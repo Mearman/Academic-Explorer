@@ -1,3 +1,147 @@
+## 16.0.0 (2025-11-21)
+
+* test(web): fix relationship-detection-service mock for ENTITY_METADATA ([5b8468d](https://github.com/Mearman/Academic-Explorer/commit/5b8468d))
+* docs(docs): add entity taxonomy centralization specification ([b3228ad](https://github.com/Mearman/Academic-Explorer/commit/b3228ad))
+* docs(docs): add OpenAlex entity definition consolidation specification ([8545a95](https://github.com/Mearman/Academic-Explorer/commit/8545a95))
+* docs(docs): amend constitution to v2.2.0 (spec commit requirement) ([49ffc2c](https://github.com/Mearman/Academic-Explorer/commit/49ffc2c))
+* docs(docs): amend constitution to v2.3.0 (automatic workflow progression) ([dd9fb6a](https://github.com/Mearman/Academic-Explorer/commit/dd9fb6a))
+* docs(docs): amend constitution to v2.4.0 (no re-export principle) ([c1171b1](https://github.com/Mearman/Academic-Explorer/commit/c1171b1))
+* docs(docs): amend constitution to v2.4.1 ([55b921f](https://github.com/Mearman/Academic-Explorer/commit/55b921f))
+* docs(docs): complete Phase 0 and Phase 1 planning artifacts (spec-018) ([8bffb62](https://github.com/Mearman/Academic-Explorer/commit/8bffb62))
+* docs(docs): complete spec-018 entity type consolidation documentation ([28c241f](https://github.com/Mearman/Academic-Explorer/commit/28c241f))
+* docs(docs): remove backward compatibility from spec-018 ([7acb4a1](https://github.com/Mearman/Academic-Explorer/commit/7acb4a1))
+* refactor(graph): import EntityType from types package ([5546ed5](https://github.com/Mearman/Academic-Explorer/commit/5546ed5))
+* refactor(monorepo): consolidate EntityType to single canonical source ([cbb75ad](https://github.com/Mearman/Academic-Explorer/commit/cbb75ad))
+* refactor(monorepo): fix remaining EntityType duplicates and type conflicts ([c54bd1e](https://github.com/Mearman/Academic-Explorer/commit/c54bd1e))
+* refactor(utils): import EntityType from types package ([a6cc82c](https://github.com/Mearman/Academic-Explorer/commit/a6cc82c))
+* refactor(web): make entity name clickable instead of separate button ([e4d292f](https://github.com/Mearman/Academic-Explorer/commit/e4d292f))
+* refactor(web): migrate to centralized entity metadata ([b3ba74e](https://github.com/Mearman/Academic-Explorer/commit/b3ba74e))
+* fix(academic-explorer): correct relationship direction for Authors ([470eb96](https://github.com/Mearman/Academic-Explorer/commit/470eb96))
+* fix(academic-explorer): correct Works outbound query and add repository relationships ([fa2fc46](https://github.com/Mearman/Academic-Explorer/commit/fa2fc46))
+* fix(academic-explorer): match RelationshipTypeString casing to RelationType enum ([dc64217](https://github.com/Mearman/Academic-Explorer/commit/dc64217))
+* fix(academic-explorer): use host_organization_name for publisher display name ([e495f34](https://github.com/Mearman/Academic-Explorer/commit/e495f34))
+* fix(release): include all commit types in release notes ([c2ce73b](https://github.com/Mearman/Academic-Explorer/commit/c2ce73b))
+* fix(shared-utils): correct RELATED_TO relationship type case ([121c1fd](https://github.com/Mearman/Academic-Explorer/commit/121c1fd))
+* fix(web): add custom formatter for entity reference fields ([9820507](https://github.com/Mearman/Academic-Explorer/commit/9820507))
+* fix(web): add QueryClientProvider to relationship component tests ([87ee6c9](https://github.com/Mearman/Academic-Explorer/commit/87ee6c9))
+* fix(web): add ScrollArea to EntityInfoSection for scrollable content ([02e31e9](https://github.com/Mearman/Academic-Explorer/commit/02e31e9))
+* fix(web): decouple sidebar preview from graph operations ([5818620](https://github.com/Mearman/Academic-Explorer/commit/5818620))
+* fix(web): detect entity type from ID prefix in RichEntityDisplay ([89454c3](https://github.com/Mearman/Academic-Explorer/commit/89454c3))
+* fix(web): detect entity type from ID prefix in View Full Details button ([21919b4](https://github.com/Mearman/Academic-Explorer/commit/21919b4))
+* fix(web): pass full data object to onDataFetched callback ([3a28860](https://github.com/Mearman/Academic-Explorer/commit/3a28860))
+* fix(web): preserve graph errors in relationship fallback logic ([05d8012](https://github.com/Mearman/Academic-Explorer/commit/05d8012))
+* fix(web): resolve TanStack Router plugin issues and add taxonomy routes ([587bce1](https://github.com/Mearman/Academic-Explorer/commit/587bce1))
+* fix(web): update React Query cache when fields are fetched on demand ([c62e976](https://github.com/Mearman/Academic-Explorer/commit/c62e976))
+* fix(web): use displayEntityId for entity data fetching in EntityInfoSection ([7cb999f](https://github.com/Mearman/Academic-Explorer/commit/7cb999f))
+* feat: add support for OpenAlex taxonomy entities (domains, fields, subfields) ([9e08b9d](https://github.com/Mearman/Academic-Explorer/commit/9e08b9d))
+* feat(academic-explorer): add embedded data extraction support for relationship queries ([88f4cb2](https://github.com/Mearman/Academic-Explorer/commit/88f4cb2))
+* feat(academic-explorer): add Works related_to query for discovering similar works ([fb9e870](https://github.com/Mearman/Academic-Explorer/commit/fb9e870))
+* feat(academic-explorer): extend type unions to include taxonomy entities ([c430f32](https://github.com/Mearman/Academic-Explorer/commit/c430f32))
+* feat(academic-explorer): populate all relationship query configurations ([16e0c8e](https://github.com/Mearman/Academic-Explorer/commit/16e0c8e))
+* feat(graph): add Work→Topic, Institution relationships ([b5eb38c](https://github.com/Mearman/Academic-Explorer/commit/b5eb38c))
+* feat(monorepo): centralize entity metadata in types package ([b94dc9f](https://github.com/Mearman/Academic-Explorer/commit/b94dc9f))
+* feat(shared-utils): add taxonomy entity support to storage layer ([42e3d7a](https://github.com/Mearman/Academic-Explorer/commit/42e3d7a))
+* feat(types): add OpenAlex taxonomy entities (domains, fields, subfields) to type system ([5ee7261](https://github.com/Mearman/Academic-Explorer/commit/5ee7261))
+* feat(web): add API-based relationship extraction fallback ([9029040](https://github.com/Mearman/Academic-Explorer/commit/9029040))
+* feat(web): add API-based relationship query registry ([a694ea3](https://github.com/Mearman/Academic-Explorer/commit/a694ea3))
+* feat(web): add background prefetch for ID-only embedded relationships ([7933fb0](https://github.com/Mearman/Academic-Explorer/commit/7933fb0))
+* feat(web): add comprehensive field display with on-demand fetching ([c388430](https://github.com/Mearman/Academic-Explorer/commit/c388430))
+* feat(web): add dual-click behavior to relationship items ([05bad7d](https://github.com/Mearman/Academic-Explorer/commit/05bad7d))
+* feat(web): add support for taxonomy entity routes (domains, fields, subfields) ([c051452](https://github.com/Mearman/Academic-Explorer/commit/c051452))
+* feat(web): add taxonomy entity configs and colors ([b9c32f9](https://github.com/Mearman/Academic-Explorer/commit/b9c32f9))
+* feat(web): add View Full Details button to entity preview ([7793357](https://github.com/Mearman/Academic-Explorer/commit/7793357))
+* feat(web): auto-collapse right sidebar when no entity preview is available ([1d97673](https://github.com/Mearman/Academic-Explorer/commit/1d97673))
+* feat(web): auto-open right sidebar on entity click and remove history fallback ([f521521](https://github.com/Mearman/Academic-Explorer/commit/f521521))
+* feat(web): complete taxonomy entity integration across web app ([b64938d](https://github.com/Mearman/Academic-Explorer/commit/b64938d))
+* feat(web): make entity reference fields clickable with proper routing ([abf0807](https://github.com/Mearman/Academic-Explorer/commit/abf0807))
+* feat(web): split left sidebar into Bookmarks (upper) and History (lower) sections ([ba15360](https://github.com/Mearman/Academic-Explorer/commit/ba15360))
+* chore(release): 15.0.2 [skip ci] ([fd1189d](https://github.com/Mearman/Academic-Explorer/commit/fd1189d))
+
+
+### Breaking change
+
+* for spec-018: removes re-export tasks from entity
+consolidation plan. All backward compatibility re-exports violate new
+principle and must be eliminated.
+
+Refs: constitution v2.4.0 (MINOR bump - new principle added)
+
+### BREAKING CHANGE
+
+* All EntityType imports now use @academic-explorer/types
+
+Centralize EntityType definition to packages/types/src/entities/entities.ts
+as the single source of truth. All packages and apps now import EntityType
+from @academic-explorer/types instead of local duplicates.
+
+Changes:
+- Remove EntityType from graph/src/types/core.ts (imported from types pkg)
+- Remove EntityType from utils/storage/catalogue-db.ts (imported from types pkg)
+- Remove EntityType re-exports from graph and utils package indices
+- Add EntityType import to utils/url-compression.ts (full 12-type support)
+- Fix graph package: 25 files updated to import from types package
+- Fix web app: 35 files updated to import from types package
+  - Remove local singular EntityType definitions
+  - Convert all entity type references from singular to plural forms
+  - Update ENTITY_TYPE_CONFIGS keys: author→authors, work→works, etc.
+  - Fix AddToListModal to use canonical EntityType (remove mapping)
+  - Add missing entity types (concepts, keywords) to catalogue counts
+- Fix CLI: Already using correct imports (no changes needed)
+
+Constitution Compliance:
+- Removed all EntityType re-exports (Principle III: no re-exports)
+- All imports now direct from canonical source
+
+Coverage:
+✅ All 12 OpenAlex entity types supported:
+   works, authors, sources, institutions, topics, concepts,
+   publishers, funders, keywords, domains, fields, subfields
+
+Files modified: 71
+- Graph package: 26 files
+- Utils package: 9 files
+- Web app: 35 files
+- CLI: 1 file (verified correct)
+
+Build status: All packages build successfully
+- types ✅
+- utils ✅
+- graph ✅
+- client ✅
+- simulation ✅
+- ui ✅
+- cli ✅
+- web ✅
+* CachedEntityMetadata.type changed from EntityType to
+CacheStorageType (internal change, affects cache browser only)
+* Constitution version 2.1.0 → 2.2.0 (MINOR)
+
+New workflow requirement:
+- ALWAYS commit changes to ./specs/ directory after each phase completion
+- Spec commits MUST use docs(spec-###): prefix
+- Commit spec changes separately from implementation changes
+
+Example spec commit:
+  git add specs/018-entity-consolidation/
+  git commit -m "docs(spec-018): complete Phase 1 setup tasks"
+
+Refs: .specify/memory/constitution.md (Principle VI)
+Refs: .specify/templates/plan-template.md (Constitution Check)
+Refs: .specify/templates/spec-template.md (Constitution Alignment)
+* Constitution version 2.2.0 → 2.3.0 (MINOR)
+
+Follow-up TODOs:
+- Implement automatic command chaining in /speckit.plan workflow logic
+- Update command templates to check for blockers before auto-progressing
+
+Refs: constitution v2.3.0 Principle X
+* Consumers importing EntityType from @academic-explorer/graph
+must update imports to @academic-explorer/types
+* Entity metadata helper functions moved from graph package
+to types package. Import from @academic-explorer/types instead of
+@academic-explorer/graph/taxonomy/entity-taxa.
+* EntityType union now includes domains, fields, subfields
+
 ## [15.0.2](https://github.com/Mearman/Academic-Explorer/compare/v15.0.1...v15.0.2) (2025-11-20)
 
 ## [15.0.1](https://github.com/Mearman/Academic-Explorer/compare/v15.0.0...v15.0.1) (2025-11-20)
