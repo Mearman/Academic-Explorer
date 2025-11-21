@@ -3,8 +3,9 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { execSync, exec } from 'child_process';
+import { exec } from 'child_process';
 import { promisify } from 'util';
+import dns from 'dns/promises';
 
 const execAsync = promisify(exec);
 
@@ -13,17 +14,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-let CONCURRENCY = 20; // Start with 20 names in parallel (will adapt)
-const MIN_CONCURRENCY = 5;
-const MAX_CONCURRENCY = 50;
 const TLDS_TO_CHECK = ['com', 'io', 'net', 'org', 'app', 'dev', 'co.uk'];
-const MAX_RETRIES = 3; // Max retries on rate limit
-const INITIAL_BACKOFF_MS = 1000; // Start with 1 second backoff
-const RECHECK_THRESHOLD_HOURS = 24; // Only recheck if older than 24 hours
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 1000;
+const RECHECK_THRESHOLD_HOURS = 24;
 
-// Adaptive concurrency tracking
-let consecutiveSuccesses = 0;
-let rateLimitHits = 0;
+// Method selection: 'rdap' | 'dns' | 'whois' | 'auto'
+const CHECK_METHOD: 'rdap' | 'dns' | 'whois' | 'auto' = 'auto';
+
+// RDAP endpoints by TLD
+const RDAP_SERVERS: Record<string, string> = {
+  'com': 'https://rdap.verisign.com/com/v1/domain',
+  'net': 'https://rdap.verisign.com/net/v1/domain',
+  'org': 'https://rdap.publicinterestregistry.org/rdap/domain',
+  'io': 'https://rdap.nic.io/domain',
+  'app': 'https://rdap.nic.google/domain',
+  'dev': 'https://rdap.nic.google/domain',
+  'co.uk': 'https://rdap.nominet.uk/uk/domain'
+};
 
 // Type definitions
 interface NameEntry {
@@ -44,11 +52,6 @@ interface NameEntry {
 
 interface Database {
   names: NameEntry[];
-}
-
-interface DomainCheckResult {
-  name: string;
-  availability: Record<string, boolean>;
 }
 
 interface CsvRow {
@@ -77,24 +80,113 @@ interface CsvRow {
   recommendation: string;
 }
 
-// Helper function to check WHOIS availability with retry on rate limit
+// Method 1: RDAP (Registration Data Access Protocol)
+async function checkRdapAvailability(domain: string, tld: string, retryCount = 0): Promise<boolean> {
+  const rdapServer = RDAP_SERVERS[tld];
+  if (!rdapServer) {
+    console.log(`  ⚠️  No RDAP server for .${tld}, falling back to WHOIS`);
+    return checkWhoisAvailability(domain, retryCount);
+  }
+
+  const url = `${rdapServer}/${domain}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/rdap+json'
+      },
+      signal: AbortSignal.timeout(10000)
+    });
+
+    // RDAP returns 404 for available domains, 200 for registered domains
+    if (response.status === 404) {
+      return true; // Domain is available
+    } else if (response.status === 200) {
+      return false; // Domain is registered
+    } else if (response.status === 429) {
+      // Rate limited
+      if (retryCount < MAX_RETRIES) {
+        const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, retryCount);
+        console.log(`  ⏳ RDAP rate limit for ${domain}, waiting ${backoffMs}ms (retry ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+        return await checkRdapAvailability(domain, tld, retryCount + 1);
+      }
+      throw new Error('RDAP rate limit exhausted');
+    } else {
+      console.log(`  ⚠️  Unexpected RDAP status ${response.status} for ${domain}, falling back to WHOIS`);
+      return checkWhoisAvailability(domain, retryCount);
+    }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (errorMessage.includes('timeout') || errorMessage.includes('AbortError')) {
+      if (retryCount < MAX_RETRIES) {
+        const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, retryCount);
+        console.log(`  ⏳ RDAP timeout for ${domain}, waiting ${backoffMs}ms (retry ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+        return await checkRdapAvailability(domain, tld, retryCount + 1);
+      }
+    }
+
+    console.log(`  ⚠️  RDAP error for ${domain}: ${errorMessage}, falling back to WHOIS`);
+    return checkWhoisAvailability(domain, retryCount);
+  }
+}
+
+// Method 2: DNS-based checking (fast but less accurate)
+async function checkDnsAvailability(domain: string): Promise<boolean | null> {
+  try {
+    // Try to resolve A records
+    const addresses = await dns.resolve4(domain);
+    if (addresses && addresses.length > 0) {
+      return false; // Domain has DNS records, likely registered
+    }
+  } catch (error: unknown) {
+    const errorCode = (error as any).code;
+
+    // ENOTFOUND = no DNS records = likely available
+    // ENODATA = domain exists but no A records
+    if (errorCode === 'ENOTFOUND') {
+      // Try NS records as additional check
+      try {
+        const nsRecords = await dns.resolveNs(domain);
+        if (nsRecords && nsRecords.length > 0) {
+          return false; // Has nameservers = registered
+        }
+      } catch {
+        return true; // No NS records either = likely available
+      }
+    } else if (errorCode === 'ENODATA') {
+      // Domain exists but no A records - check NS
+      try {
+        const nsRecords = await dns.resolveNs(domain);
+        return nsRecords.length === 0; // No NS = might be available
+      } catch {
+        return null; // Uncertain
+      }
+    }
+  }
+
+  return null; // Uncertain - should use another method
+}
+
+// Method 3: WHOIS (fallback method)
 async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<boolean> {
   try {
     const { stdout: output } = await execAsync(`whois ${domain}`, {
-      timeout: 20000,  // Increased to 20s for heavy load conditions
+      timeout: 20000,
       encoding: 'utf8'
     });
 
     let lowerOutput = output.toLowerCase();
 
-    // Check if we got registry referral info instead of domain-specific info
-    // If so, follow the referral to the authoritative WHOIS server
+    // Check if we got registry referral info
     const referMatch = output.match(/refer:\s+(\S+)/i);
     if (referMatch) {
       const referServer = referMatch[1];
       try {
         const { stdout: referOutput } = await execAsync(`whois -h ${referServer} ${domain}`, {
-          timeout: 20000,  // Increased to 20s for heavy load conditions
+          timeout: 20000,
           encoding: 'utf8'
         });
         lowerOutput = referOutput.toLowerCase();
@@ -103,8 +195,7 @@ async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<b
       }
     }
 
-    // Check if this is just registry information (not domain-specific)
-    // Registry info has "domain: COM" (or other TLD) AND "nserver:" entries for TLD nameservers
+    // Check if this is just registry information
     const hasTldDomain = /domain:\s+(app|dev|io|com|net|org)\s*$/m.test(lowerOutput);
     const hasTldNameservers = /nserver:.*gtld-servers/i.test(lowerOutput);
     const isRegistryInfo = hasTldDomain && hasTldNameservers;
@@ -126,7 +217,6 @@ async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<b
       'available for registration',
     ];
 
-    // Check for availability first
     if (availablePatterns.some(pattern => lowerOutput.includes(pattern))) {
       return true;
     }
@@ -147,13 +237,11 @@ async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<b
       return false;
     }
 
-    // If uncertain, assume taken (safer)
-    return false;
+    return false; // If uncertain, assume taken
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
     const fullError = error instanceof Error ? error.message : String(error);
 
-    // Check for rate limit patterns
     const rateLimitPatterns = [
       'rate limit',
       'too many requests',
@@ -163,47 +251,74 @@ async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<b
     ];
 
     const isRateLimit = rateLimitPatterns.some(pattern => errorMessage.includes(pattern));
-
-    // Check for timeout
     const isTimeout = errorMessage.includes('timeout') || errorMessage.includes('timed out');
 
     if ((isRateLimit || isTimeout) && retryCount < MAX_RETRIES) {
-      // Exponential backoff: 1s, 2s, 4s
       const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, retryCount);
       const reason = isRateLimit ? 'rate limit' : 'timeout';
-      console.log(`  ⏳ ${reason} for ${domain}, waiting ${backoffMs}ms (retry ${retryCount + 1}/${MAX_RETRIES})...`);
+      console.log(`  ⏳ WHOIS ${reason} for ${domain}, waiting ${backoffMs}ms (retry ${retryCount + 1}/${MAX_RETRIES})...`);
 
-      // Track rate limit hit
-      if (isRateLimit) rateLimitHits++;
-
-      // Async sleep
       await new Promise(resolve => setTimeout(resolve, backoffMs));
-
-      // Retry
       return await checkWhoisAvailability(domain, retryCount + 1);
     }
 
-    // Log unexpected errors
     if (!isRateLimit && !isTimeout) {
-      console.log(`  ⚠️  Unexpected error for ${domain}: ${fullError}`);
+      console.log(`  ⚠️  Unexpected WHOIS error for ${domain}: ${fullError}`);
     } else {
       console.log(`  ❌ Max retries exhausted for ${domain} (${fullError})`);
     }
 
-    // On error (including exhausted retries), assume taken
+    return false; // On error, assume taken
+  }
+}
+
+// Unified checking function with method selection and fallback
+async function checkDomainAvailability(name: string, tld: string, method: typeof CHECK_METHOD = CHECK_METHOD): Promise<boolean> {
+  const domain = `${name.toLowerCase()}.${tld}`;
+
+  try {
+    switch (method) {
+      case 'rdap':
+        return await checkRdapAvailability(domain, tld);
+
+      case 'dns':
+        const dnsResult = await checkDnsAvailability(domain);
+        if (dnsResult !== null) {
+          return dnsResult;
+        }
+        // Fall through to RDAP if DNS is uncertain
+        console.log(`  ⚠️  DNS uncertain for ${domain}, trying RDAP...`);
+        return await checkRdapAvailability(domain, tld);
+
+      case 'whois':
+        return await checkWhoisAvailability(domain);
+
+      case 'auto':
+      default:
+        // Auto mode: Try DNS first (fast), then RDAP, then WHOIS as fallback
+        const quickDns = await checkDnsAvailability(domain);
+        if (quickDns === false) {
+          // DNS shows it's registered, no need to check further
+          return false;
+        }
+
+        // DNS uncertain or shows available - verify with RDAP
+        try {
+          return await checkRdapAvailability(domain, tld);
+        } catch {
+          // If RDAP fails, WHOIS fallback is already built into checkRdapAvailability
+          return false;
+        }
+    }
+  } catch (error) {
+    console.log(`  ❌ All methods failed for ${domain}, assuming taken`);
     return false;
   }
 }
 
-// Helper function to check a single TLD for a name
-async function checkSingleTldAvailability(name: string, tld: string): Promise<boolean> {
-  const domain = `${name.toLowerCase()}.${tld}`;
-  return await checkWhoisAvailability(domain);
-}
-
 // Helper function to check if a domain needs rechecking
 function needsRecheck(lastUpdated: string): boolean {
-  if (!lastUpdated) return true; // No timestamp = needs check
+  if (!lastUpdated) return true;
 
   try {
     const lastCheck = new Date(lastUpdated);
@@ -211,7 +326,7 @@ function needsRecheck(lastUpdated: string): boolean {
     const hoursSinceCheck = (now.getTime() - lastCheck.getTime()) / (1000 * 60 * 60);
     return hoursSinceCheck >= RECHECK_THRESHOLD_HOURS;
   } catch {
-    return true; // Invalid timestamp = needs check
+    return true;
   }
 }
 
@@ -297,14 +412,12 @@ function parseCsv(csvContent: string): Map<string, CsvRow> {
   const lines = csvContent.trim().split('\n');
   const rows = new Map<string, CsvRow>();
 
-  if (lines.length <= 1) return rows; // Empty or header only
+  if (lines.length <= 1) return rows;
 
-  // Skip header
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
     if (!line.trim()) continue;
 
-    // Simple CSV parsing (handles quoted fields)
     const columns: string[] = [];
     let current = '';
     let inQuotes = false;
@@ -315,7 +428,7 @@ function parseCsv(csvContent: string): Map<string, CsvRow> {
       if (char === '"') {
         if (inQuotes && line[j + 1] === '"') {
           current += '"';
-          j++; // Skip next quote
+          j++;
         } else {
           inQuotes = !inQuotes;
         }
@@ -380,7 +493,6 @@ class CsvWriter {
       const task = this.queue.shift();
       if (task) {
         task();
-        // Small delay to prevent overwhelming filesystem
         await new Promise(resolve => setTimeout(resolve, 10));
       }
     }
@@ -397,11 +509,9 @@ class CsvWriter {
 
 // Main execution
 async function main() {
-  // Read the JSON database
   const dbPath = path.join(__dirname, 'all-names-database.json');
   const db: Database = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
 
-  // Read existing CSV if it exists
   const csvPath = path.join(__dirname, 'domain-availability-matrix.csv');
   const existingRows = new Map<string, CsvRow>();
 
@@ -413,28 +523,26 @@ async function main() {
     console.log(`   Found ${existingRows.size} existing rows\n`);
   }
 
-  // Initialize with all existing rows (preserve everything)
   const allRows = new Map<string, CsvRow>(existingRows);
-
-  // Create dedicated CSV writer service
   const csvWriter = new CsvWriter();
 
-  console.log('🔍 Starting parallel WHOIS verification...');
-  console.log(`⚡ Adaptive concurrency: Starting at ${CONCURRENCY} (range: ${MIN_CONCURRENCY}-${MAX_CONCURRENCY})`);
+  console.log('🔍 Starting domain availability verification...');
+  console.log(`🎯 Method: ${CHECK_METHOD.toUpperCase()}`);
+  if (CHECK_METHOD === 'auto') {
+    console.log('   Strategy: DNS (fast filter) → RDAP (primary) → WHOIS (fallback)');
+  }
   console.log(`📊 Checking ${db.names.length} names × ${TLDS_TO_CHECK.length} TLDs (${TLDS_TO_CHECK.join(', ')})`);
-  console.log(`🔄 Dynamic rate limiting: Will back off on rate limit errors`);
   console.log(`⏰ Skip check if updated within ${RECHECK_THRESHOLD_HOURS} hours\n`);
 
   const startTime = Date.now();
   let checked = 0;
+  let skipped = 0;
 
-  // Process each TLD separately - check domains SEQUENTIALLY (concurrency = 1)
   for (const tld of TLDS_TO_CHECK) {
     console.log(`\n🔍 Checking .${tld} for all ${db.names.length} domains sequentially...`);
     const tldStart = Date.now();
     let completed = 0;
 
-    // Check domains one at a time (sequential)
     for (const name of db.names) {
       const existingRow = allRows.get(name.name);
 
@@ -450,10 +558,9 @@ async function main() {
         else if (tld === 'co.uk') lastChecked = existingRow.coukChecked;
       }
 
-      // Skip if recently checked
       if (lastChecked && !needsRecheck(lastChecked)) {
         completed++;
-        checked++;
+        skipped++;
         const currentValue = existingRow ?
           (tld === 'com' ? existingRow.com :
            tld === 'io' ? existingRow.io :
@@ -466,11 +573,10 @@ async function main() {
         continue;
       }
 
-      const available = await checkSingleTldAvailability(name.name, tld);
+      const available = await checkDomainAvailability(name.name, tld);
       const timestamp = new Date().toISOString();
 
       if (!existingRow) {
-        // Create new row with metadata from JSON
         allRows.set(name.name, {
           name: name.name,
           type: name.type || '',
@@ -497,7 +603,6 @@ async function main() {
           recommendation: name.recommendation || ''
         });
       } else {
-        // Update existing row with this TLD's result
         if (tld === 'com') {
           existingRow.com = formatAvailable(available);
           existingRow.comChecked = timestamp;
@@ -522,7 +627,6 @@ async function main() {
         }
       }
 
-      // Queue write via dedicated writer service (prevents file contention)
       csvWriter.enqueue(() => writeCsv(csvPath, allRows));
 
       completed++;
@@ -534,7 +638,6 @@ async function main() {
     console.log(`✅ .${tld} complete in ${tldDuration}s\n`);
   }
 
-  // Wait for all queued writes to complete
   console.log('⏳ Waiting for all writes to complete...');
   await csvWriter.waitForCompletion();
   console.log('✅ All writes complete');
@@ -544,7 +647,8 @@ async function main() {
   console.log(`\n✅ Verification complete: ${csvPath}`);
   console.log(`⏱️  Total time: ${duration}s`);
   console.log('\n📈 Statistics:');
-  console.log(`   Total checks performed: ${checked}`);
+  console.log(`   Checks performed: ${checked}`);
+  console.log(`   Checks skipped (cached): ${skipped}`);
   console.log(`   Throughput: ${(checked / parseFloat(duration)).toFixed(2)} checks/second`);
   console.log(`\n📊 Total rows in CSV: ${allRows.size}`);
 }
