@@ -7,11 +7,11 @@ import { useState, useCallback } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import type { OpenAlexEntity } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils";
-import type { EntityType } from "../config/cache";
+import type { CacheKeyType } from "../config/cache";
 
 interface UseFieldFetchOptions {
   entityId: string;
-  entityType: EntityType;
+  entityType: CacheKeyType;
   onSuccess?: (data: Partial<OpenAlexEntity>) => void;
 }
 

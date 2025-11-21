@@ -17,10 +17,11 @@ export type {
 
 // Static data utilities - only export what's needed to avoid conflicts
 export type {
-	EntityType as StaticEntityType,
 	DirectoryIndex,
 	FileEntry,
 } from "./static-data/cache-utilities.js"
+// Re-export CacheStorageType as StaticEntityType for backward compatibility
+export type { CacheStorageType as StaticEntityType } from "./cache-browser/types.js"
 
 // Logger
 export { logger, logError } from "./logger.js"

@@ -8,7 +8,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils";
 import { useQuery } from "@tanstack/react-query";
-import type { EntityType } from "../config/cache";
+import type { CacheKeyType } from "../config/cache";
 import { ENTITY_CACHE_TIMES } from "../config/cache";
 
 interface UseRawEntityDataOptions {
@@ -22,8 +22,8 @@ interface UseRawEntityDataOptions {
  */
 function isValidEntityData(data: {
   entityId: string | null | undefined;
-  entityType: EntityType | null;
-}): data is { entityId: string; entityType: EntityType } {
+  entityType: CacheKeyType | null;
+}): data is { entityId: string; entityType: CacheKeyType } {
   return !!data.entityId && !!data.entityType;
 }
 
@@ -35,7 +35,7 @@ export const useRawEntityData = ({
   const { entityId, enabled = true, queryParams = {} } = options;
 
   // Detect entity type from ID to use proper cache configuration
-  let entityType: EntityType | null = null;
+  let entityType: CacheKeyType | null = null;
   let detectedEntityId: string | null = null;
 
   if (entityId) {

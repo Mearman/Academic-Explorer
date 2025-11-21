@@ -7,14 +7,14 @@ import React, { useState } from "react";
 import { Group, Text, Skeleton, ActionIcon, Tooltip } from "@mantine/core";
 import { IconRefresh, IconClick } from "@tabler/icons-react";
 import { useFieldFetch } from "@/hooks/use-field-fetch";
-import type { EntityType } from "@/config/cache";
+import type { CacheKeyType } from "@/config/cache";
 
 interface FieldDisplayProps {
   label: string;
   value: unknown;
   fieldName: string;
   entityId: string;
-  entityType: EntityType;
+  entityType: CacheKeyType;
   onDataFetched?: (data: unknown) => void;
   formatter?: (value: unknown) => React.ReactNode;
 }

@@ -8,9 +8,9 @@ import {
   isValidOpenAlexEntity,
   type DirectoryEntry,
   type DirectoryIndex,
-  type EntityType,
   type FileEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
+import type { StaticEntityType } from "@academic-explorer/utils";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import("node:fs/promises");
@@ -48,7 +48,7 @@ export interface IndexGenerationOptions {
   validate?: boolean;
 }
 
-const VALID_ENTITY_TYPES: EntityType[] = [
+const VALID_ENTITY_TYPES: StaticEntityType[] = [
   "works",
   "authors",
   "sources",
@@ -81,9 +81,9 @@ export async function generateAllIndexes(
       .filter(
         (entry) =>
           entry.isDirectory() &&
-          VALID_ENTITY_TYPES.includes(entry.name as EntityType),
+          VALID_ENTITY_TYPES.includes(entry.name as StaticEntityType),
       )
-      .map((entry) => entry.name as EntityType);
+      .map((entry) => entry.name as StaticEntityType);
 
     if (entityDirs.length === 0) {
       console.log(
@@ -142,7 +142,7 @@ export async function generateIndexWithAutoDownload({
   staticDataDir,
 }: {
   entityDir: string;
-  entityType: EntityType;
+  entityType: StaticEntityType;
   staticDataDir: string;
 }): Promise<void> {
   await initializeNodeModules();
@@ -169,7 +169,7 @@ export async function generateIndexWithAutoDownload({
  */
 export async function generateIndexForEntityType(
   entityDir: string,
-  entityType: EntityType,
+  entityType: StaticEntityType,
   recursive = true,
 ): Promise<void> {
   await initializeNodeModules();
@@ -361,7 +361,7 @@ async function processJsonFiles({
 }: {
   entityDir: string;
   jsonFiles: string[];
-  entityType: EntityType;
+  entityType: StaticEntityType;
 }): Promise<Record<string, FileEntry>> {
   const files: Record<string, FileEntry> = {};
 
@@ -408,7 +408,7 @@ async function processSubdirectories({
   recursive,
 }: {
   entityDir: string;
-  entityType: EntityType;
+  entityType: StaticEntityType;
   recursive: boolean;
 }): Promise<{
   directories: Record<string, DirectoryEntry>;
@@ -596,11 +596,11 @@ async function validateIndexDirectories({
 /**
  * Get entity type from directory path
  */
-export function getEntityTypeFromPath(dirPath: string): EntityType | null {
+export function getEntityTypeFromPath(dirPath: string): StaticEntityType | null {
   // Use simple string operations to avoid sync Node.js imports
   const dirName =
     dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
-  return VALID_ENTITY_TYPES.includes(dirName as EntityType)
-    ? (dirName as EntityType)
+  return VALID_ENTITY_TYPES.includes(dirName as StaticEntityType)
+    ? (dirName as StaticEntityType)
     : null;
 }

@@ -84,11 +84,14 @@ export const ENTITY_CACHE_TIMES = {
   },
 } as const;
 
-export type EntityType = keyof typeof ENTITY_CACHE_TIMES;
+/**
+ * Cache key type includes OpenAlex entities plus special cache types (search, related)
+ */
+export type CacheKeyType = keyof typeof ENTITY_CACHE_TIMES;
 
 /**
- * Get cache configuration for a specific entity type
+ * Get cache configuration for a specific cache key
  */
-export function getCacheConfig(entityType: EntityType) {
-  return ENTITY_CACHE_TIMES[entityType];
+export function getCacheConfig(cacheKey: CacheKeyType) {
+  return ENTITY_CACHE_TIMES[cacheKey];
 }

@@ -27,24 +27,28 @@
 
 ### Setup Tasks
 
-- [ ] T001 [P1] [US1] Verify clean working tree (git status)
+- [x] T001 [P1] [US1] Verify clean working tree (git status)
   - **Command**: `git status`
   - **Expected**: No uncommitted changes
   - **Validation**: Zero modified files
+  - **Completed**: 2025-11-21
 
-- [ ] T002 [P1] [US1] Verify all tests pass before refactoring (pnpm test)
+- [x] T002 [P1] [US1] Verify all tests pass before refactoring (pnpm test)
   - **Command**: `pnpm test`
   - **Expected**: All 738 tests pass
   - **Validation**: Zero test failures
+  - **Completed**: 2025-11-21
 
-- [ ] T003 [P1] [US1] Verify all packages build successfully (pnpm build)
+- [x] T003 [P1] [US1] Verify all packages build successfully (pnpm build)
   - **Command**: `pnpm build`
   - **Expected**: All 8 projects build
   - **Validation**: Zero build errors
+  - **Completed**: 2025-11-21
 
-- [ ] T004 [P1] [US1] Create feature branch 018-entity-consolidation
+- [x] T004 [P1] [US1] Create feature branch 018-entity-consolidation
   - **Command**: `git checkout -b 018-entity-consolidation`
   - **Validation**: Branch created and checked out
+  - **Completed**: 2025-11-21
 
 ---
 
@@ -54,35 +58,40 @@
 
 ### Graph Package Tasks
 
-- [ ] T005 [P1] [US1] Remove duplicate EntityType definition in packages/graph/src/types/core.ts (lines 9-21)
+- [x] T005 [P1] [US1] Remove duplicate EntityType definition in packages/graph/src/types/core.ts (lines 9-21)
   - **File**: `packages/graph/src/types/core.ts`
   - **Action**: Delete lines 9-21 (entire EntityType union definition)
   - **Validation**: EntityType no longer defined locally
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
-- [ ] T006 [P1] [US1] Add EntityType import to packages/graph/src/types/core.ts
+- [x] T006 [P1] [US1] Add EntityType import to packages/graph/src/types/core.ts
   - **File**: `packages/graph/src/types/core.ts`
   - **Location**: After existing imports (around line 6)
   - **Code**: `import type { EntityType } from "@academic-explorer/types"`
   - **Validation**: Import statement added
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
-- [ ] T007 [P1] [US1] Remove EntityType re-export from packages/graph/src/index.ts
+- [x] T007 [P1] [US1] Remove EntityType re-export from packages/graph/src/index.ts
   - **File**: `packages/graph/src/index.ts`
   - **Action**: Delete line: `export type { EntityType } from "./types/core"`
   - **Rationale**: Constitution Principle III prohibits re-exports between internal packages
   - **Note**: Consumers must import directly from @academic-explorer/types
   - **Validation**: Re-export removed, no EntityType export remains in graph package
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
-- [ ] T008 [P1] [US1] Verify graph package type checking passes (pnpm nx typecheck graph)
+- [x] T008 [P1] [US1] Verify graph package type checking passes (pnpm nx typecheck graph)
   - **Command**: `pnpm nx typecheck graph`
   - **Expected**: Zero type errors
   - **Validation**: TypeScript compilation successful
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
-- [ ] T009 [P1] [US1] Verify graph package tests pass (pnpm nx test graph)
+- [x] T009 [P1] [US1] Verify graph package tests pass (pnpm nx test graph)
   - **Command**: `pnpm nx test graph`
   - **Expected**: All graph tests pass
   - **Validation**: Zero test failures
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
-- [ ] T010 [P1] [US1] Commit graph package changes
+- [x] T010 [P1] [US1] Commit graph package changes
   - **Files**: `packages/graph/src/types/core.ts`, `packages/graph/src/index.ts`
   - **Message**: `refactor(graph): import EntityType from types package`
   - **Body**:
@@ -98,6 +107,7 @@
     must update imports to @academic-explorer/types
     ```
   - **Validation**: Commit created successfully
+  - **Completed**: 2025-11-21 (commit 5546ed53)
 
 ---
 
@@ -107,19 +117,19 @@
 
 ### Catalogue DB Tasks
 
-- [ ] T011 [P1] [US1] Remove duplicate EntityType definition in packages/utils/src/storage/catalogue-db.ts (lines 62-72)
+- [x] T011 [P1] [US1] Remove duplicate EntityType definition in packages/utils/src/storage/catalogue-db.ts (lines 62-72)
   - **File**: `packages/utils/src/storage/catalogue-db.ts`
   - **Action**: Delete lines 62-72 (EntityType union definition)
   - **Note**: Old definition was subset (missing "concepts", "keywords")
   - **Validation**: EntityType no longer defined locally
 
-- [ ] T012 [P1] [US1] Add EntityType import to packages/utils/src/storage/catalogue-db.ts
+- [x] T012 [P1] [US1] Add EntityType import to packages/utils/src/storage/catalogue-db.ts
   - **File**: `packages/utils/src/storage/catalogue-db.ts`
   - **Location**: After existing imports (around line 8)
   - **Code**: `import type { EntityType } from "@academic-explorer/types"`
   - **Validation**: Import statement added
 
-- [ ] T013 [P1] [US1] Verify catalogue-db type checking passes
+- [x] T013 [P1] [US1] Verify catalogue-db type checking passes
   - **Command**: `pnpm nx typecheck utils`
   - **Expected**: Zero type errors
   - **Note**: Stricter type checking (subset → superset) is intentional improvement
@@ -133,7 +143,7 @@
 
 ### Cache Browser Tasks
 
-- [ ] T014 [P1] [US1] Replace EntityType definition in packages/utils/src/cache-browser/types.ts
+- [x] T014 [P1] [US1] Replace EntityType definition in packages/utils/src/cache-browser/types.ts
   - **File**: `packages/utils/src/cache-browser/types.ts`
   - **Find**: Lines 6-16 (EntityType union including "autocomplete")
   - **Replace**:
@@ -147,35 +157,35 @@
     ```
   - **Validation**: EntityType imported, CacheStorageType created
 
-- [ ] T015 [P1] [US1] Update CachedEntityMetadata interface to use CacheStorageType
+- [x] T015 [P1] [US1] Update CachedEntityMetadata interface to use CacheStorageType
   - **File**: `packages/utils/src/cache-browser/types.ts`
   - **Find**: `type: EntityType` (line 18)
   - **Replace**: `type: CacheStorageType`
   - **Validation**: Interface updated
 
-- [ ] T016 [P1] [US1] Update CacheBrowserStats interface to use CacheStorageType
+- [x] T016 [P1] [US1] Update CacheBrowserStats interface to use CacheStorageType
   - **File**: `packages/utils/src/cache-browser/types.ts`
   - **Find**: `entitiesByType: Record<EntityType, number>` (line 37)
   - **Replace**: `entitiesByType: Record<CacheStorageType, number>`
   - **Validation**: Interface updated
 
-- [ ] T017 [P1] [US1] Update CacheBrowserFilters interface to use CacheStorageType
+- [x] T017 [P1] [US1] Update CacheBrowserFilters interface to use CacheStorageType
   - **File**: `packages/utils/src/cache-browser/types.ts`
   - **Find**: `entityTypes: Set<EntityType>` (line 46)
   - **Replace**: `entityTypes: Set<CacheStorageType>`
   - **Validation**: Interface updated
 
-- [ ] T018 [P1] [US1] Verify utils package type checking passes (pnpm nx typecheck utils)
+- [x] T018 [P1] [US1] Verify utils package type checking passes (pnpm nx typecheck utils)
   - **Command**: `pnpm nx typecheck utils`
   - **Expected**: Zero type errors
   - **Validation**: TypeScript compilation successful
 
-- [ ] T019 [P1] [US1] Verify utils package tests pass (pnpm nx test utils)
+- [x] T019 [P1] [US1] Verify utils package tests pass (pnpm nx test utils)
   - **Command**: `pnpm nx test utils`
   - **Expected**: All utils tests pass
   - **Validation**: Zero test failures
 
-- [ ] T020 [P1] [US1] Commit utils package changes
+- [x] T020 [P1] [US1] Commit utils package changes
   - **Files**: `packages/utils/src/storage/catalogue-db.ts`, `packages/utils/src/cache-browser/types.ts`
   - **Message**: `refactor(utils): import EntityType from types package`
   - **Body**:
@@ -203,12 +213,12 @@
 
 ### Web App Tasks
 
-- [ ] T021 [P1] [US2] Find all EntityType imports in apps/web/src
+- [x] T021 [P1] [US2] Find all EntityType imports in apps/web/src
   - **Command**: `grep -r "import.*EntityType.*from" apps/web/src --include="*.ts" --include="*.tsx"`
   - **Expected**: List of files importing EntityType from graph or utils
   - **Validation**: Files identified for update
 
-- [ ] T022 [P1] [US2] Replace all EntityType import paths in apps/web/src
+- [x] T022 [P1] [US2] Replace all EntityType import paths in apps/web/src
   - **Find**: `import type { EntityType } from "@academic-explorer/graph"`
   - **Replace**: `import type { EntityType } from "@academic-explorer/types"`
   - **Find**: `import type { EntityType } from "@academic-explorer/utils"`
@@ -217,22 +227,22 @@
   - **Manual Review**: Verify no unintended replacements
   - **Validation**: All imports updated
 
-- [ ] T023 [P1] [US2] Verify web app type checking passes (pnpm nx typecheck web)
+- [x] T023 [P1] [US2] Verify web app type checking passes (pnpm nx typecheck web)
   - **Command**: `pnpm nx typecheck web`
   - **Expected**: Zero type errors
   - **Validation**: TypeScript compilation successful
 
-- [ ] T024 [P1] [US2] Verify web app tests pass (pnpm nx test web)
+- [x] T024 [P1] [US2] Verify web app tests pass (pnpm nx test web)
   - **Command**: `pnpm nx test web`
   - **Expected**: All web tests pass
   - **Validation**: Zero test failures
 
-- [ ] T025 [P1] [US2] Verify web app builds successfully (pnpm nx build web)
+- [x] T025 [P1] [US2] Verify web app builds successfully (pnpm nx build web)
   - **Command**: `pnpm nx build web`
   - **Expected**: Build succeeds
   - **Validation**: Web app compiles
 
-- [ ] T026 [P1] [US2] Commit web app changes
+- [x] T026 [P1] [US2] Commit web app changes
   - **Files**: All files in apps/web/src with EntityType imports
   - **Message**: `refactor(web): import EntityType from types package`
   - **Body**:
@@ -255,29 +265,29 @@
 
 ### CLI Tasks
 
-- [ ] T027 [P1] [US1] Find all EntityType imports in apps/cli/src
+- [x] T027 [P1] [US1] Find all EntityType imports in apps/cli/src
   - **Command**: `grep -r "import.*EntityType.*from" apps/cli/src --include="*.ts"`
   - **Expected**: List of files importing EntityType
   - **Note**: CLI uses EntityType sparingly (cache stats commands)
   - **Validation**: Files identified for update
 
-- [ ] T028 [P1] [US1] Replace all EntityType import paths in apps/cli/src
+- [x] T028 [P1] [US1] Replace all EntityType import paths in apps/cli/src
   - **Find**: `import type { EntityType } from "@academic-explorer/graph"`
   - **Replace**: `import type { EntityType } from "@academic-explorer/types"`
   - **Files**: Estimated ~3 files in src/commands/
   - **Validation**: All imports updated
 
-- [ ] T029 [P1] [US1] Verify CLI type checking passes (pnpm nx typecheck cli)
+- [x] T029 [P1] [US1] Verify CLI type checking passes (pnpm nx typecheck cli)
   - **Command**: `pnpm nx typecheck cli`
   - **Expected**: Zero type errors
   - **Validation**: TypeScript compilation successful
 
-- [ ] T030 [P1] [US1] Verify CLI builds successfully (pnpm nx build cli)
+- [x] T030 [P1] [US1] Verify CLI builds successfully (pnpm nx build cli)
   - **Command**: `pnpm nx build cli`
   - **Expected**: Build succeeds
   - **Validation**: CLI compiles
 
-- [ ] T031 [P1] [US1] Commit CLI changes
+- [x] T031 [P1] [US1] Commit CLI changes
   - **Files**: All files in apps/cli/src with EntityType imports
   - **Message**: `refactor(cli): import EntityType from types package`
   - **Body**:
@@ -296,37 +306,37 @@
 
 ### Global Validation Tasks
 
-- [ ] T032 [P1] [US1] Verify zero duplicate EntityType definitions (SC-001)
+- [x] T032 [P1] [US1] Verify zero duplicate EntityType definitions (SC-001)
   - **Command**: `grep -r "export type EntityType =" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "packages/types/src/entities/entities.ts"`
   - **Expected**: Zero matches (no output)
   - **Success Criteria**: SC-001
   - **Validation**: Only canonical definition exists
 
-- [ ] T033 [P1] [US2] Verify all EntityType imports use types package (SC-002)
+- [x] T033 [P1] [US2] Verify all EntityType imports use types package (SC-002)
   - **Command**: `grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@academic-explorer/types" | grep -v "node_modules"`
   - **Expected**: Zero matches (all imports from types package)
   - **Success Criteria**: SC-002
   - **Validation**: Single source of truth enforced
 
-- [ ] T034 [P2] [US3] Verify full monorepo type check passes (SC-003)
+- [x] T034 [P2] [US3] Verify full monorepo type check passes (SC-003)
   - **Command**: `pnpm typecheck`
   - **Expected**: Zero type errors across all 8 packages
   - **Success Criteria**: SC-003
   - **Validation**: TypeScript compilation successful
 
-- [ ] T035 [P1] [US1] Verify all 738 tests pass (SC-004)
+- [x] T035 [P1] [US1] Verify all 738 tests pass (SC-004)
   - **Command**: `pnpm test`
   - **Expected**: All 738 tests pass (zero failures)
   - **Success Criteria**: SC-004
   - **Validation**: Test suite unchanged
 
-- [ ] T036 [P1] [US1] Verify full monorepo build succeeds (SC-005)
+- [x] T036 [P1] [US1] Verify full monorepo build succeeds (SC-005)
   - **Command**: `pnpm build`
   - **Expected**: All 8 projects build successfully
   - **Success Criteria**: SC-005
   - **Validation**: Production-ready code
 
-- [ ] T037 [P2] [US3] Verify no hardcoded entity type strings outside types package (SC-006)
+- [x] T037 [P2] [US3] Verify no hardcoded entity type strings outside types package (SC-006)
   - **Command**: `grep -rE "type.*=.*[\"']works[\"']" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "packages/types" | grep -v "test" | grep -v ".spec.ts"`
   - **Expected**: Minimal matches (only test fixtures, MSW handlers)
   - **Success Criteria**: SC-006
@@ -341,7 +351,7 @@
 
 ### Documentation Tasks
 
-- [ ] T038 [P2] [US1] Update CLAUDE.md with entity type consolidation notes
+- [x] T038 [P2] [US1] Update CLAUDE.md with entity type consolidation notes
   - **File**: `CLAUDE.md`
   - **Section**: Add under "Recent Changes" or "Entity Type Consolidation"
   - **Content**:
@@ -366,7 +376,7 @@
     ```
   - **Validation**: Documentation updated
 
-- [ ] T039 [P1] [US1] Generate verification report
+- [x] T039 [P1] [US1] Generate verification report
   - **File**: Create `verification-report.txt` in feature directory
   - **Content**:
     ```bash

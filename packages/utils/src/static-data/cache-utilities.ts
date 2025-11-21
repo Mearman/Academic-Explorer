@@ -6,23 +6,10 @@
 
 import path from "node:path"
 import { logger } from "../logger.js"
+import type { CacheStorageType } from "../cache-browser/types.js"
 
-export type EntityType =
-	| "works"
-	| "authors"
-	| "sources"
-	| "institutions"
-	| "topics"
-	| "publishers"
-	| "funders"
-	| "concepts"
-	| "autocomplete"
-	| "domains"
-	| "fields"
-	| "subfields"
-
-export function isEntityType(value: string): value is EntityType {
-	const validEntityTypes: readonly string[] = [
+export function isCacheStorageType(value: string): value is CacheStorageType {
+	const validCacheTypes: readonly string[] = [
 		"works",
 		"authors",
 		"sources",
@@ -31,12 +18,13 @@ export function isEntityType(value: string): value is EntityType {
 		"publishers",
 		"funders",
 		"concepts",
+		"keywords",
 		"autocomplete",
 		"domains",
 		"fields",
 		"subfields",
 	]
-	return validEntityTypes.includes(value)
+	return validCacheTypes.includes(value)
 }
 
 /**
@@ -163,7 +151,7 @@ export interface ParsedOpenAlexUrl {
 	/** Query string including leading ? */
 	queryString: string
 	/** Detected entity type */
-	entityType?: EntityType
+	entityType?: CacheStorageType
 	/** Entity ID (for single entity URLs) */
 	entityId?: string
 }
@@ -243,7 +231,9 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 		// Detect entity type from first path segment
 		const potentialEntityType = pathSegments[0]
 
-		const entityType = isEntityType(potentialEntityType) ? potentialEntityType : undefined
+		const entityType: CacheStorageType | undefined = isCacheStorageType(potentialEntityType)
+			? potentialEntityType
+			: undefined
 
 		// Invalid entity types should return null
 		if (!entityType) {
@@ -653,7 +643,7 @@ export function isValidOpenAlexQueryResult(data: unknown): boolean {
 /**
  * Extract entity type from file path or URL
  */
-export function extractEntityType(pathOrUrl: string): EntityType | null {
+export function extractEntityType(pathOrUrl: string): CacheStorageType | null {
 	// Handle URLs
 	if (pathOrUrl.startsWith("http")) {
 		const parsed = parseOpenAlexUrl(pathOrUrl)
@@ -662,7 +652,7 @@ export function extractEntityType(pathOrUrl: string): EntityType | null {
 
 	// Handle file paths
 	const segments = pathOrUrl.split("/").filter(Boolean)
-	const _validEntityTypes: readonly EntityType[] = [
+	const _validCacheTypes: readonly CacheStorageType[] = [
 		"works",
 		"authors",
 		"sources",
@@ -671,10 +661,15 @@ export function extractEntityType(pathOrUrl: string): EntityType | null {
 		"publishers",
 		"funders",
 		"concepts",
+		"keywords",
+		"autocomplete",
+		"domains",
+		"fields",
+		"subfields",
 	]
 
 	for (const segment of segments) {
-		if (isEntityType(segment)) {
+		if (isCacheStorageType(segment)) {
 			return segment
 		}
 	}
@@ -1012,7 +1007,7 @@ export function reconstructPossibleCollisions({
 	entityType,
 }: {
 	queryFilename: string
-	entityType: EntityType
+	entityType: CacheStorageType
 }): string[] {
 	const base = `https://api.openalex.org/${entityType}`
 	const queryStr = filenameToQuery(decodeFilename(queryFilename))
