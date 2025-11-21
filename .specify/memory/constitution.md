@@ -1,19 +1,21 @@
 <!--
 Sync Impact Report:
-Version: 2.1.0 → 2.2.0 (MINOR: Spec file commit requirement added to Principle VI)
+Version: 2.2.0 → 2.3.0 (MINOR: Automatic workflow progression added to Principle X)
 Modified Principles:
-  - VI. Atomic Conventional Commits → Extended with spec file commit requirements
+  - X. Continuous Execution → Extended with automatic command chaining requirement
 Added Sections:
-  - Spec file commit requirements (under Principle VI)
-  - Development Workflow: Spec file discipline (new subsection)
+  - Automatic workflow progression (under Principle X)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check updated to 10 principles + spec commits)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment updated to 10 principles + spec commits)
-  - ✅ .specify/templates/tasks-template.md (Updated to reflect spec commit requirements)
+  - ✅ .specify/templates/plan-template.md (Constitution Check updated to reflect automatic workflow)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment updated to reflect automatic workflow)
+  - ⚠ .specify/templates/commands/plan.md (Workflow logic needs implementation for auto-chaining)
+  - ⚠ .specify/templates/commands/clarify.md (Verify no workflow interruption after clarifications)
+  - ⚠ .specify/templates/commands/specify.md (Verify smooth handoff to /speckit.plan)
 Follow-up TODOs:
-  - Update command templates to enforce spec commits after each phase
-  - Update /speckit.implement to auto-commit spec changes
+  - Implement automatic command chaining in /speckit.plan workflow
+  - Update /speckit.plan to check for outstanding questions before auto-progressing
+  - Ensure /speckit.tasks and /speckit.implement are invoked without user intervention
 -->
 
 # Academic Explorer Constitution
@@ -335,6 +337,15 @@ Continuous execution requirements:
 - Maintain progress tracking (TodoWrite) throughout continuous execution
 - Only stop when ALL phases are complete or a blocking error occurs
 
+**Automatic workflow progression** (NEW):
+- After completing `/speckit.plan`, if there are NO outstanding questions or clarifications needed, AUTOMATICALLY invoke `/speckit.tasks` then `/speckit.implement`
+- Do NOT wait for user approval to proceed from planning to task generation
+- Do NOT wait for user approval to proceed from task generation to implementation
+- Check for blockers: unresolved NEEDS CLARIFICATION markers, failed validations, missing dependencies
+- If NO blockers exist, immediately proceed to next phase
+- User intervention is ONLY required when blockers are discovered or errors occur
+- Example flow: `/speckit.specify` → `/speckit.plan` → (auto) `/speckit.tasks` → (auto) `/speckit.implement`
+
 Resource management during continuous execution:
 - Use efficient tool calls (parallel when possible, minimal reads)
 - Commit frequently to persist work and free memory
@@ -462,4 +473,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.2.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.3.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21

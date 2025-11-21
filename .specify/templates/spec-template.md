@@ -130,4 +130,4 @@
 - **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development
 - **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes
 - **Deployment Readiness**: Implementation must resolve all pre-existing blockers; entire monorepo must be deployable on completion
-- **Continuous Execution**: Implementation will proceed through all phases without pausing; spec commits after each phase completion
+- **Continuous Execution**: Implementation will proceed through all phases without pausing; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement

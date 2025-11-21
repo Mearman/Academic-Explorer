@@ -42,7 +42,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
 9. **Deployment Readiness**: All packages must pass typecheck/test/lint/build before work is complete
-10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion
+10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure
