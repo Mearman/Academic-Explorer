@@ -28,6 +28,7 @@ import {
   IconPinned,
   IconPin,
   IconMenu,
+  IconSearch,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
@@ -202,6 +203,18 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </Group>
 
           <Group gap="xs">
+            {/* Mobile search button */}
+            <ActionIcon
+              component={Link}
+              to="/search"
+              variant="subtle"
+              size="lg"
+              aria-label="Open search"
+              hiddenFrom="sm"
+            >
+              <IconSearch size={18} />
+            </ActionIcon>
+
             {/* Sidebar toggle controls */}
             <ActionIcon
               onClick={toggleLeftSidebar}
