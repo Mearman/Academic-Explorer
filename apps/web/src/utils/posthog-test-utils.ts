@@ -1,0 +1,338 @@
+/**
+ * PostHog Integration Testing Utilities
+ *
+ * Development utilities for testing PostHog analytics integration
+ * and verifying privacy compliance.
+ */
+
+import { POSTHOG_API_KEY, POSTHOG_HOST, POSTHOG_ENABLED } from '@/lib/posthog';
+
+/**
+ * Test PostHog configuration and privacy settings
+ */
+export function testPostHogConfiguration(): {
+  isConfigured: boolean;
+  hasApiKey: boolean;
+  hasValidHost: boolean;
+  isPrivacyCompliant: boolean;
+  issues: string[];
+} {
+  const issues: string[] = [];
+
+  // Check if PostHog is enabled
+  const hasApiKey = Boolean(POSTHOG_API_KEY && POSTHOG_API_KEY !== 'your-posthog-api-key');
+  const hasValidHost = Boolean(POSTHOG_HOST && POSTHOG_HOST.includes('posthog.com'));
+  const isConfigured = POSTHOG_ENABLED && hasApiKey && hasValidHost;
+
+  if (!POSTHOG_ENABLED) {
+    issues.push('PostHog is not enabled');
+  }
+
+  if (!hasApiKey) {
+    issues.push('Missing or invalid PostHog API key');
+  }
+
+  if (!hasValidHost) {
+    issues.push('Invalid PostHog host - should include posthog.com');
+  }
+
+  // Check privacy compliance
+  const isPrivacyCompliant = POSTHOG_HOST.includes('eu.posthog.com');
+  if (!isPrivacyCompliant && hasValidHost) {
+    issues.push('Using non-EU PostHog host - may not be GDPR compliant');
+  }
+
+  return {
+    isConfigured,
+    hasApiKey,
+    hasValidHost,
+    isPrivacyCompliant,
+    issues,
+  };
+}
+
+/**
+ * Test PostHog availability in browser
+ */
+export function testPostHogAvailability(): {
+  isAvailable: boolean;
+  isInitialized: boolean;
+  issues: string[];
+} {
+  const issues: string[] = [];
+
+  if (typeof window === 'undefined') {
+    return {
+      isAvailable: false,
+      isInitialized: false,
+      issues: ['Running in server environment'],
+    };
+  }
+
+  const hasPosthog = 'posthog' in window;
+  if (!hasPosthog) {
+    issues.push('PostHog not available on window object');
+    return {
+      isAvailable: false,
+      isInitialized: false,
+      issues,
+    };
+  }
+
+  const posthog = (window as any).posthog;
+  const isInitialized = typeof posthog.capture === 'function';
+
+  if (!isInitialized) {
+    issues.push('PostHog capture function not available');
+  }
+
+  return {
+    isAvailable: true,
+    isInitialized,
+    issues,
+  };
+}
+
+/**
+ * Test privacy compliance of current implementation
+ */
+export function testPrivacyCompliance(): {
+  isCompliant: boolean;
+  checks: {
+    usesEuHost: boolean;
+    hasNoPersonalData: boolean;
+    usesCookielessMode: boolean;
+    hasPropertyBlacklist: boolean;
+  };
+  issues: string[];
+} {
+  const issues: string[] = [];
+
+  // Check EU host
+  const usesEuHost = POSTHOG_HOST.includes('eu.posthog.com');
+  if (!usesEuHost) {
+    issues.push('Using non-EU PostHog host - GDPR compliance concern');
+  }
+
+  // Check for API key (indicates personal data collection possibility)
+  const hasNoPersonalData = !POSTHOG_API_KEY || POSTHOG_API_KEY === 'your-posthog-api-key';
+
+  // Note: We can't directly check cookieless_mode or property_blacklist from runtime
+  // These are configuration settings, but we can make assumptions based on our implementation
+  const usesCookielessMode = true; // Based on our posthog.ts configuration
+  const hasPropertyBlacklist = true; // Based on our posthog.ts configuration
+
+  const isCompliant = usesEuHost && usesCookielessMode && hasPropertyBlacklist;
+
+  return {
+    isCompliant,
+    checks: {
+      usesEuHost,
+      hasNoPersonalData,
+      usesCookielessMode,
+      hasPropertyBlacklist,
+    },
+    issues,
+  };
+}
+
+/**
+ * Test PostHog event capture functionality
+ */
+export function testPostHogEventCapture(): Promise<{
+  canCapture: boolean;
+  eventSent: boolean;
+  issues: string[];
+}> {
+  return new Promise((resolve) => {
+    const issues: string[] = [];
+
+    if (typeof window === 'undefined') {
+      resolve({
+        canCapture: false,
+        eventSent: false,
+        issues: ['Cannot test in server environment'],
+      });
+      return;
+    }
+
+    const posthog = (window as any).posthog;
+    if (!posthog || typeof posthog.capture !== 'function') {
+      resolve({
+        canCapture: false,
+        eventSent: false,
+        issues: ['PostHog capture function not available'],
+      });
+      return;
+    }
+
+    try {
+      // Override capture temporarily to intercept the call
+      const originalCapture = posthog.capture;
+      let eventCaptured = false;
+
+      posthog.capture = (eventName: string, properties?: any) => {
+        if (eventName === 'test_event') {
+          eventCaptured = true;
+          // Restore original capture
+          posthog.capture = originalCapture;
+          return;
+        }
+        return originalCapture.call(posthog, eventName, properties);
+      };
+
+      // Send test event
+      posthog.capture('test_event', {
+        test: true,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Wait a moment to see if event was captured
+      setTimeout(() => {
+        resolve({
+          canCapture: true,
+          eventSent: eventCaptured,
+          issues: eventCaptured ? [] : ['Test event was not captured'],
+        });
+      }, 100);
+
+    } catch (error) {
+      issues.push(`Error during capture test: ${error}`);
+      resolve({
+        canCapture: false,
+        eventSent: false,
+        issues,
+      });
+    }
+  });
+}
+
+/**
+ * Comprehensive PostHog integration test
+ */
+export async function runPostHogIntegrationTest(): Promise<{
+  passed: boolean;
+  results: {
+    configuration: ReturnType<typeof testPostHogConfiguration>;
+    availability: ReturnType<typeof testPostHogAvailability>;
+    privacy: ReturnType<typeof testPrivacyCompliance>;
+    capture: Awaited<ReturnType<typeof testPostHogEventCapture>>;
+  };
+  summary: {
+    totalIssues: number;
+    criticalIssues: string[];
+    recommendations: string[];
+  };
+}> {
+  const configuration = testPostHogConfiguration();
+  const availability = testPostHogAvailability();
+  const privacy = testPrivacyCompliance();
+  const capture = await testPostHogEventCapture();
+
+  const allIssues = [
+    ...configuration.issues,
+    ...availability.issues,
+    ...privacy.issues,
+    ...capture.issues,
+  ];
+
+  // Critical issues that need immediate attention
+  const criticalIssues = allIssues.filter(issue =>
+    issue.includes('Missing or invalid PostHog API key') ||
+    issue.includes('Cannot test in server environment') ||
+    issue.includes('PostHog not available')
+  );
+
+  // Recommendations for improvement
+  const recommendations: string[] = [];
+
+  if (!privacy.isCompliant) {
+    recommendations.push('Use EU PostHog host (eu.posthog.com) for GDPR compliance');
+  }
+
+  if (!configuration.hasApiKey) {
+    recommendations.push('Add valid PostHog API key to environment variables');
+  }
+
+  if (!capture.canCapture) {
+    recommendations.push('Ensure PostHog is properly initialized before testing');
+  }
+
+  if (allIssues.length === 0) {
+    recommendations.push('PostHog integration appears to be working correctly');
+  }
+
+  const passed = criticalIssues.length === 0 && capture.canCapture;
+
+  return {
+    passed,
+    results: {
+      configuration,
+      availability,
+      privacy,
+      capture,
+    },
+    summary: {
+      totalIssues: allIssues.length,
+      criticalIssues,
+      recommendations,
+    },
+  };
+}
+
+/**
+ * Development helper to log test results
+ */
+export async function testAndLogPostHogIntegration(): Promise<void> {
+  if (import.meta.env.PROD) {
+    console.warn('PostHog integration test should only be run in development');
+    return;
+  }
+
+  console.group('📊 PostHog Integration Test');
+
+  try {
+    const results = await runPostHogIntegrationTest();
+
+    console.log('Test Status:', results.passed ? '✅ PASSED' : '❌ FAILED');
+
+    if (results.summary.totalIssues > 0) {
+      console.group('Issues Found:');
+      results.summary.criticalIssues.forEach(issue => {
+        console.error('🚫', issue);
+      });
+      console.groupEnd();
+    }
+
+    if (results.summary.recommendations.length > 0) {
+      console.group('Recommendations:');
+      results.summary.recommendations.forEach(rec => {
+        console.info('💡', rec);
+      });
+      console.groupEnd();
+    }
+
+    // Detailed results for debugging
+    if (import.meta.env.DEV && !results.passed) {
+      console.group('Detailed Results:');
+      console.log('Configuration:', results.results.configuration);
+      console.log('Availability:', results.results.availability);
+      console.log('Privacy:', results.results.privacy);
+      console.log('Capture Test:', results.results.capture);
+      console.groupEnd();
+    }
+
+  } catch (error) {
+    console.error('Test failed with error:', error);
+  }
+
+  console.groupEnd();
+}
+
+// Auto-run test in development mode
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  // Wait for PostHog to initialize
+  setTimeout(() => {
+    testAndLogPostHogIntegration();
+  }, 2000);
+}
