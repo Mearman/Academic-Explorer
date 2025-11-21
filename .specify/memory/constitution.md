@@ -1,24 +1,27 @@
 <!--
 Sync Impact Report:
-Version: 2.3.0 → 2.4.0 (MINOR: No re-export principle added to Principle III)
+Version: 2.4.0 → 2.4.1 (PATCH: Strengthen backward compatibility prohibition in Principle VII)
 Modified Principles:
-  - III. Monorepo Architecture → Extended with no re-export requirement
+  - VII. Development-Stage Pragmatism → Strengthened prohibition against backward compatibility
 Added Sections:
-  - No re-export requirement (under Principle III)
+  - Explicit backward compatibility prohibition (under Principle VII)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check includes re-export prohibition)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment includes re-export prohibition)
-  - ⚠ specs/018-entity-consolidation/plan.md (CONFLICTS: plan includes re-exports for backward compatibility)
-  - ⚠ specs/018-entity-consolidation/tasks.md (CONFLICTS: tasks T007, T010, T020 include re-export steps)
-  - ⚠ specs/018-entity-consolidation/data-model.md (CONFLICTS: Contract 1 shows re-export pattern)
-  - ⚠ specs/018-entity-consolidation/contracts/package-contracts.md (CONFLICTS: all contracts show re-export patterns)
+  - ⚠ .specify/templates/plan-template.md (May need to emphasize no backward compatibility in Constitution Check)
+  - ⚠ .specify/templates/spec-template.md (May need to emphasize no backward compatibility in Constitution Alignment)
+  - ⚠ specs/018-entity-consolidation/plan.md (CONFLICTS: plan includes re-exports for backward compatibility - MUST be removed)
+  - ⚠ specs/018-entity-consolidation/tasks.md (CONFLICTS: tasks T007, T010, T020 include re-export steps - MUST be removed)
+  - ⚠ specs/018-entity-consolidation/data-model.md (CONFLICTS: Contract 1 shows re-export pattern - MUST be removed)
+  - ⚠ specs/018-entity-consolidation/contracts/package-contracts.md (CONFLICTS: all contracts show re-export patterns - MUST be removed)
 Follow-up TODOs:
-  - Update spec-018 to remove all re-export tasks (T007, backward compatibility contracts)
+  - Update spec-018 to remove ALL backward compatibility measures (re-exports, migration paths)
   - Verify all existing packages comply with no re-export rule
-  - Update tasks.md to eliminate re-export steps in Phase 1, 2, 3
-  - Update package-contracts.md to show direct imports only (no re-exports)
-  - Document migration path for consumers currently importing from graph/utils instead of types
+  - Update tasks.md to eliminate re-export steps in all phases
+  - Update package-contracts.md to show direct imports only (no compatibility layers)
+  - Remove all references to "maintaining backward compatibility" from all specs
+Previous Amendment (v2.4.0):
+  - Added no re-export requirement to Principle III (Monorepo Architecture)
+  - Templates updated: plan-template.md, spec-template.md
 -->
 
 # Academic Explorer Constitution
@@ -220,19 +223,31 @@ Committing spec changes after each phase ensures:
 4. **Recovery capability** - Can resume implementation from last completed phase
 5. **Documentation accuracy** - Spec files reflect actual implementation state
 
-### VII. Development-Stage Pragmatism
+### VII. Development-Stage Pragmatism (NON-NEGOTIABLE)
 
-**Backwards compatibility and legacy support are NOT priorities during active development**.
-Since this application is in development stage for PhD research purposes, focus on forward
-progress and iteration speed rather than maintaining compatibility with previous versions.
+**NEVER include backward compatibility or legacy support**. The application is unreleased
+and still in active development for PhD research purposes. Backward compatibility adds
+complexity and hinders progress without providing any value.
 
 Development-stage requirements:
-- Breaking changes to APIs, data models, and interfaces are acceptable without migration paths
+- Breaking changes to APIs, data models, and interfaces are ENCOURAGED when they improve design
 - Database schema changes can be destructive (no data migration required)
 - Configuration formats can change without backward compatibility
 - Dependencies can be upgraded to latest versions without considering legacy support
 - Experimental features can be removed if they don't work out
 - Storage formats can change without preserving old data
+- **Re-exports for backward compatibility are PROHIBITED** (violates Principle III)
+- **Migration paths are NOT required** - consumers update their imports directly
+- **Deprecation warnings are NOT required** - just make the breaking change
+- **Version constraints do NOT apply** - MAJOR version bumps are not required for breaking changes
+
+**Explicit backward compatibility prohibition**:
+- NEVER maintain old APIs alongside new ones "for compatibility"
+- NEVER create wrapper functions to preserve old behavior
+- NEVER add conditional logic to support both old and new patterns
+- NEVER document migration paths or upgrade guides during development
+- NEVER preserve deprecated features "just in case"
+- If a refactoring requires breaking changes, make them immediately without hesitation
 
 **IMPORTANT**: This principle applies ONLY during development. Before any public release or
 when the project transitions to production use, this principle MUST be revisited and likely
@@ -244,17 +259,19 @@ MUST be deployment-ready even during development—pre-existing issues MUST be r
 before work is considered complete.
 
 **Rationale**: The project is currently in active PhD research development (June 2023+).
-Research iteration requires flexibility to pivot architectural decisions based on findings.
-Maintaining backwards compatibility during exploration phases would:
+The application is unreleased with a single developer/user. Backward compatibility measures
+during this phase are pure overhead that:
 1. Slow down experimentation and hypothesis testing
 2. Lock in suboptimal design decisions made early in research
 3. Create technical debt for features that may be discarded
-4. Waste research time on migration code that benefits no users (single researcher using it)
+4. Waste research time on migration code that benefits literally no users
 5. Prevent adoption of better approaches discovered during research
+6. Add complexity to the codebase without delivering any value
+7. Require maintaining multiple code paths for the same functionality
 
 Once the research stabilizes and the tool is ready for wider academic use, a proper
 versioning and compatibility strategy will be essential. At that point, this principle
-should be replaced with appropriate stability guarantees.
+should be replaced with appropriate stability guarantees for external users.
 
 ### VIII. Test-First Bug Fixes (NON-NEGOTIABLE)
 
@@ -508,4 +525,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.4.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.4.1 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
