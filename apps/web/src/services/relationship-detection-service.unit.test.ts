@@ -11,22 +11,26 @@ import type { GraphNode,  } from "@academic-explorer/graph"
 import type { EntityType } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
 
-// Mock type guards from @academic-explorer/types
-vi.mock("@academic-explorer/types", () => ({
-  isWork: vi.fn((entity) => {
-    return entity && typeof entity === "object" && "publication_year" in entity;
-  }),
-  isAuthor: vi.fn((entity) => {
-    return entity && typeof entity === "object" && "works_count" in entity;
-  }),
-  isSource: vi.fn((entity) => {
-    return entity && typeof entity === "object" && ("issn_l" in entity || "publisher" in entity);
-  }),
-  isInstitution: vi.fn((entity) => {
-    return entity && typeof entity === "object" && "country_code" in entity;
-  }),
-  isNonNull: vi.fn((value) => value != null),
-}));
+// Mock type guards from @academic-explorer/types (partial mock to preserve ENTITY_METADATA)
+vi.mock("@academic-explorer/types", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@academic-explorer/types")>();
+  return {
+    ...actual,
+    isWork: vi.fn((entity) => {
+      return entity && typeof entity === "object" && "publication_year" in entity;
+    }),
+    isAuthor: vi.fn((entity) => {
+      return entity && typeof entity === "object" && "works_count" in entity;
+    }),
+    isSource: vi.fn((entity) => {
+      return entity && typeof entity === "object" && ("issn_l" in entity || "publisher" in entity);
+    }),
+    isInstitution: vi.fn((entity) => {
+      return entity && typeof entity === "object" && "country_code" in entity;
+    }),
+    isNonNull: vi.fn((value) => value != null),
+  };
+});
 
 // Mock the external dependencies
 vi.mock("@academic-explorer/client", () => ({
