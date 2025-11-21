@@ -107,7 +107,7 @@ describe("RelationshipDetectionService - Keywords Analyzer", () => {
         {
           id: "K123456789",
           display_name: "Machine Learning",
-          // Missing score
+          score: undefined, // Explicitly set to undefined
         },
       ];
 
@@ -146,7 +146,7 @@ describe("RelationshipDetectionService - Keywords Analyzer", () => {
       // Arrange
       workData.keywords = [
         {
-          // Missing id field
+          id: "", // Empty string for missing id
           display_name: "Artificial Intelligence",
           score: 0.92,
         },
