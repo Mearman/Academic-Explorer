@@ -183,15 +183,12 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.slice(0, 50).map((grant, i): GraphNode => ({
+      const existingNodes: GraphNode[] = (workData.grants || []).slice(0, 50).map((grant, i) =>
+      createTestGraphNode({
         id: `F${String(i).padStart(10, "0")}`,
         entityId: grant.funder,
         entityType: "funders",
         label: grant.funder_display_name,
-        color: "#4285F4",
-        size: 25,
-        x: i * 30,
-        y: i * 30,
       }));
 
       // Measure memory before and after
