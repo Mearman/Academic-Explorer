@@ -392,6 +392,9 @@ jobs:
 
       - name: Inject source map metadata
         run: posthog-cli sourcemap inject --project Academic-Explorer --version ${{ github.sha }} --directory ./apps/web/dist
+        env:
+          POSTHOG_CLI_TOKEN: ${{ secrets.POSTHOG_CLI_TOKEN }}
+          POSTHOG_CLI_ENV_ID: ${{ secrets.POSTHOG_CLI_ENV_ID }}
 
       - name: Upload source maps to PostHog
         run: posthog-cli --host https://eu.posthog.com sourcemap upload --directory ./apps/web/dist --delete-after
