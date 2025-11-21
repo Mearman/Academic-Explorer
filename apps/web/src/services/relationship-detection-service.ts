@@ -50,6 +50,44 @@ interface MinimalEntityData {
   field?: { id: string; display_name: string };
   topics?: Array<{ id: string; display_name: string }>;
   subfield?: { id: string; display_name: string };
+
+  // New relationship fields for complete OpenAlex support
+  grants?: Array<{                          // T021: Add grants field
+    funder: string;
+    funder_display_name: string;
+    award_id: string | null;
+  }>;
+  keywords?: Array<{                       // T022: Add keywords field
+    id: string;
+    display_name: string;
+    score: number;
+  }>;
+  concepts?: Array<{                        // T023: Add concepts field (legacy)
+    id: string;
+    display_name: string;
+    score: number;
+    level: number;
+    wikidata?: string;
+  }>;
+  enhanced_topics?: Array<{                // T024: Add enhanced topics with count/score
+    id: string;
+    display_name: string;
+    count: number;
+    score: number;
+    subfield: { id: string; display_name: string };
+    field: { id: string; display_name: string };
+    domain: { id: string; display_name: string };
+  }>;
+  repositories?: Array<{                  // T025: Add repositories field
+    id: string;
+    display_name: string;
+    host_organization: string;
+  }>;
+  roles?: Array<{                          // T026: Add roles field
+    role: string;
+    id: string;
+    works_count: number;
+  }>;
 }
 
 /**
