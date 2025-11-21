@@ -151,7 +151,7 @@ describe("GraphStore", () => {
       expect(state.isLoading).toBe(false);
       expect(state.error).toBeNull();
       expect(Object.keys(state.visibleEntityTypes).length).toBe(12);
-      expect(Object.keys(state.visibleEdgeTypes).length).toBe(20); // Includes all RelationType enum values
+      expect(Object.keys(state.visibleEdgeTypes).length).toBe(22); // Includes all RelationType enum values
     });
 
     it("should have correct default visible entity types", () => {

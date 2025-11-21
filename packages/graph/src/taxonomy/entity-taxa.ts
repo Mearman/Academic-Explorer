@@ -111,19 +111,7 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "gray",
 		plural: "Has Keywords",
 	},
-	[RelationType.CONCEPT]: {
-		displayName: "Has Concept",
-		description: "Work is associated with a legacy concept",
-		color: "violet",
-		plural: "Has Concepts",
-	},
-	[RelationType.HAS_ROLE]: {
-		displayName: "Has Role",
-		description: "Entity has a role in relation to another entity",
-		color: "indigo",
-		plural: "Has Roles",
-	},
-	[RelationType.AUTHOR_RESEARCHES]: {
+		[RelationType.AUTHOR_RESEARCHES]: {
 		displayName: "Researches",
 		description: "Author conducts research in a topic area",
 		color: "red",
@@ -171,6 +159,21 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "gray",
 		plural: "Related To",
 	},
+
+	// Missing relation types that need string keys
+	"concept": {
+		displayName: "Has Concept",
+		description: "Work is associated with a legacy concept",
+		color: "violet",
+		plural: "Has Concepts",
+	},
+	"has_role": {
+		displayName: "Has Role",
+		description: "Entity has a role in relation to another entity",
+		color: "indigo",
+		plural: "Has Roles",
+	},
+
 }
 
 /**
