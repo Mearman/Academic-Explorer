@@ -297,7 +297,7 @@ async function checkDomainAvailability(name: string, tld: string, method: typeof
       default:
         // Auto mode: Consensus-based checking (fastest to slowest)
         // Strategy: DNS (70ms) → RDAP (100ms) → WHOIS (500-1000ms)
-        // If two methods agree domain is taken, mark as taken
+        // Require two methods to agree before marking as taken OR available
 
         // Step 1: DNS check (fastest)
         const dnsCheck = await checkDnsAvailability(domain);
@@ -310,30 +310,42 @@ async function checkDomainAvailability(name: string, tld: string, method: typeof
           rdapCheck = null;
         }
 
-        // If both DNS and RDAP agree it's taken, return taken immediately
+        // Early exit: If both fast methods agree, return immediately
         if (dnsCheck === false && rdapCheck === false) {
           return false; // Consensus: TAKEN (DNS + RDAP agree)
         }
-
-        // If both DNS and RDAP agree it's available, return available immediately
         if (dnsCheck === true && rdapCheck === true) {
           return true; // Consensus: AVAILABLE (DNS + RDAP agree)
         }
 
-        // No consensus - check WHOIS for final decision (slowest)
+        // No consensus from fast methods - check WHOIS for tie-breaker (slowest)
         const whoisCheck = await checkWhoisAvailability(domain);
 
-        // If WHOIS says taken, prioritize that (WHOIS is most authoritative)
-        if (whoisCheck === false) {
-          return false;
+        // Count votes for TAKEN (false)
+        const takenVotes = [
+          dnsCheck === false,
+          rdapCheck === false,
+          whoisCheck === false
+        ].filter(Boolean).length;
+
+        // Count votes for AVAILABLE (true)
+        const availableVotes = [
+          dnsCheck === true,
+          rdapCheck === true,
+          whoisCheck === true
+        ].filter(Boolean).length;
+
+        // Require 2+ votes to reach consensus
+        if (takenVotes >= 2) {
+          return false; // Consensus: TAKEN (2+ methods agree)
         }
 
-        // If WHOIS says available and at least one fast method agrees, return available
-        if (whoisCheck === true && (dnsCheck === true || rdapCheck === true)) {
-          return true;
+        if (availableVotes >= 2) {
+          return true; // Consensus: AVAILABLE (2+ methods agree)
         }
 
-        // Default to taken if still uncertain
+        // No consensus (shouldn't happen with 3 methods, but handle it)
+        // Default to taken (conservative approach)
         return false;
     }
   } catch (error) {
@@ -555,8 +567,8 @@ async function main() {
   console.log('🔍 Starting domain availability verification...');
   console.log(`🎯 Method: ${CHECK_METHOD.toUpperCase()}`);
   if (CHECK_METHOD === 'auto') {
-    console.log('   Strategy: DNS (70ms) → RDAP (100ms) → WHOIS (500ms) - consensus-based');
-    console.log('   Rule: If two methods agree domain is taken, mark as taken');
+    console.log('   Strategy: DNS (70ms) → RDAP (100ms) → WHOIS (500ms) - consensus voting');
+    console.log('   Rule: Require 2+ methods to agree (taken OR available)');
   }
   console.log(`📊 Checking ${db.names.length} names × ${TLDS_TO_CHECK.length} TLDs (${TLDS_TO_CHECK.join(', ')})`);
   console.log(`⏰ Skip check if updated within ${RECHECK_THRESHOLD_HOURS} hours\n`);
