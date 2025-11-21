@@ -68,8 +68,8 @@ Complete support for all 12 OpenAlex entity types (licenses excluded per researc
 
 - [x] T008 [P] [US1] Write E2E tests in apps/web/src/test/e2e/keywords-navigation.e2e.test.ts for navigation and relationship display
 - [x] T009 [P] [US3] Write integration tests in apps/web/src/test/integration/entity-type-coverage.integration.test.ts for type/client/config validation
-- [ ] T010 [P] Update apps/web/CLAUDE.md to document 12/12 entity type completion
-- [ ] T011 [P] Update specs/019-full-entity-support/spec.md to mark User Story 2 as "Not Applicable - licenses not OpenAlex entities"
+- [x] T010 [P] Update apps/web/CLAUDE.md to document 12/12 entity type completion
+- [x] T011 [P] Update specs/019-full-entity-support/spec.md to mark User Story 2 as "Not Applicable - licenses not OpenAlex entities"
 
 **Acceptance**:
 - T008: E2E tests pass - keywords pages navigable, relationships display, view mode toggle works
