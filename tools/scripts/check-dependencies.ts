@@ -3,7 +3,7 @@
 /**
  * Automated dependency checking and validation script
  *
- * This script performs comprehensive dependency analysis for the Academic Explorer monorepo:
+ * This script performs comprehensive dependency analysis for the Bibliom monorepo:
  * - Checks for circular dependencies
  * - Validates workspace dependency consistency
  * - Identifies outdated dependencies
@@ -225,7 +225,7 @@ function generateDependencyReport(): DependencyReport {
 }
 
 function main() {
-	console.log("📦 Academic Explorer - Dependency Analysis")
+	console.log("📦 Bibliom - Dependency Analysis")
 	console.log("==========================================\n")
 
 	try {

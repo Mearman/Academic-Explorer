@@ -7,7 +7,7 @@
 
 ## Summary
 
-Consolidate all duplicate `EntityType` definitions across the Academic Explorer monorepo into a single canonical source in `@academic-explorer/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Remove all re-exports between internal packages per Constitution Principle III. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Establish TypeScript type safety across all 8 packages with direct imports only.
+Consolidate all duplicate `EntityType` definitions across the Bibliom monorepo into a single canonical source in `@academic-explorer/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Remove all re-exports between internal packages per Constitution Principle III. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Establish TypeScript type safety across all 8 packages with direct imports only.
 
 ## Technical Context
 
@@ -25,7 +25,7 @@ Consolidate all duplicate `EntityType` definitions across the Academic Explorer 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: No `any` types planned; use `unknown` with type guards
 2. **Test-First Development**: Tests written and failing before implementation begins

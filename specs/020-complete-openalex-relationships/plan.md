@@ -51,7 +51,7 @@ Implement detection and visualization for all remaining OpenAlex relationship ty
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned. All relationship data structures will use proper typed interfaces (GrantRelationship, KeywordRelationship, TopicWithMetadata, etc.). Unknown data from API will use `unknown` with type guards.
 

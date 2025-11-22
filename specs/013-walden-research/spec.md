@@ -10,15 +10,15 @@
 
 ### User Story 1 - Access Latest OpenAlex Data Quality Improvements (Priority: P1)
 
-As a researcher using Academic Explorer, I need to access the improved OpenAlex Data Version 2 (Walden) so that I can benefit from better citation parsing, location detection, and language identification.
+As a researcher using Bibliom, I need to access the improved OpenAlex Data Version 2 (Walden) so that I can benefit from better citation parsing, location detection, and language identification.
 
 **Why this priority**: This is foundational - all users should automatically receive the highest quality data available from OpenAlex without manual intervention.
 
-**Independent Test**: Can be fully tested by querying works via Academic Explorer and verifying the response includes improved metadata (more references, more locations, better language detection) compared to Data Version 1.
+**Independent Test**: Can be fully tested by querying works via Bibliom and verifying the response includes improved metadata (more references, more locations, better language detection) compared to Data Version 1.
 
 **Acceptance Scenarios**:
 
-1. **Given** Academic Explorer is running, **When** a user searches for works, **Then** the system automatically uses OpenAlex Data Version 2 by default
+1. **Given** Bibliom is running, **When** a user searches for works, **Then** the system automatically uses OpenAlex Data Version 2 by default
 2. **Given** a work with multiple repository locations, **When** the user views work details, **Then** all locations are displayed (14% increase expected)
 3. **Given** a work in a non-English language, **When** the user views work metadata, **Then** the language is accurately detected using the new algorithm
 4. **Given** a work with open access versions, **When** the user views OA status, **Then** the status reflects improved OA classification
@@ -61,7 +61,7 @@ As a researcher with existing saved searches or analyses, I need to temporarily 
 
 ### Edge Cases
 
-- What happens when xpac works have missing or incomplete metadata that Academic Explorer normally expects?
+- What happens when xpac works have missing or incomplete metadata that Bibliom normally expects?
 - How does the system handle works that gained references/citations between v1 and v2 (affects citation counts)?
 - What happens when a user has bookmarked a work and its metadata significantly changes in v2?
 - How does the force-directed graph handle 190M additional xpac works when included (performance impact)?
@@ -133,14 +133,14 @@ As a researcher with existing saved searches or analyses, I need to temporarily 
 
 - OpenAlex API will maintain backward compatibility for Data Version 2 requests (no breaking schema changes)
 - The `data-version=1` parameter will remain functional through November 30, 2025
-- Academic Explorer defaults `include_xpac=true` to align with OpenAlex's future direction (they plan to make xpac default but timing is TBD)
+- Bibliom defaults `include_xpac=true` to align with OpenAlex's future direction (they plan to make xpac default but timing is TBD)
 - xpac works will eventually receive full author disambiguation, but no timeline specified
-- Fulltext indexing issues in Walden will be resolved by OpenAlex team (not Academic Explorer responsibility)
+- Fulltext indexing issues in Walden will be resolved by OpenAlex team (not Bibliom responsibility)
 - OREO evaluation tool (https://oreo.openalex.org/) will remain available for tracking data quality improvements
 
 ## Known Walden Improvements
 
-The following improvements are documented in the Walden release and should be reflected in Academic Explorer:
+The following improvements are documented in the Walden release and should be reflected in Bibliom:
 
 1. **References & Citations**: 14% of works have new references; 8% see increased citation counts
 2. **Locations**: 14% of works see increased location counts (publisher, repository, preprint)

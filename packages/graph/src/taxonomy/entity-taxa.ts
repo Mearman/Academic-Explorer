@@ -1,5 +1,5 @@
 /**
- * Relation taxonomy definitions for Academic Explorer
+ * Relation taxonomy definitions for Bibliom
  *
  * NOTE: Entity metadata has been moved to @academic-explorer/types/entities
  * Import entity metadata directly from types package, not from here.

@@ -6,7 +6,7 @@
 
 ## Investigation Summary
 
-This research phase identified all duplicate `EntityType` definitions across the Academic Explorer monorepo, analyzed differences, and determined the consolidation strategy.
+This research phase identified all duplicate `EntityType` definitions across the Bibliom monorepo, analyzed differences, and determined the consolidation strategy.
 
 ## Duplicate EntityType Definitions Found
 

@@ -2,7 +2,7 @@
   "name": "@academic-explorer/types",
   "version": "0.0.0",
   "type": "module",
-  "description": "Type definitions, schemas, and type guards for Academic Explorer",
+  "description": "Type definitions, schemas, and type guards for Bibliom",
   "keywords": [
     "types",
     "entities",

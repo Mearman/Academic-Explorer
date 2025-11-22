@@ -1,6 +1,6 @@
 # Apps
 
-This directory contains the main applications for the Academic Explorer monorepo.
+This directory contains the main applications for the Bibliom monorepo.
 
 ## Applications
 

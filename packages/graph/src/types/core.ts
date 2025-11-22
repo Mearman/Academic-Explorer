@@ -1,5 +1,5 @@
 /**
- * Core graph types and interfaces for Academic Explorer
+ * Core graph types and interfaces for Bibliom
  * Provider-agnostic definitions that work with any graph visualization library
  */
 

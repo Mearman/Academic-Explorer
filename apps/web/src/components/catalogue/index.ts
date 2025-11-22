@@ -1,8 +1,8 @@
 /**
- * Catalogue UI components for Academic Explorer
+ * Catalogue UI components for Bibliom
  *
  * This module exports all catalogue-related components for managing lists,
- * bibliographies, and entity collections in the Academic Explorer application.
+ * bibliographies, and entity collections in the Bibliom application.
  */
 
 export { CatalogueListComponent } from "./CatalogueList";

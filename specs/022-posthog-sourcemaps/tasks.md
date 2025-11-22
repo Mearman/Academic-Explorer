@@ -7,7 +7,7 @@
 
 ## Overview
 
-This task list implements automated PostHog source map upload for production error tracking in Academic Explorer. Tasks are organized by user story priority (P1 → P2 → P3) to enable independent, incremental implementation and testing.
+This task list implements automated PostHog source map upload for production error tracking in Bibliom. Tasks are organized by user story priority (P1 → P2 → P3) to enable independent, incremental implementation and testing.
 
 **Key Deliverables**:
 1. **User Story 1 (P1)**: Readable stack traces in production errors
@@ -87,7 +87,7 @@ All tasks follow this format:
 
 ## Phase 3: User Story 1 - Production Error Debugging with Readable Stack Traces (P1)
 
-**User Story**: When a production error occurs in Academic Explorer, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references.
+**User Story**: When a production error occurs in Bibliom, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references.
 
 **Goal**: Enable PostHog to deobfuscate production errors using source maps
 

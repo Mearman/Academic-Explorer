@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 /**
- * CI Monitoring Script for Academic Explorer
+ * CI Monitoring Script for Bibliom
  *
  * Monitors GitHub Actions workflows, extracts error logs, and provides CI status overview.
  * Focus on nx-ci.yml workflow and related CI jobs.

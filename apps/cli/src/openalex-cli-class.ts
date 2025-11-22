@@ -276,10 +276,10 @@ function isDevelopmentMode(): boolean {
 		if (nodeEnv === "production") return false
 	}
 
-	// Check if we're running from within the Academic Explorer repo structure
+	// Check if we're running from within the Bibliom repo structure
 	try {
 		const currentPath = process.cwd()
-		const expectedRepoName = "Academic Explorer"
+		const expectedRepoName = "Bibliom"
 
 		// Check if current working directory contains repo structure indicators
 		if (currentPath.includes(expectedRepoName) || currentPath.includes("academic-explorer")) {

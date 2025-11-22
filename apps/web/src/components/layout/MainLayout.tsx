@@ -197,7 +197,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             {!mobileSearchExpanded && (
               <Link to="/" style={{ textDecoration: 'none' }}>
                 <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
-                  Academic Explorer
+                  Bibliom
                 </Text>
               </Link>
             )}
@@ -653,7 +653,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         {children ?? (
           <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
-            <Title order={2}>Academic Explorer</Title>
+            <Title order={2}>Bibliom</Title>
             <Text>Sidebars restored - Navigate to view content</Text>
           </Stack>
         )}

@@ -31,6 +31,6 @@ output = coverage/coverage.json
 [paths]
 source =
     src/
-    /Users/*/Academic Explorer/packages/graph/src/
-    /home/*/Academic Explorer/packages/graph/src/
+    /Users/*/Bibliom/packages/graph/src/
+    /home/*/Bibliom/packages/graph/src/
     /workspace/packages/graph/src/

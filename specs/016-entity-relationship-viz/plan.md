@@ -25,7 +25,7 @@ Add incoming/outgoing relationship visualization to entity detail pages, enablin
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; relationship direction uses union type `'outbound' | 'inbound'`; all component props strictly typed
 2. **Test-First Development**: ✅ Tests written and failing before implementation begins; acceptance scenarios define test cases

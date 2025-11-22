@@ -1,8 +1,8 @@
-# Academic Explorer
+# Bibliom
 
 > A comprehensive monorepo for exploring academic literature through interactive knowledge graphs and data visualizations.
 
-Academic Explorer is a TypeScript-based research platform that provides intuitive access to academic literature via the [OpenAlex API](https://docs.openalex.org/). Built as a modern monorepo, it combines a powerful React web application with a sophisticated CLI tool for academic data exploration and management.
+Bibliom is a TypeScript-based research platform that provides intuitive access to academic literature via the [OpenAlex API](https://docs.openalex.org/). Built as a modern monorepo, it combines a powerful React web application with a sophisticated CLI tool for academic data exploration and management.
 
 **[View Live Application](https://mearman.github.io/Academic-Explorer/#/authors/A5017898742)**
 
@@ -15,7 +15,7 @@ Academic Explorer is a TypeScript-based research platform that provides intuitiv
 This repository is organized as an Nx-managed monorepo with shared packages and focused applications:
 
 ```
-Academic Explorer/
+Bibliom/
 ├── apps/
 │   ├── cli/                    # Command-line interface
 │   └── web/                    # React SPA application

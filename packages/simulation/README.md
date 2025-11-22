@@ -1,6 +1,6 @@
 # @academic-explorer/simulation
 
-Force-directed graph simulation engine for Academic Explorer. Pure algorithmic APIs for deterministic graph layout with D3-force integration and web worker support.
+Force-directed graph simulation engine for Bibliom. Pure algorithmic APIs for deterministic graph layout with D3-force integration and web worker support.
 
 ## Main Exports
 

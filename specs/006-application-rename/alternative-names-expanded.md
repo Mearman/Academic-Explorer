@@ -1,7 +1,7 @@
 # Expanded Alternative Names (Non-Compound) - Second Round
 
 **Date**: 2025-11-12
-**Purpose**: Additional creative non-compound name options for Academic Explorer rebrand
+**Purpose**: Additional creative non-compound name options for Bibliom rebrand
 
 ## Overview
 

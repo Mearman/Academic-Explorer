@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Academic Explorer web application will be documented in this file.
+All notable changes to the Bibliom web application will be documented in this file.
 
 This changelog follows independent versioning for the web application, starting from version 8.1.0 (baseline at monorepo creation).
 

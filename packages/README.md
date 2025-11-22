@@ -1,11 +1,11 @@
 # Packages
 
-Shared packages for the Academic Explorer monorepo. These packages provide reusable functionality across the main web application and CLI tool.
+Shared packages for the Bibliom monorepo. These packages provide reusable functionality across the main web application and CLI tool.
 
 ## Package Structure
 
 - **[`client`](client/README.md)** - TypeScript client for OpenAlex API with entity support and utilities
-- **[`graph`](graph/README.md)** - Core graph data structures, types, and services for Academic Explorer
+- **[`graph`](graph/README.md)** - Core graph data structures, types, and services for Bibliom
 - **[`simulation`](simulation/README.md)** - Force-directed graph simulation engine using D3 and web workers
 - **[`ui`](ui/README.md)** - Reusable UI components built with Mantine and XYFlow
 - **[`utils`](utils/README.md)** - Shared utilities including logging, caching, storage, and type guards

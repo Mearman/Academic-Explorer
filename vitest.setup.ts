@@ -1,6 +1,6 @@
 import { vi } from "vitest"
 
-// Global Vitest setup for the Academic Explorer monorepo
+// Global Vitest setup for the Bibliom monorepo
 // This handles common testing issues across all packages
 
 // Fix lru-cache ES module compatibility issue system-wide

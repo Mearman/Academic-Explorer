@@ -575,7 +575,7 @@ describe('SmartEntityCache', () => {
   describe('Real-World Scenarios', () => {
     describe('UI rendering workflow', () => {
       it('should efficiently handle typical UI rendering pattern', async () => {
-        // Simulate typical Academic Explorer workflow:
+        // Simulate typical Bibliom workflow:
         // 1. Search results (minimal fields)
         // 2. Detail view (more fields)
         // 3. Graph traversal (relationships)

@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document defines the Vite configuration changes required to enable source map generation for PostHog error tracking. Vite is the build tool for Academic Explorer's web application.
+This document defines the Vite configuration changes required to enable source map generation for PostHog error tracking. Vite is the build tool for Bibliom's web application.
 
 ---
 
@@ -95,7 +95,7 @@ apps/web/dist/
 
 **File Size**: Typically 2-10x larger than corresponding JS file (contains original source)
 
-**File Count**: One `.map` file per `.js` bundle/chunk (expected 10-50 for Academic Explorer)
+**File Count**: One `.map` file per `.js` bundle/chunk (expected 10-50 for Bibliom)
 
 ### JavaScript Bundle Changes
 

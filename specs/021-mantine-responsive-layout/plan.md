@@ -7,7 +7,7 @@
 
 ## Summary
 
-Fix responsive layout issues in Academic Explorer by correctly configuring Mantine 7.x responsive system. Primary requirements: (1) Mobile-first header navigation with collapsible menu, (2) Responsive sidebar widths and collapse behavior across breakpoints, (3) Content layout auto-adaptation with responsive padding/spacing. Technical approach uses Mantine's mobile-first breakpoint system (base/sm/md/lg/xl), responsive prop objects for AppShell configuration, and strategic use of hiddenFrom/visibleFrom for conditional rendering.
+Fix responsive layout issues in Bibliom by correctly configuring Mantine 7.x responsive system. Primary requirements: (1) Mobile-first header navigation with collapsible menu, (2) Responsive sidebar widths and collapse behavior across breakpoints, (3) Content layout auto-adaptation with responsive padding/spacing. Technical approach uses Mantine's mobile-first breakpoint system (base/sm/md/lg/xl), responsive prop objects for AppShell configuration, and strategic use of hiddenFrom/visibleFrom for conditional rendering.
 
 ## Technical Context
 
@@ -25,7 +25,7 @@ Fix responsive layout issues in Academic Explorer by correctly configuring Manti
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 ### Initial Check (Pre-Phase 0)
 

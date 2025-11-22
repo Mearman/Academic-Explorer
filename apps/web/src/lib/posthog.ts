@@ -1,7 +1,7 @@
 import type { PostHogConfig } from 'posthog-js'
 
 /**
- * Academic Explorer PostHog Analytics Configuration
+ * Bibliom PostHog Analytics Configuration
  *
  * Privacy-compliant configuration for EU/GDPR compliance without consent banners.
  *

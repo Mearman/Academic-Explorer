@@ -2,7 +2,7 @@
   "name": "@academic-explorer/graph",
   "version": "0.0.0",
   "type": "module",
-  "description": "Core graph data structures and types for Academic Explorer",
+  "description": "Core graph data structures and types for Bibliom",
   "keywords": [
     "graph",
     "academic",

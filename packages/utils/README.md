@@ -1,6 +1,6 @@
 # @academic-explorer/utils
 
-Shared utilities and helpers for Academic Explorer monorepo packages. Provides generic, reusable utilities without domain-specific dependencies.
+Shared utilities and helpers for Bibliom monorepo packages. Provides generic, reusable utilities without domain-specific dependencies.
 
 ## Main Exports
 

@@ -1,5 +1,5 @@
 /**
- * Rate limiting configuration for Academic Explorer
+ * Rate limiting configuration for Bibliom
  * OpenAlex API allows up to 10 requests per second with polite pool (with mailto header)
  */
 

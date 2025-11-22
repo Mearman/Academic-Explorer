@@ -2,7 +2,7 @@
   "name": "@academic-explorer/ui",
   "version": "0.0.0",
   "type": "module",
-  "description": "Reusable UI components for Academic Explorer built with Mantine and XYFlow",
+  "description": "Reusable UI components for Bibliom built with Mantine and XYFlow",
   "keywords": [
     "ui",
     "components",

@@ -1,5 +1,5 @@
 /**
- * Force simulation engines for Academic Explorer
+ * Force simulation engines for Bibliom
  * Pure algorithmic APIs for force-directed graph layout
  */
 

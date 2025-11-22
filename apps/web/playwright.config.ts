@@ -1,5 +1,5 @@
 /**
- * Playwright configuration for Academic Explorer E2E tests
+ * Playwright configuration for Bibliom E2E tests
  * Uses Playwright's built-in test runner and web server management
  */
 

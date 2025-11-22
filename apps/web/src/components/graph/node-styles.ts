@@ -1,5 +1,5 @@
 /**
- * Graph node styling functions for Academic Explorer
+ * Graph node styling functions for Bibliom
  * Provides conditional styling for xpac works and works with unverified authors
  *
  * User Story 2: Visual distinction for xpac works (datasets, software, specimens)

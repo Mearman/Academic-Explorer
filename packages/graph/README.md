@@ -1,6 +1,6 @@
 # @academic-explorer/graph
 
-Core graph data structures and services for Academic Explorer. Provides UI-agnostic graph logic that can be shared across CLI, SDK, and web applications.
+Core graph data structures and services for Bibliom. Provides UI-agnostic graph logic that can be shared across CLI, SDK, and web applications.
 
 ## Main Exports
 

@@ -12,7 +12,7 @@ This feature involves build artifacts and CI/CD configuration rather than runtim
 
 ### Release
 
-Represents a deployed version of Academic Explorer with associated source maps.
+Represents a deployed version of Bibliom with associated source maps.
 
 **Attributes**:
 - `version: string` - Git commit SHA (e.g., `a1b2c3d4e5f6...`)
@@ -213,7 +213,7 @@ export default defineConfig({
 
 - **Format**: Valid Source Map v3 JSON
 - **Size**: Typically 500KB - 5MB per file (no explicit limit)
-- **Count**: Expected 10-50 files for Academic Explorer monorepo
+- **Count**: Expected 10-50 files for Bibliom monorepo
 - **Validation**: Performed by PostHog CLI during upload
 
 ### API Credentials
@@ -228,7 +228,7 @@ export default defineConfig({
 
 ## No Runtime Data Models
 
-**Important**: This feature does NOT introduce new TypeScript interfaces, classes, or runtime data structures to the Academic Explorer application. All "entities" above are:
+**Important**: This feature does NOT introduce new TypeScript interfaces, classes, or runtime data structures to the Bibliom application. All "entities" above are:
 - Build artifacts (temporary files)
 - CI/CD configuration (YAML, environment variables)
 - External service data (PostHog cloud storage)

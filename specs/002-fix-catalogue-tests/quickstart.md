@@ -13,14 +13,14 @@ This guide helps developers understand, run, and fix the 27 failing catalogue E2
 - Node.js 18+
 - pnpm 8+
 - Chrome browser (for Playwright)
-- Academic Explorer repository cloned
+- Bibliom repository cloned
 - Feature 001 (storage abstraction) completed
 
 ## Quick Start
 
 ```bash
 # 1. Check out the feature branch
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/Bibliom"
 git checkout 002-fix-catalogue-tests
 
 # 2. Install dependencies

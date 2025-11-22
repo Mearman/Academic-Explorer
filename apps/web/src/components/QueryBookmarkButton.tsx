@@ -1,5 +1,5 @@
 /**
- * Query bookmark button component for Academic Explorer
+ * Query bookmark button component for Bibliom
  * Provides bookmarking functionality for complex queries with pagination awareness
  */
 

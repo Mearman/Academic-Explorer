@@ -133,7 +133,7 @@ A developer new to the project can understand the MSW setup by reading documenta
 ## Assumptions *(optional)*
 
 1. **Playwright is already configured**: The project uses Playwright for E2E tests with a working `playwright.config.ts` and `playwright.global-setup.ts`
-2. **Tests run serially**: The Academic Explorer constitution mandates serial test execution to avoid memory issues, simplifying MSW setup (no concurrency concerns)
+2. **Tests run serially**: The Bibliom constitution mandates serial test execution to avoid memory issues, simplifying MSW setup (no concurrency concerns)
 3. **Node.js 18+**: MSW 2.x requires Node.js 18 or higher, which is already used by the project
 4. **OpenAlex API schema is stable**: Fixture structure matches current OpenAlex API responses; future schema changes may require fixture updates
 5. **Tests use InMemoryStorageProvider**: Tests already use in-memory storage per constitution, so storage layer doesn't need mocking

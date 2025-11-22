@@ -166,7 +166,7 @@ This feature corrects a fundamental architectural issue where graph edges point 
 ### Q3: What happens to external references to edge IDs?
 **Answer**: Edge IDs are generated as `source-target-type`, so reversing source/target will change IDs. This is acceptable because:
 - Edge IDs are not exposed to users
-- No external systems reference Academic Explorer edge IDs
+- No external systems reference Bibliom edge IDs
 - Internal references (e.g., in graph-store) will be regenerated during migration
 
 ---

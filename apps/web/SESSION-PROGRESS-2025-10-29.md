@@ -5,7 +5,7 @@
 ### Session Objective
 **User Request**: "resolve ALL issues. not just new or critical ones"
 
-Continue comprehensive work on Academic Explorer application with focus on:
+Continue comprehensive work on Bibliom application with focus on:
 1. Resolving all remaining issues
 2. Testing all URLs from openalex-test-urls.json
 3. Ensuring data completeness

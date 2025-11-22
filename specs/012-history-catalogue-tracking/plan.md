@@ -23,7 +23,7 @@ Implement a history tracking feature that records visited entities (works, autho
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; history entry types will use discriminated unions for entity/list/view types with proper type guards
 2. **Test-First Development**: ✅ Tests written and failing before implementation (unit tests for storage operations, component tests for UI, E2E tests for navigation flow)

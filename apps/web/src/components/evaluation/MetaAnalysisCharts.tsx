@@ -1160,7 +1160,7 @@ export function DatasetStatisticsOverview({
           fontStyle: "italic",
         }}
       >
-        AE Found = Academic Explorer Found, Coverage = (AE Found / Original) ×
+        AE Found = Bibliom Found, Coverage = (AE Found / Original) ×
         100%
       </div>
     </div>

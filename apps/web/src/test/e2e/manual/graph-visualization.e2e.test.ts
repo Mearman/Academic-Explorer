@@ -18,15 +18,15 @@ test.describe("Graph Visualization E2E Tests", () => {
       timeout: 10000,
     });
 
-    // Wait for Academic Explorer header to appear
-    await page.waitForSelector("text=Academic Explorer", { timeout: 5000 });
+    // Wait for Bibliom header to appear
+    await page.waitForSelector("text=Bibliom", { timeout: 5000 });
 
     // Check if page loaded successfully
     const pageContent = await page.locator("body").count();
     expect(pageContent).toBeGreaterThan(0);
 
-    // Check for Academic Explorer header
-    const header = await page.locator("text=Academic Explorer").count();
+    // Check for Bibliom header
+    const header = await page.locator("text=Bibliom").count();
     expect(header).toBeGreaterThan(0);
 
     console.log("✅ Author page rendered without infinite loops");
@@ -36,7 +36,7 @@ test.describe("Graph Visualization E2E Tests", () => {
     await page.goto(AUTHOR_URL, { timeout: 10000 });
 
     // Wait for page to be ready
-    await page.waitForSelector("text=Academic Explorer", { timeout: 3000 });
+    await page.waitForSelector("text=Bibliom", { timeout: 3000 });
 
     // Check for XYFlow/ReactFlow containers
     const graphSelectors = [
@@ -79,7 +79,7 @@ test.describe("Graph Visualization E2E Tests", () => {
     await page.goto(AUTHOR_URL, { timeout: 10000 });
 
     // Wait for page to stabilize
-    await page.waitForSelector("text=Academic Explorer", { timeout: 3000 });
+    await page.waitForSelector("text=Bibliom", { timeout: 3000 });
 
     // Wait for any loading indicators to disappear (if they exist)
     try {

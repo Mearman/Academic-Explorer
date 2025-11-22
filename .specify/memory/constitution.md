@@ -14,7 +14,7 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# Academic Explorer Constitution
+# Bibliom Constitution
 
 ## Core Principles
 
@@ -581,7 +581,7 @@ This constitution supersedes all other development practices. Amendments require
 All PRs and code reviews MUST verify compliance with this constitution. Features that
 violate principles without documented justification MUST be rejected.
 
-For runtime development guidance specific to Academic Explorer workflows, see `CLAUDE.md`
+For runtime development guidance specific to Bibliom workflows, see `CLAUDE.md`
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 

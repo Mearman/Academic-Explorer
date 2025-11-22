@@ -143,7 +143,7 @@ Once workflow completes:
 4. **Check GitHub Pages Deployment**:
    ```bash
    curl -s "https://mearman.github.io/Academic-Explorer/" | grep -o '<title>[^<]*</title>'
-   # Should show: <title>Academic Explorer</title>
+   # Should show: <title>Bibliom</title>
 
    curl -sI "https://mearman.github.io/Academic-Explorer/" | grep "last-modified"
    # Should show timestamp after 09:28 (deploy job start time)

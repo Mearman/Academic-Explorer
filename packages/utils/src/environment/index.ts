@@ -1,5 +1,5 @@
 /**
- * Environment detection and configuration system for Academic Explorer
+ * Environment detection and configuration system for Bibliom
  *
  * Provides unified interface for environment detection, cache configuration,
  * and runtime mode switching. Enables other packages to determine optimal

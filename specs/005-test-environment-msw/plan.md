@@ -25,7 +25,7 @@ Fix 27 failing E2E tests (232 total) by implementing MSW (Mock Service Worker) t
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ MSW handlers will be fully typed with TypeScript interfaces; fixture types will match OpenAlex schema; no `any` types
 2. **Test-First Development**: ✅ Tests already exist and are failing; this feature fixes test infrastructure (not modifying test logic)

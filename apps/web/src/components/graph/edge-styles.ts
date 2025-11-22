@@ -1,5 +1,5 @@
 /**
- * Graph edge styling functions for Academic Explorer
+ * Graph edge styling functions for Bibliom
  * Provides multi-modal visual distinction for outbound vs inbound relationships
  *
  * User Story 2: Visual distinction between outbound edges (data stored on source entity)

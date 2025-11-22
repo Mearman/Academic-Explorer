@@ -4,7 +4,7 @@
  *
  * @fileoverview Comprehensive test coverage of contextual field selection logic
  * including context-based field mapping, entity type handling, and integration
- * with the Academic Explorer caching and graph systems.
+ * with the Bibliom caching and graph systems.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -566,7 +566,7 @@ describe('ContextualFieldSelector', () => {
   });
 
   describe('Real-world Usage Patterns', () => {
-    it('should support Academic Explorer use cases', () => {
+    it('should support Bibliom use cases', () => {
       // Graph traversal
       const traversalFields = fieldSelector.getRequiredFields('works', CacheContext.TRAVERSAL);
       expect(Array.isArray(traversalFields)).toBe(true);

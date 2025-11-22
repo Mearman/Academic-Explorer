@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the improvements made to achieve zero warnings and perfect CI pipeline success for the Academic Explorer monorepo.
+This document outlines the improvements made to achieve zero warnings and perfect CI pipeline success for the Bibliom monorepo.
 
 ## Key Improvements
 

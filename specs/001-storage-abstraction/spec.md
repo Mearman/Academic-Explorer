@@ -26,7 +26,7 @@ QA engineers and developers need to run E2E tests in Playwright that interact wi
 
 ### User Story 2 - Production Application with IndexedDB Storage (Priority: P1)
 
-End users of the Academic Explorer application need their catalogue data to persist across browser sessions using the browser's native IndexedDB storage.
+End users of the Bibliom application need their catalogue data to persist across browser sessions using the browser's native IndexedDB storage.
 
 **Why this priority**: This is equally critical as it maintains the existing production functionality. The abstraction must not break existing user workflows.
 

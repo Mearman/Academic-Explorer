@@ -14,14 +14,14 @@ Get the feature up and running in under 5 minutes.
 
 - Node.js 18+ installed
 - pnpm package manager
-- Academic Explorer repository cloned
+- Bibliom repository cloned
 - Branch `016-entity-relationship-viz` checked out
 
 ### Setup
 
 ```bash
 # Navigate to repository
-cd "Academic Explorer"
+cd "Bibliom"
 
 # Checkout feature branch
 git checkout 016-entity-relationship-viz

@@ -10,7 +10,7 @@
 
 ### User Story 1 - Mobile-First Header Navigation (Priority: P1)
 
-Users accessing Academic Explorer on mobile devices need a functional, non-overflowing header that provides access to all navigation options without horizontal scrolling or element overlap.
+Users accessing Bibliom on mobile devices need a functional, non-overflowing header that provides access to all navigation options without horizontal scrolling or element overlap.
 
 **Why this priority**: The header is the primary navigation interface and currently has overflow issues on mobile devices (5 navigation buttons + search + sidebar toggles + theme toggle exceed available width on small screens). This is a critical usability blocker for mobile users.
 

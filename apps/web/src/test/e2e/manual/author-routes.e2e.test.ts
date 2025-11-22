@@ -19,7 +19,7 @@ test.describe("Author Routes E2E Tests", () => {
     // Use more generous timeout for CI environments
     const headerTitle = page
       .locator("header")
-      .locator("text=Academic Explorer");
+      .locator("text=Bibliom");
     await expect(headerTitle).toBeVisible({ timeout: 15000 });
 
     // Verify no JavaScript errors occurred
@@ -38,7 +38,7 @@ test.describe("Author Routes E2E Tests", () => {
 
     // Check that the page title is correct
     const title = await page.title();
-    expect(title).toContain("Academic Explorer");
+    expect(title).toContain("Bibliom");
 
     // Verify basic page structure
     const root = page.locator("#root");
@@ -55,8 +55,8 @@ test.describe("Author Routes E2E Tests", () => {
     const header = page.locator('header, [role="banner"]');
     await expect(header).toBeVisible({ timeout: 15000 });
 
-    // Academic Explorer title in header
-    const appTitle = page.locator("header").locator("text=Academic Explorer");
+    // Bibliom title in header
+    const appTitle = page.locator("header").locator("text=Bibliom");
     await expect(appTitle).toBeVisible({ timeout: 15000 });
 
     // Navigation should be present
@@ -166,12 +166,12 @@ test.describe("Author Routes E2E Tests", () => {
     await homeLink.click();
 
     // Wait for homepage content instead of URL
-    await page.waitForSelector('h1:has-text("Academic Explorer")', {
+    await page.waitForSelector('h1:has-text("Bibliom")', {
       timeout: 15000,
     });
 
     // Verify we're back on the homepage
-    const title = page.locator('h1:has-text("Academic Explorer")');
+    const title = page.locator('h1:has-text("Bibliom")');
     await expect(title).toBeVisible({ timeout: 15000 });
   });
 
@@ -220,7 +220,7 @@ test.describe("Author Routes E2E Tests", () => {
     await expect(root).toBeVisible({ timeout: 15000 });
 
     // Should maintain header structure
-    const appTitle = page.locator("header").locator("text=Academic Explorer");
+    const appTitle = page.locator("header").locator("text=Bibliom");
     await expect(appTitle).toBeVisible({ timeout: 15000 });
 
     // Navigation should still work

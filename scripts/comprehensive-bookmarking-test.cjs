@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Comprehensive bookmarking test script for Academic Explorer
+ * Comprehensive bookmarking test script for Bibliom
  * Tests bookmarking functionality across all OpenAlex URL patterns
  */
 
@@ -12,7 +12,7 @@ const path = require('path');
 // Configuration
 const BASE_URL = 'http://localhost:5173';
 const TIMEOUT = 30000;
-const TEST_DATA_PATH = '/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/data/openalex-test-urls.json';
+const TEST_DATA_PATH = '/Users/joe/Documents/Research/PhD/Bibliom/apps/web/src/test/data/openalex-test-urls.json';
 
 // Load test URLs
 const testUrlsData = JSON.parse(fs.readFileSync(TEST_DATA_PATH, 'utf8'));
@@ -293,12 +293,12 @@ class BookmarkingTester {
 
   async saveReport(report) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const reportPath = `/Users/joe/Documents/Research/PhD/Academic Explorer/bookmarking-comprehensive-test-report-${timestamp}.json`;
+    const reportPath = `/Users/joe/Documents/Research/PhD/Bibliom/bookmarking-comprehensive-test-report-${timestamp}.json`;
 
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     // Also create a readable markdown summary
-    const markdownPath = `/Users/joe/Documents/Research/PhD/Academic Explorer/bookmarking-comprehensive-test-report-${timestamp}.md`;
+    const markdownPath = `/Users/joe/Documents/Research/PhD/Bibliom/bookmarking-comprehensive-test-report-${timestamp}.md`;
 
     let markdown = `# Comprehensive Bookmarking Test Report\n\n`;
     markdown += `**Generated:** ${new Date().toLocaleString()}\n\n`;

@@ -1,5 +1,5 @@
 /**
- * Academic Explorer UI Package
+ * Bibliom UI Package
  * Pure UI components built with Mantine and TypeScript
  */
 

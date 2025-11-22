@@ -1,6 +1,6 @@
 # Tools Directory
 
-Development and verification scripts for the Academic Explorer monorepo.
+Development and verification scripts for the Bibliom monorepo.
 
 ## Verification Scripts
 

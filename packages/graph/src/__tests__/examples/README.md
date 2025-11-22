@@ -1,6 +1,6 @@
 # Graph Provider System Examples
 
-This directory contains example tests that demonstrate proper usage patterns for the Academic Explorer graph provider system. These tests serve as both documentation and verification of intended usage patterns.
+This directory contains example tests that demonstrate proper usage patterns for the Bibliom graph provider system. These tests serve as both documentation and verification of intended usage patterns.
 
 ## Purpose
 
@@ -78,7 +78,7 @@ examples/
 Ensure you have the development dependencies installed:
 
 ```bash
-cd /Users/joe/Documents/Research/PhD/Academic Explorer
+cd /Users/joe/Documents/Research/PhD/Bibliom
 pnpm install
 ```
 

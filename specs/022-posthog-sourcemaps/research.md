@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document captures research findings and technology decisions for implementing PostHog source map upload in Academic Explorer. Since the Technical Context had no "NEEDS CLARIFICATION" markers, this research focuses on documenting known approaches and verifying best practices.
+This document captures research findings and technology decisions for implementing PostHog source map upload in Bibliom. Since the Technical Context had no "NEEDS CLARIFICATION" markers, this research focuses on documenting known approaches and verifying best practices.
 
 ## Technology Decisions
 
@@ -75,7 +75,7 @@ posthog-cli sourcemap upload \
 **Decision**: Add source map upload steps to existing `.github/workflows/deploy.yml` after build step, before deployment step
 
 **Rationale**:
-- Academic Explorer already uses GitHub Actions for deployment
+- Bibliom already uses GitHub Actions for deployment
 - Source maps must be uploaded BEFORE deployment to ensure errors are immediately debuggable
 - Workflow should fail if upload fails (prevents deploying code without debug capability)
 - Git commit hash (`$GITHUB_SHA`) is ideal release version identifier for traceability
@@ -145,7 +145,7 @@ posthog-cli sourcemap upload \
 **Decision**: Use `--host https://eu.posthog.com` for source map uploads
 
 **Rationale**:
-- Academic Explorer already uses EU PostHog instance for analytics (confirmed in spec)
+- Bibliom already uses EU PostHog instance for analytics (confirmed in spec)
 - Source maps must be uploaded to the same instance where errors are tracked
 - Using US instance would result in source maps not being found for EU-tracked errors
 - GDPR compliance consideration (PhD research at Bangor University, Wales)
@@ -154,7 +154,7 @@ posthog-cli sourcemap upload \
 
 **Alternatives Considered**:
 - US PostHog instance (https://app.posthog.com) - Rejected because existing analytics already on EU instance
-- Self-hosted PostHog - Rejected because Academic Explorer uses PostHog cloud, not self-hosted
+- Self-hosted PostHog - Rejected because Bibliom uses PostHog cloud, not self-hosted
 
 **References**:
 - PostHog EU cloud: https://posthog.com/eu

@@ -1,5 +1,5 @@
 /**
- * Filter utilities for the Academic Explorer application
+ * Filter utilities for the Bibliom application
  *
  * This module provides utilities for working with OpenAlex API filters,
  * including conversion from TypeScript filter objects to query strings.

@@ -151,5 +151,5 @@ The test used `process.cwd()` which is context-dependent and unreliable. Using `
 
 ---
 
-**Session Goal**: Resolve ALL issues in Academic Explorer application
+**Session Goal**: Resolve ALL issues in Bibliom application
 **Progress**: 3 critical fixes applied, deployment in progress

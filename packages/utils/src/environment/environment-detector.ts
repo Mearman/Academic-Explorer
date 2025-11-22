@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 /**
- * Environment detection utilities for Academic Explorer
+ * Environment detection utilities for Bibliom
  *
  * Detects development vs production mode using NODE_ENV, process.env, and build context.
  * Provides robust environment detection for both browser and Node.js environments.

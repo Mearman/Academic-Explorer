@@ -42,7 +42,7 @@ function EvaluationDashboard() {
           lineClamp={3}
           maw={800}
         >
-          Evaluate Academic Explorer&apos;s literature discovery capabilities
+          Evaluate Bibliom&apos;s literature discovery capabilities
           against published systematic literature reviews using the STAR
           (Systematic Literature Review) methodology. This provides quantitative
           metrics for precision, recall, and F1-score analysis required for PhD
@@ -105,7 +105,7 @@ function EvaluationDashboard() {
           </Text>
 
           <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
-            Execute Academic Explorer searches against STAR datasets and
+            Execute Bibliom searches against STAR datasets and
             calculate precision/recall metrics
           </Text>
 
@@ -187,7 +187,7 @@ function EvaluationDashboard() {
               2. Search Replication
             </Text>
             <Text size="xs" c="dimmed" lineClamp={3}>
-              Run Academic Explorer searches using original STAR search criteria
+              Run Bibliom searches using original STAR search criteria
               and strategies
             </Text>
           </Stack>
@@ -226,7 +226,7 @@ function EvaluationDashboard() {
               <Text span fw={600}>PhD Evaluation Context:</Text>
             </Group>
             {" "}
-            This evaluation demonstrates Academic Explorer&apos;s ability to
+            This evaluation demonstrates Bibliom&apos;s ability to
             improve upon existing systematic reviews by identifying previously
             missed papers and providing more efficient literature discovery
             pathways. Results provide quantitative evidence for thesis Chapter 6

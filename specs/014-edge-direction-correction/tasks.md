@@ -297,7 +297,7 @@ wait
 
 ## Constitution Compliance Verification
 
-Per Academic Explorer Constitution, verify compliance:
+Per Bibliom Constitution, verify compliance:
 
 - ✅ **Type Safety**: All tasks use proper TypeScript types, no `any` types introduced
 - ✅ **Test-First Development**: E2E tests written before implementation (T011-T017 before T018-T024)

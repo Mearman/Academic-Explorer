@@ -1,6 +1,6 @@
 import { createTheme, globalStyle } from "@vanilla-extract/css";
 
-// Academic Explorer Design Tokens
+// Bibliom Design Tokens
 export const [themeClass, vars] = createTheme({
   color: {
     // Primary colors - Academic blue palette

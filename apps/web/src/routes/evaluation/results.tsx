@@ -144,7 +144,7 @@ function ComparisonResults() {
     }
   }, []);
 
-  // Real Academic Explorer search function using OpenAlex API
+  // Real Bibliom search function using OpenAlex API
   const performAcademicExplorerSearch = (
     dataset: STARDataset,
   ): WorkReference[] => {
@@ -168,7 +168,7 @@ function ComparisonResults() {
     } catch (error) {
       logError(
         logger,
-        "Academic Explorer search failed:",
+        "Bibliom search failed:",
         error,
         "ComparisonResults",
         "routing",
@@ -197,7 +197,7 @@ function ComparisonResults() {
     try {
       const startTime = performance.now();
 
-      // Step 1: Perform Academic Explorer search
+      // Step 1: Perform Bibliom search
       const academicExplorerResults = performAcademicExplorerSearch(dataset);
 
       // Step 2: Run comparison with progress tracking
@@ -375,7 +375,7 @@ function ComparisonResults() {
           STAR Comparison Results
         </h1>
         <p style={{ fontSize: "16px", color: "#6b7280" }}>
-          Detailed analysis of Academic Explorer performance against systematic
+          Detailed analysis of Bibliom performance against systematic
           literature review ground truth
         </p>
       </div>
@@ -1277,7 +1277,7 @@ function ComparisonResults() {
                 margin: 0,
               }}
             >
-              These results demonstrate Academic Explorer&apos;s quantitative
+              These results demonstrate Bibliom&apos;s quantitative
               performance improvements over traditional systematic review
               methodologies. The precision/recall metrics and additional papers
               discovered provide statistical evidence for Chapter 6 evaluation.

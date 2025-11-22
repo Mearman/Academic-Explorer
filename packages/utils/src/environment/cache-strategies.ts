@@ -1,5 +1,5 @@
 /**
- * Cache strategies for Academic Explorer
+ * Cache strategies for Bibliom
  *
  * Defines environment-specific cache strategies and behaviors.
  * Provides type-safe cache strategy selection based on environment detection.

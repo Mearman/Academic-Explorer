@@ -7,7 +7,7 @@ set -e
 
 BASE_URL="https://mearman.github.io/Academic-Explorer"
 
-echo "=== Testing Academic Explorer Deployment ==="
+echo "=== Testing Bibliom Deployment ==="
 echo "Base URL: $BASE_URL"
 echo ""
 

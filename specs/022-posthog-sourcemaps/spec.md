@@ -9,7 +9,7 @@
 
 ### User Story 1 - Production Error Debugging with Readable Stack Traces (Priority: P1)
 
-When a production error occurs in Academic Explorer, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references. This enables rapid identification and resolution of production issues.
+When a production error occurs in Bibliom, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references. This enables rapid identification and resolution of production issues.
 
 **Why this priority**: Without readable stack traces, debugging production errors is extremely difficult and time-consuming. This is the core value proposition of source map upload and blocks all other error tracking improvements.
 

@@ -1,6 +1,6 @@
 # API Contracts: OpenAlex Walden Support
 
-**Note**: This feature integrates with external OpenAlex API only. No new Academic Explorer endpoints.
+**Note**: This feature integrates with external OpenAlex API only. No new Bibliom endpoints.
 
 ## OpenAlex API Integration
 

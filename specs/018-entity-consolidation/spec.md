@@ -9,7 +9,7 @@
 
 ### User Story 1 - Single Source of Truth for Entity Definitions (Priority: P1)
 
-As a developer working on the Academic Explorer codebase, I need all OpenAlex entity type definitions to exist in one canonical location so that changes to entity metadata propagate consistently across all packages without requiring updates in multiple places.
+As a developer working on the Bibliom codebase, I need all OpenAlex entity type definitions to exist in one canonical location so that changes to entity metadata propagate consistently across all packages without requiring updates in multiple places.
 
 **Why this priority**: This is P1 because duplicated entity definitions create maintenance burden, risk of inconsistency, and potential bugs when definitions drift apart. Having already centralized entity metadata in spec-017, we need to eliminate remaining duplicates and ensure all packages reference the single source.
 

@@ -140,4 +140,4 @@ Breaking changes to these interfaces require:
 - [Feature Specification](../spec.md)
 - [Data Model](../data-model.md)
 - [Implementation Plan](../plan.md)
-- [Academic Explorer Constitution](../../../.specify/memory/constitution.md)
+- [Bibliom Constitution](../../../.specify/memory/constitution.md)

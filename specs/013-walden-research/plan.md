@@ -25,7 +25,7 @@ Enable support for OpenAlex's Walden rewrite (Data Version 2) which provides imp
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 ### ✅ 1. Type Safety
 **Status**: PASS
@@ -103,7 +103,7 @@ specs/013-walden-research/
 ### Source Code (repository root)
 
 ```text
-Academic Explorer/ (monorepo root)
+Bibliom/ (monorepo root)
 ├── apps/
 │   └── web/
 │       ├── src/
@@ -236,17 +236,17 @@ See [data-model.md](./data-model.md) for schema definitions.
 
 See `contracts/` directory for OpenAPI specifications.
 
-**New/Modified Endpoints**: N/A (external API only - no new Academic Explorer endpoints)
+**New/Modified Endpoints**: N/A (external API only - no new Bibliom endpoints)
 
 **OpenAlex API Integration**:
 - **Parameter**: `data-version` (query param)
   - Values: `1` | `2`
-  - Default: `2` (Academic Explorer sends v2 by default)
+  - Default: `2` (Bibliom sends v2 by default)
   - Availability: `1` supported through November 2025 only
 
 - **Parameter**: `include_xpac` (query param)
   - Values: `true` | not included
-  - Default: `true` (Academic Explorer sends by default)
+  - Default: `true` (Bibliom sends by default)
   - Behavior: When `true`, includes 190M non-traditional works
 
 ### Quickstart

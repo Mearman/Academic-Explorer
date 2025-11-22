@@ -1,6 +1,6 @@
 # Query Bookmarking Implementation
 
-This document describes the query bookmarking functionality implemented for Academic Explorer, which allows users to bookmark complex OpenAlex API queries while intelligently handling pagination parameters.
+This document describes the query bookmarking functionality implemented for Bibliom, which allows users to bookmark complex OpenAlex API queries while intelligently handling pagination parameters.
 
 ## Overview
 

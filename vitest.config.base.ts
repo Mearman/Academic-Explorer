@@ -1,7 +1,7 @@
 /// <reference types='vitest' />
 import { defineConfig } from "vitest/config";
 
-// Base Vitest configuration for the Academic Explorer monorepo
+// Base Vitest configuration for the Bibliom monorepo
 // This provides common testing configuration for all projects
 export const baseVitestConfig = defineConfig({
   test: {

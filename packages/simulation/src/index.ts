@@ -1,7 +1,7 @@
 /**
  * @academic-explorer/simulation
  *
- * Pure force-directed graph simulation engine for Academic Explorer.
+ * Pure force-directed graph simulation engine for Bibliom.
  * Framework-agnostic APIs for graph layout with D3-force integration.
  *
  * @author Joe Mearman

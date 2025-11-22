@@ -25,7 +25,7 @@ Fix critical AUTHORSHIP edge direction bug (currently reversed: Author → Work 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - All relationship data uses strict TypeScript types; no `any` types; type guards for OpenAlex data validation (see `contracts/validation.contract.md`)
 2. **Test-First Development**: ✅ PASS - Red-Green-Refactor approach with direction-specific assertions; tests written before implementation (see `research.md` Section 5)

@@ -124,9 +124,9 @@ cache/static/
 | `maxCacheSize` | number | 100 | Maximum number of cached items |
 | `validateData` | boolean | true | Enable response data validation |
 
-## Integration with Academic Explorer
+## Integration with Bibliom
 
-This reader is designed to integrate with the Academic Explorer's static data generation pipeline:
+This reader is designed to integrate with the Bibliom's static data generation pipeline:
 
 1. **CLI generates static data** → GitHub Pages hosts it
 2. **Production app uses reader** → Fetches pre-generated data

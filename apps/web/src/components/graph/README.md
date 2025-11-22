@@ -1,6 +1,6 @@
 # Graph Styling and Rendering Utilities
 
-This directory contains styling and rendering utilities for graph visualization in Academic Explorer.
+This directory contains styling and rendering utilities for graph visualization in Bibliom.
 
 ## User Story 2: Visual Distinction
 

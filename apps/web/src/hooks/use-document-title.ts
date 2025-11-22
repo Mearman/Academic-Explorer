@@ -9,7 +9,7 @@ import { logger } from "@academic-explorer/utils/logger";
 interface UseDocumentTitleOptions {
   /**
    * Base title to append after the main title
-   * @default "Academic Explorer"
+   * @default "Bibliom"
    */
   baseTitle?: string;
   /**
@@ -31,7 +31,7 @@ interface UseDocumentTitleOptions {
  * useDocumentTitle(entity?.display_name);
  *
  * // Set title with custom base
- * useDocumentTitle("Search Results", { baseTitle: "Academic Explorer" });
+ * useDocumentTitle("Search Results", { baseTitle: "Bibliom" });
  *
  * // Restore original title on unmount
  * useDocumentTitle("Temporary Title", { restoreOnUnmount: true });
@@ -41,7 +41,7 @@ export const useDocumentTitle = (
   title: string | null | undefined,
   options: UseDocumentTitleOptions = {},
 ) => {
-  const { baseTitle = "Academic Explorer", restoreOnUnmount = false } = options;
+  const { baseTitle = "Bibliom", restoreOnUnmount = false } = options;
 
   const originalTitle = useRef<string | null>(null);
 

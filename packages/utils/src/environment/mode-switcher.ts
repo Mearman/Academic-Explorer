@@ -1,5 +1,5 @@
 /**
- * Mode switcher for Academic Explorer
+ * Mode switcher for Bibliom
  *
  * Orchestrates cache behavior switching based on detected environment.
  * Provides a unified interface for selecting and configuring cache strategies.

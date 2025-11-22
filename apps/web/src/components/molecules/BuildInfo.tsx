@@ -111,7 +111,7 @@ export const BuildInfo: React.FC = () => {
           fw={500}
         >
           <IconBrandGithub size={14} />
-          Academic Explorer
+          Bibliom
         </Anchor>
       </Group>
     </Paper>

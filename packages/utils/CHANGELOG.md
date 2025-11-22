@@ -246,4 +246,4 @@ This package uses independent versioning separate from the monorepo version.
 
 - initial release as independent package in monorepo structure
 
-  Extracted from shared-utils with core utilities for Academic Explorer project including environment detection, cache management, and static data generation.
+  Extracted from shared-utils with core utilities for Bibliom project including environment detection, cache management, and static data generation.

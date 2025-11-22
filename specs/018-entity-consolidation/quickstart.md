@@ -2,7 +2,7 @@
 
 **Feature**: 018-entity-consolidation
 **Estimated Time**: 75 minutes
-**Prerequisites**: Familiarity with TypeScript, Nx workspace, Academic Explorer codebase
+**Prerequisites**: Familiarity with TypeScript, Nx workspace, Bibliom codebase
 
 ## Overview
 

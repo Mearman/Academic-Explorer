@@ -115,7 +115,7 @@ All technical decisions for this feature are determined based on existing codeba
 - Requirement FR-005: Pagination when counts exceed 50 items
 - Success Criteria SC-006: Handle 1000 relationships without degradation
 - Client-side: All relationship data already loaded with graph; no additional API calls
-- "Load more" pattern: Consistent with existing Academic Explorer UX
+- "Load more" pattern: Consistent with existing Bibliom UX
 
 **Alternatives Considered**:
 - **Virtual scrolling**: Rejected as over-engineering for most entities (< 100 relationships)
@@ -137,7 +137,7 @@ All technical decisions for this feature are determined based on existing codeba
 **Rationale**:
 - Requirement FR-007: Handle entities with zero relationships gracefully
 - Requirement FR-013: Display error states with retry options
-- Consistent with existing Academic Explorer error handling patterns
+- Consistent with existing Bibliom error handling patterns
 - Mantine UI provides built-in empty state and error components
 
 **Alternatives Considered**:

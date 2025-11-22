@@ -5,7 +5,7 @@
 
 ## Summary
 
-Improve the layout and responsive design of the Academic Explorer landing page (root route `/`) to ensure proper spacing, alignment, and visual hierarchy across all viewport sizes. Update E2E tests to verify layout correctness, touch target sizes, and responsive behavior.
+Improve the layout and responsive design of the Bibliom landing page (root route `/`) to ensure proper spacing, alignment, and visual hierarchy across all viewport sizes. Update E2E tests to verify layout correctness, touch target sizes, and responsive behavior.
 
 **Technical Approach**: Refine existing Mantine Card component styling using inline styles and Mantine's responsive utilities. Adjust spacing between sections (title, search form, examples, features) to create clear visual hierarchy. Update existing E2E test assertions to verify responsive layout, element positioning, and minimum touch target sizes.
 
@@ -25,7 +25,7 @@ Improve the layout and responsive design of the Academic Explorer landing page (
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; existing component uses strict TypeScript with proper Mantine prop types
 2. **Test-First Development**: ✅ E2E tests already exist (`apps/web/src/test/e2e/manual/homepage.e2e.test.ts`); will update assertions before layout changes

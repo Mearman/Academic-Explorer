@@ -1,7 +1,7 @@
 # Comprehensive Fixes Summary - 2025-10-29
 
 ## Session Goal
-Resolve ALL issues in the Academic Explorer application, test all 276 URLs from openalex-urls.json, and ensure successful deployment to GitHub Pages.
+Resolve ALL issues in the Bibliom application, test all 276 URLs from openalex-urls.json, and ensure successful deployment to GitHub Pages.
 
 ## Discoveries & Fixes
 

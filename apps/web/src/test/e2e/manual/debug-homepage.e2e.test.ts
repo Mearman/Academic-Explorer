@@ -50,11 +50,11 @@ test.describe("Debug Homepage", () => {
     const h1Elements = await page.locator("h1").allTextContents();
     console.log("H1 elements:", h1Elements);
 
-    // Check if Academic Explorer text exists anywhere
+    // Check if Bibliom text exists anywhere
     const academicExplorerText = await page
-      .locator("text=Academic Explorer")
+      .locator("text=Bibliom")
       .count();
-    console.log("Academic Explorer text count:", academicExplorerText);
+    console.log("Bibliom text count:", academicExplorerText);
 
     // Check for header
     const header = await page.locator("header").count();
@@ -76,6 +76,6 @@ test.describe("Debug Homepage", () => {
 
     // Basic assertion - page should load without JS errors
     expect(errors.length).toBe(0);
-    expect(title).toBe("Academic Explorer");
+    expect(title).toBe("Bibliom");
   });
 });

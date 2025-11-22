@@ -1,6 +1,6 @@
 # @academic-explorer/ui
 
-Reusable UI components for Academic Explorer built with Mantine and TanStack Table.
+Reusable UI components for Bibliom built with Mantine and TanStack Table.
 
 ## Main Exports
 

@@ -7,7 +7,7 @@
 
 ## Summary
 
-Implement automated PostHog source map upload for production error tracking in Academic Explorer. The primary requirement is to enable readable stack traces in production by generating source maps during Vite builds, injecting release metadata using PostHog CLI, and uploading them automatically via GitHub Actions CI/CD workflow. This ensures developers can debug production errors with original TypeScript file paths and line numbers instead of minified bundle references.
+Implement automated PostHog source map upload for production error tracking in Bibliom. The primary requirement is to enable readable stack traces in production by generating source maps during Vite builds, injecting release metadata using PostHog CLI, and uploading them automatically via GitHub Actions CI/CD workflow. This ensures developers can debug production errors with original TypeScript file paths and line numbers instead of minified bundle references.
 
 ## Technical Context
 
@@ -38,7 +38,7 @@ Implement automated PostHog source map upload for production error tracking in A
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - No TypeScript code changes to app logic; only Vite config (typed) and GitHub Actions YAML. PostHog CLI types used where applicable.
 2. **Test-First Development**: ✅ PASS - Feature uses verification testing (manual error triggering, workflow validation, dashboard checks). No new application logic requiring unit tests. Verification tests outlined in spec acceptance scenarios.

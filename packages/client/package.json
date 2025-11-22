@@ -14,7 +14,7 @@
     "authors",
     "institutions"
   ],
-  "author": "Academic Explorer",
+  "author": "Bibliom",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.esm.js",

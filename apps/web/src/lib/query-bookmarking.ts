@@ -1,5 +1,5 @@
 /**
- * Query bookmarking utilities for Academic Explorer
+ * Query bookmarking utilities for Bibliom
  * Handles bookmarking of complex API queries while excluding pagination parameters
  */
 

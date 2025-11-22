@@ -25,7 +25,7 @@ Fix 27 failing catalogue E2E tests across entity management, import/export, and 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - Fixes will maintain strict TypeScript typing; no new `any` types; entity type discrimination uses type guards; all storage operations maintain type safety
 2. **Test-First Development**: ✅ PASS - Tests already exist and are failing; this is true test-driven repair (Red state verified, implementing Green); no test modifications allowed per spec

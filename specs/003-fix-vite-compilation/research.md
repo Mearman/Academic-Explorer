@@ -8,7 +8,7 @@
 
 TypeScript is emitting compiled .js, .js.map, and .d.ts files directly into src/ directories alongside source .ts/.tsx files. This causes Vite dev server to serve stale cached code during E2E tests instead of the latest source changes. The issue blocks test-driven development as code modifications aren't reflected in test execution.
 
-**Root Cause Discovered**: During the fix for feature 002-fix-catalogue-tests, we attempted to add `noEmit: true` to tsconfig.app.json (commit 3898deb). This prevented in-place compilation but broke TypeScript project references with error: `tsconfig.json(38,5): error TS6310: Referenced project '/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web' may not disable emit.`
+**Root Cause Discovered**: During the fix for feature 002-fix-catalogue-tests, we attempted to add `noEmit: true` to tsconfig.app.json (commit 3898deb). This prevented in-place compilation but broke TypeScript project references with error: `tsconfig.json(38,5): error TS6310: Referenced project '/Users/joe/Documents/Research/PhD/Bibliom/apps/web' may not disable emit.`
 
 The tools package references apps/web and requires declaration files (.d.ts) for type checking, so we cannot globally disable emit.
 

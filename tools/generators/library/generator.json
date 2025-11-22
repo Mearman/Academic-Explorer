@@ -1,7 +1,7 @@
 {
   "name": "library",
   "$schema": "../../../node_modules/nx/schemas/generator-schema.json",
-  "description": "Create a new library package in the Academic Explorer monorepo",
+  "description": "Create a new library package in the Bibliom monorepo",
   "factory": "./generator.ts",
   "schema": "./schema.json",
   "x-type": "workspace-generator"

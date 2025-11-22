@@ -25,7 +25,7 @@ Optimize the GitHub Actions CI/CD pipeline to reduce execution time from 30-40 m
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with Bibliom Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - Workflow YAML configuration does not involve TypeScript types; Nx configuration uses typed JSON schemas
 2. **Test-First Development**: ✅ PASS - Optimizations validated through actual pipeline runs before/after; timing benchmarks serve as tests

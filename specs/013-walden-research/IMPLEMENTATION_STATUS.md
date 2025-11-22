@@ -39,7 +39,7 @@
 
 ### 2. Xpac Works (Extended Research Outputs)
 
-**190M Additional Works**: Academic Explorer now includes xpac works by default:
+**190M Additional Works**: Bibliom now includes xpac works by default:
 - Datasets
 - Software
 - Specimens

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 /**
- * Validation script for Academic Explorer generators
+ * Validation script for Bibliom generators
  * This script validates that all generator files and configurations are properly set up
  */
 
@@ -92,7 +92,7 @@ function validateGenerator(
 }
 
 function main() {
-  console.log("🚀 Validating Academic Explorer Generators")
+  console.log("🚀 Validating Bibliom Generators")
   console.log("==========================================")
 
   const generatorsPath = join(__dirname)
@@ -138,9 +138,9 @@ function main() {
         )
 
         if (academicGenerators.length === 0) {
-          overallResult.warnings.push("No Academic Explorer generators found in nx.json configuration")
+          overallResult.warnings.push("No Bibliom generators found in nx.json configuration")
         } else {
-          console.log(`✅ Found ${academicGenerators.length} Academic Explorer generators in nx.json`)
+          console.log(`✅ Found ${academicGenerators.length} Bibliom generators in nx.json`)
         }
       }
     } catch (error) {

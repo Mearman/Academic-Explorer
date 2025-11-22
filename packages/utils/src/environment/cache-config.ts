@@ -1,5 +1,5 @@
 /**
- * Cache configuration system for Academic Explorer
+ * Cache configuration system for Bibliom
  *
  * Provides environment-specific configuration for static data paths and cache strategies.
  * Handles differences between local development (public/ directory) and production (GitHub Pages URLs).

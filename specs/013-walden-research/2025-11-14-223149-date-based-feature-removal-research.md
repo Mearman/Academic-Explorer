@@ -476,7 +476,7 @@ test.describe('Data Version Selector - Temporal Behavior', () => {
 - No client-side date manipulation
 
 **Cons**:
-- Academic Explorer is SPA (no backend)
+- Bibliom is SPA (no backend)
 - Adds network request overhead
 - Cannot work offline
 

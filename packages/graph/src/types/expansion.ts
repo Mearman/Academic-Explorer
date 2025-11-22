@@ -1,5 +1,5 @@
 /**
- * Expansion configuration types for relationship discovery in Academic Explorer
+ * Expansion configuration types for relationship discovery in Bibliom
  * Supports configurable limits per relationship type to control graph growth
  * and API bandwidth usage while maintaining performance.
  *

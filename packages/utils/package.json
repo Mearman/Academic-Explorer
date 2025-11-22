@@ -2,7 +2,7 @@
   "name": "@academic-explorer/utils",
   "version": "0.0.0",
   "type": "module",
-  "description": "Shared utilities and helpers for Academic Explorer",
+  "description": "Shared utilities and helpers for Bibliom",
   "keywords": [
     "utils",
     "helpers",

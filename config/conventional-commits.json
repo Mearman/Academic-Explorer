@@ -61,7 +61,7 @@
     "monorepo": "Monorepo-wide changes",
     "web": "Web application",
     "cli": "CLI application",
-    "academic-explorer": "Academic Explorer app",
+    "academic-explorer": "Bibliom app",
     "openalex-client": "OpenAlex API client package",
     "graph": "Graph utilities package",
     "ui-components": "UI components package",

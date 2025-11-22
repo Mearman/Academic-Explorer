@@ -2,7 +2,7 @@
   "name": "@academic-explorer/simulation",
   "version": "0.0.0",
   "type": "module",
-  "description": "Force-directed graph simulation engine for Academic Explorer",
+  "description": "Force-directed graph simulation engine for Bibliom",
   "keywords": [
     "simulation",
     "force-directed",

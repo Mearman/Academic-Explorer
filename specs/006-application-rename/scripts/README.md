@@ -1,6 +1,6 @@
 # Domain Availability Checker Scripts
 
-This directory contains scripts for verifying domain availability for the Academic Explorer application rename project.
+This directory contains scripts for verifying domain availability for the Bibliom application rename project.
 
 ## Main Script: `update-database-availability.sh`
 

@@ -2,7 +2,7 @@
   "name": "@academic-explorer/web",
   "version": "0.0.0",
   "type": "module",
-  "description": "Academic Explorer Web App - React SPA for OpenAlex API exploration",
+  "description": "Bibliom Web App - React SPA for OpenAlex API exploration",
   "keywords": [
     "academic",
     "research",
