@@ -39,7 +39,9 @@ const getDB = (): SettingsDB => {
 // Settings state interface
 interface SettingsState {
   /** Email for OpenAlex polite pool */
-  politePoolEmail: string;
+  politePoolEmail: string | undefined;
+  /** API key for OpenAlex requests (optional) */
+  apiKey: string | undefined;
   /** Include Walden-related research data */
   includeXpac: boolean;
   /** Data format version */
@@ -48,7 +50,8 @@ interface SettingsState {
 
 // Default values
 const DEFAULT_SETTINGS: SettingsState = {
-  politePoolEmail: "",
+  politePoolEmail: undefined,
+  apiKey: undefined,
   includeXpac: true,
   dataVersion: undefined,
 };
@@ -59,6 +62,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+(?:\.[^\s@]+)+$/;
 // Settings keys for storage
 const SETTINGS_KEYS = {
   POLITE_POOL_EMAIL: "politePoolEmail",
+  API_KEY: "apiKey",
   INCLUDE_XPAC: "includeXpac",
   DATA_VERSION: "dataVersion",
 } as const;
@@ -85,7 +89,10 @@ class SettingsStore {
       // Load stored values
       for (const record of records) {
         if (record.key === SETTINGS_KEYS.POLITE_POOL_EMAIL) {
-          settings.politePoolEmail = record.value;
+          settings.politePoolEmail = record.value === "undefined" ? undefined : record.value;
+        }
+        if (record.key === SETTINGS_KEYS.API_KEY) {
+          settings.apiKey = record.value === "undefined" ? undefined : record.value;
         }
         if (record.key === SETTINGS_KEYS.INCLUDE_XPAC) {
           settings.includeXpac = record.value === "true";
@@ -105,21 +112,43 @@ class SettingsStore {
   /**
    * Update polite pool email
    */
-  async setPolitePoolEmail(email: string): Promise<void> {
+  async setPolitePoolEmail(email: string | undefined): Promise<void> {
     try {
       await this.db.settings.put({
         key: SETTINGS_KEYS.POLITE_POOL_EMAIL,
-        value: email,
+        value: email === undefined ? "undefined" : email,
         updatedAt: new Date(),
       });
 
       this.logger.debug("settings", "Updated polite pool email", {
-        hasEmail: email.length > 0,
-        isValid: this.isValidEmail(email),
+        hasEmail: email !== undefined && email.length > 0,
+        isValid: email ? this.isValidEmail(email) : false,
       });
     } catch (error) {
       this.logger?.error("settings", "Failed to update polite pool email", {
         email,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Update OpenAlex API key
+   */
+  async setApiKey(apiKey: string | undefined): Promise<void> {
+    try {
+      await this.db.settings.put({
+        key: SETTINGS_KEYS.API_KEY,
+        value: apiKey === undefined ? "undefined" : apiKey,
+        updatedAt: new Date(),
+      });
+
+      this.logger.debug("settings", "Updated API key", {
+        hasApiKey: apiKey !== undefined && apiKey.length > 0,
+      });
+    } catch (error) {
+      this.logger?.error("settings", "Failed to update API key", {
         error,
       });
       throw error;
@@ -184,7 +213,8 @@ class SettingsStore {
   /**
    * Validate email format
    */
-  isValidEmail(email: string): boolean {
+  isValidEmail(email: string | undefined): boolean {
+    if (!email) return false;
     const trimmed = email.trim();
     return EMAIL_REGEX.test(trimmed) && !trimmed.endsWith(".");
   }
@@ -192,9 +222,17 @@ class SettingsStore {
   /**
    * Get current polite pool email
    */
-  async getPolitePoolEmail(): Promise<string> {
+  async getPolitePoolEmail(): Promise<string | undefined> {
     const settings = await this.getSettings();
     return settings.politePoolEmail;
+  }
+
+  /**
+   * Get current OpenAlex API key
+   */
+  async getApiKey(): Promise<string | undefined> {
+    const settings = await this.getSettings();
+    return settings.apiKey;
   }
 
   /**
@@ -274,7 +312,7 @@ export { SettingsStore };
 export const settingsStoreInstance = dexieStore;
 
 // Simple hook for components - no complex state management
-export const usePolitePoolEmail = (): string => {
+export const usePolitePoolEmail = (): string | undefined => {
   // This can be enhanced with React state management if needed
   return DEFAULT_SETTINGS.politePoolEmail;
 };
@@ -286,15 +324,17 @@ export const useHasValidEmail = (): boolean => {
 
 // Direct function exports for when you need explicit calls
 export const settingsActions = {
-  setPolitePoolEmail: (email: string) => dexieStore.setPolitePoolEmail(email),
+  setPolitePoolEmail: (email: string | undefined) => dexieStore.setPolitePoolEmail(email),
+  setApiKey: (apiKey: string | undefined) => dexieStore.setApiKey(apiKey),
   resetSettings: () => dexieStore.resetSettings(),
-  isValidEmail: (email: string) => dexieStore.isValidEmail(email),
+  isValidEmail: (email: string | undefined) => dexieStore.isValidEmail(email),
   getPolitePoolEmail: () => dexieStore.getPolitePoolEmail(),
+  getApiKey: () => dexieStore.getApiKey(),
   hasValidEmail: () => dexieStore.hasValidEmail(),
 };
 
 // Zustand-style compatibility - simple selector pattern
-export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string }) => T): T => {
+export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string | undefined }) => T): T => {
   const state = {
     ...settingsActions,
     politePoolEmail: usePolitePoolEmail(),

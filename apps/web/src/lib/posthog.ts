@@ -82,6 +82,7 @@ export const POSTHOG_CONFIG: Partial<PostHogConfig> = {
 
   // Session recording configuration
   session_recording: {
+    maskAllInputs: false,             // Don't mask all inputs by default (only mask .ph-no-capture)
     recordCrossOriginIframes: false,  // Don't record cross-origin iframes
     recordHeaders: true,              // Capture network request headers
     recordBody: true,                 // Capture network request bodies
