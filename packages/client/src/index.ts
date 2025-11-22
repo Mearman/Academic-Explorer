@@ -61,6 +61,7 @@ export {
   createCachedOpenAlexClient,
   getCachePerformanceMetrics,
   updateOpenAlexEmail,
+  updateOpenAlexApiKey,
   type CachedClientConfig,
   type ClientApis,
 } from "./cached-client";

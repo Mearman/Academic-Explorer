@@ -505,8 +505,15 @@ export function createCachedOpenAlexClient(
 /**
  * Update the email configuration for the global OpenAlex client
  */
-export function updateOpenAlexEmail(email: string) {
+export function updateOpenAlexEmail(email: string | undefined) {
   cachedOpenAlex.updateConfig({ userEmail: email });
+}
+
+/**
+ * Update the API key configuration for the global OpenAlex client
+ */
+export function updateOpenAlexApiKey(apiKey: string | undefined) {
+  cachedOpenAlex.updateConfig({ apiKey });
 }
 
 /**

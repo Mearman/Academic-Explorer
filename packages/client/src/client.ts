@@ -17,6 +17,7 @@ import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-exp
 export interface OpenAlexClientConfig {
   baseUrl?: string;
   userEmail?: string;
+  apiKey?: string;
   includeXpac?: boolean;
   dataVersion?: '1' | '2';
   rateLimit?: {
@@ -31,7 +32,8 @@ export interface OpenAlexClientConfig {
 
 interface FullyConfiguredClient {
   baseUrl: string;
-  userEmail: string;
+  userEmail: string | undefined;
+  apiKey: string | undefined;
   includeXpac: boolean;
   dataVersion: '1' | '2' | undefined;
   rateLimit: {
@@ -179,7 +181,8 @@ export class OpenAlexBaseClient {
       baseUrl: this.isDevelopmentMode()
         ? "/api/openalex"
         : "https://api.openalex.org",
-      userEmail: "",
+      userEmail: undefined,
+      apiKey: undefined,
       includeXpac: false,
       dataVersion: undefined,
       rateLimit: {
@@ -340,6 +343,11 @@ export class OpenAlexBaseClient {
     // Add user email if provided (recommended by OpenAlex)
     if (this.config.userEmail) {
       url.searchParams.set("mailto", this.config.userEmail);
+    }
+
+    // Add API key if provided (for higher rate limits)
+    if (this.config.apiKey) {
+      url.searchParams.set("api_key", this.config.apiKey);
     }
 
     // Add include_xpac parameter if enabled
