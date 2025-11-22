@@ -1,3 +1,121 @@
+## 18.0.0 (2025-11-22)
+
+* fix(ci): use simple string filters and cd into packages for vitest ([c1a3704](https://github.com/Mearman/Academic-Explorer/commit/c1a3704))
+* fix(cli): add missing test:component target with passWithNoTests ([412cbad](https://github.com/Mearman/Academic-Explorer/commit/412cbad))
+* fix(cli): update test assertion and migrate to @nx/vitest:test executor ([6f76135](https://github.com/Mearman/Academic-Explorer/commit/6f76135))
+* fix(config): add file extension wildcard to test patterns ([ee871c3](https://github.com/Mearman/Academic-Explorer/commit/ee871c3))
+* fix(config): add missing test targets to packages without Nx plugin support ([2496553](https://github.com/Mearman/Academic-Explorer/commit/2496553))
+* fix(config): remove brace expansion from test patterns ([0425bcb](https://github.com/Mearman/Academic-Explorer/commit/0425bcb))
+* fix(config): remove invalid --include flag from vitest commands ([1c82cb6](https://github.com/Mearman/Academic-Explorer/commit/1c82cb6))
+* fix(config): use nx test targets instead of direct vitest calls ([7450263](https://github.com/Mearman/Academic-Explorer/commit/7450263))
+* fix(web): correct Playwright webServer configuration for E2E tests ([469a7ed](https://github.com/Mearman/Academic-Explorer/commit/469a7ed))
+* fix(web): import ViewMode type in entity route files ([3ca7997](https://github.com/Mearman/Academic-Explorer/commit/3ca7997))
+* fix(web): resolve TanStack Router path resolution and configure test targets ([002aa8a](https://github.com/Mearman/Academic-Explorer/commit/002aa8a))
+* fix(web): use correct baseURL port in E2E tests for CI ([6a8dbd6](https://github.com/Mearman/Academic-Explorer/commit/6a8dbd6))
+* feat(ci): configure Nx workspace for automatic test target handling ([fdf8b6c](https://github.com/Mearman/Academic-Explorer/commit/fdf8b6c))
+* feat(config): complete Phase 1 setup - baseline metrics documented ([6b9e74f](https://github.com/Mearman/Academic-Explorer/commit/6b9e74f))
+* feat(config): complete Phase 2 foundational - add path filter infrastructure ([b3f97a0](https://github.com/Mearman/Academic-Explorer/commit/b3f97a0))
+* feat(config): complete Phase 3 User Story 1 - build artifact caching (MVP) ([7044dbc](https://github.com/Mearman/Academic-Explorer/commit/7044dbc))
+* feat(config): complete Phase 4 User Story 2 - enhanced caching ([c9fa56f](https://github.com/Mearman/Academic-Explorer/commit/c9fa56f))
+* feat(config): complete Phase 5 User Story 3 - skip unnecessary work ([67943cd](https://github.com/Mearman/Academic-Explorer/commit/67943cd))
+* feat(openalex-client): add API key support and make email optional ([a3cb79e](https://github.com/Mearman/Academic-Explorer/commit/a3cb79e))
+* feat(web): add API key UI and PostHog masking for sensitive fields ([abd3fd2](https://github.com/Mearman/Academic-Explorer/commit/abd3fd2))
+* feat(web): add EntityGraphView component for network visualization ([eac8e99](https://github.com/Mearman/Academic-Explorer/commit/eac8e99))
+* feat(web): add graph view mode to entity detail layout ([2715863](https://github.com/Mearman/Academic-Explorer/commit/2715863))
+* feat(web): add Settings link to top navigation ([0ed2bce](https://github.com/Mearman/Academic-Explorer/commit/0ed2bce))
+* feat(web): create dedicated settings page route ([d2d8f03](https://github.com/Mearman/Academic-Explorer/commit/d2d8f03))
+* feat(web): initialize OpenAlex client with stored credentials ([772d2cd](https://github.com/Mearman/Academic-Explorer/commit/772d2cd))
+* docs(ci): document test execution fix in spec-023 results ([c766a58](https://github.com/Mearman/Academic-Explorer/commit/c766a58))
+* docs(docs): add CI optimization specification (023-ci-optimization) ([8d58475](https://github.com/Mearman/Academic-Explorer/commit/8d58475))
+* docs(docs): complete Phase 6 documentation and cleanup ([17d71e5](https://github.com/Mearman/Academic-Explorer/commit/17d71e5))
+* docs(docs): document Phase 6 CI reorganization improvements ([da8f90d](https://github.com/Mearman/Academic-Explorer/commit/da8f90d))
+* docs(docs): improve feature numbering in speckit.specify command ([b489cd0](https://github.com/Mearman/Academic-Explorer/commit/b489cd0))
+* test(web): configure CI to use preview server for E2E tests ([99e158d](https://github.com/Mearman/Academic-Explorer/commit/99e158d))
+* test(web): fix storage state and HAR cache paths in global setup ([f0b860a](https://github.com/Mearman/Academic-Explorer/commit/f0b860a))
+* test(web): fix timing issues in settings store and cache population test ([835ea62](https://github.com/Mearman/Academic-Explorer/commit/835ea62))
+* test(web): fix timing issues in settings store and skip flaky cache test ([1a7671a](https://github.com/Mearman/Academic-Explorer/commit/1a7671a))
+* test(web): update route integration tests for graph view mode ([4009c3c](https://github.com/Mearman/Academic-Explorer/commit/4009c3c))
+* ci(config): separate test types into distinct CI jobs ([4d97a5f](https://github.com/Mearman/Academic-Explorer/commit/4d97a5f)), closes [#023-ci-optimization](https://github.com/Mearman/Academic-Explorer/issues/023-ci-optimization)
+* ci(config): separate test types into sequential matrix jobs ([74c6c97](https://github.com/Mearman/Academic-Explorer/commit/74c6c97))
+* ci(config): use matrix strategy for test execution ([de6f8d9](https://github.com/Mearman/Academic-Explorer/commit/de6f8d9)), closes [#023-ci-optimization](https://github.com/Mearman/Academic-Explorer/issues/023-ci-optimization)
+* refactor(config): eliminate duplicate tasks and share Nx cache ([d1b750e](https://github.com/Mearman/Academic-Explorer/commit/d1b750e))
+* refactor(config): improve CI workflow organization ([eca8b93](https://github.com/Mearman/Academic-Explorer/commit/eca8b93))
+* refactor(web): change politePoolEmail type from optional to required string ([a3fe08d](https://github.com/Mearman/Academic-Explorer/commit/a3fe08d))
+* refactor(web): configure selective input masking in PostHog ([43ef196](https://github.com/Mearman/Academic-Explorer/commit/43ef196))
+* chore(release): 17.3.1 [skip ci] ([e588d01](https://github.com/Mearman/Academic-Explorer/commit/e588d01))
+* chore(web): update auto-generated route tree ([30f0fce](https://github.com/Mearman/Academic-Explorer/commit/30f0fce))
+* build(web): add TanStack Router Vite plugin for route generation ([dc33d47](https://github.com/Mearman/Academic-Explorer/commit/dc33d47))
+
+
+### BREAKING CHANGE
+
+* CI workflow restructured with independent test jobs
+
+- Created separate jobs for each test type:
+  - unit-tests: Runs *.unit.test.{ts,tsx} files
+  - integration-tests: Runs *.integration.test.{ts,tsx} files
+  - component-tests: Runs *.component.test.{ts,tsx} files
+  - e2e: Runs *.e2e.test.ts files (Playwright)
+
+- Split quality-gates into focused jobs:
+  - security-audit: Runs pnpm audit for vulnerabilities
+  - dependency-audit: Runs pnpm deps:check for health
+
+- All test jobs:
+  - Download build artifacts from build job (no rebuilds)
+  - Download Nx cache from build job (shared caching)
+  - Run in parallel after build completes
+  - Upload separate coverage artifacts
+
+- Benefits:
+  - No duplicate tasks across jobs (each task runs once)
+  - Faster feedback (tests run in parallel)
+  - Shared Nx cache reduces redundant work
+  - Clear separation of concerns
+  - Better visibility into which test type fails
+
+- Updated job dependencies:
+  - deploy: Requires all tests + audits to pass
+  - release: Requires all tests + audits + deploy to pass
+  - results: Shows status of all individual jobs
+* Test jobs now run as matrix (8 packages × 3 test types)
+
+- Replaced separate test jobs with matrix-based tests job:
+  - Removed: unit-tests, integration-tests, component-tests
+  - Added: tests (matrix job)
+
+- Matrix dimensions:
+  - packages: [web, cli, client, graph, simulation, types, ui, utils]
+  - test-types: [unit, integration, component]
+  - Total combinations: 24 parallel jobs
+
+- Benefits:
+  - Better parallelization (24 vs 3 jobs)
+  - Faster feedback (individual package failures visible immediately)
+  - Better resource utilization (matrix jobs can run concurrently)
+  - Clear per-package test status in GitHub UI
+  - Separate coverage artifacts per package/test-type
+
+- Matrix job features:
+  - Dynamic package path detection (apps/ vs packages/)
+  - Graceful handling of missing tests (exits 0 if no tests found)
+  - Per-matrix coverage uploads (coverage-{package}-{test-type})
+  - fail-fast: false (continue testing other combinations on failure)
+
+- Updated job dependencies:
+  - deploy: Now depends on tests (matrix) instead of 3 separate jobs
+  - release: Now depends on tests (matrix) instead of 3 separate jobs
+  - results: Shows "Tests (Matrix)" with count of parallel jobs
+* userEmail is now string | undefined
+
+- Add apiKey parameter to OpenAlexClientConfig
+- Add apiKey to FullyConfiguredClient interface (string | undefined)
+- Update buildUrl() to include api_key query parameter when provided
+- Add updateOpenAlexApiKey() function for runtime configuration
+- Export updateOpenAlexApiKey from client package
+- Make userEmail optional (string | undefined) throughout client
+- Default both userEmail and apiKey to undefined
+
 ## <small>17.3.1 (2025-11-22)</small>
 
 * refactor(web): use Partial<PostHogConfig> with correct properties ([d64b1f3](https://github.com/Mearman/Academic-Explorer/commit/d64b1f3))
