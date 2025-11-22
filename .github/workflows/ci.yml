@@ -235,7 +235,7 @@ jobs:
           fi
 
           # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.unit.test"
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.unit.test.*"
 
           echo "Running unit tests for ${{ matrix.package }}"
           echo "Test pattern: $TEST_PATTERN"
@@ -340,7 +340,7 @@ jobs:
           fi
 
           # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.component.test"
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.component.test.*"
 
           echo "Running component tests for ${{ matrix.package }}"
           echo "Test pattern: $TEST_PATTERN"
@@ -445,7 +445,7 @@ jobs:
           fi
 
           # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.integration.test"
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.integration.test.*"
 
           echo "Running integration tests for ${{ matrix.package }}"
           echo "Test pattern: $TEST_PATTERN"
