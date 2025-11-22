@@ -51,7 +51,15 @@ export const baseVitestConfig = defineConfig({
     },
 
     // Include/exclude patterns - only run TypeScript source files, not compiled .js
-    include: ["src/**/*.{test,spec}.{ts,mts,cts,tsx}"],
+    // Supports multiple test naming conventions: *.test.ts, *.unit.test.ts, *.integration.test.ts, etc.
+    include: [
+      "src/**/*.test.{ts,mts,cts,tsx}",
+      "src/**/*.spec.{ts,mts,cts,tsx}",
+      "src/**/*.unit.test.{ts,mts,cts,tsx}",
+      "src/**/*.component.test.{ts,mts,cts,tsx}",
+      "src/**/*.integration.test.{ts,mts,cts,tsx}",
+      "src/**/*.e2e.test.{ts,mts,cts,tsx}",
+    ],
     exclude: [
       "node_modules/",
       "dist/",

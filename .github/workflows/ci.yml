@@ -234,14 +234,13 @@ jobs:
             PACKAGE_PATH="packages/${{ matrix.package }}"
           fi
 
-          # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.unit.test.*"
-
           echo "Running unit tests for ${{ matrix.package }}"
-          echo "Test pattern: $TEST_PATTERN"
+          echo "Package path: $PACKAGE_PATH"
 
-          # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
+          # cd into package and run vitest with simple string filter
+          # Vitest will use the package's vitest.config.ts and match *.unit.test.ts files
+          cd "$PACKAGE_PATH"
+          pnpm exec vitest run --reporter=verbose "unit" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
@@ -339,14 +338,13 @@ jobs:
             PACKAGE_PATH="packages/${{ matrix.package }}"
           fi
 
-          # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.component.test.*"
-
           echo "Running component tests for ${{ matrix.package }}"
-          echo "Test pattern: $TEST_PATTERN"
+          echo "Package path: $PACKAGE_PATH"
 
-          # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
+          # cd into package and run vitest with simple string filter
+          # Vitest will use the package's vitest.config.ts and match *.component.test.ts files
+          cd "$PACKAGE_PATH"
+          pnpm exec vitest run --reporter=verbose "component" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
@@ -444,14 +442,13 @@ jobs:
             PACKAGE_PATH="packages/${{ matrix.package }}"
           fi
 
-          # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.integration.test.*"
-
           echo "Running integration tests for ${{ matrix.package }}"
-          echo "Test pattern: $TEST_PATTERN"
+          echo "Package path: $PACKAGE_PATH"
 
-          # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
+          # cd into package and run vitest with simple string filter
+          # Vitest will use the package's vitest.config.ts and match *.integration.test.ts files
+          cd "$PACKAGE_PATH"
+          pnpm exec vitest run --reporter=verbose "integration" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
