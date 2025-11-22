@@ -87,7 +87,7 @@ export const POSTHOG_CONFIG: PostHogConfig = {
 
   // Development settings
   debug: import.meta.env.DEV && POSTHOG_ENABLED,
-} as PostHogConfig; // Type assertion needed - PostHog types don't match all config options
+} as unknown as PostHogConfig; // Type assertion needed - PostHog types don't match all config options
 
 /**
  * Academic-specific event types for PostHog analytics
