@@ -39,7 +39,8 @@ export default defineConfig({
   // Shared settings for all projects
   use: {
     // Base URL for tests - configurable for production testing
-    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:5173",
+    // In CI, use preview server port (4173), in dev use dev server port (5173)
+    baseURL: process.env.E2E_BASE_URL ?? (process.env.CI ? "http://localhost:4173" : "http://localhost:5173"),
 
     // Collect trace when retrying the failed test
     trace: "on-first-retry",
@@ -122,14 +123,18 @@ export default defineConfig({
 
   // Web server configuration for E2E tests
   webServer: {
-    command: "cd ../../ && pnpm dev",
-    port: 5173,
+    // In CI, use preview server with built app for faster, more reliable tests
+    // In dev, use dev server for hot reload and better DX
+    command: process.env.CI
+      ? "cd ../.. && pnpm --filter @academic-explorer/web preview"
+      : "cd ../.. && pnpm dev",
+    port: process.env.CI ? 4173 : 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
     timeout: 120000,
     env: {
-      NODE_ENV: "development",
+      NODE_ENV: process.env.CI ? "production" : "development",
       RUNNING_E2E: "true",
     },
   },
