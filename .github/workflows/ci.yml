@@ -155,18 +155,17 @@ jobs:
           fi
 
 
-  # Matrix-based tests - Run all test types for all packages in parallel
-  tests:
+  # Unit tests - Fast, isolated tests (run first)
+  unit-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     needs: build
     if: always() && needs.build.result == 'success'
     strategy:
       fail-fast: false
       matrix:
         package: [web, cli, client, graph, simulation, types, ui, utils]
-        test-type: [unit, integration, component]
-    name: tests (${{ matrix.package }} / ${{ matrix.test-type }})
+    name: unit-tests (${{ matrix.package }})
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -225,8 +224,8 @@ jobs:
             echo "⚠️  Nx cache not found - tests will run without cache"
           fi
 
-      - name: Run ${{ matrix.test-type }} tests for ${{ matrix.package }}
-        timeout-minutes: 15
+      - name: Run unit tests for ${{ matrix.package }}
+        timeout-minutes: 10
         run: |
           # Determine package path
           if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
@@ -236,9 +235,9 @@ jobs:
           fi
 
           # Run tests with appropriate filter
-          TEST_PATTERN="${PACKAGE_PATH}/**/*.${{ matrix.test-type }}.test.{ts,tsx}"
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.unit.test.{ts,tsx}"
 
-          echo "Running ${{ matrix.test-type }} tests for ${{ matrix.package }}"
+          echo "Running unit tests for ${{ matrix.package }}"
           echo "Test pattern: $TEST_PATTERN"
 
           # Run vitest - if no tests match, vitest will exit 0
@@ -253,11 +252,221 @@ jobs:
             fi
           }
 
-      - name: Upload coverage for ${{ matrix.package }} / ${{ matrix.test-type }}
+      - name: Upload coverage for ${{ matrix.package }} / unit
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-${{ matrix.package }}-${{ matrix.test-type }}
+          name: coverage-${{ matrix.package }}-unit
+          path: coverage/
+          retention-days: 7
+
+  # Component tests - React component tests (run after unit tests)
+  component-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: unit-tests
+    if: always() && needs.unit-tests.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [web, cli, client, graph, simulation, types, ui, utils]
+    name: component-tests (${{ matrix.package }})
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+            **/node_modules
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Download Nx cache
+        uses: actions/download-artifact@v4
+        with:
+          name: nx-cache
+        continue-on-error: true
+
+      - name: Validate artifacts exist
+        run: |
+          if [ ! -d "apps/web/dist" ] || [ ! -d "apps/cli/dist" ]; then
+            echo "❌ Build artifacts missing - cannot proceed with tests"
+            exit 1
+          fi
+          echo "✅ Build artifacts validated"
+
+          # Check if Nx cache was downloaded
+          if [ -d ".nx/cache" ]; then
+            echo "✅ Nx cache restored from build job"
+          else
+            echo "⚠️  Nx cache not found - tests will run without cache"
+          fi
+
+      - name: Run component tests for ${{ matrix.package }}
+        timeout-minutes: 10
+        run: |
+          # Determine package path
+          if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
+            PACKAGE_PATH="apps/${{ matrix.package }}"
+          else
+            PACKAGE_PATH="packages/${{ matrix.package }}"
+          fi
+
+          # Run tests with appropriate filter
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.component.test.{ts,tsx}"
+
+          echo "Running component tests for ${{ matrix.package }}"
+          echo "Test pattern: $TEST_PATTERN"
+
+          # Run vitest - if no tests match, vitest will exit 0
+          pnpm exec vitest run --reporter=verbose --include "$TEST_PATTERN" || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 0 ]; then
+              echo "✅ No tests found (this is OK)"
+              exit 0
+            else
+              echo "❌ Tests failed with exit code $EXIT_CODE"
+              exit $EXIT_CODE
+            fi
+          }
+
+      - name: Upload coverage for ${{ matrix.package }} / component
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-${{ matrix.package }}-component
+          path: coverage/
+          retention-days: 7
+
+  # Integration tests - Cross-component tests (run after component tests, heavier)
+  integration-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: component-tests
+    if: always() && needs.component-tests.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [web, cli, client, graph, simulation, types, ui, utils]
+    name: integration-tests (${{ matrix.package }})
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+            **/node_modules
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Download Nx cache
+        uses: actions/download-artifact@v4
+        with:
+          name: nx-cache
+        continue-on-error: true
+
+      - name: Validate artifacts exist
+        run: |
+          if [ ! -d "apps/web/dist" ] || [ ! -d "apps/cli/dist" ]; then
+            echo "❌ Build artifacts missing - cannot proceed with tests"
+            exit 1
+          fi
+          echo "✅ Build artifacts validated"
+
+          # Check if Nx cache was downloaded
+          if [ -d ".nx/cache" ]; then
+            echo "✅ Nx cache restored from build job"
+          else
+            echo "⚠️  Nx cache not found - tests will run without cache"
+          fi
+
+      - name: Run integration tests for ${{ matrix.package }}
+        timeout-minutes: 20
+        run: |
+          # Determine package path
+          if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
+            PACKAGE_PATH="apps/${{ matrix.package }}"
+          else
+            PACKAGE_PATH="packages/${{ matrix.package }}"
+          fi
+
+          # Run tests with appropriate filter
+          TEST_PATTERN="${PACKAGE_PATH}/**/*.integration.test.{ts,tsx}"
+
+          echo "Running integration tests for ${{ matrix.package }}"
+          echo "Test pattern: $TEST_PATTERN"
+
+          # Run vitest - if no tests match, vitest will exit 0
+          pnpm exec vitest run --reporter=verbose --include "$TEST_PATTERN" || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 0 ]; then
+              echo "✅ No tests found (this is OK)"
+              exit 0
+            else
+              echo "❌ Tests failed with exit code $EXIT_CODE"
+              exit $EXIT_CODE
+            fi
+          }
+
+      - name: Upload coverage for ${{ matrix.package }} / integration
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-${{ matrix.package }}-integration
           path: coverage/
           retention-days: 7
 
@@ -347,12 +556,12 @@ jobs:
       #   run: pnpm licenses:check
         # Disabled temporarily to allow CI to pass and enable GitHub Pages deployment
 
-  # E2E tests
+  # E2E tests - Full application tests (run after integration tests)
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [build, changes]
-    if: always() && needs.build.result == 'success' && needs.changes.outputs.code == 'true'
+    needs: [build, changes, integration-tests]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.code == 'true' && needs.integration-tests.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -503,8 +712,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [build, tests, e2e, security-audit, dependency-audit]
-    if: needs.build.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && needs.tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success'
+    needs: [build, unit-tests, component-tests, integration-tests, e2e, security-audit, dependency-audit]
+    if: needs.build.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success'
     environment:
       name: production
       url: https://mearman.github.io/Academic-Explorer/
@@ -645,8 +854,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build, tests, e2e, security-audit, dependency-audit, deploy]
-    if: needs.build.result == 'success' && needs.tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
+    needs: [build, unit-tests, component-tests, integration-tests, e2e, security-audit, dependency-audit, deploy]
+    if: needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
@@ -817,7 +1026,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build, tests, security-audit, dependency-audit, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [build, unit-tests, component-tests, integration-tests, security-audit, dependency-audit, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -835,7 +1044,9 @@ jobs:
             echo "| Job | Status | Details |"
             echo "|-----|--------|---------|"
             echo "| 🔨 Build | ${{ needs.build.result }} | Build artifacts shared across jobs |"
-            echo "| 🧪 Tests (Matrix) | ${{ needs.tests.result }} | 8 packages × 3 test types (24 parallel jobs) |"
+            echo "| 🧪 Unit Tests | ${{ needs.unit-tests.result }} | 8 packages (fast, isolated tests) |"
+            echo "| 🧩 Component Tests | ${{ needs.component-tests.result }} | 8 packages (React component tests) |"
+            echo "| 🔗 Integration Tests | ${{ needs.integration-tests.result }} | 8 packages (cross-component tests) |"
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
             echo "| 📦 Dependency Audit | ${{ needs.dependency-audit.result }} | Dependency health checks |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
