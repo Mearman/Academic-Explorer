@@ -23,9 +23,9 @@
 
 **Purpose**: Project initialization and documentation preparation
 
-- [ ] T001 Create baseline performance metrics by analyzing recent workflow runs
-- [ ] T002 [P] Document current pipeline timing in specs/023-ci-optimization/baseline-metrics.md
-- [ ] T003 [P] Create backup of current .github/workflows/ci.yml to .github/workflows/ci.yml.backup
+- [X] T001 Create baseline performance metrics by analyzing recent workflow runs
+- [X] T002 [P] Document current pipeline timing in specs/023-ci-optimization/baseline-metrics.md
+- [X] T003 [P] Create backup of current .github/workflows/ci.yml to .github/workflows/ci.yml.backup
 
 ---
 
