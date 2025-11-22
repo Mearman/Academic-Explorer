@@ -35,25 +35,31 @@ Given that feature description, do this:
       git fetch --all --prune
       ```
    
-   b. Find the highest feature number across all sources for the short-name:
-      - Remote branches: `git ls-remote --heads origin | grep -E 'refs/heads/[0-9]+-<short-name>$'`
-      - Local branches: `git branch | grep -E '^[* ]*[0-9]+-<short-name>$'`
-      - Specs directories: Check for directories matching `specs/[0-9]+-<short-name>`
-   
-   c. Determine the next available number:
-      - Extract all numbers from all three sources
-      - Find the highest number N
-      - Use N+1 for the new branch number
-   
-   d. Run the script `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"` with the calculated number and short-name:
+   b. Find the highest feature number globally across all sources:
+      - All remote branches: `git ls-remote --heads origin | grep -E 'refs/heads/[0-9]+-' | sed 's/.*refs\/heads\///' | sed 's/-.*$//' | sort -n | tail -1`
+      - All local branches: `git branch | grep -E '^[* ]*[0-9]+-' | sed 's/^[* ]*//' | sed 's/-.*$//' | sort -n | tail -1`
+      - All specs directories: `ls -d specs/[0-9]*-* 2>/dev/null | sed 's/specs\///' | sed 's/-.*$//' | sort -n | tail -1`
+
+   c. Check if a feature with this exact short-name already exists (to prevent duplicates):
+      - Remote: `git ls-remote --heads origin | grep -E "refs/heads/[0-9]+-${short_name}$"`
+      - Local: `git branch | grep -E "^[* ]*[0-9]+-${short_name}$"`
+      - Specs: `ls -d specs/[0-9]*-${short_name} 2>/dev/null`
+      - If ANY of these exist, ERROR: "Feature '${short_name}' already exists. Use a different short-name or work on the existing feature."
+
+   d. Determine the next available number:
+      - Find the maximum number from all three sources in step b
+      - Use max(all_numbers) + 1 for the new feature number
+      - If no features exist at all, start with 1
+
+   e. Run the script `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"` with the calculated number and short-name:
       - Pass `--number N+1` and `--short-name "your-short-name"` along with the feature description
-      - Bash example: `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" --json --number 5 --short-name "user-auth" "Add user authentication"`
-      - PowerShell example: `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
-   
+      - Bash example: `.specify/scripts/bash/create-new-feature.sh --json --number 23 --short-name "user-auth" "Add user authentication"`
+      - PowerShell example: `.specify/scripts/bash/create-new-feature.sh --json -Number 23 -ShortName "user-auth" "Add user authentication"`
+
    **IMPORTANT**:
-   - Check all three sources (remote branches, local branches, specs directories) to find the highest number
-   - Only match branches/directories with the exact short-name pattern
-   - If no existing branches/directories found with this short-name, start with number 1
+   - Feature numbers are GLOBAL and sequential across all features (not per short-name)
+   - Always find the highest number across ALL branches/specs, regardless of name
+   - Check for duplicate short-names to prevent conflicts
    - You must only ever run this script once per feature
    - The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for
    - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
