@@ -2,6 +2,7 @@ import { defineConfig, type UserConfig, type PluginOption } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -44,6 +45,11 @@ function createWebConfig(): UserConfig {
     // Plugins configuration
     plugins: [
       nxViteTsPaths(),
+      // TanStack Router Plugin - must come before React plugin
+      TanStackRouterVite({
+        routesDirectory: './src/routes',
+        generatedRouteTree: './src/routeTree.gen.ts',
+      }),
       // OpenAlex Cache Plugin
       openalexCachePlugin({
         staticDataPath: "public/data/openalex",
