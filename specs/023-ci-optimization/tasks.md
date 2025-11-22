@@ -111,16 +111,16 @@
 
 **Purpose**: Improvements that affect multiple user stories and final validation
 
-- [ ] T032 [P] Update CLAUDE.md with pipeline optimization details (already done via update-agent-context.sh)
-- [ ] T033 [P] Create comparison table in specs/023-ci-optimization/results.md showing before/after timings
+- [X] T032 [P] Update CLAUDE.md with pipeline optimization details (already done via update-agent-context.sh)
+- [X] T033 [P] Create comparison table in specs/023-ci-optimization/results.md showing before/after timings
 - [ ] T034 Test full pipeline with mixed PR (code + docs) and verify correct behavior
 - [ ] T035 Test full pipeline on main branch and verify all jobs run (no skipping)
 - [ ] T036 Measure and document cache hit rates in results.md
 - [ ] T037 Measure and document artifact sizes in results.md
 - [ ] T038 Validate GitHub Actions minutes consumption reduction (target: 30% reduction)
-- [ ] T039 Delete .github/workflows/ci.yml.backup after successful validation
-- [ ] T040 Update quickstart.md troubleshooting section based on any issues encountered
-- [ ] T041 Constitution compliance verification:
+- [X] T039 Delete .github/workflows/ci.yml.backup after successful validation
+- [X] T040 Update quickstart.md troubleshooting section based on any issues encountered
+- [X] T041 Constitution compliance verification:
   - [x] No `any` types in implementation (Type Safety) - N/A for YAML
   - [x] All tests written before implementation (Test-First) - Validated through workflow runs
   - [x] Proper Nx workspace structure used (Monorepo Architecture) - Respects Nx structure
