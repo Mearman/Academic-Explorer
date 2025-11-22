@@ -20,9 +20,11 @@
 
 | Job | Before | After (Expected) | Savings | Optimization |
 |-----|--------|------------------|---------|--------------|
-| **build** | 12-15 min | 9-10 min | 3-5 min | Removed nx reset + parallel=4 |
+| **build** | 12-15 min | 9-10 min | 3-5 min | Removed nx reset + parallel=4 + no duplicate tasks |
+| **tests (matrix)** | N/A (was 3 sequential jobs) | 5-8 min per matrix cell | Variable | 24 parallel jobs (8 packages × 3 test types) |
+| **security-audit** | N/A (was part of quality-gates) | 2-3 min | N/A | Separated from quality-gates, downloads artifacts |
+| **dependency-audit** | N/A (was part of quality-gates) | 2-3 min | N/A | Separated from quality-gates, downloads artifacts |
 | **e2e** | 20-25 min (rebuilt) | 8-10 min (download) | 12-15 min | Artifact download + Playwright cache |
-| **quality-gates** | 25-30 min (rebuilt) | 15-18 min (download) | 10-12 min | Artifact download + pnpm cache |
 | **performance** | 15-20 min (rebuilt) | 10-12 min OR SKIP | 5-20 min | Artifact download + conditional skip |
 | **deploy** | 10-12 min (rebuilt) | 8-10 min (download) | 2-4 min | Artifact download |
 | **coverage** | 8-10 min | 8-10 min | 0 min | No rebuild (unchanged) |
@@ -148,6 +150,70 @@ if: always() && needs.build.result == 'success' &&
 **Expected Impact**:
 - Docs-only PR time: 30-40 min → <5 min (83%+ reduction)
 - Performance job: Always run → Opt-in via label (saves ~20 min on most PRs)
+
+### Phase 6: Additional CI Reorganization (Complete)
+
+**Post-Implementation Optimizations** (beyond original spec):
+
+**Job Naming Standardization**:
+- ✅ Renamed `build-and-test` → `build` (single responsibility principle)
+- ✅ Updated all 14 references across workflow file
+- ✅ Updated baseline-metrics.md and results.md documentation
+
+**Task Duplication Elimination**:
+- ✅ Removed duplicate typecheck/lint/test steps from build job
+- ✅ Build job now only builds (no redundant quality checks)
+- ✅ Added Nx cache sharing via artifacts between jobs
+
+**Quality Gates Separation**:
+- ✅ Split monolithic quality-gates into two focused jobs:
+  - `security-audit`: Runs `pnpm audit --audit-level moderate`
+  - `dependency-audit`: Runs `pnpm deps:check`
+- ✅ Each job downloads build artifacts (no redundant builds)
+- ✅ 10-minute timeout per job (was 40 minutes combined)
+
+**Matrix-Based Test Parallelization**:
+- ✅ Replaced 3 sequential test jobs with matrix strategy
+- ✅ 8 packages × 3 test types = 24 parallel jobs
+  - Packages: web, cli, client, graph, simulation, types, ui, utils
+  - Test types: unit, integration, component
+- ✅ Dynamic package path detection (apps/ vs packages/)
+- ✅ Graceful handling of missing tests (exit 0 if no tests found)
+- ✅ Individual coverage artifacts per package/test-type combination
+- ✅ fail-fast: false (continue on individual failures for visibility)
+
+**Nx Cache Sharing**:
+```yaml
+# Upload from build job:
+- name: Upload Nx cache
+  uses: actions/upload-artifact@v4
+  with:
+    name: nx-cache
+    path: |
+      .nx/cache
+      **/node_modules/.cache
+    retention-days: 1
+
+# Download in dependent jobs:
+- name: Download Nx cache
+  uses: actions/download-artifact@v4
+  with:
+    name: nx-cache
+  continue-on-error: true
+```
+
+**Expected Impact**:
+- Test parallelization: 3 sequential jobs → 24 parallel jobs
+- Better failure visibility: Individual package/test-type failures visible immediately
+- Improved resource utilization: Matrix jobs run concurrently on GitHub runners
+- Clearer separation of concerns: Each job has single, well-defined responsibility
+- Reduced total wall-clock time: Tests can complete in parallel instead of sequentially
+
+**Commits**:
+- `eca8b930` - Renamed build-and-test → build, fixed quality-gates redundancy
+- `d1b750e8` - Eliminated duplicate tasks, shared Nx cache
+- `4d97a5f5` - Separated test types into distinct CI jobs
+- `de6f8d9a` - Implemented matrix strategy for test execution
 
 ## Validation Plan
 
