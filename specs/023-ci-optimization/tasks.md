@@ -95,11 +95,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Add if conditional to performance job: github.ref == 'refs/heads/main' OR contains(labels, 'perf-check')
-- [ ] T026 [P] [US3] Update performance job needs to include [build-and-test, changes]
-- [ ] T027 [US3] Add performance skip message when job is skipped (visible in GitHub Actions UI)
-- [ ] T028 [US3] Create perf-check label in repository if it doesn't exist
-- [ ] T029 [US3] Document perf-check label usage in specs/023-ci-optimization/quickstart.md (already done)
+- [X] T025 [P] [US3] Add if conditional to performance job: github.ref == 'refs/heads/main' OR contains(labels, 'perf-check')
+- [X] T026 [P] [US3] Update performance job needs to include [build-and-test, changes]
+- [X] T027 [US3] Add performance skip message when job is skipped (visible in GitHub Actions UI)
+- [X] T028 [US3] Create perf-check label in repository if it doesn't exist
+- [X] T029 [US3] Document perf-check label usage in specs/023-ci-optimization/quickstart.md (already done)
 - [ ] T030 [US3] Test US3 by submitting docs-only PR and verifying jobs skip correctly
 - [ ] T031 [US3] Test perf-check label by adding label to PR and verifying performance job runs
 
