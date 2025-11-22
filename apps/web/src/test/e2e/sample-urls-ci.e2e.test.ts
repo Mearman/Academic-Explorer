@@ -15,7 +15,9 @@ import { join } from 'path';
 const urlsPath = join(process.cwd(), '../../openalex-urls-sample.json');
 const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+// Use Playwright's baseURL from config (no hardcoded fallback to avoid CI/local port mismatch)
+// The config sets baseURL to http://localhost:4173 in CI, http://localhost:5173 locally
+const BASE_URL = process.env.BASE_URL || process.env.E2E_BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL
