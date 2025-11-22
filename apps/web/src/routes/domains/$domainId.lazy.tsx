@@ -6,7 +6,7 @@ import { type Domain } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayout";
+import { EntityDetailLayout, type ViewMode } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
@@ -18,7 +18,7 @@ import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 function DomainRoute() {
   const { domainId: rawDomainId } = useParams({ strict: false }) as { domainId: string };
   const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the domain ID in case it's URL-encoded
   const domainId = decodeEntityId(rawDomainId);
@@ -82,7 +82,7 @@ function DomainRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={domain}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={fullDomainId} entityType="domains" />

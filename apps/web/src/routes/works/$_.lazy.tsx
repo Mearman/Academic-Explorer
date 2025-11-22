@@ -6,7 +6,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { WORK_FIELDS, type Work, type WorkField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetectionService } from "@academic-explorer/graph";
@@ -19,7 +19,7 @@ import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
@@ -220,7 +220,7 @@ function WorkRoute() {
       selectParam={(selectParam as string) || ''}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={work as Record<string, unknown>}
     >
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
