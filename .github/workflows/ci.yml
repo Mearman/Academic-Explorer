@@ -114,12 +114,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Reset Nx cache
-        run: npx nx reset
-
       - name: Build
         timeout-minutes: 20
-        run: npx nx run-many -t build --parallel=3
+        run: npx nx run-many -t build --parallel=4
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/web/dist
+            apps/cli/dist
+            packages/*/dist
+          retention-days: 1
 
       - name: Type check
         timeout-minutes: 10
@@ -245,7 +252,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [build-and-test, changes]
-    if: always() && needs.build-and-test.result == 'success'
+    if: always() && needs.build-and-test.result == 'success' && needs.changes.outputs.code == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -263,12 +270,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Validate build artifacts
+        run: |
+          if [ ! -d "apps/web/dist" ]; then
+            echo "Error: Build artifacts missing - apps/web/dist not found"
+            exit 1
+          fi
+          echo "Build artifacts validated successfully"
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
-
-      - name: Build application
-        timeout-minutes: 15
-        run: pnpm nx build web
 
       - name: Run E2E tests
         run: pnpm nx e2e web
@@ -351,9 +367,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build application
-        timeout-minutes: 15
-        run: pnpm nx build web
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
 
       - name: Start application
         run: |
@@ -408,14 +425,10 @@ jobs:
         timeout-minutes: 5
         run: pnpm install --frozen-lockfile
 
-      - name: Build application
-        timeout-minutes: 15
-        run: pnpm nx build web --verbose
-        env:
-          GITHUB_PAGES: true
-          NX_SKIP_NX_CACHE: true
-          VITE_PUBLIC_POSTHOG_API_KEY: ${{ secrets.VITE_PUBLIC_POSTHOG_API_KEY }}
-          VITE_PUBLIC_POSTHOG_HOST: ${{ secrets.VITE_PUBLIC_POSTHOG_HOST }}
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
 
       - name: Install PostHog CLI
         run: npm install -g @posthog/cli

@@ -51,16 +51,16 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Remove `npx nx reset` step from build-and-test job in .github/workflows/ci.yml
-- [ ] T008 [P] [US1] Change build parallelism from --parallel=3 to --parallel=4 in build-and-test job
-- [ ] T009 [US1] Add upload-artifact@v4 step to build-and-test job with retention-days: 1
-- [ ] T010 [US1] Configure artifact upload paths: apps/web/dist, apps/cli/dist, packages/*/dist
-- [ ] T011 [US1] Replace build step in e2e job with download-artifact@v6 step
-- [ ] T012 [US1] Replace build step in performance job with download-artifact@v6 step
-- [ ] T013 [US1] Replace build step in deploy job with download-artifact@v6 step
-- [ ] T014 [US1] Add if conditional to e2e job: needs.changes.outputs.code == 'true'
-- [ ] T015 [US1] Update e2e job needs to include [build-and-test, changes]
-- [ ] T016 [US1] Add artifact existence validation to e2e job (fail-fast if artifact missing)
+- [X] T007 [P] [US1] Remove `npx nx reset` step from build-and-test job in .github/workflows/ci.yml
+- [X] T008 [P] [US1] Change build parallelism from --parallel=3 to --parallel=4 in build-and-test job
+- [X] T009 [US1] Add upload-artifact@v4 step to build-and-test job with retention-days: 1
+- [X] T010 [US1] Configure artifact upload paths: apps/web/dist, apps/cli/dist, packages/*/dist
+- [X] T011 [US1] Replace build step in e2e job with download-artifact@v4 step
+- [X] T012 [US1] Replace build step in performance job with download-artifact@v4 step
+- [X] T013 [US1] Replace build step in deploy job with download-artifact@v4 step
+- [X] T014 [US1] Add if conditional to e2e job: needs.changes.outputs.code == 'true'
+- [X] T015 [US1] Update e2e job needs to include [build-and-test, changes]
+- [X] T016 [US1] Add artifact existence validation to e2e job (fail-fast if artifact missing)
 - [ ] T017 [US1] Test US1 by pushing test PR and measuring pipeline time (target: <20 min)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - code PRs complete in under 20 minutes
