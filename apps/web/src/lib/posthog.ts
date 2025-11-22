@@ -32,7 +32,7 @@ console.debug('📊 PostHog Configuration:', {
  * PostHog configuration optimized for academic research tool with EU privacy compliance
  * Uses cookieless mode to avoid consent requirements while maintaining valuable analytics
  */
-export const POSTHOG_CONFIG: PostHogConfig = {
+export const POSTHOG_CONFIG: Partial<PostHogConfig> = {
   api_host: POSTHOG_HOST,
 
   // Privacy-first settings (no consent required)
@@ -77,17 +77,19 @@ export const POSTHOG_CONFIG: PostHogConfig = {
   capture_exceptions: true,   // Enable error tracking for debugging
   capture_performance: true,  // PostHog performance monitoring enabled
 
+  // Console logging
+  enable_recording_console_log: true,  // Enable console log recording in sessions
+
   // Session recording configuration
   session_recording: {
     recordCrossOriginIframes: false,  // Don't record cross-origin iframes
     recordHeaders: true,              // Capture network request headers
     recordBody: true,                 // Capture network request bodies
-    captureLogLevel: 'info',          // Capture console logs (info and above)
   },
 
   // Development settings
   debug: import.meta.env.DEV && POSTHOG_ENABLED,
-} as unknown as PostHogConfig; // Type assertion needed - PostHog types don't match all config options
+}
 
 /**
  * Academic-specific event types for PostHog analytics
