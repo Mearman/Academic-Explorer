@@ -64,8 +64,8 @@ jobs:
               - '.github/workflows/**'
               - '.github/actions/**'
 
-  # Main build and test job
-  build-and-test:
+  # Main build job - builds once and shares artifacts with all other jobs
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -199,8 +199,8 @@ jobs:
   quality-gates:
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    needs: build-and-test
-    if: needs.build-and-test.outputs.quality-gates == 'true'
+    needs: build
+    if: needs.build.outputs.quality-gates == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -223,8 +223,12 @@ jobs:
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: |
+            ${{ env.STORE_PATH }}
+            **/node_modules
           key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -235,13 +239,23 @@ jobs:
       - name: Check dependencies
         run: pnpm deps:check
 
-      
+
       # - name: License check
 #   run: pnpm licenses:check
         # Disabled temporarily to allow CI to pass and enable GitHub Pages deployment
 
-      - name: Build all projects
-        run: pnpm build
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Validate artifacts exist
+        run: |
+          if [ ! -d "apps/web/dist" ] || [ ! -d "apps/cli/dist" ]; then
+            echo "❌ Build artifacts missing - cannot proceed with quality gates"
+            exit 1
+          fi
+          echo "✅ Build artifacts validated"
 
       - name: Run all tests with coverage
         timeout-minutes: 25
@@ -261,8 +275,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [build-and-test, changes]
-    if: always() && needs.build-and-test.result == 'success' && needs.changes.outputs.code == 'true'
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.code == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -319,8 +333,8 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build-and-test
-    if: always() && needs.build-and-test.result == 'success'
+    needs: build
+    if: always() && needs.build.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -366,8 +380,8 @@ jobs:
   performance:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-and-test, changes]
-    if: always() && needs.build-and-test.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'perf-check'))
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'perf-check'))
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -413,8 +427,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [build-and-test, e2e, quality-gates]
-    if: needs.build-and-test.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success' && needs.e2e.result == 'success' && needs.quality-gates.result == 'success'
+    needs: [build, e2e, quality-gates]
+    if: needs.build.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && needs.e2e.result == 'success' && needs.quality-gates.result == 'success'
     environment:
       name: production
       url: https://mearman.github.io/Academic-Explorer/
@@ -555,8 +569,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-and-test, e2e, quality-gates, deploy]
-    if: needs.build-and-test.result == 'success' && needs.e2e.result == 'success' && needs.quality-gates.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
+    needs: [build, e2e, quality-gates, deploy]
+    if: needs.build.result == 'success' && needs.e2e.result == 'success' && needs.quality-gates.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
@@ -727,7 +741,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build-and-test, quality-gates, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [build, quality-gates, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -744,12 +758,12 @@ jobs:
             echo ""
             echo "| Job | Status | Details |"
             echo "|-----|--------|---------|"
-            echo "| 🔨 Build & Test | ${{ needs.build-and-test.result }} | All projects built and tested |"
-            echo "| 🔍 Quality Gates | ${{ needs.quality-gates.result }} | ${{ needs.build-and-test.outputs.quality-gates == 'true' && 'Comprehensive checks' || 'Skipped' }} |"
+            echo "| 🔨 Build | ${{ needs.build.result }} | Build artifacts shared across jobs |"
+            echo "| 🔍 Quality Gates | ${{ needs.quality-gates.result }} | ${{ needs.build.outputs.quality-gates == 'true' && 'Comprehensive checks' || 'Skipped' }} |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
             echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
-            echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.build-and-test.outputs.should-deploy == 'true' && 'GitHub Pages (after e2e & quality)' || 'Skipped' }} |"
+            echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.build.outputs.should-deploy == 'true' && 'GitHub Pages (after e2e & quality)' || 'Skipped' }} |"
             echo "| 🎯 Post-Deploy E2E | ${{ needs.post-deploy-e2e.result }} | ${{ needs.post-deploy-e2e.result == 'success' && 'Live site verification passed' || (needs.post-deploy-e2e.result == 'skipped' && 'Not run' || 'Live site verification failed') }} |"
             echo "| 🔄 Rollback | ${{ needs.rollback.result }} | ${{ needs.rollback.result == 'success' && 'Automatic rollback completed' || (needs.rollback.result == 'skipped' && 'Not needed' || 'Rollback failed') }} |"
             echo "| 📦 Release | ${{ needs.release.result }} | ${{ needs.release.result == 'success' && 'Release created successfully' || (needs.release.result == 'skipped' && 'Not created (failed post-deploy E2E)' || 'Release failed') }} |"

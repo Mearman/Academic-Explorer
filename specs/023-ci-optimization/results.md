@@ -20,7 +20,7 @@
 
 | Job | Before | After (Expected) | Savings | Optimization |
 |-----|--------|------------------|---------|--------------|
-| **build-and-test** | 12-15 min | 9-10 min | 3-5 min | Removed nx reset + parallel=4 |
+| **build** | 12-15 min | 9-10 min | 3-5 min | Removed nx reset + parallel=4 |
 | **e2e** | 20-25 min (rebuilt) | 8-10 min (download) | 12-15 min | Artifact download + Playwright cache |
 | **quality-gates** | 25-30 min (rebuilt) | 15-18 min (download) | 10-12 min | Artifact download + pnpm cache |
 | **performance** | 15-20 min (rebuilt) | 10-12 min OR SKIP | 5-20 min | Artifact download + conditional skip |
@@ -140,7 +140,7 @@ restore-keys: nx-cache-v2-${{ runner.os }}-
 
 **Performance Job Conditional**:
 ```yaml
-if: always() && needs.build-and-test.result == 'success' &&
+if: always() && needs.build.result == 'success' &&
     (github.ref == 'refs/heads/main' ||
      contains(github.event.pull_request.labels.*.name, 'perf-check'))
 ```

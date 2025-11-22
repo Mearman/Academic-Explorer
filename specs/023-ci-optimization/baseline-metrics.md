@@ -7,20 +7,20 @@
 ## Current Pipeline Configuration
 
 **Workflow File**: `.github/workflows/ci.yml`
-**Total Jobs**: 10 (build-and-test, changes, quality-gates, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback, results)
+**Total Jobs**: 10 (build, changes, quality-gates, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback, results)
 
 ### Job Structure (Pre-Optimization)
 
 | Job | Depends On | Builds? | Timeout | Estimated Duration |
 |-----|------------|---------|---------|-------------------|
-| build-and-test | none | Yes | 30 min | 12-15 min |
-| quality-gates | build-and-test | Yes (rebuilds) | 40 min | 25-30 min |
-| e2e | build-and-test | Yes (rebuilds) | 30 min | 20-25 min |
-| coverage | build-and-test | No | 15 min | 8-10 min |
-| performance | build-and-test | Yes (rebuilds) | 20 min | 15-20 min |
-| deploy | build-and-test, e2e, quality-gates | Yes (rebuilds) | 15 min | 10-12 min |
+| build | none | Yes | 30 min | 12-15 min |
+| quality-gates | build | Yes (rebuilds) | 40 min | 25-30 min |
+| e2e | build | Yes (rebuilds) | 30 min | 20-25 min |
+| coverage | build | No | 15 min | 8-10 min |
+| performance | build | Yes (rebuilds) | 20 min | 15-20 min |
+| deploy | build, e2e, quality-gates | Yes (rebuilds) | 15 min | 10-12 min |
 | post-deploy-e2e | deploy | No | 25 min | Disabled |
-| release | build-and-test, e2e, quality-gates, deploy | No | 20 min | 5-8 min |
+| release | build, e2e, quality-gates, deploy | No | 20 min | 5-8 min |
 | rollback | post-deploy-e2e | No | 10 min | N/A (conditional) |
 | results | all | No | 10 min | 2-3 min |
 
@@ -28,7 +28,7 @@
 
 **Build Redundancy**:
 - Build happens 5 times per pipeline run:
-  - build-and-test job
+  - build job
   - quality-gates job (rebuilds)
   - e2e job (rebuilds)
   - performance job (rebuilds)
@@ -65,13 +65,13 @@
 **Wall Clock Time**: 35-40 minutes (longest job wins due to parallelism)
 
 **Critical Path**:
-1. build-and-test: 15 min
+1. build: 15 min
 2. e2e OR quality-gates (parallel): 25-30 min
 3. deploy (waits for both): 12 min
 4. release: 8 min
 
 **Total Compute Minutes** (sum of all jobs):
-- build-and-test: 15 min
+- build: 15 min
 - quality-gates: 30 min
 - e2e: 25 min
 - coverage: 10 min
@@ -98,13 +98,13 @@
 **Wall Clock Time**: <20 minutes (43% reduction)
 
 **Critical Path** (optimized):
-1. build-and-test: 9-10 min (faster parallelism)
+1. build: 9-10 min (faster parallelism)
 2. e2e (downloads artifacts): 10 min
 3. deploy (downloads artifacts): 10 min
 4. release: 8 min
 
 **Total Compute Minutes** (optimized):
-- build-and-test: 10 min (once, not 5x)
+- build: 10 min (once, not 5x)
 - quality-gates: 15 min (no rebuild)
 - e2e: 10 min (no rebuild)
 - coverage: 10 min (unchanged)
@@ -130,7 +130,7 @@
 |--------|----------|--------|-------------|
 | Code PR time | 35-40 min | <20 min | Workflow run duration |
 | Docs PR time | 35-40 min | <5 min | Workflow run duration |
-| First test results | 15+ min | <5 min | build-and-test completion |
+| First test results | 15+ min | <5 min | build completion |
 | Build redundancy | 5x builds | 1x build | Count from logs |
 | Compute minutes | ~120 min | ~60-80 min | Sum of job durations |
 | GitHub Actions cost | Baseline | -30% | Monthly usage report |
