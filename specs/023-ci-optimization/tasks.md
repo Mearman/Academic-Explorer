@@ -75,12 +75,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Add node_modules to pnpm cache paths in build-and-test job
-- [ ] T019 [P] [US2] Create Playwright browser cache step in e2e job using actions/cache@v4
-- [ ] T020 [P] [US2] Configure Playwright cache key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-- [ ] T021 [P] [US2] Configure Playwright cache path: ~/.cache/ms-playwright
-- [ ] T022 [US2] Verify Playwright install --with-deps checks for cached browsers before downloading
-- [ ] T023 [US2] Add cache analytics to build-and-test job output (show hit/miss status)
+- [X] T018 [P] [US2] Add node_modules to pnpm cache paths in build-and-test job
+- [X] T019 [P] [US2] Create Playwright browser cache step in e2e job using actions/cache@v4
+- [X] T020 [P] [US2] Configure Playwright cache key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+- [X] T021 [P] [US2] Configure Playwright cache path: ~/.cache/ms-playwright
+- [X] T022 [US2] Verify Playwright install --with-deps checks for cached browsers before downloading
+- [X] T023 [US2] Add cache analytics to build-and-test job output (show hit/miss status)
 - [ ] T024 [US2] Test US2 by running pipeline twice and verifying cache hits in second run
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - builds happen once, caches hit consistently

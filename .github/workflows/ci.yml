@@ -93,14 +93,18 @@ jobs:
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
+        id: pnpm-cache
         with:
-          path: ${{ env.STORE_PATH }}
+          path: |
+            ${{ env.STORE_PATH }}
+            **/node_modules
           key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-store-${{ runner.os }}-
 
       - name: Setup Nx cache
         uses: actions/cache@v4
+        id: nx-cache
         with:
           path: |
             .nx/cache
@@ -110,6 +114,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nx-cache-v2-
             ${{ runner.os }}-nx-cache-v1-
+
+      - name: Cache analytics
+        run: |
+          echo "📊 Cache Hit Status:"
+          echo "  pnpm cache: ${{ steps.pnpm-cache.outputs.cache-hit == 'true' && '✅ HIT' || '❌ MISS' }}"
+          echo "  Nx cache: ${{ steps.nx-cache.outputs.cache-hit == 'true' && '✅ HIT' || '❌ MISS' }}"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -282,6 +292,14 @@ jobs:
             exit 1
           fi
           echo "Build artifacts validated successfully"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
