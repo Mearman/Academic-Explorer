@@ -125,9 +125,10 @@ export default defineConfig({
   webServer: {
     // In CI, use preview server with built app for faster, more reliable tests
     // In dev, use dev server for hot reload and better DX
+    // Commands run from apps/web directory (set by Nx e2e target)
     command: process.env.CI
-      ? "cd ../.. && pnpm --filter @academic-explorer/web preview"
-      : "cd ../.. && pnpm dev",
+      ? "pnpm preview"
+      : "pnpm dev",
     port: process.env.CI ? 4173 : 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
