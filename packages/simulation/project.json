@@ -3,6 +3,14 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/simulation/src",
   "projectType": "library",
-  "targets": {},
-  "tags": ["type:library", "scope:simulation", "layer:core"]
+  "targets": {
+    "test:unit": {},
+    "test:component": {},
+    "test:integration": {}
+  },
+  "tags": [
+    "type:library",
+    "scope:simulation",
+    "layer:core"
+  ]
 }

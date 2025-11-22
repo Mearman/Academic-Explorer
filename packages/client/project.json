@@ -6,13 +6,19 @@
   "targets": {
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{workspaceRoot}/packages/client/dist"],
-      "dependsOn": ["^build"],
+      "outputs": [
+        "{workspaceRoot}/packages/client/dist"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
       "options": {
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
         "tsConfig": "packages/client/tsconfig.json",
-        "format": ["esm"],
+        "format": [
+          "esm"
+        ],
         "compiler": "tsc",
         "generateExportsField": false,
         "project": "packages/client/package.json",
@@ -31,7 +37,10 @@
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
         "tsConfig": "packages/client/tsconfig.json",
-        "format": ["esm", "cjs"],
+        "format": [
+          "esm",
+          "cjs"
+        ],
         "compiler": "tsc",
         "generateExportsField": false,
         "project": "packages/client/package.json",
@@ -44,7 +53,14 @@
         ]
       },
       "cache": false
-    }
+    },
+    "test:unit": {},
+    "test:component": {},
+    "test:integration": {}
   },
-  "tags": ["type:library", "scope:openalex", "layer:core"]
+  "tags": [
+    "type:library",
+    "scope:openalex",
+    "layer:core"
+  ]
 }
