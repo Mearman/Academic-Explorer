@@ -39,7 +39,7 @@ const getDB = (): SettingsDB => {
 // Settings state interface
 interface SettingsState {
   /** Email for OpenAlex polite pool */
-  politePoolEmail: string | undefined;
+  politePoolEmail: string;
   /** API key for OpenAlex requests (optional) */
   apiKey: string | undefined;
   /** Include Walden-related research data */
@@ -50,7 +50,7 @@ interface SettingsState {
 
 // Default values
 const DEFAULT_SETTINGS: SettingsState = {
-  politePoolEmail: undefined,
+  politePoolEmail: "",
   apiKey: undefined,
   includeXpac: true,
   dataVersion: undefined,
@@ -89,7 +89,7 @@ class SettingsStore {
       // Load stored values
       for (const record of records) {
         if (record.key === SETTINGS_KEYS.POLITE_POOL_EMAIL) {
-          settings.politePoolEmail = record.value === "undefined" ? undefined : record.value;
+          settings.politePoolEmail = record.value === "undefined" ? "" : record.value;
         }
         if (record.key === SETTINGS_KEYS.API_KEY) {
           settings.apiKey = record.value === "undefined" ? undefined : record.value;
@@ -114,15 +114,16 @@ class SettingsStore {
    */
   async setPolitePoolEmail(email: string | undefined): Promise<void> {
     try {
+      const emailValue = email === undefined ? "" : email;
       await this.db.settings.put({
         key: SETTINGS_KEYS.POLITE_POOL_EMAIL,
-        value: email === undefined ? "undefined" : email,
+        value: emailValue,
         updatedAt: new Date(),
       });
 
       this.logger.debug("settings", "Updated polite pool email", {
-        hasEmail: email !== undefined && email.length > 0,
-        isValid: email ? this.isValidEmail(email) : false,
+        hasEmail: emailValue.length > 0,
+        isValid: emailValue ? this.isValidEmail(emailValue) : false,
       });
     } catch (error) {
       this.logger?.error("settings", "Failed to update polite pool email", {
@@ -222,7 +223,7 @@ class SettingsStore {
   /**
    * Get current polite pool email
    */
-  async getPolitePoolEmail(): Promise<string | undefined> {
+  async getPolitePoolEmail(): Promise<string> {
     const settings = await this.getSettings();
     return settings.politePoolEmail;
   }
@@ -312,7 +313,7 @@ export { SettingsStore };
 export const settingsStoreInstance = dexieStore;
 
 // Simple hook for components - no complex state management
-export const usePolitePoolEmail = (): string | undefined => {
+export const usePolitePoolEmail = (): string => {
   // This can be enhanced with React state management if needed
   return DEFAULT_SETTINGS.politePoolEmail;
 };
@@ -334,7 +335,7 @@ export const settingsActions = {
 };
 
 // Zustand-style compatibility - simple selector pattern
-export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string | undefined }) => T): T => {
+export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string }) => T): T => {
   const state = {
     ...settingsActions,
     politePoolEmail: usePolitePoolEmail(),
