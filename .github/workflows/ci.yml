@@ -69,7 +69,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      coverage-reports: ${{ steps.coverage.outputs.coverage-reports }}
       quality-gates: ${{ steps.quality-gates.outputs.quality-gates }}
       should-deploy: ${{ steps.deploy.outputs.should-deploy }}
     steps:
@@ -138,43 +137,14 @@ jobs:
             packages/*/dist
           retention-days: 1
 
-      - name: Type check
-        timeout-minutes: 10
-        run: npx nx run-many -t typecheck --parallel=2 || true
-        continue-on-error: true
-
-      - name: Lint
-        timeout-minutes: 10
-        run: npx nx lint web || true
-        continue-on-error: true
-
-      - name: Test
-        timeout-minutes: 15
-        run: npx nx test web --coverage || true
-        continue-on-error: true
-
-      - name: Upload coverage reports
-        id: coverage
-        run: |
-          mkdir -p coverage/all
-          # Look for coverage-report.json from test command output
-          find . -name "coverage-report.json" -exec cp {} coverage/all/ \; 2>/dev/null || echo "No coverage-report.json files found"
-          # Look for coverage.json files from Vitest
-          find coverage -name "coverage.json" -exec cp {} coverage/all/ \; 2>/dev/null || echo "No coverage.json files found"
-          # Also look for any coverage-summary.json files
-          find coverage -name "coverage-summary.json" -exec cp {} coverage/all/ \; 2>/dev/null || echo "No coverage-summary.json files found"
-          # If no coverage files found, create an empty marker to prevent the warning
-          if [ ! -f coverage/all/coverage-report.json ] && [ ! -f coverage/all/coverage.json ] && [ ! -f coverage/all/coverage-summary.json ]; then
-            echo '{"coverage": {}, "files": {}}' > coverage/all/no-coverage.json
-          fi
-          echo "coverage-reports=coverage/all" >> "${GITHUB_OUTPUT}"
-
-      - name: Upload coverage artifacts
+      - name: Upload Nx cache
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-all
-          path: ${{ steps.coverage.outputs.coverage-reports }}
-          retention-days: 7
+          name: nx-cache
+          path: |
+            .nx/cache
+            **/node_modules/.cache
+          retention-days: 1
 
       - name: Determine quality gates run
         id: quality-gates
@@ -249,6 +219,12 @@ jobs:
         with:
           name: build-artifacts
 
+      - name: Download Nx cache
+        uses: actions/download-artifact@v4
+        with:
+          name: nx-cache
+        continue-on-error: true
+
       - name: Validate artifacts exist
         run: |
           if [ ! -d "apps/web/dist" ] || [ ! -d "apps/cli/dist" ]; then
@@ -256,6 +232,13 @@ jobs:
             exit 1
           fi
           echo "✅ Build artifacts validated"
+
+          # Check if Nx cache was downloaded
+          if [ -d ".nx/cache" ]; then
+            echo "✅ Nx cache restored from build job"
+          else
+            echo "⚠️  Nx cache not found - tests will run without cache"
+          fi
 
       - name: Run all tests with coverage
         timeout-minutes: 25
