@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ExploreRouteImport } from './routes/explore'
@@ -67,6 +68,11 @@ import { Route as OpenalexOrgSplatRouteImport } from './routes/openalex.org/$'
 import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
 import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$orcid'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/settings.lazy').then((d) => d.Route))
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -417,6 +423,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$': typeof AuthorsSplatRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
@@ -476,6 +483,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$': typeof AuthorsSplatRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
@@ -536,6 +544,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$_': typeof AuthorsSplatRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/search'
+    | '/settings'
     | '/api-openalex-org/$'
     | '/authors/$'
     | '/concepts/$conceptId'
@@ -656,6 +666,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/search'
+    | '/settings'
     | '/api-openalex-org/$'
     | '/authors/$'
     | '/concepts/$conceptId'
@@ -715,6 +726,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/search'
+    | '/settings'
     | '/api-openalex-org/$'
     | '/authors/$_'
     | '/concepts/$conceptId'
@@ -775,6 +787,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRouteWithChildren
   HistoryRoute: typeof HistoryRoute
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
   AuthorsSplatRoute: typeof AuthorsSplatRoute
   ConceptsConceptIdRoute: typeof ConceptsConceptIdRoute
@@ -820,6 +833,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -1261,6 +1281,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRouteWithChildren,
   HistoryRoute: HistoryRoute,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
   AuthorsSplatRoute: AuthorsSplatRoute,
   ConceptsConceptIdRoute: ConceptsConceptIdRoute,
