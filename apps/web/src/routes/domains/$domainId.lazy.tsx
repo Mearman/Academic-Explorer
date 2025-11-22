@@ -18,7 +18,7 @@ import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 function DomainRoute() {
   const { domainId: rawDomainId } = useParams({ strict: false }) as { domainId: string };
   const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the domain ID in case it's URL-encoded
   const domainId = decodeEntityId(rawDomainId);
@@ -82,7 +82,7 @@ function DomainRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={domain}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={fullDomainId} entityType="domains" />

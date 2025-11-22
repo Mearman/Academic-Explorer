@@ -18,7 +18,7 @@ import { IconAlertCircle } from "@tabler/icons-react";
 function ConceptRoute() {
   const { conceptId: rawConceptId } = useParams({ from: "/concepts/$conceptId" });
   const { select: selectParam } = useSearch({ from: "/concepts/$conceptId" });
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the concept ID in case it's URL-encoded (for external IDs with special characters)
   const conceptId = decodeEntityId(rawConceptId);
@@ -76,7 +76,7 @@ function ConceptRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={concept}>
       <Alert
         icon={<IconAlertCircle size={16} />}

@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from "react";
-import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal } from "@mantine/core";
-import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
+import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
+import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck, IconNetwork } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
@@ -9,6 +9,9 @@ import type { EntityTypeConfig } from "./EntityTypeConfig";
 import type { EntityType } from "@academic-explorer/types";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 import { AddToListModal } from "../catalogue/AddToListModal";
+import { EntityGraphView } from "./EntityGraphView";
+
+export type ViewMode = "rich" | "raw" | "graph";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -17,8 +20,8 @@ interface EntityDetailLayoutProps {
   displayName: string;
   selectParam?: string;
   selectFields: string[];
-  viewMode: "raw" | "rich";
-  onToggleView: () => void;
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
   data: Record<string, unknown>;
   children?: ReactNode;
 }
@@ -50,7 +53,7 @@ export function EntityDetailLayout({
   selectParam,
   selectFields,
   viewMode,
-  onToggleView,
+  onViewModeChange,
   data,
   children,
 }: EntityDetailLayoutProps) {
@@ -212,14 +215,15 @@ export function EntityDetailLayout({
                 </Tooltip>
               )}
 
-              <Button
-                size="lg"
-                variant="light"
-                leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
-                onClick={onToggleView}
-              >
-                {viewMode === "raw" ? "Rich View" : "Raw View"}
-              </Button>
+              <SegmentedControl
+                value={viewMode}
+                onChange={(value) => onViewModeChange(value as ViewMode)}
+                data={[
+                  { label: 'Rich', value: 'rich' },
+                  { label: 'Raw', value: 'raw' },
+                  { label: 'Graph', value: 'graph' },
+                ]}
+              />
             </Group>
           </Group>
         </Paper>
@@ -241,7 +245,7 @@ export function EntityDetailLayout({
                 size="sm"
                 c={colors.text.primary}
                 style={{
-                  fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
+                  fontFamily: "'SF Mono', 'Monaco', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
                   whiteSpace: "pre",
                   lineHeight: 1.6
                 }}
@@ -250,6 +254,8 @@ export function EntityDetailLayout({
               </Text>
             </Paper>
           </Paper>
+        ) : viewMode === "graph" ? (
+          <EntityGraphView entityId={entityId} height={700} />
         ) : (
           <>
             <EntityDataDisplay data={data} />

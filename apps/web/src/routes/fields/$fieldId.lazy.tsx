@@ -18,7 +18,7 @@ import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 function FieldRoute() {
   const { fieldId: rawFieldId } = useParams({ strict: false }) as { fieldId: string };
   const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the field ID in case it's URL-encoded
   const fieldId = decodeEntityId(rawFieldId);
@@ -82,7 +82,7 @@ function FieldRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={field}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={fullFieldId} entityType="fields" />

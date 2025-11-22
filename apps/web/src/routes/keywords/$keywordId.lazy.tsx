@@ -16,7 +16,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function KeywordRoute() {
   const { keywordId: rawKeywordId } = useParams({ from: "/keywords/$keywordId" });
   const { select: selectParam } = useSearch({ from: "/keywords/$keywordId" });
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the keyword ID in case it's URL-encoded (for external IDs with special characters)
   const keywordId = decodeEntityId(rawKeywordId);
@@ -74,7 +74,7 @@ function KeywordRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={keyword}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={keywordId || ""} entityType="keywords" />

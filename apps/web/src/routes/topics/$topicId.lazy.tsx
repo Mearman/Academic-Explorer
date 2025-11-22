@@ -18,7 +18,7 @@ import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [viewMode, setViewMode] = useState<ViewMode>("rich");
 
   // Decode the topic ID in case it's URL-encoded (for external IDs with special characters)
   const topicId = decodeEntityId(rawTopicId);
@@ -79,7 +79,7 @@ function TopicRoute() {
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
       selectFields={selectFields || []}
       viewMode={viewMode}
-      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      onViewModeChange={setViewMode}
       data={topic}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={topicId || ""} entityType="topics" />
