@@ -35,6 +35,15 @@
         }
       }
     },
+    "test:component": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "apps/cli/vitest.config.ts",
+        "include": ["src/**/*.component.test.ts"],
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/cli/component"
+      }
+    },
     "test:integration": {
       "executor": "@nx/vitest:test",
       "options": {
