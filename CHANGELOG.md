@@ -1,3 +1,10 @@
+## 17.3.0 (2025-11-22)
+
+* fix(web): correct PostHog config types - remove invalid recordCanvas property ([75e7881](https://github.com/Mearman/Academic-Explorer/commit/75e7881))
+* fix(web): use double assertion for PostHog config type safety ([7eb3c5d](https://github.com/Mearman/Academic-Explorer/commit/7eb3c5d))
+* feat(web): enable all PostHog features - autocapture, session recordings, pageviews, performance mon ([a06efc4](https://github.com/Mearman/Academic-Explorer/commit/a06efc4))
+* chore(release): 17.2.1 [skip ci] ([f815580](https://github.com/Mearman/Academic-Explorer/commit/f815580))
+
 ## <small>17.2.1 (2025-11-22)</small>
 
 * fix(config): remove --project flag from PostHog CLI sourcemap inject ([73a11f4](https://github.com/Mearman/Academic-Explorer/commit/73a11f4))
