@@ -29,6 +29,8 @@ const testStoreInstance = settingsStoreInstance;
 
 describe("SettingsStore", () => {
   beforeEach(async () => {
+    // Wait for any pending migrations to complete
+    await new Promise((resolve) => setTimeout(resolve, 100));
     // Clear store state before each test
     await testStoreInstance.resetSettings();
     // Clear localStorage mock calls
@@ -37,7 +39,7 @@ describe("SettingsStore", () => {
     localStorageMock.removeItem.mockClear();
     localStorageMock.clear.mockClear();
     // Wait for initialization to complete
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
   afterEach(() => {
