@@ -1,0 +1,137 @@
+# Cache Key Schema
+# Defines the structure and naming conventions for GitHub Actions cache keys
+
+cache-key:
+  primary:
+    type: string
+    required: true
+    format: "{category}-{os}-{version}-{hash}"
+    description: "Primary cache key with file hashes for exact matching"
+    examples:
+      - "pnpm-Linux-20250122-a3f5e8d9"
+      - "nx-cache-Linux-v2-b7c4d1a6"
+      - "playwright-Linux-1b9f2e3c"
+
+  restore-keys:
+    type: array
+    required: false
+    items:
+      type: string
+      format: "{category}-{os}-{version}-"
+    description: "Fallback cache keys for prefix matching (ordered from most to least specific)"
+    examples:
+      - "pnpm-Linux-"
+      - "nx-cache-Linux-v2-"
+      - "nx-cache-Linux-v1-"
+
+  paths:
+    type: array
+    required: true
+    items:
+      type: string
+    minItems: 1
+    description: "Directories to cache (absolute or relative to repository root)"
+    examples:
+      - ".nx/cache"
+      - "**/node_modules"
+      - "~/.cache/ms-playwright"
+
+  version:
+    type: string
+    required: false
+    pattern: "^v[0-9]+$"
+    description: "Schema version for cache structure (increment to invalidate all caches)"
+    examples:
+      - "v1"
+      - "v2"
+
+key-components:
+  category:
+    type: string
+    enum:
+      - "pnpm"
+      - "nx-cache"
+      - "playwright"
+    description: "Cache category identifier"
+
+  os:
+    type: string
+    expression: "${{ runner.os }}"
+    values:
+      - "Linux"
+      - "macOS"
+      - "Windows"
+    description: "Operating system identifier from GitHub Actions context"
+
+  version:
+    type: string
+    description: "Cache schema version (optional, for manual invalidation)"
+
+  hash:
+    type: string
+    expression: "${{ hashFiles('pattern') }}"
+    description: "File hash for deterministic cache invalidation"
+    hash-patterns:
+      pnpm: "pnpm-lock.yaml"
+      nx-cache: "nx.json, **/project.json, pnpm-lock.yaml, tsconfig*.json"
+      playwright: "pnpm-lock.yaml"
+
+constraints:
+  cache-size:
+    maximum-per-key: 10737418240  # 10GB
+    maximum-total: 10737418240     # 10GB across all keys
+    description: "GitHub Actions cache size limits"
+
+  cache-expiry:
+    default: 604800  # 7 days in seconds
+    description: "Caches are automatically evicted after 7 days of no access"
+
+  cache-eviction:
+    strategy: "LRU"
+    description: "Least Recently Used eviction when total size exceeds 10GB"
+
+validation-rules:
+  - "cache-key.primary must be deterministic (same inputs = same key)"
+  - "cache-key.restore-keys must be ordered from most specific to least specific"
+  - "cache-key.paths must contain at least one directory"
+  - "Total cache size cannot exceed 10GB per repository"
+  - "Cache keys should include ${{ runner.os }} to prevent cross-platform conflicts"
+
+cache-definitions:
+  nx-cache:
+    primary: "${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}"
+    restore-keys:
+      - "${{ runner.os }}-nx-cache-v2-"
+      - "${{ runner.os }}-nx-cache-v1-"
+    paths:
+      - ".nx/cache"
+      - "**/node_modules/.cache"
+      - "**/.vite"
+
+  pnpm-store:
+    primary: "pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}"
+    restore-keys:
+      - "pnpm-${{ runner.os }}-"
+    paths:
+      - "${{ env.STORE_PATH }}"
+      - "**/node_modules"
+
+  playwright-browsers:
+    primary: "playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}"
+    restore-keys:
+      - "playwright-${{ runner.os }}-"
+    paths:
+      - "~/.cache/ms-playwright"
+
+usage-example: |
+  - name: Setup Nx cache
+    uses: actions/cache@v4
+    with:
+      path: |
+        .nx/cache
+        **/node_modules/.cache
+        **/.vite
+      key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+      restore-keys: |
+        ${{ runner.os }}-nx-cache-v2-
+        ${{ runner.os }}-nx-cache-v1-

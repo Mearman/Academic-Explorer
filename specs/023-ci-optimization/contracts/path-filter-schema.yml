@@ -1,0 +1,162 @@
+# Path Filter Schema
+# Defines file pattern filters for conditional job execution in GitHub Actions
+
+path-filter:
+  id:
+    type: string
+    required: true
+    pattern: "^[a-z-]+$"
+    description: "Unique identifier for this filter set"
+    example: "filter"
+
+  filters:
+    type: object
+    required: true
+    minProperties: 1
+    description: "Named filter patterns for different file categories"
+    properties:
+      code:
+        type: array
+        items:
+          type: string
+          format: "glob-pattern"
+        description: "Patterns matching application code files"
+        examples:
+          - "apps/**"
+          - "packages/**"
+          - "pnpm-lock.yaml"
+          - "nx.json"
+          - "tsconfig*.json"
+
+      docs:
+        type: array
+        items:
+          type: string
+          format: "glob-pattern"
+        description: "Patterns matching documentation files"
+        examples:
+          - "**.md"
+          - "specs/**"
+          - "docs/**"
+
+      config:
+        type: array
+        items:
+          type: string
+          format: "glob-pattern"
+        description: "Patterns matching CI/CD configuration files"
+        examples:
+          - ".github/workflows/**"
+          - ".github/actions/**"
+
+  outputs:
+    type: object
+    description: "Boolean outputs for each filter indicating if matching files changed"
+    properties:
+      code:
+        type: boolean
+        expression: "${{ steps.filter.outputs.code }}"
+      docs:
+        type: boolean
+        expression: "${{ steps.filter.outputs.docs }}"
+      config:
+        type: boolean
+        expression: "${{ steps.filter.outputs.config }}"
+
+glob-patterns:
+  supported-syntax:
+    - "**/*.ts - Recursive match for TypeScript files"
+    - "apps/** - All files under apps/ directory"
+    - "*.md - Top-level markdown files"
+    - "**.md - All markdown files recursively"
+    - "!excluded/** - Negation (exclude pattern)"
+
+  best-practices:
+    - "Use ** for recursive directory matching"
+    - "Use * for single-level wildcard"
+    - "Order patterns from most specific to least specific"
+    - "Avoid overlapping patterns across filter categories"
+    - "Test patterns with dorny/paths-filter@v3 local testing mode"
+
+filter-logic:
+  matching:
+    description: "Filter returns true if ANY pattern matches changed files"
+    example: "code filter has ['apps/**', 'packages/**'] → true if any file in apps/ OR packages/ changed"
+
+  precedence:
+    description: "Multiple filters can match simultaneously (non-exclusive)"
+    example: "If both code and docs files changed, both filters return true"
+
+  edge-cases:
+    empty-pr:
+      description: "PR with no file changes"
+      behavior: "All filters return false, jobs with if: conditions skip"
+
+    new-branch:
+      description: "New feature branch with all files 'changed'"
+      behavior: "All filters return true, full pipeline runs"
+
+    force-push:
+      description: "Force push rewriting history"
+      behavior: "Compares against merge-base, accurate change detection"
+
+    mixed-changes:
+      description: "PR with both code and docs changes"
+      behavior: "Both code and docs filters return true, all jobs run"
+
+validation-rules:
+  - "At least one filter must be defined"
+  - "Filter names must be valid YAML keys (alphanumeric + hyphens)"
+  - "Glob patterns must be valid (no syntax errors)"
+  - "Patterns should not overlap across categories (causes ambiguous behavior)"
+  - "Each filter should have at least one pattern"
+
+usage-example: |
+  jobs:
+    changes:
+      runs-on: ubuntu-latest
+      outputs:
+        code: ${{ steps.filter.outputs.code }}
+        docs: ${{ steps.filter.outputs.docs }}
+      steps:
+        - uses: actions/checkout@v5
+        - uses: dorny/paths-filter@v3
+          id: filter
+          with:
+            filters: |
+              code:
+                - 'apps/**'
+                - 'packages/**'
+                - 'pnpm-lock.yaml'
+                - 'nx.json'
+                - 'tsconfig*.json'
+              docs:
+                - '**.md'
+                - 'specs/**'
+                - 'docs/**'
+
+    e2e:
+      needs: [build-and-test, changes]
+      if: needs.changes.outputs.code == 'true'
+      # ... job steps
+
+job-conditional-patterns:
+  run-only-if-code-changed:
+    expression: "needs.changes.outputs.code == 'true'"
+    use-case: "E2E tests, performance tests"
+
+  run-if-code-or-config-changed:
+    expression: "needs.changes.outputs.code == 'true' || needs.changes.outputs.config == 'true'"
+    use-case: "Quality gates (tests must run if workflow itself changed)"
+
+  skip-only-if-docs-only:
+    expression: "!(needs.changes.outputs.docs == 'true' && needs.changes.outputs.code == 'false')"
+    use-case: "Build jobs (skip only if EXCLUSIVELY docs changed)"
+
+  always-run:
+    expression: "always()"
+    use-case: "Results aggregation, cleanup jobs"
+
+  run-on-main-or-code-changed:
+    expression: "github.ref == 'refs/heads/main' || needs.changes.outputs.code == 'true'"
+    use-case: "Performance tests (always on main, opt-in for PRs)"
