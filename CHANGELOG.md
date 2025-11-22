@@ -1,3 +1,9 @@
+## <small>17.2.1 (2025-11-22)</small>
+
+* fix(config): remove --project flag from PostHog CLI sourcemap inject ([73a11f4](https://github.com/Mearman/Academic-Explorer/commit/73a11f4))
+* fix(web): correct PostHog configuration for event tracking and sourcemaps ([3bda6e8](https://github.com/Mearman/Academic-Explorer/commit/3bda6e8))
+* chore(release): 17.2.0 [skip ci] ([6f7d569](https://github.com/Mearman/Academic-Explorer/commit/6f7d569))
+
 ## 17.2.0 (2025-11-22)
 
 * fix(config): add EU host to PostHog sourcemap inject command ([930d34c](https://github.com/Mearman/Academic-Explorer/commit/930d34c))
