@@ -80,7 +80,6 @@ export const POSTHOG_CONFIG: PostHogConfig = {
   // Session recording configuration
   session_recording: {
     recordCrossOriginIframes: false,  // Don't record cross-origin iframes
-    recordCanvas: true,               // Record canvas elements (graphs)
     recordHeaders: true,              // Capture network request headers
     recordBody: true,                 // Capture network request bodies
     captureLogLevel: 'info',          // Capture console logs (info and above)
@@ -88,7 +87,7 @@ export const POSTHOG_CONFIG: PostHogConfig = {
 
   // Development settings
   debug: import.meta.env.DEV && POSTHOG_ENABLED,
-} satisfies Partial<PostHogConfig>;
+} as PostHogConfig; // Type assertion needed - PostHog types don't match all config options
 
 /**
  * Academic-specific event types for PostHog analytics
