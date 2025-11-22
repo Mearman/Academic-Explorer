@@ -227,29 +227,11 @@ jobs:
       - name: Run unit tests for ${{ matrix.package }}
         timeout-minutes: 10
         run: |
-          # Determine package path
-          if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
-            PACKAGE_PATH="apps/${{ matrix.package }}"
-          else
-            PACKAGE_PATH="packages/${{ matrix.package }}"
-          fi
-
           echo "Running unit tests for ${{ matrix.package }}"
-          echo "Package path: $PACKAGE_PATH"
 
-          # cd into package and run vitest with simple string filter
-          # Vitest will use the package's vitest.config.ts and match *.unit.test.ts files
-          cd "$PACKAGE_PATH"
-          pnpm exec vitest run --reporter=verbose "unit" || {
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -eq 0 ]; then
-              echo "✅ No tests found (this is OK)"
-              exit 0
-            else
-              echo "❌ Tests failed with exit code $EXIT_CODE"
-              exit $EXIT_CODE
-            fi
-          }
+          # Use Nx to run tests - leverages targetDefaults with @nx/vitest:test executor
+          # passWithNoTests configured in nx.json handles packages without tests
+          pnpm nx test:unit ${{ matrix.package }}
 
       - name: Upload coverage for ${{ matrix.package }} / unit
         uses: actions/upload-artifact@v4
@@ -331,29 +313,11 @@ jobs:
       - name: Run component tests for ${{ matrix.package }}
         timeout-minutes: 10
         run: |
-          # Determine package path
-          if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
-            PACKAGE_PATH="apps/${{ matrix.package }}"
-          else
-            PACKAGE_PATH="packages/${{ matrix.package }}"
-          fi
-
           echo "Running component tests for ${{ matrix.package }}"
-          echo "Package path: $PACKAGE_PATH"
 
-          # cd into package and run vitest with simple string filter
-          # Vitest will use the package's vitest.config.ts and match *.component.test.ts files
-          cd "$PACKAGE_PATH"
-          pnpm exec vitest run --reporter=verbose "component" || {
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -eq 0 ]; then
-              echo "✅ No tests found (this is OK)"
-              exit 0
-            else
-              echo "❌ Tests failed with exit code $EXIT_CODE"
-              exit $EXIT_CODE
-            fi
-          }
+          # Use Nx to run tests - leverages targetDefaults with @nx/vitest:test executor
+          # passWithNoTests configured in nx.json handles packages without tests
+          pnpm nx test:component ${{ matrix.package }}
 
       - name: Upload coverage for ${{ matrix.package }} / component
         uses: actions/upload-artifact@v4
@@ -435,29 +399,11 @@ jobs:
       - name: Run integration tests for ${{ matrix.package }}
         timeout-minutes: 20
         run: |
-          # Determine package path
-          if [ "${{ matrix.package }}" = "web" ] || [ "${{ matrix.package }}" = "cli" ]; then
-            PACKAGE_PATH="apps/${{ matrix.package }}"
-          else
-            PACKAGE_PATH="packages/${{ matrix.package }}"
-          fi
-
           echo "Running integration tests for ${{ matrix.package }}"
-          echo "Package path: $PACKAGE_PATH"
 
-          # cd into package and run vitest with simple string filter
-          # Vitest will use the package's vitest.config.ts and match *.integration.test.ts files
-          cd "$PACKAGE_PATH"
-          pnpm exec vitest run --reporter=verbose "integration" || {
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -eq 0 ]; then
-              echo "✅ No tests found (this is OK)"
-              exit 0
-            else
-              echo "❌ Tests failed with exit code $EXIT_CODE"
-              exit $EXIT_CODE
-            fi
-          }
+          # Use Nx to run tests - leverages targetDefaults with @nx/vitest:test executor
+          # passWithNoTests configured in nx.json handles packages without tests
+          pnpm nx test:integration ${{ matrix.package }}
 
       - name: Upload coverage for ${{ matrix.package }} / integration
         uses: actions/upload-artifact@v4
