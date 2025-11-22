@@ -37,9 +37,9 @@ export const POSTHOG_CONFIG: PostHogConfig = {
 
   // Privacy-first settings (no consent required)
   cookieless_mode: 'always',          // No cookies/local storage = GDPR consent not required
-  autocapture: false,                 // Manual event capture only - better privacy control
-  disable_session_recording: true,    // No session recording for privacy protection
-  capture_pageview: false,           // Manual page view capture for better control
+  autocapture: true,                  // Automatic event capture enabled
+  disable_session_recording: false,   // Session recording enabled (no masking)
+  capture_pageview: true,             // Automatic page view capture
 
   // Performance settings
   api_transport: 'fetch',
@@ -75,11 +75,20 @@ export const POSTHOG_CONFIG: PostHogConfig = {
 
   // Error tracking configuration
   capture_exceptions: true,   // Enable error tracking for debugging
-  capture_performance: false, // Use our own performance monitoring
+  capture_performance: true,  // PostHog performance monitoring enabled
+
+  // Session recording configuration
+  session_recording: {
+    recordCrossOriginIframes: false,  // Don't record cross-origin iframes
+    recordCanvas: true,               // Record canvas elements (graphs)
+    recordHeaders: true,              // Capture network request headers
+    recordBody: true,                 // Capture network request bodies
+    captureLogLevel: 'info',          // Capture console logs (info and above)
+  },
 
   // Development settings
   debug: import.meta.env.DEV && POSTHOG_ENABLED,
-} as any; // Type assertion to handle PostHog config interface compatibility
+} satisfies Partial<PostHogConfig>;
 
 /**
  * Academic-specific event types for PostHog analytics
