@@ -19,6 +19,7 @@ import {
   IconSettings,
   IconAlertTriangle,
   IconMail,
+  IconKey,
   IconCheck,
   IconX,
   IconInfoCircle,
@@ -29,7 +30,7 @@ import { clearAllCacheLayers } from "@academic-explorer/utils/cache";
 import { clearAppMetadata } from "@academic-explorer/utils/cache";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance } from "@/stores/settings-store";
-import { updateOpenAlexEmail } from "@academic-explorer/client";
+import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
 import { XpacToggle, DataVersionSelector } from "@academic-explorer/ui";
 import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
@@ -47,7 +48,7 @@ export const SettingsSection: React.FC = () => {
 
   // Settings store - using simplified API
   const politePoolEmail = usePolitePoolEmail();
-  const { setPolitePoolEmail, isValidEmail } = useSettingsStore(
+  const { setPolitePoolEmail, setApiKey, isValidEmail, getApiKey } = useSettingsStore(
     (state) => state,
   );
 
@@ -57,27 +58,40 @@ export const SettingsSection: React.FC = () => {
   // Local state for data version setting
   const [dataVersion, setDataVersion] = React.useState<'1' | '2' | undefined>(undefined);
 
+  // Local state for API key
+  const [apiKey, setApiKeyState] = React.useState<string | undefined>(undefined);
+
   // Load settings from store on mount
   React.useEffect(() => {
     const loadSettings = async () => {
       const settings = await settingsStoreInstance.getSettings();
       setIncludeXpac(settings.includeXpac);
       setDataVersion(settings.dataVersion);
+      setApiKeyState(settings.apiKey);
     };
     void loadSettings();
   }, []);
 
   // Local state for email editing
-  const [localEmail, setLocalEmail] = React.useState(politePoolEmail);
+  const [localEmail, setLocalEmail] = React.useState(politePoolEmail || "");
   const [isEditingEmail, setIsEditingEmail] = React.useState(false);
   const [showEmailValidation, setShowEmailValidation] = React.useState(false);
+
+  // Local state for API key editing
+  const [localApiKey, setLocalApiKey] = React.useState<string>(apiKey || "");
+  const [isEditingApiKey, setIsEditingApiKey] = React.useState(false);
 
   const queryClient = useQueryClient();
 
   // Sync local email state with store
   React.useEffect(() => {
-    setLocalEmail(politePoolEmail);
+    setLocalEmail(politePoolEmail || "");
   }, [politePoolEmail]);
+
+  // Sync local API key state with store
+  React.useEffect(() => {
+    setLocalApiKey(apiKey || "");
+  }, [apiKey]);
 
   const handleEmailChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,7 +154,7 @@ export const SettingsSection: React.FC = () => {
   ]);
 
   const handleEmailCancel = React.useCallback(() => {
-    setLocalEmail(politePoolEmail);
+    setLocalEmail(politePoolEmail || "");
     setIsEditingEmail(false);
     setShowEmailValidation(false);
     logger.debug("settings", "Email edit cancelled");
@@ -157,6 +171,56 @@ export const SettingsSection: React.FC = () => {
       }
     },
     [handleEmailSave, handleEmailCancel],
+  );
+
+  // API Key handlers
+  const handleApiKeyChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      setLocalApiKey(value);
+    },
+    [],
+  );
+
+  const handleApiKeySave = React.useCallback(async () => {
+    const trimmedApiKey = localApiKey.trim();
+    const apiKeyValue = trimmedApiKey === "" ? undefined : trimmedApiKey;
+    await setApiKey(apiKeyValue);
+    updateOpenAlexApiKey(apiKeyValue);
+    setIsEditingApiKey(false);
+    logger.debug("settings", "API key saved successfully", {
+      hasApiKey: apiKeyValue !== undefined,
+    });
+
+    const message = apiKeyValue
+      ? "OpenAlex API key has been configured."
+      : "OpenAlex API key has been cleared.";
+
+    notifications.show({
+      title: "API Key Updated",
+      message,
+      color: "green",
+      icon: <IconCheck size={16} />,
+    });
+  }, [localApiKey, setApiKey]);
+
+  const handleApiKeyCancel = React.useCallback(() => {
+    setLocalApiKey(apiKey || "");
+    setIsEditingApiKey(false);
+    logger.debug("settings", "API key edit cancelled");
+  }, [apiKey]);
+
+  const handleApiKeyKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleApiKeySave();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        handleApiKeyCancel();
+      }
+    },
+    [handleApiKeySave, handleApiKeyCancel],
   );
 
   const handleXpacToggle = React.useCallback(async (value: boolean) => {
@@ -367,7 +431,7 @@ export const SettingsSection: React.FC = () => {
 
   const isEmailValid = showEmailValidation ? isValidEmail(localEmail) : true;
   const hasStoredEmail =
-    politePoolEmail.length > 0 && isValidEmail(politePoolEmail);
+    politePoolEmail && politePoolEmail.length > 0 && isValidEmail(politePoolEmail);
 
   return (
     <Stack gap="md">
@@ -416,6 +480,7 @@ export const SettingsSection: React.FC = () => {
         ) : (
           <Stack gap="xs">
             <TextInput
+              className="ph-no-capture"
               placeholder="your.email@example.com"
               value={localEmail}
               onChange={handleEmailChange}
@@ -467,6 +532,80 @@ export const SettingsSection: React.FC = () => {
           Your email is used only for OpenAlex API requests to enable faster
           response times. It is not stored remotely or shared with third
           parties.
+        </Text>
+      </Stack>
+
+      <Divider />
+
+      {/* OpenAlex API Key Configuration */}
+      <Stack gap="sm">
+        <Group gap="xs">
+          <IconKey size={16} />
+          <Text size="sm" fw={500}>
+            OpenAlex API Key
+          </Text>
+          <Tooltip
+            label="Optional API key for OpenAlex requests. Provides higher rate limits and priority access"
+            position="right"
+            multiline
+            w={200}
+          >
+            <IconInfoCircle
+              size={12}
+              style={{ color: "var(--mantine-color-dimmed)" }}
+            />
+          </Tooltip>
+        </Group>
+
+        {!isEditingApiKey ? (
+          <Group gap="sm">
+            <Text size="sm" {...(apiKey ? {} : { c: "dimmed" })}>
+              {apiKey ? "••••••••••••••••" : "No API key configured"}
+            </Text>
+            <Button
+              variant="subtle"
+              size="xs"
+              onClick={() => {
+                setIsEditingApiKey(true);
+              }}
+            >
+              {apiKey ? "Edit" : "Configure"}
+            </Button>
+          </Group>
+        ) : (
+          <Stack gap="xs">
+            <TextInput
+              className="ph-no-capture"
+              type="password"
+              placeholder="Enter your OpenAlex API key"
+              value={localApiKey}
+              onChange={handleApiKeyChange}
+              onKeyDown={handleApiKeyKeyDown}
+            />
+            <Group gap="sm">
+              <Button
+                variant="light"
+                size="xs"
+                onClick={handleApiKeySave}
+                leftSection={<IconCheck size={14} />}
+              >
+                Save
+              </Button>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={handleApiKeyCancel}
+                leftSection={<IconX size={14} />}
+              >
+                Cancel
+              </Button>
+            </Group>
+          </Stack>
+        )}
+
+        <Text size="xs" c="dimmed">
+          Your API key is stored locally in your browser and is never sent to
+          any third parties except OpenAlex.
         </Text>
       </Stack>
 
