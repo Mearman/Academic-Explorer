@@ -9,13 +9,14 @@ import * as path from "path";
 import { startMSWServer } from "./test/setup/msw-setup";
 
 // Use relative paths to avoid import.meta issues
+// Note: process.cwd() is apps/web because nx e2e target sets cwd to apps/web
 const STORAGE_STATE_PATH = path.join(
   process.cwd(),
-  "apps/web/test-results/storage-state/state.json"
+  "test-results/storage-state/state.json"
 );
 const HAR_CACHE_DIR = path.join(
   process.cwd(),
-  "apps/web/test-results/har-cache"
+  "test-results/har-cache"
 );
 
 async function globalSetup(config: FullConfig) {
