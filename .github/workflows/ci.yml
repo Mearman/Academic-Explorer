@@ -33,7 +33,37 @@ env:
   CI: true
 
 jobs:
-  
+  # Detect which files changed to enable conditional job execution
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      docs: ${{ steps.filter.outputs.docs }}
+      config: ${{ steps.filter.outputs.config }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'apps/**'
+              - 'packages/**'
+              - 'pnpm-lock.yaml'
+              - 'nx.json'
+              - 'tsconfig*.json'
+            docs:
+              - '**.md'
+              - 'specs/**'
+              - 'docs/**'
+            config:
+              - '.github/workflows/**'
+              - '.github/actions/**'
+
   # Main build and test job
   build-and-test:
     runs-on: ubuntu-latest
@@ -214,7 +244,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: build-and-test
+    needs: [build-and-test, changes]
     if: always() && needs.build-and-test.result == 'success'
     steps:
       - name: Checkout
@@ -302,7 +332,7 @@ jobs:
   performance:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: build-and-test
+    needs: [build-and-test, changes]
     if: always() && needs.build-and-test.result == 'success'
     steps:
       - name: Checkout

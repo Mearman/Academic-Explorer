@@ -35,9 +35,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Add dorny/paths-filter@v3 action to workflow dependencies
-- [ ] T005 Create `changes` job in .github/workflows/ci.yml with path filter outputs (code, docs, config)
-- [ ] T006 Update job needs dependencies to include `changes` job where required
+- [X] T004 Add dorny/paths-filter@v3 action to workflow dependencies
+- [X] T005 Create `changes` job in .github/workflows/ci.yml with path filter outputs (code, docs, config)
+- [X] T006 Update job needs dependencies to include `changes` job where required
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
