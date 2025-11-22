@@ -10,7 +10,14 @@ export default defineConfig(
 	mergeConfig(baseVitestConfig, {
 		root: __dirname,
 		cacheDir: "../../node_modules/.vite/apps/web",
-		plugins: [nxViteTsPaths(), react(), vanillaExtractPlugin()],
+		plugins: [
+			nxViteTsPaths(),
+			// Note: TanStack Router Plugin is NOT needed for tests
+			// The route tree is already generated at build time
+			// Including it causes path resolution issues during Nx project graph generation
+			react(),
+			vanillaExtractPlugin(),
+		],
 
 		resolve: {
 			alias: {

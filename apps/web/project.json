@@ -17,6 +17,36 @@
         "cwd": "apps/web"
       },
       "dependsOn": ["build"]
+    },
+    "test:unit": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "apps/web/vitest.config.ts",
+        "include": ["src/**/*.unit.test.{ts,tsx}"],
+        "passWithNoTests": true,
+        "coverage": {
+          "enabled": true,
+          "reportsDirectory": "coverage/apps/web/unit"
+        }
+      }
+    },
+    "test:component": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "apps/web/vitest.config.ts",
+        "include": ["src/**/*.component.test.{ts,tsx}"],
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/web/component"
+      }
+    },
+    "test:integration": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "apps/web/vitest.config.ts",
+        "include": ["src/**/*.integration.test.{ts,tsx}"],
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/web/integration"
+      }
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

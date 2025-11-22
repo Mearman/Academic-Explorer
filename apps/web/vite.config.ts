@@ -46,9 +46,10 @@ function createWebConfig(): UserConfig {
     plugins: [
       nxViteTsPaths(),
       // TanStack Router Plugin - must come before React plugin
+      // Use absolute paths to avoid issues during Nx project graph generation
       TanStackRouterVite({
-        routesDirectory: './src/routes',
-        generatedRouteTree: './src/routeTree.gen.ts',
+        routesDirectory: resolve(__dirname, 'src/routes'),
+        generatedRouteTree: resolve(__dirname, 'src/routeTree.gen.ts'),
       }),
       // OpenAlex Cache Plugin
       openalexCachePlugin({
