@@ -308,6 +308,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Catalogue
               </Button>
+              <Button
+                component={Link}
+                to="/settings"
+                variant="subtle"
+                size="xs"
+              >
+                Settings
+              </Button>
             </Group>
 
             {/* Mobile navigation - dropdown menu (hidden when search expanded) */}
@@ -358,6 +366,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Catalogue
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Settings
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
