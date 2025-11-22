@@ -205,7 +205,7 @@ describe("OpenAlexCLI Integration Tests", () => {
 
 			expect(result).toBeNull()
 			expect(consoleSpy).toHaveBeenCalledWith(
-				expect.stringContaining("[general] Cache miss for authors/A9999999999"),
+				expect.stringContaining("[general] Cache-only mode: entity A9999999999 not found in cache"),
 				""
 			)
 

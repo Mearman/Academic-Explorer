@@ -24,7 +24,7 @@
       }
     },
     "test:unit": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "config": "apps/cli/vitest.config.ts",
         "include": ["src/**/*.unit.test.ts"],
@@ -36,7 +36,7 @@
       }
     },
     "test:integration": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "config": "apps/cli/vitest.config.ts",
         "include": ["src/**/*.integration.test.ts"],
