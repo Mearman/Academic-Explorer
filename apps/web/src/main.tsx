@@ -268,6 +268,28 @@ storageProvider.initializeSpecialLists().catch((error) => {
   logger.error("main", "Failed to initialize special lists", { error });
 });
 
+// Initialize OpenAlex client with settings from storage
+(async () => {
+  try {
+    const { settingsStoreInstance } = await import("@/stores/settings-store");
+    const { updateOpenAlexEmail, updateOpenAlexApiKey } = await import("@academic-explorer/client");
+
+    const settings = await settingsStoreInstance.getSettings();
+
+    if (settings.politePoolEmail) {
+      updateOpenAlexEmail(settings.politePoolEmail);
+      logger.debug("main", "Initialized OpenAlex client with email from settings");
+    }
+
+    if (settings.apiKey) {
+      updateOpenAlexApiKey(settings.apiKey);
+      logger.debug("main", "Initialized OpenAlex client with API key from settings");
+    }
+  } catch (error) {
+    logger.error("main", "Failed to initialize OpenAlex client with settings", { error });
+  }
+})();
+
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");
