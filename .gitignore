@@ -133,3 +133,7 @@ vite.config.base.js
 vite.config.base.d.ts
 vitest.config.base.js
 vitest.config.base.d.ts
+# Environment files (contain sensitive API keys)
+.env
+.env.*
+!.env.example
