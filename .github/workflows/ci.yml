@@ -136,15 +136,6 @@ jobs:
             packages/*/dist
           retention-days: 1
 
-      - name: Upload Nx cache
-        uses: actions/upload-artifact@v4
-        with:
-          name: nx-cache
-          path: |
-            .nx/cache
-            **/node_modules/.cache
-          retention-days: 1
-
       - name: Determine deployment
         id: deploy
         run: |
@@ -195,6 +186,18 @@ jobs:
           restore-keys: |
             pnpm-store-${{ runner.os }}-
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nx/cache
+            **/node_modules/.cache
+            **/.vite
+          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-v2-
+            ${{ runner.os }}-nx-cache-v1-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -203,12 +206,6 @@ jobs:
         with:
           name: build-artifacts
 
-      - name: Download Nx cache
-        uses: actions/download-artifact@v4
-        with:
-          name: nx-cache
-        continue-on-error: true
-
       - name: Validate artifacts exist
         run: |
           if [ ! -d "apps/web/dist" ] || [ ! -d "apps/cli/dist" ]; then
@@ -216,13 +213,6 @@ jobs:
             exit 1
           fi
           echo "✅ Build artifacts validated"
-
-          # Check if Nx cache was downloaded
-          if [ -d ".nx/cache" ]; then
-            echo "✅ Nx cache restored from build job"
-          else
-            echo "⚠️  Nx cache not found - tests will run without cache"
-          fi
 
       - name: Run unit tests for ${{ matrix.package }}
         timeout-minutes: 10
@@ -284,16 +274,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nx/cache
+            **/node_modules/.cache
+            **/.vite
+          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-v2-
+            ${{ runner.os }}-nx-cache-v1-
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-
-      - name: Download Nx cache
-        uses: actions/download-artifact@v4
-        with:
-          name: nx-cache
-        continue-on-error: true
 
       - name: Validate artifacts exist
         run: |
@@ -302,13 +298,6 @@ jobs:
             exit 1
           fi
           echo "✅ Build artifacts validated"
-
-          # Check if Nx cache was downloaded
-          if [ -d ".nx/cache" ]; then
-            echo "✅ Nx cache restored from build job"
-          else
-            echo "⚠️  Nx cache not found - tests will run without cache"
-          fi
 
       - name: Run component tests for ${{ matrix.package }}
         timeout-minutes: 10
@@ -370,16 +359,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nx/cache
+            **/node_modules/.cache
+            **/.vite
+          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-v2-
+            ${{ runner.os }}-nx-cache-v1-
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-
-      - name: Download Nx cache
-        uses: actions/download-artifact@v4
-        with:
-          name: nx-cache
-        continue-on-error: true
 
       - name: Validate artifacts exist
         run: |
@@ -388,13 +383,6 @@ jobs:
             exit 1
           fi
           echo "✅ Build artifacts validated"
-
-          # Check if Nx cache was downloaded
-          if [ -d ".nx/cache" ]; then
-            echo "✅ Nx cache restored from build job"
-          else
-            echo "⚠️  Nx cache not found - tests will run without cache"
-          fi
 
       - name: Run integration tests for ${{ matrix.package }}
         timeout-minutes: 20
