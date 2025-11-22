@@ -1,3 +1,8 @@
+## <small>17.3.1 (2025-11-22)</small>
+
+* refactor(web): use Partial<PostHogConfig> with correct properties ([d64b1f3](https://github.com/Mearman/Academic-Explorer/commit/d64b1f3))
+* chore(release): 17.3.0 [skip ci] ([ef63a13](https://github.com/Mearman/Academic-Explorer/commit/ef63a13))
+
 ## 17.3.0 (2025-11-22)
 
 * fix(web): correct PostHog config types - remove invalid recordCanvas property ([75e7881](https://github.com/Mearman/Academic-Explorer/commit/75e7881))
