@@ -3,6 +3,14 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/types/entities/src",
   "projectType": "library",
-  "targets": {},
-  "tags": ["type:library", "scope:shared", "type:entity"]
+  "targets": {
+    "test:unit": {},
+    "test:component": {},
+    "test:integration": {}
+  },
+  "tags": [
+    "type:library",
+    "scope:shared",
+    "type:entity"
+  ]
 }

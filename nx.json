@@ -322,6 +322,12 @@
       ]
     },
     "test:unit": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "testNamePattern": "unit",
+        "passWithNoTests": true,
+        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/unit"
+      },
       "cache": true,
       "dependsOn": [],
       "inputs": [
@@ -333,6 +339,12 @@
       ]
     },
     "test:component": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "testNamePattern": "component",
+        "passWithNoTests": true,
+        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/component"
+      },
       "cache": true,
       "dependsOn": [
         "test:unit"
@@ -346,6 +358,12 @@
       ]
     },
     "test:integration": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "testNamePattern": "integration",
+        "passWithNoTests": true,
+        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/integration"
+      },
       "cache": true,
       "dependsOn": [
         "test:unit"
