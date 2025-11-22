@@ -241,7 +241,7 @@ jobs:
           echo "Test pattern: $TEST_PATTERN"
 
           # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose --include "$TEST_PATTERN" || {
+          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
@@ -346,7 +346,7 @@ jobs:
           echo "Test pattern: $TEST_PATTERN"
 
           # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose --include "$TEST_PATTERN" || {
+          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
@@ -451,7 +451,7 @@ jobs:
           echo "Test pattern: $TEST_PATTERN"
 
           # Run vitest - if no tests match, vitest will exit 0
-          pnpm exec vitest run --reporter=verbose --include "$TEST_PATTERN" || {
+          pnpm exec vitest run --reporter=verbose "$TEST_PATTERN" || {
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No tests found (this is OK)"
