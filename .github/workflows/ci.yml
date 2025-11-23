@@ -108,10 +108,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Cache analytics
         run: |
@@ -195,10 +194,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -284,10 +282,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -370,10 +367,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
