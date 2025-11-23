@@ -20,9 +20,11 @@ export default defineConfig({
       ],
   testIgnore: process.env.E2E_FULL_SUITE ? ["**/manual/**"] : ["**/manual/**", "**/*-full.e2e.test.ts"],
 
-  // Run tests in parallel - E2E tests are browser-isolated
-  fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  // Run tests serially to prevent OOM errors
+  // Tests must run one at a time (workers: 1) due to memory constraints
+  // See specs/020-e2e-test-coverage/audit-results.md for details
+  fullyParallel: false,
+  workers: 1,
 
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
