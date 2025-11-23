@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     tags: ["v*"]
   pull_request:
     branches: [main]
@@ -37,13 +37,27 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     outputs:
       code: ${{ steps.filter.outputs.code }}
       docs: ${{ steps.filter.outputs.docs }}
       config: ${{ steps.filter.outputs.config }}
+      should-test: ${{ steps.check-event.outputs.should-test }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Check if tests should run
+        id: check-event
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]] || \
+             [[ "${{ github.ref }}" == "refs/heads/main" ]] || \
+             [[ "${{ github.event_name }}" == "schedule" ]] || \
+             [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should-test=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "should-test=false" >> "${GITHUB_OUTPUT}"
+          fi
 
       - name: Detect file changes
         uses: dorny/paths-filter@v3
@@ -108,10 +122,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Cache analytics
         run: |
@@ -152,8 +165,8 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build
-    if: always() && needs.build.result == 'success'
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.should-test == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -195,10 +208,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -238,8 +250,8 @@ jobs:
   component-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: unit-tests
-    if: always() && needs.unit-tests.result == 'success'
+    needs: [unit-tests, changes]
+    if: always() && needs.unit-tests.result == 'success' && needs.changes.outputs.should-test == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -284,10 +296,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -324,8 +335,8 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    needs: component-tests
-    if: always() && needs.component-tests.result == 'success'
+    needs: [component-tests, changes]
+    if: always() && needs.component-tests.result == 'success' && needs.changes.outputs.should-test == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -370,10 +381,9 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v2-
-            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -410,8 +420,8 @@ jobs:
   security-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: build
-    if: always() && needs.build.result == 'success'
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.should-test == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -451,8 +461,8 @@ jobs:
   dependency-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: build
-    if: always() && needs.build.result == 'success'
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.should-test == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -554,8 +564,8 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build
-    if: always() && needs.build.result == 'success'
+    needs: [build, changes]
+    if: always() && needs.build.result == 'success' && needs.changes.outputs.should-test == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
