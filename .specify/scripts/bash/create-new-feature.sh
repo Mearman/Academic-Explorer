@@ -83,30 +83,50 @@ find_repo_root() {
 # Function to check existing branches (local and remote) and return next available number
 check_existing_branches() {
     local short_name="$1"
-    
+
     # Fetch all remotes to get latest branch info (suppress errors if no remotes)
     git fetch --all --prune 2>/dev/null || true
-    
-    # Find all branches matching the pattern using git ls-remote (more reliable)
-    local remote_branches=$(git ls-remote --heads origin 2>/dev/null | grep -E "refs/heads/[0-9]+-${short_name}$" | sed 's/.*\/\([0-9]*\)-.*/\1/' | sort -n)
-    
-    # Also check local branches
-    local local_branches=$(git branch 2>/dev/null | grep -E "^[* ]*[0-9]+-${short_name}$" | sed 's/^[* ]*//' | sed 's/-.*//' | sort -n)
-    
-    # Check specs directory as well
-    local spec_dirs=""
-    if [ -d "$SPECS_DIR" ]; then
-        spec_dirs=$(find "$SPECS_DIR" -maxdepth 1 -type d -name "[0-9]*-${short_name}" 2>/dev/null | xargs -n1 basename 2>/dev/null | sed 's/-.*//' | sort -n)
+
+    # Get highest number from ALL branches (not just matching short name)
+    local highest_branch=0
+    branches=$(git branch -a 2>/dev/null || echo "")
+
+    if [ -n "$branches" ]; then
+        while IFS= read -r branch; do
+            # Clean branch name: remove leading markers and remote prefixes
+            clean_branch=$(echo "$branch" | sed 's/^[* ]*//; s|^remotes/[^/]*/||')
+
+            # Extract feature number if branch matches pattern ###-*
+            if echo "$clean_branch" | grep -q '^[0-9]\{3\}-'; then
+                number=$(echo "$clean_branch" | grep -o '^[0-9]\{3\}' || echo "0")
+                number=$((10#$number))
+                if [ "$number" -gt "$highest_branch" ]; then
+                    highest_branch=$number
+                fi
+            fi
+        done <<< "$branches"
     fi
-    
-    # Combine all sources and get the highest number
-    local max_num=0
-    for num in $remote_branches $local_branches $spec_dirs; do
-        if [ "$num" -gt "$max_num" ]; then
-            max_num=$num
-        fi
-    done
-    
+
+    # Get highest number from ALL specs (not just matching short name)
+    local highest_spec=0
+    if [ -d "$SPECS_DIR" ]; then
+        for dir in "$SPECS_DIR"/*; do
+            [ -d "$dir" ] || continue
+            dirname=$(basename "$dir")
+            number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
+            number=$((10#$number))
+            if [ "$number" -gt "$highest_spec" ]; then
+                highest_spec=$number
+            fi
+        done
+    fi
+
+    # Take the maximum of both
+    local max_num=$highest_branch
+    if [ "$highest_spec" -gt "$max_num" ]; then
+        max_num=$highest_spec
+    fi
+
     # Return next number
     echo $((max_num + 1))
 }
