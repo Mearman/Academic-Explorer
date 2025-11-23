@@ -71,7 +71,7 @@ runs:
         echo "🔍 Generating matrix from Nx dependency graph..."
 
         # Run the matrix generator script
-        node ${{ github.action_path }}/generate-matrix.cjs \
+        npx tsx ${{ github.action_path }}/generate-matrix.ts \
           --project-type="${{ inputs.project-type }}" \
           --affected-only="${{ inputs.affected-only }}" \
           --base="${{ inputs.base }}" \

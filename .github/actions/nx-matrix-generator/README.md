@@ -286,16 +286,16 @@ You can test the matrix generator locally:
 
 ```bash
 # Test with all projects
-node .github/actions/nx-matrix-generator/generate-matrix.cjs
+npx tsx .github/actions/nx-matrix-generator/generate-matrix.ts
 
 # Test with specific filters
-node .github/actions/nx-matrix-generator/generate-matrix.cjs \
+npx tsx .github/actions/nx-matrix-generator/generate-matrix.ts \
   --project-type=lib \
   --affected-only=false \
   --output-format=full
 
 # Test affected projects
-node .github/actions/nx-matrix-generator/generate-matrix.cjs \
+npx tsx .github/actions/nx-matrix-generator/generate-matrix.ts \
   --affected-only=true \
   --base=origin/main \
   --head=HEAD

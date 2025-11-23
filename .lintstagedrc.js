@@ -6,8 +6,8 @@ export default {
   ],
 
   // Type check all affected projects
-  '*.{ts,tsx}': [
-    () => 'nx affected --target=typecheck'
+  '{packages,apps}/**/*.{ts,tsx}': [
+    () => 'nx affected --target=typecheck --base=HEAD~1 --head=HEAD'
   ],
 
   // GitHub workflow files (exclude action definitions)

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 
 /**
  * Nx Dependency Matrix Generator
@@ -7,14 +7,62 @@
  * This script analyzes the Nx workspace and creates a matrix strategy for parallel CI/CD jobs.
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'node:child_process';
+import * as fs from 'node:fs';
+
+// Types and Interfaces
+interface Options {
+  projectType: string;
+  affectedOnly: boolean;
+  base: string;
+  head: string;
+  exclude: string[];
+  include: string[];
+  outputFormat: 'names-only' | 'full';
+  maxParallel: number;
+  withDependencies: boolean;
+}
+
+interface ProjectDetails {
+  name: string;
+  type: string;
+  root: string;
+  sourceRoot: string;
+  targets: string[];
+  tags: string[];
+  implicitDependencies: string[];
+}
+
+interface MatrixItemFull {
+  name: string;
+  type: string;
+  root: string;
+  targets: string[];
+  dependencies?: string[];
+}
+
+type MatrixItem = string | MatrixItemFull;
+
+interface MatrixResult {
+  matrix: MatrixItem[];
+  projects: string[];
+  count: number;
+}
+
+interface NxProject {
+  name?: string;
+  projectType?: string;
+  root?: string;
+  sourceRoot?: string;
+  targets?: Record<string, unknown>;
+  tags?: string[];
+  implicitDependencies?: string[];
+}
 
 // Parse command-line arguments
-function parseArgs() {
+function parseArgs(): Options {
   const args = process.argv.slice(2);
-  const options = {
+  const options: Options = {
     projectType: 'all',
     affectedOnly: false,
     base: 'origin/main',
@@ -50,7 +98,7 @@ function parseArgs() {
         options.include = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
         break;
       case 'output-format':
-        options.outputFormat = value;
+        options.outputFormat = value as 'names-only' | 'full';
         break;
       case 'max-parallel':
         options.maxParallel = parseInt(value, 10);
@@ -65,7 +113,7 @@ function parseArgs() {
 }
 
 // Execute shell command and return output
-function exec(command, options = {}) {
+function exec(command: string, options: Record<string, unknown> = {}): string {
   try {
     const result = execSync(command, {
       encoding: 'utf8',
@@ -75,19 +123,21 @@ function exec(command, options = {}) {
     return result.trim();
   } catch (error) {
     console.error(`Error executing command: ${command}`);
-    console.error(error.message);
-    if (error.stderr) {
-      console.error('STDERR:', error.stderr.toString());
+    if (error instanceof Error) {
+      console.error(error.message);
+      if ('stderr' in error && error.stderr) {
+        console.error('STDERR:', error.stderr.toString());
+      }
     }
     throw error;
   }
 }
 
 // Get all Nx projects
-function getAllProjects() {
+function getAllProjects(): string[] {
   try {
     const output = exec('npx nx show projects --json');
-    return JSON.parse(output);
+    return JSON.parse(output) as string[];
   } catch (error) {
     console.error('Failed to get Nx projects');
     throw error;
@@ -95,23 +145,25 @@ function getAllProjects() {
 }
 
 // Get affected projects
-function getAffectedProjects(base, head) {
+function getAffectedProjects(base: string, head: string): string[] {
   try {
     // Get affected projects using Nx
     const output = exec(`npx nx show projects --affected --base=${base} --head=${head} --json`);
-    return JSON.parse(output);
+    return JSON.parse(output) as string[];
   } catch (error) {
     console.warn('Failed to get affected projects, falling back to all projects');
-    console.error(error.message);
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
     return getAllProjects();
   }
 }
 
 // Get project details
-function getProjectDetails(projectName) {
+function getProjectDetails(projectName: string): ProjectDetails {
   try {
     const output = exec(`npx nx show project ${projectName} --json`);
-    const project = JSON.parse(output);
+    const project = JSON.parse(output) as NxProject;
     return {
       name: project.name || projectName,
       type: project.projectType || 'unknown',
@@ -136,13 +188,13 @@ function getProjectDetails(projectName) {
 }
 
 // Get project dependencies from the dependency graph
-function getProjectDependencies(projectName) {
+function getProjectDependencies(projectName: string): string[] {
   try {
     const output = exec(`npx nx show project ${projectName} --json`);
-    const project = JSON.parse(output);
+    const project = JSON.parse(output) as NxProject;
 
     // Extract dependencies from implicitDependencies and targets
-    const dependencies = new Set();
+    const dependencies = new Set<string>();
 
     if (project.implicitDependencies) {
       project.implicitDependencies.forEach(dep => dependencies.add(dep));
@@ -156,7 +208,7 @@ function getProjectDependencies(projectName) {
 }
 
 // Filter projects by type
-function filterByType(projects, projectType) {
+function filterByType(projects: string[], projectType: string): string[] {
   if (projectType === 'all') {
     return projects;
   }
@@ -185,11 +237,11 @@ function filterByType(projects, projectType) {
 }
 
 // Generate matrix
-function generateMatrix(options) {
+function generateMatrix(options: Options): MatrixResult {
   console.log('Configuration:', JSON.stringify(options, null, 2));
 
   // Step 1: Get projects
-  let projects = [];
+  let projects: string[] = [];
 
   if (options.include.length > 0) {
     // If specific projects are included, use only those
@@ -224,7 +276,7 @@ function generateMatrix(options) {
   }
 
   // Step 4: Build matrix based on output format
-  let matrix;
+  let matrix: MatrixItem[];
 
   if (options.outputFormat === 'names-only') {
     // Simple array of project names
@@ -233,7 +285,7 @@ function generateMatrix(options) {
     // Full format with metadata
     matrix = projects.map(projectName => {
       const details = getProjectDetails(projectName);
-      const item = {
+      const item: MatrixItemFull = {
         name: projectName,
         type: details.type,
         root: details.root,
@@ -262,7 +314,7 @@ function generateMatrix(options) {
 }
 
 // Set GitHub Actions output
-function setOutput(name, value) {
+function setOutput(name: string, value: string | string[] | MatrixItem[]): void {
   const githubOutput = process.env.GITHUB_OUTPUT;
 
   if (githubOutput) {
@@ -275,7 +327,7 @@ function setOutput(name, value) {
 }
 
 // Main execution
-function main() {
+function main(): void {
   try {
     console.log('🚀 Nx Dependency Matrix Generator');
     console.log('='.repeat(60));
@@ -290,7 +342,7 @@ function main() {
     // Set GitHub Actions outputs
     setOutput('matrix', result.matrix);
     setOutput('projects', result.projects);
-    setOutput('count', result.count);
+    setOutput('count', result.count.toString());
 
     console.log('='.repeat(60));
     console.log('Matrix JSON:');
@@ -305,8 +357,9 @@ function main() {
 }
 
 // Run if executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { generateMatrix, parseArgs };
+// Export for testing
+export { generateMatrix, parseArgs, type Options, type MatrixResult, type ProjectDetails };
