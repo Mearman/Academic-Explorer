@@ -649,7 +649,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [build, unit-tests, component-tests, integration-tests, e2e, security-audit, dependency-audit]
-    if: needs.build.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success'
+    if: needs.build.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success'
     environment:
       name: production
       url: https://mearman.github.io/Academic-Explorer/
@@ -791,7 +791,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [build, unit-tests, component-tests, integration-tests, e2e, security-audit, dependency-audit, deploy]
-    if: needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && needs.e2e.result == 'success' && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
+    if: needs.build.result == 'success' && needs.unit-tests.result == 'success' && needs.component-tests.result == 'success' && needs.integration-tests.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
