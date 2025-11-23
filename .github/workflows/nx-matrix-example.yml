@@ -1,0 +1,168 @@
+name: Nx Matrix Example
+
+# This workflow demonstrates how to use the nx-matrix-generator action
+# to dynamically create test matrices based on your Nx dependency graph
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Example 1: Generate matrix for all projects
+  setup-all:
+    name: Setup Matrix - All Projects
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      projects: ${{ steps.matrix.outputs.projects }}
+      count: ${{ steps.matrix.outputs.count }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Generate Matrix
+        id: matrix
+        uses: ./.github/actions/nx-matrix-generator
+        with:
+          project-type: 'all'
+
+      - name: Display Matrix
+        run: |
+          echo "Generated matrix with ${{ steps.matrix.outputs.count }} projects"
+          echo "Projects: ${{ steps.matrix.outputs.projects }}"
+
+  # Example 2: Generate matrix for only libraries
+  setup-libs:
+    name: Setup Matrix - Libraries Only
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      count: ${{ steps.matrix.outputs.count }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Generate Matrix
+        id: matrix
+        uses: ./.github/actions/nx-matrix-generator
+        with:
+          project-type: 'lib'
+
+  # Example 3: Generate matrix for affected projects only
+  setup-affected:
+    name: Setup Matrix - Affected Projects
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      count: ${{ steps.matrix.outputs.count }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for affected detection
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Generate Matrix
+        id: matrix
+        uses: ./.github/actions/nx-matrix-generator
+        with:
+          affected-only: 'true'
+          base: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+          head: 'HEAD'
+
+  # Example 4: Test all projects using the generated matrix
+  test-all:
+    name: Test ${{ matrix.project }}
+    needs: setup-all
+    if: needs.setup-all.outputs.count > 0
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.setup-all.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Test ${{ matrix.project }}
+        run: |
+          echo "Testing project: ${{ matrix.project }}"
+          npx nx test:unit ${{ matrix.project }} || echo "No unit tests for ${{ matrix.project }}"
+
+  # Example 5: Test libraries only
+  test-libs:
+    name: Test Library ${{ matrix.project }}
+    needs: setup-libs
+    if: needs.setup-libs.outputs.count > 0
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.setup-libs.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Test ${{ matrix.project }}
+        run: npx nx test:unit ${{ matrix.project }}
+
+  # Example 6: Test affected projects only
+  test-affected:
+    name: Test Affected ${{ matrix.project }}
+    needs: setup-affected
+    if: needs.setup-affected.outputs.count > 0
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.setup-affected.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Test ${{ matrix.project }}
+        run: npx nx test:unit ${{ matrix.project }}
+
+  # Summary job
+  summary:
+    name: Matrix Example Summary
+    needs: [setup-all, setup-libs, setup-affected, test-all, test-libs, test-affected]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## Matrix Generation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- All Projects: ${{ needs.setup-all.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Libraries: ${{ needs.setup-libs.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Affected: ${{ needs.setup-affected.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Test All: ${{ needs.test-all.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Libs: ${{ needs.test-libs.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Affected: ${{ needs.test-affected.result }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,89 @@
+name: 'Nx Dependency Matrix Generator'
+description: 'Dynamically generates GitHub Actions matrix jobs from Nx dependency graph'
+author: 'Academic Explorer'
+
+inputs:
+  project-type:
+    description: 'Filter by project type: "all", "app", "lib", "e2e". Comma-separated for multiple types.'
+    required: false
+    default: 'all'
+
+  affected-only:
+    description: 'Only include affected projects (based on git changes)'
+    required: false
+    default: 'false'
+
+  base:
+    description: 'Base branch for affected comparison (used when affected-only is true)'
+    required: false
+    default: 'origin/main'
+
+  head:
+    description: 'Head branch for affected comparison (used when affected-only is true)'
+    required: false
+    default: 'HEAD'
+
+  exclude:
+    description: 'Comma-separated list of project names to exclude from the matrix'
+    required: false
+    default: ''
+
+  include:
+    description: 'Comma-separated list of project names to include (overrides other filters)'
+    required: false
+    default: ''
+
+  output-format:
+    description: 'Output format: "names-only" (just project names) or "full" (with metadata)'
+    required: false
+    default: 'names-only'
+
+  max-parallel:
+    description: 'Maximum number of parallel jobs (0 for unlimited)'
+    required: false
+    default: '0'
+
+  with-dependencies:
+    description: 'Include project dependencies in the output metadata'
+    required: false
+    default: 'false'
+
+outputs:
+  matrix:
+    description: 'JSON matrix for GitHub Actions matrix strategy'
+    value: ${{ steps.generate-matrix.outputs.matrix }}
+
+  projects:
+    description: 'Array of project names included in the matrix'
+    value: ${{ steps.generate-matrix.outputs.projects }}
+
+  count:
+    description: 'Number of projects in the matrix'
+    value: ${{ steps.generate-matrix.outputs.count }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate Nx Matrix
+      id: generate-matrix
+      shell: bash
+      run: |
+        echo "🔍 Generating matrix from Nx dependency graph..."
+
+        # Run the matrix generator script
+        node ${{ github.action_path }}/generate-matrix.cjs \
+          --project-type="${{ inputs.project-type }}" \
+          --affected-only="${{ inputs.affected-only }}" \
+          --base="${{ inputs.base }}" \
+          --head="${{ inputs.head }}" \
+          --exclude="${{ inputs.exclude }}" \
+          --include="${{ inputs.include }}" \
+          --output-format="${{ inputs.output-format }}" \
+          --max-parallel="${{ inputs.max-parallel }}" \
+          --with-dependencies="${{ inputs.with-dependencies }}"
+
+        echo "✅ Matrix generated successfully"
+
+branding:
+  icon: 'git-branch'
+  color: 'blue'
