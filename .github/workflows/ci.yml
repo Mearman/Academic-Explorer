@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     tags: ["v*"]
   pull_request:
     branches: [main]
@@ -37,6 +37,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     outputs:
       code: ${{ steps.filter.outputs.code }}
       docs: ${{ steps.filter.outputs.docs }}
@@ -152,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: build
-    if: always() && needs.build.result == 'success'
+    if: always() && needs.build.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     strategy:
       fail-fast: false
       matrix:
@@ -237,7 +238,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: unit-tests
-    if: always() && needs.unit-tests.result == 'success'
+    if: always() && needs.unit-tests.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     strategy:
       fail-fast: false
       matrix:
@@ -322,7 +323,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: component-tests
-    if: always() && needs.component-tests.result == 'success'
+    if: always() && needs.component-tests.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     strategy:
       fail-fast: false
       matrix:
@@ -407,7 +408,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build
-    if: always() && needs.build.result == 'success'
+    if: always() && needs.build.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -448,7 +449,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build
-    if: always() && needs.build.result == 'success'
+    if: always() && needs.build.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -551,7 +552,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: build
-    if: always() && needs.build.result == 'success'
+    if: always() && needs.build.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v5
