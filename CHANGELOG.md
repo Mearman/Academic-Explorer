@@ -1,3 +1,13 @@
+## <small>18.0.1 (2025-11-23)</small>
+
+* fix(config): add always() to deploy condition to prevent auto-skip ([70bafc3](https://github.com/Mearman/Academic-Explorer/commit/70bafc3))
+* fix(config): add always() to release condition to prevent auto-skip ([0560a82](https://github.com/Mearman/Academic-Explorer/commit/0560a82))
+* fix(config): allow deployment when E2E tests are skipped ([fd562f7](https://github.com/Mearman/Academic-Explorer/commit/fd562f7))
+* fix(config): set GITHUB_PAGES environment variable for production build ([d59a819](https://github.com/Mearman/Academic-Explorer/commit/d59a819))
+* docs(docs): add E2E test coverage enhancement specification ([06acfa3](https://github.com/Mearman/Academic-Explorer/commit/06acfa3)), closes [hi#value](https://github.com/hi/issues/value)
+* perf(config): optimize Nx cache with GitHub Actions cache instead of artifacts ([a987489](https://github.com/Mearman/Academic-Explorer/commit/a987489))
+* chore(release): 18.0.0 [skip ci] ([45b12c1](https://github.com/Mearman/Academic-Explorer/commit/45b12c1))
+
 ## 18.0.0 (2025-11-22)
 
 * fix(ci): use simple string filters and cd into packages for vitest ([c1a3704](https://github.com/Mearman/Academic-Explorer/commit/c1a3704))
