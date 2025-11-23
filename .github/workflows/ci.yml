@@ -124,6 +124,8 @@ jobs:
 
       - name: Build
         timeout-minutes: 20
+        env:
+          GITHUB_PAGES: true
         run: npx nx run-many -t build --parallel=4
 
       - name: Upload build artifacts
@@ -230,6 +232,7 @@ jobs:
           name: coverage-${{ matrix.package }}-unit
           path: coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # Component tests - React component tests (run after unit tests)
   component-tests:
@@ -315,6 +318,7 @@ jobs:
           name: coverage-${{ matrix.package }}-component
           path: coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # Integration tests - Cross-component tests (run after component tests, heavier)
   integration-tests:
@@ -400,6 +404,7 @@ jobs:
           name: coverage-${{ matrix.package }}-integration
           path: coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # Security audit - Check for vulnerabilities
   security-audit:
