@@ -1,3 +1,8 @@
+## <small>18.0.2 (2025-11-23)</small>
+
+* fix(config): add test gating logic to prevent runs on feature branch pushes ([503b45d](https://github.com/Mearman/Academic-Explorer/commit/503b45d))
+* chore(release): 18.0.1 [skip ci] ([807605e](https://github.com/Mearman/Academic-Explorer/commit/807605e))
+
 ## <small>18.0.1 (2025-11-23)</small>
 
 * fix(config): add always() to deploy condition to prevent auto-skip ([70bafc3](https://github.com/Mearman/Academic-Explorer/commit/70bafc3))
