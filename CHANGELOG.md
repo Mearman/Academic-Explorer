@@ -1,3 +1,8 @@
+## <small>19.0.1 (2025-11-24)</small>
+
+* chore(deps): bump the mantine group with 5 updates (#102) ([94021fc](https://github.com/Mearman/Academic-Explorer/commit/94021fc)), closes [#102](https://github.com/Mearman/Academic-Explorer/issues/102)
+* chore(release): 19.0.0 [skip ci] ([ae8172f](https://github.com/Mearman/Academic-Explorer/commit/ae8172f))
+
 ## 19.0.0 (2025-11-24)
 
 * ci(config): remove graph and simulation packages from test matrices ([e3acb00](https://github.com/Mearman/Academic-Explorer/commit/e3acb00))
