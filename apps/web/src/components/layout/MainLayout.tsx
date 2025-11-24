@@ -33,7 +33,6 @@ import {
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
-import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { HistorySidebar } from "./HistorySidebar";
 import { SidebarFallback } from "./SidebarFallback";
@@ -630,7 +629,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
-                <RightSidebarDynamic />
               </Box>
             </>
           )}

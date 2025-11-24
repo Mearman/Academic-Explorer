@@ -35,11 +35,6 @@ const EntityFiltersSection = React.lazy(() =>
     default: m.EntityFiltersSection,
   })),
 );
-const GraphActionsSection = React.lazy(() =>
-  import("@/components/sections").then((m) => ({
-    default: m.GraphActionsSection,
-  })),
-);
 const CacheSettingsSection = React.lazy(() =>
   import("@/components/sections").then((m) => ({
     default: m.CacheSettingsSection,
@@ -50,11 +45,6 @@ const EdgeFiltersSection = React.lazy(() =>
     default: m.EdgeFiltersSection,
   })),
 );
-const EntityInfoSection = React.lazy(() =>
-  import("@/components/sections").then((m) => ({
-    default: m.EntityInfoSection,
-  })),
-);
 const ExternalLinksSection = React.lazy(() =>
   import("@/components/sections").then((m) => ({
     default: m.ExternalLinksSection,
@@ -63,11 +53,6 @@ const ExternalLinksSection = React.lazy(() =>
 const ViewOptionsSection = React.lazy(() =>
   import("@/components/sections").then((m) => ({
     default: m.ViewOptionsSection,
-  })),
-);
-const RawApiDataSection = React.lazy(() =>
-  import("@/components/sections").then((m) => ({
-    default: m.RawApiDataSection,
   })),
 );
 const GraphStatsSection = React.lazy(() =>
@@ -91,11 +76,6 @@ const AppActivitySection = React.lazy(() =>
 const NodeRepositorySection = React.lazy(() =>
   import("@/components/sections").then((m) => ({
     default: m.NodeRepositorySection,
-  })),
-);
-const EdgeRepositorySection = React.lazy(() =>
-  import("@/components/sections").then((m) => ({
-    default: m.EdgeRepositorySection,
   })),
 );
 const AllNodesSection = React.lazy(() =>
@@ -140,16 +120,6 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
     tooltip: "Entity & edge filters",
   },
   {
-    id: "graph-actions",
-    title: "Graph Actions",
-    icon: IconGraph,
-    component: GraphActionsSection,
-    defaultSidebar: LEFT_SIDEBAR,
-    category: GRAPH_CONTROL_CATEGORY,
-    order: 3,
-    tooltip: "Graph layout controls",
-  },
-  {
     id: "cache-settings",
     title: "Cache & Traversal Settings",
     icon: IconDatabase,
@@ -178,16 +148,6 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
     category: "repository",
     order: 6,
     tooltip: "Drag nodes to add to graph",
-  },
-  {
-    id: "edge-repository",
-    title: "Edge Repository",
-    icon: IconArrowsExchange,
-    component: EdgeRepositorySection,
-    defaultSidebar: "left",
-    category: "repository",
-    order: 7,
-    tooltip: "Drag edges to add to graph",
   },
   {
     id: "all-nodes",
@@ -222,16 +182,6 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
 
   // Right sidebar sections (default)
   {
-    id: "entity-info",
-    title: "Entity Information",
-    icon: IconInfoCircle,
-    component: EntityInfoSection,
-    defaultSidebar: "right",
-    category: "entity-details",
-    order: 1,
-    tooltip: "Entity details",
-  },
-  {
     id: "external-links",
     title: "External Links",
     icon: IconExternalLink,
@@ -250,16 +200,6 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
     category: "view-control",
     order: 3,
     tooltip: "View options",
-  },
-  {
-    id: "raw-api-data",
-    title: "Raw API Data",
-    icon: IconEye,
-    component: RawApiDataSection,
-    defaultSidebar: "right",
-    category: "debugging",
-    order: 4,
-    tooltip: "Raw API data",
   },
   {
     id: "network-activity",

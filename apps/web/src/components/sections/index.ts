@@ -3,6 +3,7 @@
  * All dynamically loadable sidebar sections
  */
 
+export { SearchSection } from "./SearchSection";
 export { EntityFiltersSection } from "./EntityFiltersSection";
 export { SettingsSection } from "./SettingsSection";
 
