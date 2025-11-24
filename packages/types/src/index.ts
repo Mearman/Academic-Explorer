@@ -91,3 +91,46 @@ export type {
 	EntityType,
 	EntityTypeMap,
 } from "./entities"
+
+// Re-export graph types
+export type {
+	Position,
+	ExternalIdentifier,
+	GraphNode,
+	EdgeDirection,
+	GraphEdge,
+	GraphLayout,
+	GraphEvents,
+	GraphOptions,
+	EntityIdentifier,
+	ProviderType,
+	SearchOptions,
+	SearchResult,
+	GraphData,
+	GraphCache,
+	GraphStats,
+	Community,
+	ForceLink,
+	ForceSimulationNode,
+	ForceSimulationTask,
+} from "./graph-types"
+
+// Re-export expansion settings types
+export type {
+	ExpansionTarget,
+	ExpansionOptions,
+	SortCriteria,
+	FilterOperator,
+	FilterCriteria,
+	ExpansionSettings,
+	PropertyType,
+	PropertyDefinition,
+	EntityTypeProperties,
+} from "./expansion-settings"
+export {
+	ENTITY_PROPERTIES,
+	DEFAULT_EXPANSION_SETTINGS,
+	getPropertiesForTarget,
+	getDefaultSettingsForTarget,
+	validateFilterCriteria,
+} from "./expansion-settings"
