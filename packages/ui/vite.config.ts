@@ -1,10 +1,9 @@
 import { fileURLToPath, URL } from "node:url";
 import { resolve } from "path";
-import { defineConfig, mergeConfig } from "vite";
-import baseConfig from "../../vite.config.base";
+import { defineConfig } from "vite";
 
-// UI library-specific Vite configuration
-// Optimized for library distribution with proper externals
+// UI library Vite configuration
+// Includes esbuild config for React 19 JSX transformation
 const uiConfig = defineConfig({
   build: {
     lib: {
@@ -21,28 +20,31 @@ const uiConfig = defineConfig({
     emptyOutDir: true,
     target: "esnext",
     rollupOptions: {
+      // Externalize all dependencies including React (peer dependencies)
       external: [
-        // React ecosystem
+        // React (peer dependency - must be externalized)
         "react",
         "react-dom",
         "react/jsx-runtime",
 
-        // Mantine UI library
+        // Mantine UI library (heavy)
         "@mantine/core",
         "@mantine/hooks",
         "@mantine/dates",
         "@mantine/notifications",
         "@mantine/spotlight",
 
-        // Icons and utilities
+        // Icons (large)
         "@tabler/icons-react",
+
+        // Other heavy dependencies
         "@tanstack/react-table",
         "@tanstack/react-router",
         "@xyflow/react",
         "date-fns",
         "immer",
 
-        // Internal workspace dependencies
+        // Internal workspace dependencies (avoid circular dependencies)
         "@academic-explorer/types",
         "@academic-explorer/utils",
       ],
@@ -67,6 +69,12 @@ const uiConfig = defineConfig({
     },
   },
 
+  esbuild: {
+    jsx: "automatic",
+    jsxFactory: "React",
+    jsxFragment: "React.Fragment",
+  },
+
   resolve: {
     alias: {
       "@": resolve(fileURLToPath(new URL(".", import.meta.url)), "src"),
@@ -74,5 +82,4 @@ const uiConfig = defineConfig({
   },
 });
 
-// Type assertion to handle mergeConfig compatibility between different Vite versions
-export default mergeConfig(baseConfig, uiConfig) as ReturnType<typeof mergeConfig>;
+export default uiConfig;

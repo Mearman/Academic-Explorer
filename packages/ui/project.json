@@ -10,7 +10,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "command": "vite build --config vite.config.dev.ts",
+        "command": "vite build",
         "cwd": "packages/ui"
       },
       "dependsOn": [
