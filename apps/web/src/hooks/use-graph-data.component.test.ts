@@ -5,7 +5,7 @@
 import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { createGraphDataService } from "@/services/graph-data-service";
 import { graphStore, useGraphStore } from "@/stores/graph-store";
-import type { SearchOptions } from "@academic-explorer/graph";
+import type { SearchOptions } from "@academic-explorer/types";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook } from "@testing-library/react";

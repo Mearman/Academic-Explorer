@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useAnimatedLayout } from "@academic-explorer/graph";
+import { useAnimatedLayout } from "@academic-explorer/types";
 import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 
 // Mock ReactFlow

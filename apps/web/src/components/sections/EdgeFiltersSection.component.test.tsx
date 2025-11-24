@@ -12,7 +12,7 @@ import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MantineProvider } from "@mantine/core";
 import { EdgeFiltersSection, filterByDirection, type EdgeDirectionFilter } from "./EdgeFiltersSection";
-import { RelationType, type GraphEdge } from "@academic-explorer/graph";
+import { RelationType, type GraphEdge } from "@academic-explorer/types";
 
 // Helper to render component with Mantine provider
 const renderWithMantine = (component: React.ReactElement) => {

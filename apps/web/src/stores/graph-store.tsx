@@ -8,8 +8,8 @@ import type {
   GraphNode,
   GraphEdge,
   GraphLayout,
-} from "@academic-explorer/graph";
-import { RelationType } from "@academic-explorer/graph";
+} from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 

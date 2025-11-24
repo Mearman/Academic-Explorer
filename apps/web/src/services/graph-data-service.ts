@@ -20,6 +20,7 @@ import {
   cachedOpenAlex,
   createRequestPipeline,
 } from "@academic-explorer/client";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import {
   isAuthor,
   isInstitution,
@@ -32,8 +33,8 @@ import type {
   GraphEdge,
   GraphNode,
   SearchOptions,
-} from "@academic-explorer/graph";
-import { EntityDetectionService, RelationType } from "@academic-explorer/graph";
+} from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import {

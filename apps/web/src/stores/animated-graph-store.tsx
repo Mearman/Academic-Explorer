@@ -13,7 +13,7 @@ import React, {
   type Reducer,
 } from "react";
 import { useGraphStore } from "./graph-store";
-import type { GraphNode, GraphLayout } from "@academic-explorer/graph";
+import type { GraphNode, GraphLayout } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 
 interface NodePosition {

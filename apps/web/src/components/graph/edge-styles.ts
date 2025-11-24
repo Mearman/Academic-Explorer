@@ -9,7 +9,8 @@
  * to meet WCAG 2.1 Level AA standards
  */
 
-import type { GraphEdge, RelationType, EdgeDirection } from "@academic-explorer/graph";
+import type { GraphEdge, EdgeDirection } from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 
 /**
  * Style properties for graph edges

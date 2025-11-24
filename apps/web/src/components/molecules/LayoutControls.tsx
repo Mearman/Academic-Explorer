@@ -6,7 +6,7 @@ import React from "react";
 import { Button, Popover, Stack, Text } from "@mantine/core";
 import { IconLayout, IconNetwork } from "@tabler/icons-react";
 import { useGraphStore } from "@/stores/graph-store";
-import type { GraphLayout } from "@academic-explorer/graph";
+import type { GraphLayout } from "@academic-explorer/types";
 
 const layoutOptions = [
   {

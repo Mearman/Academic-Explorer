@@ -4,7 +4,7 @@
  * @vitest-environment jsdom
  */
 
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {

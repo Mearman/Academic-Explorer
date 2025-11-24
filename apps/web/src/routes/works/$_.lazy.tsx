@@ -9,7 +9,7 @@ import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils/logger";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";

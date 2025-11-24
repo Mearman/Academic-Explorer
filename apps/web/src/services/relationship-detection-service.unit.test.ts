@@ -6,8 +6,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
 import { RelationshipDetectionService } from "./relationship-detection-service";
 import { graphStore } from "../stores/graph-store";
-import { RelationType } from "@academic-explorer/graph";
-import type { GraphNode,  } from "@academic-explorer/graph"
+import { RelationType } from "@academic-explorer/types";
+import type { GraphNode,  } from "@academic-explorer/types"
 import type { EntityType } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
 

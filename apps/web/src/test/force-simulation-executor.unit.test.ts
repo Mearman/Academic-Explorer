@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createForceSimulationExecutor } from "@academic-explorer/graph";
-import type { ForceSimulationTask, ForceSimulationNode, ForceLink } from "@academic-explorer/graph";
+import { createForceSimulationExecutor } from "@academic-explorer/types";
+import type { ForceSimulationTask, ForceSimulationNode, ForceLink } from "@academic-explorer/types";
 
 describe("ForceSimulationExecutor", () => {
   let executor: ReturnType<typeof createForceSimulationExecutor>;

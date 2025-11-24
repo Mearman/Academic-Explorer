@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import type { ProviderType } from "@academic-explorer/graph";
+import type { ProviderType } from "@academic-explorer/types";
 import React from "react";
 
 // Mock Dexie to prevent IndexedDB operations in tests

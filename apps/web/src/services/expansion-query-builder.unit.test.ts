@@ -9,7 +9,7 @@ import type {
   ExpansionSettings,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 
 // Mock logger to prevent console output during tests
 vi.mock("@academic-explorer/utils/logger", () => ({

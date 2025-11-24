@@ -8,8 +8,8 @@ import Dexie, { type Table } from "dexie";
 import type {
   GraphNode,
   GraphEdge,
-} from "@academic-explorer/graph";
-import { RelationType } from "@academic-explorer/graph";
+} from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 

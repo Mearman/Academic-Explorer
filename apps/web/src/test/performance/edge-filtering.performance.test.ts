@@ -9,7 +9,7 @@
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { filterByDirection, type EdgeDirectionFilter } from "@/components/sections/EdgeFiltersSection";
-import { RelationType, type GraphEdge } from "@academic-explorer/graph";
+import { RelationType, type GraphEdge } from "@academic-explorer/types";
 
 describe("Edge Filtering Performance", () => {
   // Generate realistic test data

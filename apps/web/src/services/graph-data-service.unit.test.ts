@@ -5,16 +5,17 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "./graph-data-service";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { graphStore } from "../stores/graph-store";
-import type { SearchOptions } from "@academic-explorer/graph";
+import type { SearchOptions } from "@academic-explorer/utils";
 import type {
   Work,
   PartialWork,
   Author,
   OpenAlexEntity,
   Authorship,
-} from "@academic-explorer/types";
+} from "@academic-explorer/utils";
+import { RelationType } from "@academic-explorer/types";
 
 // Mock client
 vi.mock("@academic-explorer/client", () => ({
@@ -61,27 +62,19 @@ vi.mock("@academic-explorer/client", () => ({
   isFunder: vi.fn(),
 }));
 
-vi.mock("@academic-explorer/graph", () => ({
-  EntityDetectionService: {
-    detectEntity: vi.fn(),
-  },
-  RelationType: {
-    AUTHORED: "authored",
-    AFFILIATED: "affiliated",
-    PUBLISHED_IN: "published_in",
-    REFERENCES: "references",
-    CITES: "cites",
-    CITED_BY: "cited_by",
-    SIMILAR_TO: "similar_to",
-    HAS_TOPIC: "has_topic",
-    WORKS_IN_SOURCE: "works_in_source",
-    WORK_HAS_TOPIC: "work_has_topic",
-    FUNDED_BY: "funded_by",
-    SOURCE_PUBLISHED_BY: "source_published_by",
-    INSTITUTION_CHILD_OF: "institution_child_of",
-    RELATED_TO: "related_to",
-  },
-}));
+// Mock EntityDetectionService from utils package
+vi.mock("@academic-explorer/utils", async (importOriginal) => {
+  const actual = await importOriginal() as any;
+  return {
+    ...actual,
+    EntityDetectionService: {
+      detectEntity: vi.fn(),
+      detectEntityType: vi.fn(),
+      normalizeIdentifier: vi.fn(),
+      isValidIdentifier: vi.fn(),
+    },
+  };
+});
 
 // Mock graphStore - will be configured in beforeEach
 vi.mock("../stores/graph-store", () => ({

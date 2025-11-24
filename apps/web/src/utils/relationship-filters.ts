@@ -7,7 +7,7 @@
  */
 
 import type { RelationshipSection } from '@/types/relationship';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 
 export type EdgeDirectionFilter = 'outbound' | 'inbound' | 'both';
 

@@ -4,15 +4,15 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { createLocalEventBus } from "@academic-explorer/graph";
+import { createLocalEventBus } from "@academic-explorer/utils";
 import {
   MainThreadExecutionStrategy,
   SimpleTaskExecutorRegistry,
   createExecutionStrategy,
   detectWorkerSupport,
   ExecutionMode,
-} from "@academic-explorer/graph";
-import type { TaskExecutor } from "@academic-explorer/graph";
+} from "@academic-explorer/utils";
+import type { TaskExecutor } from "@academic-explorer/utils";
 
 describe("MainThreadExecutionStrategy", () => {
   let bus: ReturnType<typeof createLocalEventBus>;

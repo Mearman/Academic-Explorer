@@ -8,7 +8,8 @@ import { RelationshipDetectionService, createTestGraphNode } from "@/services/re
 import type { GraphNode, DetectedRelationship } from "@/services/relationship-detection-service";
 
 // Mock logger to avoid console noise during tests
-vi.mock("@academic-explorer/utils", () => ({
+vi.mock("@academic-explorer/utils", async (importOriginal) => ({
+  ...await importOriginal(),
   logger: {
     debug: vi.fn(),
     info: vi.fn(),

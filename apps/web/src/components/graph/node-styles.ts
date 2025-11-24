@@ -6,7 +6,7 @@
  * and works with unverified authors (name-string only, no Author ID)
  */
 
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 
 /**
  * Style properties for graph nodes

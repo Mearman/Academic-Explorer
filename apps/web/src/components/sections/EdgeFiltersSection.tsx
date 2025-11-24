@@ -11,7 +11,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@academic-explorer/utils/logger";
-import { RelationType, type GraphEdge } from "@academic-explorer/graph";
+import { RelationType, type GraphEdge } from "@academic-explorer/types";
 import { safeParseRelationType } from "@academic-explorer/utils";
 
 // Direction filter types

@@ -3,7 +3,7 @@
  */
 
 import { useAppActivityStore } from "@/stores/app-activity-store";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useMemo } from "react";
 import { decodeEntityId } from "@/utils/url-decoding";

@@ -1,6 +1,6 @@
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {

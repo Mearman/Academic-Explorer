@@ -4,7 +4,8 @@
  */
 
 import { graphStore } from "../stores/graph-store";
-import type { OpenAlexEntity, EntityType } from "@academic-explorer/types";
+import type { OpenAlexEntity, EntityType, GraphEdge, GraphNode } from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 import {
   isAuthor,
   isInstitution,
@@ -16,11 +17,7 @@ import {
   ADVANCED_FIELD_SELECTIONS,
   cachedOpenAlex,
 } from "@academic-explorer/client";
-import type {
-  GraphEdge,
-  GraphNode,
-} from "@academic-explorer/graph";
-import { EntityDetectionService, RelationType } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import {
@@ -2047,5 +2044,5 @@ export function createRelationshipDetectionService(
   return new RelationshipDetectionService(queryClient);
 }
 
-// Re-export GraphNode from @academic-explorer/graph for test compatibility
-export type { GraphNode } from "@academic-explorer/graph";
+// Re-export GraphNode from @academic-explorer/types for test compatibility
+export type { GraphNode } from "@academic-explorer/types";

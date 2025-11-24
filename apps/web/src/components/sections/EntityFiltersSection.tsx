@@ -9,7 +9,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { logger } from "@academic-explorer/utils/logger";
 import type { EntityType } from "@academic-explorer/types";
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 import { Checkbox, Badge, Stack } from "@mantine/core";
 import { SectionFrame } from "@academic-explorer/ui";
 import {

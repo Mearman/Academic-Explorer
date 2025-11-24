@@ -14,9 +14,9 @@ import type {
   GraphEdge,
   GraphProvider,
   GraphLayout,
-} from "@academic-explorer/graph";
-import { RelationType } from "@academic-explorer/graph";
-import { DEFAULT_FORCE_PARAMS } from "@academic-explorer/graph";
+} from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
+import { DEFAULT_FORCE_PARAMS } from "@academic-explorer/types";
 import type { EntityType } from "@academic-explorer/types";
 
 // Mock localStorage for persistence testing

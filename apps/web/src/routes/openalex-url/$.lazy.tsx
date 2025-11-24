@@ -1,4 +1,4 @@
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import {
   useNavigate,
   useParams,

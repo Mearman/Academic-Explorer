@@ -16,7 +16,7 @@ import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { useLayoutState } from "@/stores/layout-store";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 
 interface ExternalLinksSectionProps {
   className?: string;
