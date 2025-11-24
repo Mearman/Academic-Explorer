@@ -117,7 +117,7 @@
     "dexie": "^4.2.1",
     "pako": "^2.1.0",
     "qrcode": "^1.5.4",
-    "zod": "^4.1.11"
+    "zod": "^4.1.13"
   },
   "peerDependencies": {
     "@mantine/core": "^8.0.0",

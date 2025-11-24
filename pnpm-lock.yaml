@@ -261,8 +261,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(vitest@4.0.10)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
 
   apps/cli:
     dependencies:
@@ -279,8 +279,8 @@ importers:
         specifier: ^14.0.1
         version: 14.0.2
       zod:
-        specifier: ^4.1.11
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.9.1
@@ -581,8 +581,8 @@ importers:
   packages/types:
     dependencies:
       zod:
-        specifier: ^4.1.11
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       eslint:
         specifier: ^9.36.0
@@ -691,8 +691,8 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
       zod:
-        specifier: ^4.1.11
-        version: 4.1.12
+        specifier: ^4.1.13
+        version: 4.1.13
     devDependencies:
       '@types/react':
         specifier: ^19.2.5
@@ -9558,8 +9558,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
+  zod@4.1.13:
+    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -15199,8 +15199,8 @@ snapshots:
       '@babel/parser': 7.28.5
       eslint: 9.39.1(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.1.12
-      zod-validation-error: 4.0.2(zod@4.1.12)
+      zod: 4.1.13
+      zod-validation-error: 4.0.2(zod@4.1.13)
     transitivePeerDependencies:
       - supports-color
 
@@ -19950,13 +19950,13 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod-validation-error@4.0.2(zod@4.1.12):
+  zod-validation-error@4.0.2(zod@4.1.13):
     dependencies:
-      zod: 4.1.12
+      zod: 4.1.13
 
   zod@3.25.76: {}
 
-  zod@4.1.12: {}
+  zod@4.1.13: {}
 
   zustand@4.5.7(@types/react@19.2.6)(immer@10.2.0)(react@19.2.0):
     dependencies:
