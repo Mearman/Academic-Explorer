@@ -43,18 +43,7 @@ vi.mock("dexie", () => {
   };
 });
 
-// Mock the section-registry and group-registry modules to avoid import resolution issues
-vi.mock("./section-registry", () => ({
-  getDefaultSectionPlacements: vi.fn(() => ({})),
-  getAllSectionIds: vi.fn(() => []),
-  getSectionById: vi.fn(() => ({})),
-}));
-
-vi.mock("./group-registry", () => ({
-  updateGroupDefinition: vi.fn(),
-  getGroupDefinition: vi.fn(() => ({})),
-  registerGroupDefinition: vi.fn(),
-}));
+// Mocks for deleted section-registry and group-registry removed (no longer needed)
 
 import { useLayoutStore, useLayoutActions, LayoutProvider } from "./layout-store";
 
