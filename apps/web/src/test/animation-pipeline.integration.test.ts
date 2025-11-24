@@ -20,8 +20,8 @@ vi.mock("@xyflow/react", () => ({
 }));
 
 // Mock the useAnimatedLayout hook from graph package (it's a stub)
-vi.mock("@academic-explorer/graph", async () => {
-  const actual = await vi.importActual("@academic-explorer/graph");
+vi.mock("@academic-explorer/types", async () => {
+  const actual = await vi.importActual("@academic-explorer/types");
   return {
     ...actual,
     useAnimatedLayout: vi.fn(() => ({
@@ -125,7 +125,7 @@ describe("Animation Pipeline", () => {
 
   it("should validate animation pipeline components exist", async () => {
     // Test that all required components can be imported
-    await expect(import("@academic-explorer/graph")).resolves.not.toThrow();
+    await expect(import("@academic-explorer/types")).resolves.not.toThrow();
     await expect(
       import("@academic-explorer/simulation"),
     ).resolves.not.toThrow();

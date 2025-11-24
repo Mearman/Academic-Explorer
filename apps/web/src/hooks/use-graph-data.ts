@@ -9,7 +9,7 @@ import { useGraphStore, graphStore } from "@/stores/graph-store";
 import type {
   ExpansionOptions,
   SearchOptions,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 import type { EntityType } from "@academic-explorer/types";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { useQueryClient } from "@tanstack/react-query";

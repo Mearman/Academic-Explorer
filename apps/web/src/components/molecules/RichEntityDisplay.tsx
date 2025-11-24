@@ -51,7 +51,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { FieldDisplay } from "@/components/molecules/FieldDisplay";
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 import type { Authorship, OpenAlexEntity, Work, Author, InstitutionEntity } from "@academic-explorer/types";
 import { isWork, isAuthor, isInstitution } from "@academic-explorer/types";
 import {
@@ -61,7 +61,7 @@ import {
   getNodeWorkType,
   getNodeIsXpac,
   getNodeHasUnverifiedAuthor,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 
 interface RichEntityDisplayProps {
   entity: GraphNode;

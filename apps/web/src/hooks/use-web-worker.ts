@@ -10,7 +10,7 @@ import type {
   SimulationLink,
   NodePosition,
 } from "@academic-explorer/simulation";
-import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
+import type { GraphNode, GraphEdge } from "@academic-explorer/types";
 
 // Type guards for safe type checking
 function isMetadataWithNodeId(

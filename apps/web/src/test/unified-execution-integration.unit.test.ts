@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useUnifiedExecutionWorker } from "../hooks/use-unified-execution-worker";
-import type { ForceSimulationNode } from "@academic-explorer/graph";
+import type { ForceSimulationNode } from "@academic-explorer/types";
 import type { SimulationLink } from "@academic-explorer/simulation";
 
 // Mock the logger to avoid console output during tests

@@ -13,24 +13,24 @@ import {
   EventHandler,
   createLocalEventBus,
   createCrossTabEventBus,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 import {
   TaskQueue,
   TaskDescriptor,
   TaskResult,
   TaskStatus,
   createTaskQueue,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 import {
   WorkerPool,
   WorkerPoolOptions,
   createWorkerPool,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 import {
   QueuedResourceCoordinator,
   QueueCoordinatorOptions,
   createQueuedResourceCoordinator,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 
 // Type guard for TaskResult
 function isTaskResult(value: unknown): value is TaskResult {

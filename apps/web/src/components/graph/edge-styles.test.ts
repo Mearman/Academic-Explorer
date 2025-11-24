@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { GraphEdge } from '@academic-explorer/graph';
-import { RelationType } from '@academic-explorer/graph';
+import type { GraphEdge } from '@academic-explorer/types';
+import { RelationType } from '@academic-explorer/types';
 import {
   getEdgeStyle,
   getOutboundStyle,

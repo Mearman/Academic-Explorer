@@ -7,7 +7,7 @@ import { render, screen, within, cleanup } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { RelationshipTypeFilter } from './RelationshipTypeFilter';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 
 describe('RelationshipTypeFilter', () => {
   const mockOnChange = vi.fn();

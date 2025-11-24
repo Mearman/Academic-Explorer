@@ -10,7 +10,7 @@ import { MantineProvider } from '@mantine/core';
 import '@testing-library/jest-dom';
 import { RelationshipItem } from './RelationshipItem';
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 
 // Mock useEntityInteraction hook - create a spy that can be configured per test
 const mockHandleSidebarEntityClick = vi.fn();

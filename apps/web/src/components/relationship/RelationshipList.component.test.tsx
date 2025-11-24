@@ -10,7 +10,7 @@ import { MantineProvider } from '@mantine/core';
 import '@testing-library/jest-dom';
 import { RelationshipList } from './RelationshipList';
 import type { RelationshipSection, RelationshipItem } from '@/types/relationship';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 
 // Mock useEntityInteraction hook
 vi.mock('@/hooks/use-entity-interaction', () => ({

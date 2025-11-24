@@ -10,7 +10,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutState } from "@/stores/layout-store";
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { Group, Stack, ScrollArea } from "@mantine/core";

@@ -6,7 +6,7 @@ import type { ForceGraphMethods, NodeObject, LinkObject } from 'react-force-grap
 import { useGraphData } from '@/hooks/use-graph-data';
 import { useGraphStore } from '@/stores/graph-store';
 import { getConditionalNodeStyle } from '@/components/graph/node-styles';
-import type { GraphNode, GraphEdge } from '@academic-explorer/graph';
+import type { GraphNode, GraphEdge } from '@academic-explorer/types';
 
 interface EntityGraphViewProps {
 	entityId: string;

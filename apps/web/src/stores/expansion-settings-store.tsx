@@ -11,9 +11,9 @@ import type {
   ExpansionTarget,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/graph";
-import { getDefaultSettingsForTarget } from "@academic-explorer/graph";
-import { RelationType } from "@academic-explorer/graph";
+} from "@academic-explorer/types";
+import { getDefaultSettingsForTarget } from "@academic-explorer/types";
+import { RelationType } from "@academic-explorer/types";
 
 interface ExpansionSettingsState {
   /** Settings per target type */

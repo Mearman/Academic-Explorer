@@ -27,9 +27,9 @@ import {
 import { useRepositoryStore, createInitialEdgeTypeFilter } from "@/stores/repository-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphEdge,  } from "@academic-explorer/graph"
+import type { GraphEdge,  } from "@academic-explorer/types"
 import type { EntityType } from "@academic-explorer/types";
-import { RelationType, getRelationColor } from "@academic-explorer/graph";
+import { RelationType, getRelationColor } from "@academic-explorer/types";
 import type { RepositoryState } from "@/stores/repository-store";
 
 const edgeTypeOptions = [

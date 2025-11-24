@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';

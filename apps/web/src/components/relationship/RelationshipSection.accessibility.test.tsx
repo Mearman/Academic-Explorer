@@ -10,7 +10,7 @@ import { MantineProvider } from '@mantine/core';
 import '@testing-library/jest-dom';
 import { RelationshipSection } from './RelationshipSection';
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 import { axe } from 'vitest-axe';
 import * as matchers from 'vitest-axe/matchers';
 

@@ -8,7 +8,7 @@ import type {
   ExpansionSettings,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/graph";
+} from "@academic-explorer/types";
 
 export interface OpenAlexQueryParams {
   filter?: string;

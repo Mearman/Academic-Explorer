@@ -8,7 +8,7 @@ import { useLayoutStore } from "@/stores/layout-store";
 import { graphStore, useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/types";
 import type { ExpansionOptions } from "@/services/graph-data-service";
 import type { GraphState } from "@/stores/graph-store";
 

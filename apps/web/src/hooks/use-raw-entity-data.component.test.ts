@@ -21,7 +21,7 @@ vi.mock("@academic-explorer/utils", async () => {
 
 import { logger as testLogger } from "@academic-explorer/utils";
 
-vi.mock("@academic-explorer/graph", () => ({
+vi.mock("@academic-explorer/types", () => ({
   EntityDetectionService: {
     detectEntity: vi.fn(() => ({
       entityType: "works",
@@ -85,7 +85,7 @@ describe("useRawEntityData", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    const { EntityDetectionService } = await import("@academic-explorer/graph");
+    const { EntityDetectionService } = await import("@academic-explorer/types");
 
     vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
       entityType: "works",

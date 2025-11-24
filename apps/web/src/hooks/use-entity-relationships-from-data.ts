@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import type { EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 import type {
   RelationshipSection,
   RelationshipItem,

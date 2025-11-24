@@ -9,8 +9,8 @@
 import { useMemo, useContext, useRef, useEffect } from 'react';
 import { GraphContext } from '@/stores/graph-store';
 import type { EntityType } from '@academic-explorer/types';
-import type { GraphEdge, GraphNode } from '@academic-explorer/graph';
-import { RelationType } from '@academic-explorer/graph';
+import type { GraphEdge, GraphNode } from '@academic-explorer/types';
+import { RelationType } from '@academic-explorer/types';
 import type {
   RelationshipSection,
   RelationshipError,
