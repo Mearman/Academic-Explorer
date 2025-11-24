@@ -179,6 +179,38 @@ export {
 	parseEntityUrl,
 } from "./entity-detector.js"
 
+// Entity detection service
+export {
+	EntityDetectionService,
+	detectEntityType,
+	normalizeIdentifier,
+	isValidIdentifier,
+	detectEntity,
+	type DetectionResult,
+} from "./entity-detection-service.js"
+
+// Event bus system
+export {
+	GraphEventType,
+	EntityEventType,
+	WorkerEventType,
+	TaskStatus,
+	createLocalEventBus,
+	createCrossTabEventBus,
+	localEventBus,
+	type Event,
+	type EventHandler,
+	type EventBus,
+	type TaskDescriptor,
+	type TaskResult,
+	type EventBusOptions,
+	type TaskQueue,
+	type WorkerPool,
+	type WorkerPoolOptions,
+	type QueuedResourceCoordinator,
+	type QueueCoordinatorOptions,
+} from "./event-bus.js"
+
 // Storage utilities
 export {
 	createIndexedDBStorage,
