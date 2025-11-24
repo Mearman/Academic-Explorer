@@ -12,13 +12,11 @@ import { RelationshipItem } from './RelationshipItem';
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
 
-// Mock useEntityInteraction hook - create a spy that can be configured per test
-const mockHandleSidebarEntityClick = vi.fn();
+// Mock useNavigate hook
+const mockNavigate = vi.fn();
 
-vi.mock('@/hooks/use-entity-interaction', () => ({
-  useEntityInteraction: vi.fn(() => ({
-    handleSidebarEntityClick: mockHandleSidebarEntityClick,
-  })),
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => mockNavigate,
 }));
 
 // Test wrapper with MantineProvider
@@ -132,7 +130,7 @@ describe('RelationshipItem', () => {
     await user.click(link);
 
     // Should navigate to target entity for outbound relationships
-    expect(mockHandleSidebarEntityClick).toHaveBeenCalledWith({ entityId: 'A456', entityType: 'authors' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/authors/A456' });
   });
 
   it('should handle click navigation for inbound relationships', async () => {
@@ -153,6 +151,6 @@ describe('RelationshipItem', () => {
     await user.click(link);
 
     // Should navigate to source entity for inbound relationships
-    expect(mockHandleSidebarEntityClick).toHaveBeenCalledWith({ entityId: 'W123', entityType: 'works' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/works/W123' });
   });
 });
