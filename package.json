@@ -142,7 +142,7 @@
     "tsx": "^4.20.6",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.2",
+    "vite": "^7.2.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.10",
     "vitest-axe": "^0.1.0",
