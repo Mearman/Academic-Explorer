@@ -156,8 +156,6 @@ function createWebConfig(): UserConfig {
       exclude: [
         '@academic-explorer/client',
         '@academic-explorer/utils',
-        '@academic-explorer/graph',
-        '@academic-explorer/simulation',
       ],
       force: true,
     },

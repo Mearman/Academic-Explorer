@@ -45,7 +45,6 @@ const uiConfig = defineConfig({
         // Internal workspace dependencies
         "@academic-explorer/types",
         "@academic-explorer/utils",
-        "@academic-explorer/graph",
       ],
       output: {
         globals: {

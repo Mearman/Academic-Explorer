@@ -9,8 +9,7 @@
       "@/ui/section-kit": ["./src/components/section-kit"],
       "@academic-explorer/types": ["../types/dist/index.d.ts"],
       "@academic-explorer/utils": ["../utils/dist/index.d.ts"],
-      "@academic-explorer/client": ["../client/dist/index.d.ts"],
-      "@academic-explorer/graph": ["../graph/dist/index.d.ts"]
+      "@academic-explorer/client": ["../client/dist/index.d.ts"]
     },
     "types": [],
     "declaration": true,

@@ -47,7 +47,6 @@ const devConfig = defineConfig({
         // Internal workspace dependencies (avoid circular dependencies)
         "@academic-explorer/types",
         "@academic-explorer/utils",
-        "@academic-explorer/graph",
       ],
       output: {
         globals: {
