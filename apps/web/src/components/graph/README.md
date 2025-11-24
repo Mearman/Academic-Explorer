@@ -24,9 +24,9 @@ Implements visual styling to distinguish:
 
 ```typescript
 import { getConditionalNodeStyle } from '@/components/graph';
-import type { GraphNode } from '@academic-explorer/graph';
+// Note: GraphNode type is now defined locally in @/services/relationship-detection-service
 
-const node: GraphNode = {
+const node = {
   id: 'W123',
   entityType: 'works',
   label: 'Example Work',
@@ -196,10 +196,9 @@ const colors = NODE_STYLE_COLORS;
 
 ```typescript
 import { getEdgeStyle } from '@/components/graph';
-import type { GraphEdge } from '@academic-explorer/graph';
-import { RelationType } from '@academic-explorer/graph';
+// Note: GraphEdge and RelationType are now defined locally in @/services/relationship-detection-service
 
-const edge: GraphEdge = {
+const edge = {
   id: 'W123-A456',
   source: 'W123',  // Work ID
   target: 'A456',  // Author ID
