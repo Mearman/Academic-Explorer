@@ -1,35 +1,11 @@
-import { Badge, type MantineColor } from "@mantine/core";
+import { Badge } from "@mantine/core";
 import type { EntityType } from "@academic-explorer/types";
+import { ENTITY_METADATA } from "@academic-explorer/types";
 
 export interface EntityTypeBadgeProps {
 	entityType: EntityType;
 	size?: "xs" | "sm" | "md" | "lg" | "xl";
 	variant?: "filled" | "light" | "outline";
-}
-
-/**
- * Maps entity types to their corresponding Mantine colors
- */
-const ENTITY_TYPE_COLORS: Record<EntityType, MantineColor> = {
-	works: "violet",
-	authors: "blue",
-	sources: "teal",
-	institutions: "orange",
-	topics: "pink",
-	concepts: "yellow",
-	publishers: "indigo",
-	funders: "lime",
-	keywords: "grape",
-	domains: "cyan",
-	fields: "green",
-	subfields: "yellow",
-};
-
-/**
- * Capitalizes the first letter of a string
- */
-function capitalize(str: string): string {
-	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 /**
@@ -46,12 +22,11 @@ export function EntityTypeBadge({
 	size = "sm",
 	variant = "light",
 }: EntityTypeBadgeProps) {
-	const color = ENTITY_TYPE_COLORS[entityType];
-	const label = capitalize(entityType);
+	const metadata = ENTITY_METADATA[entityType];
 
 	return (
-		<Badge color={color} size={size} variant={variant}>
-			{label}
+		<Badge color={metadata.color} size={size} variant={variant}>
+			{metadata.displayName}
 		</Badge>
 	);
 }

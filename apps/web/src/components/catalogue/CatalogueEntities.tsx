@@ -56,9 +56,9 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { type CatalogueEntity, type CatalogueList } from "@academic-explorer/utils"
 import type { EntityType } from "@academic-explorer/types";
+import { ENTITY_METADATA } from "@academic-explorer/types";
 import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
-import { ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS } from "@/constants/catalogue";
 import {
   isWorkMetadata,
   isAuthorMetadata,
@@ -249,8 +249,8 @@ function SortableEntityRow({
         <Table.Td>
           <Stack gap="xs">
             <Group gap="sm">
-              <Badge size="sm" variant="light" color={ENTITY_TYPE_COLORS[entity.entityType]}>
-                {ENTITY_TYPE_LABELS[entity.entityType]}
+              <Badge size="sm" variant="light" color={ENTITY_METADATA[entity.entityType].color}>
+                {ENTITY_METADATA[entity.entityType].displayName}
               </Badge>
               <Text size="sm" fw={500}>
                 {entity.entityId}
