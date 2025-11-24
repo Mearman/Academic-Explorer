@@ -30,6 +30,8 @@
     "include": [
     "vite.config.base.ts",
     "vite.config.old.ts",
+    "vitest.setup.ts",
+    "vitest.config.base.ts",
     "vitest.workspace.ts",
     "eslint.config.ts",
     "playwright.config.ts",
