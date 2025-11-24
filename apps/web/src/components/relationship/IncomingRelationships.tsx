@@ -104,7 +104,7 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
 
   if (error) {
     const handleRetry = () => {
-      // Reload the page to retry graph loading
+      // Reload the page to retry loading
       window.location.reload();
     };
 
@@ -114,19 +114,17 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
           <Text c="red" size="sm">
             Failed to load relationships: {error.message}
           </Text>
-          {error.retryable && (
-            <Group>
-              <Button
-                size="xs"
-                variant="light"
-                color="red"
-                onClick={handleRetry}
-                data-testid="incoming-relationships-retry-button"
-              >
-                Retry
-              </Button>
-            </Group>
-          )}
+          <Group>
+            <Button
+              size="xs"
+              variant="light"
+              color="red"
+              onClick={handleRetry}
+              data-testid="incoming-relationships-retry-button"
+            >
+              Retry
+            </Button>
+          </Group>
         </Stack>
       </Paper>
     );

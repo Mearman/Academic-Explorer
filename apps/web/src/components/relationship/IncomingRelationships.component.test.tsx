@@ -51,6 +51,7 @@ describe('IncomingRelationships', () => {
 
     // Reset window.location.reload mock
     Object.defineProperty(window, 'location', {
+      value: { reload: vi.fn() },
       writable: true,
       configurable: true,
     });
@@ -87,23 +88,23 @@ describe('IncomingRelationships', () => {
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: new Error('Failed to load relationships'),
+        error: new Error('Network error occurred'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
 
       expect(screen.getByTestId('incoming-relationships-error')).toBeInTheDocument();
-      expect(screen.getByText(/Failed to load relationships: Failed to load graph data/i)).toBeInTheDocument();
+      expect(screen.getByText(/Failed to load relationships: Network error occurred/i)).toBeInTheDocument();
     });
 
-    it('should render retry button when error is retryable', () => {
+    it('should render retry button when error occurs', () => {
       vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: new Error('Failed to load relationships'),
+        error: new Error('Network error'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -111,22 +112,6 @@ describe('IncomingRelationships', () => {
       const retryButton = screen.getByTestId('incoming-relationships-retry-button');
       expect(retryButton).toBeInTheDocument();
       expect(retryButton).toHaveTextContent('Retry');
-    });
-
-    it('should not render retry button when error is not retryable', () => {
-      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
-        incoming: [],
-        outgoing: [],
-        incomingCount: 0,
-        outgoingCount: 0,
-        loading: false,
-        error: new Error('Failed to load relationships'),
-      });
-
-      renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
-
-      expect(screen.getByTestId('incoming-relationships-error')).toBeInTheDocument();
-      expect(screen.queryByTestId('incoming-relationships-retry-button')).not.toBeInTheDocument();
     });
 
     it('should call window.location.reload when retry button is clicked', async () => {
