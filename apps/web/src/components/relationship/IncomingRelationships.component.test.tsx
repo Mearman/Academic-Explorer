@@ -9,14 +9,9 @@ import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IncomingRelationships } from './IncomingRelationships';
-import type { UseEntityRelationshipsResult } from '@/hooks/use-entity-relationships';
 import { RelationshipErrorCode } from '@/types/relationship';
 
 // Mock the hooks
-vi.mock('@/hooks/use-entity-relationships', () => ({
-  useEntityRelationships: vi.fn(),
-}));
-
 vi.mock('@/hooks/use-entity-relationship-queries', () => ({
   useEntityRelationshipQueries: vi.fn(),
 }));
@@ -26,7 +21,6 @@ vi.mock('@/hooks/use-entity-relationships-from-data', () => ({
 }));
 
 // Import after mocking
-import { useEntityRelationships } from '@/hooks/use-entity-relationships';
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
 
@@ -57,7 +51,6 @@ describe('IncomingRelationships', () => {
 
     // Reset window.location.reload mock
     Object.defineProperty(window, 'location', {
-      value: { reload: vi.fn() },
       writable: true,
       configurable: true,
     });
@@ -88,18 +81,13 @@ describe('IncomingRelationships', () => {
   describe('Error State with Retry', () => {
     it('should render error message when error occurs', () => {
       // Mock hook to return error state
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: {
-          message: 'Failed to load graph data',
-          code: RelationshipErrorCode.GRAPH_LOAD_FAILED,
-          retryable: true,
-          timestamp: new Date(),
-        },
+        error: new Error('Failed to load relationships'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -109,18 +97,13 @@ describe('IncomingRelationships', () => {
     });
 
     it('should render retry button when error is retryable', () => {
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: {
-          message: 'Network error',
-          code: RelationshipErrorCode.GRAPH_LOAD_FAILED,
-          retryable: true,
-          timestamp: new Date(),
-        },
+        error: new Error('Failed to load relationships'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -131,18 +114,13 @@ describe('IncomingRelationships', () => {
     });
 
     it('should not render retry button when error is not retryable', () => {
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: {
-          message: 'Permanent error',
-          code: RelationshipErrorCode.GRAPH_LOAD_FAILED,
-          retryable: false,
-          timestamp: new Date(),
-        },
+        error: new Error('Failed to load relationships'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -156,18 +134,13 @@ describe('IncomingRelationships', () => {
       const reloadSpy = vi.fn();
       window.location.reload = reloadSpy;
 
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: {
-          message: 'Temporary error',
-          code: RelationshipErrorCode.GRAPH_LOAD_FAILED,
-          retryable: true,
-          timestamp: new Date(),
-        },
+        error: new Error('Failed to load relationships'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -181,18 +154,13 @@ describe('IncomingRelationships', () => {
     });
 
     it('should render error with proper styling', () => {
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
         outgoingCount: 0,
         loading: false,
-        error: {
-          message: 'Test error',
-          code: RelationshipErrorCode.GRAPH_LOAD_FAILED,
-          retryable: true,
-          timestamp: new Date(),
-        },
+        error: new Error('Failed to load relationships'),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -204,7 +172,7 @@ describe('IncomingRelationships', () => {
 
   describe('Loading State', () => {
     it('should render loading skeleton when loading is true', () => {
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,
@@ -222,7 +190,7 @@ describe('IncomingRelationships', () => {
 
   describe('Empty State', () => {
     it('should render nothing when no incoming relationships and no error', () => {
-      vi.mocked(useEntityRelationships).mockReturnValue({
+      vi.mocked(useEntityRelationshipQueries).mockReturnValue({
         incoming: [],
         outgoing: [],
         incomingCount: 0,

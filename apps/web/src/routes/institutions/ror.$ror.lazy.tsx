@@ -6,18 +6,11 @@ import {
 import { useEffect } from "react";
 import { IconBuilding } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/utils";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
 function RORInstitutionRoute() {
   const { ror } = useParams({ from: "/institutions/ror/$ror" });
   const navigate = useNavigate();
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveROR = async () => {
@@ -35,15 +28,11 @@ function RORInstitutionRoute() {
           detection?.entityType === "institutions" &&
           detection.detectionMethod.toLowerCase().includes("ror")
         ) {
-          // If graph already has nodes, use incremental loading to preserve existing entities
-          if (nodeCount > 0) {
-            await loadEntityIntoGraph(`ror:${detection.normalizedId}`);
-          } else {
-            // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(`ror:${detection.normalizedId}`);
-          }
-
-          // No navigation needed - graph is always visible
+          // Redirect to standard institutions route with normalized ROR
+          void navigate({
+            to: `/institutions/${detection.normalizedId}`,
+            replace: true,
+          });
         } else {
           throw new Error(`Invalid ROR ID format: ${decodedROR}`);
         }
@@ -65,7 +54,7 @@ function RORInstitutionRoute() {
     };
 
     void resolveROR();
-  }, [ror, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [ror, navigate]);
 
   return (
     <div
@@ -91,9 +80,6 @@ function RORInstitutionRoute() {
         }}
       >
         {decodeURIComponent(ror)}
-      </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        Loading institution details and building affiliation graph
       </div>
     </div>
   );

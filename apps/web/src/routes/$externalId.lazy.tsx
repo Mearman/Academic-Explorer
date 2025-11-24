@@ -1,5 +1,3 @@
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
 import { EntityDetectionService } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
@@ -13,12 +11,6 @@ import { useEffect } from "react";
 function ExternalIdRoute() {
   const { externalId } = useParams({ from: "/$externalId" });
   const navigate = useNavigate();
-  // EntityDetectionService uses static methods, no instance needed
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveExternalId = async () => {
@@ -229,7 +221,7 @@ function ExternalIdRoute() {
     };
 
     void resolveExternalId();
-  }, [externalId, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [externalId, navigate]);
 
   return (
     <div

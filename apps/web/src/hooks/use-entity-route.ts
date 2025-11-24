@@ -7,7 +7,6 @@ import { useState, useCallback } from "react";
 import { useParams, useSearch } from "@tanstack/react-router";
 import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@academic-explorer/utils";
 import { useRawEntityData } from "./use-raw-entity-data";
-import { useGraphData } from "./use-graph-data";
 import { useUserInteractions } from "./use-user-interactions";
 
 export function useEntityRoute<T = unknown>(
@@ -33,48 +32,36 @@ export function useEntityRoute<T = unknown>(
     },
   });
 
-  // Get graph data hooks
-  const { loadEntity, loadEntityIntoGraph } = useGraphData();
-
   // Get user interactions
   const userInteractions = useUserInteractions();
 
-  // Graph data - stub for now, will be implemented when needed
+  // Graph data - stubbed (graph store removed)
   const graphData = {
     data: null,
     isLoading: false,
     error: null,
   };
 
-  // Mini graph data - stub for now, will be implemented when needed
+  // Mini graph data - stubbed (graph store removed)
   const miniGraphData = {
     data: rawEntityData.data,
     isLoading: rawEntityData.isLoading,
     error: rawEntityData.error,
   };
 
-  // Wrap loadEntity to handle string parameter
+  // Stubbed load functions (graph store removed)
   const wrappedLoadEntity = useCallback(
-    (entity: unknown) => {
-      if (typeof entity === "string") {
-        loadEntity(entity);
-      } else if (entity && typeof entity === "object" && "id" in entity) {
-        loadEntity((entity as { id: string }).id);
-      }
+    (_entity: unknown) => {
+      // Graph store removed - no-op
     },
-    [loadEntity]
+    []
   );
 
-  // Wrap loadEntityIntoGraph to handle string parameter
   const wrappedLoadEntityIntoGraph = useCallback(
-    (entity: unknown) => {
-      if (typeof entity === "string") {
-        loadEntityIntoGraph(entity);
-      } else if (entity && typeof entity === "object" && "id" in entity) {
-        loadEntityIntoGraph((entity as { id: string }).id);
-      }
+    (_entity: unknown) => {
+      // Graph store removed - no-op
     },
-    [loadEntityIntoGraph]
+    []
   );
 
   return {

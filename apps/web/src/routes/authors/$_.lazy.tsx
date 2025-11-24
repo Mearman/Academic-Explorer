@@ -1,3 +1,4 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -11,8 +12,6 @@ import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
-import { useEntityRelationshipsFromData } from "@/hooks/use-entity-relationships-from-data";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
@@ -60,22 +59,11 @@ function AuthorRoute() {
     enabled: !!decodedAuthorId && decodedAuthorId !== "random",
   });
 
-  // Get relationship counts from both graph and data sources
-  const graphRelationships = useEntityRelationships(
+  // Get relationship counts from API queries
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     decodedAuthorId || '',
     'authors'
   );
-
-  const dataRelationships = useEntityRelationshipsFromData(
-    author || null,
-    'authors'
-  );
-
-  // Use graph counts if available, otherwise fall back to data-based counts
-  const hasGraphData = graphRelationships.incomingCount > 0 || graphRelationships.outgoingCount > 0;
-  const { incomingCount, outgoingCount } = hasGraphData
-    ? graphRelationships
-    : dataRelationships;
 
   const config = ENTITY_TYPE_CONFIGS.authors;
 

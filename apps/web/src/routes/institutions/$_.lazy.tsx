@@ -1,3 +1,4 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -11,7 +12,6 @@ import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function InstitutionRoute() {
   const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
@@ -60,7 +60,7 @@ function InstitutionRoute() {
   });
 
   // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     decodedInstitutionId || '',
     'institutions'
   );

@@ -6,19 +6,11 @@ import {
 import { useEffect } from "react";
 import { IconBook } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/utils";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
-
 
 function ISSNSourceRoute() {
   const { issn } = useParams({ from: "/sources/issn/$issn" });
   const navigate = useNavigate();
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveISSN = async () => {
@@ -30,16 +22,11 @@ function ISSNSourceRoute() {
         const detection = EntityDetectionService.detectEntity(decodedISSN);
 
         if (detection?.entityType === "sources") {
-          // If graph already has nodes, use incremental loading to preserve existing entities
-          // normalizedId already includes issn: prefix from EntityDetectionService
-          if (nodeCount > 0) {
-            await loadEntityIntoGraph(detection.normalizedId);
-          } else {
-            // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(detection.normalizedId);
-          }
-
-          // No navigation needed - graph is always visible
+          // Redirect to standard sources route with normalized ISSN
+          void navigate({
+            to: `/sources/${detection.normalizedId}`,
+            replace: true,
+          });
         } else {
           throw new Error(`Invalid ISSN format: ${decodedISSN}`);
         }
@@ -61,7 +48,7 @@ function ISSNSourceRoute() {
     };
 
     void resolveISSN();
-  }, [issn, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [issn, navigate]);
 
   return (
     <div
@@ -84,9 +71,6 @@ function ISSNSourceRoute() {
         }}
       >
         {decodeURIComponent(issn)}
-      </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        Loading source details and building publication graph
       </div>
     </div>
   );

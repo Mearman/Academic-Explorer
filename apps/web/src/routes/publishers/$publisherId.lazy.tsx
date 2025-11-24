@@ -1,3 +1,4 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -10,7 +11,6 @@ import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function PublisherRoute() {
   const { publisherId: rawPublisherId } = useParams({ strict: false });
@@ -29,7 +29,7 @@ function PublisherRoute() {
     : undefined;
 
   // Get relationship counts
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     publisherId || "",
     'publishers'
   );

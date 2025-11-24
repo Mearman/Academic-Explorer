@@ -10,7 +10,6 @@ import React, { useState, useEffect } from 'react';
 import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/types';
-import { useEntityRelationships } from '@/hooks/use-entity-relationships';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { RelationshipSection } from './RelationshipSection';
@@ -61,43 +60,27 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
     }
   }, [selectedTypes, storageKey]);
 
-  // Try graph-based relationships first
-  const graphRelationships = useEntityRelationships(
-    entityId,
-    entityType,
-    {
-      types: selectedTypes,
-      direction: 'inbound',
-    }
-  );
-
   // Query for API-based relationships (works, citing works, etc.)
   const apiRelationships = useEntityRelationshipQueries(entityId, entityType);
 
-  // Fall back to embedded data-based relationships if graph and API have no data
+  // Fall back to embedded data-based relationships if API has no data
   const dataRelationships = useEntityRelationshipsFromData(entityData, entityType);
 
-  // Choose which source to use with priority: graph > API queries > embedded data
-  const hasGraphData = graphRelationships.incoming.length > 0 || graphRelationships.loading;
+  // Choose which source to use with priority: API queries > embedded data
   const hasApiData = apiRelationships.incoming.length > 0 || apiRelationships.loading;
 
   let incoming, loading, error;
 
-  if (hasGraphData) {
-    // Priority 1: Graph-based relationships (when entities are in graph)
-    incoming = graphRelationships.incoming;
-    loading = graphRelationships.loading;
-    error = graphRelationships.error;
-  } else if (hasApiData) {
-    // Priority 2: API-queried relationships (e.g., works by author)
+  if (hasApiData) {
+    // Priority 1: API-queried relationships (e.g., works by author)
     incoming = apiRelationships.incoming;
     loading = apiRelationships.loading;
     error = apiRelationships.error;
   } else {
-    // Priority 3: Embedded data relationships (fallback)
+    // Priority 2: Embedded data relationships (fallback)
     incoming = dataRelationships.incoming;
     loading = false;
-    error = graphRelationships.error; // Preserve graph errors even when falling back
+    error = apiRelationships.error;
   }
 
   // Show loading skeleton while fetching

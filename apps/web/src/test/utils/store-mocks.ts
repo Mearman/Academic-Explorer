@@ -49,28 +49,6 @@ export function createMockStore<T extends Record<string, unknown>>(
   };
 }
 
-/**
- * Mock graph store with common test state
- */
-export const createMockGraphStore = (): any =>
-  createMockStore({
-    nodes: new Map(),
-    edges: new Map(),
-    selectedNodeId: null,
-    currentLayout: {
-      entityType: "d3-force" as const,
-      options: {},
-    },
-    addNode: vi.fn(),
-    removeNode: vi.fn(),
-    updateNode: vi.fn(),
-    addEdge: vi.fn(),
-    removeEdge: vi.fn(),
-    setSelectedNode: vi.fn(),
-    setLayout: vi.fn(),
-    clearGraph: vi.fn(),
-    resetToInitialState: vi.fn(),
-  });
 
 /**
  * Mock layout store with common test state
@@ -141,7 +119,6 @@ export function mockStoreModule<T>(storeName: string, mockStore: T): void {
 export function withMockStores<P extends Record<string, unknown>>(
   Component: React.ComponentType<P>,
   stores?: {
-    graphStore?: ReturnType<typeof createMockGraphStore>;
     layoutStore?: ReturnType<typeof createMockLayoutStore>;
     settingsStore?: ReturnType<typeof createMockSettingsStore>;
     expansionSettingsStore?: ReturnType<
@@ -151,12 +128,6 @@ export function withMockStores<P extends Record<string, unknown>>(
 ) {
   return function MockedComponent(props: P) {
     // Mock stores before rendering
-    if (stores?.graphStore) {
-      vi.doMock("@/stores/graph-store", () => ({
-        useGraphStore: () => stores.graphStore,
-      }));
-    }
-
     if (stores?.layoutStore) {
       vi.doMock("@/stores/layout-store", () => ({
         useLayoutStore: () => stores.layoutStore,

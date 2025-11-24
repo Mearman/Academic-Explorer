@@ -1,10 +1,10 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { CONCEPT_FIELDS, type Concept, type ConceptField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 import { EntityDetailLayout, type ViewMode } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
@@ -45,7 +45,7 @@ function ConceptRoute() {
   });
 
   // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     conceptId || "",
     'concepts'
   );

@@ -1,3 +1,4 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -13,7 +14,6 @@ import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function SubfieldRoute() {
   const { subfieldId: rawSubfieldId } = useParams({ strict: false }) as { subfieldId: string };
@@ -52,7 +52,7 @@ function SubfieldRoute() {
   });
 
   // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     fullSubfieldId,
     'subfields'
   );

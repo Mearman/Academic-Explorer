@@ -176,13 +176,6 @@ import { routeTree } from "./routeTree.gen";
 // Load persisted app activity events on app start
 import { AppActivityProvider } from "@/stores/app-activity-store";
 import { LayoutProvider } from "@/stores/layout-store";
-import { GraphProvider, graphStore } from "@/stores/graph-store";
-
-// Expose graph store globally for E2E tests
-if (typeof window !== "undefined" && (import.meta.env.DEV || import.meta.env.MODE === "test")) {
-  (window as any).graphStore = graphStore;
-  logger.debug("main", "Exposed graphStore globally for testing");
-}
 
 // Create Mantine theme using design tokens
 const theme = createTheme({
@@ -356,13 +349,11 @@ createRoot(rootElement, reactErrorHandlers).render(
         <ModalsProvider>
           <Notifications />
           <StorageProviderWrapper provider={storageProvider}>
-            <GraphProvider>
-              <LayoutProvider>
-                <AppActivityProvider>
-                  <RouterProvider router={router} />
-                </AppActivityProvider>
-              </LayoutProvider>
-            </GraphProvider>
+            <LayoutProvider>
+              <AppActivityProvider>
+                <RouterProvider router={router} />
+              </AppActivityProvider>
+            </LayoutProvider>
           </StorageProviderWrapper>
         </ModalsProvider>
       </MantineProvider>

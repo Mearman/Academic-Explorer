@@ -1,3 +1,4 @@
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { useParams, useSearch } from "@tanstack/react-router";
@@ -14,7 +15,6 @@ import { logger } from "@academic-explorer/utils/logger";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
@@ -124,7 +124,7 @@ function WorkRoute() {
   });
 
   // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  const { incomingCount, outgoingCount } = useEntityRelationshipQueries(
     normalizedWorkId || '',
     'works'
   );

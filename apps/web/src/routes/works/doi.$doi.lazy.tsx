@@ -6,19 +6,11 @@ import {
 import { useEffect } from "react";
 import { IconFile } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/utils";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
-
 
 function DOIWorkRoute() {
   const { doi } = useParams({ from: "/works/doi/$doi" });
   const navigate = useNavigate();
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveDOI = async () => {
@@ -33,15 +25,11 @@ function DOIWorkRoute() {
           detection?.entityType === "works" &&
           detection.detectionMethod === "DOI"
         ) {
-          // If graph already has nodes, use incremental loading to preserve existing entities
-          if (nodeCount > 0) {
-            await loadEntityIntoGraph(`doi:${detection.normalizedId}`);
-          } else {
-            // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(`doi:${detection.normalizedId}`);
-          }
-
-          // No navigation needed - graph is always visible
+          // Redirect to standard works route with normalized DOI
+          void navigate({
+            to: `/works/${detection.normalizedId}`,
+            replace: true,
+          });
         } else {
           throw new Error(`Invalid DOI format: ${decodedDOI}`);
         }
@@ -63,7 +51,7 @@ function DOIWorkRoute() {
     };
 
     void resolveDOI();
-  }, [doi, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [doi, navigate]);
 
   return (
     <div
@@ -86,9 +74,6 @@ function DOIWorkRoute() {
         }}
       >
         {decodeURIComponent(doi)}
-      </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        Loading work details and building relationship graph
       </div>
     </div>
   );

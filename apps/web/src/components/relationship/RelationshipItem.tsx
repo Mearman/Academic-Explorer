@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { Anchor, Text, Group, Stack } from '@mantine/core';
-import { useEntityInteraction } from '@/hooks/use-entity-interaction';
+import { useNavigate } from '@tanstack/react-router';
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
 
 export interface RelationshipItemProps {
@@ -21,7 +21,7 @@ export interface RelationshipItemProps {
  * Shows the related entity name as a clickable link, with optional subtitle and metadata
  */
 export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
-  const { handleSidebarEntityClick } = useEntityInteraction();
+  const navigate = useNavigate();
 
   // Determine which entity to link to (the "other" entity, not the current one being viewed)
   const relatedEntityId = item.direction === 'inbound' ? item.sourceId : item.targetId;
@@ -45,7 +45,7 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
     // This allows Ctrl+click, Cmd+click, middle-click to work as normal browser navigation
     if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
       e.preventDefault();
-      handleSidebarEntityClick({ entityId: cleanEntityId, entityType });
+      void navigate({ to: `/${entityType}/${cleanEntityId}` });
     }
     // Otherwise, let the browser handle it (opens in new tab, etc.)
   };

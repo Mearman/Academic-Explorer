@@ -7,17 +7,10 @@ import { useEffect } from "react";
 import { IconUser } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
-
 
 function ORCIDAuthorRoute() {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
   const navigate = useNavigate();
-  const graphData = useGraphData();
-  const { loadEntity, loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveORCID = async () => {
@@ -35,15 +28,11 @@ function ORCIDAuthorRoute() {
           );
         }
 
-        // Load the author entity directly using the normalized ORCID URL
-        // The OpenAlex API accepts ORCID URLs as author IDs
-        // If graph already has nodes, use incremental loading
-        if (nodeCount > 0) {
-          await loadEntityIntoGraph(detection.normalizedId);
-        } else {
-          await loadEntity(detection.normalizedId);
-        }
-        // No navigation needed - graph is always visible
+        // Redirect to standard authors route with normalized ORCID
+        void navigate({
+          to: `/authors/${detection.normalizedId}`,
+          replace: true,
+        });
       } catch (error) {
         logError(
           logger,
@@ -62,7 +51,7 @@ function ORCIDAuthorRoute() {
     };
 
     void resolveORCID();
-  }, [orcid, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [orcid, navigate]);
 
   return (
     <div
@@ -85,9 +74,6 @@ function ORCIDAuthorRoute() {
         }}
       >
         {decodeURIComponent(orcid)}
-      </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        Loading author details and building citation graph
       </div>
     </div>
   );

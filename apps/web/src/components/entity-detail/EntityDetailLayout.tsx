@@ -9,9 +9,8 @@ import type { EntityTypeConfig } from "./EntityTypeConfig";
 import type { EntityType } from "@academic-explorer/types";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 import { AddToListModal } from "../catalogue/AddToListModal";
-import { EntityGraphView } from "./EntityGraphView";
 
-export type ViewMode = "rich" | "raw" | "graph";
+export type ViewMode = "rich" | "raw";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -221,7 +220,6 @@ export function EntityDetailLayout({
                 data={[
                   { label: 'Rich', value: 'rich' },
                   { label: 'Raw', value: 'raw' },
-                  { label: 'Graph', value: 'graph' },
                 ]}
               />
             </Group>
@@ -254,8 +252,6 @@ export function EntityDetailLayout({
               </Text>
             </Paper>
           </Paper>
-        ) : viewMode === "graph" ? (
-          <EntityGraphView entityId={entityId} height={700} />
         ) : (
           <>
             <EntityDataDisplay data={data} />
