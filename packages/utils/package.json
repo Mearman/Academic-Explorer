@@ -149,7 +149,7 @@
     "eslint": "^9.36.0",
     "react": "^19.0.0",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.13"
   },
   "publishConfig": {
     "access": "public"
