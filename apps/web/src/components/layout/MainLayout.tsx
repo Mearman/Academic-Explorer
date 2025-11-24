@@ -62,25 +62,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     pinRightSidebar,
   } = layoutStore;
 
-  // Helper to activate default groups if none are active
-  // Don't use useCallback to avoid React Hook dependency issues with context methods
-  const activateDefaultGroups = () => {
-    const leftGroups = layoutActions.getToolGroupsForSidebar("left");
-    const rightGroups = layoutActions.getToolGroupsForSidebar("right");
-    const leftActiveGroup = layoutActions.getActiveGroup("left");
-    const rightActiveGroup = layoutActions.getActiveGroup("right");
-
-    if (!leftActiveGroup && Object.keys(leftGroups).length > 0) {
-      layoutActions.setActiveGroup({ sidebar: "left", groupId: Object.keys(leftGroups)[0] });
-    }
-    if (!rightActiveGroup && Object.keys(rightGroups).length > 0) {
-      layoutActions.setActiveGroup({
-        sidebar: "right",
-        groupId: Object.keys(rightGroups)[0],
-      });
-    }
-  };
-
   // Width state for dragging (using React state for immediate visual feedback)
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(300);
   const [rightSidebarWidth, setRightSidebarWidth] = useState(300);
@@ -425,21 +406,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     Left Panel
                   </Text>
                   <Group gap="xs">
-                    {/* Debug info */}
-                    <Text size="xs" c="red">
-                      Active: {layoutActions.getActiveGroup("left") ?? "none"}
-                    </Text>
-                    {!layoutActions.getActiveGroup("left") && (
-                      <ActionIcon
-                        onClick={activateDefaultGroups}
-                        variant="light"
-                        size="sm"
-                        color="blue"
-                        aria-label="Activate tools"
-                      >
-                        <IconLayoutSidebar size={14} />
-                      </ActionIcon>
-                    )}
                     <ActionIcon
                       onClick={() => {
                         pinLeftSidebar(!leftSidebarPinned);
@@ -593,21 +559,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     Right Panel
                   </Text>
                   <Group gap="xs">
-                    {/* Debug info */}
-                    <Text size="xs" c="red">
-                      Active: {layoutActions.getActiveGroup("right") ?? "none"}
-                    </Text>
-                    {!layoutActions.getActiveGroup("right") && (
-                      <ActionIcon
-                        onClick={activateDefaultGroups}
-                        variant="light"
-                        size="sm"
-                        color="blue"
-                        aria-label="Activate tools"
-                      >
-                        <IconLayoutSidebarRight size={14} />
-                      </ActionIcon>
-                    )}
                     <ActionIcon
                       onClick={() => {
                         pinRightSidebar(!rightSidebarPinned);

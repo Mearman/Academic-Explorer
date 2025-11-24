@@ -6,17 +6,6 @@
 import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
 import Dexie, { type Table } from "dexie";
 import type { ProviderType } from "@academic-explorer/types";
-import {
-  getDefaultSectionPlacements,
-  getAllSectionIds,
-  getSectionById,
-} from "./section-registry";
-// Group registry imports available but not currently used
-// import {
-//   updateGroupDefinition,
-//   getGroupDefinition,
-//   registerGroupDefinition,
-// } from "./group-registry";
 import { logger } from "@academic-explorer/utils/logger";
 
 // Database schema for layout persistence
@@ -83,38 +72,6 @@ class LayoutPersistenceService {
               break;
             case "rightSidebarPinned":
               layoutState.rightSidebarPinned = Boolean(parsedValue);
-              break;
-            case "collapsedSections":
-              if (typeof parsedValue === "object" && parsedValue !== null) {
-                layoutState.collapsedSections = parsedValue as Record<
-                  string,
-                  boolean
-                >;
-              }
-              break;
-            case "sectionPlacements":
-              if (typeof parsedValue === "object" && parsedValue !== null) {
-                layoutState.sectionPlacements = parsedValue as Record<
-                  string,
-                  "left" | "right"
-                >;
-              }
-              break;
-            case "activeGroups":
-              if (typeof parsedValue === "object" && parsedValue !== null) {
-                layoutState.activeGroups = parsedValue as Record<
-                  "left" | "right",
-                  string | null
-                >;
-              }
-              break;
-            case "toolGroups":
-              if (typeof parsedValue === "object" && parsedValue !== null) {
-                layoutState.toolGroups = parsedValue as Record<
-                  "left" | "right",
-                  Record<string, ToolGroup>
-                >;
-              }
               break;
             case "graphProvider":
               if (typeof parsedValue === "string") {
@@ -229,10 +186,6 @@ class LayoutPersistenceService {
                 "leftSidebarPinned",
                 "rightSidebarOpen",
                 "rightSidebarPinned",
-                "collapsedSections",
-                "sectionPlacements",
-                "activeGroups",
-                "toolGroups",
                 "graphProvider",
                 "autoPinOnLayoutStabilization",
               ];
@@ -299,12 +252,6 @@ const safePersist = (operation: Promise<void>) => {
   });
 };
 
-interface ToolGroup {
-  id: string;
-  sections: string[];
-  activeSection: string | null;
-}
-
 interface LayoutState {
   // Sidebar states
   leftSidebarOpen: boolean;
@@ -320,18 +267,6 @@ interface LayoutState {
   leftSidebarHovered: boolean;
   rightSidebarHovered: boolean;
 
-  // Section collapsed states (for tool headers)
-  collapsedSections: Record<string, boolean>;
-
-  // Section placement states (which sidebar each section is in)
-  sectionPlacements: Record<string, "left" | "right">;
-
-  // Active group for each sidebar (VSCode-style single active group)
-  activeGroups: Record<"left" | "right", string | null>;
-
-  // Tool groups for each sidebar (category-based groups with multiple tools)
-  toolGroups: Record<"left" | "right", Record<string, ToolGroup>>;
-
   // Graph provider selection
   graphProvider: ProviderType;
 
@@ -342,74 +277,6 @@ interface LayoutState {
   autoPinOnLayoutStabilization: boolean;
 }
 
-// Helper function to create default tool groups based on categories
-const createDefaultToolGroups = (): Record<
-  "left" | "right",
-  Record<string, ToolGroup>
-> => {
-  const placements = getDefaultSectionPlacements();
-  const leftSections = getAllSectionIds().filter(
-    (id) => placements[id] === "left",
-  );
-  const rightSections = getAllSectionIds().filter(
-    (id) => placements[id] === "right",
-  );
-
-  // Get unique categories for each sidebar
-  const leftCategories = [
-    ...new Set(
-      leftSections
-        .map((id) => getSectionById(id)?.category)
-        .filter((cat): cat is string => Boolean(cat)),
-    ),
-  ];
-  const rightCategories = [
-    ...new Set(
-      rightSections
-        .map((id) => getSectionById(id)?.category)
-        .filter((cat): cat is string => Boolean(cat)),
-    ),
-  ];
-
-  const createGroupsForSide = (sections: string[], categories: string[]) => {
-    const groups: Record<string, ToolGroup> = {};
-    for (const category of categories) {
-      const categorySections = sections.filter((id) => {
-        const section = getSectionById(id);
-        return section?.category === category;
-      });
-      if (categorySections.length > 0) {
-        groups[category] = {
-          id: category,
-          sections: categorySections,
-          activeSection: categorySections[0] ?? null, // Default to first section
-        };
-      }
-    }
-    return groups;
-  };
-
-  return {
-    left: createGroupsForSide(leftSections, leftCategories),
-    right: createGroupsForSide(rightSections, rightCategories),
-  };
-};
-
-// Helper function to create default active groups (first group in each sidebar)
-const createDefaultActiveGroups = (): Record<
-  "left" | "right",
-  string | null
-> => {
-  const toolGroups = createDefaultToolGroups();
-  const leftGroupIds = Object.keys(toolGroups.left);
-  const rightGroupIds = Object.keys(toolGroups.right);
-
-  return {
-    left: leftGroupIds[0] ?? null,
-    right: rightGroupIds[0] ?? null,
-  };
-};
-
 type LayoutPersistedState = Partial<
   Pick<
     LayoutState,
@@ -417,10 +284,6 @@ type LayoutPersistedState = Partial<
     | "leftSidebarPinned"
     | "rightSidebarOpen"
     | "rightSidebarPinned"
-    | "collapsedSections"
-    | "sectionPlacements"
-    | "activeGroups"
-    | "toolGroups"
     | "graphProvider"
     | "autoPinOnLayoutStabilization"
   >
@@ -436,10 +299,6 @@ const getInitialState = (): LayoutState => ({
   rightSidebarAutoHidden: false,
   leftSidebarHovered: false,
   rightSidebarHovered: false,
-  collapsedSections: {},
-  sectionPlacements: getDefaultSectionPlacements(),
-  activeGroups: createDefaultActiveGroups(),
-  toolGroups: createDefaultToolGroups(),
   graphProvider: "xyflow",
   previewEntityId: null,
   autoPinOnLayoutStabilization: false,
@@ -457,18 +316,10 @@ type LayoutAction =
   | { type: "SET_RIGHT_SIDEBAR_AUTO_HIDDEN"; payload: boolean }
   | { type: "SET_LEFT_SIDEBAR_HOVERED"; payload: boolean }
   | { type: "SET_RIGHT_SIDEBAR_HOVERED"; payload: boolean }
-  | { type: "SET_SECTION_COLLAPSED"; payload: { sectionKey: string; collapsed: boolean } }
-  | { type: "EXPAND_SIDEBAR_TO_SECTION"; payload: { sidebar: "left" | "right"; sectionKey: string } }
-  | { type: "SET_ACTIVE_GROUP"; payload: { sidebar: "left" | "right"; groupId: string | null } }
   | { type: "SET_GRAPH_PROVIDER"; payload: ProviderType }
   | { type: "SET_PREVIEW_ENTITY"; payload: string | null }
   | { type: "SET_AUTO_PIN_ON_LAYOUT_STABILIZATION"; payload: boolean }
-  | { type: "LOAD_PERSISTED_STATE"; payload: Partial<LayoutState> }
-  | { type: "RESET_SECTION_PLACEMENTS" }
-  | { type: "ADD_SECTION_TO_GROUP"; payload: { sidebar: "left" | "right"; groupId: string; sectionKey: string } }
-  | { type: "REMOVE_SECTION_FROM_GROUP"; payload: { sidebar: "left" | "right"; groupId: string; sectionKey: string } }
-  | { type: "REORDER_GROUPS"; payload: { sidebar: "left" | "right"; groupIds: string[] } }
-  | { type: "MOVE_GROUP_TO_SIDEBAR"; payload: { fromSidebar: "left" | "right"; toSidebar: "left" | "right"; groupId: string } };
+  | { type: "LOAD_PERSISTED_STATE"; payload: Partial<LayoutState> };
 
 // Reducer
 const layoutReducer = (state: LayoutState, action: LayoutAction): LayoutState => {
@@ -493,61 +344,6 @@ const layoutReducer = (state: LayoutState, action: LayoutAction): LayoutState =>
       return { ...state, leftSidebarHovered: action.payload };
     case "SET_RIGHT_SIDEBAR_HOVERED":
       return { ...state, rightSidebarHovered: action.payload };
-    case "SET_SECTION_COLLAPSED":
-      return {
-        ...state,
-        collapsedSections: {
-          ...state.collapsedSections,
-          [action.payload.sectionKey]: action.payload.collapsed,
-        },
-      };
-    case "EXPAND_SIDEBAR_TO_SECTION": {
-      const { sidebar, sectionKey } = action.payload;
-      const toolGroups = state.toolGroups[sidebar];
-      let targetGroupId: string | null = null;
-
-      for (const [groupId, group] of Object.entries(toolGroups) as [
-        string,
-        ToolGroup,
-      ][]) {
-        if (group.sections.includes(sectionKey)) {
-          targetGroupId = groupId;
-          break;
-        }
-      }
-
-      if (!targetGroupId) return state;
-
-      const updatedGroups = {
-        ...toolGroups,
-        [targetGroupId]: {
-          ...toolGroups[targetGroupId],
-          activeSection: sectionKey,
-        },
-      };
-
-      return {
-        ...state,
-        leftSidebarOpen: sidebar === "left" ? true : state.leftSidebarOpen,
-        rightSidebarOpen: sidebar === "right" ? true : state.rightSidebarOpen,
-        toolGroups: {
-          ...state.toolGroups,
-          [sidebar]: updatedGroups,
-        },
-        activeGroups: {
-          ...state.activeGroups,
-          [sidebar]: targetGroupId,
-        },
-      };
-    }
-    case "SET_ACTIVE_GROUP":
-      return {
-        ...state,
-        activeGroups: {
-          ...state.activeGroups,
-          [action.payload.sidebar]: action.payload.groupId,
-        },
-      };
     case "SET_GRAPH_PROVIDER":
       return { ...state, graphProvider: action.payload };
     case "SET_PREVIEW_ENTITY":
@@ -556,99 +352,6 @@ const layoutReducer = (state: LayoutState, action: LayoutAction): LayoutState =>
       return { ...state, autoPinOnLayoutStabilization: action.payload };
     case "LOAD_PERSISTED_STATE":
       return { ...state, ...action.payload };
-    case "RESET_SECTION_PLACEMENTS":
-      return {
-        ...state,
-        sectionPlacements: getDefaultSectionPlacements(),
-        activeGroups: createDefaultActiveGroups(),
-        toolGroups: createDefaultToolGroups(),
-      };
-
-    case "ADD_SECTION_TO_GROUP": {
-      const { sidebar, groupId, sectionKey } = action.payload;
-      const currentToolGroups = { ...state.toolGroups };
-
-      if (!currentToolGroups[sidebar]) {
-        currentToolGroups[sidebar] = {};
-      }
-
-      if (!currentToolGroups[sidebar][groupId]) {
-        currentToolGroups[sidebar][groupId] = { id: groupId, sections: [], activeSection: null };
-      }
-
-      const group = { ...currentToolGroups[sidebar][groupId] };
-      if (!group.sections.includes(sectionKey)) {
-        group.sections = [...group.sections, sectionKey];
-      }
-
-      currentToolGroups[sidebar][groupId] = group;
-
-      return {
-        ...state,
-        toolGroups: currentToolGroups,
-      };
-    }
-
-    case "REMOVE_SECTION_FROM_GROUP": {
-      const { sidebar, groupId, sectionKey } = action.payload;
-      const currentToolGroups = { ...state.toolGroups };
-
-      if (currentToolGroups[sidebar]?.[groupId]) {
-        const group = { ...currentToolGroups[sidebar][groupId] };
-        group.sections = group.sections.filter(section => section !== sectionKey);
-        currentToolGroups[sidebar][groupId] = group;
-      }
-
-      return {
-        ...state,
-        toolGroups: currentToolGroups,
-      };
-    }
-
-    case "REORDER_GROUPS": {
-      const { sidebar, groupIds } = action.payload;
-      const currentToolGroups = { ...state.toolGroups };
-      const sidebarGroups = currentToolGroups[sidebar] || {};
-      const reorderedGroups: Record<string, ToolGroup> = {};
-
-      groupIds.forEach(groupId => {
-        if (sidebarGroups[groupId]) {
-          reorderedGroups[groupId] = sidebarGroups[groupId];
-        }
-      });
-
-      currentToolGroups[sidebar] = reorderedGroups;
-
-      return {
-        ...state,
-        toolGroups: currentToolGroups,
-      };
-    }
-
-    case "MOVE_GROUP_TO_SIDEBAR": {
-      const { fromSidebar, toSidebar, groupId } = action.payload;
-      const currentToolGroups = { ...state.toolGroups };
-      const group = currentToolGroups[fromSidebar]?.[groupId];
-
-      if (group) {
-        // Remove from original sidebar
-        const newFromSidebar = { ...currentToolGroups[fromSidebar] };
-        delete newFromSidebar[groupId];
-        currentToolGroups[fromSidebar] = newFromSidebar;
-
-        // Add to new sidebar
-        if (!currentToolGroups[toSidebar]) {
-          currentToolGroups[toSidebar] = {};
-        }
-        currentToolGroups[toSidebar][groupId] = { id: groupId, sections: group.sections, activeSection: group.activeSection };
-      }
-
-      return {
-        ...state,
-        toolGroups: currentToolGroups,
-      };
-    }
-
     default:
       return state;
   }
@@ -704,10 +407,6 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         "leftSidebarPinned",
         "rightSidebarOpen",
         "rightSidebarPinned",
-        "collapsedSections",
-        "sectionPlacements",
-        "activeGroups",
-        "toolGroups",
         "graphProvider",
         "autoPinOnLayoutStabilization",
       ];
@@ -727,10 +426,6 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     state.leftSidebarPinned,
     state.rightSidebarOpen,
     state.rightSidebarPinned,
-    state.collapsedSections,
-    state.sectionPlacements,
-    state.activeGroups,
-    state.toolGroups,
     state.graphProvider,
     state.autoPinOnLayoutStabilization,
   ]);
@@ -776,19 +471,9 @@ const createFallbackActions = () => {
     setRightSidebarAutoHidden: noOp,
     setLeftSidebarHovered: noOp,
     setRightSidebarHovered: noOp,
-    setSectionCollapsed: noOp,
-    expandSidebarToSection: noOp,
-    setActiveGroup: noOp,
     setGraphProvider: noOp,
     setPreviewEntity: noOp,
     setAutoPinOnLayoutStabilization: noOp,
-    resetSectionPlacements: noOp,
-    getToolGroupsForSidebar: () => [],
-    getActiveGroup: () => null,
-    addSectionToGroup: noOp,
-    removeSectionFromGroup: noOp,
-    reorderGroups: noOp,
-    moveGroupToSidebar: noOp,
   };
 };
 
@@ -826,68 +511,12 @@ export const useLayoutActions = () => {
       context.dispatch({ type: "SET_LEFT_SIDEBAR_HOVERED", payload: hovered }),
     setRightSidebarHovered: (hovered: boolean) =>
       context.dispatch({ type: "SET_RIGHT_SIDEBAR_HOVERED", payload: hovered }),
-    setSectionCollapsed: ({ sectionKey, collapsed }: { sectionKey: string; collapsed: boolean }) =>
-      context.dispatch({ type: "SET_SECTION_COLLAPSED", payload: { sectionKey, collapsed } }),
-    expandSidebarToSection: ({ sidebar, sectionKey }: { sidebar: "left" | "right"; sectionKey: string }) =>
-      context.dispatch({ type: "EXPAND_SIDEBAR_TO_SECTION", payload: { sidebar, sectionKey } }),
-    setActiveGroup: ({ sidebar, groupId }: { sidebar: "left" | "right"; groupId: string | null }) =>
-      context.dispatch({ type: "SET_ACTIVE_GROUP", payload: { sidebar, groupId } }),
     setGraphProvider: (provider: ProviderType) =>
       context.dispatch({ type: "SET_GRAPH_PROVIDER", payload: provider }),
     setPreviewEntity: (entityId: string | null) =>
       context.dispatch({ type: "SET_PREVIEW_ENTITY", payload: entityId }),
     setAutoPinOnLayoutStabilization: (enabled: boolean) =>
       context.dispatch({ type: "SET_AUTO_PIN_ON_LAYOUT_STABILIZATION", payload: enabled }),
-    resetSectionPlacements: () =>
-      context.dispatch({ type: "RESET_SECTION_PLACEMENTS" }),
-
-    // Group management methods
-    getToolGroupsForSidebar: (sidebar: "left" | "right") => {
-      const groups = context.state.toolGroups?.[sidebar] || {};
-      const activeGroupId = context.state.activeGroups?.[sidebar];
-      return Object.entries(groups).map(([id, group]) => ({
-        id,
-        name: id,
-        sections: group.sections || [],
-        isActive: id === activeGroupId,
-      }));
-    },
-
-    getActiveGroup: (sidebar: "left" | "right"): string | null => {
-      const activeGroupId = context.state.activeGroups?.[sidebar];
-      if (!activeGroupId) return null;
-
-      const groups = context.state.toolGroups?.[sidebar] || {};
-      return groups[activeGroupId] ? activeGroupId : null;
-    },
-
-    addSectionToGroup: ({ sidebar, groupId, sectionKey }: { sidebar: "left" | "right"; groupId: string; sectionKey: string }) => {
-      context.dispatch({
-        type: "ADD_SECTION_TO_GROUP",
-        payload: { sidebar, groupId, sectionKey }
-      });
-    },
-
-    removeSectionFromGroup: ({ sidebar, groupId, sectionKey }: { sidebar: "left" | "right"; groupId: string; sectionKey: string }) => {
-      context.dispatch({
-        type: "REMOVE_SECTION_FROM_GROUP",
-        payload: { sidebar, groupId, sectionKey }
-      });
-    },
-
-    reorderGroups: ({ sidebar, groupIds }: { sidebar: "left" | "right"; groupIds: string[] }) => {
-      context.dispatch({
-        type: "REORDER_GROUPS",
-        payload: { sidebar, groupIds }
-      });
-    },
-
-    moveGroupToSidebar: ({ fromSidebar, toSidebar, groupId }: { fromSidebar: "left" | "right"; toSidebar: "left" | "right"; groupId: string }) => {
-      context.dispatch({
-        type: "MOVE_GROUP_TO_SIDEBAR",
-        payload: { fromSidebar, toSidebar, groupId }
-      });
-    },
   };
 };
 
@@ -899,14 +528,6 @@ export const useLayoutStore = () => {
   return {
     ...state,
     ...actions,
-    // Ensure all methods are available
-    getToolGroupsForSidebar: actions.getToolGroupsForSidebar,
-    getActiveGroup: actions.getActiveGroup,
-    setActiveGroup: actions.setActiveGroup,
-    addSectionToGroup: actions.addSectionToGroup,
-    removeSectionFromGroup: actions.removeSectionFromGroup,
-    reorderGroups: actions.reorderGroups,
-    moveGroupToSidebar: actions.moveGroupToSidebar,
   };
 };
 
