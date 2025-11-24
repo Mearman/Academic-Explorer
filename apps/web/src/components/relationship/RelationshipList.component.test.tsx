@@ -12,13 +12,6 @@ import { RelationshipList } from './RelationshipList';
 import type { RelationshipSection, RelationshipItem } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
 
-// Mock useEntityInteraction hook
-vi.mock('@/hooks/use-entity-interaction', () => ({
-  useEntityInteraction: () => ({
-    handleSidebarEntityClick: vi.fn(),
-  }),
-}));
-
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>{children}</MantineProvider>

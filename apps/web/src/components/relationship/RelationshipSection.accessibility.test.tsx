@@ -17,13 +17,6 @@ import * as matchers from 'vitest-axe/matchers';
 // Extend Vitest matchers
 expect.extend(matchers);
 
-// Mock useEntityInteraction hook
-vi.mock('@/hooks/use-entity-interaction', () => ({
-  useEntityInteraction: () => ({
-    handleSidebarEntityClick: vi.fn(),
-  }),
-}));
-
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>{children}</MantineProvider>

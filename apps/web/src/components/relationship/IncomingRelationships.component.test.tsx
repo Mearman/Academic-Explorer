@@ -9,7 +9,6 @@ import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IncomingRelationships } from './IncomingRelationships';
-import { RelationshipErrorCode } from '@/types/relationship';
 
 // Mock the hooks
 vi.mock('@/hooks/use-entity-relationship-queries', () => ({
