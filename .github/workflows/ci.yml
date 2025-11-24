@@ -170,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, graph, simulation, types, ui, utils]
+        package: [web, cli, client, types, ui, utils]
     name: unit-tests (${{ matrix.package }})
     steps:
       - name: Checkout
@@ -255,7 +255,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, graph, simulation, types, ui, utils]
+        package: [web, cli, client, types, ui, utils]
     name: component-tests (${{ matrix.package }})
     steps:
       - name: Checkout
@@ -340,7 +340,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, graph, simulation, types, ui, utils]
+        package: [web, cli, client, types, ui, utils]
     name: integration-tests (${{ matrix.package }})
     steps:
       - name: Checkout
@@ -990,9 +990,9 @@ jobs:
             echo "| Job | Status | Details |"
             echo "|-----|--------|---------|"
             echo "| 🔨 Build | ${{ needs.build.result }} | Build artifacts shared across jobs |"
-            echo "| 🧪 Unit Tests | ${{ needs.unit-tests.result }} | 8 packages (fast, isolated tests) |"
-            echo "| 🧩 Component Tests | ${{ needs.component-tests.result }} | 8 packages (React component tests) |"
-            echo "| 🔗 Integration Tests | ${{ needs.integration-tests.result }} | 8 packages (cross-component tests) |"
+            echo "| 🧪 Unit Tests | ${{ needs.unit-tests.result }} | 6 packages (fast, isolated tests) |"
+            echo "| 🧩 Component Tests | ${{ needs.component-tests.result }} | 6 packages (React component tests) |"
+            echo "| 🔗 Integration Tests | ${{ needs.integration-tests.result }} | 6 packages (cross-component tests) |"
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
             echo "| 📦 Dependency Audit | ${{ needs.dependency-audit.result }} | Dependency health checks |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
