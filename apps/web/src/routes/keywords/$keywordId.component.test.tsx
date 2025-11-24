@@ -31,9 +31,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   };
 });
 
-// Mock the relationship hooks
-vi.mock('@/hooks/use-entity-relationships', () => ({
-  useEntityRelationships: vi.fn(() => ({
+// Mock the relationship hooks used by the components
+vi.mock('@/hooks/use-entity-relationship-queries', () => ({
+  useEntityRelationshipQueries: vi.fn(() => ({
     incoming: [
       {
         id: 'authorship',
@@ -59,6 +59,16 @@ vi.mock('@/hooks/use-entity-relationships', () => ({
     incomingCount: 5,
     outgoingCount: 10,
     loading: false,
+    error: undefined,
+  })),
+}));
+
+vi.mock('@/hooks/use-entity-relationships-from-data', () => ({
+  useEntityRelationshipsFromData: vi.fn(() => ({
+    incoming: [],
+    outgoing: [],
+    incomingCount: 0,
+    outgoingCount: 0,
   })),
 }));
 
