@@ -39,7 +39,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 // Import after mocks
 import { Route as OpenAlexUrlRoute } from "./$";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/types";
 
 // Extract the component from the route
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;

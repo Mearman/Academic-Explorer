@@ -91,3 +91,15 @@ export type {
 	EntityType,
 	EntityTypeMap,
 } from "./entities"
+
+// Re-export graph types
+export type {
+	GraphNode,
+	GraphEdge,
+	ExternalIdentifier,
+	SortCriteria,
+	FilterCriteria,
+	ExpansionSettings,
+	ExpansionTarget,
+} from "./graph"
+export { getDefaultSettingsForTarget } from "./graph"

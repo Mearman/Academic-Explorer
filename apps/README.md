@@ -11,9 +11,9 @@ This directory contains the main applications for the Academic Explorer monorepo
 
 Both apps depend on shared packages in `../packages/`:
 - `@academic-explorer/client` - OpenAlex API client
+- `@academic-explorer/types` - Shared type definitions
+- `@academic-explorer/ui` - UI components (web only)
 - `@academic-explorer/utils` - Common utilities
-- `@academic-explorer/graph` - Graph data structures (web only)
-- `@academic-explorer/simulation` - Force simulation logic (web only)
 
 ## Development
 

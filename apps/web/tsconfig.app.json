@@ -41,8 +41,6 @@
   ],
   "references": [
     { "path": "../../packages/client" },
-    { "path": "../../packages/graph" },
-    { "path": "../../packages/simulation" },
     { "path": "../../packages/types" },
     { "path": "../../packages/ui" },
     { "path": "../../packages/utils" }

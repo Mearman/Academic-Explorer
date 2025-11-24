@@ -9,19 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as HistoryRouteImport } from './routes/history'
-import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
 import { Route as CatalogueRouteImport } from './routes/catalogue'
 import { Route as CacheRouteImport } from './routes/cache'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as ExternalIdRouteImport } from './routes/$externalId'
-import { Route as SplatRouteImport } from './routes/$_'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works/index'
 import { Route as TopicsIndexRouteImport } from './routes/topics/index'
@@ -32,26 +27,9 @@ import { Route as KeywordsIndexRouteImport } from './routes/keywords/index'
 import { Route as InstitutionsIndexRouteImport } from './routes/institutions/index'
 import { Route as FundersIndexRouteImport } from './routes/funders/index'
 import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
-import { Route as AutocompleteIndexRouteImport } from './routes/autocomplete/index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
-import { Route as WorksSplatRouteImport } from './routes/works/$_'
-import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
-import { Route as SubfieldsSubfieldIdRouteImport } from './routes/subfields/$subfieldId'
-import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
-import { Route as PublishersPublisherIdRouteImport } from './routes/publishers/$publisherId'
-import { Route as OpenalexUrlSplatRouteImport } from './routes/openalex-url/$'
-import { Route as KeywordsKeywordIdRouteImport } from './routes/keywords/$keywordId'
-import { Route as InstitutionsSplatRouteImport } from './routes/institutions/$_'
-import { Route as HttpsSplatRouteImport } from './routes/https/$'
-import { Route as FundersFunderIdRouteImport } from './routes/funders/$funderId'
-import { Route as FieldsFieldIdRouteImport } from './routes/fields/$fieldId'
-import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
-import { Route as DomainsDomainIdRouteImport } from './routes/domains/$domainId'
-import { Route as ConceptsConceptIdRouteImport } from './routes/concepts/$conceptId'
-import { Route as AuthorsSplatRouteImport } from './routes/authors/$_'
-import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api-openalex-org/$'
 import { Route as TextTopicsIndexRouteImport } from './routes/text/topics/index'
 import { Route as TextKeywordsIndexRouteImport } from './routes/text/keywords/index'
 import { Route as TextConceptsIndexRouteImport } from './routes/text/concepts/index'
@@ -62,17 +40,7 @@ import { Route as AutocompleteInstitutionsIndexRouteImport } from './routes/auto
 import { Route as AutocompleteFundersIndexRouteImport } from './routes/autocomplete/funders/index'
 import { Route as AutocompleteConceptsIndexRouteImport } from './routes/autocomplete/concepts/index'
 import { Route as AutocompleteAuthorsIndexRouteImport } from './routes/autocomplete/authors/index'
-import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
-import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
-import { Route as OpenalexOrgSplatRouteImport } from './routes/openalex.org/$'
-import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
-import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$orcid'
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/settings.lazy').then((d) => d.Route))
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -83,11 +51,6 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/history.lazy').then((d) => d.Route))
-const ExploreRoute = ExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/explore.lazy').then((d) => d.Route))
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
@@ -118,21 +81,6 @@ const BookmarksRoute = BookmarksRouteImport.update({
   path: '/bookmarks',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/bookmarks.lazy').then((d) => d.Route))
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-const ExternalIdRoute = ExternalIdRouteImport.update({
-  id: '/$externalId',
-  path: '/$externalId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/$externalId.lazy').then((d) => d.Route))
-const SplatRoute = SplatRouteImport.update({
-  id: '/$_',
-  path: '/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/$_.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -191,96 +139,11 @@ const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/concepts/index.lazy').then((d) => d.Route),
 )
-const AutocompleteIndexRoute = AutocompleteIndexRouteImport.update({
-  id: '/autocomplete/',
-  path: '/autocomplete/',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/autocomplete/index.lazy').then((d) => d.Route),
-)
 const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
   id: '/authors/',
   path: '/authors/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/authors/index.lazy').then((d) => d.Route))
-const WorksSplatRoute = WorksSplatRouteImport.update({
-  id: '/works/$_',
-  path: '/works/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/works/$_.lazy').then((d) => d.Route))
-const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
-  id: '/topics/$topicId',
-  path: '/topics/$topicId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/topics/$topicId.lazy').then((d) => d.Route),
-)
-const SubfieldsSubfieldIdRoute = SubfieldsSubfieldIdRouteImport.update({
-  id: '/subfields/$subfieldId',
-  path: '/subfields/$subfieldId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/subfields/$subfieldId.lazy').then((d) => d.Route),
-)
-const SourcesSourceIdRoute = SourcesSourceIdRouteImport.update({
-  id: '/sources/$sourceId',
-  path: '/sources/$sourceId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/sources/$sourceId.lazy').then((d) => d.Route),
-)
-const PublishersPublisherIdRoute = PublishersPublisherIdRouteImport.update({
-  id: '/publishers/$publisherId',
-  path: '/publishers/$publisherId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/publishers/$publisherId.lazy').then((d) => d.Route),
-)
-const OpenalexUrlSplatRoute = OpenalexUrlSplatRouteImport.update({
-  id: '/openalex-url/$',
-  path: '/openalex-url/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/openalex-url/$.lazy').then((d) => d.Route),
-)
-const KeywordsKeywordIdRoute = KeywordsKeywordIdRouteImport.update({
-  id: '/keywords/$keywordId',
-  path: '/keywords/$keywordId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/keywords/$keywordId.lazy').then((d) => d.Route),
-)
-const InstitutionsSplatRoute = InstitutionsSplatRouteImport.update({
-  id: '/institutions/$_',
-  path: '/institutions/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/institutions/$_.lazy').then((d) => d.Route),
-)
-const HttpsSplatRoute = HttpsSplatRouteImport.update({
-  id: '/https/$',
-  path: '/https/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/https/$.lazy').then((d) => d.Route))
-const FundersFunderIdRoute = FundersFunderIdRouteImport.update({
-  id: '/funders/$funderId',
-  path: '/funders/$funderId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/funders/$funderId.lazy').then((d) => d.Route),
-)
-const FieldsFieldIdRoute = FieldsFieldIdRouteImport.update({
-  id: '/fields/$fieldId',
-  path: '/fields/$fieldId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/fields/$fieldId.lazy').then((d) => d.Route),
-)
-const ExploreGraphRoute = ExploreGraphRouteImport.update({
-  id: '/graph',
-  path: '/graph',
-  getParentRoute: () => ExploreRoute,
-} as any).lazy(() => import('./routes/explore/graph.lazy').then((d) => d.Route))
 const EvaluationResultsRoute = EvaluationResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -291,32 +154,6 @@ const EvaluationDatasetsRoute = EvaluationDatasetsRouteImport.update({
   path: '/datasets',
   getParentRoute: () => EvaluationRoute,
 } as any)
-const DomainsDomainIdRoute = DomainsDomainIdRouteImport.update({
-  id: '/domains/$domainId',
-  path: '/domains/$domainId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/domains/$domainId.lazy').then((d) => d.Route),
-)
-const ConceptsConceptIdRoute = ConceptsConceptIdRouteImport.update({
-  id: '/concepts/$conceptId',
-  path: '/concepts/$conceptId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/concepts/$conceptId.lazy').then((d) => d.Route),
-)
-const AuthorsSplatRoute = AuthorsSplatRouteImport.update({
-  id: '/authors/$_',
-  path: '/authors/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/authors/$_.lazy').then((d) => d.Route))
-const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
-  id: '/api-openalex-org/$',
-  path: '/api-openalex-org/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/api-openalex-org/$.lazy').then((d) => d.Route),
-)
 const TextTopicsIndexRoute = TextTopicsIndexRouteImport.update({
   id: '/text/topics/',
   path: '/text/topics/',
@@ -373,77 +210,20 @@ const AutocompleteAuthorsIndexRoute =
     path: '/autocomplete/authors/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
-  id: '/works/doi/$doi',
-  path: '/works/doi/$doi',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/works/doi.$doi.lazy').then((d) => d.Route),
-)
-const SourcesIssnIssnRoute = SourcesIssnIssnRouteImport.update({
-  id: '/sources/issn/$issn',
-  path: '/sources/issn/$issn',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/sources/issn.$issn.lazy').then((d) => d.Route),
-)
-const OpenalexOrgSplatRoute = OpenalexOrgSplatRouteImport.update({
-  id: '/openalex/org/$',
-  path: '/openalex/org/$',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/openalex.org/$.lazy').then((d) => d.Route),
-)
-const InstitutionsRorRorRoute = InstitutionsRorRorRouteImport.update({
-  id: '/institutions/ror/$ror',
-  path: '/institutions/ror/$ror',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/institutions/ror.$ror.lazy').then((d) => d.Route),
-)
-const AuthorsOrcidOrcidRoute = AuthorsOrcidOrcidRouteImport.update({
-  id: '/authors/orcid/$orcid',
-  path: '/authors/orcid/$orcid',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/authors/orcid.$orcid.lazy').then((d) => d.Route),
-)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$': typeof SplatRoute
-  '/$externalId': typeof ExternalIdRoute
-  '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
-  '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$': typeof AuthorsSplatRoute
-  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
-  '/domains/$domainId': typeof DomainsDomainIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
-  '/explore/graph': typeof ExploreGraphRoute
-  '/fields/$fieldId': typeof FieldsFieldIdRoute
-  '/funders/$funderId': typeof FundersFunderIdRoute
-  '/https/$': typeof HttpsSplatRoute
-  '/institutions/$': typeof InstitutionsSplatRoute
-  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/openalex-url/$': typeof OpenalexUrlSplatRoute
-  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
-  '/sources/$sourceId': typeof SourcesSourceIdRoute
-  '/subfields/$subfieldId': typeof SubfieldsSubfieldIdRoute
-  '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$': typeof WorksSplatRoute
   '/authors': typeof AuthorsIndexRoute
-  '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
@@ -453,11 +233,6 @@ export interface FileRoutesByFullPath {
   '/text': typeof TextIndexRoute
   '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
-  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
-  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
-  '/openalex/org/$': typeof OpenalexOrgSplatRoute
-  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
-  '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
   '/autocomplete/concepts': typeof AutocompleteConceptsIndexRoute
   '/autocomplete/funders': typeof AutocompleteFundersIndexRoute
@@ -471,39 +246,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$': typeof SplatRoute
-  '/$externalId': typeof ExternalIdRoute
-  '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
-  '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$': typeof AuthorsSplatRoute
-  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
-  '/domains/$domainId': typeof DomainsDomainIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
-  '/explore/graph': typeof ExploreGraphRoute
-  '/fields/$fieldId': typeof FieldsFieldIdRoute
-  '/funders/$funderId': typeof FundersFunderIdRoute
-  '/https/$': typeof HttpsSplatRoute
-  '/institutions/$': typeof InstitutionsSplatRoute
-  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/openalex-url/$': typeof OpenalexUrlSplatRoute
-  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
-  '/sources/$sourceId': typeof SourcesSourceIdRoute
-  '/subfields/$subfieldId': typeof SubfieldsSubfieldIdRoute
-  '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$': typeof WorksSplatRoute
   '/authors': typeof AuthorsIndexRoute
-  '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
@@ -513,11 +266,6 @@ export interface FileRoutesByTo {
   '/text': typeof TextIndexRoute
   '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
-  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
-  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
-  '/openalex/org/$': typeof OpenalexOrgSplatRoute
-  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
-  '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
   '/autocomplete/concepts': typeof AutocompleteConceptsIndexRoute
   '/autocomplete/funders': typeof AutocompleteFundersIndexRoute
@@ -532,39 +280,17 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$_': typeof SplatRoute
-  '/$externalId': typeof ExternalIdRoute
-  '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRouteWithChildren
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
-  '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$_': typeof AuthorsSplatRoute
-  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
-  '/domains/$domainId': typeof DomainsDomainIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
-  '/explore/graph': typeof ExploreGraphRoute
-  '/fields/$fieldId': typeof FieldsFieldIdRoute
-  '/funders/$funderId': typeof FundersFunderIdRoute
-  '/https/$': typeof HttpsSplatRoute
-  '/institutions/$_': typeof InstitutionsSplatRoute
-  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/openalex-url/$': typeof OpenalexUrlSplatRoute
-  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
-  '/sources/$sourceId': typeof SourcesSourceIdRoute
-  '/subfields/$subfieldId': typeof SubfieldsSubfieldIdRoute
-  '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$_': typeof WorksSplatRoute
   '/authors/': typeof AuthorsIndexRoute
-  '/autocomplete/': typeof AutocompleteIndexRoute
   '/concepts/': typeof ConceptsIndexRoute
   '/funders/': typeof FundersIndexRoute
   '/institutions/': typeof InstitutionsIndexRoute
@@ -574,11 +300,6 @@ export interface FileRoutesById {
   '/text/': typeof TextIndexRoute
   '/topics/': typeof TopicsIndexRoute
   '/works/': typeof WorksIndexRoute
-  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
-  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
-  '/openalex/org/$': typeof OpenalexOrgSplatRoute
-  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
-  '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors/': typeof AutocompleteAuthorsIndexRoute
   '/autocomplete/concepts/': typeof AutocompleteConceptsIndexRoute
   '/autocomplete/funders/': typeof AutocompleteFundersIndexRoute
@@ -594,39 +315,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$'
-    | '/$externalId'
-    | '/about'
     | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/catalogue'
     | '/error-test'
     | '/evaluation'
-    | '/explore'
     | '/history'
     | '/search'
-    | '/settings'
-    | '/api-openalex-org/$'
-    | '/authors/$'
-    | '/concepts/$conceptId'
-    | '/domains/$domainId'
     | '/evaluation/datasets'
     | '/evaluation/results'
-    | '/explore/graph'
-    | '/fields/$fieldId'
-    | '/funders/$funderId'
-    | '/https/$'
-    | '/institutions/$'
-    | '/keywords/$keywordId'
-    | '/openalex-url/$'
-    | '/publishers/$publisherId'
-    | '/sources/$sourceId'
-    | '/subfields/$subfieldId'
-    | '/topics/$topicId'
-    | '/works/$'
     | '/authors'
-    | '/autocomplete'
     | '/concepts'
     | '/funders'
     | '/institutions'
@@ -636,11 +335,6 @@ export interface FileRouteTypes {
     | '/text'
     | '/topics'
     | '/works'
-    | '/authors/orcid/$orcid'
-    | '/institutions/ror/$ror'
-    | '/openalex/org/$'
-    | '/sources/issn/$issn'
-    | '/works/doi/$doi'
     | '/autocomplete/authors'
     | '/autocomplete/concepts'
     | '/autocomplete/funders'
@@ -654,39 +348,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$'
-    | '/$externalId'
-    | '/about'
     | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/catalogue'
     | '/error-test'
     | '/evaluation'
-    | '/explore'
     | '/history'
     | '/search'
-    | '/settings'
-    | '/api-openalex-org/$'
-    | '/authors/$'
-    | '/concepts/$conceptId'
-    | '/domains/$domainId'
     | '/evaluation/datasets'
     | '/evaluation/results'
-    | '/explore/graph'
-    | '/fields/$fieldId'
-    | '/funders/$funderId'
-    | '/https/$'
-    | '/institutions/$'
-    | '/keywords/$keywordId'
-    | '/openalex-url/$'
-    | '/publishers/$publisherId'
-    | '/sources/$sourceId'
-    | '/subfields/$subfieldId'
-    | '/topics/$topicId'
-    | '/works/$'
     | '/authors'
-    | '/autocomplete'
     | '/concepts'
     | '/funders'
     | '/institutions'
@@ -696,11 +368,6 @@ export interface FileRouteTypes {
     | '/text'
     | '/topics'
     | '/works'
-    | '/authors/orcid/$orcid'
-    | '/institutions/ror/$ror'
-    | '/openalex/org/$'
-    | '/sources/issn/$issn'
-    | '/works/doi/$doi'
     | '/autocomplete/authors'
     | '/autocomplete/concepts'
     | '/autocomplete/funders'
@@ -714,39 +381,17 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/$_'
-    | '/$externalId'
-    | '/about'
     | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/catalogue'
     | '/error-test'
     | '/evaluation'
-    | '/explore'
     | '/history'
     | '/search'
-    | '/settings'
-    | '/api-openalex-org/$'
-    | '/authors/$_'
-    | '/concepts/$conceptId'
-    | '/domains/$domainId'
     | '/evaluation/datasets'
     | '/evaluation/results'
-    | '/explore/graph'
-    | '/fields/$fieldId'
-    | '/funders/$funderId'
-    | '/https/$'
-    | '/institutions/$_'
-    | '/keywords/$keywordId'
-    | '/openalex-url/$'
-    | '/publishers/$publisherId'
-    | '/sources/$sourceId'
-    | '/subfields/$subfieldId'
-    | '/topics/$topicId'
-    | '/works/$_'
     | '/authors/'
-    | '/autocomplete/'
     | '/concepts/'
     | '/funders/'
     | '/institutions/'
@@ -756,11 +401,6 @@ export interface FileRouteTypes {
     | '/text/'
     | '/topics/'
     | '/works/'
-    | '/authors/orcid/$orcid'
-    | '/institutions/ror/$ror'
-    | '/openalex/org/$'
-    | '/sources/issn/$issn'
-    | '/works/doi/$doi'
     | '/autocomplete/authors/'
     | '/autocomplete/concepts/'
     | '/autocomplete/funders/'
@@ -775,36 +415,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SplatRoute: typeof SplatRoute
-  ExternalIdRoute: typeof ExternalIdRoute
-  AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
   BrowseRoute: typeof BrowseRoute
   CacheRoute: typeof CacheRoute
   CatalogueRoute: typeof CatalogueRoute
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
-  ExploreRoute: typeof ExploreRouteWithChildren
   HistoryRoute: typeof HistoryRoute
   SearchRoute: typeof SearchRoute
-  SettingsRoute: typeof SettingsRoute
-  ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
-  AuthorsSplatRoute: typeof AuthorsSplatRoute
-  ConceptsConceptIdRoute: typeof ConceptsConceptIdRoute
-  DomainsDomainIdRoute: typeof DomainsDomainIdRoute
-  FieldsFieldIdRoute: typeof FieldsFieldIdRoute
-  FundersFunderIdRoute: typeof FundersFunderIdRoute
-  HttpsSplatRoute: typeof HttpsSplatRoute
-  InstitutionsSplatRoute: typeof InstitutionsSplatRoute
-  KeywordsKeywordIdRoute: typeof KeywordsKeywordIdRoute
-  OpenalexUrlSplatRoute: typeof OpenalexUrlSplatRoute
-  PublishersPublisherIdRoute: typeof PublishersPublisherIdRoute
-  SourcesSourceIdRoute: typeof SourcesSourceIdRoute
-  SubfieldsSubfieldIdRoute: typeof SubfieldsSubfieldIdRoute
-  TopicsTopicIdRoute: typeof TopicsTopicIdRoute
-  WorksSplatRoute: typeof WorksSplatRoute
   AuthorsIndexRoute: typeof AuthorsIndexRoute
-  AutocompleteIndexRoute: typeof AutocompleteIndexRoute
   ConceptsIndexRoute: typeof ConceptsIndexRoute
   FundersIndexRoute: typeof FundersIndexRoute
   InstitutionsIndexRoute: typeof InstitutionsIndexRoute
@@ -814,11 +433,6 @@ export interface RootRouteChildren {
   TextIndexRoute: typeof TextIndexRoute
   TopicsIndexRoute: typeof TopicsIndexRoute
   WorksIndexRoute: typeof WorksIndexRoute
-  AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
-  InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
-  OpenalexOrgSplatRoute: typeof OpenalexOrgSplatRoute
-  SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
-  WorksDoiDoiRoute: typeof WorksDoiDoiRoute
   AutocompleteAuthorsIndexRoute: typeof AutocompleteAuthorsIndexRoute
   AutocompleteConceptsIndexRoute: typeof AutocompleteConceptsIndexRoute
   AutocompleteFundersIndexRoute: typeof AutocompleteFundersIndexRoute
@@ -833,13 +447,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -852,13 +459,6 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explore': {
-      id: '/explore'
-      path: '/explore'
-      fullPath: '/explore'
-      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/evaluation': {
@@ -901,27 +501,6 @@ declare module '@tanstack/react-router' {
       path: '/bookmarks'
       fullPath: '/bookmarks'
       preLoaderRoute: typeof BookmarksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$externalId': {
-      id: '/$externalId'
-      path: '/$externalId'
-      fullPath: '/$externalId'
-      preLoaderRoute: typeof ExternalIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$_': {
-      id: '/$_'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -994,103 +573,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConceptsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/autocomplete/': {
-      id: '/autocomplete/'
-      path: '/autocomplete'
-      fullPath: '/autocomplete'
-      preLoaderRoute: typeof AutocompleteIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/authors/': {
       id: '/authors/'
       path: '/authors'
       fullPath: '/authors'
       preLoaderRoute: typeof AuthorsIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/works/$_': {
-      id: '/works/$_'
-      path: '/works/$'
-      fullPath: '/works/$'
-      preLoaderRoute: typeof WorksSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/topics/$topicId': {
-      id: '/topics/$topicId'
-      path: '/topics/$topicId'
-      fullPath: '/topics/$topicId'
-      preLoaderRoute: typeof TopicsTopicIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/subfields/$subfieldId': {
-      id: '/subfields/$subfieldId'
-      path: '/subfields/$subfieldId'
-      fullPath: '/subfields/$subfieldId'
-      preLoaderRoute: typeof SubfieldsSubfieldIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sources/$sourceId': {
-      id: '/sources/$sourceId'
-      path: '/sources/$sourceId'
-      fullPath: '/sources/$sourceId'
-      preLoaderRoute: typeof SourcesSourceIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/publishers/$publisherId': {
-      id: '/publishers/$publisherId'
-      path: '/publishers/$publisherId'
-      fullPath: '/publishers/$publisherId'
-      preLoaderRoute: typeof PublishersPublisherIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/openalex-url/$': {
-      id: '/openalex-url/$'
-      path: '/openalex-url/$'
-      fullPath: '/openalex-url/$'
-      preLoaderRoute: typeof OpenalexUrlSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keywords/$keywordId': {
-      id: '/keywords/$keywordId'
-      path: '/keywords/$keywordId'
-      fullPath: '/keywords/$keywordId'
-      preLoaderRoute: typeof KeywordsKeywordIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/institutions/$_': {
-      id: '/institutions/$_'
-      path: '/institutions/$'
-      fullPath: '/institutions/$'
-      preLoaderRoute: typeof InstitutionsSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/https/$': {
-      id: '/https/$'
-      path: '/https/$'
-      fullPath: '/https/$'
-      preLoaderRoute: typeof HttpsSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/funders/$funderId': {
-      id: '/funders/$funderId'
-      path: '/funders/$funderId'
-      fullPath: '/funders/$funderId'
-      preLoaderRoute: typeof FundersFunderIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fields/$fieldId': {
-      id: '/fields/$fieldId'
-      path: '/fields/$fieldId'
-      fullPath: '/fields/$fieldId'
-      preLoaderRoute: typeof FieldsFieldIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explore/graph': {
-      id: '/explore/graph'
-      path: '/graph'
-      fullPath: '/explore/graph'
-      preLoaderRoute: typeof ExploreGraphRouteImport
-      parentRoute: typeof ExploreRoute
     }
     '/evaluation/results': {
       id: '/evaluation/results'
@@ -1105,34 +593,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/evaluation/datasets'
       preLoaderRoute: typeof EvaluationDatasetsRouteImport
       parentRoute: typeof EvaluationRoute
-    }
-    '/domains/$domainId': {
-      id: '/domains/$domainId'
-      path: '/domains/$domainId'
-      fullPath: '/domains/$domainId'
-      preLoaderRoute: typeof DomainsDomainIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/concepts/$conceptId': {
-      id: '/concepts/$conceptId'
-      path: '/concepts/$conceptId'
-      fullPath: '/concepts/$conceptId'
-      preLoaderRoute: typeof ConceptsConceptIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/authors/$_': {
-      id: '/authors/$_'
-      path: '/authors/$'
-      fullPath: '/authors/$'
-      preLoaderRoute: typeof AuthorsSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api-openalex-org/$': {
-      id: '/api-openalex-org/$'
-      path: '/api-openalex-org/$'
-      fullPath: '/api-openalex-org/$'
-      preLoaderRoute: typeof ApiOpenalexOrgSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/text/topics/': {
       id: '/text/topics/'
@@ -1204,41 +664,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AutocompleteAuthorsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/works/doi/$doi': {
-      id: '/works/doi/$doi'
-      path: '/works/doi/$doi'
-      fullPath: '/works/doi/$doi'
-      preLoaderRoute: typeof WorksDoiDoiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sources/issn/$issn': {
-      id: '/sources/issn/$issn'
-      path: '/sources/issn/$issn'
-      fullPath: '/sources/issn/$issn'
-      preLoaderRoute: typeof SourcesIssnIssnRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/openalex/org/$': {
-      id: '/openalex/org/$'
-      path: '/openalex/org/$'
-      fullPath: '/openalex/org/$'
-      preLoaderRoute: typeof OpenalexOrgSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/institutions/ror/$ror': {
-      id: '/institutions/ror/$ror'
-      path: '/institutions/ror/$ror'
-      fullPath: '/institutions/ror/$ror'
-      preLoaderRoute: typeof InstitutionsRorRorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/authors/orcid/$orcid': {
-      id: '/authors/orcid/$orcid'
-      path: '/authors/orcid/$orcid'
-      fullPath: '/authors/orcid/$orcid'
-      preLoaderRoute: typeof AuthorsOrcidOrcidRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -1256,49 +681,17 @@ const EvaluationRouteWithChildren = EvaluationRoute._addFileChildren(
   EvaluationRouteChildren,
 )
 
-interface ExploreRouteChildren {
-  ExploreGraphRoute: typeof ExploreGraphRoute
-}
-
-const ExploreRouteChildren: ExploreRouteChildren = {
-  ExploreGraphRoute: ExploreGraphRoute,
-}
-
-const ExploreRouteWithChildren =
-  ExploreRoute._addFileChildren(ExploreRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SplatRoute: SplatRoute,
-  ExternalIdRoute: ExternalIdRoute,
-  AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
   BrowseRoute: BrowseRoute,
   CacheRoute: CacheRoute,
   CatalogueRoute: CatalogueRoute,
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
-  ExploreRoute: ExploreRouteWithChildren,
   HistoryRoute: HistoryRoute,
   SearchRoute: SearchRoute,
-  SettingsRoute: SettingsRoute,
-  ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
-  AuthorsSplatRoute: AuthorsSplatRoute,
-  ConceptsConceptIdRoute: ConceptsConceptIdRoute,
-  DomainsDomainIdRoute: DomainsDomainIdRoute,
-  FieldsFieldIdRoute: FieldsFieldIdRoute,
-  FundersFunderIdRoute: FundersFunderIdRoute,
-  HttpsSplatRoute: HttpsSplatRoute,
-  InstitutionsSplatRoute: InstitutionsSplatRoute,
-  KeywordsKeywordIdRoute: KeywordsKeywordIdRoute,
-  OpenalexUrlSplatRoute: OpenalexUrlSplatRoute,
-  PublishersPublisherIdRoute: PublishersPublisherIdRoute,
-  SourcesSourceIdRoute: SourcesSourceIdRoute,
-  SubfieldsSubfieldIdRoute: SubfieldsSubfieldIdRoute,
-  TopicsTopicIdRoute: TopicsTopicIdRoute,
-  WorksSplatRoute: WorksSplatRoute,
   AuthorsIndexRoute: AuthorsIndexRoute,
-  AutocompleteIndexRoute: AutocompleteIndexRoute,
   ConceptsIndexRoute: ConceptsIndexRoute,
   FundersIndexRoute: FundersIndexRoute,
   InstitutionsIndexRoute: InstitutionsIndexRoute,
@@ -1308,11 +701,6 @@ const rootRouteChildren: RootRouteChildren = {
   TextIndexRoute: TextIndexRoute,
   TopicsIndexRoute: TopicsIndexRoute,
   WorksIndexRoute: WorksIndexRoute,
-  AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
-  InstitutionsRorRorRoute: InstitutionsRorRorRoute,
-  OpenalexOrgSplatRoute: OpenalexOrgSplatRoute,
-  SourcesIssnIssnRoute: SourcesIssnIssnRoute,
-  WorksDoiDoiRoute: WorksDoiDoiRoute,
   AutocompleteAuthorsIndexRoute: AutocompleteAuthorsIndexRoute,
   AutocompleteConceptsIndexRoute: AutocompleteConceptsIndexRoute,
   AutocompleteFundersIndexRoute: AutocompleteFundersIndexRoute,

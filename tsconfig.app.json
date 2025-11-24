@@ -26,8 +26,6 @@
       "@academic-explorer/client": ["packages/client/src/index.ts"],
       "@academic-explorer/utils": ["packages/utils/src/index.ts"],
       "@academic-explorer/ui": ["packages/ui/src/index.ts"],
-      "@academic-explorer/graph": ["packages/graph/src/index.ts"],
-      "@academic-explorer/simulation": ["packages/simulation/src/index.ts"],
       "@academic-explorer/types": ["packages/types/src/index.ts"]
     },
 
@@ -50,9 +48,7 @@
     "src/build-plugins/**/*"
   ],
   "references": [
-    { "path": "../../packages/graph" },
     { "path": "../../packages/utils" },
-    { "path": "../../packages/simulation" },
     { "path": "../../packages/client" },
     { "path": "../../packages/ui" }
   ]

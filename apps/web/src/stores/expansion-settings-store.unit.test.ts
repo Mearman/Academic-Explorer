@@ -13,7 +13,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { expansionSettingsActions } from "./expansion-settings-store";
-import { RelationType } from "@academic-explorer/graph";
+import { RelationType } from "@academic-explorer/types";
 
 // Mock logger to prevent console output during tests
 vi.mock("@academic-explorer/utils/logger", () => ({

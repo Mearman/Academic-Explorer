@@ -5,14 +5,13 @@ Shared packages for the Academic Explorer monorepo. These packages provide reusa
 ## Package Structure
 
 - **[`client`](client/README.md)** - TypeScript client for OpenAlex API with entity support and utilities
-- **[`graph`](graph/README.md)** - Core graph data structures, types, and services for Academic Explorer
-- **[`simulation`](simulation/README.md)** - Force-directed graph simulation engine using D3 and web workers
-- **[`ui`](ui/README.md)** - Reusable UI components built with Mantine and XYFlow
+- **[`types`](types/README.md)** - Shared type definitions for entities, relationships, and data structures
+- **[`ui`](ui/README.md)** - Reusable UI components built with Mantine
 - **[`utils`](utils/README.md)** - Shared utilities including logging, caching, storage, and type guards
 
 ## Dependencies
 
-The packages form a dependency hierarchy: `utils` provides foundations for `graph` and `client`, which support the higher-level `simulation` and `ui` packages. All packages are consumed by the main web application and CLI tool.
+The packages form a dependency hierarchy: `utils` provides foundations for `types` and `client`, which support the higher-level `ui` package. All packages are consumed by the main web application and CLI tool.
 
 ## Development
 
