@@ -5,7 +5,7 @@
 
 import type { OpenAlexEntity, QueryParams } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { EntityDetectionService } from "@academic-explorer/utils"";
+import { EntityDetectionService } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { CacheKeyType } from "../config/cache";
