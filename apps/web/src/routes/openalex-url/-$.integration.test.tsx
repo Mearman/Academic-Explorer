@@ -17,8 +17,8 @@ vi.mock("./$", async (importOriginal) => {
 });
 
 // Mock EntityDetectionService
-vi.mock("@academic-explorer/types", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@academic-explorer/types")>();
+vi.mock("@academic-explorer/utils", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@academic-explorer/utils")>();
   return {
     ...actual,
     EntityDetectionService: {

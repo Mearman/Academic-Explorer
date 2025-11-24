@@ -7,11 +7,15 @@ import { EntityDetectionService } from "@academic-explorer/utils";
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
 
 // Mock EntityDetectionService
-vi.mock("@academic-explorer/types", () => ({
-  EntityDetectionService: {
-    detectEntity: vi.fn(),
-  },
-}));
+vi.mock("@academic-explorer/utils", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@academic-explorer/utils")>();
+  return {
+    ...actual,
+    EntityDetectionService: {
+      detectEntity: vi.fn(),
+    },
+  };
+});
 
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
