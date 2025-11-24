@@ -1,3 +1,50 @@
+## 19.0.0 (2025-11-24)
+
+* ci(config): remove graph and simulation packages from test matrices ([e3acb00](https://github.com/Mearman/Academic-Explorer/commit/e3acb00))
+* chore: update pnpm lockfile and static data after package removal ([5a594cb](https://github.com/Mearman/Academic-Explorer/commit/5a594cb))
+* chore(deps-dev): bump @nx/web from 22.0.2 to 22.1.1 (#103) ([f6b1019](https://github.com/Mearman/Academic-Explorer/commit/f6b1019)), closes [#103](https://github.com/Mearman/Academic-Explorer/issues/103)
+* chore(deps-dev): bump @types/react from 19.2.6 to 19.2.7 in the react group (#98) ([04b06c1](https://github.com/Mearman/Academic-Explorer/commit/04b06c1)), closes [#98](https://github.com/Mearman/Academic-Explorer/issues/98)
+* chore(deps): bump the tanstack group with 2 updates (#99) ([654e222](https://github.com/Mearman/Academic-Explorer/commit/654e222)), closes [#99](https://github.com/Mearman/Academic-Explorer/issues/99)
+* chore(deps): bump zod from 4.1.12 to 4.1.13 (#105) ([da501f2](https://github.com/Mearman/Academic-Explorer/commit/da501f2)), closes [#105](https://github.com/Mearman/Academic-Explorer/issues/105)
+* chore(release): 18.0.2 [skip ci] ([843ed6b](https://github.com/Mearman/Academic-Explorer/commit/843ed6b))
+* refactor: remove graph package and update TypeScript configuration ([e50eef3](https://github.com/Mearman/Academic-Explorer/commit/e50eef3))
+* refactor(config): migrate deprecated entity constants to ENTITY_METADATA ([0a3dfe1](https://github.com/Mearman/Academic-Explorer/commit/0a3dfe1))
+* refactor(config): remove remaining graph/simulation package references ([6f22aea](https://github.com/Mearman/Academic-Explorer/commit/6f22aea))
+* refactor(ui-components): consolidate vite configs ([53c5f66](https://github.com/Mearman/Academic-Explorer/commit/53c5f66))
+* refactor(web): remove graph store and visualization system ([ff44831](https://github.com/Mearman/Academic-Explorer/commit/ff44831))
+* refactor(web): remove graph/simulation package references from tsconfig and docs ([ecbb9b9](https://github.com/Mearman/Academic-Explorer/commit/ecbb9b9))
+* refactor(web): remove legacy components dependent on deleted simulation package ([eec68a3](https://github.com/Mearman/Academic-Explorer/commit/eec68a3))
+* refactor(web): remove obsolete graph store references from test files ([459200e](https://github.com/Mearman/Academic-Explorer/commit/459200e))
+* refactor(web): remove references to deleted components and fix section registry ([31086aa](https://github.com/Mearman/Academic-Explorer/commit/31086aa))
+* refactor(web): remove simulation package dependency ([da55fb9](https://github.com/Mearman/Academic-Explorer/commit/da55fb9))
+* refactor(web): remove unused RawApiDataSection component ([fe169a2](https://github.com/Mearman/Academic-Explorer/commit/fe169a2))
+* refactor(web): remove unused section registry system and cleanup ([93741bc](https://github.com/Mearman/Academic-Explorer/commit/93741bc))
+* refactor(web): remove unused section system and clean up layout store ([b3f5e21](https://github.com/Mearman/Academic-Explorer/commit/b3f5e21))
+* refactor(web): remove unused VSCode-style group system and animated-graph-store ([b2b5995](https://github.com/Mearman/Academic-Explorer/commit/b2b5995))
+* refactor(web): update imports to use new package locations ([2f0ce73](https://github.com/Mearman/Academic-Explorer/commit/2f0ce73))
+* fix(config): resolve TypeScript config parsing errors in tests ([9c62349](https://github.com/Mearman/Academic-Explorer/commit/9c62349))
+* fix(scripts): remove unused short_name parameter from check_existing_branches ([cca954c](https://github.com/Mearman/Academic-Explorer/commit/cca954c))
+* fix(scripts): use global maximum for branch numbering to prevent collisions ([df8a88a](https://github.com/Mearman/Academic-Explorer/commit/df8a88a))
+* fix(web): correct import paths for services after package migration ([a6e0ad2](https://github.com/Mearman/Academic-Explorer/commit/a6e0ad2))
+* fix(web): fix OpenAlexUrl route tests mock package ([6ca0962](https://github.com/Mearman/Academic-Explorer/commit/6ca0962))
+* fix(web): remove extra quote from import statement in use-raw-entity-data ([5254d76](https://github.com/Mearman/Academic-Explorer/commit/5254d76))
+* fix(web): simplify relationship component error handling and update tests ([34b4a60](https://github.com/Mearman/Academic-Explorer/commit/34b4a60))
+* fix(web): update keywords route test to mock correct hooks ([369145c](https://github.com/Mearman/Academic-Explorer/commit/369145c))
+* fix(web): update RelationshipItem tests to use useNavigate mock ([a2041ad](https://github.com/Mearman/Academic-Explorer/commit/a2041ad))
+* test(web): remove obsolete mocks for deleted section/group registry ([cdfc26f](https://github.com/Mearman/Academic-Explorer/commit/cdfc26f))
+* feat(types): migrate graph types and expansion settings from graph package ([bdd91b2](https://github.com/Mearman/Academic-Explorer/commit/bdd91b2))
+* feat(utils): migrate EntityDetectionService and event-bus from graph package ([45a6a91](https://github.com/Mearman/Academic-Explorer/commit/45a6a91))
+
+
+### BREAKING CHANGE
+
+* @academic-explorer/graph package removed, use @academic-explorer/types and @academic-explorer/utils instead
+* EntityDetectionService and event utilities now in @academic-explorer/utils
+* Graph types now in @academic-explorer/types instead of @academic-explorer/graph
+* Graph visualization removed. No 'Graph' mode
+or force-directed network interactions.
+* Simulation package features removed
+
 ## <small>18.0.2 (2025-11-23)</small>
 
 * fix(config): add test gating logic to prevent runs on feature branch pushes ([503b45d](https://github.com/Mearman/Academic-Explorer/commit/503b45d))
