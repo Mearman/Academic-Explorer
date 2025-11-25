@@ -1,7 +1,7 @@
 # Implementation Tasks: Complete OpenAlex Relationship Support
 
 **Feature**: Complete OpenAlex Relationship Support
-**Branch**: `020-complete-openalex-relationships`
+**Branch**: `028-complete-openalex-relationships`
 **Spec**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md) | **Research**: [research.md](./research.md)
 
 ## Task Summary

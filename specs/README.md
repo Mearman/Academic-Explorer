@@ -8,7 +8,7 @@ This directory contains all feature specifications for Academic Explorer, organi
 |--------|-------|
 | ✅ Complete | 13 |
 | 🚧 In Progress | 3 |
-| 📝 Draft | 11 |
+| 📝 Draft | 12 |
 | ⚠️ Archived | 2 |
 
 ## Completed Specifications
@@ -142,7 +142,7 @@ Correcting graph edge directions to match OpenAlex data ownership model. User St
 ---
 
 ### spec-018: Entity Consolidation
-**Status**: 🚧 In Progress | **Progress**: 39/40 tasks
+**Status**: 🚧 In Progress (Near Complete) | **Progress**: 39/40 tasks
 
 EntityType consolidation to `@academic-explorer/types` as single source of truth. 39 of 40 tasks complete. Remaining: T040 (Commit documentation updates).
 
@@ -251,6 +251,15 @@ Academic graph pattern extraction including ego networks, path analysis, motif d
 
 ---
 
+### spec-028: Complete OpenAlex Relationships
+**Status**: 📝 Draft
+
+Extension of spec-015 for complete relationship coverage including funding sources, publishers, and additional relationship types. Renumbered from 020 to resolve duplicate spec numbering.
+
+[View Spec](./028-complete-openalex-relationships/)
+
+---
+
 ## Archived Specifications
 
 ### spec-002: Fix Catalogue Tests
@@ -273,11 +282,13 @@ All test failures resolved. Current status: 1,422 tests passing (605 web + 817 g
 
 ## Known Issues
 
-### Duplicate Spec Number
-- **Issue**: Two specs with number "022"
-  - `022-posthog-sourcemaps` (has content)
-  - `022-graph-extraction` (empty directory)
-- **Action Required**: Renumber 022-graph-extraction or remove empty directory
+### Spec Numbering Cleanup (2025-11-25)
+
+**Resolved Issues**:
+- **Duplicate 020**: Renumbered `020-complete-openalex-relationships` → `028-complete-openalex-relationships`
+- **Duplicate 022**: Removed empty `022-graph-extraction` directory (actual spec correctly located at `026-graph-extraction`)
+
+All duplicate spec numbers have been resolved. Current spec numbering is consistent with one spec per number.
 
 ---
 
@@ -321,4 +332,4 @@ All specifications must align with the [Academic Explorer Constitution](../.spec
 
 ---
 
-**Last Updated**: 2025-11-25 | **Total Specs**: 29 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-11-25 | **Total Specs**: 28 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)

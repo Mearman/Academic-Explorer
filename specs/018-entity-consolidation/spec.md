@@ -2,7 +2,7 @@
 
 **Feature Branch**: `018-entity-consolidation`
 **Created**: 2025-11-21
-**Status**: Draft
+**Status**: Near Complete (39/40 tasks)
 **Input**: User description: "I think there are still many places we list the OpenAlex entity permutations, classifications, identifications, types, etc. Identify, unify, deduplicate and centralise them into the types package"
 
 ## User Scenarios & Testing *(mandatory)*

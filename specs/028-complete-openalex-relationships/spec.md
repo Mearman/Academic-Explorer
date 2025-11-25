@@ -1,6 +1,6 @@
 # Feature Specification: Complete OpenAlex Relationship Support
 
-**Feature Branch**: `020-complete-openalex-relationships`
+**Feature Branch**: `028-complete-openalex-relationships`
 **Created**: 2025-11-21
 **Status**: Draft
 **Input**: User description: "add support for all of them"
