@@ -4,6 +4,23 @@
 **Created**: 2025-11-22
 **Purpose**: Document current CI/CD pipeline performance before optimizations
 
+---
+
+> **⚠️ VALIDATION STATUS: THEORETICAL ESTIMATES**
+>
+> All metrics in this document are **theoretical estimates** based on workflow configuration analysis.
+> **No actual CI workflow runs have been measured yet.**
+>
+> **Validation Required**:
+> - Task T017: User Story 1 validation (code PR timing)
+> - Task T024: User Story 2 validation (cache hit rates)
+> - Task T030: User Story 3 validation (docs-only PR)
+> - Task T031: User Story 3 validation (perf-check label)
+>
+> Real-world measurements will be recorded in `results.md` after validation tasks are executed.
+
+---
+
 ## Current Pipeline Configuration
 
 **Workflow File**: `.github/workflows/ci.yml`

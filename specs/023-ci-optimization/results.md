@@ -4,6 +4,23 @@
 **Implemented**: 2025-11-22
 **Status**: Implementation Complete - Awaiting Real-World Validation
 
+---
+
+> **⚠️ VALIDATION STATUS: EXPECTED METRICS ONLY**
+>
+> All "After (Expected)" values and improvement percentages are **theoretical projections**.
+> **No actual CI workflow run data has been collected or measured.**
+>
+> **Status "⏳ Pending validation" means**:
+> - Workflow changes have been implemented and committed
+> - No real CI runs have been executed to measure actual performance
+> - Validation tasks T017, T024, T030, T031 need to be executed
+> - Actual measurements will populate the "Actual Results" section at end of file
+>
+> See "Validation Plan" section below for test scenarios that will collect real data.
+
+---
+
 ## Before/After Comparison
 
 ### Pipeline Execution Time
