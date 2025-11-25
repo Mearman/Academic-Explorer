@@ -94,18 +94,18 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T029 [US2] Write failing test for Scenario 1 (balanced partitions) in packages/algorithms/test/partitioning/spectral.test.ts
-- [ ] T030 [US2] Write failing test for Scenario 2 (minimized edge cuts) in packages/algorithms/test/partitioning/spectral.test.ts
-- [ ] T031 [US2] Write failing test for Scenario 3 (constraint satisfaction) in packages/algorithms/test/partitioning/spectral.test.ts
-- [ ] T032 [US2] Implement normalized Laplacian computation (L = D^(-1/2) * (D - A) * D^(-1/2)) in packages/algorithms/src/partitioning/spectral.ts
-- [ ] T033 [US2] Implement k-smallest eigenvector extraction (power iteration or Lanczos) in packages/algorithms/src/partitioning/spectral.ts
-- [ ] T034 [US2] Implement k-means clustering on eigenvector matrix in packages/algorithms/src/partitioning/spectral.ts
-- [ ] T035 [US2] Implement partition constraint handling in packages/algorithms/src/partitioning/spectral.ts
-- [ ] T036 [US2] Implement balance ratio calculation in packages/algorithms/src/partitioning/spectral.ts
-- [ ] T037 [US2] Verify all spectral partitioning tests pass
-- [ ] T038 [US2] Run performance benchmark on 500-node graph (must complete < 60s)
-- [ ] T039 [US2] Export spectralPartition function from packages/algorithms/src/index.ts
-- [ ] T040 [US2] Commit spectral partitioning with message "feat(algorithms): add spectral graph partitioning (P2)"
+- [X] T029 [US2] Write failing test for Scenario 1 (balanced partitions) in packages/algorithms/test/partitioning/spectral.test.ts
+- [X] T030 [US2] Write failing test for Scenario 2 (minimized edge cuts) in packages/algorithms/test/partitioning/spectral.test.ts
+- [X] T031 [US2] Write failing test for Scenario 3 (constraint satisfaction) in packages/algorithms/test/partitioning/spectral.test.ts
+- [X] T032 [US2] Implement normalized Laplacian computation (L = D^(-1/2) * (D - A) * D^(-1/2)) in packages/algorithms/src/partitioning/spectral.ts
+- [X] T033 [US2] Implement k-smallest eigenvector extraction (power iteration or Lanczos) in packages/algorithms/src/partitioning/spectral.ts
+- [X] T034 [US2] Implement k-means clustering on eigenvector matrix in packages/algorithms/src/partitioning/spectral.ts
+- [X] T035 [US2] Implement partition constraint handling in packages/algorithms/src/partitioning/spectral.ts
+- [X] T036 [US2] Implement balance ratio calculation in packages/algorithms/src/partitioning/spectral.ts
+- [X] T037 [US2] Verify all spectral partitioning tests pass
+- [X] T038 [US2] Run performance benchmark on 500-node graph (must complete < 60s)
+- [X] T039 [US2] Export spectralPartition function from packages/algorithms/src/index.ts
+- [X] T040 [US2] Commit spectral partitioning with message "feat(algorithms): add spectral graph partitioning (P2)"
 
 ---
 

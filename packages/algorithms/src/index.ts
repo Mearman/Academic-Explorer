@@ -26,7 +26,7 @@ export {
   type CycleInfo,
 } from './types/algorithm-results';
 export { type WeightFunction, defaultWeightFunction } from './types/weight-function';
-export { type Community, type ClusterMetrics } from './types/clustering-types';
+export { type Community, type ClusterMetrics, type Dendrogram, type Partition, type LeidenCommunity, type Core, type CorePeripheryStructure, type CorePeripheryResult, type BiconnectedComponent } from './types/clustering-types';
 
 // Graph data structure
 export { Graph } from './graph/graph';
@@ -50,6 +50,9 @@ export { stronglyConnectedComponents } from './analysis/scc';
 
 // Clustering algorithms
 export { detectCommunities } from './clustering/louvain';
+export { labelPropagation } from './clustering/label-propagation';
+export { leiden } from './clustering/leiden';
+export { infomap } from './clustering/infomap';
 
 // Clustering metrics
 export {
@@ -69,3 +72,13 @@ export {
   calculateClusterMetrics,
   updateCommunityDensities,
 } from './metrics/cluster-quality';
+
+// Partitioning algorithms
+export { spectralPartition } from './partitioning/spectral';
+// Decomposition algorithms
+export { corePeripheryDecomposition } from './decomposition/core-periphery';
+export { kCoreDecomposition } from './decomposition/k-core';
+export { biconnectedComponents } from './decomposition/biconnected';
+
+// Hierarchical clustering algorithms
+export { hierarchicalClustering } from './hierarchical/clustering';
