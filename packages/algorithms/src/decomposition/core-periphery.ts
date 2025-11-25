@@ -279,34 +279,38 @@ function updateCorenessScoresOptimized<E extends Edge>(
   const nodeIndex = new Map<string, number>();
   nodeIds.forEach((id, idx) => nodeIndex.set(id, idx));
 
-  // For each node, calculate weighted sum of neighbor coreness
+  // For each node, calculate sum of neighbor coreness (Borgatti-Everett formula)
+  // C_i = Σ_j (a_ij * C_j) where a_ij is adjacency
   for (const nodeId of nodeIds) {
     let weightedSum = 0;
-    let totalWeight = 0;
 
     // Sum coreness of all neighbors (both incoming and outgoing edges)
     for (const edge of edges) {
       if (edge.source === nodeId) {
         // Outgoing edge: add target's coreness
         weightedSum += corenessScores.get(edge.target) ?? 0;
-        totalWeight += 1;
       } else if (edge.target === nodeId) {
         // Incoming edge: add source's coreness
         weightedSum += corenessScores.get(edge.source) ?? 0;
-        totalWeight += 1;
       }
     }
 
-    // Normalize by degree (avoid division by zero)
-    const newCoreness = totalWeight > 0 ? weightedSum / totalWeight : 0;
-    newScores.set(nodeId, newCoreness);
+    // Store sum (not average) - this creates score separation
+    newScores.set(nodeId, weightedSum);
   }
 
-  // Normalize scores to [0, 1] range
-  const maxScore = Math.max(...Array.from(newScores.values()), 0.001);
-  if (maxScore > 0) {
+  // Only normalize if scores exceed valid [0, 1] range
+  // This prevents artificial inflation when max score < 1.0
+  const maxScore = Math.max(...Array.from(newScores.values()), 0);
+  if (maxScore > 1.0) {
+    // Scores exceed range, normalize to prevent overflow
     for (const [nodeId, score] of newScores) {
       corenessScores.set(nodeId, score / maxScore);
+    }
+  } else {
+    // Scores already in valid range, update without normalization
+    for (const [nodeId, score] of newScores) {
+      corenessScores.set(nodeId, score);
     }
   }
 }
