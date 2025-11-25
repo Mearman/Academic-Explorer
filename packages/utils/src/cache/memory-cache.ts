@@ -22,7 +22,7 @@ export interface CacheStats {
 	hitRate: number
 }
 
-export interface CacheConfig {
+export interface MemoryCacheConfig {
 	maxSize: number
 	defaultTtl?: number // milliseconds
 	enableStats: boolean
@@ -34,7 +34,7 @@ export interface CacheConfig {
 export class MemoryCache<T> {
 	private cache = new Map<string, CacheEntry<T>>()
 	private accessOrder: string[] = []
-	private config: CacheConfig
+	private config: MemoryCacheConfig
 	private stats = {
 		hits: 0,
 		misses: 0,
@@ -42,7 +42,7 @@ export class MemoryCache<T> {
 	}
 
 	constructor(
-		config: Partial<CacheConfig> = {},
+		config: Partial<MemoryCacheConfig> = {},
 		private logger?: GenericLogger
 	) {
 		this.config = {
