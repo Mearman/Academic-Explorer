@@ -23,11 +23,11 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T001 Create directory structure in packages/algorithms/src/ (clustering/, partitioning/, decomposition/, hierarchical/, metrics/)
-- [ ] T002 Create directory structure in packages/algorithms/test/ (clustering/, partitioning/, decomposition/, hierarchical/, metrics/, fixtures/)
-- [ ] T003 [P] Create clustering-types.ts in packages/algorithms/src/types/ with all entity interfaces (Community, Partition, Dendrogram, Core, LeidenCommunity, LabelCluster, InfomapModule, CorePeripheryStructure, BiconnectedComponent, ClusterMetrics)
-- [ ] T004 [P] Create result type wrappers in packages/algorithms/src/types/clustering-types.ts (ClusteringResult, PartitionResult, DecompositionResult variants, HierarchicalResult)
-- [ ] T005 [P] Create error types in packages/algorithms/src/types/clustering-types.ts (ClusteringError, PartitioningError, etc.)
+- [X] T001 Create directory structure in packages/algorithms/src/ (clustering/, partitioning/, decomposition/, hierarchical/, metrics/)
+- [X] T002 Create directory structure in packages/algorithms/test/ (clustering/, partitioning/, decomposition/, hierarchical/, metrics/, fixtures/)
+- [X] T003 [P] Create clustering-types.ts in packages/algorithms/src/types/ with all entity interfaces (Community, Partition, Dendrogram, Core, LeidenCommunity, LabelCluster, InfomapModule, CorePeripheryStructure, BiconnectedComponent, ClusterMetrics)
+- [X] T004 [P] Create result type wrappers in packages/algorithms/src/types/clustering-types.ts (ClusteringResult, PartitionResult, DecompositionResult variants, HierarchicalResult)
+- [X] T005 [P] Create error types in packages/algorithms/src/types/clustering-types.ts (ClusteringError, PartitioningError, etc.)
 
 ---
 
