@@ -369,6 +369,277 @@ if (result.ok) {
 }
 ```
 
+### 8. Community Detection (Louvain)
+
+Detects communities in networks using modularity optimization.
+
+**Time Complexity**: O(n log n) empirical
+**Space Complexity**: O(V + E)
+
+```typescript
+import { Graph, detectCommunities, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false); // undirected recommended
+
+// Build citation network
+graph.addNode({ id: 'P1', type: 'paper' });
+graph.addNode({ id: 'P2', type: 'paper' });
+graph.addNode({ id: 'P3', type: 'paper' });
+graph.addNode({ id: 'P4', type: 'paper' });
+
+// Add citation edges
+graph.addEdge({ id: 'e1', source: 'P1', target: 'P2', type: 'cites' });
+graph.addEdge({ id: 'e2', source: 'P2', target: 'P3', type: 'cites' });
+graph.addEdge({ id: 'e3', source: 'P3', target: 'P4', type: 'cites' });
+
+// Detect communities
+const result = detectCommunities(graph);
+
+if (result.ok) {
+  console.log(`Found ${result.value.communities.length} communities`);
+  console.log(`Modularity: ${result.value.modularity}`);
+
+  result.value.communities.forEach(community => {
+    console.log(`Community ${community.id}: ${community.nodes.size} nodes`);
+    console.log(`Density: ${community.density}`);
+  });
+}
+```
+
+### 9. Spectral Partitioning
+
+Partitions graphs into balanced subgraphs using spectral methods.
+
+**Time Complexity**: O(n² + k×iterations)
+**Space Complexity**: O(n²)
+
+```typescript
+import { Graph, spectralPartition, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build graph
+// ... add nodes and edges ...
+
+// Partition into k=3 balanced subgraphs
+const result = spectralPartition(graph, { k: 3, balanceTolerance: 1.2 });
+
+if (result.ok) {
+  result.value.forEach((partition, i) => {
+    console.log(`Partition ${i}: ${partition.nodes.size} nodes`);
+    console.log(`Balance ratio: ${partition.balanceRatio}`);
+  });
+}
+```
+
+### 10. Hierarchical Clustering
+
+Creates hierarchical clusterings with dendrogram support.
+
+**Time Complexity**: O(n²)
+**Space Complexity**: O(n²)
+
+```typescript
+import { Graph, hierarchicalClustering, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build graph
+// ... add nodes and edges ...
+
+// Perform hierarchical clustering
+const result = hierarchicalClustering(graph);
+
+if (result.ok) {
+  const dendrogram = result.value;
+
+  // Cut at specific height
+  const clusters = dendrogram.cutAtHeight(0.5);
+  console.log(`Clusters at height 0.5: ${clusters.length}`);
+
+  // Get exactly k clusters
+  const kClusters = dendrogram.getClusters(5);
+  console.log(`Exactly 5 clusters created`);
+}
+```
+
+### 11. K-Core Decomposition
+
+Finds k-cores (maximal subgraphs with minimum degree k).
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, kCoreDecomposition, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build graph
+// ... add nodes and edges ...
+
+// Find all k-cores
+const result = kCoreDecomposition(graph);
+
+if (result.ok) {
+  result.value.cores.forEach(core => {
+    console.log(`${core.k}-core: ${core.nodes.size} nodes`);
+  });
+  console.log(`Degeneracy: ${result.value.degeneracy}`);
+}
+```
+
+### 12. Leiden Clustering
+
+Community detection with connectivity guarantee (improves on Louvain).
+
+**Time Complexity**: O(n log n) empirical
+**Space Complexity**: O(V + E)
+
+```typescript
+import { Graph, leiden, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build graph
+// ... add nodes and edges ...
+
+// Run Leiden algorithm
+const result = leiden(graph);
+
+if (result.ok) {
+  console.log(`Modularity: ${result.value.modularity}`);
+  result.value.communities.forEach(community => {
+    console.log(`Community ${community.id}: ${community.nodes.size} nodes`);
+    console.log(`Connected: ${community.isConnected}`); // Always true for Leiden
+  });
+}
+```
+
+### 13. Label Propagation
+
+Fast linear-time clustering based on label propagation.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, labelPropagation, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build large graph (10,000+ nodes)
+// ... add nodes and edges ...
+
+// Fast clustering
+const result = labelPropagation(graph, { maxIterations: 10 });
+
+if (result.ok) {
+  console.log(`Found ${result.value.clusters.length} clusters`);
+  console.log(`Converged in ${result.value.iterations} iterations`);
+}
+```
+
+### 14. Infomap Clustering
+
+Information-theoretic clustering based on minimum description length.
+
+**Time Complexity**: O((V + E) × iterations)
+**Space Complexity**: O(V + E)
+
+```typescript
+import { Graph, infomap, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(true); // directed recommended
+
+// Build directed graph
+// ... add nodes and edges ...
+
+// Run Infomap
+const result = infomap(graph, { maxIterations: 100 });
+
+if (result.ok) {
+  console.log(`Compression ratio: ${result.value.compressionRatio}`);
+  result.value.modules.forEach(module => {
+    console.log(`Module ${module.id}: ${module.nodes.size} nodes`);
+  });
+}
+```
+
+### 15. Core-Periphery Decomposition
+
+Identifies core and periphery nodes using Borgatti-Everett model.
+
+**Time Complexity**: O((V + E) × iterations)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, corePeripheryDecomposition, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false);
+
+// Build graph
+// ... add nodes and edges ...
+
+// Find core-periphery structure
+const result = corePeripheryDecomposition(graph, { coreThreshold: 0.7 });
+
+if (result.ok) {
+  console.log(`Core: ${result.value.core.size} nodes`);
+  console.log(`Periphery: ${result.value.periphery.size} nodes`);
+  console.log(`Fit quality: ${result.value.fitQuality}`);
+
+  // Get coreness scores
+  result.value.corenessScores.forEach((score, nodeId) => {
+    console.log(`${nodeId}: ${score.toFixed(3)}`);
+  });
+}
+```
+
+### 16. Biconnected Components
+
+Finds biconnected components and articulation points using Tarjan's algorithm.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, biconnectedComponents, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false); // undirected
+
+// Build graph
+// ... add nodes and edges ...
+
+// Find biconnected components
+const result = biconnectedComponents(graph);
+
+if (result.ok) {
+  console.log(`Found ${result.value.components.length} biconnected components`);
+  console.log(`Articulation points: ${result.value.articulationPoints.size}`);
+
+  result.value.components.forEach(component => {
+    console.log(`Component: ${component.nodes.size} nodes, ${component.edges.size} edges`);
+  });
+}
+```
+
+## Clustering & Partitioning Algorithms
+
+The package includes 9 graph clustering and partitioning algorithms:
+
+| Algorithm | Use Case | Time Complexity | Key Feature |
+|-----------|----------|-----------------|-------------|
+| **Louvain** | General community detection | O(n log n) | High modularity optimization |
+| **Leiden** | Communities with connectivity | O(n log n) | Guarantees connected communities |
+| **Label Propagation** | Large graphs (10k+ nodes) | O(V + E) | Fastest, linear time |
+| **Infomap** | Directed flow networks | O((V+E)×iter) | Information-theoretic |
+| **Spectral Partitioning** | Balanced graph cuts | O(n²) | Balanced partition sizes |
+| **Hierarchical** | Multi-level clustering | O(n²) | Dendrogram with flexible cuts |
+| **K-Core** | Dense subgraph mining | O(V + E) | Finds highly connected cores |
+| **Core-Periphery** | Hub identification | O((V+E)×iter) | Distinguishes core from periphery |
+| **Biconnected** | Bridge/cut-vertex analysis | O(V + E) | Finds articulation points |
+
 ## Advanced Usage
 
 ### Heterogeneous Graphs
