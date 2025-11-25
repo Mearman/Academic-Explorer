@@ -1,3 +1,11 @@
+## <small>19.0.2 (2025-11-25)</small>
+
+* chore(deps-dev): bump @nx/devkit from 22.1.0 to 22.1.1 (#106) ([746d1f6](https://github.com/Mearman/Academic-Explorer/commit/746d1f6)), closes [#106](https://github.com/Mearman/Academic-Explorer/issues/106)
+* chore(deps-dev): bump msw from 2.12.2 to 2.12.3 (#104) ([89dd1f6](https://github.com/Mearman/Academic-Explorer/commit/89dd1f6)), closes [#104](https://github.com/Mearman/Academic-Explorer/issues/104)
+* chore(deps-dev): bump the build-tools group across 1 directory with 2 updates (#108) ([0bd8e0a](https://github.com/Mearman/Academic-Explorer/commit/0bd8e0a)), closes [#108](https://github.com/Mearman/Academic-Explorer/issues/108)
+* chore(deps): bump @posthog/react from 1.4.0 to 1.5.0 (#107) ([5cb371f](https://github.com/Mearman/Academic-Explorer/commit/5cb371f)), closes [#107](https://github.com/Mearman/Academic-Explorer/issues/107)
+* chore(release): 19.0.1 [skip ci] ([deee964](https://github.com/Mearman/Academic-Explorer/commit/deee964))
+
 ## <small>19.0.1 (2025-11-24)</small>
 
 * chore(deps): bump the mantine group with 5 updates (#102) ([94021fc](https://github.com/Mearman/Academic-Explorer/commit/94021fc)), closes [#102](https://github.com/Mearman/Academic-Explorer/issues/102)
