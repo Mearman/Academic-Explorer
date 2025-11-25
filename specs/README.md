@@ -6,9 +6,9 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 13 |
-| 🚧 In Progress | 3 |
-| 📝 Draft | 12 |
+| ✅ Complete | 14 |
+| 🚧 In Progress | 4 |
+| 📝 Draft | 10 |
 | ⚠️ Archived | 2 |
 
 ## Completed Specifications
@@ -55,6 +55,15 @@ Landing page responsive layout improvements (320px-3840px), WCAG 2.1 Level AA co
 Eliminated nested scrollbar issues in central section and sidebars. Fixed via layout component refactoring with proper overflow and padding settings.
 
 [View Spec](./011-fix-vertical-scrolling/)
+
+---
+
+### spec-012: History Catalogue Tracking
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Enhanced history tracking and catalogue management using catalogue storage provider's special "history" list. Implemented via commit `feat(web): migrate to catalogue-based history tracking system`.
+
+[View Spec](./012-history-catalogue-tracking/)
 
 ---
 
@@ -141,6 +150,15 @@ Correcting graph edge directions to match OpenAlex data ownership model. User St
 
 ---
 
+### spec-017: Entity Taxonomy Centralization
+**Status**: 🚧 In Progress | **Progress**: 13/34 tasks (38%)
+
+Centralize entity taxonomy definitions and metadata to `@academic-explorer/types`. Phase 1 complete, Phase 2 in progress. Predecessor work for spec-018 (Entity Consolidation).
+
+[View Spec](./017-entity-taxonomy-centralization/)
+
+---
+
 ### spec-018: Entity Consolidation
 **Status**: 🚧 In Progress (Near Complete) | **Progress**: 39/40 tasks
 
@@ -194,33 +212,6 @@ Support for multiple storage provider implementations simultaneously.
 Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations.
 
 [View Spec](./008-bookmark-query-views/)
-
----
-
-### spec-012: History Catalogue Tracking
-**Status**: 📝 Draft
-
-Enhanced history tracking and catalogue management.
-
-[View Spec](./012-history-catalogue-tracking/)
-
----
-
-### spec-017: Entity Taxonomy Centralization
-**Status**: 📝 Draft
-
-Centralize entity taxonomy definitions and metadata.
-
-[View Spec](./017-entity-taxonomy-centralization/)
-
----
-
-### spec-020: Complete OpenAlex Relationships
-**Status**: 📝 Draft
-
-Extension of spec-015 for complete relationship coverage including funding sources, publishers, and additional relationship types.
-
-[View Spec](./020-complete-openalex-relationships/)
 
 ---
 
