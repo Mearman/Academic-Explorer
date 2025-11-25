@@ -83,21 +83,24 @@
 
 #### Fast Louvain Random Mode
 
-- [ ] T020 [P] [US2] Add determineOptimalMode(nodeCount: number): "best" | "random" helper to louvain.ts (best for <200, random for ≥500)
-- [ ] T021 [P] [US2] Add shuffle(array: T[], seed?: number): T[] utility function to louvain.ts (Fisher-Yates shuffle with optional PRNG seed)
-- [ ] T022 [US2] Refactor neighbor selection logic in louvain.ts local moving phase: branch on mode (best vs random)
-- [ ] T023 [US2] Implement best-neighbor mode in louvain.ts: evaluate all neighbors, select max ΔQ (existing behavior)
-- [ ] T024 [US2] Implement random-neighbor mode in louvain.ts: shuffle neighbors, accept first positive ΔQ
-- [ ] T025 [US2] Implement auto mode resolution in louvain.ts entry point: resolvedMode = config?.mode === "auto" ? determineOptimalMode(nodeCount) : (config?.mode ?? "auto")
+- [X] T020 [P] [US2] Add determineOptimalMode(nodeCount: number): "best" | "random" helper to louvain.ts (best for <200, random for ≥500)
+- [X] T021 [P] [US2] Add shuffle(array: T[], seed?: number): T[] utility function to louvain.ts (Fisher-Yates shuffle with optional PRNG seed)
+- [X] T022 [US2] Refactor neighbor selection logic in louvain.ts local moving phase: branch on mode (best vs random)
+- [X] T023 [US2] Implement best-neighbor mode in louvain.ts: evaluate all neighbors, select max ΔQ (existing behavior)
+- [X] T024 [US2] Implement random-neighbor mode in louvain.ts: shuffle neighbors, accept first positive ΔQ
+- [X] T025 [US2] Implement auto mode resolution in louvain.ts entry point: resolvedMode = config?.mode === "auto" ? determineOptimalMode(nodeCount) : (config?.mode ?? "auto")
 
 #### Altered Communities Heuristic
 
-- [ ] T026 [P] [US2] Add AlteredCommunitiesState interface to packages/algorithms/src/types/clustering-types.ts (alteredCommunities: Set<number>)
-- [ ] T027 [US2] Add getNodesToVisit(alteredState, communities, graph): Set<string> helper to louvain.ts (returns nodes in altered communities + their neighbors)
-- [ ] T028 [US2] Initialize altered communities state in louvain.ts local moving phase: alteredState = { alteredCommunities: new Set(all community IDs) } before first iteration
-- [ ] T029 [US2] Update iteration loop in louvain.ts: nodesToVisit = iter === 0 ? allNodes : getNodesToVisit(alteredState, communities, graph)
-- [ ] T030 [US2] Clear and repopulate altered communities in louvain.ts: alteredState.alteredCommunities.clear() at iteration start, add oldCommunity and newCommunity on each move
-- [ ] T031 [US2] Add early termination in louvain.ts: if (alteredState.alteredCommunities.size === 0) break
+- [X] T026 [P] [US2] Add AlteredCommunitiesState interface to packages/algorithms/src/types/clustering-types.ts (alteredCommunities: Set<number>)
+- [X] T027 [US2] Add getNodesToVisit(alteredState, communities, graph): Set<string> helper to louvain.ts (returns nodes in altered communities + their neighbors)
+- [X] T028 [US2] Initialize altered communities state in louvain.ts local moving phase: alteredState = { alteredCommunities: new Set(all community IDs) } before first iteration
+- [X] T029 [US2] Update iteration loop in louvain.ts: nodesToVisit = iter === 0 ? allNodes : getNodesToVisit(alteredState, communities, graph)
+- [X] T030 [US2] Clear and repopulate altered communities in louvain.ts: alteredState.alteredCommunities.clear() at iteration start, add oldCommunity and newCommunity on each move
+- [X] T031 [US2] Add early termination in louvain.ts: if (alteredState.alteredCommunities.size === 0) break
+
+**Checkpoint**: ✅ Phase 4 complete - Tested but unsuitable for citation networks (commit 5c9818ce8)
+**Result**: Random mode causes quality regression (Q: 0.37→0.05), slower convergence (103→201 iterations). Altered communities adds overhead (5.67s→11.33s). Both optimizations disabled. Phase 3 baseline (10-11s, Q=0.37) remains optimal.
 
 ### Verification for User Story 2
 
