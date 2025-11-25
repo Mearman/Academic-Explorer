@@ -6,15 +6,60 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 10 |
-| 🚧 In Progress | 17 |
-| 📝 Draft | 3 |
-| ⚠️ Archived | 0 |
+| ✅ Complete | 13 |
+| 🚧 In Progress | 3 |
+| 📝 Draft | 11 |
+| ⚠️ Archived | 2 |
 
 ## Completed Specifications
 
+### spec-001: Storage Abstraction
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Storage provider interface abstraction enabling swappable implementations. IndexedDB (Dexie) for production, in-memory provider for E2E/Playwright tests, mock provider for unit tests. Resolved 28+ E2E test failures by eliminating IndexedDB incompatibilities.
+
+[View Spec](./001-storage-abstraction/)
+
+---
+
+### spec-003: Fix Vite Compilation
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Resolved tsconfig/Vite issue causing files to compile in-place rather than to dist folder. Fixed build configuration for proper output directory structure.
+
+[View Spec](./003-fix-vite-compilation/)
+
+---
+
+### spec-009: Graph Rendering Abstraction
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Decoupled graph rendering from specific graph packages. Force simulation in `packages/simulation/`, graph data structures in `packages/graph/`. Supports multiple node/edge types, directional edges, and custom forces. 817 tests passing.
+
+[View Spec](./009-graph-rendering-abstraction/)
+
+---
+
+### spec-010: Landing Page Layout
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Landing page responsive layout improvements (320px-3840px), WCAG 2.1 Level AA compliant touch targets (44px minimum), enhanced visual hierarchy with zoom support (150%-200%). All E2E tests passing.
+
+[View Spec](./010-landing-page-layout/)
+
+---
+
+### spec-011: Fix Vertical Scrolling
+**Status**: ✅ Complete | **Completed**: 2025-11-17
+
+Eliminated nested scrollbar issues in central section and sidebars. Fixed via layout component refactoring with proper overflow and padding settings.
+
+[View Spec](./011-fix-vertical-scrolling/)
+
+---
+
 ### spec-013: Walden Research (OpenAlex Data Version 2)
-**Status**: ✅ Complete | **Completed**: 2025-11-23
+**Status**: ✅ Complete | **Completed**: 2025-11-16
 
 OpenAlex Walden (Data Version 2) support with xpac works (datasets, software, specimens). Includes visual distinction, work type badges, and Settings toggle for 190M additional research outputs.
 
@@ -22,17 +67,8 @@ OpenAlex Walden (Data Version 2) support with xpac works (datasets, software, sp
 
 ---
 
-### spec-014: Edge Direction Correction
-**Status**: ✅ Complete | **Completed**: 2025-11-18
-
-Corrected graph edge directions to match OpenAlex data ownership model. Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup. Multi-modal visual distinction with direction filter UI.
-
-[View Spec](./014-edge-direction-correction/)
-
----
-
 ### spec-015: OpenAlex Relationships
-**Status**: ✅ Complete | **Completed**: 2025-11-23
+**Status**: ✅ Complete | **Completed**: 2025-11-18
 
 Complete relationship implementation across all OpenAlex entity types. 90 tasks across 10 phases covering bidirectional relationships, type safety, and performance optimization.
 
@@ -49,30 +85,21 @@ Enhanced entity detail pages with relationship visualization capabilities. Type 
 
 ---
 
-### spec-018: Entity Consolidation
-**Status**: ✅ Complete | **Completed**: 2025-11-21
-
-EntityType consolidation to `@academic-explorer/types` as single source of truth. Eliminated duplicate definitions across packages, updated 50+ import statements.
-
-[View Spec](./018-entity-consolidation/)
-
----
-
 ### spec-019: Full Entity Support
 **Status**: ✅ Complete | **Completed**: 2025-11-21
 
-Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields.
+Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities).
 
 [View Spec](./019-full-entity-support/)
 
 ---
 
-### spec-020: E2E Test Coverage
-**Status**: ✅ Complete | **Completed**: 2025-11-23
+### spec-021: Mantine Responsive Layout
+**Status**: ✅ Complete | **Completed**: 2025-11-21
 
-E2E test coverage enhancement across 6 phases. Playwright tests with deterministic wait helpers, page object hierarchy, accessibility checks, and test categorization system.
+Mantine UI responsive layout configuration corrections. Fixed layout issues with proper breakpoint configuration and auto-layout settings. Mobile search Enter-key trigger implemented.
 
-[View Spec](./020-e2e-test-coverage/)
+[View Spec](./021-mantine-responsive-layout/)
 
 ---
 
@@ -105,133 +132,43 @@ Louvain algorithm scaling optimization with 97% performance improvement. 5 optim
 
 ## In Progress Specifications
 
-### spec-001: Storage Abstraction
-**Status**: 🚧 In Progress
+### spec-014: Edge Direction Correction
+**Status**: 🚧 In Progress | **Last Updated**: 2025-11-18
 
-Storage provider interface abstraction to enable swappable implementations. IndexedDB (Dexie), in-memory (E2E tests), and mock providers.
+Correcting graph edge directions to match OpenAlex data ownership model. User Story 2 (P2) implemented. Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup.
 
-[View Spec](./001-storage-abstraction/)
-
----
-
-### spec-002: Fix Catalogue Tests
-**Status**: 🚧 In Progress
-
-Test fixes for catalogue functionality.
-
-[View Spec](./002-fix-catalogue-tests/)
+[View Spec](./014-edge-direction-correction/)
 
 ---
 
-### spec-003: Fix Vite Compilation
-**Status**: 🚧 In Progress
+### spec-018: Entity Consolidation
+**Status**: 🚧 In Progress | **Progress**: 39/40 tasks
 
-Resolve Vite compilation issues affecting build pipeline.
+EntityType consolidation to `@academic-explorer/types` as single source of truth. 39 of 40 tasks complete. Remaining: T040 (Commit documentation updates).
 
-[View Spec](./003-fix-vite-compilation/)
-
----
-
-### spec-004: Fix Failing Tests
-**Status**: 🚧 In Progress
-
-Systematic resolution of failing test suite.
-
-[View Spec](./004-fix-failing-tests/)
+[View Spec](./018-entity-consolidation/)
 
 ---
 
-### spec-005: Test Environment MSW
-**Status**: 🚧 In Progress
+### spec-020: E2E Test Coverage
+**Status**: 🚧 In Progress | **Progress**: 0/109 tasks
 
-Mock Service Worker (MSW) integration for test environment API mocking.
+E2E test coverage enhancement. Plan to add missing tests for untested routes, implement workflow tests, add error scenario coverage, and automate high-value manual tests.
 
-[View Spec](./005-test-environment-msw/)
-
----
-
-### spec-008: Bookmark Query Views
-**Status**: 🚧 In Progress
-
-Advanced query and filtering capabilities for bookmark management.
-
-[View Spec](./008-bookmark-query-views/)
-
----
-
-### spec-009: Graph Rendering Abstraction
-**Status**: 🚧 In Progress
-
-Abstraction layer for graph rendering implementations.
-
-[View Spec](./009-graph-rendering-abstraction/)
-
----
-
-### spec-010: Landing Page Layout
-**Status**: 🚧 In Progress
-
-Landing page redesign and layout improvements.
-
-[View Spec](./010-landing-page-layout/)
-
----
-
-### spec-011: Fix Vertical Scrolling
-**Status**: 🚧 In Progress
-
-Resolve vertical scrolling issues in UI components.
-
-[View Spec](./011-fix-vertical-scrolling/)
-
----
-
-### spec-020: Complete OpenAlex Relationships
-**Status**: 🚧 In Progress
-
-Extension of spec-015 for complete relationship coverage.
-
-[View Spec](./020-complete-openalex-relationships/)
-
----
-
-### spec-021: Mantine Responsive Layout
-**Status**: 🚧 In Progress
-
-Responsive layout improvements using Mantine UI framework.
-
-[View Spec](./021-mantine-responsive-layout/)
-
----
-
-### spec-022: PostHog Sourcemaps
-**Status**: 🚧 In Progress
-
-PostHog sourcemap integration for production error tracking.
-
-[View Spec](./022-posthog-sourcemaps/)
-
----
-
-### spec-023: CI Optimization
-**Status**: 🚧 In Progress
-
-CI/CD pipeline optimization for faster build and deployment times.
-
-[View Spec](./023-ci-optimization/)
-
----
-
-### spec-026: Graph Extraction
-**Status**: 🚧 In Progress
-
-Graph extraction and export functionality.
-
-[View Spec](./026-graph-extraction/)
+[View Spec](./020-e2e-test-coverage/)
 
 ---
 
 ## Draft Specifications
+
+### spec-005: Test Environment MSW
+**Status**: 📝 Draft
+
+Mock Service Worker (MSW) integration for test environment API mocking. E2E tests to run reliably without external API dependencies.
+
+[View Spec](./005-test-environment-msw/)
+
+---
 
 ### spec-006: Application Rename
 **Status**: 📝 Draft
@@ -251,6 +188,15 @@ Support for multiple storage provider implementations simultaneously.
 
 ---
 
+### spec-008: Bookmark Query Views
+**Status**: 📝 Draft
+
+Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations.
+
+[View Spec](./008-bookmark-query-views/)
+
+---
+
 ### spec-012: History Catalogue Tracking
 **Status**: 📝 Draft
 
@@ -260,9 +206,78 @@ Enhanced history tracking and catalogue management.
 
 ---
 
+### spec-017: Entity Taxonomy Centralization
+**Status**: 📝 Draft
+
+Centralize entity taxonomy definitions and metadata.
+
+[View Spec](./017-entity-taxonomy-centralization/)
+
+---
+
+### spec-020: Complete OpenAlex Relationships
+**Status**: 📝 Draft
+
+Extension of spec-015 for complete relationship coverage including funding sources, publishers, and additional relationship types.
+
+[View Spec](./020-complete-openalex-relationships/)
+
+---
+
+### spec-022: PostHog Sourcemaps
+**Status**: 📝 Draft
+
+PostHog sourcemap integration for production error tracking with readable stack traces.
+
+[View Spec](./022-posthog-sourcemaps/)
+
+---
+
+### spec-023: CI Optimization
+**Status**: 📝 Draft
+
+CI/CD pipeline optimization for faster build and deployment times. Build artifact caching, parallel test execution, conditional job skipping.
+
+[View Spec](./023-ci-optimization/)
+
+---
+
+### spec-026: Graph Extraction
+**Status**: 📝 Draft
+
+Academic graph pattern extraction including ego networks, path analysis, motif detection, and research-specific subgraph operations.
+
+[View Spec](./026-graph-extraction/)
+
+---
+
 ## Archived Specifications
 
-None currently.
+### spec-002: Fix Catalogue Tests
+**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
+
+Catalogue E2E test failures resolved by spec-001 (storage abstraction). All tests now passing. Issue resolved through InMemoryStorageProvider implementation.
+
+[View Spec](./002-fix-catalogue-tests/)
+
+---
+
+### spec-004: Fix Failing Tests
+**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
+
+All test failures resolved. Current status: 1,422 tests passing (605 web + 817 graph), zero failures. Resolved through multiple implementations including storage abstraction, layout fixes, and history tracking.
+
+[View Spec](./004-fix-failing-tests/)
+
+---
+
+## Known Issues
+
+### Duplicate Spec Number
+- **Issue**: Two specs with number "022"
+  - `022-posthog-sourcemaps` (has content)
+  - `022-graph-extraction` (empty directory)
+- **Action Required**: Renumber 022-graph-extraction or remove empty directory
 
 ---
 
@@ -306,4 +321,4 @@ All specifications must align with the [Academic Explorer Constitution](../.spec
 
 ---
 
-**Last Updated**: 2025-11-25 | **Total Specs**: 30 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-11-25 | **Total Specs**: 29 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
