@@ -45,6 +45,128 @@ export interface CitationEdge {
 }
 
 /**
+ * Generate a citation network with specified size and community structure.
+ *
+ * @param nodeCount - Total number of papers in the network
+ * @param communityCount - Number of communities to create
+ * @param inCommunityProb - Probability of intra-community edges (0.0-1.0)
+ * @param seed - Random seed for deterministic generation (default: 42)
+ * @returns Graph with specified structure and known community assignments
+ *
+ * @remarks
+ * **Algorithm**:
+ * - Nodes distributed evenly across communities (nodeCount / communityCount per community)
+ * - Each node creates ~10 edges total (8 intra + 2 inter for 0.8 probability)
+ * - Intra-community edges: Each node cites inCommunityProb * 10 papers within its community
+ * - Inter-community edges: Each node cites (1 - inCommunityProb) * 10 papers from other communities
+ *
+ * **Performance**:
+ * - Time: O(V * degree) where V = nodeCount, degree = 10
+ * - Space: O(V + E) where E ≈ nodeCount * 10
+ *
+ * @example
+ * ```typescript
+ * // 500-node network, 5 communities, 80% intra-community edges
+ * const graph = generateCitationNetwork(500, 5, 0.8);
+ * console.log(`Nodes: ${graph.getNodeCount()}`); // 500
+ * console.log(`Edges: ${graph.getEdgeCount()}`); // ~5000
+ * ```
+ *
+ * @since Phase 5 (spec-027 profiling tests)
+ */
+export function generateCitationNetwork(
+  nodeCount: number,
+  communityCount: number,
+  inCommunityProb: number,
+  seed: number = 42
+): Graph<PaperNode, CitationEdge> {
+  const graph = new Graph<PaperNode, CitationEdge>(true); // Directed graph
+  const random = seededRandom(seed);
+
+  const nodesPerCommunity = Math.floor(nodeCount / communityCount);
+  const avgDegree = 10; // Target average degree
+  const intraEdgesPerNode = Math.floor(avgDegree * inCommunityProb);
+  const interEdgesPerNode = Math.floor(avgDegree * (1 - inCommunityProb));
+
+  const communityNames = [
+    'Machine Learning',
+    'Natural Language Processing',
+    'Computer Vision',
+    'Databases',
+    'Networks',
+    'Human-Computer Interaction',
+    'Software Engineering',
+    'Theory',
+    'Security',
+    'Systems',
+  ];
+
+  // Create nodes
+  for (let i = 0; i < nodeCount; i++) {
+    const communityId = Math.floor(i / nodesPerCommunity);
+    const paperInCommunity = i % nodesPerCommunity;
+
+    const node: PaperNode = {
+      id: `P${i}`,
+      title: `${communityNames[communityId % communityNames.length]} Paper ${paperInCommunity}`,
+      year: 2015 + Math.floor(i / nodesPerCommunity),
+      community: communityId,
+    };
+
+    graph.addNode(node);
+  }
+
+  // Add intra-community edges
+  for (let i = 0; i < nodeCount; i++) {
+    const communityId = Math.floor(i / nodesPerCommunity);
+    const startIdx = communityId * nodesPerCommunity;
+    const endIdx = Math.min(startIdx + nodesPerCommunity, nodeCount);
+
+    for (let j = 0; j < intraEdgesPerNode; j++) {
+      let target = startIdx + Math.floor(random() * (endIdx - startIdx));
+
+      // Avoid self-loops
+      if (target === i) {
+        target = (target + 1 - startIdx) % (endIdx - startIdx) + startIdx;
+      }
+
+      const edge: CitationEdge = {
+        id: `E${i}-${target}`,
+        source: `P${i}`,
+        target: `P${target}`,
+        year: 2015 + Math.floor(i / nodesPerCommunity),
+      };
+
+      graph.addEdge(edge);
+    }
+  }
+
+  // Add inter-community edges
+  for (let i = 0; i < nodeCount; i++) {
+    const sourceCommunity = Math.floor(i / nodesPerCommunity);
+
+    for (let j = 0; j < interEdgesPerNode; j++) {
+      // Pick a different community
+      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * (communityCount - 1))) % communityCount;
+      const targetStart = targetCommunity * nodesPerCommunity;
+      const targetEnd = Math.min(targetStart + nodesPerCommunity, nodeCount);
+      const target = targetStart + Math.floor(random() * (targetEnd - targetStart));
+
+      const edge: CitationEdge = {
+        id: `E${i}-${target}-inter`,
+        source: `P${i}`,
+        target: `P${target}`,
+        year: 2015 + Math.floor(i / nodesPerCommunity),
+      };
+
+      graph.addEdge(edge);
+    }
+  }
+
+  return graph;
+}
+
+/**
  * Create a small citation network with 100 papers and 5 known communities.
  *
  * Community structure:
