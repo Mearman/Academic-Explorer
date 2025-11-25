@@ -160,13 +160,6 @@ export type EntityFilterConfig<T extends EntityType> = T extends "works"
     ? FilterFieldConfig[]
     : FilterFieldConfig[];
 
-// Filter validation results
-export interface FilterValidationResult {
-  isValid: boolean;
-  errors: Record<string, string>;
-  warnings: Record<string, string>;
-}
-
 // URL serialization types
 export interface FilterURL {
   entityType: EntityType;
