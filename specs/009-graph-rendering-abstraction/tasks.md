@@ -28,15 +28,15 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 **Purpose**: Create package structure and configure build/test infrastructure
 
-- [ ] T001 Create package directory `packages/graph-renderer/` with package.json (name: `@academic-explorer/graph-renderer`, version: 0.1.0)
-- [ ] T002 [P] Configure Nx project config in `packages/graph-renderer/project.json` with build and test targets
-- [ ] T003 [P] Create TypeScript config in `packages/graph-renderer/tsconfig.json` extending workspace base config with strict mode
-- [ ] T004 [P] Configure Vite for library mode in `packages/graph-renderer/vite.config.ts` with ES module output
-- [ ] T005 [P] Configure Vitest in `packages/graph-renderer/vitest.config.ts` with serial execution and 5-min timeout
-- [ ] T006 [P] Create source directory structure: `src/core/`, `src/simulation/`, `src/forces/`, `src/renderers/`, `src/utils/`
-- [ ] T007 [P] Create test directory structure: `__tests__/core/`, `__tests__/simulation/`, `__tests__/forces/`, `__tests__/renderers/`, `__tests__/e2e/`
-- [ ] T008 [P] Add package alias `@academic-explorer/graph-renderer` to workspace `tsconfig.base.json` paths
-- [ ] T009 Create package exports in `packages/graph-renderer/src/index.ts` with barrel exports for core, simulation, forces, renderers
+- [x] T001 Create package directory `packages/graph-renderer/` with package.json (name: `@academic-explorer/graph-renderer`, version: 0.1.0)
+- [x] T002 [P] Configure Nx project config in `packages/graph-renderer/project.json` with build and test targets
+- [x] T003 [P] Create TypeScript config in `packages/graph-renderer/tsconfig.json` extending workspace base config with strict mode
+- [x] T004 [P] Configure Vite for library mode in `packages/graph-renderer/vite.config.ts` with ES module output
+- [x] T005 [P] Configure Vitest in `packages/graph-renderer/vitest.config.ts` with serial execution and 5-min timeout
+- [x] T006 [P] Create source directory structure: `src/core/`, `src/simulation/`, `src/forces/`, `src/renderers/`, `src/utils/`
+- [x] T007 [P] Create test directory structure: `__tests__/core/`, `__tests__/simulation/`, `__tests__/forces/`, `__tests__/renderers/`, `__tests__/e2e/`
+- [x] T008 [P] Add package alias `@academic-explorer/graph-renderer` to workspace `tsconfig.base.json` paths
+- [x] T009 Create package exports in `packages/graph-renderer/src/index.ts` with barrel exports for core, simulation, forces, renderers
 
 **Checkpoint**: Package structure ready - foundational work can begin
 
@@ -50,29 +50,29 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Utilities
 
-- [ ] T010 [P] Create vector math utilities in `packages/graph-renderer/src/utils/vector.ts` (add, subtract, magnitude, normalize, scale)
-- [ ] T011 [P] Write FAILING unit tests for vector utilities in `packages/graph-renderer/__tests__/utils/vector.unit.test.ts`
-- [ ] T012 [P] Create bounding box utilities in `packages/graph-renderer/src/utils/bbox.ts` (contains, intersects, expand)
-- [ ] T013 [P] Write FAILING unit tests for bbox utilities in `packages/graph-renderer/__tests__/utils/bbox.unit.test.ts`
+- [x] T010 [P] Create vector math utilities in `packages/graph-renderer/src/utils/vector.ts` (add, subtract, magnitude, normalize, scale)
+- [x] T011 [P] Write FAILING unit tests for vector utilities in `packages/graph-renderer/__tests__/utils/vector.unit.test.ts`
+- [x] T012 [P] Create bounding box utilities in `packages/graph-renderer/src/utils/bbox.ts` (contains, intersects, expand)
+- [x] T013 [P] Write FAILING unit tests for bbox utilities in `packages/graph-renderer/__tests__/utils/bbox.unit.test.ts`
 
 ### Type Guards
 
-- [ ] T014 [P] Create type guard utilities in `packages/graph-renderer/src/utils/type-guards.ts` (isNode, isEdge, isValidPosition)
-- [ ] T015 [P] Write FAILING unit tests for type guards in `packages/graph-renderer/__tests__/utils/type-guards.unit.test.ts`
+- [x] T014 [P] Create type guard utilities in `packages/graph-renderer/src/utils/type-guards.ts` (isNode, isEdge, isValidPosition)
+- [x] T015 [P] Write FAILING unit tests for type guards in `packages/graph-renderer/__tests__/utils/type-guards.unit.test.ts`
 
 ### Core Data Structures
 
-- [ ] T016 Create Node generic type in `packages/graph-renderer/src/core/node.ts` with `Node<TData>` interface (id, type, x, y, vx, vy, properties, data)
-- [ ] T017 Write FAILING unit tests for Node validation in `packages/graph-renderer/__tests__/core/node.unit.test.ts`
-- [ ] T018 Create Edge generic type in `packages/graph-renderer/src/core/edge.ts` with `Edge<TData>` interface (id, source, target, type, directed, properties, data)
-- [ ] T019 Write FAILING unit tests for Edge validation in `packages/graph-renderer/__tests__/core/edge.unit.test.ts`
+- [x] T016 Create Node generic type in `packages/graph-renderer/src/core/node.ts` with `Node<TData>` interface (id, type, x, y, vx, vy, properties, data)
+- [x] T017 Write FAILING unit tests for Node validation in `packages/graph-renderer/__tests__/core/node.unit.test.ts`
+- [x] T018 Create Edge generic type in `packages/graph-renderer/src/core/edge.ts` with `Edge<TData>` interface (id, source, target, type, directed, properties, data)
+- [x] T019 Write FAILING unit tests for Edge validation in `packages/graph-renderer/__tests__/core/edge.unit.test.ts`
 
 ### Graph Container
 
-- [ ] T020 Create Graph generic class in `packages/graph-renderer/src/core/graph.ts` with `Graph<TNode, TEdge>` supporting addNode, removeNode, addEdge, removeEdge, getNode, getEdge, validate
-- [ ] T021 Write FAILING unit tests for Graph CRUD operations in `packages/graph-renderer/__tests__/core/graph.unit.test.ts`
-- [ ] T022 Implement edge validation (FR-016) to ensure source/target nodes exist in `packages/graph-renderer/src/core/graph.ts`
-- [ ] T023 Write FAILING unit tests for edge validation with invalid node references in `packages/graph-renderer/__tests__/core/graph.unit.test.ts`
+- [x] T020 Create Graph generic class in `packages/graph-renderer/src/core/graph.ts` with `Graph<TNode, TEdge>` supporting addNode, removeNode, addEdge, removeEdge, getNode, getEdge, validate
+- [x] T021 Write FAILING unit tests for Graph CRUD operations in `packages/graph-renderer/__tests__/core/graph.unit.test.ts`
+- [x] T022 Implement edge validation (FR-016) to ensure source/target nodes exist in `packages/graph-renderer/src/core/graph.ts`
+- [x] T023 Write FAILING unit tests for edge validation with invalid node references in `packages/graph-renderer/__tests__/core/graph.unit.test.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -88,22 +88,22 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T024 [P] [US1] Write FAILING unit test for node type visual mapping in `packages/graph-renderer/__tests__/renderers/visual-mapping.unit.test.ts`
-- [ ] T025 [P] [US1] Write FAILING component test for rendering multiple node types in `packages/graph-renderer/__tests__/renderers/canvas-renderer-nodes.component.test.ts`
-- [ ] T026 [P] [US1] Write FAILING component test for rendering graph with zero edges in `packages/graph-renderer/__tests__/renderers/canvas-renderer-nodes-only.component.test.ts`
-- [ ] T027 [P] [US1] Write FAILING E2E test for 100+ nodes of mixed types in `packages/graph-renderer/__tests__/e2e/multi-type-rendering.e2e.test.ts`
+- [x] T024 [P] [US1] Write FAILING unit test for node type visual mapping in `packages/graph-renderer/__tests__/renderers/visual-mapping.unit.test.ts`
+- [x] T025 [P] [US1] Write FAILING component test for rendering multiple node types in `packages/graph-renderer/__tests__/renderers/canvas-renderer-nodes.component.test.ts`
+- [x] T026 [P] [US1] Write FAILING component test for rendering graph with zero edges in `packages/graph-renderer/__tests__/renderers/canvas-renderer-nodes-only.component.test.ts`
+- [x] T027 [P] [US1] Write FAILING E2E test for 100+ nodes of mixed types in `packages/graph-renderer/__tests__/e2e/multi-type-rendering.e2e.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T028 [P] [US1] Create VisualProperties type in `packages/graph-renderer/src/core/visual-properties.ts` (size, color, shape, label, opacity)
-- [ ] T029 [P] [US1] Create NodeVisualConfig type mapping in `packages/graph-renderer/src/core/visual-config.ts` for node type to visual properties
-- [ ] T030 [US1] Create RendererAdapter interface in `packages/graph-renderer/src/renderers/renderer-interface.ts` with init, render, destroy, resize lifecycle methods
-- [ ] T031 [US1] Implement Canvas renderer in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with node type visual mapping support
-- [ ] T032 [US1] Implement node shape rendering functions in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (circle, square, triangle, diamond)
-- [ ] T033 [US1] Implement node label rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with text overflow handling
-- [ ] T034 [US1] Implement default visual config in `packages/graph-renderer/src/core/visual-config.ts` for undefined node types
-- [ ] T035 [US1] Add error handling for missing visual config in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with fallback defaults
-- [ ] T036 [US1] Implement random position initialization in `packages/graph-renderer/src/utils/layout.ts` for nodes without x/y coordinates
+- [x] T028 [P] [US1] Create VisualProperties type in `packages/graph-renderer/src/core/visual-properties.ts` (size, color, shape, label, opacity)
+- [x] T029 [P] [US1] Create NodeVisualConfig type mapping in `packages/graph-renderer/src/core/visual-config.ts` for node type to visual properties
+- [x] T030 [US1] Create RendererAdapter interface in `packages/graph-renderer/src/renderers/renderer-interface.ts` with init, render, destroy, resize lifecycle methods
+- [x] T031 [US1] Implement Canvas renderer in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with node type visual mapping support
+- [x] T032 [US1] Implement node shape rendering functions in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (circle, square, triangle, diamond)
+- [x] T033 [US1] Implement node label rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with text overflow handling
+- [x] T034 [US1] Implement default visual config in `packages/graph-renderer/src/core/visual-config.ts` for undefined node types
+- [x] T035 [US1] Add error handling for missing visual config in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with fallback defaults
+- [x] T036 [US1] Implement random position initialization in `packages/graph-renderer/src/utils/layout.ts` for nodes without x/y coordinates
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -117,22 +117,22 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Write FAILING unit test for edge type visual mapping in `packages/graph-renderer/__tests__/renderers/visual-mapping.unit.test.ts`
-- [ ] T038 [P] [US2] Write FAILING component test for rendering directed edges with arrows in `packages/graph-renderer/__tests__/renderers/canvas-renderer-directed-edges.component.test.ts`
-- [ ] T039 [P] [US2] Write FAILING component test for rendering undirected edges without arrows in `packages/graph-renderer/__tests__/renderers/canvas-renderer-undirected-edges.component.test.ts`
-- [ ] T040 [P] [US2] Write FAILING component test for multiple edge types with distinct visuals in `packages/graph-renderer/__tests__/renderers/canvas-renderer-edge-types.component.test.ts`
+- [x] T037 [P] [US2] Write FAILING unit test for edge type visual mapping in `packages/graph-renderer/__tests__/renderers/visual-mapping.unit.test.ts`
+- [x] T038 [P] [US2] Write FAILING component test for rendering directed edges with arrows in `packages/graph-renderer/__tests__/renderers/canvas-renderer-directed-edges.component.test.ts`
+- [x] T039 [P] [US2] Write FAILING component test for rendering undirected edges without arrows in `packages/graph-renderer/__tests__/renderers/canvas-renderer-undirected-edges.component.test.ts`
+- [x] T040 [P] [US2] Write FAILING component test for multiple edge types with distinct visuals in `packages/graph-renderer/__tests__/renderers/canvas-renderer-edge-types.component.test.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T041 [P] [US2] Create EdgeVisualProperties type in `packages/graph-renderer/src/core/visual-properties.ts` (color, width, style, arrowStyle, opacity)
-- [ ] T042 [P] [US2] Create EdgeVisualConfig type mapping in `packages/graph-renderer/src/core/visual-config.ts` for edge type to visual properties
-- [ ] T043 [US2] Extend RendererAdapter interface in `packages/graph-renderer/src/renderers/renderer-interface.ts` with edge visual config support
-- [ ] T044 [US2] Implement edge rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with type-based visual mapping
-- [ ] T045 [US2] Implement directional arrow rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (triangle, circle, diamond arrow styles)
-- [ ] T046 [US2] Implement edge line styles in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (solid, dashed, dotted)
-- [ ] T047 [US2] Implement edge width scaling in `packages/graph-renderer/src/renderers/canvas-renderer.ts` based on visual config
-- [ ] T048 [US2] Add error handling for invalid edge references in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (missing source/target nodes)
-- [ ] T049 [US2] Implement default edge visual config in `packages/graph-renderer/src/core/visual-config.ts` for undefined edge types
+- [x] T041 [P] [US2] Create EdgeVisualProperties type in `packages/graph-renderer/src/core/visual-properties.ts` (color, width, style, arrowStyle, opacity)
+- [x] T042 [P] [US2] Create EdgeVisualConfig type mapping in `packages/graph-renderer/src/core/visual-config.ts` for edge type to visual properties
+- [x] T043 [US2] Extend RendererAdapter interface in `packages/graph-renderer/src/renderers/renderer-interface.ts` with edge visual config support
+- [x] T044 [US2] Implement edge rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with type-based visual mapping
+- [x] T045 [US2] Implement directional arrow rendering in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (triangle, circle, diamond arrow styles)
+- [x] T046 [US2] Implement edge line styles in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (solid, dashed, dotted)
+- [x] T047 [US2] Implement edge width scaling in `packages/graph-renderer/src/renderers/canvas-renderer.ts` based on visual config
+- [x] T048 [US2] Add error handling for invalid edge references in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (missing source/target nodes)
+- [x] T049 [US2] Implement default edge visual config in `packages/graph-renderer/src/core/visual-config.ts` for undefined edge types
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -146,24 +146,24 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for User Story 3
 
-- [ ] T050 [P] [US3] Write FAILING unit test for simulation engine initialization in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
-- [ ] T051 [P] [US3] Write FAILING unit test for simulation tick loop in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
-- [ ] T052 [P] [US3] Write FAILING unit test for simulation pause/resume in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
-- [ ] T053 [P] [US3] Write FAILING integration test for headless simulation with position updates in `packages/graph-renderer/__tests__/simulation/headless-simulation.integration.test.ts`
-- [ ] T054 [P] [US3] Write FAILING integration test for simulation-renderer connection in `packages/graph-renderer/__tests__/simulation/renderer-connection.integration.test.ts`
+- [x] T050 [P] [US3] Write FAILING unit test for simulation engine initialization in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
+- [x] T051 [P] [US3] Write FAILING unit test for simulation tick loop in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
+- [x] T052 [P] [US3] Write FAILING unit test for simulation pause/resume in `packages/graph-renderer/__tests__/simulation/engine.unit.test.ts`
+- [x] T053 [P] [US3] Write FAILING integration test for headless simulation with position updates in `packages/graph-renderer/__tests__/simulation/headless-simulation.integration.test.ts`
+- [x] T054 [P] [US3] Write FAILING integration test for simulation-renderer connection in `packages/graph-renderer/__tests__/simulation/renderer-connection.integration.test.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T055 [P] [US3] Create SimulationConfig type in `packages/graph-renderer/src/simulation/config.ts` (alpha, alphaMin, alphaDecay, velocityDecay, iterations)
-- [ ] T056 [P] [US3] Create SimulationState enum in `packages/graph-renderer/src/simulation/state.ts` (RUNNING, PAUSED, STOPPED)
-- [ ] T057 [US3] Create Simulation class in `packages/graph-renderer/src/simulation/engine.ts` with init, start, pause, resume, stop, tick methods
-- [ ] T058 [US3] Implement alpha decay cooling schedule in `packages/graph-renderer/src/simulation/engine.ts` with configurable decay rate
-- [ ] T059 [US3] Implement RAF-based tick loop in `packages/graph-renderer/src/simulation/engine.ts` with automatic stop at alphaMin
-- [ ] T060 [US3] Create event emitter for simulation events in `packages/graph-renderer/src/simulation/engine.ts` (tick, end, pause, resume)
-- [ ] T061 [US3] Implement velocity Verlet integrator in `packages/graph-renderer/src/simulation/integrator.ts` for position/velocity updates
-- [ ] T062 [US3] Write FAILING unit tests for velocity Verlet integrator in `packages/graph-renderer/__tests__/simulation/integrator.unit.test.ts`
-- [ ] T063 [US3] Connect simulation tick events to renderer updates in `packages/graph-renderer/src/renderers/canvas-renderer.ts`
-- [ ] T064 [US3] Implement position change detection in `packages/graph-renderer/src/simulation/engine.ts` to skip rendering when positions stable
+- [x] T055 [P] [US3] Create SimulationConfig type in `packages/graph-renderer/src/simulation/config.ts` (alpha, alphaMin, alphaDecay, velocityDecay, iterations)
+- [x] T056 [P] [US3] Create SimulationState enum in `packages/graph-renderer/src/simulation/state.ts` (RUNNING, PAUSED, STOPPED)
+- [x] T057 [US3] Create Simulation class in `packages/graph-renderer/src/simulation/engine.ts` with init, start, pause, resume, stop, tick methods
+- [x] T058 [US3] Implement alpha decay cooling schedule in `packages/graph-renderer/src/simulation/engine.ts` with configurable decay rate
+- [x] T059 [US3] Implement RAF-based tick loop in `packages/graph-renderer/src/simulation/engine.ts` with automatic stop at alphaMin
+- [x] T060 [US3] Create event emitter for simulation events in `packages/graph-renderer/src/simulation/engine.ts` (tick, end, pause, resume)
+- [x] T061 [US3] Implement velocity Verlet integrator in `packages/graph-renderer/src/simulation/integrator.ts` for position/velocity updates
+- [x] T062 [US3] Write FAILING unit tests for velocity Verlet integrator in `packages/graph-renderer/__tests__/simulation/integrator.unit.test.ts`
+- [x] T063 [US3] Connect simulation tick events to renderer updates in `packages/graph-renderer/src/renderers/canvas-renderer.ts`
+- [x] T064 [US3] Implement position change detection in `packages/graph-renderer/src/simulation/engine.ts` to skip rendering when positions stable
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently
 
@@ -177,30 +177,30 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for User Story 4
 
-- [ ] T065 [P] [US4] Write FAILING unit test for repulsion force calculation in `packages/graph-renderer/__tests__/forces/repulsion.unit.test.ts`
-- [ ] T066 [P] [US4] Write FAILING unit test for centering force calculation in `packages/graph-renderer/__tests__/forces/centering.unit.test.ts`
-- [ ] T067 [P] [US4] Write FAILING integration test for node force application with varying strengths in `packages/graph-renderer/__tests__/forces/node-force-application.integration.test.ts`
-- [ ] T068 [P] [US4] Write FAILING integration test for dynamic force value updates in `packages/graph-renderer/__tests__/forces/dynamic-force-updates.integration.test.ts`
-- [ ] T069a [P] [US4] Write FAILING unit test for circular environmental force calculation in `packages/graph-renderer/__tests__/forces/circular.unit.test.ts`
-- [ ] T069b [P] [US4] Write FAILING unit test for linear environmental force calculation in `packages/graph-renderer/__tests__/forces/linear.unit.test.ts`
-- [ ] T069c [P] [US4] Write FAILING integration test for circular force creating rotational layout in `packages/graph-renderer/__tests__/forces/circular-rotation-layout.integration.test.ts`
-- [ ] T069d [P] [US4] Write FAILING integration test for linear force creating directional flow in `packages/graph-renderer/__tests__/forces/linear-directional-flow.integration.test.ts`
+- [x] T065 [P] [US4] Write FAILING unit test for repulsion force calculation in `packages/graph-renderer/__tests__/forces/repulsion.unit.test.ts`
+- [x] T066 [P] [US4] Write FAILING unit test for centering force calculation in `packages/graph-renderer/__tests__/forces/centering.unit.test.ts`
+- [x] T067 [P] [US4] Write FAILING integration test for node force application with varying strengths in `packages/graph-renderer/__tests__/forces/node-force-application.integration.test.ts`
+- [x] T068 [P] [US4] Write FAILING integration test for dynamic force value updates in `packages/graph-renderer/__tests__/forces/dynamic-force-updates.integration.test.ts`
+- [x] T069a [P] [US4] Write FAILING unit test for circular environmental force calculation in `packages/graph-renderer/__tests__/forces/circular.unit.test.ts`
+- [x] T069b [P] [US4] Write FAILING unit test for linear environmental force calculation in `packages/graph-renderer/__tests__/forces/linear.unit.test.ts`
+- [x] T069c [P] [US4] Write FAILING integration test for circular force creating rotational layout in `packages/graph-renderer/__tests__/forces/circular-rotation-layout.integration.test.ts`
+- [x] T069d [P] [US4] Write FAILING integration test for linear force creating directional flow in `packages/graph-renderer/__tests__/forces/linear-directional-flow.integration.test.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T069 [P] [US4] Create Force generic interface in `packages/graph-renderer/src/forces/force-interface.ts` with signature `(nodes: Node<T>[], edges: Edge<E>[], alpha: number) => void`
-- [ ] T070 [P] [US4] Create ForceConfig type in `packages/graph-renderer/src/forces/force-config.ts` for force strength and parameters
-- [ ] T071 [US4] Implement repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` with per-node strength based on node data
-- [ ] T072 [US4] Implement centering force in `packages/graph-renderer/src/forces/centering.ts` with configurable center point
-- [ ] T073 [US4] Implement force composition utility in `packages/graph-renderer/src/forces/compose.ts` for additive force accumulation
-- [ ] T074 [US4] Add force registration to Simulation class in `packages/graph-renderer/src/simulation/engine.ts` with addForce, removeForce methods
-- [ ] T075 [US4] Implement force application loop in `packages/graph-renderer/src/simulation/engine.ts` that applies all forces each tick
-- [ ] T076 [US4] Add support for node property access in forces in `packages/graph-renderer/src/forces/force-interface.ts` via generic TNodeData
-- [ ] T077 [US4] Implement force strength scaling by alpha in `packages/graph-renderer/src/simulation/engine.ts` for gradual stabilization
-- [ ] T077a [P] [US4] Implement circular environmental force in `packages/graph-renderer/src/forces/circular.ts` with perpendicular vector calculation for rotation
-- [ ] T077b [P] [US4] Implement linear environmental force in `packages/graph-renderer/src/forces/linear.ts` with direction vector normalization
-- [ ] T077c [P] [US4] Add radius-based attenuation to circular force in `packages/graph-renderer/src/forces/circular.ts` for influence zone control
-- [ ] T077d [P] [US4] Create factory functions `createCircularForce` and `createLinearForce` in `packages/graph-renderer/src/forces/index.ts` for convenient force creation
+- [x] T069 [P] [US4] Create Force generic interface in `packages/graph-renderer/src/forces/force-interface.ts` with signature `(nodes: Node<T>[], edges: Edge<E>[], alpha: number) => void`
+- [x] T070 [P] [US4] Create ForceConfig type in `packages/graph-renderer/src/forces/force-config.ts` for force strength and parameters
+- [x] T071 [US4] Implement repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` with per-node strength based on node data
+- [x] T072 [US4] Implement centering force in `packages/graph-renderer/src/forces/centering.ts` with configurable center point
+- [x] T073 [US4] Implement force composition utility in `packages/graph-renderer/src/forces/compose.ts` for additive force accumulation
+- [x] T074 [US4] Add force registration to Simulation class in `packages/graph-renderer/src/simulation/engine.ts` with addForce, removeForce methods
+- [x] T075 [US4] Implement force application loop in `packages/graph-renderer/src/simulation/engine.ts` that applies all forces each tick
+- [x] T076 [US4] Add support for node property access in forces in `packages/graph-renderer/src/forces/force-interface.ts` via generic TNodeData
+- [x] T077 [US4] Implement force strength scaling by alpha in `packages/graph-renderer/src/simulation/engine.ts` for gradual stabilization
+- [x] T077a [P] [US4] Implement circular environmental force in `packages/graph-renderer/src/forces/circular.ts` with perpendicular vector calculation for rotation
+- [x] T077b [P] [US4] Implement linear environmental force in `packages/graph-renderer/src/forces/linear.ts` with direction vector normalization
+- [x] T077c [P] [US4] Add radius-based attenuation to circular force in `packages/graph-renderer/src/forces/circular.ts` for influence zone control
+- [x] T077d [P] [US4] Create factory functions `createCircularForce` and `createLinearForce` in `packages/graph-renderer/src/forces/index.ts` for convenient force creation
 
 **Checkpoint**: At this point, User Stories 1-4 should all work independently
 
@@ -214,20 +214,20 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for User Story 5
 
-- [ ] T078 [P] [US5] Write FAILING unit test for attraction force calculation in `packages/graph-renderer/__tests__/forces/attraction.unit.test.ts`
-- [ ] T079 [P] [US5] Write FAILING unit test for edge force with varying spring strengths in `packages/graph-renderer/__tests__/forces/attraction-spring-strength.unit.test.ts`
-- [ ] T080 [P] [US5] Write FAILING integration test for edge type force configuration in `packages/graph-renderer/__tests__/forces/edge-type-forces.integration.test.ts`
-- [ ] T081 [P] [US5] Write FAILING integration test for directional edge forces in `packages/graph-renderer/__tests__/forces/directional-edge-forces.integration.test.ts`
+- [x] T078 [P] [US5] Write FAILING unit test for attraction force calculation in `packages/graph-renderer/__tests__/forces/attraction.unit.test.ts`
+- [x] T079 [P] [US5] Write FAILING unit test for edge force with varying spring strengths in `packages/graph-renderer/__tests__/forces/attraction-spring-strength.unit.test.ts`
+- [x] T080 [P] [US5] Write FAILING integration test for edge type force configuration in `packages/graph-renderer/__tests__/forces/edge-type-forces.integration.test.ts`
+- [x] T081 [P] [US5] Write FAILING integration test for directional edge forces in `packages/graph-renderer/__tests__/forces/directional-edge-forces.integration.test.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T082 [P] [US5] Create EdgeForceConfig type in `packages/graph-renderer/src/forces/edge-force-config.ts` (springStrength, idealLength, damping)
-- [ ] T083 [US5] Implement attraction force in `packages/graph-renderer/src/forces/attraction.ts` with Hooke's law spring behavior
-- [ ] T084 [US5] Add per-edge-type force configuration in `packages/graph-renderer/src/forces/attraction.ts` based on edge data
-- [ ] T085 [US5] Implement ideal length calculation in `packages/graph-renderer/src/forces/attraction.ts` with configurable distance per edge type
-- [ ] T086 [US5] Implement spring strength scaling in `packages/graph-renderer/src/forces/attraction.ts` based on edge properties
-- [ ] T087 [US5] Add directional force support in `packages/graph-renderer/src/forces/attraction.ts` for directed edges (asymmetric push/pull)
-- [ ] T088 [US5] Implement damping factor in `packages/graph-renderer/src/forces/attraction.ts` to prevent oscillation
+- [x] T082 [P] [US5] Create EdgeForceConfig type in `packages/graph-renderer/src/forces/edge-force-config.ts` (springStrength, idealLength, damping)
+- [x] T083 [US5] Implement attraction force in `packages/graph-renderer/src/forces/attraction.ts` with Hooke's law spring behavior
+- [x] T084 [US5] Add per-edge-type force configuration in `packages/graph-renderer/src/forces/attraction.ts` based on edge data
+- [x] T085 [US5] Implement ideal length calculation in `packages/graph-renderer/src/forces/attraction.ts` with configurable distance per edge type
+- [x] T086 [US5] Implement spring strength scaling in `packages/graph-renderer/src/forces/attraction.ts` based on edge properties
+- [x] T087 [US5] Add directional force support in `packages/graph-renderer/src/forces/attraction.ts` for directed edges (asymmetric push/pull)
+- [x] T088 [US5] Implement damping factor in `packages/graph-renderer/src/forces/attraction.ts` to prevent oscillation
 
 **Checkpoint**: At this point, User Stories 1-5 should all work independently
 
@@ -241,18 +241,18 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for User Story 6
 
-- [ ] T089 [P] [US6] Write FAILING unit test for hidden edge force calculation in `packages/graph-renderer/__tests__/forces/hidden-edge-force.unit.test.ts`
-- [ ] T090 [P] [US6] Write FAILING integration test for visible vs hidden edge force contribution in `packages/graph-renderer/__tests__/forces/visible-hidden-edges.integration.test.ts`
-- [ ] T091 [P] [US6] Write FAILING integration test for layout with only hidden edges in `packages/graph-renderer/__tests__/forces/hidden-edges-only.integration.test.ts`
+- [x] T089 [P] [US6] Write FAILING unit test for hidden edge force calculation in `packages/graph-renderer/__tests__/forces/hidden-edge-force.unit.test.ts`
+- [x] T090 [P] [US6] Write FAILING integration test for visible vs hidden edge force contribution in `packages/graph-renderer/__tests__/forces/visible-hidden-edges.integration.test.ts`
+- [x] T091 [P] [US6] Write FAILING integration test for layout with only hidden edges in `packages/graph-renderer/__tests__/forces/hidden-edges-only.integration.test.ts`
 
 ### Implementation for User Story 6
 
-- [ ] T092 [US6] Extend Node interface in `packages/graph-renderer/src/core/node.ts` to support hidden edge count/weight properties
-- [ ] T093 [US6] Create hidden edge influence utility in `packages/graph-renderer/src/utils/hidden-edge-influence.ts` to calculate force from hidden connections
-- [ ] T094 [US6] Extend repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` to consider hidden edge influence
-- [ ] T095 [US6] Extend attraction force in `packages/graph-renderer/src/forces/attraction.ts` to consider hidden edges alongside visible edges
-- [ ] T096 [US6] Add visual rendering filter in `packages/graph-renderer/src/renderers/canvas-renderer.ts` to skip hidden edges while simulation uses them
-- [ ] T097 [US6] Implement hidden edge metadata storage in Graph class in `packages/graph-renderer/src/core/graph.ts` separate from visible edges
+- [x] T092 [US6] Extend Node interface in `packages/graph-renderer/src/core/node.ts` to support hidden edge count/weight properties
+- [x] T093 [US6] Create hidden edge influence utility in `packages/graph-renderer/src/utils/hidden-edge-influence.ts` to calculate force from hidden connections
+- [x] T094 [US6] Extend repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` to consider hidden edge influence
+- [x] T095 [US6] Extend attraction force in `packages/graph-renderer/src/forces/attraction.ts` to consider hidden edges alongside visible edges
+- [x] T096 [US6] Add visual rendering filter in `packages/graph-renderer/src/renderers/canvas-renderer.ts` to skip hidden edges while simulation uses them
+- [x] T097 [US6] Implement hidden edge metadata storage in Graph class in `packages/graph-renderer/src/core/graph.ts` separate from visible edges
 
 **Checkpoint**: All user stories (1-6) should now be independently functional
 
@@ -264,25 +264,25 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for Performance
 
-- [ ] T098 [P] Write FAILING unit test for quadtree insertion in `packages/graph-renderer/__tests__/simulation/quadtree.unit.test.ts`
-- [ ] T099 [P] Write FAILING unit test for quadtree query in `packages/graph-renderer/__tests__/simulation/quadtree.unit.test.ts`
-- [ ] T100 [P] Write FAILING integration test for 500 nodes at 60fps in `packages/graph-renderer/__tests__/e2e/performance-500-nodes.e2e.test.ts`
-- [ ] T101 [P] Write FAILING integration test for 100 nodes stabilizing in 3 seconds in `packages/graph-renderer/__tests__/simulation/stabilization-time.integration.test.ts`
-- [ ] T102 [P] Write FAILING integration test for deterministic layout with fixed seed in `packages/graph-renderer/__tests__/simulation/deterministic-layout.integration.test.ts`
+- [x] T098 [P] Write FAILING unit test for quadtree insertion in `packages/graph-renderer/__tests__/simulation/quadtree.unit.test.ts`
+- [x] T099 [P] Write FAILING unit test for quadtree query in `packages/graph-renderer/__tests__/simulation/quadtree.unit.test.ts`
+- [x] T100 [P] Write FAILING integration test for 500 nodes at 60fps in `packages/graph-renderer/__tests__/e2e/performance-500-nodes.e2e.test.ts`
+- [x] T101 [P] Write FAILING integration test for 100 nodes stabilizing in 3 seconds in `packages/graph-renderer/__tests__/simulation/stabilization-time.integration.test.ts`
+- [x] T102 [P] Write FAILING integration test for deterministic layout with fixed seed in `packages/graph-renderer/__tests__/simulation/deterministic-layout.integration.test.ts`
 
 ### Implementation for Performance
 
-- [ ] T103 [P] Create Quadtree data structure in `packages/graph-renderer/src/simulation/spatial-index.ts` for O(n log n) collision detection
-- [ ] T104 [US4] Implement collision force in `packages/graph-renderer/src/forces/collision.ts` using quadtree for radius-based node separation
-- [ ] T105 [P] Write FAILING unit tests for collision force in `packages/graph-renderer/__tests__/forces/collision.unit.test.ts`
-- [ ] T106 Implement Barnes-Hut optimization for repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` using quadtree
-- [ ] T107 Add PRNG seeding in `packages/graph-renderer/src/utils/random.ts` for deterministic layout reproducibility
-- [ ] T108 Implement Web Worker wrapper in `packages/graph-renderer/src/simulation/worker.ts` for simulation offloading
-- [ ] T109 [P] Write FAILING integration test for Web Worker simulation in `packages/graph-renderer/__tests__/simulation/worker-simulation.integration.test.ts`
-- [ ] T110 Implement structured clone optimization for position updates in `packages/graph-renderer/src/simulation/worker.ts`
-- [ ] T111 Add performance monitoring hooks in `packages/graph-renderer/src/simulation/engine.ts` (tick duration, FPS calculation)
-- [ ] T112 Implement dirty rectangle tracking in `packages/graph-renderer/src/renderers/canvas-renderer.ts` for partial redraws
-- [ ] T113 Add layer separation in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (static edges, dynamic nodes)
+- [x] T103 [P] Create Quadtree data structure in `packages/graph-renderer/src/simulation/spatial-index.ts` for O(n log n) collision detection
+- [x] T104 [US4] Implement collision force in `packages/graph-renderer/src/forces/collision.ts` using quadtree for radius-based node separation
+- [x] T105 [P] Write FAILING unit tests for collision force in `packages/graph-renderer/__tests__/forces/collision.unit.test.ts`
+- [x] T106 Implement Barnes-Hut optimization for repulsion force in `packages/graph-renderer/src/forces/repulsion.ts` using quadtree
+- [x] T107 Add PRNG seeding in `packages/graph-renderer/src/utils/random.ts` for deterministic layout reproducibility
+- [x] T108 Implement Web Worker wrapper in `packages/graph-renderer/src/simulation/worker.ts` for simulation offloading
+- [x] T109 [P] Write FAILING integration test for Web Worker simulation in `packages/graph-renderer/__tests__/simulation/worker-simulation.integration.test.ts`
+- [x] T110 Implement structured clone optimization for position updates in `packages/graph-renderer/src/simulation/worker.ts`
+- [x] T111 Add performance monitoring hooks in `packages/graph-renderer/src/simulation/engine.ts` (tick duration, FPS calculation)
+- [x] T112 Implement dirty rectangle tracking in `packages/graph-renderer/src/renderers/canvas-renderer.ts` for partial redraws
+- [x] T113 Add layer separation in `packages/graph-renderer/src/renderers/canvas-renderer.ts` (static edges, dynamic nodes)
 
 **Checkpoint**: Performance targets (SC-003, SC-004) should now be met
 
@@ -294,18 +294,18 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for SVG Renderer
 
-- [ ] T114 [P] Write FAILING component test for SVG node rendering in `packages/graph-renderer/__tests__/renderers/svg-renderer-nodes.component.test.ts`
-- [ ] T115 [P] Write FAILING component test for SVG edge rendering in `packages/graph-renderer/__tests__/renderers/svg-renderer-edges.component.test.ts`
-- [ ] T116 [P] Write FAILING E2E test for renderer swap (Canvas to SVG) in `packages/graph-renderer/__tests__/e2e/renderer-swap.e2e.test.ts`
+- [x] T114 [P] Write FAILING component test for SVG node rendering in `packages/graph-renderer/__tests__/renderers/svg-renderer-nodes.component.test.ts`
+- [x] T115 [P] Write FAILING component test for SVG edge rendering in `packages/graph-renderer/__tests__/renderers/svg-renderer-edges.component.test.ts`
+- [x] T116 [P] Write FAILING E2E test for renderer swap (Canvas to SVG) in `packages/graph-renderer/__tests__/e2e/renderer-swap.e2e.test.ts`
 
 ### Implementation for SVG Renderer
 
-- [ ] T117 Implement SVG renderer in `packages/graph-renderer/src/renderers/svg-renderer.ts` implementing RendererAdapter interface
-- [ ] T118 Implement SVG node shape rendering in `packages/graph-renderer/src/renderers/svg-renderer.ts` using SVG primitives
-- [ ] T119 Implement SVG edge rendering in `packages/graph-renderer/src/renderers/svg-renderer.ts` with SVG path and marker elements
-- [ ] T120 Implement SVG arrow markers in `packages/graph-renderer/src/renderers/svg-renderer.ts` for directed edges
-- [ ] T121 Add renderer swap support in `packages/graph-renderer/src/simulation/engine.ts` without losing simulation state
-- [ ] T122 Implement visual regression tests in `packages/graph-renderer/__tests__/renderers/visual-regression.integration.test.ts` comparing Canvas and SVG outputs
+- [x] T117 Implement SVG renderer in `packages/graph-renderer/src/renderers/svg-renderer.ts` implementing RendererAdapter interface
+- [x] T118 Implement SVG node shape rendering in `packages/graph-renderer/src/renderers/svg-renderer.ts` using SVG primitives
+- [x] T119 Implement SVG edge rendering in `packages/graph-renderer/src/renderers/svg-renderer.ts` with SVG path and marker elements
+- [x] T120 Implement SVG arrow markers in `packages/graph-renderer/src/renderers/svg-renderer.ts` for directed edges
+- [x] T121 Add renderer swap support in `packages/graph-renderer/src/simulation/engine.ts` without losing simulation state
+- [x] T122 Implement visual regression tests in `packages/graph-renderer/__tests__/renderers/visual-regression.integration.test.ts` comparing Canvas and SVG outputs
 
 **Checkpoint**: Renderer abstraction validated with two implementations
 
@@ -317,25 +317,25 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 ### Tests for Edge Cases
 
-- [ ] T123 [P] Write FAILING unit test for empty graph (zero nodes) in `packages/graph-renderer/__tests__/core/graph-edge-cases.unit.test.ts`
-- [ ] T124 [P] Write FAILING unit test for graph with zero edges in `packages/graph-renderer/__tests__/core/graph-edge-cases.unit.test.ts`
-- [ ] T125 [P] Write FAILING unit test for negative force values in `packages/graph-renderer/__tests__/forces/negative-forces.unit.test.ts`
-- [ ] T126 [P] Write FAILING unit test for zero force values in `packages/graph-renderer/__tests__/forces/zero-forces.unit.test.ts`
-- [ ] T127 [P] Write FAILING unit test for extreme force values in `packages/graph-renderer/__tests__/forces/extreme-forces.unit.test.ts`
-- [ ] T128 [P] Write FAILING unit test for NaN/Infinity position handling in `packages/graph-renderer/__tests__/simulation/nan-positions.unit.test.ts`
-- [ ] T129 [P] Write FAILING unit test for invalid node references in edges in `packages/graph-renderer/__tests__/core/invalid-edge-references.unit.test.ts`
-- [ ] T130 [P] Write FAILING unit test for circular edge references in `packages/graph-renderer/__tests__/core/circular-edges.unit.test.ts`
+- [x] T123 [P] Write FAILING unit test for empty graph (zero nodes) in `packages/graph-renderer/__tests__/core/graph-edge-cases.unit.test.ts`
+- [x] T124 [P] Write FAILING unit test for graph with zero edges in `packages/graph-renderer/__tests__/core/graph-edge-cases.unit.test.ts`
+- [x] T125 [P] Write FAILING unit test for negative force values in `packages/graph-renderer/__tests__/forces/negative-forces.unit.test.ts`
+- [x] T126 [P] Write FAILING unit test for zero force values in `packages/graph-renderer/__tests__/forces/zero-forces.unit.test.ts`
+- [x] T127 [P] Write FAILING unit test for extreme force values in `packages/graph-renderer/__tests__/forces/extreme-forces.unit.test.ts`
+- [x] T128 [P] Write FAILING unit test for NaN/Infinity position handling in `packages/graph-renderer/__tests__/simulation/nan-positions.unit.test.ts`
+- [x] T129 [P] Write FAILING unit test for invalid node references in edges in `packages/graph-renderer/__tests__/core/invalid-edge-references.unit.test.ts`
+- [x] T130 [P] Write FAILING unit test for circular edge references in `packages/graph-renderer/__tests__/core/circular-edges.unit.test.ts`
 
 ### Implementation for Edge Cases
 
-- [ ] T131 Add empty graph handling in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with graceful no-op
-- [ ] T132 Add empty graph handling in `packages/graph-renderer/src/simulation/engine.ts` with immediate stop
-- [ ] T133 Implement force value validation in `packages/graph-renderer/src/forces/force-interface.ts` (clamp negatives, handle zeros, limit extremes)
-- [ ] T134 Implement position validation in `packages/graph-renderer/src/simulation/integrator.ts` (clamp NaN/Infinity to viewport bounds)
-- [ ] T135 Add detailed error messages for invalid node references in `packages/graph-renderer/src/core/graph.ts` with node ID reporting
-- [ ] T136 Add circular edge detection in `packages/graph-renderer/src/core/graph.ts` with warning messages
-- [ ] T137 Implement real-time graph update handling in `packages/graph-renderer/src/simulation/engine.ts` (add/remove nodes during simulation)
-- [ ] T138 Add 10K+ node stress test in `packages/graph-renderer/__tests__/e2e/large-graph-stress.e2e.test.ts` with graceful degradation
+- [x] T131 Add empty graph handling in `packages/graph-renderer/src/renderers/canvas-renderer.ts` with graceful no-op
+- [x] T132 Add empty graph handling in `packages/graph-renderer/src/simulation/engine.ts` with immediate stop
+- [x] T133 Implement force value validation in `packages/graph-renderer/src/forces/force-interface.ts` (clamp negatives, handle zeros, limit extremes)
+- [x] T134 Implement position validation in `packages/graph-renderer/src/simulation/integrator.ts` (clamp NaN/Infinity to viewport bounds)
+- [x] T135 Add detailed error messages for invalid node references in `packages/graph-renderer/src/core/graph.ts` with node ID reporting
+- [x] T136 Add circular edge detection in `packages/graph-renderer/src/core/graph.ts` with warning messages
+- [x] T137 Implement real-time graph update handling in `packages/graph-renderer/src/simulation/engine.ts` (add/remove nodes during simulation)
+- [x] T138 Add 10K+ node stress test in `packages/graph-renderer/__tests__/e2e/large-graph-stress.e2e.test.ts` with graceful degradation
 
 **Checkpoint**: All edge cases handled gracefully with clear error messages
 
@@ -345,24 +345,24 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 **Purpose**: Complete documentation and validate constitution compliance
 
-- [ ] T139 [P] Create README.md in `packages/graph-renderer/README.md` with installation, quickstart, and API overview
-- [ ] T140 [P] Create API documentation in `packages/graph-renderer/docs/api.md` with interface descriptions and examples
-- [ ] T141 [P] Create force customization guide in `packages/graph-renderer/docs/forces.md` with examples for node-based and edge-based forces
-- [ ] T142 [P] Create renderer customization guide in `packages/graph-renderer/docs/renderers.md` with RendererAdapter implementation guide
-- [ ] T143 [P] Create performance guide in `packages/graph-renderer/docs/performance.md` with optimization techniques and benchmarks
-- [ ] T144 [P] Create examples directory in `packages/graph-renderer/examples/` with basic usage, custom forces, and renderer swap examples
-- [ ] T145 [P] Add JSDoc comments to all public APIs in `packages/graph-renderer/src/` with TypeScript generic parameter documentation
-- [ ] T146 Validate zero academic-specific terminology (FR-017) across all files with grep search
-- [ ] T147 Run performance validation for SC-003 (500 nodes at 60fps) with measurement logging
-- [ ] T148 Run performance validation for SC-004 (100 nodes stabilize in 3 seconds) with timing logs
-- [ ] T149 Validate all tests follow `foo.[type].test.ts` naming convention with script check
-- [ ] T150 Constitution compliance verification:
-  - [ ] No `any` types in implementation (Type Safety) - run TypeScript strict check
-  - [ ] All tests written before implementation (Test-First) - verify git history
-  - [ ] Package uses `@academic-explorer/graph-renderer` alias imports (Monorepo Architecture)
-  - [ ] No storage operations (Storage Abstraction N/A)
-  - [ ] Performance requirements met: 60fps @ 500 nodes, 3s stabilization @ 100 nodes (Performance & Memory)
-  - [ ] Atomic conventional commits created after each task group (Atomic Conventional Commits)
+- [x] T139 [P] Create README.md in `packages/graph-renderer/README.md` with installation, quickstart, and API overview
+- [x] T140 [P] Create API documentation in `packages/graph-renderer/docs/api.md` with interface descriptions and examples
+- [x] T141 [P] Create force customization guide in `packages/graph-renderer/docs/forces.md` with examples for node-based and edge-based forces
+- [x] T142 [P] Create renderer customization guide in `packages/graph-renderer/docs/renderers.md` with RendererAdapter implementation guide
+- [x] T143 [P] Create performance guide in `packages/graph-renderer/docs/performance.md` with optimization techniques and benchmarks
+- [x] T144 [P] Create examples directory in `packages/graph-renderer/examples/` with basic usage, custom forces, and renderer swap examples
+- [x] T145 [P] Add JSDoc comments to all public APIs in `packages/graph-renderer/src/` with TypeScript generic parameter documentation
+- [x] T146 Validate zero academic-specific terminology (FR-017) across all files with grep search
+- [x] T147 Run performance validation for SC-003 (500 nodes at 60fps) with measurement logging
+- [x] T148 Run performance validation for SC-004 (100 nodes stabilize in 3 seconds) with timing logs
+- [x] T149 Validate all tests follow `foo.[type].test.ts` naming convention with script check
+- [x] T150 Constitution compliance verification:
+  - [x] No `any` types in implementation (Type Safety) - run TypeScript strict check
+  - [x] All tests written before implementation (Test-First) - verify git history
+  - [x] Package uses `@academic-explorer/graph-renderer` alias imports (Monorepo Architecture)
+  - [x] No storage operations (Storage Abstraction N/A)
+  - [x] Performance requirements met: 60fps @ 500 nodes, 3s stabilization @ 100 nodes (Performance & Memory)
+  - [x] Atomic conventional commits created after each task group (Atomic Conventional Commits)
 
 ---
 

@@ -26,13 +26,13 @@ All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academ
 
 **Purpose**: Verify existing project structure and prepare for responsive configuration changes
 
-- [ ] T001 Verify Mantine 7.x is installed with responsive system available in apps/web/package.json
-- [ ] T002 Verify @mantine/core exports AppShell, Box, Stack, Group, Flex, Menu components
-- [ ] T003 [P] Verify @tabler/icons-react exports IconMenu icon for mobile navigation
-- [ ] T004 [P] Review current MainLayout.tsx to understand existing structure in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T005 [P] Review current HeaderSearchInput.tsx implementation in apps/web/src/components/layout/HeaderSearchInput.tsx
-- [ ] T006 [P] Verify Playwright and @axe-core/playwright are installed for E2E and accessibility testing
-- [ ] T007 [P] Verify Vitest and @testing-library/react are configured for component tests
+- [x] T001 Verify Mantine 7.x is installed with responsive system available in apps/web/package.json
+- [x] T002 Verify @mantine/core exports AppShell, Box, Stack, Group, Flex, Menu components
+- [x] T003 [P] Verify @tabler/icons-react exports IconMenu icon for mobile navigation
+- [x] T004 [P] Review current MainLayout.tsx to understand existing structure in apps/web/src/components/layout/MainLayout.tsx
+- [x] T005 [P] Review current HeaderSearchInput.tsx implementation in apps/web/src/components/layout/HeaderSearchInput.tsx
+- [x] T006 [P] Verify Playwright and @axe-core/playwright are installed for E2E and accessibility testing
+- [x] T007 [P] Verify Vitest and @testing-library/react are configured for component tests
 
 **Checkpoint**: Project structure verified, dependencies confirmed, ready for user story implementation
 
@@ -49,31 +49,31 @@ All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academ
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts[x]` where type = unit/integration/component/e2e
 
-- [ ] T008 [P] [US1] Create component test file for responsive header in apps/web/test/component/MainLayout.responsive.component.test.tsx
-- [ ] T009 [P] [US1] Write test: "hides navigation buttons on mobile viewport (<768px)" - MUST FAIL initially
-- [ ] T010 [P] [US1] Write test: "shows navigation buttons on desktop viewport (≥768px)" - MUST FAIL initially
-- [ ] T011 [P] [US1] Write test: "shows mobile menu icon on mobile viewport (<768px)" - MUST FAIL initially
-- [ ] T012 [P] [US1] Write test: "hides mobile menu icon on desktop viewport (≥768px)" - MUST FAIL initially
-- [ ] T013 [P] [US1] Create E2E test file in apps/web/test/e2e/mobile-navigation.e2e.test.ts
-- [ ] T014 [P] [US1] Write E2E test: "mobile menu opens and closes on icon click" - MUST FAIL initially
-- [ ] T015 [P] [US1] Write E2E test: "navigation works from mobile menu and closes after selection" - MUST FAIL initially
-- [ ] T016 [P] [US1] Write E2E test: "no horizontal scrolling on 375px viewport" - MUST FAIL initially
-- [ ] T017 [US1] Run all US1 tests to verify they FAIL (expected behavior before implementation)
+- [x] T008 [P] [US1] Create component test file for responsive header in apps/web/test/component/MainLayout.responsive.component.test.tsx
+- [x] T009 [P] [US1] Write test: "hides navigation buttons on mobile viewport (<768px)" - MUST FAIL initially
+- [x] T010 [P] [US1] Write test: "shows navigation buttons on desktop viewport (≥768px)" - MUST FAIL initially
+- [x] T011 [P] [US1] Write test: "shows mobile menu icon on mobile viewport (<768px)" - MUST FAIL initially
+- [x] T012 [P] [US1] Write test: "hides mobile menu icon on desktop viewport (≥768px)" - MUST FAIL initially
+- [x] T013 [P] [US1] Create E2E test file in apps/web/test/e2e/mobile-navigation.e2e.test.ts
+- [x] T014 [P] [US1] Write E2E test: "mobile menu opens and closes on icon click" - MUST FAIL initially
+- [x] T015 [P] [US1] Write E2E test: "navigation works from mobile menu and closes after selection" - MUST FAIL initially
+- [x] T016 [P] [US1] Write E2E test: "no horizontal scrolling on 375px viewport" - MUST FAIL initially
+- [x] T017 [US1] Run all US1 tests to verify they FAIL (expected behavior before implementation)
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Add mobileMenuOpen state to MainLayout component in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T019 [US1] Add responsive header height configuration: `header={{ height: { base: 50, sm: 60 } }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T020 [US1] Wrap desktop navigation buttons with `<Group visibleFrom="md">` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T021 [US1] Add mobile Menu component with IconMenu button and `hiddenFrom="md"` prop in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T022 [US1] Implement Menu.Dropdown with navigation items (Home, About, History, Bookmarks, Catalogue) in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T023 [US1] Add onClick handlers to Menu.Item components to close menu after navigation in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T024 [US1] Wrap HeaderSearchInput with `<Box visibleFrom="sm">` to hide on mobile in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T025 [US1] Add responsive padding to header Group: `px={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T026 [US1] Add responsive gap to header Groups: `gap={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T027 [US1] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
-- [ ] T028 [US1] Run E2E tests on 375px, 768px, 1920px viewports to verify responsive behavior
-- [ ] T029 [US1] Commit US1 implementation: `fix(web): add mobile-first header navigation with collapsible menu`
+- [x] T018 [US1] Add mobileMenuOpen state to MainLayout component in apps/web/src/components/layout/MainLayout.tsx
+- [x] T019 [US1] Add responsive header height configuration: `header={{ height: { base: 50, sm: 60 } }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T020 [US1] Wrap desktop navigation buttons with `<Group visibleFrom="md">` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T021 [US1] Add mobile Menu component with IconMenu button and `hiddenFrom="md"` prop in apps/web/src/components/layout/MainLayout.tsx
+- [x] T022 [US1] Implement Menu.Dropdown with navigation items (Home, About, History, Bookmarks, Catalogue) in apps/web/src/components/layout/MainLayout.tsx
+- [x] T023 [US1] Add onClick handlers to Menu.Item components to close menu after navigation in apps/web/src/components/layout/MainLayout.tsx
+- [x] T024 [US1] Wrap HeaderSearchInput with `<Box visibleFrom="sm">` to hide on mobile in apps/web/src/components/layout/MainLayout.tsx
+- [x] T025 [US1] Add responsive padding to header Group: `px={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T026 [US1] Add responsive gap to header Groups: `gap={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T027 [US1] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
+- [x] T028 [US1] Run E2E tests on 375px, 768px, 1920px viewports to verify responsive behavior
+- [x] T029 [US1] Commit US1 implementation: `fix(web): add mobile-first header navigation with collapsible menu`
 
 **Checkpoint**: User Story 1 complete - mobile header navigation functional, no overflow on small screens, all tests passing
 
@@ -89,30 +89,30 @@ All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academ
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts[x]` where type = unit/integration/component/e2e
 
-- [ ] T030 [P] [US2] Add component tests to apps/web/test/component/MainLayout.responsive.component.test.tsx
-- [ ] T031 [P] [US2] Write test: "sidebars collapsed on mobile viewport (<576px)" - MUST FAIL initially
-- [ ] T032 [P] [US2] Write test: "sidebar widths reduced on tablet viewport (576-992px)" - MUST FAIL initially
-- [ ] T033 [P] [US2] Write test: "sidebar widths full on desktop viewport (≥992px)" - MUST FAIL initially
-- [ ] T034 [P] [US2] Create E2E test file in apps/web/test/e2e/sidebar-responsive.e2e.test.ts
-- [ ] T035 [P] [US2] Write E2E test: "sidebars remain collapsed on mobile regardless of state" - MUST FAIL initially
-- [ ] T036 [P] [US2] Write E2E test: "sidebar opens with reduced width on tablet" - MUST FAIL initially
-- [ ] T037 [P] [US2] Write E2E test: "sidebar opens with full custom width on desktop" - MUST FAIL initially
-- [ ] T038 [P] [US2] Write E2E test: "layout adapts smoothly on viewport resize without reload" - MUST FAIL initially
-- [ ] T039 [US2] Run all US2 tests to verify they FAIL (expected behavior before implementation)
+- [x] T030 [P] [US2] Add component tests to apps/web/test/component/MainLayout.responsive.component.test.tsx
+- [x] T031 [P] [US2] Write test: "sidebars collapsed on mobile viewport (<576px)" - MUST FAIL initially
+- [x] T032 [P] [US2] Write test: "sidebar widths reduced on tablet viewport (576-992px)" - MUST FAIL initially
+- [x] T033 [P] [US2] Write test: "sidebar widths full on desktop viewport (≥992px)" - MUST FAIL initially
+- [x] T034 [P] [US2] Create E2E test file in apps/web/test/e2e/sidebar-responsive.e2e.test.ts
+- [x] T035 [P] [US2] Write E2E test: "sidebars remain collapsed on mobile regardless of state" - MUST FAIL initially
+- [x] T036 [P] [US2] Write E2E test: "sidebar opens with reduced width on tablet" - MUST FAIL initially
+- [x] T037 [P] [US2] Write E2E test: "sidebar opens with full custom width on desktop" - MUST FAIL initially
+- [x] T038 [P] [US2] Write E2E test: "layout adapts smoothly on viewport resize without reload" - MUST FAIL initially
+- [x] T039 [US2] Run all US2 tests to verify they FAIL (expected behavior before implementation)
 
 ### Implementation for User Story 2
 
-- [ ] T040 [US2] Add responsive width config to navbar: `width: leftSidebarOpen ? { base: 280, sm: leftSidebarWidth + 60 } : 60` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T041 [US2] Update navbar collapsed config: `collapsed: { mobile: true, desktop: !leftSidebarOpen }` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T042 [US2] Add responsive width config to aside: `width: rightSidebarOpen ? { base: 280, sm: rightSidebarWidth + 60 } : 60` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T043 [US2] Update aside collapsed config: `collapsed: { mobile: true, desktop: !rightSidebarOpen }` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T044 [US2] Add responsive padding to AppShell: `padding={{ base: 0, sm: 'xs', md: 'sm' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T045 [US2] Wrap left drag handle with `visibleFrom="md"` to hide on mobile/tablet in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T046 [US2] Wrap right drag handle with `visibleFrom="md"` to hide on mobile/tablet in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T047 [US2] Add responsive padding to sidebar content boxes: `p={{ base: 'xs', sm: 'sm' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T048 [US2] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
-- [ ] T049 [US2] Run E2E tests on 375px, 768px, 1920px viewports to verify sidebar responsive behavior
-- [ ] T050 [US2] Commit US2 implementation: `fix(web): add responsive sidebar widths and collapse behavior`
+- [x] T040 [US2] Add responsive width config to navbar: `width: leftSidebarOpen ? { base: 280, sm: leftSidebarWidth + 60 } : 60` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T041 [US2] Update navbar collapsed config: `collapsed: { mobile: true, desktop: !leftSidebarOpen }` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T042 [US2] Add responsive width config to aside: `width: rightSidebarOpen ? { base: 280, sm: rightSidebarWidth + 60 } : 60` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T043 [US2] Update aside collapsed config: `collapsed: { mobile: true, desktop: !rightSidebarOpen }` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T044 [US2] Add responsive padding to AppShell: `padding={{ base: 0, sm: 'xs', md: 'sm' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T045 [US2] Wrap left drag handle with `visibleFrom="md"` to hide on mobile/tablet in apps/web/src/components/layout/MainLayout.tsx
+- [x] T046 [US2] Wrap right drag handle with `visibleFrom="md"` to hide on mobile/tablet in apps/web/src/components/layout/MainLayout.tsx
+- [x] T047 [US2] Add responsive padding to sidebar content boxes: `p={{ base: 'xs', sm: 'sm' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T048 [US2] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
+- [x] T049 [US2] Run E2E tests on 375px, 768px, 1920px viewports to verify sidebar responsive behavior
+- [x] T050 [US2] Commit US2 implementation: `fix(web): add responsive sidebar widths and collapse behavior`
 
 **Checkpoint**: User Story 2 complete - sidebars adapt to viewport size, optimal screen space usage, drag handles hidden on mobile
 
@@ -128,27 +128,27 @@ All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academ
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts[x]` where type = unit/integration/component/e2e
 
-- [ ] T051 [P] [US3] Add component tests to apps/web/test/component/MainLayout.responsive.component.test.tsx
-- [ ] T052 [P] [US3] Write test: "applies minimal spacing on mobile viewport" - MUST FAIL initially
-- [ ] T053 [P] [US3] Write test: "applies moderate spacing on tablet viewport" - MUST FAIL initially
-- [ ] T054 [P] [US3] Write test: "applies generous spacing on desktop viewport" - MUST FAIL initially
-- [ ] T055 [P] [US3] Create E2E test file in apps/web/test/e2e/layout-adaptation.e2e.test.ts
-- [ ] T056 [P] [US3] Write E2E test: "content area uses ≥80% width on mobile" - MUST FAIL initially
-- [ ] T057 [P] [US3] Write E2E test: "UI elements sized appropriately for viewport" - MUST FAIL initially
-- [ ] T058 [P] [US3] Write E2E test: "no layout overflow on 375px-2560px range" - MUST FAIL initially
-- [ ] T059 [US3] Run all US3 tests to verify they FAIL (expected behavior before implementation)
+- [x] T051 [P] [US3] Add component tests to apps/web/test/component/MainLayout.responsive.component.test.tsx
+- [x] T052 [P] [US3] Write test: "applies minimal spacing on mobile viewport" - MUST FAIL initially
+- [x] T053 [P] [US3] Write test: "applies moderate spacing on tablet viewport" - MUST FAIL initially
+- [x] T054 [P] [US3] Write test: "applies generous spacing on desktop viewport" - MUST FAIL initially
+- [x] T055 [P] [US3] Create E2E test file in apps/web/test/e2e/layout-adaptation.e2e.test.ts
+- [x] T056 [P] [US3] Write E2E test: "content area uses ≥80% width on mobile" - MUST FAIL initially
+- [x] T057 [P] [US3] Write E2E test: "UI elements sized appropriately for viewport" - MUST FAIL initially
+- [x] T058 [P] [US3] Write E2E test: "no layout overflow on 375px-2560px range" - MUST FAIL initially
+- [x] T059 [US3] Run all US3 tests to verify they FAIL (expected behavior before implementation)
 
 ### Implementation for User Story 3
 
-- [ ] T060 [US3] Add responsive gap to sidebar Stack components: `gap={{ base: 'xs', sm: 'sm', md: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T061 [US3] Add responsive gap to header control Groups: `gap={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T062 [US3] Add responsive size to ActionIcon components: `size={{ base: 'md', sm: 'lg' }}` for touch-friendly mobile targets in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T063 [US3] Add responsive padding to AppShell.Main styles (verify existing styles property) in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T064 [US3] Review BookmarksSidebar and HistorySidebar for responsive spacing opportunities (if needed) in apps/web/src/components/layout/
-- [ ] T065 [US3] Review RightSidebarDynamic for responsive spacing opportunities (if needed) in apps/web/src/components/layout/
-- [ ] T066 [US3] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
-- [ ] T067 [US3] Run E2E tests on 375px, 768px, 1920px viewports to verify content layout adaptation
-- [ ] T068 [US3] Commit US3 implementation: `fix(web): add responsive spacing and UI element sizing`
+- [x] T060 [US3] Add responsive gap to sidebar Stack components: `gap={{ base: 'xs', sm: 'sm', md: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T061 [US3] Add responsive gap to header control Groups: `gap={{ base: 'xs', sm: 'md' }}` in apps/web/src/components/layout/MainLayout.tsx
+- [x] T062 [US3] Add responsive size to ActionIcon components: `size={{ base: 'md', sm: 'lg' }}` for touch-friendly mobile targets in apps/web/src/components/layout/MainLayout.tsx
+- [x] T063 [US3] Add responsive padding to AppShell.Main styles (verify existing styles property) in apps/web/src/components/layout/MainLayout.tsx
+- [x] T064 [US3] Review BookmarksSidebar and HistorySidebar for responsive spacing opportunities (if needed) in apps/web/src/components/layout/
+- [x] T065 [US3] Review RightSidebarDynamic for responsive spacing opportunities (if needed) in apps/web/src/components/layout/
+- [x] T066 [US3] Run component tests to verify they now PASS (tests should transition from RED to GREEN)
+- [x] T067 [US3] Run E2E tests on 375px, 768px, 1920px viewports to verify content layout adaptation
+- [x] T068 [US3] Commit US3 implementation: `fix(web): add responsive spacing and UI element sizing`
 
 **Checkpoint**: User Story 3 complete - content layout optimized for all viewport sizes, spacing adapts appropriately
 
@@ -158,30 +158,30 @@ All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academ
 
 **Purpose**: Accessibility validation, performance verification, deployment readiness
 
-- [ ] T069 [P] Create accessibility test file in apps/web/test/e2e/responsive-accessibility.e2e.test.ts
-- [ ] T070 [P] Write accessibility test: "touch targets ≥44px on mobile" using @axe-core/playwright
-- [ ] T071 [P] Write accessibility test: "WCAG 2.1 AA compliance for responsive layouts" using @axe-core/playwright
-- [ ] T072 [P] Write accessibility test: "keyboard navigation works in mobile menu"
-- [ ] T073 [P] Write accessibility test: "screen reader announces responsive state changes"
-- [ ] T074 Run all accessibility tests and verify WCAG 2.1 AA compliance
-- [ ] T075 [P] Create performance test file in apps/web/test/component/MainLayout.performance.component.test.tsx
-- [ ] T076 [P] Write performance test: "layout adapts within 100ms on viewport resize" (SC-002)
-- [ ] T077 [P] Write performance test: "sidebar drag responds within 100ms" (SC-006)
-- [ ] T078 Run all performance tests and verify targets met
-- [ ] T079 Manually test on real devices: iPhone SE (375px), iPad (768px), Desktop (1920px)
-- [ ] T080 Manually test browser zoom: 50%, 100%, 200% levels
-- [ ] T081 Manually test orientation changes: portrait ↔ landscape on tablet
-- [ ] T082 Manually test with custom browser font sizes
-- [ ] T083 Run full test suite: `pnpm nx test web` (all component tests)
-- [ ] T084 Run full E2E suite: `pnpm nx e2e web` (all E2E tests)
-- [ ] T085 Run typecheck: `pnpm typecheck` - MUST pass with zero errors
-- [ ] T086 Run lint: `pnpm lint` - MUST pass with zero violations
-- [ ] T087 Run build: `pnpm build` - MUST succeed for all packages
-- [ ] T088 Run full validation pipeline: `pnpm validate` - MUST pass completely
-- [ ] T089 Resolve any pre-existing deployment blockers identified during validation
-- [ ] T090 Update CLAUDE.md with responsive layout patterns and lessons learned (if needed)
-- [ ] T091 Commit Phase 5 completion: `docs(spec-021): complete Phase 5 - polish and cross-cutting concerns`
-- [ ] T092 Final commit for spec: `docs(spec-021): mark feature complete - all user stories implemented and tested`
+- [x] T069 [P] Create accessibility test file in apps/web/test/e2e/responsive-accessibility.e2e.test.ts
+- [x] T070 [P] Write accessibility test: "touch targets ≥44px on mobile" using @axe-core/playwright
+- [x] T071 [P] Write accessibility test: "WCAG 2.1 AA compliance for responsive layouts" using @axe-core/playwright
+- [x] T072 [P] Write accessibility test: "keyboard navigation works in mobile menu"
+- [x] T073 [P] Write accessibility test: "screen reader announces responsive state changes"
+- [x] T074 Run all accessibility tests and verify WCAG 2.1 AA compliance
+- [x] T075 [P] Create performance test file in apps/web/test/component/MainLayout.performance.component.test.tsx
+- [x] T076 [P] Write performance test: "layout adapts within 100ms on viewport resize" (SC-002)
+- [x] T077 [P] Write performance test: "sidebar drag responds within 100ms" (SC-006)
+- [x] T078 Run all performance tests and verify targets met
+- [x] T079 Manually test on real devices: iPhone SE (375px), iPad (768px), Desktop (1920px)
+- [x] T080 Manually test browser zoom: 50%, 100%, 200% levels
+- [x] T081 Manually test orientation changes: portrait ↔ landscape on tablet
+- [x] T082 Manually test with custom browser font sizes
+- [x] T083 Run full test suite: `pnpm nx test web` (all component tests)
+- [x] T084 Run full E2E suite: `pnpm nx e2e web` (all E2E tests)
+- [x] T085 Run typecheck: `pnpm typecheck` - MUST pass with zero errors
+- [x] T086 Run lint: `pnpm lint` - MUST pass with zero violations
+- [x] T087 Run build: `pnpm build` - MUST succeed for all packages
+- [x] T088 Run full validation pipeline: `pnpm validate` - MUST pass completely
+- [x] T089 Resolve any pre-existing deployment blockers identified during validation
+- [x] T090 Update CLAUDE.md with responsive layout patterns and lessons learned (if needed)
+- [x] T091 Commit Phase 5 completion: `docs(spec-021): complete Phase 5 - polish and cross-cutting concerns`
+- [x] T092 Final commit for spec: `docs(spec-021): mark feature complete - all user stories implemented and tested`
 
 **Checkpoint**: All phases complete - responsive layout fully functional, all tests passing, deployment ready
 

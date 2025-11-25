@@ -26,8 +26,8 @@
 
 **Status**: No setup needed - using existing MainLayout.tsx and Playwright infrastructure
 
-- [ ] T001 Verify Playwright E2E test infrastructure is functional by running existing homepage tests
-- [ ] T002 Verify MainLayout.tsx is using Mantine 7.x AppShell components (check imports)
+- [x] T001 Verify Playwright E2E test infrastructure is functional by running existing homepage tests
+- [x] T002 Verify MainLayout.tsx is using Mantine 7.x AppShell components (check imports)
 
 ---
 
@@ -37,8 +37,8 @@
 
 **Status**: No foundational work needed - this is a CSS fix to existing component
 
-- [ ] T003 Document current scroll behavior by taking screenshots of nested scrollbars in main content area
-- [ ] T004 Verify both sidebars can be populated with 50+ items for testing (bookmarks and history)
+- [x] T003 Document current scroll behavior by taking screenshots of nested scrollbars in main content area
+- [x] T004 Verify both sidebars can be populated with 50+ items for testing (bookmarks and history)
 
 **Checkpoint**: Foundation verified - user story implementation can begin
 
@@ -55,32 +55,32 @@
 > **NOTE: Write these tests FIRST, ensure they FAIL before CSS fixes**
 > **NAMING**: Following pattern `layout-scrolling.e2e.test.ts` (e2e type)
 
-- [ ] T005 [P] [US1] Create E2E test file apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts with test suite structure
-- [ ] T006 [P] [US1] Add E2E test: "main content area has no nested scrollbar" - navigate to /bookmarks, verify no overflow scrollbar in main Box in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T007 [P] [US1] Add E2E test: "scrolling main content does not create nested scrollbars" - add long content, scroll, verify single scrollbar in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T008 [P] [US1] Add E2E test: "main content fills viewport height correctly" - verify calc(100vh - 60px) is respected in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T009 [US1] Run E2E tests for User Story 1 and verify they FAIL (confirming nested scrollbar bug exists)
+- [x] T005 [P] [US1] Create E2E test file apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts with test suite structure
+- [x] T006 [P] [US1] Add E2E test: "main content area has no nested scrollbar" - navigate to /bookmarks, verify no overflow scrollbar in main Box in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T007 [P] [US1] Add E2E test: "scrolling main content does not create nested scrollbars" - add long content, scroll, verify single scrollbar in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T008 [P] [US1] Add E2E test: "main content fills viewport height correctly" - verify calc(100vh - 60px) is respected in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T009 [US1] Run E2E tests for User Story 1 and verify they FAIL (confirming nested scrollbar bug exists)
 
 **Verification Checkpoint**: All US1 tests should FAIL at this point (Red phase confirmed)
 
 ### CSS Fix Implementation for User Story 1 (Green Phase)
 
-- [ ] T010 [US1] Remove overflow: "auto" from main content Box style prop (line 485) in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T011 [US1] Verify height calculation calc(100vh - 60px) remains unchanged (line 485) in apps/web/src/components/layout/MainLayout.tsx
-- [ ] T012 [US1] Run TypeScript typecheck to ensure no type errors introduced: pnpm typecheck
-- [ ] T013 [US1] Run E2E tests for User Story 1 and verify they now PASS (Green phase)
+- [x] T010 [US1] Remove overflow: "auto" from main content Box style prop (line 485) in apps/web/src/components/layout/MainLayout.tsx
+- [x] T011 [US1] Verify height calculation calc(100vh - 60px) remains unchanged (line 485) in apps/web/src/components/layout/MainLayout.tsx
+- [x] T012 [US1] Run TypeScript typecheck to ensure no type errors introduced: pnpm typecheck
+- [x] T013 [US1] Run E2E tests for User Story 1 and verify they now PASS (Green phase)
 
 ### Validation for User Story 1
 
-- [ ] T014 [US1] Manual test: Navigate to /bookmarks with both sidebars open, verify no nested scrollbar in main content
-- [ ] T015 [US1] Manual test: Navigate to /catalogue, verify layout works correctly without overflow: auto
-- [ ] T016 [US1] Manual test: Resize browser window from 1920x1080 to 800x600, verify no layout breaks
-- [ ] T017 [US1] Run full existing E2E test suite to ensure no regressions: pnpm test:e2e
+- [x] T014 [US1] Manual test: Navigate to /bookmarks with both sidebars open, verify no nested scrollbar in main content
+- [x] T015 [US1] Manual test: Navigate to /catalogue, verify layout works correctly without overflow: auto
+- [x] T016 [US1] Manual test: Resize browser window from 1920x1080 to 800x600, verify no layout breaks
+- [x] T017 [US1] Run full existing E2E test suite to ensure no regressions: pnpm test:e2e
 
 ### Commit for User Story 1
 
-- [ ] T018 [US1] Create atomic commit for tests: git add apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts && git commit -m "test(layout): add E2E tests for scroll behavior isolation"
-- [ ] T019 [US1] Create atomic commit for CSS fix: git add apps/web/src/components/layout/MainLayout.tsx && git commit -m "fix(layout): eliminate nested scrollbar in main content area"
+- [x] T018 [US1] Create atomic commit for tests: git add apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts && git commit -m "test(layout): add E2E tests for scroll behavior isolation"
+- [x] T019 [US1] Create atomic commit for CSS fix: git add apps/web/src/components/layout/MainLayout.tsx && git commit -m "fix(layout): eliminate nested scrollbar in main content area"
 
 **Checkpoint**: User Story 1 complete - main content area has no nested scrollbars ✅
 
@@ -96,25 +96,25 @@
 
 > **NAMING**: Adding to existing `layout-scrolling.e2e.test.ts` file
 
-- [ ] T020 [P] [US2] Add E2E test: "left sidebar scrolls independently with 50+ bookmarks" - populate left sidebar, scroll it, verify main content position unchanged in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T021 [P] [US2] Add E2E test: "right sidebar scrolls independently with 50+ history items" - populate right sidebar, scroll it, verify main content position unchanged in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T022 [P] [US2] Add E2E test: "scroll context switches seamlessly between sections" - scroll left sidebar, then main, then right, verify no double-scrolling in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T023 [P] [US2] Add E2E test: "keyboard navigation works across scroll contexts" - Tab through focusable elements, verify no focus trapping in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
-- [ ] T024 [US2] Run new E2E tests for User Story 2 and verify they PASS (should pass after US1 fix)
+- [x] T020 [P] [US2] Add E2E test: "left sidebar scrolls independently with 50+ bookmarks" - populate left sidebar, scroll it, verify main content position unchanged in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T021 [P] [US2] Add E2E test: "right sidebar scrolls independently with 50+ history items" - populate right sidebar, scroll it, verify main content position unchanged in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T022 [P] [US2] Add E2E test: "scroll context switches seamlessly between sections" - scroll left sidebar, then main, then right, verify no double-scrolling in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T023 [P] [US2] Add E2E test: "keyboard navigation works across scroll contexts" - Tab through focusable elements, verify no focus trapping in apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts
+- [x] T024 [US2] Run new E2E tests for User Story 2 and verify they PASS (should pass after US1 fix)
 
 **Verification Checkpoint**: All US2 tests should PASS (sidebar overflow was already correct)
 
 ### Verification for User Story 2
 
-- [ ] T025 [US2] Verify left sidebar has overflowY: "auto" at line 287 in apps/web/src/components/layout/MainLayout.tsx (no changes needed)
-- [ ] T026 [US2] Verify right sidebar has overflowY: "auto" at line 429 in apps/web/src/components/layout/MainLayout.tsx (no changes needed)
-- [ ] T027 [US2] Manual test: Create 50+ bookmarks, scroll left sidebar, verify smooth scrolling without glitches
-- [ ] T028 [US2] Manual test: Browse 50+ entities to populate history, scroll right sidebar, verify isolation from main content
-- [ ] T029 [US2] Manual test: Small viewport (1024x600), verify all three scroll contexts work correctly
+- [x] T025 [US2] Verify left sidebar has overflowY: "auto" at line 287 in apps/web/src/components/layout/MainLayout.tsx (no changes needed)
+- [x] T026 [US2] Verify right sidebar has overflowY: "auto" at line 429 in apps/web/src/components/layout/MainLayout.tsx (no changes needed)
+- [x] T027 [US2] Manual test: Create 50+ bookmarks, scroll left sidebar, verify smooth scrolling without glitches
+- [x] T028 [US2] Manual test: Browse 50+ entities to populate history, scroll right sidebar, verify isolation from main content
+- [x] T029 [US2] Manual test: Small viewport (1024x600), verify all three scroll contexts work correctly
 
 ### Commit for User Story 2
 
-- [ ] T030 [US2] Create atomic commit for sidebar tests: git add apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts && git commit -m "test(layout): add E2E tests for independent sidebar scrolling"
+- [x] T030 [US2] Create atomic commit for sidebar tests: git add apps/web/src/test/e2e/manual/layout-scrolling.e2e.test.ts && git commit -m "test(layout): add E2E tests for independent sidebar scrolling"
 
 **Checkpoint**: User Story 2 complete - sidebars scroll independently ✅
 
@@ -124,17 +124,17 @@
 
 **Purpose**: Final validation and documentation updates
 
-- [ ] T031 Run all quickstart.md manual test procedures (7 test scenarios)
-- [ ] T032 [P] Update specs/011-fix-vertical-scrolling/plan.md with implementation notes if needed
-- [ ] T033 [P] Take after-fix screenshots showing corrected scroll behavior for documentation
-- [ ] T034 Run full test suite to verify no regressions: pnpm validate
-- [ ] T035 Constitution compliance verification:
-  - [ ] No `any` types in implementation (Type Safety) ✅
-  - [ ] Tests written before CSS fix (Test-First) ✅
-  - [ ] Changes confined to apps/web structure (Monorepo Architecture) ✅
-  - [ ] N/A - no storage operations (Storage Abstraction) ✅
-  - [ ] No memory leaks, improved scroll performance (Performance & Memory) ✅
-  - [ ] Two atomic commits created after task completion (Atomic Conventional Commits) ✅
+- [x] T031 Run all quickstart.md manual test procedures (7 test scenarios)
+- [x] T032 [P] Update specs/011-fix-vertical-scrolling/plan.md with implementation notes if needed
+- [x] T033 [P] Take after-fix screenshots showing corrected scroll behavior for documentation
+- [x] T034 Run full test suite to verify no regressions: pnpm validate
+- [x] T035 Constitution compliance verification:
+  - [x] No `any` types in implementation (Type Safety) ✅
+  - [x] Tests written before CSS fix (Test-First) ✅
+  - [x] Changes confined to apps/web structure (Monorepo Architecture) ✅
+  - [x] N/A - no storage operations (Storage Abstraction) ✅
+  - [x] No memory leaks, improved scroll performance (Performance & Memory) ✅
+  - [x] Two atomic commits created after task completion (Atomic Conventional Commits) ✅
 
 ---
 
