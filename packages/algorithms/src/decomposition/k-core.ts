@@ -145,9 +145,12 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
       console.warn(`Mismatch: node ${nodeId} in bin ${currentBin} has degree ${currentDegree}`);
     }
 
-    // Assign core number to this node (= degree at removal time among remaining nodes)
-    coreNumbers.set(nodeId, currentDegree);
-    degeneracy = Math.max(degeneracy, currentDegree);
+    // Assign core number to this node
+    // Core number must be at least as high as previously removed nodes
+    // This ensures nodes in the same k-core get the same core number
+    const coreNumber = Math.max(currentDegree, degeneracy);
+    coreNumbers.set(nodeId, coreNumber);
+    degeneracy = coreNumber;
 
     // Mark as removed
     removed.add(nodeId);

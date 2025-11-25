@@ -28,23 +28,23 @@ interface CitationEdge {
 }
 
 /**
- * Create a small citation network with guaranteed k-core properties.
+ * Create a perfect k-core test graph using isolated cliques.
  *
- * Network structure (using cliques for guaranteed k-cores):
- * - 10 papers forming a complete graph (9-core: each has 9 neighbors)
- * - 20 additional papers forming 6-core with first group
- * - 30 additional papers forming 3-core
- * - 40 additional papers forming periphery (1-2 core)
+ * Network structure (isolated cliques with guaranteed k-cores):
+ * - Clique 1: Papers 0-9 (K10 complete graph, 9-core: each has exactly 9 neighbors)
+ * - Clique 2: Papers 10-15 (K6 complete graph, 5-core: each has exactly 5 neighbors)
+ * - Clique 3: Papers 16-19 (K4 complete graph, 3-core: each has exactly 3 neighbors)
+ * - Isolated pairs: Papers 20-29 (5 pairs, 1-core: each has exactly 1 neighbor)
  *
- * Total: 100 papers with guaranteed nested k-core structure
+ * Total: 30 papers with guaranteed k-core structure (no cross-clique edges)
  *
  * @returns Graph with guaranteed k-core hierarchy
  */
 function createKCoreTestGraph(): Graph<PaperNode, CitationEdge> {
   const graph = new Graph<PaperNode, CitationEdge>(true); // Directed graph
 
-  // Add 100 papers
-  for (let i = 0; i < 100; i++) {
+  // Add 30 papers
+  for (let i = 0; i < 30; i++) {
     graph.addNode({
       id: `P${i}`,
       title: `Paper ${i}`,
@@ -65,51 +65,34 @@ function createKCoreTestGraph(): Graph<PaperNode, CitationEdge> {
     });
   };
 
-  // 9-core: Papers 0-9 (10 papers) - Fully connected clique
-  // Each paper has 9 neighbors (complete graph K10)
+  // Clique 1: K10 complete graph (papers 0-9)
+  // Each paper has exactly 9 neighbors → 9-core
   for (let i = 0; i < 10; i++) {
     for (let j = i + 1; j < 10; j++) {
       addBidirectionalEdge(i, j);
     }
   }
 
-  // 6-core: Papers 10-29 (20 papers) + connect to 9-core
-  // Create a K20 clique among papers 10-29 (each has 19 neighbors within group)
-  // Then connect each to at least 6 papers from 0-9 (ensures they're in 6-core overall)
-  for (let i = 10; i < 30; i++) {
-    // Connect to other 6-core papers (K20 clique)
-    for (let j = i + 1; j < 30; j++) {
-      addBidirectionalEdge(i, j);
-    }
-    // Connect to 7 papers from 9-core (to guarantee 6-core membership with 9-core)
-    for (let j = 0; j < 7; j++) {
+  // Clique 2: K6 complete graph (papers 10-15)
+  // Each paper has exactly 5 neighbors → 5-core
+  for (let i = 10; i < 16; i++) {
+    for (let j = i + 1; j < 16; j++) {
       addBidirectionalEdge(i, j);
     }
   }
 
-  // 3-core: Papers 30-59 (30 papers)
-  // Create a K30 clique (each has 29 neighbors within group)
-  // Connect each to 4 papers from higher cores (ensures they're in 3-core)
-  for (let i = 30; i < 60; i++) {
-    // Connect to other 3-core papers (K30 clique)
-    for (let j = i + 1; j < 60; j++) {
+  // Clique 3: K4 complete graph (papers 16-19)
+  // Each paper has exactly 3 neighbors → 3-core
+  for (let i = 16; i < 20; i++) {
+    for (let j = i + 1; j < 20; j++) {
       addBidirectionalEdge(i, j);
-    }
-    // Connect to 4 papers from higher cores
-    for (let j = 0; j < 4; j++) {
-      addBidirectionalEdge(i, 10 + j);
     }
   }
 
-  // Periphery: Papers 60-99 (40 papers)
-  // Each paper has 1-2 connections to core papers
-  for (let i = 60; i < 100; i++) {
-    // Connect to one core paper
-    addBidirectionalEdge(i, 30 + (i % 30));
-    // Every other periphery paper gets a second connection
-    if (i % 2 === 0) {
-      addBidirectionalEdge(i, 10 + (i % 20));
-    }
+  // Isolated pairs (papers 20-29)
+  // Each paper has exactly 1 neighbor → 1-core
+  for (let i = 20; i < 30; i += 2) {
+    addBidirectionalEdge(i, i + 1);
   }
 
   return graph;
@@ -117,11 +100,61 @@ function createKCoreTestGraph(): Graph<PaperNode, CitationEdge> {
 
 describe('K-Core Decomposition (User Story 4)', () => {
   describe('Scenario 1: Degree Constraint Validation', () => {
-    // Note: This test is skipped because creating a fixture with guaranteed k-core properties
-    // is complex due to cross-clique connections creating unpredictable overlapping k-cores.
-    // The algorithm correctness is validated by the other tests (core numbers, nesting, degeneracy).
-    it.skip('should ensure all nodes in k-core have degree >= k within the subgraph', () => {
-      // Given: Citation network with 100 papers and guaranteed k-core structure
+    it('should handle a single clique correctly', () => {
+      // Given: Simple K10 clique (10 nodes, each with 9 neighbors)
+      const graph = new Graph<PaperNode, CitationEdge>(true);
+
+      for (let i = 0; i < 10; i++) {
+        graph.addNode({ id: `P${i}`, title: `Paper ${i}` });
+      }
+
+      for (let i = 0; i < 10; i++) {
+        for (let j = i + 1; j < 10; j++) {
+          graph.addEdge({ id: `E${i}-${j}`, source: `P${i}`, target: `P${j}` });
+          graph.addEdge({ id: `E${j}-${i}`, source: `P${j}`, target: `P${i}` });
+        }
+      }
+
+      // When: Run k-core decomposition
+      const result = kCoreDecomposition(graph);
+
+      // Then: All nodes should be in 9-core
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+
+      const { cores, coreNumbers, degeneracy } = result.value;
+      expect(degeneracy).toBe(9);
+      expect(coreNumbers.size).toBe(10);
+
+      // All nodes have core number 9
+      coreNumbers.forEach((coreNumber) => {
+        expect(coreNumber).toBe(9);
+      });
+
+      // The 9-core contains all 10 nodes
+      const core9 = cores.get(9);
+      expect(core9).toBeDefined();
+      expect(core9!.size).toBe(10);
+
+      // Each node in 9-core has exactly 9 neighbors within the core
+      core9!.nodes.forEach((nodeId) => {
+        const neighbors = new Set<string>();
+        graph.getAllEdges().forEach((edge) => {
+          if (edge.source === nodeId) neighbors.add(edge.target);
+          if (edge.target === nodeId) neighbors.add(edge.source);
+        });
+
+        let degreeInCore = 0;
+        neighbors.forEach((neighborId) => {
+          if (core9!.nodes.has(neighborId)) degreeInCore++;
+        });
+
+        expect(degreeInCore).toBe(9);
+      });
+    });
+
+    it('should ensure all nodes in k-core have degree >= k within the subgraph', () => {
+      // Given: Perfect k-core graph with isolated cliques (30 papers)
       const graph = createKCoreTestGraph();
 
       // When: Run k-core decomposition
@@ -136,7 +169,6 @@ describe('K-Core Decomposition (User Story 4)', () => {
       // Verify each core satisfies degree constraint
       cores.forEach((core, k) => {
         if (k === 0) return; // Skip k=0 (trivial core with all nodes)
-        if (k < 3) return; // Skip small k-cores (periphery has complex structure due to incoming edges)
 
         // For each node in k-core, count its neighbors also in the k-core
         // For directed graphs, we need to count both incoming and outgoing neighbors
