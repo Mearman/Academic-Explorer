@@ -420,27 +420,25 @@ import { detectCommunities } from '@academic-explorer/algorithms';
 
 const result = detectCommunities(graph, {
   // Resolution parameter (default: 1.0)
-  // Higher values = more communities, lower = fewer
+  // Higher values = more/smaller communities, lower = fewer/larger communities
   resolution: 1.0,
 
-  // Random seed for deterministic results (optional)
-  randomSeed: 42,
+  // Neighbor selection mode (default: "auto")
+  // "auto" = best-neighbor for all graphs (Phase 4 update)
+  // "best" = evaluate all neighbors, select max ΔQ (quality-first)
+  // "random" = accept first positive ΔQ (not recommended)
+  mode: "auto",
 
-  // Convergence threshold (default: 1e-4)
-  minModularityIncrease: 1e-4,
+  // Random seed for deterministic neighbor shuffling (optional)
+  seed: 42,
 
-  // Maximum iterations per level (default: 10)
-  maxIterations: 10,
+  // Convergence threshold (default: adaptive based on graph size)
+  // Adaptive: 1e-5 for >500 nodes, 1e-6 for ≤500 nodes
+  minModularityIncrease: 1e-5,
 
-  // Maximum hierarchy levels (default: 10)
-  maxLevels: 10,
-
-  // CSR mode: 'auto' | 'enabled' | 'disabled' (default: 'auto')
-  // 'auto' = use CSR for graphs >200 nodes
-  csrMode: 'auto',
-
-  // Enable debug logging (default: false)
-  debug: false,
+  // Maximum iterations per level (default: adaptive based on graph size)
+  // Adaptive: 20 for first level >200 nodes, 40-50 otherwise
+  maxIterations: 20,
 });
 ```
 

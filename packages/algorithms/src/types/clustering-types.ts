@@ -345,11 +345,33 @@ export interface ClusterMetrics {
  */
 export interface LouvainConfiguration {
   /**
+   * Resolution parameter for modularity calculation.
+   *
+   * @remarks
+   * Controls community size detection:
+   * - Values > 1.0: Favor smaller, more granular communities
+   * - Value = 1.0 (default): Standard Newman-Girvan modularity
+   * - Values < 1.0: Favor larger, coarser communities
+   *
+   * Higher resolution = more communities detected
+   * Lower resolution = fewer communities detected
+   *
+   * @default 1.0
+   * @since Phase 1 (Parameter Tuning)
+   */
+  resolution?: number;
+
+  /**
    * Neighbor selection strategy.
    *
-   * - `"auto"` (default): Best-neighbor for <200 nodes, random for ≥500 nodes
+   * @remarks
+   * **UPDATE (Phase 4)**: Auto mode now always selects "best" mode.
+   * Random mode caused quality degradation (Q: 0.37 → 0.05) and slower convergence
+   * (103 → 201 iterations) for citation networks.
+   *
+   * - `"auto"` (default): Best-neighbor mode for all graphs (Phase 4 update)
    * - `"best"`: Always evaluate all neighbors, select maximum ΔQ (quality-first)
-   * - `"random"`: Accept first neighbor with positive ΔQ after shuffle (speed-first, Fast Louvain)
+   * - `"random"`: Accept first neighbor with positive ΔQ (not recommended)
    *
    * @default "auto"
    * @since Phase 2 (Fast Louvain)
@@ -363,6 +385,10 @@ export interface LouvainConfiguration {
    * If provided, enables reproducible test results by seeding the PRNG.
    * If undefined, uses Math.random() (non-deterministic).
    *
+   * Used for:
+   * - Neighbor order randomization (Fisher-Yates shuffle)
+   * - Tie-breaking in modularity optimization
+   *
    * @since Phase 1 (Parameter Tuning)
    */
   seed?: number;
@@ -372,24 +398,35 @@ export interface LouvainConfiguration {
    *
    * @remarks
    * Adaptive default (if undefined):
-   * - 1e-5 for graphs >500 nodes
-   * - 1e-6 for graphs ≤500 nodes
+   * - 1e-5 for graphs >500 nodes (looser, faster)
+   * - 1e-6 for graphs ≤500 nodes (stricter, higher quality)
    *
-   * Lower values = stricter convergence, higher quality, slower performance
-   * Higher values = looser convergence, lower quality, faster performance
+   * Stops iteration when ΔQ < threshold:
+   * - Lower values = stricter convergence, higher quality, slower performance
+   * - Higher values = looser convergence, lower quality, faster performance
    *
+   * @default Adaptive (1e-5 or 1e-6 based on graph size)
    * @since Phase 1 (Parameter Tuning)
    */
   minModularityIncrease?: number;
 
   /**
-   * Maximum iterations override.
+   * Maximum iterations per hierarchy level override.
    *
    * @remarks
    * Adaptive default (if undefined):
-   * - 20 iterations for graphs >200 nodes (first hierarchy level)
-   * - 40-50 iterations for graphs ≤200 nodes
+   * - 20 iterations for first hierarchy level (level 0) with >200 nodes
+   * - 40 iterations for graphs with 100-200 nodes
+   * - 50 iterations for graphs with <100 nodes
    *
+   * Prevents infinite loops while allowing convergence:
+   * - Lower values = faster but may not fully converge
+   * - Higher values = more thorough but slower
+   *
+   * Most node movements occur in first few iterations, so lower limits
+   * are effective for large graphs.
+   *
+   * @default Adaptive (20, 40, or 50 based on graph size and level)
    * @since Phase 1 (Parameter Tuning)
    */
   maxIterations?: number;
