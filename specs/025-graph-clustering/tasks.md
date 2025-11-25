@@ -269,18 +269,18 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T102 [US8] Write failing test for Scenario 1 (coreness > 0.7 for influential papers) in packages/algorithms/test/decomposition/core-periphery.test.ts
-- [ ] T103 [US8] Write failing test for Scenario 2 (core size 10-30%, edge density 60-80%) in packages/algorithms/test/decomposition/core-periphery.test.ts
-- [ ] T104 [US8] Write failing test for Scenario 3 (performance < 25s) in packages/algorithms/test/decomposition/core-periphery.test.ts
-- [ ] T105 [US8] Implement Borgatti-Everett model: initialize coreness scores (high-degree = core) in packages/algorithms/src/decomposition/core-periphery.ts
-- [ ] T106 [US8] Implement iterative coreness optimization (update based on neighbor coreness) in packages/algorithms/src/decomposition/core-periphery.ts
-- [ ] T107 [US8] Implement convergence detection (coreness changes < epsilon) in packages/algorithms/src/decomposition/core-periphery.ts
-- [ ] T108 [US8] Implement core threshold application (coreness > threshold → core) in packages/algorithms/src/decomposition/core-periphery.ts
-- [ ] T109 [US8] Implement fit quality calculation (correlation between observed and expected) in packages/algorithms/src/decomposition/core-periphery.ts
-- [ ] T110 [US8] Verify all core-periphery tests pass
-- [ ] T111 [US8] Run performance benchmark on 1000-node graph (must complete < 25s)
-- [ ] T112 [US8] Export corePeripheryDecomposition function from packages/algorithms/src/index.ts
-- [ ] T113 [US8] Commit core-periphery implementation with message "feat(algorithms): add core-periphery decomposition (P8)"
+- [X] T102 [US8] Write failing test for Scenario 1 (coreness > 0.7 for influential papers) in packages/algorithms/test/decomposition/core-periphery.test.ts
+- [X] T103 [US8] Write failing test for Scenario 2 (core size 10-30%, edge density 60-80%) in packages/algorithms/test/decomposition/core-periphery.test.ts
+- [X] T104 [US8] Write failing test for Scenario 3 (performance < 25s) in packages/algorithms/test/decomposition/core-periphery.test.ts
+- [X] T105 [US8] Implement Borgatti-Everett model: initialize coreness scores (high-degree = core) in packages/algorithms/src/decomposition/core-periphery.ts
+- [X] T106 [US8] Implement iterative coreness optimization (update based on neighbor coreness) in packages/algorithms/src/decomposition/core-periphery.ts
+- [X] T107 [US8] Implement convergence detection (coreness changes < epsilon) in packages/algorithms/src/decomposition/core-periphery.ts
+- [X] T108 [US8] Implement core threshold application (coreness > threshold → core) in packages/algorithms/src/decomposition/core-periphery.ts
+- [X] T109 [US8] Implement fit quality calculation (correlation between observed and expected) in packages/algorithms/src/decomposition/core-periphery.ts
+- [X] T110 [US8] Verify all core-periphery tests pass
+- [X] T111 [US8] Run performance benchmark on 1000-node graph (must complete < 25s)
+- [X] T112 [US8] Export corePeripheryDecomposition function from packages/algorithms/src/index.ts
+- [X] T113 [US8] Commit core-periphery implementation with message "feat(algorithms): add core-periphery decomposition (P8)"
 
 ---
 

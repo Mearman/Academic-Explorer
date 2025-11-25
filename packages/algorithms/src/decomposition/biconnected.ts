@@ -140,15 +140,13 @@ function tarjanDFS<N extends Node, E extends Edge>(
       // (child v cannot reach ancestors of u via back edges)
       if (!isRoot && lowV >= discU) {
         state.articulationPoints.add(u);
+      }
 
+      // Extract component when child cannot reach ancestors (for both root and non-root)
+      if (lowV >= discU) {
         // Extract biconnected component
         const component = extractComponent(state, u, v);
         state.components.push(component);
-      }
-
-      // Case 3: Root with exactly 1 child - extract component when finishing
-      if (isRoot && childCount === 1 && state.edgeStack.length > 0) {
-        // This will be handled after the loop
       }
     } else if (v !== state.parent.get(u)) {
       // v is already visited and not parent (back edge)
@@ -164,13 +162,6 @@ function tarjanDFS<N extends Node, E extends Edge>(
     }
   }
 
-  // If this is a root with children, extract remaining component
-  if (isRoot && state.edgeStack.length > 0) {
-    const component = extractRemainingComponent(state);
-    if (component.nodes.size > 0) {
-      state.components.push(component);
-    }
-  }
 }
 
 /**

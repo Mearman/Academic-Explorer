@@ -279,26 +279,54 @@ describe('Biconnected Component Decomposition', () => {
         });
       }
 
-      // Create scale-free network structure (some nodes highly connected)
-      // Each node connects to 5 neighbors on average (~2500 edges)
-      for (let i = 0; i < 1000; i++) {
-        // Connect to next 5 nodes (circular)
-        for (let j = 1; j <= 5; j++) {
-          const target = (i + j) % 1000;
-          if (i < target) {
-            // Avoid duplicate edges in undirected graph
+      // Create structure with communities connected by bridges
+      // 10 communities of 100 nodes each, connected by bridge nodes
+      const communitySize = 100;
+      const numCommunities = 10;
+
+      // Create densely connected communities
+      for (let c = 0; c < numCommunities; c++) {
+        const startIdx = c * communitySize;
+        const endIdx = startIdx + communitySize;
+
+        // Connect nodes within community (star topology from hub + some random edges)
+        const hub = startIdx; // First node in community is hub
+
+        for (let i = startIdx + 1; i < endIdx; i++) {
+          // Connect to hub (creates star)
+          graph.addEdge({
+            id: `E${hub}-${i}`,
+            source: `P${hub}`,
+            target: `P${i}`,
+            year: 2020,
+          });
+
+          // Add some random edges within community for redundancy
+          if (i < endIdx - 1) {
             graph.addEdge({
-              id: `E${i}-${target}`,
+              id: `E${i}-${i + 1}`,
               source: `P${i}`,
-              target: `P${target}`,
+              target: `P${i + 1}`,
               year: 2020,
             });
           }
         }
       }
 
+      // Connect communities via bridge nodes (hubs)
+      for (let c = 0; c < numCommunities - 1; c++) {
+        const hub1 = c * communitySize;
+        const hub2 = (c + 1) * communitySize;
+        graph.addEdge({
+          id: `BRIDGE-${c}`,
+          source: `P${hub1}`,
+          target: `P${hub2}`,
+          year: 2020,
+        });
+      }
+
       expect(graph.getNodeCount()).toBe(1000);
-      expect(graph.getEdgeCount()).toBeGreaterThan(2000);
+      expect(graph.getEdgeCount()).toBeGreaterThan(1900); // ~1979 edges with current structure
 
       // When: Run biconnected component decomposition
       const startTime = performance.now();
@@ -315,9 +343,13 @@ describe('Biconnected Component Decomposition', () => {
 
       const { articulationPoints, components } = result.value;
 
-      // Should find some articulation points (but not all nodes)
+      // Should find hub nodes as articulation points (10 community hubs)
+      // Plus potentially some other nodes
       expect(articulationPoints.size).toBeGreaterThan(0);
       expect(articulationPoints.size).toBeLessThan(1000);
+
+      // Should at least detect the 10 community hubs as articulation points
+      expect(articulationPoints.size).toBeGreaterThanOrEqual(10);
 
       // Should find multiple components
       expect(components.length).toBeGreaterThan(0);
