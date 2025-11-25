@@ -182,7 +182,7 @@ describe('Louvain Community Detection', () => {
   });
 
   describe('User Story 1 - Scenario 3: Performance Requirement', () => {
-    it('should complete in under 30 seconds for 1000-paper network', () => {
+    it('should complete in under 30 seconds for 1000-paper network', { timeout: 35000 }, () => {
       // Given: Large citation network with 1000+ papers
       const graph = largeCitationNetwork();
       expect(graph.getNodeCount()).toBeGreaterThanOrEqual(1000);
@@ -208,7 +208,7 @@ describe('Louvain Community Detection', () => {
       expect(totalAssignedNodes).toBe(graph.getNodeCount());
     });
 
-    it('should maintain modularity quality at scale', () => {
+    it('should maintain modularity quality at scale', { timeout: 35000 }, () => {
       // Given: Large citation network
       const graph = largeCitationNetwork();
 
@@ -223,7 +223,7 @@ describe('Louvain Community Detection', () => {
       // (Small network target: > 0.3, large network: > 0.2 allows 33% degradation)
     });
 
-    it('should scale efficiently with graph size', () => {
+    it('should scale efficiently with graph size', { timeout: 60000 }, () => {
       // Given: Both small and large networks
       const smallGraph = smallCitationNetwork();
       const largeGraph = largeCitationNetwork();

@@ -56,10 +56,9 @@ export function calculateModularity<N extends Node, E extends Edge>(
   // Build community membership map: nodeId -> communityId
   const nodeToCommunity = new Map<string, number>();
   communities.forEach((community) => {
-    community.nodes.forEach((nodeId) => {
-      // Convert node to string ID for map lookup
-      const nodeIdStr = typeof nodeId === 'string' ? nodeId : String(nodeId);
-      nodeToCommunity.set(nodeIdStr, community.id);
+    community.nodes.forEach((node) => {
+      // Extract node ID from node object
+      nodeToCommunity.set(node.id, community.id);
     });
   });
 

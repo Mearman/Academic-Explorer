@@ -68,11 +68,11 @@ Each user story is independently testable and delivers incremental value.
 - [X] T017 [US1] Write failing test for Scenario 1 (modularity > 0.3) in packages/algorithms/test/clustering/louvain.test.ts
 - [X] T018 [US1] Write failing test for Scenario 2 (community labels) in packages/algorithms/test/clustering/louvain.test.ts
 - [X] T019 [US1] Write failing test for Scenario 3 (performance < 30s) in packages/algorithms/test/clustering/louvain.test.ts
-- [ ] T020 [US1] Implement Louvain algorithm: Phase 1 (local moving) in packages/algorithms/src/clustering/louvain.ts
-- [ ] T021 [US1] Implement Louvain algorithm: Phase 2 (aggregation) in packages/algorithms/src/clustering/louvain.ts
-- [ ] T022 [US1] Implement Louvain algorithm: modularity optimization loop in packages/algorithms/src/clustering/louvain.ts
-- [ ] T023 [US1] Implement disconnected component handling in packages/algorithms/src/clustering/louvain.ts
-- [ ] T024 [US1] Implement weight function integration in packages/algorithms/src/clustering/louvain.ts
+- [X] T020 [US1] Implement Louvain algorithm: Phase 1 (local moving) in packages/algorithms/src/clustering/louvain.ts
+- [X] T021 [US1] Implement Louvain algorithm: Phase 2 (aggregation) in packages/algorithms/src/clustering/louvain.ts
+- [X] T022 [US1] Implement Louvain algorithm: modularity optimization loop in packages/algorithms/src/clustering/louvain.ts
+- [X] T023 [US1] Implement disconnected component handling in packages/algorithms/src/clustering/louvain.ts
+- [X] T024 [US1] Implement weight function integration in packages/algorithms/src/clustering/louvain.ts
 - [ ] T025 [US1] Verify all Louvain tests pass
 - [ ] T026 [US1] Run performance benchmark on 1000-node graph (must complete < 30s)
 - [ ] T027 [US1] Export louvain function from packages/algorithms/src/index.ts

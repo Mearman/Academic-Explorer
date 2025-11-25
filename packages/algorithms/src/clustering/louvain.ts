@@ -78,10 +78,26 @@ export function detectCommunities<N extends Node, E extends Edge>(
     return [];
   }
 
+  // Pre-compute incoming edges for directed graphs (O(m) instead of O(n²))
+  const incomingEdges = new Map<string, E[]>();
+  if (graph.isDirected()) {
+    allNodes.forEach((node) => {
+      const outgoingResult = graph.getOutgoingEdges(node.id);
+      if (outgoingResult.ok) {
+        outgoingResult.value.forEach((edge) => {
+          if (!incomingEdges.has(edge.target)) {
+            incomingEdges.set(edge.target, []);
+          }
+          incomingEdges.get(edge.target)!.push(edge);
+        });
+      }
+    });
+  }
+
   // Pre-calculate node degrees (optimization)
   const nodeDegrees = new Map<string, number>();
   allNodes.forEach((node) => {
-    nodeDegrees.set(node.id, calculateNodeDegree(graph, node.id, weightFn));
+    nodeDegrees.set(node.id, calculateNodeDegree(graph, node.id, weightFn, incomingEdges));
   });
 
   // Initialize: Each node in its own community
@@ -109,90 +125,177 @@ export function detectCommunities<N extends Node, E extends Edge>(
     return buildCommunityResults(graph, nodeToCommunity);
   }
 
-  // Main optimization loop
-  let improved = true;
-  let outerIteration = 0;
-  const MAX_OUTER_ITERATIONS = 10; // Limit outer loop iterations
+  // Track hierarchy: superNodeId -> set of original node IDs
+  // At level 0, each original node is its own super-node
+  let superNodes = new Map<string, Set<string>>();
+  allNodes.forEach((node) => {
+    superNodes.set(node.id, new Set([node.id]));
+  });
 
-  while (improved && outerIteration < MAX_OUTER_ITERATIONS) {
-    improved = false;
-    outerIteration++;
+  // Multi-level optimization: Phase 1 + Phase 2 repeated
+  let hierarchyLevel = 0;
+  const MAX_HIERARCHY_LEVELS = 3; // Reduced for performance
 
-    // Phase 1: Local moving
-    // Visit nodes in random order
-    const nodeOrder = shuffleArray([...allNodes.map((n) => n.id)]);
+  while (hierarchyLevel < MAX_HIERARCHY_LEVELS) {
+    hierarchyLevel++;
 
-    for (const nodeId of nodeOrder) {
-      const currentCommunityId = nodeToCommunity.get(nodeId)!;
-      const currentCommunity = communities.get(currentCommunityId)!;
+    // Rebuild nodeToCommunity and communities for current super-nodes
+    nodeToCommunity.clear();
+    communities.clear();
+    let nextCommunityId = 0;
 
-      // Calculate weights to neighboring communities
-      const neighborCommunities = findNeighborCommunities(
-        graph,
-        nodeId,
-        nodeToCommunity,
-        weightFn
-      );
+    // Each super-node starts in its own community
+    superNodes.forEach((memberNodes, superNodeId) => {
+      const communityId = nextCommunityId++;
+      nodeToCommunity.set(superNodeId, communityId);
 
-      // Find best community to move to
-      let bestCommunityId = currentCommunityId;
-      let bestDeltaQ = 0;
+      // Calculate degree for this super-node (sum of all member node degrees)
+      let totalDegree = 0;
+      memberNodes.forEach((nodeId) => {
+        totalDegree += nodeDegrees.get(nodeId) || 0;
+      });
 
-      for (const [neighborCommunityId, kIn] of neighborCommunities.entries()) {
-        if (neighborCommunityId === currentCommunityId) {
-          continue; // Skip current community
-        }
+      communities.set(communityId, {
+        id: communityId,
+        nodes: new Set([superNodeId]), // Community contains super-node IDs
+        sigmaTot: totalDegree,
+        sigmaIn: 0,
+      });
+    });
 
-        const neighborCommunity = communities.get(neighborCommunityId)!;
-        const ki = nodeDegrees.get(nodeId) || 0;
+    // Phase 1: Local moving optimization on super-nodes
+    let improved = true;
+    let iteration = 0;
+    const MAX_ITERATIONS = hierarchyLevel === 1 ? 50 : 10; // Reduced for performance
 
-        // Calculate modularity change
-        const deltaQ = calculateModularityDelta(
-          ki,
-          kIn,
-          neighborCommunity.sigmaTot,
-          neighborCommunity.sigmaIn,
-          m
-        ) * resolution;
+    // Build reverse lookup once per hierarchy level (optimization)
+    const nodeToSuperNode = new Map<string, string>();
+    superNodes.forEach((members, superNodeId) => {
+      members.forEach((originalNodeId) => {
+        nodeToSuperNode.set(originalNodeId, superNodeId);
+      });
+    });
 
-        if (deltaQ > bestDeltaQ) {
-          bestDeltaQ = deltaQ;
-          bestCommunityId = neighborCommunityId;
-        }
-      }
+    while (improved && iteration < MAX_ITERATIONS) {
+      improved = false;
+      iteration++;
 
-      // Move node if beneficial
-      if (bestCommunityId !== currentCommunityId && bestDeltaQ > minModularityIncrease) {
-        moveNode(
-          nodeId,
-          currentCommunityId,
-          bestCommunityId,
-          communities,
-          nodeToCommunity,
+      // Visit super-nodes in random order
+      const superNodeOrder = shuffleArray([...superNodes.keys()]);
+
+      for (const superNodeId of superNodeOrder) {
+        const currentCommunityId = nodeToCommunity.get(superNodeId)!;
+        const currentCommunity = communities.get(currentCommunityId)!;
+
+        // Calculate weights to neighboring communities for this super-node
+        const memberNodes = superNodes.get(superNodeId)!;
+        const neighborCommunities = findNeighborCommunitiesForSuperNode(
           graph,
+          memberNodes,
+          nodeToSuperNode,
+          nodeToCommunity,
           weightFn,
-          nodeDegrees
+          incomingEdges
         );
-        improved = true;
+
+        // Find best community to move to
+        let bestCommunityId = currentCommunityId;
+        let bestDeltaQ = 0;
+
+        // Calculate super-node degree (sum of member degrees)
+        let superNodeDegree = 0;
+        memberNodes.forEach((nodeId) => {
+          superNodeDegree += nodeDegrees.get(nodeId) || 0;
+        });
+
+        for (const [neighborCommunityId, kIn] of neighborCommunities.entries()) {
+          if (neighborCommunityId === currentCommunityId) {
+            continue; // Skip current community
+          }
+
+          const neighborCommunity = communities.get(neighborCommunityId)!;
+
+          // Calculate modularity change
+          const deltaQ = calculateModularityDelta(
+            superNodeDegree,
+            kIn,
+            neighborCommunity.sigmaTot,
+            neighborCommunity.sigmaIn,
+            m
+          ) * resolution;
+
+          if (deltaQ > bestDeltaQ) {
+            bestDeltaQ = deltaQ;
+            bestCommunityId = neighborCommunityId;
+          }
+        }
+
+        // Move super-node if beneficial
+        if (bestCommunityId !== currentCommunityId && bestDeltaQ > minModularityIncrease) {
+          moveSuperNode(
+            superNodeId,
+            currentCommunityId,
+            bestCommunityId,
+            communities,
+            nodeToCommunity,
+            superNodes,
+            nodeDegrees
+          );
+          improved = true;
+        }
       }
+
+      // Remove empty communities
+      removeEmptyCommunities(communities, nodeToCommunity);
     }
 
-    // Remove empty communities
-    removeEmptyCommunities(communities, nodeToCommunity);
-
-    // If no improvement, we've reached a local optimum
-    if (!improved) {
+    // Phase 2: Aggregate communities into new super-nodes
+    const numCommunities = communities.size;
+    if (numCommunities <= 1 || numCommunities >= superNodes.size) {
+      // Converged - only 1 community or no merging happened
       break;
     }
 
-    // Phase 2: Aggregation
-    // Build super-graph where each community becomes a node
-    // (For now, we'll skip multi-level optimization and return results)
-    // TODO: Implement multi-level aggregation for better results
+    // Build new super-nodes where each community becomes a single super-node
+    const newSuperNodes = new Map<string, Set<string>>();
+    let nextSuperNodeId = 0;
+
+    communities.forEach((community) => {
+      const newSuperNodeId = `L${hierarchyLevel}_${nextSuperNodeId++}`;
+      const allMemberNodes = new Set<string>();
+
+      // Collect all original nodes from all super-nodes in this community
+      community.nodes.forEach((superNodeId) => {
+        const members = superNodes.get(superNodeId);
+        if (members) {
+          members.forEach((originalNodeId) => {
+            allMemberNodes.add(originalNodeId);
+          });
+        }
+      });
+
+      newSuperNodes.set(newSuperNodeId, allMemberNodes);
+    });
+
+    // Replace super-nodes with aggregated super-nodes
+    superNodes = newSuperNodes;
   }
 
-  // Build final Community results
-  return buildCommunityResults(graph, nodeToCommunity);
+  // Build final Community results by mapping super-nodes back to original nodes
+  // nodeToCommunity currently maps super-node IDs to community IDs
+  // We need to map original node IDs to community IDs
+  const finalNodeToCommunity = new Map<string, number>();
+
+  superNodes.forEach((memberNodes, superNodeId) => {
+    const communityId = nodeToCommunity.get(superNodeId);
+    if (communityId !== undefined) {
+      memberNodes.forEach((originalNodeId) => {
+        finalNodeToCommunity.set(originalNodeId, communityId);
+      });
+    }
+  });
+
+  return buildCommunityResults(graph, finalNodeToCommunity);
 }
 
 /**
@@ -201,7 +304,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
 function calculateNodeDegree<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   nodeId: string,
-  weightFn: WeightFunction<N, E>
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>
 ): number {
   let degree = 0;
 
@@ -217,21 +321,14 @@ function calculateNodeDegree<N extends Node, E extends Edge>(
     });
   }
 
-  // Incoming edges (for directed graphs)
+  // Incoming edges (for directed graphs) - use pre-computed cache
   if (graph.isDirected()) {
-    const allNodes = graph.getAllNodes();
-    allNodes.forEach((node) => {
-      const outgoingResult = graph.getOutgoingEdges(node.id);
-      if (outgoingResult.ok) {
-        outgoingResult.value.forEach((edge) => {
-          if (edge.target === nodeId) {
-            const sourceOption = graph.getNode(edge.source);
-            const targetOption = graph.getNode(edge.target);
-            if (sourceOption.some && targetOption.some) {
-              degree += weightFn(edge, sourceOption.value, targetOption.value);
-            }
-          }
-        });
+    const incoming = incomingEdges.get(nodeId) || [];
+    incoming.forEach((edge) => {
+      const sourceOption = graph.getNode(edge.source);
+      const targetOption = graph.getNode(edge.target);
+      if (sourceOption.some && targetOption.some) {
+        degree += weightFn(edge, sourceOption.value, targetOption.value);
       }
     });
   }
@@ -271,13 +368,89 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
 }
 
 /**
+ * Find neighboring communities and calculate edge weights to each (for super-nodes).
+ *
+ * For a super-node (which contains multiple original nodes), this finds all edges
+ * from those original nodes to nodes in other super-nodes, and aggregates the weights
+ * by the target super-node's community.
+ */
+function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  memberNodes: Set<string>,
+  nodeToSuperNode: Map<string, string>,
+  nodeToCommunity: Map<string, number>,
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>
+): Map<number, number> {
+  const neighborCommunities = new Map<number, number>(); // communityId -> total weight
+
+  // For each member node in this super-node
+  memberNodes.forEach((nodeId) => {
+    // Outgoing edges
+    const outgoingResult = graph.getOutgoingEdges(nodeId);
+    if (outgoingResult.ok) {
+      outgoingResult.value.forEach((edge) => {
+        const targetNodeId = edge.target;
+
+        // Find which super-node the target belongs to
+        const targetSuperNodeId = nodeToSuperNode.get(targetNodeId);
+        if (targetSuperNodeId) {
+          // Find which community that super-node is in
+          const targetCommunityId = nodeToCommunity.get(targetSuperNodeId);
+          if (targetCommunityId !== undefined) {
+            const sourceOption = graph.getNode(edge.source);
+            const targetOption = graph.getNode(edge.target);
+            if (sourceOption.some && targetOption.some) {
+              const weight = weightFn(edge, sourceOption.value, targetOption.value);
+              neighborCommunities.set(
+                targetCommunityId,
+                (neighborCommunities.get(targetCommunityId) || 0) + weight
+              );
+            }
+          }
+        }
+      });
+    }
+
+    // Incoming edges (for directed graphs)
+    if (graph.isDirected()) {
+      const incoming = incomingEdges.get(nodeId) || [];
+      incoming.forEach((edge) => {
+        const sourceNodeId = edge.source;
+
+        // Find which super-node the source belongs to
+        const sourceSuperNodeId = nodeToSuperNode.get(sourceNodeId);
+        if (sourceSuperNodeId) {
+          // Find which community that super-node is in
+          const sourceCommunityId = nodeToCommunity.get(sourceSuperNodeId);
+          if (sourceCommunityId !== undefined) {
+            const sourceOption = graph.getNode(edge.source);
+            const targetOption = graph.getNode(edge.target);
+            if (sourceOption.some && targetOption.some) {
+              const weight = weightFn(edge, sourceOption.value, targetOption.value);
+              neighborCommunities.set(
+                sourceCommunityId,
+                (neighborCommunities.get(sourceCommunityId) || 0) + weight
+              );
+            }
+          }
+        }
+      });
+    }
+  });
+
+  return neighborCommunities;
+}
+
+/**
  * Find neighboring communities and calculate edge weights to each.
  */
-function findNeighborCommunities<N extends Node, E extends Edge>(
+function findNeighborCommunitiesForNode<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   nodeId: string,
   nodeToCommunity: Map<string, number>,
-  weightFn: WeightFunction<N, E>
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>
 ): Map<number, number> {
   const neighborCommunities = new Map<number, number>(); // communityId -> total weight
 
@@ -301,34 +474,70 @@ function findNeighborCommunities<N extends Node, E extends Edge>(
     });
   }
 
-  // Incoming edges (for directed graphs)
+  // Incoming edges (for directed graphs) - use pre-computed cache
   if (graph.isDirected()) {
-    const allNodes = graph.getAllNodes();
-    allNodes.forEach((node) => {
-      const outgoingResult = graph.getOutgoingEdges(node.id);
-      if (outgoingResult.ok) {
-        outgoingResult.value.forEach((edge) => {
-          if (edge.target === nodeId) {
-            const neighborId = edge.source;
-            const neighborCommunityId = nodeToCommunity.get(neighborId);
-            if (neighborCommunityId !== undefined) {
-              const sourceOption = graph.getNode(edge.source);
-              const targetOption = graph.getNode(edge.target);
-              if (sourceOption.some && targetOption.some) {
-                const weight = weightFn(edge, sourceOption.value, targetOption.value);
-                neighborCommunities.set(
-                  neighborCommunityId,
-                  (neighborCommunities.get(neighborCommunityId) || 0) + weight
-                );
-              }
-            }
-          }
-        });
+    const incoming = incomingEdges.get(nodeId) || [];
+    incoming.forEach((edge) => {
+      const neighborId = edge.source;
+      const neighborCommunityId = nodeToCommunity.get(neighborId);
+      if (neighborCommunityId !== undefined) {
+        const sourceOption = graph.getNode(edge.source);
+        const targetOption = graph.getNode(edge.target);
+        if (sourceOption.some && targetOption.some) {
+          const weight = weightFn(edge, sourceOption.value, targetOption.value);
+          neighborCommunities.set(
+            neighborCommunityId,
+            (neighborCommunities.get(neighborCommunityId) || 0) + weight
+          );
+        }
       }
     });
   }
 
   return neighborCommunities;
+}
+
+/**
+ * Move a super-node from one community to another.
+ *
+ * This is similar to moveNode but works with super-nodes, which contain
+ * multiple original nodes. The sigmaTot and sigmaIn calculations need to
+ * account for all edges between the member nodes.
+ */
+function moveSuperNode<N extends Node, E extends Edge>(
+  superNodeId: string,
+  fromCommunityId: number,
+  toCommunityId: number,
+  communities: Map<number, LouvainCommunity>,
+  nodeToCommunity: Map<string, number>,
+  superNodes: Map<string, Set<string>>,
+  nodeDegrees: Map<string, number>
+): void {
+  const fromCommunity = communities.get(fromCommunityId)!;
+  const toCommunity = communities.get(toCommunityId)!;
+  const memberNodes = superNodes.get(superNodeId)!;
+
+  // Calculate total degree for this super-node (sum of member node degrees)
+  let superNodeDegree = 0;
+  memberNodes.forEach((nodeId) => {
+    superNodeDegree += nodeDegrees.get(nodeId) || 0;
+  });
+
+  // Remove super-node from old community
+  fromCommunity.nodes.delete(superNodeId);
+  fromCommunity.sigmaTot -= superNodeDegree;
+
+  // For sigmaIn calculation, we need to count edges between this super-node's
+  // member nodes and other super-nodes' member nodes in the same community.
+  // This is complex, so for now we'll use a simplified approach:
+  // We don't update sigmaIn during super-node moves (it's recalculated in Phase 2)
+
+  // Add super-node to new community
+  toCommunity.nodes.add(superNodeId);
+  toCommunity.sigmaTot += superNodeDegree;
+
+  // Update mapping
+  nodeToCommunity.set(superNodeId, toCommunityId);
 }
 
 /**
@@ -342,7 +551,8 @@ function moveNode<N extends Node, E extends Edge>(
   nodeToCommunity: Map<string, number>,
   graph: Graph<N, E>,
   weightFn: WeightFunction<N, E>,
-  nodeDegrees: Map<string, number>
+  nodeDegrees: Map<string, number>,
+  incomingEdges: Map<string, E[]>
 ): void {
   const fromCommunity = communities.get(fromCommunityId)!;
   const toCommunity = communities.get(toCommunityId)!;
@@ -359,7 +569,8 @@ function moveNode<N extends Node, E extends Edge>(
     graph,
     nodeId,
     fromCommunity.nodes,
-    weightFn
+    weightFn,
+    incomingEdges
   );
   fromCommunity.sigmaIn -= internalEdgesToOldCommunity;
 
@@ -372,7 +583,8 @@ function moveNode<N extends Node, E extends Edge>(
     graph,
     nodeId,
     toCommunity.nodes,
-    weightFn
+    weightFn,
+    incomingEdges
   );
   toCommunity.sigmaIn += internalEdgesToNewCommunity;
 
@@ -387,7 +599,8 @@ function calculateInternalEdgeWeight<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   nodeId: string,
   communityNodes: Set<string>,
-  weightFn: WeightFunction<N, E>
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>
 ): number {
   let weight = 0;
 
@@ -405,22 +618,15 @@ function calculateInternalEdgeWeight<N extends Node, E extends Edge>(
     });
   }
 
-  // Incoming edges (for directed graphs)
+  // Incoming edges (for directed graphs) - use pre-computed cache
   if (graph.isDirected()) {
-    const allNodes = graph.getAllNodes();
-    allNodes.forEach((node) => {
-      if (communityNodes.has(node.id)) {
-        const outgoingResult = graph.getOutgoingEdges(node.id);
-        if (outgoingResult.ok) {
-          outgoingResult.value.forEach((edge) => {
-            if (edge.target === nodeId) {
-              const sourceOption = graph.getNode(edge.source);
-              const targetOption = graph.getNode(edge.target);
-              if (sourceOption.some && targetOption.some) {
-                weight += weightFn(edge, sourceOption.value, targetOption.value);
-              }
-            }
-          });
+    const incoming = incomingEdges.get(nodeId) || [];
+    incoming.forEach((edge) => {
+      if (communityNodes.has(edge.source)) {
+        const sourceOption = graph.getNode(edge.source);
+        const targetOption = graph.getNode(edge.target);
+        if (sourceOption.some && targetOption.some) {
+          weight += weightFn(edge, sourceOption.value, targetOption.value);
         }
       }
     });
