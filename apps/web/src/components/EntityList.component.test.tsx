@@ -14,7 +14,7 @@ import { MantineProvider } from "@mantine/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
-import { EntityList, type ColumnConfig } from "./EntityList";
+import { EntityList, type EntityListColumnConfig } from "./EntityList";
 
 // Mock the cached OpenAlex client
 vi.mock("@academic-explorer/client", () => ({
@@ -208,7 +208,7 @@ const mockSourcesData = createMockResponse<Source>([
   },
 ]);
 
-const baseColumns: ColumnConfig[] = [
+const baseColumns: EntityListColumnConfig[] = [
   { key: "id", header: "ID" },
   { key: "display_name", header: "Name" },
 ];

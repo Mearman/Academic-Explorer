@@ -25,7 +25,8 @@ import React, { useMemo, useState } from "react";
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
-import { ViewModeToggle, type ViewMode } from "./ViewModeToggle";
+import { ViewModeToggle, type TableViewMode } from "./ViewModeToggle";
+import type { ColumnConfig as BaseColumnConfig } from "./types";
 
 type Entity =
   | Funder
@@ -38,15 +39,14 @@ type Entity =
   | Concept
   | Keyword;
 
-export type ColumnConfig = {
-  key: string;
-  header: string;
+// Extend base ColumnConfig with typed row parameter
+export type EntityListColumnConfig = Omit<BaseColumnConfig, 'render'> & {
   render?: (value: unknown, row: Entity) => React.ReactNode;
 };
 
 export interface EntityListProps {
   entityType: EntityType;
-  columns: ColumnConfig[];
+  columns: EntityListColumnConfig[];
   perPage?: number;
   title?: string;
   urlFilters?: unknown;
@@ -62,8 +62,8 @@ export interface EntityListProps {
     seed?: number;
     mailto?: string;
   };
-  viewMode?: ViewMode;
-  onViewModeChange?: (viewMode: ViewMode) => void;
+  viewMode?: TableViewMode;
+  onViewModeChange?: (viewMode: TableViewMode) => void;
 }
 
 // Entity transformation functions are now provided by @academic-explorer/utils
@@ -263,7 +263,7 @@ export function EntityList({
     setCurrentPage(page);
   };
 
-  const handleViewModeChange = (newViewMode: ViewMode) => {
+  const handleViewModeChange = (newViewMode: TableViewMode) => {
     onViewModeChange?.(newViewMode);
   };
 
