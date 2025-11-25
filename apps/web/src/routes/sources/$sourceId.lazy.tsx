@@ -7,7 +7,7 @@ import { SOURCE_FIELDS, type Source, type SourceField } from "@academic-explorer
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
@@ -15,7 +15,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function SourceRoute() {
   const { sourceId: rawSourceId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   // Decode the source ID in case it's URL-encoded (for external IDs with special characters)
   const sourceId = decodeEntityId(rawSourceId);

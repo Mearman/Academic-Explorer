@@ -7,7 +7,7 @@ import { TOPIC_FIELDS, type Topic, type TopicField } from "@academic-explorer/ty
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout, type ViewMode } from "@/components/entity-detail/EntityDetailLayout";
+import { EntityDetailLayout,  type DetailViewMode } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
@@ -18,7 +18,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   // Decode the topic ID in case it's URL-encoded (for external IDs with special characters)
   const topicId = decodeEntityId(rawTopicId);

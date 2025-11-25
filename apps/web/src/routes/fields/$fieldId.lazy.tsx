@@ -7,7 +7,7 @@ import { type Field } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout, type ViewMode } from "@/components/entity-detail/EntityDetailLayout";
+import { EntityDetailLayout,  type DetailViewMode } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
@@ -18,7 +18,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function FieldRoute() {
   const { fieldId: rawFieldId } = useParams({ strict: false }) as { fieldId: string };
   const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   // Decode the field ID in case it's URL-encoded
   const fieldId = decodeEntityId(rawFieldId);

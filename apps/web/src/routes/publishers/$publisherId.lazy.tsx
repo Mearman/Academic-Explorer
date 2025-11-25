@@ -7,7 +7,7 @@ import { PUBLISHER_FIELDS, type Publisher, type PublisherField } from "@academic
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
@@ -15,7 +15,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function PublisherRoute() {
   const { publisherId: rawPublisherId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   const config = ENTITY_TYPE_CONFIGS.publishers;
 

@@ -7,7 +7,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { WORK_FIELDS, type Work, type WorkField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetectionService } from "@academic-explorer/utils";
@@ -19,7 +19,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();

@@ -7,7 +7,7 @@ import { INSTITUTION_FIELDS, type InstitutionEntity, type InstitutionField } fro
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS, type ViewMode } from "@/components/entity-detail";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
@@ -16,7 +16,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 function InstitutionRoute() {
   const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
   const { select: selectParam } = useSearch({ strict: false });
-  const [viewMode, setViewMode] = useState<ViewMode>("rich");
+  const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
 
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
