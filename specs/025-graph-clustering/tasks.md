@@ -45,9 +45,9 @@ Each user story is independently testable and delivers incremental value.
 - [X] T011 [P] Create test fixtures: largeCitationNetwork() in packages/algorithms/test/fixtures/citation-networks.ts (1000 papers for performance testing)
 - [X] T012 [P] Create test fixtures: topicHierarchyGraph() in packages/algorithms/test/fixtures/topic-hierarchies.ts (50 topics, 3 levels)
 - [X] T013 [P] Create test fixtures: knownCommunityGraph() in packages/algorithms/test/fixtures/known-clusters.ts (with ground truth labels)
-- [ ] T014 Write unit tests for modularity calculation in packages/algorithms/test/metrics/modularity.test.ts
-- [ ] T015 [P] Write unit tests for conductance calculation in packages/algorithms/test/metrics/conductance.test.ts
-- [ ] T016 [P] Write unit tests for ClusterMetrics utilities in packages/algorithms/test/metrics/cluster-quality.test.ts
+- [X] T014 Write unit tests for modularity calculation in packages/algorithms/test/metrics/modularity.test.ts
+- [X] T015 [P] Write unit tests for conductance calculation in packages/algorithms/test/metrics/conductance.test.ts
+- [X] T016 [P] Write unit tests for ClusterMetrics utilities in packages/algorithms/test/metrics/cluster-quality.test.ts
 
 ---
 
