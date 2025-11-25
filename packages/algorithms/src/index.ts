@@ -25,6 +25,7 @@ export {
   type Component,
   type CycleInfo,
 } from './types/algorithm-results';
+export { type WeightFunction, defaultWeightFunction } from './types/weight-function';
 
 // Graph data structure
 export { Graph } from './graph/graph';

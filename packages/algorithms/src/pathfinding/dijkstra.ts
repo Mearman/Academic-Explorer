@@ -8,6 +8,7 @@ import {
   type InvalidInputError,
   type NegativeWeightError,
 } from '../types/errors';
+import { type WeightFunction, defaultWeightFunction } from '../types/weight-function';
 import { validateNonNegativeWeight } from '../utils/validators';
 import { MinHeap } from './priority-queue';
 
@@ -26,6 +27,7 @@ import { MinHeap } from './priority-queue';
  * @param graph - The graph to search
  * @param startId - ID of the start node
  * @param endId - ID of the end node
+ * @param weightFn - Optional function to extract weight from edges/nodes. Defaults to edge.weight ?? 1
  * @returns Result containing Option<Path> or error
  *   - Ok(Some(path)) if path exists
  *   - Ok(None) if no path exists (disconnected)
@@ -35,20 +37,27 @@ import { MinHeap } from './priority-queue';
  * @example
  * ```typescript
  * const graph = new Graph<MyNode, MyEdge>(true);
- * graph.addNode({ id: 'A', type: 'test' });
- * graph.addNode({ id: 'B', type: 'test' });
+ * graph.addNode({ id: 'A', type: 'test', elevation: 100 });
+ * graph.addNode({ id: 'B', type: 'test', elevation: 200 });
  * graph.addEdge({ id: 'E1', source: 'A', target: 'B', type: 'edge', weight: 5 });
  *
- * const result = dijkstra(graph, 'A', 'B');
- * if (result.ok && result.value.some) {
- *   console.log('Path found with total weight:', result.value.value.totalWeight);
- * }
+ * // Use default edge weights
+ * const result1 = dijkstra(graph, 'A', 'B');
+ *
+ * // Use custom edge attribute
+ * const result2 = dijkstra(graph, 'A', 'B', (edge) => edge.customCost);
+ *
+ * // Use node elevation difference
+ * const result3 = dijkstra(graph, 'A', 'B', (edge, source, target) =>
+ *   Math.abs(source.elevation - target.elevation)
+ * );
  * ```
  */
 export function dijkstra<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   startId: string,
-  endId: string
+  endId: string,
+  weightFn: WeightFunction<N, E> = defaultWeightFunction
 ): Result<Option<Path<N, E>>, GraphError> {
   // Validate inputs
   if (!graph) {
@@ -144,7 +153,16 @@ export function dijkstra<N extends Node, E extends Edge>(
     // Relax all edges
     for (const edge of edgesResult.value) {
       const neighborId = edge.target;
-      const edgeWeight = edge.weight ?? 1; // Default weight is 1
+
+      // Get source and target nodes for weight function
+      const sourceNodeResult = graph.getNode(currentId);
+      const targetNodeResult = graph.getNode(neighborId);
+
+      if (!sourceNodeResult.some || !targetNodeResult.some) {
+        continue;
+      }
+
+      const edgeWeight = weightFn(edge, sourceNodeResult.value, targetNodeResult.value);
 
       const tentativeDistance = currentDistance + edgeWeight;
       const currentNeighborDistance = distances.get(neighborId)!;
@@ -166,7 +184,7 @@ export function dijkstra<N extends Node, E extends Edge>(
   }
 
   // Reconstruct path
-  const path = reconstructPath(graph, startId, endId, predecessors);
+  const path = reconstructPath(graph, startId, endId, predecessors, weightFn);
 
   return Ok(Some(path));
 }
@@ -179,7 +197,8 @@ function reconstructPath<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   startId: string,
   endId: string,
-  predecessors: Map<string, { nodeId: string; edgeId: string } | null>
+  predecessors: Map<string, { nodeId: string; edgeId: string } | null>,
+  weightFn: WeightFunction<N, E>
 ): Path<N, E> {
   const pathNodes: N[] = [];
   const pathEdges: E[] = [];
@@ -201,8 +220,16 @@ function reconstructPath<N extends Node, E extends Edge>(
 
     const edgeResult = graph.getEdge(pred.edgeId);
     if (edgeResult.some) {
-      pathEdges.unshift(edgeResult.value);
-      totalWeight += edgeResult.value.weight ?? 1;
+      const edge = edgeResult.value;
+      pathEdges.unshift(edge);
+
+      // Calculate weight using the weight function
+      const sourceNodeResult = graph.getNode(pred.nodeId);
+      const targetNodeResult = graph.getNode(currentId);
+
+      if (sourceNodeResult.some && targetNodeResult.some) {
+        totalWeight += weightFn(edge, sourceNodeResult.value, targetNodeResult.value);
+      }
     }
 
     currentId = pred.nodeId;
