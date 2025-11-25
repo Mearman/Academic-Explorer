@@ -19,6 +19,10 @@ import type {
   FundersFilters,
 } from "@academic-explorer/types";
 
+// Import filter types and builder from canonical source (not re-exported)
+import type { FilterCondition, FilterExpression } from "./filter-builder.js";
+import { buildFilterString as buildFilterStringFromFilters } from "./filter-builder.js";
+
 /**
  * Sort options for different entity types
  */
@@ -34,22 +38,8 @@ export interface SortOptions {
  */
 export type LogicalOperator = "AND" | "OR" | "NOT";
 
-/**
- * Complex filter expression that can contain nested logical operations
- */
-export interface FilterExpression {
-  operator?: LogicalOperator;
-  conditions: Array<FilterCondition | FilterExpression>;
-}
-
-/**
- * Individual filter condition
- */
-export interface FilterCondition {
-  field: string;
-  operator?: "=" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "starts_with";
-  value: string | number | boolean | string[] | number[];
-}
+// Note: FilterCondition and FilterExpression are imported but not re-exported
+// to avoid duplicates in the barrel file (canonical source is filter-builder.ts)
 
 /**
  * Date range validation result
@@ -479,39 +469,11 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 export function buildFilterString(
   filters: EntityFilters | Partial<EntityFilters> | null | undefined,
 ): string {
-  if (!filters || Object.keys(filters).length === 0) {
+  if (!filters) {
     return "";
   }
-
-  const filterParts: string[] = [];
-
-  Object.entries(filters).forEach(([field, value]) => {
-    if (value === undefined || value === null) {
-      return;
-    }
-
-    let formattedValue: string;
-
-    if (Array.isArray(value)) {
-      // Handle array values with OR logic using pipe separator
-      formattedValue = value
-        .filter((v) => v !== undefined && v !== null && String(v).trim() !== "")
-        .map((v) => escapeFilterValue(String(v)))
-        .join("|");
-    } else if (typeof value === "boolean") {
-      formattedValue = value.toString();
-    } else if (typeof value === "number") {
-      formattedValue = value.toString();
-    } else {
-      formattedValue = escapeFilterValue(String(value));
-    }
-
-    if (formattedValue) {
-      filterParts.push(`${field}:${formattedValue}`);
-    }
-  });
-
-  return filterParts.join(",");
+  // Use the feature-rich implementation from filter-builder.ts
+  return buildFilterStringFromFilters(filters);
 }
 
 /**
