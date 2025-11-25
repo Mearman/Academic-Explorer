@@ -26,6 +26,7 @@ export {
   type CycleInfo,
 } from './types/algorithm-results';
 export { type WeightFunction, defaultWeightFunction } from './types/weight-function';
+export { type Community, type ClusterMetrics } from './types/clustering-types';
 
 // Graph data structure
 export { Graph } from './graph/graph';
@@ -46,3 +47,25 @@ export { topologicalSort } from './analysis/topological-sort';
 export { detectCycle } from './analysis/cycle-detection';
 export { connectedComponents } from './analysis/connected-components';
 export { stronglyConnectedComponents } from './analysis/scc';
+
+// Clustering algorithms
+export { detectCommunities } from './clustering/louvain';
+
+// Clustering metrics
+export {
+  calculateModularity,
+  calculateCommunityModularity,
+  calculateModularityDelta,
+} from './metrics/modularity';
+export {
+  calculateConductance,
+  calculateAverageConductance,
+  calculateWeightedAverageConductance,
+} from './metrics/conductance';
+export {
+  calculateDensity,
+  calculateAverageDensity,
+  calculateCoverageRatio,
+  calculateClusterMetrics,
+  updateCommunityDensities,
+} from './metrics/cluster-quality';
