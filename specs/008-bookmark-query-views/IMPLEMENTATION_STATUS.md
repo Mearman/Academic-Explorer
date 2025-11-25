@@ -6,16 +6,16 @@
 
 ## 📊 Progress Overview
 
-**Completed**: 22/55 tasks (40%)
+**Completed**: 24/57 tasks (42%)
 **Latest Commit**: `23d43a57` - feat(bookmarks): implement core bookmark functionality (User Story 1 MVP)
 
 ### Phase Completion
 
 - ✅ **Phase 1 - Setup**: 2/3 tasks (67%)
 - ✅ **Phase 2 - Foundational**: 6/6 tasks (100%)
-- ✅ **Phase 3 - User Story 1**: 14/14 tasks (100%) ← **MVP COMPLETE**
-- ⏳ **Phase 4 - User Story 2**: 0/6 tasks (0%)
-- ⏳ **Phase 5 - User Story 3**: 0/10 tasks (0%)
+- ✅ **Phase 3 - User Story 1**: 15/15 tasks (100%) ← **MVP COMPLETE**
+- ⏳ **Phase 4 - User Story 2**: 0/8 tasks (0%)
+- ⏳ **Phase 5 - User Story 3**: 0/13 tasks (0%)
 - ⏳ **Phase 6 - Polish**: 0/10 tasks (0%)
 
 ## ✅ What's Been Built
@@ -209,13 +209,13 @@ The `CatalogueStorageProvider` interface already has complete bookmark support:
 **Total New Code**: ~2,800 lines across 18 files
 **Test Coverage**: 65 new passing unit tests, 27 E2E tests
 
-## 🎯 What Needs to Be Built (33 tasks)
+## 🎯 What Needs to Be Built (33 tasks remaining)
 
 ### Phase 3: User Story 1 - Core Bookmarking ✅ COMPLETE
 
 **Goal**: Enable users to bookmark entity/query pages and view their bookmarks
 
-All 14 tasks completed - see section 6 above for details.
+All 15 tasks completed - see section 6 above for details.
 
 #### UI Components Needed
 
