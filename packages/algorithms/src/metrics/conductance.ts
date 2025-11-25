@@ -98,10 +98,9 @@ export function calculateConductance<N extends Node, E extends Edge>(
     }
   });
 
-  // For undirected graphs, we've double-counted cut edges
-  if (!graph.isDirected()) {
-    cut = cut / 2;
-  }
+  // Note: We only count cut edges from the cluster side (lines 85-94),
+  // so there's no double-counting even for undirected graphs.
+  // No division needed.
 
   // Conductance = cut(S) / min(vol(S), vol(V\S))
   const denominator = Math.min(volS, volComplement);
