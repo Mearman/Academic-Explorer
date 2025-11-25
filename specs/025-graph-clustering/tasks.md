@@ -123,18 +123,18 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T041 [US3] Write failing test for Scenario 1 (correct grouping) in packages/algorithms/test/hierarchical/clustering.test.ts
-- [ ] T042 [US3] Write failing test for Scenario 2 (dendrogram cutting) in packages/algorithms/test/hierarchical/clustering.test.ts
-- [ ] T043 [US3] Write failing test for Scenario 3 (parent-child structure) in packages/algorithms/test/hierarchical/clustering.test.ts
-- [ ] T044 [US3] Implement distance matrix computation from adjacency matrix in packages/algorithms/src/hierarchical/clustering.ts
-- [ ] T045 [US3] Implement agglomerative clustering with average linkage in packages/algorithms/src/hierarchical/clustering.ts
-- [ ] T046 [US3] Implement dendrogram data structure with merge history in packages/algorithms/src/hierarchical/clustering.ts
-- [ ] T047 [US3] Implement cutAtHeight() method for dendrogram in packages/algorithms/src/hierarchical/clustering.ts
-- [ ] T048 [US3] Implement getClusters(k) method for dendrogram in packages/algorithms/src/hierarchical/clustering.ts
-- [ ] T049 [US3] Verify all hierarchical clustering tests pass
-- [ ] T050 [US3] Run performance benchmark on 200-node graph (must complete < 45s)
-- [ ] T051 [US3] Export hierarchicalClustering function from packages/algorithms/src/index.ts
-- [ ] T052 [US3] Commit hierarchical clustering with message "feat(algorithms): add hierarchical clustering (P3)"
+- [X] T041 [US3] Write failing test for Scenario 1 (correct grouping) in packages/algorithms/test/hierarchical/clustering.test.ts
+- [X] T042 [US3] Write failing test for Scenario 2 (dendrogram cutting) in packages/algorithms/test/hierarchical/clustering.test.ts
+- [X] T043 [US3] Write failing test for Scenario 3 (parent-child structure) in packages/algorithms/test/hierarchical/clustering.test.ts
+- [X] T044 [US3] Implement distance matrix computation from adjacency matrix in packages/algorithms/src/hierarchical/clustering.ts
+- [X] T045 [US3] Implement agglomerative clustering with average linkage in packages/algorithms/src/hierarchical/clustering.ts
+- [X] T046 [US3] Implement dendrogram data structure with merge history in packages/algorithms/src/hierarchical/clustering.ts
+- [X] T047 [US3] Implement cutAtHeight() method for dendrogram in packages/algorithms/src/hierarchical/clustering.ts
+- [X] T048 [US3] Implement getClusters(k) method for dendrogram in packages/algorithms/src/hierarchical/clustering.ts
+- [X] T049 [US3] Verify all hierarchical clustering tests pass
+- [X] T050 [US3] Run performance benchmark on 200-node graph (must complete < 45s)
+- [X] T051 [US3] Export hierarchicalClustering function from packages/algorithms/src/index.ts
+- [X] T052 [US3] Commit hierarchical clustering with message "feat(algorithms): add hierarchical clustering (P3)"
 
 ---
 
@@ -239,19 +239,19 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T089 [US7] Write failing test for Scenario 1 (flow alignment) in packages/algorithms/test/clustering/infomap.test.ts
-- [ ] T090 [US7] Write failing test for Scenario 2 (compression ratio > 1.5) in packages/algorithms/test/clustering/infomap.test.ts
-- [ ] T091 [US7] Write failing test for Scenario 3 (performance < 40s) in packages/algorithms/test/clustering/infomap.test.ts
-- [ ] T092 [US7] Implement transition probability calculation (edge_weight / out_degree) in packages/algorithms/src/clustering/infomap.ts
-- [ ] T093 [US7] Implement map equation: L = H(X) + Σ p_i * H(X_i) in packages/algorithms/src/clustering/infomap.ts
-- [ ] T094 [US7] Implement greedy search for module assignment in packages/algorithms/src/clustering/infomap.ts
-- [ ] T095 [US7] Implement visit probability calculation (steady-state random walk) in packages/algorithms/src/clustering/infomap.ts
-- [ ] T096 [US7] Implement compression ratio calculation in packages/algorithms/src/clustering/infomap.ts
-- [ ] T097 [US7] Implement directed edge handling (respect edge direction in random walk) in packages/algorithms/src/clustering/infomap.ts
-- [ ] T098 [US7] Verify all Infomap tests pass
-- [ ] T099 [US7] Run performance benchmark on 1000-node graph (must complete < 40s)
-- [ ] T100 [US7] Export infomap function from packages/algorithms/src/index.ts
-- [ ] T101 [US7] Commit Infomap implementation with message "feat(algorithms): add Infomap clustering (P7)"
+- [X] T089 [US7] Write failing test for Scenario 1 (flow alignment) in packages/algorithms/test/clustering/infomap.test.ts
+- [X] T090 [US7] Write failing test for Scenario 2 (compression ratio > 1.5) in packages/algorithms/test/clustering/infomap.test.ts
+- [X] T091 [US7] Write failing test for Scenario 3 (performance < 40s) in packages/algorithms/test/clustering/infomap.test.ts
+- [X] T092 [US7] Implement transition probability calculation (edge_weight / out_degree) in packages/algorithms/src/clustering/infomap.ts
+- [X] T093 [US7] Implement map equation: L = H(X) + Σ p_i * H(X_i) in packages/algorithms/src/clustering/infomap.ts
+- [X] T094 [US7] Implement greedy search for module assignment in packages/algorithms/src/clustering/infomap.ts
+- [X] T095 [US7] Implement visit probability calculation (steady-state random walk) in packages/algorithms/src/clustering/infomap.ts
+- [X] T096 [US7] Implement compression ratio calculation in packages/algorithms/src/clustering/infomap.ts
+- [X] T097 [US7] Implement directed edge handling (respect edge direction in random walk) in packages/algorithms/src/clustering/infomap.ts
+- [X] T098 [US7] Verify all Infomap tests pass
+- [X] T099 [US7] Run performance benchmark on 1000-node graph (must complete < 40s)
+- [X] T100 [US7] Export infomap function from packages/algorithms/src/index.ts
+- [X] T101 [US7] Commit Infomap implementation with message "feat(algorithms): add Infomap clustering (P7)"
 
 ---
 
