@@ -2,8 +2,8 @@
 
 **Feature Branch**: `001-storage-abstraction`
 **Created**: 2025-11-11
-**Status**: Completed
-**Completed**: 2025-11-17
+**Status**: In Progress (Functionally Complete)
+**Progress**: 35/74 tasks (47%)
 **Input**: User description: "decouple our storage from Dexie so we can easily inject an in-memory storage provider when in testing in playwright"
 
 ## User Scenarios & Testing *(mandatory)*
