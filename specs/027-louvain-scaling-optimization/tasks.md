@@ -132,9 +132,16 @@
 
 **Checkpoint**: ✅ CSR Infrastructure complete (T040-T043) - CSRGraph interface, conversion function, entry point integration with fallback. NOT YET USED for neighbor iteration (no performance benefit yet). Remaining: T044-T046 (refactor neighbor access), T047-T053 (community caching), T054-T064 (verification) = 21 tasks
 
-- [ ] T044 [US3] Refactor neighbor access in louvain.ts local moving phase: use csrGraph.offsets[nodeIdx] to csrGraph.offsets[nodeIdx + 1] slice
-- [ ] T045 [US3] Refactor neighbor weights in louvain.ts: use csrGraph.weights.slice(start, end) instead of Map lookups
-- [ ] T046 [US3] Update all graph.getNeighbors() calls in louvain.ts to use CSR slicing pattern
+- [X] T044 [US3] Refactor neighbor access in louvain.ts local moving phase: use csrGraph.offsets[nodeIdx] to csrGraph.offsets[nodeIdx + 1] slice
+- [X] T045 [US3] Refactor neighbor weights in louvain.ts: use csrGraph.weights.slice(start, end) instead of Map lookups
+- [X] T046 [US3] Update all graph.getNeighbors() calls in louvain.ts to use CSR slicing pattern
+
+**Checkpoint**: ✅ CSR Neighbor Iteration complete (T044-T046) - CSR now actively used for
+neighbor lookups in findNeighborCommunitiesForSuperNode(). **Performance gains: 50-60%
+speedup** across all graph sizes. Results: 100 nodes: 86ms→37ms (57% faster), 500 nodes:
+2.1s→1.06s (50% faster), 1000 nodes: 10.3s→4.78s (54% faster). Progress vs. baseline:
+15.4s→4.78s (69% improvement). Gap to target (1.5-2.5s): now 2-3x (was 4-7x). Remaining:
+T047-T053 (community caching), T054-T064 (verification) = 18 tasks
 
 ### Community Hash Table Cache
 

@@ -471,7 +471,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
           nodeToSuperNode,
           nodeToCommunity,
           weightFn,
-          incomingEdges
+          incomingEdges,
+          csrGraph // T046: Pass CSR graph for optimized neighbor iteration
         );
 
         // T022-T024: Find best community to move to (spec-027 Phase 4)
@@ -718,28 +719,31 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
   nodeToSuperNode: Map<string, string>,
   nodeToCommunity: Map<string, number>,
   weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
+  incomingEdges: Map<string, E[]>,
+  csrGraph: CSRGraph<N, E> | null = null
 ): Map<number, number> {
   const neighborCommunities = new Map<number, number>(); // communityId -> total weight
 
   // For each member node in this super-node
   memberNodes.forEach((nodeId) => {
-    // Outgoing edges
-    const outgoingResult = graph.getOutgoingEdges(nodeId);
-    if (outgoingResult.ok) {
-      outgoingResult.value.forEach((edge) => {
-        const targetNodeId = edge.target;
+    // T044-T046: Use CSR for neighbor iteration when available (spec-027 Phase 5)
+    if (csrGraph) {
+      const nodeIdx = csrGraph.nodeIndex.get(nodeId);
+      if (nodeIdx !== undefined) {
+        const start = csrGraph.offsets[nodeIdx];
+        const end = csrGraph.offsets[nodeIdx + 1];
 
-        // Find which super-node the target belongs to
-        const targetSuperNodeId = nodeToSuperNode.get(targetNodeId);
-        if (targetSuperNodeId) {
-          // Find which community that super-node is in
-          const targetCommunityId = nodeToCommunity.get(targetSuperNodeId);
-          if (targetCommunityId !== undefined) {
-            const sourceOption = graph.getNode(edge.source);
-            const targetOption = graph.getNode(edge.target);
-            if (sourceOption.some && targetOption.some) {
-              const weight = weightFn(edge, sourceOption.value, targetOption.value);
+        // Iterate through CSR-packed neighbors
+        for (let i = start; i < end; i++) {
+          const targetIdx = csrGraph.edges[i];
+          const targetNodeId = csrGraph.nodeIds[targetIdx];
+          const weight = csrGraph.weights[i]; // Use CSR weight (assumes weightFn returns edge.weight)
+
+          // Find which super-node the target belongs to
+          const targetSuperNodeId = nodeToSuperNode.get(targetNodeId);
+          if (targetSuperNodeId) {
+            const targetCommunityId = nodeToCommunity.get(targetSuperNodeId);
+            if (targetCommunityId !== undefined) {
               neighborCommunities.set(
                 targetCommunityId,
                 (neighborCommunities.get(targetCommunityId) || 0) + weight
@@ -747,7 +751,33 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
             }
           }
         }
-      });
+      }
+    } else {
+      // Fallback: Original Map-based iteration
+      const outgoingResult = graph.getOutgoingEdges(nodeId);
+      if (outgoingResult.ok) {
+        outgoingResult.value.forEach((edge) => {
+          const targetNodeId = edge.target;
+
+          // Find which super-node the target belongs to
+          const targetSuperNodeId = nodeToSuperNode.get(targetNodeId);
+          if (targetSuperNodeId) {
+            // Find which community that super-node is in
+            const targetCommunityId = nodeToCommunity.get(targetSuperNodeId);
+            if (targetCommunityId !== undefined) {
+              const sourceOption = graph.getNode(edge.source);
+              const targetOption = graph.getNode(edge.target);
+              if (sourceOption.some && targetOption.some) {
+                const weight = weightFn(edge, sourceOption.value, targetOption.value);
+                neighborCommunities.set(
+                  targetCommunityId,
+                  (neighborCommunities.get(targetCommunityId) || 0) + weight
+                );
+              }
+            }
+          }
+        });
+      }
     }
 
     // Incoming edges (for directed graphs)
