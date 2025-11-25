@@ -6,17 +6,17 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 14 |
-| 🚧 In Progress | 4 |
-| 📝 Draft | 10 |
+| ✅ Complete | 7 |
+| 🚧 In Progress | 11 |
+| 📝 Draft | 8 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
 
 ### spec-001: Storage Abstraction
-**Status**: ✅ Complete | **Completed**: 2025-11-17
+**Status**: 🚧 In Progress (Functionally Complete) | **Progress**: 35/74 tasks (47%)
 
-Storage provider interface abstraction enabling swappable implementations. IndexedDB (Dexie) for production, in-memory provider for E2E/Playwright tests, mock provider for unit tests. Resolved 28+ E2E test failures by eliminating IndexedDB incompatibilities.
+Storage provider interface abstraction enabling swappable implementations. IndexedDB (Dexie) for production, in-memory provider for E2E/Playwright tests, mock provider for unit tests. Resolved 28+ E2E test failures by eliminating IndexedDB incompatibilities. Core implementation complete; tests and polish phase incomplete.
 
 [View Spec](./001-storage-abstraction/)
 
@@ -77,36 +77,36 @@ Support for multiple storage provider implementations simultaneously.
 ---
 
 ### spec-008: Bookmark Query Views
-**Status**: 📝 Draft
+**Status**: 🚧 In Progress | **Progress**: 24/57 tasks (42%)
 
-Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations.
+Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations. Phase 1-2 foundational work complete, User Story 1 in progress.
 
 [View Spec](./008-bookmark-query-views/)
 
 ---
 
 ### spec-009: Graph Rendering Abstraction
-**Status**: ✅ Complete | **Completed**: 2025-11-17
+**Status**: ✅ Complete (tasks untracked) | **Completed**: 2025-11-17
 
-Decoupled graph rendering from specific graph packages. Force simulation in `packages/simulation/`, graph data structures in `packages/graph/`. Supports multiple node/edge types, directional edges, and custom forces. 817 tests passing.
+Decoupled graph rendering from specific graph packages. Force simulation in `packages/simulation/`, graph data structures in `packages/graph/`. Supports multiple node/edge types, directional edges, and custom forces. 817 tests passing. Implementation completed outside tasks.md workflow.
 
 [View Spec](./009-graph-rendering-abstraction/)
 
 ---
 
 ### spec-010: Landing Page Layout
-**Status**: ✅ Complete | **Completed**: 2025-11-17
+**Status**: 🚧 In Progress (Near Complete) | **Progress**: 48/55 tasks (87%)
 
-Landing page responsive layout improvements (320px-3840px), WCAG 2.1 Level AA compliant touch targets (44px minimum), enhanced visual hierarchy with zoom support (150%-200%). All E2E tests passing.
+Landing page responsive layout improvements (320px-3840px), WCAG 2.1 Level AA compliant touch targets (44px minimum), enhanced visual hierarchy with zoom support (150%-200%). All E2E tests passing. 7 polish phase tasks remain.
 
 [View Spec](./010-landing-page-layout/)
 
 ---
 
 ### spec-011: Fix Vertical Scrolling
-**Status**: ✅ Complete | **Completed**: 2025-11-17
+**Status**: ✅ Complete (tasks untracked) | **Completed**: 2025-11-17
 
-Eliminated nested scrollbar issues in central section and sidebars. Fixed via layout component refactoring with proper overflow and padding settings.
+Eliminated nested scrollbar issues in central section and sidebars. Fixed via layout component refactoring with proper overflow and padding settings. Implementation completed outside tasks.md workflow.
 
 [View Spec](./011-fix-vertical-scrolling/)
 
@@ -131,9 +131,9 @@ OpenAlex Walden (Data Version 2) support with xpac works (datasets, software, sp
 ---
 
 ### spec-014: Edge Direction Correction
-**Status**: 🚧 In Progress | **Last Updated**: 2025-11-18
+**Status**: 🚧 In Progress | **Progress**: 34/53 tasks (64%)
 
-Correcting graph edge directions to match OpenAlex data ownership model. User Story 2 (P2) implemented. Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup.
+Correcting graph edge directions to match OpenAlex data ownership model. Phases 1-2 complete, User Story 1 partial (16/19 tasks), User Story 2 partial (5/14 tasks). Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup.
 
 [View Spec](./014-edge-direction-correction/)
 
@@ -149,9 +149,9 @@ Complete relationship implementation across all OpenAlex entity types. 90 tasks 
 ---
 
 ### spec-016: Entity Relationship Visualization
-**Status**: ✅ Complete | **Completed**: 2025-11-20
+**Status**: 🚧 In Progress | **Progress**: 6/80 tasks (8%)
 
-Enhanced entity detail pages with relationship visualization capabilities. Type filtering, count summaries, localStorage persistence, loading/error states. 80 tasks with <1s rendering for 50-100 items.
+Enhanced entity detail pages with relationship visualization capabilities. Type filtering, count summaries, localStorage persistence, loading/error states. Only Phase 1 setup complete; core user stories pending.
 
 [View Spec](./016-entity-relationship-viz/)
 
@@ -176,16 +176,16 @@ EntityType consolidation to `@academic-explorer/types` as single source of truth
 ---
 
 ### spec-019: Full Entity Support
-**Status**: ✅ Complete | **Completed**: 2025-11-21
+**Status**: 🚧 In Progress (Near Complete) | **Progress**: 9/11 tasks (82%)
 
-Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities).
+Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities). Core implementation complete; documentation tasks remain.
 
 [View Spec](./019-full-entity-support/)
 
 ---
 
 ### spec-020: E2E Test Coverage
-**Status**: 🚧 In Progress | **Progress**: 0/109 tasks
+**Status**: 🚧 In Progress | **Progress**: 0/107 tasks
 
 E2E test coverage enhancement. Plan to add missing tests for untested routes, implement workflow tests, add error scenario coverage, and automate high-value manual tests.
 
@@ -194,36 +194,36 @@ E2E test coverage enhancement. Plan to add missing tests for untested routes, im
 ---
 
 ### spec-021: Mantine Responsive Layout
-**Status**: ✅ Complete | **Completed**: 2025-11-21
+**Status**: ✅ Complete (tasks untracked) | **Completed**: 2025-11-21
 
-Mantine UI responsive layout configuration corrections. Fixed layout issues with proper breakpoint configuration and auto-layout settings. Mobile search Enter-key trigger implemented.
+Mantine UI responsive layout configuration corrections. Fixed layout issues with proper breakpoint configuration and auto-layout settings. Mobile search Enter-key trigger implemented. Implementation completed outside tasks.md workflow.
 
 [View Spec](./021-mantine-responsive-layout/)
 
 ---
 
 ### spec-022: PostHog Sourcemaps
-**Status**: 📝 Draft
+**Status**: 🚧 In Progress | **Progress**: 14/117 tasks (12%)
 
-PostHog sourcemap integration for production error tracking with readable stack traces.
+PostHog sourcemap integration for production error tracking with readable stack traces. Phases 1-2 and partial Phase 4 complete.
 
 [View Spec](./022-posthog-sourcemaps/)
 
 ---
 
 ### spec-023: CI Optimization
-**Status**: 📝 Draft
+**Status**: 🚧 In Progress (Near Complete) | **Progress**: 30/41 tasks (73%)
 
-CI/CD pipeline optimization for faster build and deployment times. Build artifact caching, parallel test execution, conditional job skipping.
+CI/CD pipeline optimization for faster build and deployment times. Build artifact caching, parallel test execution, conditional job skipping. Core implementation complete; testing and validation remain.
 
 [View Spec](./023-ci-optimization/)
 
 ---
 
 ### spec-024: Algorithms Package
-**Status**: ✅ Complete | **Completed**: 2025-11-25
+**Status**: 🚧 In Progress | **Progress**: 27/75 tasks (36%)
 
-Core graph algorithms with Result/Option error handling. Traversal (DFS, BFS), pathfinding (Dijkstra), and analysis (connected components, SCC, cycle detection, topological sort). 112/112 tests passing.
+Core graph algorithms with Result/Option error handling. Foundational infrastructure complete (Graph class, types, Result/Option). Core algorithms (DFS, BFS, Dijkstra, pathfinding, graph analysis) pending implementation.
 
 [View Spec](./024-algorithms-package/)
 
@@ -248,9 +248,9 @@ Academic graph pattern extraction including ego networks, path analysis, motif d
 ---
 
 ### spec-027: Louvain Scaling Optimization
-**Status**: ✅ Complete | **Completed**: 2025-11-25
+**Status**: 🚧 In Progress (Core Complete) | **Progress**: 53/72 tasks (74%)
 
-Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 443ms for 1000 nodes (baseline: 15.4s).
+Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 443ms for 1000 nodes (baseline: 15.4s). Core objectives achieved; verification and polish tasks remain.
 
 [View Spec](./027-louvain-scaling-optimization/)
 
