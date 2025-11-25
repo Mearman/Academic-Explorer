@@ -228,10 +228,50 @@ For researchers working with 5,000-10,000 node networks, even optimized Louvain 
 - ✅ **SC-009**: All 9 existing Louvain tests pass unchanged
 - ⚠️ **SC-004**: Scaling ratio 120x (improved from 202x but still above <66x target, will improve in Phase 4-5)
 
-**Next Steps**:
-- Phase 4 (T020-T039): Fast Louvain + altered communities for additional 2-3x speedup
-- Target: 3-5s for 1000 nodes
-- Expected scaling ratio improvement to approach O(n log n) target
+### Phase 4: Fast Louvain + Altered Communities - ❌ Not Suitable for Citation Networks (2025-11-25)
+
+**Status**: Tested and disabled
+
+**Implementation**:
+- ✅ T020-T025: Mode selection infrastructure (determineOptimalMode, shuffle, mode branching)
+- ✅ T026-T031: Altered communities heuristic (getNodesToVisit, state tracking)
+
+**Performance Results**:
+
+| Optimization | 1000 nodes Runtime | Modularity | Iterations | Result |
+|--------------|-------------------|------------|------------|--------|
+| **Phase 3 Baseline** (best mode only) | 5.67-10.44s | 0.3718 | 103 | ✓ Optimal |
+| Fast Louvain (random mode) | 11-18s | 0.05-0.12 | 201 | ❌ Quality regression |
+| Best + Altered Communities | 11.33s | 0.3720 | 103 | ❌ Overhead, no benefit |
+
+**Root Cause Analysis**:
+
+1. **Fast Louvain Random Mode** - Unsuitable for citation networks:
+   - Causes severe quality degradation (Q: 0.37 → 0.05, 84% loss)
+   - Fails minimum quality threshold (≥0.19)
+   - Paradoxically SLOWS convergence (103 → 201 iterations)
+   - Result: 3x SLOWER runtime (18.7s vs 5.6s)
+   - **Why**: Citation networks have different structural properties than social/web networks where Fast Louvain was benchmarked. Accepting first positive ΔQ leads to poor-quality moves requiring many iterations to correct.
+
+2. **Altered Communities Heuristic** - No performance benefit:
+   - Overhead outweighs benefit (11.33s vs 5.67s best case)
+   - Community structure changes significantly in early iterations, keeping "altered" set large
+   - getNodesToVisit() computation cost exceeds savings from skipping nodes
+   - **Why**: Algorithm converges quickly with best mode (103 iterations total), so filtering provides minimal benefit.
+
+**Final Strategy**:
+- Mode selection infrastructure retained for future experimentation
+- determineOptimalMode() always returns "best" for citation networks
+- Random mode available via explicit `mode: "random"` parameter but NOT recommended
+- Altered communities disabled to avoid overhead
+
+**Success Criteria Status**:
+- ❌ **SC-002**: Target 3-5s not achieved (actual: 10-11s)
+- ❌ **SC-004**: Scaling ratio still 117x (target <66x)
+- ✅ **SC-006**: Modularity quality maintained (≥0.19)
+- ✅ **SC-009**: All 9 existing Louvain tests pass
+
+**Conclusion**: Phase 4 optimizations unsuitable for citation networks. Phase 3 baseline (10-11s, Q=0.37) remains optimal. CSR refactoring (Phase 5) may be needed for further speedup, but cost/benefit unclear.
 
 ---
 

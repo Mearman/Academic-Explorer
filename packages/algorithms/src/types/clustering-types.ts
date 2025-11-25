@@ -395,6 +395,28 @@ export interface LouvainConfiguration {
   maxIterations?: number;
 }
 
+/**
+ * Altered communities state for tracking changed communities between iterations.
+ *
+ * @remarks
+ * Used by altered communities heuristic to reduce redundant computation.
+ * Only nodes in altered communities (and their neighbors) need to be revisited.
+ *
+ * @since Phase 4 (spec-027, Altered Communities)
+ */
+export interface AlteredCommunitiesState {
+  /**
+   * Set of community IDs that had nodes move in or out during the last iteration.
+   *
+   * @remarks
+   * - Initialized with all community IDs before first iteration (visit all nodes)
+   * - Cleared at the start of each iteration
+   * - Populated during node moves (add both source and target community IDs)
+   * - Used to filter which nodes need to be checked for movement
+   */
+  alteredCommunities: Set<number>;
+}
+
 // ============================================================================
 // Error Types
 // ============================================================================

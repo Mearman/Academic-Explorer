@@ -16,7 +16,7 @@
 
 import type { Graph } from '../graph/graph';
 import type { Node, Edge } from '../types/graph';
-import type { Community, LouvainConfiguration } from '../types/clustering-types';
+import type { Community, LouvainConfiguration, AlteredCommunitiesState } from '../types/clustering-types';
 import type { WeightFunction } from '../types/weight-function';
 import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
@@ -66,6 +66,159 @@ export function getAdaptiveIterationLimit(nodeCount: number, level: number): num
     return 20;
   }
   return nodeCount < 100 ? 50 : 40;
+}
+
+/**
+ * Determine optimal neighbor selection mode based on graph size.
+ *
+ * @param nodeCount - Number of nodes in graph
+ * @returns Neighbor selection mode ("best" or "random")
+ *
+ * @remarks
+ * **UPDATE (Phase 4 debugging)**: Random mode disabled for citation networks.
+ *
+ * Testing revealed Fast Louvain random-neighbor selection causes severe quality degradation
+ * for citation network graphs (Q=0.05-0.12 vs Q=0.37 with best mode), failing the minimum
+ * quality threshold of Q≥0.19. Random mode also paradoxically SLOWED convergence (201 iterations
+ * vs 103 with best mode), resulting in 3x slower runtime.
+ *
+ * Root cause: Citation networks have different structural properties than the social/web networks
+ * where Fast Louvain was benchmarked in literature. Accepting first positive ΔQ leads to poor-quality
+ * moves that require many iterations to correct.
+ *
+ * **Current strategy**: Always use best-neighbor mode for quality. Random mode remains available
+ * via explicit `mode: "random"` parameter for experimentation but is not recommended.
+ *
+ * @since Phase 4 (spec-027, Fast Louvain)
+ */
+export function determineOptimalMode(nodeCount: number): "best" | "random" {
+  // Always use best mode after Phase 4 debugging
+  // Random mode caused quality loss (Q: 0.37 → 0.05) and slower convergence (103 → 201 iterations)
+  return "best";
+
+  // Original auto mode logic (disabled):
+  // if (nodeCount < 200) return "best";
+  // if (nodeCount >= 500) return "random";
+  // return "best"; // Medium graphs (200-499) default to quality
+}
+
+/**
+ * Shuffle an array in-place using Fisher-Yates algorithm.
+ *
+ * @param array - Array to shuffle (modified in-place)
+ * @param seed - Optional random seed for deterministic shuffling (for tests)
+ * @returns The shuffled array (same reference as input)
+ *
+ * @remarks
+ * Fisher-Yates shuffle guarantees uniform distribution of permutations.
+ * If seed is provided, uses simple linear congruential generator (LCG) for PRNG.
+ * If seed is undefined, uses Math.random() (non-deterministic).
+ *
+ * LCG parameters: a=1664525, c=1013904223, m=2^32 (Numerical Recipes)
+ *
+ * @since Phase 4 (spec-027, Fast Louvain)
+ */
+export function shuffle<T>(array: T[], seed?: number): T[] {
+  let rng: () => number;
+
+  if (seed !== undefined) {
+    // Deterministic PRNG for reproducible tests
+    let state = seed;
+    rng = () => {
+      state = (1664525 * state + 1013904223) >>> 0; // LCG: a=1664525, c=1013904223, m=2^32
+      return state / 0x100000000; // Normalize to [0, 1)
+    };
+  } else {
+    // Non-deterministic for production
+    rng = Math.random;
+  }
+
+  // Fisher-Yates shuffle
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
+/**
+ * Get nodes to visit based on altered communities heuristic.
+ *
+ * @param alteredState - Altered communities state tracking
+ * @param superNodes - Map of super-node ID → set of original node IDs
+ * @param nodeToCommunity - Map of super-node ID → community ID
+ * @param graph - Input graph
+ * @param nodeToSuperNode - Map of original node ID → super-node ID
+ * @param incomingEdges - Pre-computed incoming edges map
+ * @returns Set of super-node IDs that should be checked for movement
+ *
+ * @remarks
+ * Returns nodes in altered communities plus their neighbors (nodes with edges to/from altered communities).
+ * This reduces redundant computation by only revisiting nodes likely to move.
+ *
+ * **First Iteration**: alteredCommunities contains all community IDs → returns all nodes
+ * **Subsequent Iterations**: Only returns nodes in changed communities + their neighbors
+ *
+ * @since Phase 4 (spec-027, Altered Communities)
+ */
+function getNodesToVisit<N extends Node, E extends Edge>(
+  alteredState: AlteredCommunitiesState,
+  superNodes: Map<string, Set<string>>,
+  nodeToCommunity: Map<string, number>,
+  graph: Graph<N, E>,
+  nodeToSuperNode: Map<string, string>,
+  incomingEdges: Map<string, E[]>
+): Set<string> {
+  const nodesToVisit = new Set<string>();
+
+  // If no communities altered, return empty set (early termination will handle this)
+  if (alteredState.alteredCommunities.size === 0) {
+    return nodesToVisit;
+  }
+
+  // Add all super-nodes in altered communities
+  superNodes.forEach((memberNodes, superNodeId) => {
+    const communityId = nodeToCommunity.get(superNodeId);
+    if (communityId !== undefined && alteredState.alteredCommunities.has(communityId)) {
+      nodesToVisit.add(superNodeId);
+    }
+  });
+
+  // Add neighbors of nodes in altered communities
+  // For each super-node in altered communities, find its neighbors and add them
+  const alteredSuperNodes = new Set(nodesToVisit);
+  alteredSuperNodes.forEach((superNodeId) => {
+    const memberNodes = superNodes.get(superNodeId);
+    if (!memberNodes) return;
+
+    // For each original node in this super-node, find its neighbors
+    memberNodes.forEach((nodeId) => {
+      // Outgoing edges
+      const outgoingResult = graph.getOutgoingEdges(nodeId);
+      if (outgoingResult.ok) {
+        outgoingResult.value.forEach((edge) => {
+          const targetSuperNode = nodeToSuperNode.get(edge.target);
+          if (targetSuperNode) {
+            nodesToVisit.add(targetSuperNode);
+          }
+        });
+      }
+
+      // Incoming edges (for directed graphs)
+      if (graph.isDirected()) {
+        const incoming = incomingEdges.get(nodeId) || [];
+        incoming.forEach((edge) => {
+          const sourceSuperNode = nodeToSuperNode.get(edge.source);
+          if (sourceSuperNode) {
+            nodesToVisit.add(sourceSuperNode);
+          }
+        });
+      }
+    });
+  });
+
+  return nodesToVisit;
 }
 
 /**
@@ -144,6 +297,12 @@ export function detectCommunities<N extends Node, E extends Edge>(
 
   // T015: Iteration count tracking (spec-027 Phase 1)
   let totalIterations = 0;
+
+  // T025: Resolve neighbor selection mode (spec-027 Phase 4)
+  const { mode = "auto", seed } = options;
+  const resolvedMode: "best" | "random" = mode === "auto"
+    ? determineOptimalMode(allNodes.length)
+    : mode;
 
   // Pre-compute incoming edges for directed graphs (O(m) instead of O(n²))
   const incomingEdges = new Map<string, E[]>();
@@ -259,13 +418,27 @@ export function detectCommunities<N extends Node, E extends Edge>(
     // Aggressive early stopping: 2 rounds for large graphs, 3 for small
     const MAX_NO_IMPROVEMENT_ROUNDS = nodeCount > 500 ? 2 : 3;
 
+    // T028-T031: Altered communities heuristic (spec-027 Phase 4) - DISABLED
+    // Testing showed NO performance benefit for citation networks:
+    // - Best mode only: 5.67s for 1000 nodes, Q=0.3718
+    // - Best + altered communities: 11.33s for 1000 nodes, Q=0.3720
+    // Overhead of tracking/filtering outweighs benefit. Community structure changes
+    // too much in early iterations, keeping altered set large.
+    //
+    // const alteredState: AlteredCommunitiesState = {
+    //   alteredCommunities: new Set(communities.keys()),
+    // };
+
     while (improved && iteration < MAX_ITERATIONS) {
       improved = false;
       iteration++;
       let movesThisRound = 0;
 
-      // Visit super-nodes in random order
-      const superNodeOrder = shuffleArray([...superNodes.keys()]);
+      // Visit all super-nodes (altered communities disabled - no benefit)
+      const nodesToVisit = new Set(superNodes.keys());
+
+      // Visit nodes in random order
+      const superNodeOrder = shuffleArray([...nodesToVisit]);
 
       for (const superNodeId of superNodeOrder) {
         const currentCommunityId = nodeToCommunity.get(superNodeId)!;
@@ -282,7 +455,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
           incomingEdges
         );
 
-        // Find best community to move to
+        // T022-T024: Find best community to move to (spec-027 Phase 4)
+        // Mode-based neighbor selection: "best" evaluates all, "random" accepts first positive
         let bestCommunityId = currentCommunityId;
         let bestDeltaQ = 0;
 
@@ -292,25 +466,59 @@ export function detectCommunities<N extends Node, E extends Edge>(
           superNodeDegree += nodeDegrees.get(nodeId) || 0;
         });
 
-        for (const [neighborCommunityId, kIn] of neighborCommunities.entries()) {
-          if (neighborCommunityId === currentCommunityId) {
-            continue; // Skip current community
+        // Convert neighbor communities to array for mode-based processing
+        const neighborList = Array.from(neighborCommunities.entries());
+
+        if (resolvedMode === "random") {
+          // T024: Random-neighbor mode (Fast Louvain) - shuffle and accept first positive ΔQ
+          const shuffledNeighbors = shuffle(neighborList, seed);
+
+          for (const [neighborCommunityId, kIn] of shuffledNeighbors) {
+            if (neighborCommunityId === currentCommunityId) {
+              continue; // Skip current community
+            }
+
+            const neighborCommunity = communities.get(neighborCommunityId)!;
+
+            // Calculate modularity change
+            const deltaQ = calculateModularityDelta(
+              superNodeDegree,
+              kIn,
+              neighborCommunity.sigmaTot,
+              neighborCommunity.sigmaIn,
+              m
+            ) * resolution;
+
+            // Accept first positive modularity gain (Fast Louvain)
+            if (deltaQ > adaptiveMinModularityIncrease) {
+              bestDeltaQ = deltaQ;
+              bestCommunityId = neighborCommunityId;
+              break; // Early exit - accept first improvement
+            }
           }
+        } else {
+          // T023: Best-neighbor mode - evaluate all neighbors, select maximum ΔQ
+          for (const [neighborCommunityId, kIn] of neighborList) {
+            if (neighborCommunityId === currentCommunityId) {
+              continue; // Skip current community
+            }
 
-          const neighborCommunity = communities.get(neighborCommunityId)!;
+            const neighborCommunity = communities.get(neighborCommunityId)!;
 
-          // Calculate modularity change
-          const deltaQ = calculateModularityDelta(
-            superNodeDegree,
-            kIn,
-            neighborCommunity.sigmaTot,
-            neighborCommunity.sigmaIn,
-            m
-          ) * resolution;
+            // Calculate modularity change
+            const deltaQ = calculateModularityDelta(
+              superNodeDegree,
+              kIn,
+              neighborCommunity.sigmaTot,
+              neighborCommunity.sigmaIn,
+              m
+            ) * resolution;
 
-          if (deltaQ > bestDeltaQ) {
-            bestDeltaQ = deltaQ;
-            bestCommunityId = neighborCommunityId;
+            // Track best community (maximum ΔQ)
+            if (deltaQ > bestDeltaQ) {
+              bestDeltaQ = deltaQ;
+              bestCommunityId = neighborCommunityId;
+            }
           }
         }
 
@@ -327,6 +535,10 @@ export function detectCommunities<N extends Node, E extends Edge>(
           );
           improved = true;
           movesThisRound++;
+
+          // T030: Altered communities population (spec-027 Phase 4) - DISABLED (no benefit)
+          // alteredState.alteredCommunities.add(currentCommunityId); // Source community
+          // alteredState.alteredCommunities.add(bestCommunityId);    // Target community
         }
       }
 
@@ -394,12 +606,13 @@ export function detectCommunities<N extends Node, E extends Edge>(
     }
   });
 
-  // T014 & T015: Log performance metrics (spec-027 Phase 1)
+  // T014 & T015: Log performance metrics (spec-027 Phase 1 & Phase 4)
   const endTime = performance.now();
   const runtime = endTime - startTime;
   console.log(`[spec-027] Louvain completed in ${runtime.toFixed(2)}ms (${(runtime / 1000).toFixed(2)}s)`);
   console.log(`[spec-027] Total iterations: ${totalIterations} across ${hierarchyLevel} hierarchy levels`);
   console.log(`[spec-027] Adaptive threshold: ${adaptiveMinModularityIncrease.toExponential(1)}`);
+  console.log(`[spec-027] Neighbor selection mode: ${resolvedMode} (requested: ${mode})`);
 
   return buildCommunityResults(graph, finalNodeToCommunity);
 }
