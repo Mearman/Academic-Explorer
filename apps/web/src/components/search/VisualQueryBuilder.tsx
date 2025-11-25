@@ -43,13 +43,14 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import type { LogicalOperator } from "../filters/types/filter-ui";
 
 // Query builder types
 export interface QueryFilterChip {
   id: string;
   type: "field" | "operator" | "value";
   field?: string;
-  operator?: FilterOperator;
+  operator?: QueryFilterOperator;
   value?: unknown;
   label: string;
   category: QueryChipCategory;
@@ -74,7 +75,7 @@ export interface VisualQuery {
   description?: string;
 }
 
-export type FilterOperator =
+export type QueryFilterOperator =
   | "equals"
   | "not_equals"
   | "contains"
@@ -82,7 +83,6 @@ export type FilterOperator =
   | "less_than"
   | "between"
   | "exists";
-export type LogicalOperator = "AND" | "OR" | "NOT";
 export type QueryChipCategory =
   | "general"
   | "temporal"
