@@ -28,16 +28,32 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
   const nodes = graph.getAllNodes();
   const visited = new Set<string>();
   const inStack = new Set<string>();
+  const parent = new Map<string, string | null>();
   const postorder: N[] = [];
 
-  // DFS with cycle detection
-  function dfs(nodeId: string): Result<void, CycleDetectedError> {
+  // DFS with cycle detection and path reconstruction
+  function dfs(nodeId: string, parentId: string | null): Result<void, CycleDetectedError> {
     if (inStack.has(nodeId)) {
-      // Back edge detected - cycle!
+      // Back edge detected - reconstruct cycle path from parent chain
+      const cyclePath: string[] = [];
+      let current: string | null | undefined = parentId;
+
+      // Trace back from parent to the node where cycle starts
+      while (current !== null && current !== undefined && current !== nodeId) {
+        cyclePath.push(current);
+        current = parent.get(current);
+      }
+
+      // Add the cycle start node to complete the cycle
+      cyclePath.push(nodeId);
+
+      // Reverse to get path from cycle start to back edge
+      cyclePath.reverse();
+
       return Err({
         type: 'cycle-detected',
-        message: `Cycle detected involving node '${nodeId}'`,
-        cyclePath: [nodeId], // Simplified - actual cycle reconstruction would need more tracking
+        message: `Cycle detected: ${cyclePath.join(' → ')} → ${cyclePath[0]}`,
+        cyclePath,
       });
     }
 
@@ -47,12 +63,13 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
 
     visited.add(nodeId);
     inStack.add(nodeId);
+    parent.set(nodeId, parentId);
 
     // Visit all neighbors
     const neighborsResult = graph.getNeighbors(nodeId);
     if (neighborsResult.ok) {
       for (const neighborId of neighborsResult.value) {
-        const result = dfs(neighborId);
+        const result = dfs(neighborId, nodeId);
         if (!result.ok) {
           return result;
         }
@@ -73,7 +90,7 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
   // Run DFS from all unvisited nodes
   for (const node of nodes) {
     if (!visited.has(node.id)) {
-      const result = dfs(node.id);
+      const result = dfs(node.id, null);
       if (!result.ok) {
         return Err(result.error);
       }
