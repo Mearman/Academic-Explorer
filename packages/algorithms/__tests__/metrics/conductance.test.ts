@@ -64,7 +64,7 @@ describe('calculateConductance', () => {
     expect(conductance).toBe(0.0);
   });
 
-  it('should calculate low conductance for dense cluster', () => {
+  it('should calculate conductance for dense cluster with small complement', () => {
     const graph = new Graph<Node, Edge>(false);
 
     // Create two clusters: dense cluster A and sparse cluster B
@@ -90,8 +90,14 @@ describe('calculateConductance', () => {
 
     const conductance = calculateConductance(graph, clusterA);
 
-    // Dense cluster with few boundary edges should have low conductance
-    expect(conductance).toBeLessThan(0.3);
+    // Conductance = cut(S) / min(vol(S), vol(V\S))
+    // cut(S) = 1 (A1-B1)
+    // vol(S) = 7 (degrees: 3+2+2)
+    // vol(V\S) = 1 (degree of B1)
+    // φ(S) = 1 / min(7, 1) = 1.0
+    //
+    // Even with few boundary edges, conductance can be high when complement volume is small
+    expect(conductance).toBe(1.0);
     expect(conductance).toBeGreaterThanOrEqual(0.0);
   });
 

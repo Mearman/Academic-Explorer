@@ -8,6 +8,22 @@
 import { Graph } from '../../src/graph/graph';
 
 /**
+ * Simple seeded random number generator (mulberry32).
+ * Provides deterministic pseudo-random numbers for reproducible test fixtures.
+ *
+ * @param seed - Integer seed value
+ * @returns Function that returns random numbers in [0, 1)
+ */
+function seededRandom(seed: number): () => number {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+
+/**
  * Node with known ground truth community assignment.
  */
 export interface ClusterNode {
@@ -84,6 +100,9 @@ export function knownCommunityGraph(directed = false): {
   const numCommunities = 4;
   const nodesPerCommunity = 10;
 
+  // Use seeded random for deterministic graph generation
+  const random = seededRandom(42);
+
   // Create nodes with ground truth labels
   for (let i = 0; i < numNodes; i++) {
     const communityId = Math.floor(i / nodesPerCommunity);
@@ -103,7 +122,7 @@ export function knownCommunityGraph(directed = false): {
     for (let i = startIdx; i < endIdx; i++) {
       for (let j = i + 1; j < endIdx; j++) {
         // 90% probability of edge existing
-        if (Math.random() < 0.9) {
+        if (random() < 0.9) {
           const edge: ClusterEdge = {
             id: `E${i}-${j}`,
             source: `N${i}`,
@@ -113,7 +132,7 @@ export function knownCommunityGraph(directed = false): {
           graph.addEdge(edge);
 
           // For directed graphs, add reverse edge with same probability
-          if (directed && Math.random() < 0.9) {
+          if (directed && random() < 0.9) {
             const reverseEdge: ClusterEdge = {
               id: `E${j}-${i}`,
               source: `N${j}`,
@@ -138,7 +157,7 @@ export function knownCommunityGraph(directed = false): {
       for (let i = start1; i < end1; i++) {
         for (let j = start2; j < end2; j++) {
           // 10% probability of cross-community edge
-          if (Math.random() < 0.1) {
+          if (random() < 0.1) {
             const edge: ClusterEdge = {
               id: `E${i}-${j}-inter`,
               source: `N${i}`,
@@ -148,7 +167,7 @@ export function knownCommunityGraph(directed = false): {
             graph.addEdge(edge);
 
             // For directed graphs, add reverse edge with same probability
-            if (directed && Math.random() < 0.1) {
+            if (directed && random() < 0.1) {
               const reverseEdge: ClusterEdge = {
                 id: `E${j}-${i}-inter`,
                 source: `N${j}`,
