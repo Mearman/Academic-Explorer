@@ -371,10 +371,15 @@ if (result.ok) {
 
 ### 8. Community Detection (Louvain)
 
-Detects communities in networks using modularity optimization.
+Detects communities in networks using modularity optimization with highly optimized performance.
 
-**Time Complexity**: O(n log n) empirical
+**Time Complexity**: O(n^1.16) empirical (near O(n log n))
 **Space Complexity**: O(V + E)
+
+**Performance** (spec-027 optimization):
+- **1000 nodes**: ~443ms (97% improvement from 15.4s baseline)
+- **Scaling**: 19x time increase for 10x node increase (target: <66x for O(n log n))
+- **Memory**: <22MB for 1000-node graphs (target: <100MB)
 
 ```typescript
 import { Graph, detectCommunities, type Node, type Edge } from '@academic-explorer/algorithms';
@@ -392,7 +397,7 @@ graph.addEdge({ id: 'e1', source: 'P1', target: 'P2', type: 'cites' });
 graph.addEdge({ id: 'e2', source: 'P2', target: 'P3', type: 'cites' });
 graph.addEdge({ id: 'e3', source: 'P3', target: 'P4', type: 'cites' });
 
-// Detect communities
+// Detect communities with default configuration
 const result = detectCommunities(graph);
 
 if (result.ok) {
@@ -405,6 +410,109 @@ if (result.ok) {
   });
 }
 ```
+
+#### Configuration Options
+
+Fine-tune Louvain behavior with advanced options:
+
+```typescript
+import { detectCommunities } from '@academic-explorer/algorithms';
+
+const result = detectCommunities(graph, {
+  // Resolution parameter (default: 1.0)
+  // Higher values = more communities, lower = fewer
+  resolution: 1.0,
+
+  // Random seed for deterministic results (optional)
+  randomSeed: 42,
+
+  // Convergence threshold (default: 1e-4)
+  minModularityIncrease: 1e-4,
+
+  // Maximum iterations per level (default: 10)
+  maxIterations: 10,
+
+  // Maximum hierarchy levels (default: 10)
+  maxLevels: 10,
+
+  // CSR mode: 'auto' | 'enabled' | 'disabled' (default: 'auto')
+  // 'auto' = use CSR for graphs >200 nodes
+  csrMode: 'auto',
+
+  // Enable debug logging (default: false)
+  debug: false,
+});
+```
+
+#### Optimization Phases (spec-027)
+
+The Louvain implementation includes 5 optimization phases:
+
+**Phase 1: Adaptive Thresholds & Iteration Limits**
+- Dynamic convergence thresholds based on graph density
+- Prevents unnecessary iterations on sparse graphs
+- 40% speedup for 1000-node graphs (15.4s → 9.3s)
+
+**Phase 2: Optimized Density Calculation**
+- O(n log n) density calculation using sorted edge lists
+- Replaces O(n²) nested loops with binary search
+- Critical for large hierarchies with many communities
+
+**Phase 3: Early Termination Heuristics**
+- Stop iteration when modularity plateaus
+- Detect oscillation patterns to break cycles
+- 2x additional speedup (9.3s → 4.7s)
+
+**Phase 4: Priority Queue Optimization** (disabled by default)
+- Heap-based modularity gain tracking
+- Skips unpromising node moves
+- Adds 11% overhead for citation networks, disabled pending further tuning
+
+**Phase 5: CSR (Compressed Sparse Row) Representation**
+- Memory-efficient graph encoding using typed arrays (Uint32Array, Float64Array)
+- Cache-friendly neighbor iteration
+- Auto-enabled for graphs >200 nodes
+- 5-10x speedup for large graphs (4.7s → 443ms)
+
+#### CSR Graph Representation
+
+For large graphs, Louvain automatically converts to Compressed Sparse Row format:
+
+```typescript
+// CSR format (internal, automatic)
+interface CSRGraph {
+  nodeIds: string[];              // Node ID array
+  nodeIndex: Map<string, number>; // ID → index mapping
+  offsets: Uint32Array;           // Neighbor offset array (length: n+1)
+  edges: Uint32Array;             // Neighbor index array
+  weights: Float64Array;          // Edge weight array
+}
+```
+
+**Benefits**:
+- **Memory efficiency**: O(V + E) storage using typed arrays
+- **Cache locality**: Sequential memory access patterns
+- **Fast iteration**: O(1) neighbor lookup via offset indexing
+
+**Limitations**:
+- Uint32Array limited to 2^32-1 elements (4.29 billion edges)
+- Falls back to standard representation for extremely large graphs
+- Read-only after construction (no dynamic updates)
+
+#### Scaling Characteristics
+
+Empirical complexity analysis across graph sizes:
+
+| Nodes | Edges | Runtime | Memory | Modularity |
+|-------|-------|---------|--------|------------|
+| 100   | ~900  | 30ms    | 5MB    | 0.30       |
+| 500   | ~4500 | 159ms   | 11MB   | 0.20       |
+| 1000  | ~9000 | 443ms   | 22MB   | 0.19       |
+| 2000  | ~18k  | 987ms   | 10MB   | 0.42       |
+
+**Observed complexity**: O(n^1.16) - near-optimal for real-world graphs
+
+For implementation details, see [spec-027 Louvain Scaling Optimization](../../specs/027-louvain-scaling-optimization/).
 
 ### 9. Spectral Partitioning
 
@@ -630,7 +738,7 @@ The package includes 9 graph clustering and partitioning algorithms:
 
 | Algorithm | Use Case | Time Complexity | Key Feature |
 |-----------|----------|-----------------|-------------|
-| **Louvain** | General community detection | O(n log n) | High modularity optimization |
+| **Louvain** | General community detection | O(n^1.16) empirical | Highly optimized with CSR, ~443ms for 1000 nodes |
 | **Leiden** | Communities with connectivity | O(n log n) | Guarantees connected communities |
 | **Label Propagation** | Large graphs (10k+ nodes) | O(V + E) | Fastest, linear time |
 | **Infomap** | Directed flow networks | O((V+E)×iter) | Information-theoretic |
