@@ -61,6 +61,24 @@
     }
   ],
   "namedTargets": {
+    "barrelsby": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "barrelsby --config .barrelsby.json",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.{ts,tsx}",
+        "!{projectRoot}/src/**/index.ts",
+        "!{projectRoot}/**/*.test.{ts,tsx}",
+        "!{projectRoot}/**/*.spec.{ts,tsx}",
+        "{projectRoot}/.barrelsby.json"
+      ],
+      "outputs": [
+        "{projectRoot}/src/**/index.ts"
+      ],
+      "cache": true
+    },
     "build:lib": {
       "executor": "nx:run-commands",
       "options": {
@@ -205,6 +223,7 @@
     "build": {
       "cache": true,
       "dependsOn": [
+        "barrelsby",
         "^build"
       ],
       "inputs": [
