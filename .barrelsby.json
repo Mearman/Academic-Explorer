@@ -1,0 +1,27 @@
+{
+  "$schema": "https://github.com/bencoveney/barrelsby/blob/master/src/options/schema.json",
+  "directory": [
+    "./packages/algorithms/src",
+    "./packages/client/src",
+    "./packages/types/src",
+    "./packages/ui/src",
+    "./packages/utils/src",
+    "./apps/web/src/components"
+  ],
+  "delete": true,
+  "exclude": [
+    "node_modules",
+    "\\.test\\.",
+    "\\.spec\\.",
+    "__tests__",
+    "__mocks__",
+    "\\.stories\\.",
+    "test/",
+    "internal/"
+  ],
+  "location": "all",
+  "singleQuotes": false,
+  "noHeader": false,
+  "structure": "flat",
+  "verbose": false
+}
