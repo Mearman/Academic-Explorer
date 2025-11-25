@@ -6,7 +6,19 @@
 **Obsoleted**: 2025-11-17
 **Input**: User description: "resolve the test failures"
 
-**Obsolescence Note**: All catalogue tests are now passing. Issues were resolved through implementation of spec 001 (storage abstraction with InMemoryStorageProvider for E2E tests). Current status: 1,422 tests passing with zero catalogue test failures.
+## Obsolescence Note
+
+**Status**: This specification is OBSOLETE. No tasks from this spec were ever executed.
+
+**Relationship to spec-001**: This spec was created to fix 27 failing catalogue E2E tests. However, during investigation it was discovered that the test failures were symptoms of a deeper root cause addressed by spec-001 (storage abstraction).
+
+**Why spec-002 became obsolete**:
+1. **Root cause identified**: The catalogue test failures were primarily caused by E2E tests directly interacting with IndexedDB, which caused browser hanging and test timeouts
+2. **spec-001 resolved the root cause**: Implementation of `InMemoryStorageProvider` in spec-001 allowed E2E tests to use in-memory storage instead of IndexedDB, eliminating the hanging issues
+3. **Tests now passing**: After spec-001 completion, all 27 catalogue tests began passing without any of the UI fixes described in spec-002
+4. **Current status**: 1,422 tests passing with zero catalogue test failures
+
+**Tasks never executed**: All 105 tasks outlined in tasks.md were abandoned after spec-001 resolved the underlying storage layer issues. The UI component fixes and feature implementations described in this spec were not needed.
 
 ## User Scenarios & Testing *(mandatory)*
 

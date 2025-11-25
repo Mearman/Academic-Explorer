@@ -3,7 +3,20 @@
 **Feature**: Fix Catalogue E2E Test Failures
 **Branch**: `002-fix-catalogue-tests`
 **Created**: 2025-11-11
+**Status**: OBSOLETE - TASKS NEVER EXECUTED
 **Spec**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md)
+
+## ⚠️ OBSOLETE - TASKS NEVER EXECUTED
+
+**These tasks were abandoned and never implemented.**
+
+**Why abandoned**: During investigation of the 27 failing catalogue E2E tests, it was discovered that the root cause was not missing UI functionality (as described in these tasks), but rather a storage layer issue. The E2E tests were directly interacting with IndexedDB, causing browser hanging and test timeouts.
+
+**Resolution**: spec-001 (storage abstraction) resolved the root cause by implementing `InMemoryStorageProvider` for E2E tests. After spec-001 completion, all 27 catalogue tests began passing without any of the UI fixes described below.
+
+**Current status**: All catalogue tests passing. No work from this task list was needed or executed.
+
+---
 
 ## Summary
 

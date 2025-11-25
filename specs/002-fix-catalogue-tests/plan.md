@@ -1,7 +1,16 @@
 # Implementation Plan: Fix Catalogue E2E Test Failures
 
 **Branch**: `002-fix-catalogue-tests` | **Date**: 2025-11-11 | **Spec**: [spec.md](./spec.md)
+**Status**: OBSOLETE - Plan never executed
 **Input**: Feature specification from `/specs/002-fix-catalogue-tests/spec.md`
+
+## ⚠️ OBSOLETE NOTICE
+
+**This plan was never executed.** After creating this implementation plan, it was discovered that spec-001 (storage abstraction with InMemoryStorageProvider) resolved the root cause of the catalogue test failures. All 27 tests began passing without any of the UI fixes described in this plan.
+
+See [spec.md](./spec.md) for full obsolescence explanation and relationship to spec-001.
+
+---
 
 ## Summary
 
