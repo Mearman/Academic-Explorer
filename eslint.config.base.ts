@@ -124,8 +124,29 @@ export default tseslint.config([
             ],
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/no-non-null-assertion": "error",
-            // Enforce package alias imports for cross-package dependencies
+
+            // Import rules
             "import/no-relative-packages": "error",
+            "import/no-cycle": "error",
+            "import/no-self-import": "error",
+            "import/order": ["error", {
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    "parent",
+                    "sibling",
+                    "index"
+                ],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }],
+
+            // Forbid default exports
+            "import/no-default-export": "error",
         },
         settings: {
             "import/resolver": {
@@ -143,6 +164,20 @@ export default tseslint.config([
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "no-console": "off",
+        },
+    },
+    // Allow default exports for config files and special cases
+    {
+        files: [
+            "**/*.config.{ts,js,mjs}",
+            "**/vite.config.*.ts",
+            "**/eslint.config.*.ts",
+            "**/.storybook/**/*",
+            "**/routes/**/*.tsx", // TanStack Router route files
+            "**/routeTree.gen.ts",
+        ],
+        rules: {
+            "import/no-default-export": "off",
         },
     },
 ]);
