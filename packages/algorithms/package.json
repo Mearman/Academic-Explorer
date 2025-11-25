@@ -1,0 +1,57 @@
+{
+  "name": "@academic-explorer/algorithms",
+  "version": "0.1.0",
+  "description": "Zero-dependency TypeScript graph algorithms: DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, and strongly connected components. Generic types support heterogeneous graphs with O(V+E) performance.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "graph",
+    "algorithms",
+    "graph-algorithms",
+    "graph-theory",
+    "traversal",
+    "pathfinding",
+    "dfs",
+    "bfs",
+    "dijkstra",
+    "topological-sort",
+    "cycle-detection",
+    "connected-components",
+    "strongly-connected-components",
+    "scc",
+    "tarjan",
+    "adjacency-list",
+    "directed-graph",
+    "undirected-graph",
+    "citation-network",
+    "network-analysis",
+    "academic-research",
+    "typescript",
+    "zero-dependencies",
+    "generic-types"
+  ],
+  "author": "Academic Explorer",
+  "license": "MIT",
+  "devDependencies": {
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
