@@ -298,19 +298,19 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T114 [US9] Write failing test for Scenario 1 (articulation point detection) in packages/algorithms/test/decomposition/biconnected.test.ts
-- [ ] T115 [US9] Write failing test for Scenario 2 (component connectivity) in packages/algorithms/test/decomposition/biconnected.test.ts
-- [ ] T116 [US9] Write failing test for Scenario 3 (performance < 10s, linear time) in packages/algorithms/test/decomposition/biconnected.test.ts
-- [ ] T117 [US9] Implement Tarjan's algorithm: DFS with discovery time tracking in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T118 [US9] Implement low-link value calculation (low[v] = min(disc[v], low[children], disc[back-edges])) in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T119 [US9] Implement articulation point detection (low[child] ≥ disc[v]) in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T120 [US9] Implement root articulation point check (> 1 DFS child) in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T121 [US9] Implement biconnected component extraction (edge stack popping on backtrack) in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T122 [US9] Implement disconnected graph handling (DFS from each unvisited node) in packages/algorithms/src/decomposition/biconnected.ts
-- [ ] T123 [US9] Verify all biconnected component tests pass
-- [ ] T124 [US9] Run performance benchmark on 1000-node graph (must complete < 10s)
-- [ ] T125 [US9] Export biconnectedComponents function from packages/algorithms/src/index.ts
-- [ ] T126 [US9] Commit biconnected components with message "feat(algorithms): add biconnected component decomposition (P9)"
+- [X] T114 [US9] Write failing test for Scenario 1 (articulation point detection) in packages/algorithms/test/decomposition/biconnected.test.ts
+- [X] T115 [US9] Write failing test for Scenario 2 (component connectivity) in packages/algorithms/test/decomposition/biconnected.test.ts
+- [X] T116 [US9] Write failing test for Scenario 3 (performance < 10s, linear time) in packages/algorithms/test/decomposition/biconnected.test.ts
+- [X] T117 [US9] Implement Tarjan's algorithm: DFS with discovery time tracking in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T118 [US9] Implement low-link value calculation (low[v] = min(disc[v], low[children], disc[back-edges])) in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T119 [US9] Implement articulation point detection (low[child] ≥ disc[v]) in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T120 [US9] Implement root articulation point check (> 1 DFS child) in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T121 [US9] Implement biconnected component extraction (edge stack popping on backtrack) in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T122 [US9] Implement disconnected graph handling (DFS from each unvisited node) in packages/algorithms/src/decomposition/biconnected.ts
+- [X] T123 [US9] Verify all biconnected component tests pass
+- [X] T124 [US9] Run performance benchmark on 1000-node graph (must complete < 10s)
+- [X] T125 [US9] Export biconnectedComponents function from packages/algorithms/src/index.ts
+- [X] T126 [US9] Commit biconnected components with message "feat(algorithms): add biconnected component decomposition (P9)"
 
 ---
 
