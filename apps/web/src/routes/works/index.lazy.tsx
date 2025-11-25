@@ -107,7 +107,7 @@ const worksColumns: ColumnConfig[] = [
 
 function WorksListRoute() {
   const search = useSearch({ from: "/works/" }) as OpenAlexSearchParams;
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
   // Parse filter string into filter object if present
   const urlFilters = search.filter

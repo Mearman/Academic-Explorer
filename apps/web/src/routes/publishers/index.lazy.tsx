@@ -1,10 +1,10 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { EntityList, type EntityListColumnConfig } from "@/components/EntityList";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";
 import type { ViewMode } from "@/components/ViewModeToggle";
 
-const publishersColumns: ColumnConfig[] = [
+const publishersColumns: EntityListColumnConfig[] = [
   { key: "id", header: "ID" },
   { key: "display_name", header: "Name" },
   {
@@ -15,7 +15,7 @@ const publishersColumns: ColumnConfig[] = [
 
 function PublishersRoute() {
   const search = useSearch({ from: "/publishers/" }) as OpenAlexSearchParams;
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
   return (
     <EntityList

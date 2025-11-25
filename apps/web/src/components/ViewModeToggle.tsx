@@ -2,15 +2,18 @@ import { SegmentedControl, Group, Text } from "@mantine/core";
 import { IconTable, IconList, IconGridDots } from "@tabler/icons-react";
 import React from "react";
 
-export type ViewMode = "table" | "list" | "grid";
+export type TableViewMode = "table" | "list" | "grid";
 
 interface ViewModeToggleProps {
-  value: ViewMode;
-  onChange: (value: ViewMode) => void;
+  value: TableViewMode;
+  onChange: (value: TableViewMode) => void;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
-const VIEW_MODE_DATA = [
+const VIEW_MODE_DATA: Array<{
+  value: TableViewMode;
+  label: React.ReactNode;
+}> = [
   {
     value: "table" as const,
     label: (
@@ -48,7 +51,7 @@ export function ViewModeToggle({
   return (
     <SegmentedControl
       value={value}
-      onChange={(val) => onChange(val as ViewMode)}
+      onChange={(val) => onChange(val as TableViewMode)}
       data={VIEW_MODE_DATA}
       size={size}
       fullWidth={false}

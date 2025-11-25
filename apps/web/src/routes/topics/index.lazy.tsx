@@ -23,7 +23,7 @@ const topicsColumns: ColumnConfig[] = [
 
 function TopicsListRoute() {
   const search = useSearch({ from: "/topics/" }) as OpenAlexSearchParams;
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
   return (
     <EntityList

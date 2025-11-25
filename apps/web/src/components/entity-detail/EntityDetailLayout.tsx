@@ -10,7 +10,7 @@ import type { EntityType } from "@academic-explorer/types";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 import { AddToListModal } from "../catalogue/AddToListModal";
 
-export type ViewMode = "rich" | "raw";
+export type DetailViewMode = "rich" | "raw";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -19,8 +19,8 @@ interface EntityDetailLayoutProps {
   displayName: string;
   selectParam?: string;
   selectFields: string[];
-  viewMode: ViewMode;
-  onViewModeChange: (mode: ViewMode) => void;
+  viewMode: DetailViewMode;
+  onViewModeChange: (mode: DetailViewMode) => void;
   data: Record<string, unknown>;
   children?: ReactNode;
 }
@@ -216,7 +216,7 @@ export function EntityDetailLayout({
 
               <SegmentedControl
                 value={viewMode}
-                onChange={(value) => onViewModeChange(value as ViewMode)}
+                onChange={(value) => onViewModeChange(value as DetailViewMode)}
                 data={[
                   { label: 'Rich', value: 'rich' },
                   { label: 'Raw', value: 'raw' },

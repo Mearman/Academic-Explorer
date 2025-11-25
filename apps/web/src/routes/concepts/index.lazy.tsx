@@ -17,7 +17,7 @@ const conceptsColumns: ColumnConfig[] = [
 
 function ConceptsListRoute() {
   const search = useSearch({ from: "/concepts/" }) as OpenAlexSearchParams;
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
   return (
     <div>

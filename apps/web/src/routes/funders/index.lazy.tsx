@@ -1,10 +1,10 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { EntityList, type EntityListColumnConfig } from "@/components/EntityList";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";
 import type { ViewMode } from "@/components/ViewModeToggle";
 
-const fundersColumns: ColumnConfig[] = [
+const fundersColumns: EntityListColumnConfig[] = [
   { key: "id", header: "ID" },
   { key: "display_name", header: "Name" },
   { key: "country_code", header: "Country" },
@@ -13,7 +13,7 @@ const fundersColumns: ColumnConfig[] = [
 
 function FundersRoute() {
   const search = useSearch({ from: "/funders/" }) as OpenAlexSearchParams;
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
   return (
     <EntityList
