@@ -68,7 +68,7 @@ export function detectCommunities<N extends Node, E extends Edge>(
   const {
     weightFn = () => 1.0,
     resolution = 1.0,
-    minModularityIncrease = 1e-6,
+    minModularityIncrease,
     maxIterations = 100,
   } = options;
 
@@ -132,9 +132,18 @@ export function detectCommunities<N extends Node, E extends Edge>(
     superNodes.set(node.id, new Set([node.id]));
   });
 
+  // Adaptive strategy: Use hierarchical optimization only for larger graphs
+  // Very small graphs (<= 50 nodes) get sufficient quality with single-level optimization
+  const nodeCount = allNodes.length;
+  const useHierarchicalOptimization = nodeCount > 50;
+
+  // Adaptive modularity threshold: larger graphs use higher threshold for faster convergence
+  const adaptiveMinModularityIncrease = minModularityIncrease ??
+    (nodeCount > 500 ? 1e-5 : 1e-6);
+
   // Multi-level optimization: Phase 1 + Phase 2 repeated
   let hierarchyLevel = 0;
-  const MAX_HIERARCHY_LEVELS = 3; // Reduced for performance
+  const MAX_HIERARCHY_LEVELS = useHierarchicalOptimization ? 3 : 1;
 
   while (hierarchyLevel < MAX_HIERARCHY_LEVELS) {
     hierarchyLevel++;
@@ -166,7 +175,17 @@ export function detectCommunities<N extends Node, E extends Edge>(
     // Phase 1: Local moving optimization on super-nodes
     let improved = true;
     let iteration = 0;
-    const MAX_ITERATIONS = hierarchyLevel === 1 ? 50 : 10; // Reduced for performance
+
+    // Adaptive iteration limits based on graph size and hierarchy level
+    // Balance between convergence quality and performance
+    let MAX_ITERATIONS: number;
+    if (hierarchyLevel === 1) {
+      // First level: scale iterations with graph size
+      MAX_ITERATIONS = nodeCount < 200 ? 40 : 50;
+    } else {
+      // Higher levels: fewer iterations as super-graph is smaller
+      MAX_ITERATIONS = 12;
+    }
 
     // Build reverse lookup once per hierarchy level (optimization)
     const nodeToSuperNode = new Map<string, string>();
@@ -176,9 +195,14 @@ export function detectCommunities<N extends Node, E extends Edge>(
       });
     });
 
+    let consecutiveNoImprovementRounds = 0;
+    // Aggressive early stopping: 2 rounds for large graphs, 3 for small
+    const MAX_NO_IMPROVEMENT_ROUNDS = nodeCount > 500 ? 2 : 3;
+
     while (improved && iteration < MAX_ITERATIONS) {
       improved = false;
       iteration++;
+      let movesThisRound = 0;
 
       // Visit super-nodes in random order
       const superNodeOrder = shuffleArray([...superNodes.keys()]);
@@ -231,7 +255,7 @@ export function detectCommunities<N extends Node, E extends Edge>(
         }
 
         // Move super-node if beneficial
-        if (bestCommunityId !== currentCommunityId && bestDeltaQ > minModularityIncrease) {
+        if (bestCommunityId !== currentCommunityId && bestDeltaQ > adaptiveMinModularityIncrease) {
           moveSuperNode(
             superNodeId,
             currentCommunityId,
@@ -242,11 +266,22 @@ export function detectCommunities<N extends Node, E extends Edge>(
             nodeDegrees
           );
           improved = true;
+          movesThisRound++;
         }
       }
 
       // Remove empty communities
       removeEmptyCommunities(communities, nodeToCommunity);
+
+      // Early convergence detection
+      if (movesThisRound === 0) {
+        consecutiveNoImprovementRounds++;
+        if (consecutiveNoImprovementRounds >= MAX_NO_IMPROVEMENT_ROUNDS) {
+          break; // Converged - no point continuing
+        }
+      } else {
+        consecutiveNoImprovementRounds = 0;
+      }
     }
 
     // Phase 2: Aggregate communities into new super-nodes
