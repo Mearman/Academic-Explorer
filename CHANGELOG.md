@@ -1,3 +1,21 @@
+## 19.1.0 (2025-11-25)
+
+* chore(deps): add vite-plugin-dts for TypeScript declaration generation ([f7f8f28](https://github.com/Mearman/Academic-Explorer/commit/f7f8f28))
+* chore(release): 19.0.2 [skip ci] ([d03865d](https://github.com/Mearman/Academic-Explorer/commit/d03865d))
+* chore(workspace): add algorithms package to TypeScript path mappings ([ac30290](https://github.com/Mearman/Academic-Explorer/commit/ac30290))
+* docs(algorithms): add comprehensive README documentation ([d9d850b](https://github.com/Mearman/Academic-Explorer/commit/d9d850b))
+* docs(spec-024): add algorithms package specification ([4f4c8b8](https://github.com/Mearman/Academic-Explorer/commit/4f4c8b8))
+* test(algorithms): add comprehensive unit tests for all algorithms ([1c09f0f](https://github.com/Mearman/Academic-Explorer/commit/1c09f0f))
+* test(algorithms): add integration and edge case tests ([09b9ca9](https://github.com/Mearman/Academic-Explorer/commit/09b9ca9))
+* test(algorithms): add memory validation and performance tests ([7dc0796](https://github.com/Mearman/Academic-Explorer/commit/7dc0796))
+* feat(algorithms): add DFS and BFS traversal algorithms ([424d26b](https://github.com/Mearman/Academic-Explorer/commit/424d26b))
+* feat(algorithms): add Dijkstra shortest path algorithm ([28633de](https://github.com/Mearman/Academic-Explorer/commit/28633de))
+* feat(algorithms): add generic Graph data structure ([6ba5b84](https://github.com/Mearman/Academic-Explorer/commit/6ba5b84))
+* feat(algorithms): add graph analysis algorithms ([85dcb09](https://github.com/Mearman/Academic-Explorer/commit/85dcb09))
+* feat(algorithms): add main package exports ([61f4ab9](https://github.com/Mearman/Academic-Explorer/commit/61f4ab9))
+* feat(algorithms): add package infrastructure and configuration ([8eb8bc9](https://github.com/Mearman/Academic-Explorer/commit/8eb8bc9))
+* feat(algorithms): add type system with Result and Option types ([0b7939b](https://github.com/Mearman/Academic-Explorer/commit/0b7939b))
+
 ## <small>19.0.2 (2025-11-25)</small>
 
 * chore(deps-dev): bump @nx/devkit from 22.1.0 to 22.1.1 (#106) ([746d1f6](https://github.com/Mearman/Academic-Explorer/commit/746d1f6)), closes [#106](https://github.com/Mearman/Academic-Explorer/issues/106)
