@@ -1,3 +1,11 @@
+## 19.2.0 (2025-11-25)
+
+* test(academic-explorer): add weight function tests for Dijkstra (8 tests) ([a1abf39](https://github.com/Mearman/Academic-Explorer/commit/a1abf39))
+* feat(academic-explorer): add weight function support to Dijkstra algorithm ([5c337ee](https://github.com/Mearman/Academic-Explorer/commit/5c337ee))
+* feat(academic-explorer): add weight function type for flexible edge/node weight extraction ([15eb0b0](https://github.com/Mearman/Academic-Explorer/commit/15eb0b0))
+* feat(academic-explorer): implement proper cycle path reconstruction in topological sort ([485b22e](https://github.com/Mearman/Academic-Explorer/commit/485b22e))
+* chore(release): 19.1.0 [skip ci] ([3ece267](https://github.com/Mearman/Academic-Explorer/commit/3ece267))
+
 ## 19.1.0 (2025-11-25)
 
 * chore(deps): add vite-plugin-dts for TypeScript declaration generation ([f7f8f28](https://github.com/Mearman/Academic-Explorer/commit/f7f8f28))
