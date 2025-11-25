@@ -145,13 +145,22 @@ T047-T053 (community caching), T054-T064 (verification) = 18 tasks
 
 ### Community Hash Table Cache
 
-- [ ] T047 [P] [US3] Add CommunityHashTable type to packages/algorithms/src/types/clustering-types.ts (Map<string, number>)
-- [ ] T048 [P] [US3] Add communityKey(fromId: number, toId: number): string helper to louvain.ts (returns "${fromId}-${toId}")
-- [ ] T049 [US3] Implement getCommunityEdgeWeight(cache, fromCommunity, toCommunity, csrGraph, communities): number in louvain.ts (lazy cache population)
-- [ ] T050 [US3] Implement invalidateCommunityCache(cache, communityId): void in louvain.ts (delete all entries with fromId === communityId or toId === communityId)
-- [ ] T051 [US3] Initialize community cache in louvain.ts local moving phase: cache = new Map<string, number>()
-- [ ] T052 [US3] Update ΔQ calculation in louvain.ts: use getCommunityEdgeWeight(cache, ...) instead of recalculating edge sums
-- [ ] T053 [US3] Add cache invalidation on node move in louvain.ts: call invalidateCommunityCache(cache, oldCommunity) and invalidateCommunityCache(cache, newCommunity)
+- [X] T047 [P] [US3] Add CommunityHashTable type to packages/algorithms/src/types/clustering-types.ts (Map<string, number>)
+- [X] T048 [P] [US3] Add communityKey(fromId: number, toId: number): string helper to louvain.ts (returns "${fromId}-${toId}")
+- [X] T049 [US3] Implement getCommunityEdgeWeight(cache, fromCommunity, toCommunity, csrGraph, communities): number in louvain.ts (lazy cache population)
+- [X] T050 [US3] Implement invalidateCommunityCache(cache, communityId): void in louvain.ts (delete all entries with fromId === communityId or toId === communityId)
+- [X] T051 [US3] Initialize community cache in louvain.ts local moving phase: cache = new Map<string, number>()
+- [~] T052 [US3] Update ΔQ calculation in louvain.ts: use getCommunityEdgeWeight(cache, ...) instead of recalculating edge sums (**SKIPPED** - not applicable to current algorithm variant)
+- [X] T053 [US3] Add cache invalidation on node move in louvain.ts: call invalidateCommunityCache(cache, oldCommunity) and invalidateCommunityCache(cache, newCommunity)
+
+**Checkpoint**: ✅ Community cache infrastructure complete (T047-T053) but **NO PERFORMANCE
+BENEFIT**. Testing revealed cache adds overhead without gains for current algorithm. Results:
+**Before** (CSR only): 1000 nodes in 4.78s. **After** (CSR + cache): 1000 nodes in 5.33s
+(11% **slower**). Root cause: Cache invalidation calls add O(C) overhead per node move even
+with empty cache. Algorithm calculates per-node edge weights (kIn), not community-to-community
+totals that cache would optimize. **Recommendation**: Revert T051/T053 (cache init/invalidation),
+keep T047-T050 (infrastructure) for future algorithm variants. Phase 5 CSR neighbor iteration
+(T044-T046) remains the primary optimization (50-60% speedup).
 
 ### Verification for User Story 3
 

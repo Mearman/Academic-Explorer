@@ -417,6 +417,29 @@ export interface AlteredCommunitiesState {
   alteredCommunities: Set<number>;
 }
 
+/**
+ * Community edge weight cache for Louvain optimization.
+ *
+ * @remarks
+ * Hash table caching edge weights between pairs of communities.
+ * Reduces redundant calculations during modularity evaluations.
+ *
+ * **Cache Key Format**: `"${fromCommunityId}-${toCommunityId}"`
+ * **Cache Value**: Total weight of edges from community `fromCommunityId` to `toCommunityId`
+ *
+ * **Lifecycle**:
+ * - Initialized as empty Map at the start of each local moving phase
+ * - Populated lazily when getCommunityEdgeWeight() is called (cache miss)
+ * - Invalidated when a node moves (delete entries involving affected communities)
+ *
+ * **Expected Performance**:
+ * - Cache hit rate: >80% after first iteration
+ * - Speedup: 20-40% reduction in runtime for 1000-node graphs
+ *
+ * @since Phase 5 (spec-027, Community Caching)
+ */
+export type CommunityHashTable = Map<string, number>;
+
 // ============================================================================
 // Error Types
 // ============================================================================

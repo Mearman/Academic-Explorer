@@ -16,7 +16,7 @@
 
 import type { Graph } from '../graph/graph';
 import type { Node, Edge } from '../types/graph';
-import type { Community, LouvainConfiguration, AlteredCommunitiesState } from '../types/clustering-types';
+import type { Community, LouvainConfiguration, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
 import type { WeightFunction } from '../types/weight-function';
 import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
@@ -437,6 +437,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
     // Aggressive early stopping: 2 rounds for large graphs, 3 for small
     const MAX_NO_IMPROVEMENT_ROUNDS = nodeCount > 500 ? 2 : 3;
 
+    // T051: Initialize community edge weight cache (spec-027 Phase 5)
+    const communityCache: CommunityHashTable = new Map();
+
     // T028-T031: Altered communities heuristic (spec-027 Phase 4) - DISABLED
     // Testing showed NO performance benefit for citation networks:
     // - Best mode only: 5.67s for 1000 nodes, Q=0.3718
@@ -555,6 +558,10 @@ export function detectCommunities<N extends Node, E extends Edge>(
           );
           improved = true;
           movesThisRound++;
+
+          // T053: Invalidate cache entries for affected communities (spec-027 Phase 5)
+          invalidateCommunityCache(communityCache, currentCommunityId);
+          invalidateCommunityCache(communityCache, bestCommunityId);
 
           // T030: Altered communities population (spec-027 Phase 4) - DISABLED (no benefit)
           // alteredState.alteredCommunities.add(currentCommunityId); // Source community
@@ -704,6 +711,150 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
   }
 
   return totalWeight;
+}
+
+/**
+ * Generate cache key for community pair edge weight lookup.
+ *
+ * @param fromId - Source community ID
+ * @param toId - Target community ID
+ * @returns Cache key string in format "fromId-toId"
+ *
+ * @remarks
+ * Used to create unique keys for CommunityHashTable lookups.
+ * Key format enables O(1) cache access for community edge weights during ΔQ calculations.
+ *
+ * @since Phase 5 (spec-027, T048)
+ */
+function communityKey(fromId: number, toId: number): string {
+  return `${fromId}-${toId}`;
+}
+
+/**
+ * Get total edge weight from one community to another with lazy caching.
+ *
+ * @param cache - Community edge weight cache
+ * @param fromCommunity - Source community ID
+ * @param toCommunity - Target community ID
+ * @param csrGraph - CSR graph representation
+ * @param nodeToCommunity - Map from node ID to community ID
+ * @param communities - Map from community ID to set of node IDs
+ * @returns Total weight of edges from fromCommunity to toCommunity
+ *
+ * @remarks
+ * **Cache Strategy**:
+ * - Cache hit: Return cached value (O(1))
+ * - Cache miss: Calculate via CSR iteration, populate cache, return value
+ *
+ * **Algorithm** (on cache miss):
+ * 1. For each node in fromCommunity
+ * 2. Iterate through CSR neighbors using offsets/edges/weights
+ * 3. Sum weights for neighbors in toCommunity
+ * 4. Store result in cache for future lookups
+ *
+ * **Performance**:
+ * - Expected cache hit rate: >80% after first iteration
+ * - Cache hit: O(1), Cache miss: O(E_community) where E_community = edges from fromCommunity
+ *
+ * @since Phase 5 (spec-027, T049)
+ */
+function getCommunityEdgeWeight<N extends Node, E extends Edge>(
+  cache: CommunityHashTable,
+  fromCommunity: number,
+  toCommunity: number,
+  csrGraph: CSRGraph<N, E>,
+  nodeToCommunity: Map<string, number>,
+  communities: Map<number, Set<string>>
+): number {
+  // Check cache first
+  const key = communityKey(fromCommunity, toCommunity);
+  const cached = cache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  // Cache miss: calculate edge weight
+  let totalWeight = 0;
+
+  const fromNodes = communities.get(fromCommunity);
+  if (!fromNodes) {
+    // Empty community - cache and return 0
+    cache.set(key, 0);
+    return 0;
+  }
+
+  // For each node in source community
+  for (const nodeId of fromNodes) {
+    const nodeIdx = csrGraph.nodeIndex.get(nodeId);
+    if (nodeIdx === undefined) continue;
+
+    const start = csrGraph.offsets[nodeIdx];
+    const end = csrGraph.offsets[nodeIdx + 1];
+
+    // Iterate through CSR-packed neighbors
+    for (let i = start; i < end; i++) {
+      const targetIdx = csrGraph.edges[i];
+      const targetNodeId = csrGraph.nodeIds[targetIdx];
+      const targetCommunity = nodeToCommunity.get(targetNodeId);
+
+      // If neighbor is in target community, add edge weight
+      if (targetCommunity === toCommunity) {
+        totalWeight += csrGraph.weights[i];
+      }
+    }
+  }
+
+  // Populate cache and return
+  cache.set(key, totalWeight);
+  return totalWeight;
+}
+
+/**
+ * Invalidate cache entries involving a specific community.
+ *
+ * @param cache - Community edge weight cache
+ * @param communityId - Community ID whose cache entries should be invalidated
+ *
+ * @remarks
+ * When a node moves from one community to another, edge weights to/from both
+ * affected communities change. This function removes all cache entries where
+ * communityId appears as either source or target.
+ *
+ * **Algorithm**:
+ * 1. Iterate through all cache keys in format "fromId-toId"
+ * 2. Parse fromId and toId from each key
+ * 3. Delete entry if either fromId or toId equals communityId
+ *
+ * **Performance**: O(C²) where C = number of communities (cache size)
+ * - Typically C << N (nodes), so this is acceptable
+ * - Called once per node move in local moving phase
+ *
+ * @since Phase 5 (spec-027, T050)
+ */
+function invalidateCommunityCache(
+  cache: CommunityHashTable,
+  communityId: number
+): void {
+  const keysToDelete: string[] = [];
+
+  // Collect keys to delete (can't delete during iteration)
+  for (const key of cache.keys()) {
+    const parts = key.split('-');
+    if (parts.length === 2) {
+      const fromId = parseInt(parts[0], 10);
+      const toId = parseInt(parts[1], 10);
+
+      // Delete if communityId appears in either position
+      if (fromId === communityId || toId === communityId) {
+        keysToDelete.push(key);
+      }
+    }
+  }
+
+  // Delete collected keys
+  for (const key of keysToDelete) {
+    cache.delete(key);
+  }
 }
 
 /**
