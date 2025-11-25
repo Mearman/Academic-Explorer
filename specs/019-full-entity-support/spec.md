@@ -2,8 +2,9 @@
 
 **Feature Branch**: `019-full-entity-support`
 **Created**: 2025-11-21
-**Status**: Completed
-**Completed**: 2025-11-21
+**Status**: Near Complete
+**Progress**: 9/11 tasks (82%)
+**Note**: Core implementation complete. Documentation tasks T010-T011 remain incomplete.
 **Input**: User description: "ensure we have FULL support for ALL of these (including licenses) and have corresponding http://localhost:5173/#/{TYPE}/{ID} pages to support them"
 
 ## User Scenarios & Testing *(mandatory)*
