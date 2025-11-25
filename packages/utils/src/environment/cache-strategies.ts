@@ -90,9 +90,10 @@ export enum CachePriority {
 }
 
 /**
- * Cache storage types
+ * Cache storage backend types
+ * Note: This is different from cache-browser's CacheStorageType which refers to data types.
  */
-export enum CacheStorageType {
+export enum CacheBackendType {
 	/** In-memory storage (fastest, not persistent) */
 	MEMORY = "memory",
 
@@ -123,10 +124,10 @@ export interface CacheStrategyConfig {
 	operations: CacheOperation[]
 
 	/** Storage type preference */
-	storageType: CacheStorageType
+	storageType: CacheBackendType
 
 	/** Fallback storage types */
-	fallbackStorageTypes: CacheStorageType[]
+	fallbackStorageTypes: CacheBackendType[]
 
 	/** Default cache priority */
 	defaultPriority: CachePriority
@@ -189,8 +190,8 @@ export class CacheStrategySelector {
 						CacheOperation.WRITE_THROUGH,
 						CacheOperation.INVALIDATE_REFRESH,
 					],
-					storageType: CacheStorageType.INDEXED_DB,
-					fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+					storageType: CacheBackendType.INDEXED_DB,
+					fallbackStorageTypes: [CacheBackendType.LOCAL_STORAGE, CacheBackendType.MEMORY],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
 					compression: false,
@@ -204,7 +205,7 @@ export class CacheStrategySelector {
 				return {
 					strategy,
 					operations: [CacheOperation.READ_THROUGH, CacheOperation.WRITE_THROUGH],
-					storageType: CacheStorageType.MEMORY,
+					storageType: CacheBackendType.MEMORY,
 					fallbackStorageTypes: [],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
@@ -219,8 +220,8 @@ export class CacheStrategySelector {
 				return {
 					strategy,
 					operations: [CacheOperation.CACHE_FIRST, CacheOperation.READ_THROUGH],
-					storageType: CacheStorageType.STATIC_FILE,
-					fallbackStorageTypes: [CacheStorageType.INDEXED_DB, CacheStorageType.LOCAL_STORAGE],
+					storageType: CacheBackendType.STATIC_FILE,
+					fallbackStorageTypes: [CacheBackendType.INDEXED_DB, CacheBackendType.LOCAL_STORAGE],
 					defaultPriority: CachePriority.HIGH,
 					backgroundSync: true,
 					compression: true,
@@ -238,8 +239,8 @@ export class CacheStrategySelector {
 						CacheOperation.WRITE_BEHIND,
 						CacheOperation.CACHE_FIRST,
 					],
-					storageType: CacheStorageType.INDEXED_DB,
-					fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+					storageType: CacheBackendType.INDEXED_DB,
+					fallbackStorageTypes: [CacheBackendType.LOCAL_STORAGE, CacheBackendType.MEMORY],
 					defaultPriority: CachePriority.HIGH,
 					backgroundSync: true,
 					compression: true,
@@ -253,7 +254,7 @@ export class CacheStrategySelector {
 				return {
 					strategy,
 					operations: [CacheOperation.CACHE_ONLY],
-					storageType: CacheStorageType.MOCK,
+					storageType: CacheBackendType.MOCK,
 					fallbackStorageTypes: [],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
@@ -268,7 +269,7 @@ export class CacheStrategySelector {
 				return {
 					strategy,
 					operations: [CacheOperation.READ_THROUGH, CacheOperation.WRITE_THROUGH],
-					storageType: CacheStorageType.MEMORY,
+					storageType: CacheBackendType.MEMORY,
 					fallbackStorageTypes: [],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
@@ -287,8 +288,8 @@ export class CacheStrategySelector {
 						CacheOperation.WRITE_THROUGH,
 						CacheOperation.CACHE_FIRST,
 					],
-					storageType: CacheStorageType.INDEXED_DB,
-					fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE],
+					storageType: CacheBackendType.INDEXED_DB,
+					fallbackStorageTypes: [CacheBackendType.LOCAL_STORAGE],
 					defaultPriority: CachePriority.CRITICAL,
 					backgroundSync: true,
 					compression: true,
@@ -306,8 +307,8 @@ export class CacheStrategySelector {
 				return {
 					strategy,
 					operations: [CacheOperation.CACHE_ONLY],
-					storageType: CacheStorageType.INDEXED_DB,
-					fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+					storageType: CacheBackendType.INDEXED_DB,
+					fallbackStorageTypes: [CacheBackendType.LOCAL_STORAGE, CacheBackendType.MEMORY],
 					defaultPriority: CachePriority.CRITICAL,
 					backgroundSync: false,
 					compression: true,
@@ -325,8 +326,8 @@ export class CacheStrategySelector {
 						CacheOperation.WRITE_THROUGH,
 						CacheOperation.INVALIDATE_REFRESH,
 					],
-					storageType: CacheStorageType.MEMORY,
-					fallbackStorageTypes: [CacheStorageType.INDEXED_DB],
+					storageType: CacheBackendType.MEMORY,
+					fallbackStorageTypes: [CacheBackendType.INDEXED_DB],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
 					compression: false,
@@ -345,7 +346,7 @@ export class CacheStrategySelector {
 				return {
 					strategy: CacheStrategy.DEVELOPMENT_MEMORY_ONLY,
 					operations: [CacheOperation.READ_THROUGH],
-					storageType: CacheStorageType.MEMORY,
+					storageType: CacheBackendType.MEMORY,
 					fallbackStorageTypes: [],
 					defaultPriority: CachePriority.NORMAL,
 					backgroundSync: false,
@@ -446,17 +447,11 @@ export class CacheStrategySelector {
 }
 
 /**
- * Convenience function to get cache strategy for current environment
- */
-export function getCurrentCacheStrategy(): CacheStrategy {
-	// This would import from environment-detector, but we avoid circular imports
-	// Implementation should be provided by mode-switcher
-	throw new Error("getCurrentCacheStrategy should be called through mode-switcher")
-}
-
-/**
  * Convenience function to get cache strategy configuration
  */
 export function getCacheStrategyConfig(strategy: CacheStrategy): CacheStrategyConfig {
 	return CacheStrategySelector.getStrategyConfig(strategy)
 }
+
+// Note: getCurrentCacheStrategy() is exported from mode-switcher.ts
+// to avoid circular dependencies

@@ -12,7 +12,7 @@ import {
 	CacheStrategy,
 	CacheOperation,
 	CachePriority,
-	CacheStorageType,
+	CacheBackendType,
 	type CacheStrategyConfig,
 } from "./cache-strategies.js"
 import { logger } from "../logger.js"
@@ -32,7 +32,7 @@ export interface ModeOptions {
 	/** Override cache strategy */
 	cacheStrategy?: CacheStrategy
 	/** Override storage type */
-	storageType?: CacheStorageType
+	storageType?: CacheBackendType
 	/** Custom cache size limit */
 	maxCacheSize?: number
 	/** Custom TTL in milliseconds */
@@ -171,7 +171,7 @@ export class ModeSwitcher {
 		environments: Array<"development" | "production" | "test">
 		useCases: Array<"research" | "production" | "development" | "testing">
 		strategies: CacheStrategy[]
-		storageTypes: CacheStorageType[]
+		storageTypes: CacheBackendType[]
 	} {
 		const context = EnvironmentDetector.getBuildContext()
 		const strategies = CacheStrategySelector.getAvailableStrategies(context)
@@ -181,10 +181,10 @@ export class ModeSwitcher {
 			useCases: ["research", "production", "development", "testing"],
 			strategies,
 			storageTypes: [
-				CacheStorageType.MEMORY,
-				CacheStorageType.LOCAL_STORAGE,
-				CacheStorageType.INDEXED_DB,
-				CacheStorageType.STATIC_FILE,
+				CacheBackendType.MEMORY,
+				CacheBackendType.LOCAL_STORAGE,
+				CacheBackendType.INDEXED_DB,
+				CacheBackendType.STATIC_FILE,
 			],
 		}
 	}
@@ -206,7 +206,7 @@ export class ModeSwitcher {
 		}
 
 		// Check storage type compatibility
-		if (options.storageType === CacheStorageType.STATIC_FILE && !options.offline) {
+		if (options.storageType === CacheBackendType.STATIC_FILE && !options.offline) {
 			warnings.push("Static file storage works best in offline mode")
 		}
 
