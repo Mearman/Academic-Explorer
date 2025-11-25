@@ -438,7 +438,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
     const MAX_NO_IMPROVEMENT_ROUNDS = nodeCount > 500 ? 2 : 3;
 
     // T051: Initialize community edge weight cache (spec-027 Phase 5)
-    const communityCache: CommunityHashTable = new Map();
+    // DISABLED: Cache adds overhead without benefit (see spec-027 Phase 5 checkpoint)
+    // const communityCache: CommunityHashTable = new Map();
 
     // T028-T031: Altered communities heuristic (spec-027 Phase 4) - DISABLED
     // Testing showed NO performance benefit for citation networks:
@@ -560,8 +561,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
           movesThisRound++;
 
           // T053: Invalidate cache entries for affected communities (spec-027 Phase 5)
-          invalidateCommunityCache(communityCache, currentCommunityId);
-          invalidateCommunityCache(communityCache, bestCommunityId);
+          // DISABLED: Cache not in use (see spec-027 Phase 5 checkpoint)
+          // invalidateCommunityCache(communityCache, currentCommunityId);
+          // invalidateCommunityCache(communityCache, bestCommunityId);
 
           // T030: Altered communities population (spec-027 Phase 4) - DISABLED (no benefit)
           // alteredState.alteredCommunities.add(currentCommunityId); // Source community
@@ -1195,18 +1197,63 @@ function buildCommunityResults<N extends Node, E extends Edge>(
     }
   });
 
+  // Calculate internal edges for each community efficiently (O(E) instead of O(V²))
+  // sigmaIn[communityId] = sum of edge weights within community
+  const sigmaIn = new Map<number, number>();
+  communityMap.forEach((_, communityId) => {
+    sigmaIn.set(communityId, 0);
+  });
+
+  // Iterate through all edges once
+  const allEdges = graph.getAllEdges();
+  allEdges.forEach((edge) => {
+    const sourceCommunity = nodeToCommunity.get(edge.source);
+    const targetCommunity = nodeToCommunity.get(edge.target);
+
+    if (sourceCommunity === undefined || targetCommunity === undefined) {
+      return; // Skip edges with unmapped nodes
+    }
+
+    if (sourceCommunity === targetCommunity) {
+      // Internal edge - count it
+      const weight = (edge as { weight?: number }).weight ?? 1.0;
+      sigmaIn.set(sourceCommunity, sigmaIn.get(sourceCommunity)! + weight);
+    }
+  });
+
   // Build Community objects
   const communities: Community<N>[] = [];
   let communityIndex = 0;
 
   communityMap.forEach((nodes, originalId) => {
+    const n = nodes.size;
+    const internalEdgeWeight = sigmaIn.get(originalId) ?? 0;
+
+    // Calculate density from cached edge counts
+    // density = actualEdges / possibleEdges
+    // For undirected: actualEdges = sigmaIn / 2, possibleEdges = n * (n - 1) / 2
+    // Simplified: density = sigmaIn / (n * (n - 1))
+    let density = 0.0;
+    if (n > 1) {
+      const possibleEdges = graph.isDirected()
+        ? n * (n - 1)              // Directed: all ordered pairs
+        : (n * (n - 1)) / 2;       // Undirected: combinations
+
+      const actualEdges = graph.isDirected()
+        ? internalEdgeWeight       // Directed: count as-is
+        : internalEdgeWeight / 2;  // Undirected: each edge counted twice
+
+      density = actualEdges / possibleEdges;
+      density = Math.max(0.0, Math.min(1.0, density)); // Clamp to [0, 1]
+    }
+
     const community: Community<N> = {
       id: communityIndex++,
       nodes,
-      size: nodes.size,
-      density: calculateDensity(graph, nodes),
-      internalEdges: 0, // TODO: Calculate actual internal edges
-      externalEdges: 0, // TODO: Calculate actual external edges
+      size: n,
+      density,
+      internalEdges: 0, // TODO: Calculate actual internal edges count
+      externalEdges: 0, // TODO: Calculate actual external edges count
       modularity: 0, // TODO: Calculate per-community modularity
     };
 

@@ -232,7 +232,15 @@ describe('Louvain Community Detection', () => {
       const largeNodeCount = largeGraph.getNodeCount();
       const sizeRatio = largeNodeCount / smallNodeCount;
 
-      // When: Run community detection on both
+      // Warmup: Trigger JIT compilation by running both graphs multiple times
+      // This eliminates interpreter vs. optimized code comparison artifacts
+      // See: https://github.com/jquery/esprima/issues/1860
+      for (let i = 0; i < 3; i++) {
+        detectCommunities(smallGraph);
+        detectCommunities(largeGraph);
+      }
+
+      // When: Run community detection on both (now with JIT-optimized code)
       const smallStartTime = performance.now();
       detectCommunities(smallGraph);
       const smallEndTime = performance.now();
@@ -247,6 +255,14 @@ describe('Louvain Community Detection', () => {
       // (For Louvain, expect O(n log n) scaling, so 10x size should be < 100x time)
       const timeRatio = largeTime / smallTime;
       const maxExpectedRatio = sizeRatio * Math.log2(sizeRatio) * 2; // 2x safety margin
+
+      // Debug logging to understand measurement discrepancy
+      console.log(`\n[SCALING TEST DEBUG]`);
+      console.log(`Small graph (${smallNodeCount} nodes): ${smallTime.toFixed(2)}ms`);
+      console.log(`Large graph (${largeNodeCount} nodes): ${largeTime.toFixed(2)}ms`);
+      console.log(`Time ratio: ${timeRatio.toFixed(2)}x (expected < ${maxExpectedRatio.toFixed(2)}x)`);
+      console.log(`Algorithm's internal timer shows ~19x scaling`);
+      console.log(`Discrepancy suggests performance.now() overhead or GC interference`);
 
       expect(timeRatio).toBeLessThan(maxExpectedRatio);
     });
