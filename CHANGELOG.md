@@ -1,3 +1,51 @@
+## 20.0.0 (2025-11-25)
+
+* chore(deps): add body-parser override for security ([05abacf](https://github.com/Mearman/Academic-Explorer/commit/05abacf))
+* chore(release): 19.2.0 [skip ci] ([a7bd1da](https://github.com/Mearman/Academic-Explorer/commit/a7bd1da))
+* docs(academic-explorer): clarify SlashCommand tool requirement in Principle X ([01b4a62](https://github.com/Mearman/Academic-Explorer/commit/01b4a62))
+* docs(academic-explorer): complete planning for spec 025 graph clustering ([f801d93](https://github.com/Mearman/Academic-Explorer/commit/f801d93))
+* docs(docs): amend constitution v2.5.0 - add Principle XI ([c452189](https://github.com/Mearman/Academic-Explorer/commit/c452189))
+* docs(docs): complete Phase 12 polish and integration (spec-025) ([53b55ad](https://github.com/Mearman/Academic-Explorer/commit/53b55ad))
+* docs(docs): complete planning for spec 027 Louvain optimization ([293b064](https://github.com/Mearman/Academic-Explorer/commit/293b064))
+* docs(docs): create spec-027 for Louvain scaling optimization ([c206901](https://github.com/Mearman/Academic-Explorer/commit/c206901))
+* docs(docs): document Louvain algorithm optimization research (spec-025) ([61ad6ef](https://github.com/Mearman/Academic-Explorer/commit/61ad6ef))
+* docs(docs): mark Phase 12 complete in spec-025 tasks.md ([5438b15](https://github.com/Mearman/Academic-Explorer/commit/5438b15))
+* docs(docs): mark Phase 3 (US1 Louvain) as complete in spec-025 tasks ([def0077](https://github.com/Mearman/Academic-Explorer/commit/def0077))
+* docs(docs): mark Phase 3 (US1 Parameter Tuning) as complete in spec-027 ([587d068](https://github.com/Mearman/Academic-Explorer/commit/587d068))
+* docs(docs): mark Phase 5 (US5 Leiden) as complete in spec-025 tasks ([a448eef](https://github.com/Mearman/Academic-Explorer/commit/a448eef))
+* docs(docs): mark spec-025 graph clustering as complete (134/134 tasks) ([04fbd5a](https://github.com/Mearman/Academic-Explorer/commit/04fbd5a))
+* docs(docs): update tasks.md with Core-Periphery bug fix status ([583ec87](https://github.com/Mearman/Academic-Explorer/commit/583ec87))
+* docs(spec-026): complete planning phase (plan, research, data-model, contracts, quickstart, tasks) ([386009f](https://github.com/Mearman/Academic-Explorer/commit/386009f))
+* perf(academic-explorer): add Louvain parameter tuning (spec-027 P2-P3) ([6470157](https://github.com/Mearman/Academic-Explorer/commit/6470157))
+* perf(academic-explorer): optimize Louvain algorithm for better scaling efficiency ([1955c04](https://github.com/Mearman/Academic-Explorer/commit/1955c04))
+* fix(academic-explorer): correct Core-Periphery Borgatti-Everett update formula ([937c21c](https://github.com/Mearman/Academic-Explorer/commit/937c21c))
+* fix(academic-explorer): correct k-core decomposition core number assignment ([14c337a](https://github.com/Mearman/Academic-Explorer/commit/14c337a))
+* fix(academic-explorer): increase k-core performance test safety margin to 2.2x ([40cb14f](https://github.com/Mearman/Academic-Explorer/commit/40cb14f))
+* fix(scripts): prevent octal interpretation in feature number parsing ([a6b66cc](https://github.com/Mearman/Academic-Explorer/commit/a6b66cc))
+* test(academic-explorer): add seeded RNG to citation networks for deterministic tests ([76f9077](https://github.com/Mearman/Academic-Explorer/commit/76f9077))
+* test(algorithms): add failing tests for Louvain community detection (T017-T019) ([4d92bc9](https://github.com/Mearman/Academic-Explorer/commit/4d92bc9))
+* test(shared-utils): add unit tests for clustering metrics ([c131b88](https://github.com/Mearman/Academic-Explorer/commit/c131b88))
+* feat(academic-explorer): add biconnected component decomposition (P9) ([7f94a1e](https://github.com/Mearman/Academic-Explorer/commit/7f94a1e))
+* feat(academic-explorer): add core-periphery decomposition (P8) ([2898104](https://github.com/Mearman/Academic-Explorer/commit/2898104))
+* feat(academic-explorer): add Infomap clustering (P7) ([457dd2e](https://github.com/Mearman/Academic-Explorer/commit/457dd2e))
+* feat(academic-explorer): add k-core decomposition (P4) ([23cf212](https://github.com/Mearman/Academic-Explorer/commit/23cf212))
+* feat(academic-explorer): add k-core decomposition to spec 025 as User Story 4 (P4) ([da92fdb](https://github.com/Mearman/Academic-Explorer/commit/da92fdb))
+* feat(academic-explorer): add label propagation clustering (P6) ([73e31f8](https://github.com/Mearman/Academic-Explorer/commit/73e31f8))
+* feat(academic-explorer): add Louvain community detection (P1) ([7065637](https://github.com/Mearman/Academic-Explorer/commit/7065637))
+* feat(academic-explorer): add spectral graph partitioning (P2) ([9951859](https://github.com/Mearman/Academic-Explorer/commit/9951859))
+* feat(academic-explorer): complete Louvain Phase 2 with hierarchical aggregation (T020-T024) ([49e1fcb](https://github.com/Mearman/Academic-Explorer/commit/49e1fcb)), closes [hi#quality](https://github.com/hi/issues/quality)
+* feat(academic-explorer): expand spec 025 to comprehensive clustering suite (9 algorithms) ([089ab4d](https://github.com/Mearman/Academic-Explorer/commit/089ab4d)), closes [hi#priority](https://github.com/hi/issues/priority)
+* feat(algorithms): implement Louvain community detection (T020-T024) [WIP] ([bda88e9](https://github.com/Mearman/Academic-Explorer/commit/bda88e9))
+* feat(docs): generate tasks.md for graph clustering feature (spec-025) ([4c97f31](https://github.com/Mearman/Academic-Explorer/commit/4c97f31))
+* feat(shared-utils): add test fixtures for clustering algorithms ([91445aa](https://github.com/Mearman/Academic-Explorer/commit/91445aa))
+* feat(shared-utils): setup graph clustering infrastructure (Phase 1) ([896f2e4](https://github.com/Mearman/Academic-Explorer/commit/896f2e4))
+
+
+### BREAKING CHANGE
+
+* New clustering-types module in
+@academic-explorer/algorithms
+
 ## 19.2.0 (2025-11-25)
 
 * test(academic-explorer): add weight function tests for Dijkstra (8 tests) ([a1abf39](https://github.com/Mearman/Academic-Explorer/commit/a1abf39))
