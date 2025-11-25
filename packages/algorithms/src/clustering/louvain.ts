@@ -20,6 +20,7 @@ import type { Community, LouvainConfiguration, AlteredCommunitiesState } from '.
 import type { WeightFunction } from '../types/weight-function';
 import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
+import { convertToCSR, type CSRGraph } from '../utils/csr';
 
 /**
  * Internal representation of a community during Louvain execution.
@@ -293,6 +294,24 @@ export function detectCommunities<N extends Node, E extends Edge>(
   const allNodes = graph.getAllNodes();
   if (allNodes.length === 0) {
     return [];
+  }
+
+  // T042: Convert to CSR format for better cache locality (spec-027 Phase 5)
+  let csrGraph: CSRGraph<N, E> | null = null;
+  try {
+    csrGraph = convertToCSR(graph);
+  } catch (error) {
+    // If CSR conversion fails (e.g., graph too large for typed arrays),
+    // fall back to using original Graph API
+    if (error instanceof RangeError) {
+      console.warn(
+        `CSR conversion failed (${error.message}). ` +
+        `Falling back to Map-based adjacency list.`
+      );
+    } else {
+      // Unexpected error, re-throw
+      throw error;
+    }
   }
 
   // T015: Iteration count tracking (spec-027 Phase 1)

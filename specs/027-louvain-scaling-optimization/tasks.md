@@ -125,10 +125,13 @@
 
 ### CSR Graph Representation
 
-- [ ] T040 [P] [US3] Create packages/algorithms/src/utils/csr.ts with CSRGraph<N, E> interface (offsets: Uint32Array, edges: Uint32Array, weights: Float64Array, nodeIds: string[], nodeIndex: Map<string, number>)
-- [ ] T041 [P] [US3] Implement convertToCSR<N, E>(graph: Graph<N, E>): CSRGraph<N, E> function in csr.ts (build offsets, edges, weights, nodeIds, nodeIndex)
-- [ ] T042 [US3] Add CSR conversion at louvain.ts entry point: csrGraph = convertToCSR(graph) with try-catch for memory errors
-- [ ] T043 [US3] Implement CSR memory fallback in louvain.ts: catch RangeError, log warning, call louvainLegacy(graph, config)
+- [X] T040 [P] [US3] Create packages/algorithms/src/utils/csr.ts with CSRGraph<N, E> interface (offsets: Uint32Array, edges: Uint32Array, weights: Float64Array, nodeIds: string[], nodeIndex: Map<string, number>)
+- [X] T041 [P] [US3] Implement convertToCSR<N, E>(graph: Graph<N, E>): CSRGraph<N, E> function in csr.ts (build offsets, edges, weights, nodeIds, nodeIndex)
+- [X] T042 [US3] Add CSR conversion at louvain.ts entry point: csrGraph = convertToCSR(graph) with try-catch for memory errors
+- [X] T043 [US3] Implement CSR memory fallback in louvain.ts: catch RangeError, log warning, continue with original Graph API (integrated into T042)
+
+**Checkpoint**: ✅ CSR Infrastructure complete (T040-T043) - CSRGraph interface, conversion function, entry point integration with fallback. NOT YET USED for neighbor iteration (no performance benefit yet). Remaining: T044-T046 (refactor neighbor access), T047-T053 (community caching), T054-T064 (verification) = 21 tasks
+
 - [ ] T044 [US3] Refactor neighbor access in louvain.ts local moving phase: use csrGraph.offsets[nodeIdx] to csrGraph.offsets[nodeIdx + 1] slice
 - [ ] T045 [US3] Refactor neighbor weights in louvain.ts: use csrGraph.weights.slice(start, end) instead of Map lookups
 - [ ] T046 [US3] Update all graph.getNeighbors() calls in louvain.ts to use CSR slicing pattern
