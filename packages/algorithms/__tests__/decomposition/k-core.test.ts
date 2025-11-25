@@ -29,16 +29,26 @@ describe('K-Core Decomposition (User Story 4)', () => {
         if (k === 0) return; // Skip k=0 (trivial core with all nodes)
 
         // For each node in k-core, count its neighbors also in the k-core
+        // For directed graphs, we need to count both incoming and outgoing neighbors
         core.nodes.forEach((nodeId) => {
-          const neighborsResult = graph.getNeighbors(typeof nodeId === 'string' ? nodeId : nodeId.id);
-          expect(neighborsResult.ok).toBe(true);
-          if (!neighborsResult.ok) return;
+          const nodeIdStr = typeof nodeId === 'string' ? nodeId : nodeId.id;
 
-          const neighbors = neighborsResult.value;
+          // Get all edges to count both incoming and outgoing neighbors
+          const allEdges = graph.getAllEdges();
+          const undirectedNeighbors = new Set<string>();
+
+          allEdges.forEach((edge) => {
+            if (edge.source === nodeIdStr) {
+              undirectedNeighbors.add(edge.target);
+            }
+            if (edge.target === nodeIdStr) {
+              undirectedNeighbors.add(edge.source);
+            }
+          });
 
           // Count neighbors that are also in this k-core
           let degreeInCore = 0;
-          neighbors.forEach((neighborId) => {
+          undirectedNeighbors.forEach((neighborId) => {
             if (core.nodes.has(neighborId)) {
               degreeInCore++;
             }

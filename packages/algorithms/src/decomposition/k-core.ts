@@ -69,66 +69,117 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
   const position = new Map<string, number>(); // Position in sorted array
   const removed = new Set<string>(); // Nodes that have been removed
 
-  // Step 2: Compute initial degrees
+  // Step 2: Compute initial degrees (treat directed graphs as undirected)
+  // For directed graphs, degree = in-degree + out-degree
+  const inDegrees = new Map<string, Set<string>>(); // Nodes that point to this node
+  const outDegrees = new Map<string, Set<string>>(); // Nodes this node points to
+
+  // Initialize degree maps
+  nodeIds.forEach((nodeId) => {
+    inDegrees.set(nodeId, new Set());
+    outDegrees.set(nodeId, new Set());
+  });
+
+  // Compute in-degree and out-degree for each node
+  const allEdges = graph.getAllEdges();
+  allEdges.forEach((edge) => {
+    const { source, target } = edge;
+    outDegrees.get(source)?.add(target);
+    inDegrees.get(target)?.add(source);
+  });
+
+  // Compute undirected degree (union of in-neighbors and out-neighbors)
   let maxDegree = 0;
   nodeIds.forEach((nodeId) => {
-    const neighborsResult = graph.getNeighbors(nodeId);
-    if (!neighborsResult.ok) {
-      degrees.set(nodeId, 0);
-      return;
-    }
+    const inNeighbors = inDegrees.get(nodeId) || new Set();
+    const outNeighbors = outDegrees.get(nodeId) || new Set();
 
-    const degree = neighborsResult.value.length;
+    // Combine both directions (treat as undirected)
+    const allNeighbors = new Set([...inNeighbors, ...outNeighbors]);
+    const degree = allNeighbors.size;
+
     degrees.set(nodeId, degree);
     maxDegree = Math.max(maxDegree, degree);
   });
 
   // Step 3: Bin sort nodes by degree (O(n) sorting)
-  // bins[d] = array of nodes with degree d
-  const bins: string[][] = Array.from({ length: maxDegree + 1 }, () => []);
-  nodeIds.forEach((nodeId) => {
-    const degree = degrees.get(nodeId) || 0;
-    bins[degree].push(nodeId);
-  });
+  // bins[d] = array of node indices with degree d
+  const bins: number[][] = Array.from({ length: maxDegree + 1 }, () => []);
 
-  // Create sorted array of nodes by degree
-  const sortedNodes: string[] = [];
-  bins.forEach((bin) => {
-    bin.forEach((nodeId) => {
-      position.set(nodeId, sortedNodes.length);
-      sortedNodes.push(nodeId);
-    });
+  // Map node IDs to array indices for efficient lookup
+  const nodeIndex = new Map<string, number>();
+  nodeIds.forEach((nodeId, idx) => {
+    nodeIndex.set(nodeId, idx);
+    const degree = degrees.get(nodeId) || 0;
+    bins[degree].push(idx);
+    position.set(nodeId, idx);
   });
 
   // Step 4: Process nodes in degree order (Batagelj-Zaversnik algorithm)
   let degeneracy = 0;
+  let processedCount = 0;
 
-  sortedNodes.forEach((nodeId) => {
+  for (let i = 0; i < nodeIds.length; i++) {
+    // Find the minimum non-empty bin (search from 0 each time)
+    let currentBin = -1;
+    for (let b = 0; b < bins.length; b++) {
+      if (bins[b].length > 0) {
+        currentBin = b;
+        break;
+      }
+    }
+
+    // All nodes processed
+    if (currentBin === -1) {
+      break;
+    }
+
+    // Get node with minimum degree from current bin
+    const nodeIdx = bins[currentBin].pop()!;
+    const nodeId = nodeIds[nodeIdx];
     const currentDegree = degrees.get(nodeId) || 0;
+    processedCount++;
 
-    // Assign core number to this node (= degree at removal time)
+    // Verify that degree map and bin position are in sync
+    if (currentDegree !== currentBin) {
+      console.warn(`Mismatch: node ${nodeId} in bin ${currentBin} has degree ${currentDegree}`);
+    }
+
+    // Assign core number to this node (= degree at removal time among remaining nodes)
     coreNumbers.set(nodeId, currentDegree);
     degeneracy = Math.max(degeneracy, currentDegree);
 
     // Mark as removed
     removed.add(nodeId);
 
-    // Update degrees of remaining neighbors
-    const neighborsResult = graph.getNeighbors(nodeId);
-    if (!neighborsResult.ok) return;
+    // Update degrees of remaining neighbors (both in-neighbors and out-neighbors)
+    const inNeighbors = inDegrees.get(nodeId) || new Set();
+    const outNeighbors = outDegrees.get(nodeId) || new Set();
+    const allNeighbors = new Set([...inNeighbors, ...outNeighbors]);
 
-    neighborsResult.value.forEach((neighborId) => {
+    allNeighbors.forEach((neighborId) => {
       // Skip if neighbor already removed
       if (removed.has(neighborId)) return;
 
       const neighborDegree = degrees.get(neighborId) || 0;
 
-      // Decrement neighbor's degree
       if (neighborDegree > 0) {
+        // Decrement neighbor's degree
         degrees.set(neighborId, neighborDegree - 1);
+
+        // Move neighbor to lower bin
+        const neighborIdx = nodeIndex.get(neighborId)!;
+        const neighborPos = bins[neighborDegree].indexOf(neighborIdx);
+
+        if (neighborPos !== -1) {
+          // Remove from old bin
+          bins[neighborDegree].splice(neighborPos, 1);
+          // Add to new bin (which is lower, so may be processed next iteration)
+          bins[neighborDegree - 1].push(neighborIdx);
+        }
       }
     });
-  });
+  }
 
   // Step 5: Construct k-cores from core numbers
   const cores = new Map<number, Core<string>>();
