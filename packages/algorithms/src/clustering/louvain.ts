@@ -16,7 +16,7 @@
 
 import type { Graph } from '../graph/graph';
 import type { Node, Edge } from '../types/graph';
-import type { Community } from '../types/clustering-types';
+import type { Community, LouvainConfiguration } from '../types/clustering-types';
 import type { WeightFunction } from '../types/weight-function';
 import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
@@ -32,6 +32,43 @@ interface LouvainCommunity {
 }
 
 /**
+ * Get adaptive convergence threshold based on graph size.
+ *
+ * @param nodeCount - Number of nodes in graph
+ * @returns Convergence threshold (1e-5 for large graphs, 1e-6 for small graphs)
+ *
+ * @remarks
+ * Large graphs (>500 nodes) use looser threshold for faster convergence.
+ * Small graphs (≤500 nodes) use stricter threshold for higher quality.
+ *
+ * @since Phase 1 (spec-027)
+ */
+export function getAdaptiveThreshold(nodeCount: number): number {
+  return nodeCount > 500 ? 1e-5 : 1e-6;
+}
+
+/**
+ * Get adaptive iteration limit based on graph size and hierarchy level.
+ *
+ * @param nodeCount - Number of nodes in graph
+ * @param level - Hierarchy level (0 = first level)
+ * @returns Maximum iterations (20, 40, or 50)
+ *
+ * @remarks
+ * First hierarchy level (level 0) with large graphs (>200 nodes) uses lower limit (20)
+ * because most node movements happen in the first iteration.
+ * Subsequent levels and small graphs use higher limits (40-50) for refinement.
+ *
+ * @since Phase 1 (spec-027)
+ */
+export function getAdaptiveIterationLimit(nodeCount: number, level: number): number {
+  if (level === 0 && nodeCount > 200) {
+    return 20;
+  }
+  return nodeCount < 100 ? 50 : 40;
+}
+
+/**
  * Detect communities using the Louvain algorithm.
  *
  * The Louvain method is a greedy optimization method that attempts to optimize
@@ -40,20 +77,42 @@ interface LouvainCommunity {
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
- * @param options - Optional configuration
- * @param options.weightFn - Weight function for edges (default: all edges weight 1.0)
- * @param options.resolution - Resolution parameter (default: 1.0, higher values favor more communities)
- * @param options.minModularityIncrease - Minimum modularity improvement to continue (default: 1e-6)
- * @param options.maxIterations - Maximum iterations per phase (default: 100)
+ * @param options - Optional configuration (combines legacy and optimization parameters)
+ * @param options.weightFn - Weight function for edges (default: all edges weight 1.0) [Legacy]
+ * @param options.resolution - Resolution parameter (default: 1.0, higher values favor more communities) [Legacy]
+ * @param options.mode - Neighbor selection strategy ("auto", "best", "random") [spec-027 Phase 2]
+ * @param options.seed - Random seed for deterministic shuffling [spec-027 Phase 2]
+ * @param options.minModularityIncrease - Minimum modularity improvement to continue (adaptive default via getAdaptiveThreshold)
+ * @param options.maxIterations - Maximum iterations per phase (adaptive default via getAdaptiveIterationLimit)
  * @returns Array of detected communities
+ *
+ * @remarks
+ * **Adaptive Defaults** (spec-027 Phase 1):
+ * - `minModularityIncrease`: 1e-5 for >500 nodes, 1e-6 otherwise
+ * - `maxIterations`: 20 for >200 nodes (level 0), 40-50 otherwise
+ *
+ * **Neighbor Selection Modes** (spec-027 Phase 2):
+ * - `"auto"`: Best-neighbor for <200 nodes, random for ≥500 nodes
+ * - `"best"`: Always use best-neighbor (quality-first)
+ * - `"random"`: Always use random-neighbor (speed-first, Fast Louvain)
  *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
  * // ... add nodes and edges ...
  *
+ * // Basic usage (adaptive defaults)
  * const communities = detectCommunities(graph);
  * console.log(`Found ${communities.length} communities`);
+ *
+ * // Quality-first mode
+ * const qualityCommunities = detectCommunities(graph, { mode: "best" });
+ *
+ * // Speed-first mode for large graphs
+ * const fastCommunities = detectCommunities(graph, { mode: "random", maxIterations: 10 });
+ *
+ * // Reproducible results
+ * const deterministicCommunities = detectCommunities(graph, { seed: 42 });
  * ```
  */
 export function detectCommunities<N extends Node, E extends Edge>(
@@ -61,10 +120,15 @@ export function detectCommunities<N extends Node, E extends Edge>(
   options: {
     weightFn?: WeightFunction<N, E>;
     resolution?: number;
+    mode?: "auto" | "best" | "random";
+    seed?: number;
     minModularityIncrease?: number;
     maxIterations?: number;
   } = {}
 ): Community<N>[] {
+  // T014: Runtime tracking (spec-027 Phase 1)
+  const startTime = performance.now();
+
   const {
     weightFn = () => 1.0,
     resolution = 1.0,
@@ -77,6 +141,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
   if (allNodes.length === 0) {
     return [];
   }
+
+  // T015: Iteration count tracking (spec-027 Phase 1)
+  let totalIterations = 0;
 
   // Pre-compute incoming edges for directed graphs (O(m) instead of O(n²))
   const incomingEdges = new Map<string, E[]>();
@@ -137,9 +204,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
   const nodeCount = allNodes.length;
   const useHierarchicalOptimization = nodeCount > 50;
 
-  // Adaptive modularity threshold: larger graphs use higher threshold for faster convergence
+  // T010: Adaptive modularity threshold using helper function (spec-027 Phase 1)
   const adaptiveMinModularityIncrease = minModularityIncrease ??
-    (nodeCount > 500 ? 1e-5 : 1e-6);
+    getAdaptiveThreshold(nodeCount);
 
   // Multi-level optimization: Phase 1 + Phase 2 repeated
   let hierarchyLevel = 0;
@@ -176,16 +243,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
     let improved = true;
     let iteration = 0;
 
-    // Adaptive iteration limits based on graph size and hierarchy level
-    // Balance between convergence quality and performance
-    let MAX_ITERATIONS: number;
-    if (hierarchyLevel === 1) {
-      // First level: scale iterations with graph size
-      MAX_ITERATIONS = nodeCount < 200 ? 40 : 50;
-    } else {
-      // Higher levels: fewer iterations as super-graph is smaller
-      MAX_ITERATIONS = 12;
-    }
+    // T012: Adaptive iteration limits using helper function (spec-027 Phase 1)
+    // hierarchyLevel starts at 1, but helper expects 0-based (level 0 = first iteration)
+    const MAX_ITERATIONS = maxIterations ?? getAdaptiveIterationLimit(nodeCount, hierarchyLevel - 1);
 
     // Build reverse lookup once per hierarchy level (optimization)
     const nodeToSuperNode = new Map<string, string>();
@@ -273,7 +333,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
       // Remove empty communities
       removeEmptyCommunities(communities, nodeToCommunity);
 
-      // Early convergence detection
+      // T013: Early convergence detection (spec-027 Phase 1)
+      // Already implemented: aggressive early stopping for large graphs
       if (movesThisRound === 0) {
         consecutiveNoImprovementRounds++;
         if (consecutiveNoImprovementRounds >= MAX_NO_IMPROVEMENT_ROUNDS) {
@@ -283,6 +344,9 @@ export function detectCommunities<N extends Node, E extends Edge>(
         consecutiveNoImprovementRounds = 0;
       }
     }
+
+    // T015: Accumulate iterations across hierarchy levels (spec-027 Phase 1)
+    totalIterations += iteration;
 
     // Phase 2: Aggregate communities into new super-nodes
     const numCommunities = communities.size;
@@ -329,6 +393,13 @@ export function detectCommunities<N extends Node, E extends Edge>(
       });
     }
   });
+
+  // T014 & T015: Log performance metrics (spec-027 Phase 1)
+  const endTime = performance.now();
+  const runtime = endTime - startTime;
+  console.log(`[spec-027] Louvain completed in ${runtime.toFixed(2)}ms (${(runtime / 1000).toFixed(2)}s)`);
+  console.log(`[spec-027] Total iterations: ${totalIterations} across ${hierarchyLevel} hierarchy levels`);
+  console.log(`[spec-027] Adaptive threshold: ${adaptiveMinModularityIncrease.toExponential(1)}`);
 
   return buildCommunityResults(graph, finalNodeToCommunity);
 }

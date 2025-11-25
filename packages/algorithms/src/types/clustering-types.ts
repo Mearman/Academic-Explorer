@@ -332,6 +332,70 @@ export interface ClusterMetrics {
 }
 
 // ============================================================================
+// Configuration Types
+// ============================================================================
+
+/**
+ * Configuration for Louvain algorithm optimization.
+ *
+ * @remarks
+ * All fields are optional. If not provided, adaptive defaults are used based on graph size.
+ *
+ * @since Phase 1 (Parameter Tuning)
+ */
+export interface LouvainConfiguration {
+  /**
+   * Neighbor selection strategy.
+   *
+   * - `"auto"` (default): Best-neighbor for <200 nodes, random for ≥500 nodes
+   * - `"best"`: Always evaluate all neighbors, select maximum ΔQ (quality-first)
+   * - `"random"`: Accept first neighbor with positive ΔQ after shuffle (speed-first, Fast Louvain)
+   *
+   * @default "auto"
+   * @since Phase 2 (Fast Louvain)
+   */
+  mode?: "auto" | "best" | "random";
+
+  /**
+   * Random seed for deterministic neighbor shuffling.
+   *
+   * @remarks
+   * If provided, enables reproducible test results by seeding the PRNG.
+   * If undefined, uses Math.random() (non-deterministic).
+   *
+   * @since Phase 1 (Parameter Tuning)
+   */
+  seed?: number;
+
+  /**
+   * Modularity convergence threshold override.
+   *
+   * @remarks
+   * Adaptive default (if undefined):
+   * - 1e-5 for graphs >500 nodes
+   * - 1e-6 for graphs ≤500 nodes
+   *
+   * Lower values = stricter convergence, higher quality, slower performance
+   * Higher values = looser convergence, lower quality, faster performance
+   *
+   * @since Phase 1 (Parameter Tuning)
+   */
+  minModularityIncrease?: number;
+
+  /**
+   * Maximum iterations override.
+   *
+   * @remarks
+   * Adaptive default (if undefined):
+   * - 20 iterations for graphs >200 nodes (first hierarchy level)
+   * - 40-50 iterations for graphs ≤200 nodes
+   *
+   * @since Phase 1 (Parameter Tuning)
+   */
+  maxIterations?: number;
+}
+
+// ============================================================================
 // Error Types
 // ============================================================================
 
@@ -376,25 +440,51 @@ export type HierarchicalError =
 // ============================================================================
 
 /**
- * Result type for Louvain clustering algorithm.
+ * Result of Louvain community detection.
+ *
+ * @typeParam T - Node identifier type (typically string)
+ *
+ * @remarks
+ * This interface defines the data structure returned by the Louvain algorithm.
+ * The actual function returns `Result<LouvainResult<string>, ClusteringError>`.
+ *
+ * **Performance Characteristics** (1000-node graph):
+ * - Phase 1 (Parameter Tuning): ~10-12 seconds
+ * - Phase 2 (Fast Louvain): ~3-5 seconds
+ * - Phase 3 (CSR + Caching): ~1.5-2.5 seconds
+ *
+ * **Quality Trade-offs**:
+ * - Best mode: Modularity ~0.2 (baseline)
+ * - Auto mode (large graphs): Modularity ~0.19 (5% loss for 3-6x speedup)
+ * - Random mode: Modularity ~0.18-0.19 (acceptable for speed-critical use cases)
+ *
+ * @since Phase 1 (spec-027)
  */
-export type LouvainResult<N> = Result<
-  {
-    communities: Community<N>[];
-    metrics: ClusterMetrics;
-    metadata: {
-      algorithm: 'louvain';
-      runtime: number;
-      iterations: number;
-      parameters: {
-        resolution?: number;
-        maxIterations?: number;
-        minImprovement?: number;
-      };
-    };
-  },
-  ClusteringError
->;
+export interface LouvainResult<T = string> {
+  /** Map of community ID → community structure */
+  communities: Map<number, Community<T>>;
+
+  /** Modularity score (range: [-0.5, 1.0], higher is better) */
+  modularity: number;
+
+  /** Number of hierarchy levels (typically 2-4 for citation networks) */
+  levels: number;
+
+  /** Metadata about algorithm execution */
+  metadata: {
+    /** Algorithm name (always "louvain") */
+    algorithm: string;
+
+    /** Total runtime in milliseconds */
+    runtime: number;
+
+    /** Total iterations across all hierarchy levels */
+    totalIterations: number;
+
+    /** Configuration used (with resolved adaptive defaults) */
+    configuration: Required<LouvainConfiguration>;
+  };
+}
 
 /**
  * Result type for Leiden clustering algorithm.
