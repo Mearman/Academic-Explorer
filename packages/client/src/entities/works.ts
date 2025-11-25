@@ -23,6 +23,16 @@ export type WorksQueryParams = Omit<QueryParams, "filter"> & {
 };
 
 /**
+ * Options for Works autocomplete (query passed separately)
+ */
+interface WorksAutocompleteOptions {
+  /** Number of results to return (default: 10, max: 50) */
+  per_page?: number;
+  /** Additional query parameters for filtering */
+  filters?: Record<string, unknown>;
+}
+
+/**
  * Options for searching works
  */
 export interface SearchWorksOptions {
@@ -44,16 +54,6 @@ export interface RelatedWorksOptions {
   limit?: number;
   filters?: WorksFilters;
   select?: string[];
-}
-
-/**
- * Options for autocomplete functionality
- */
-export interface AutocompleteOptions {
-  /** Number of results to return (default: 10, max: 50) */
-  per_page?: number;
-  /** Additional query parameters for filtering */
-  filters?: Record<string, unknown>;
 }
 
 /**
@@ -915,7 +915,7 @@ export class WorksApi {
    */
   async autocomplete(
     query: string,
-    options: AutocompleteOptions = {},
+    options: WorksAutocompleteOptions = {},
   ): Promise<AutocompleteResult[]> {
     // Validate query parameter
     if (typeof query !== "string") {

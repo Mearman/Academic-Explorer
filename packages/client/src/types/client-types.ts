@@ -8,14 +8,11 @@ export type {
   OpenAlexId,
   OpenAlexError,
   OpenAlexResponse,
-  OpenAlexQueryParams as QueryParams,
   AutocompleteResult,
 } from "@academic-explorer/types/entities";
 
-// Client-specific types
-export interface AutocompleteOptions {
-  limit?: number;
-}
+// Note: AutocompleteOptions is defined in utils/autocomplete.ts (canonical source)
+// Import from there directly to avoid barrel file re-export duplicates
 
 /**
  * OpenAlex Data Version parameter

@@ -14,7 +14,7 @@ import type {
 } from "@academic-explorer/types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { AutocompleteOptions } from "../utils/autocomplete";
+import type { AutocompleteOptions } from "../utils/autocomplete";
 
 /**
  * Extended query parameters specific to institutions API
