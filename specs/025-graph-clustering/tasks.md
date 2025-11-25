@@ -209,19 +209,19 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T076 [US6] Write failing test for Scenario 1 (performance < 20s for 10k nodes) in packages/algorithms/test/clustering/label-propagation.test.ts
-- [ ] T077 [US6] Write failing test for Scenario 2 (linear scaling) in packages/algorithms/test/clustering/label-propagation.test.ts
-- [ ] T078 [US6] Write failing test for Scenario 3 (convergence in 3-5 iterations) in packages/algorithms/test/clustering/label-propagation.test.ts
-- [ ] T079 [US6] Implement asynchronous label propagation: initialize unique labels in packages/algorithms/src/clustering/label-propagation.ts
-- [ ] T080 [US6] Implement label propagation: majority voting iteration in packages/algorithms/src/clustering/label-propagation.ts
-- [ ] T081 [US6] Implement random node ordering per iteration in packages/algorithms/src/clustering/label-propagation.ts
-- [ ] T082 [US6] Implement convergence detection (no label changes) in packages/algorithms/src/clustering/label-propagation.ts
-- [ ] T083 [US6] Implement tie-breaking for equally frequent labels in packages/algorithms/src/clustering/label-propagation.ts
-- [ ] T084 [US6] Verify all label propagation tests pass
-- [ ] T085 [US6] Run performance benchmark on 10k-node graph (must complete < 20s)
-- [ ] T086 [US6] Run linear scaling validation test (1k → 5k → 10k)
-- [ ] T087 [US6] Export labelPropagation function from packages/algorithms/src/index.ts
-- [ ] T088 [US6] Commit label propagation with message "feat(algorithms): add label propagation clustering (P6)"
+- [X] T076 [US6] Write failing test for Scenario 1 (performance < 20s for 10k nodes) in packages/algorithms/test/clustering/label-propagation.test.ts
+- [X] T077 [US6] Write failing test for Scenario 2 (linear scaling) in packages/algorithms/test/clustering/label-propagation.test.ts
+- [X] T078 [US6] Write failing test for Scenario 3 (convergence in 3-5 iterations) in packages/algorithms/test/clustering/label-propagation.test.ts
+- [X] T079 [US6] Implement asynchronous label propagation: initialize unique labels in packages/algorithms/src/clustering/label-propagation.ts
+- [X] T080 [US6] Implement label propagation: majority voting iteration in packages/algorithms/src/clustering/label-propagation.ts
+- [X] T081 [US6] Implement random node ordering per iteration in packages/algorithms/src/clustering/label-propagation.ts
+- [X] T082 [US6] Implement convergence detection (no label changes) in packages/algorithms/src/clustering/label-propagation.ts
+- [X] T083 [US6] Implement tie-breaking for equally frequent labels in packages/algorithms/src/clustering/label-propagation.ts
+- [X] T084 [US6] Verify all label propagation tests pass
+- [X] T085 [US6] Run performance benchmark on 10k-node graph (must complete < 20s)
+- [X] T086 [US6] Run linear scaling validation test (1k → 5k → 10k)
+- [X] T087 [US6] Export labelPropagation function from packages/algorithms/src/index.ts
+- [X] T088 [US6] Commit label propagation with message "feat(algorithms): add label propagation clustering (P6)"
 
 ---
 

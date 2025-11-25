@@ -143,34 +143,30 @@ export function labelPropagation<N extends Node, E extends Edge>(
       // Count neighbor labels (use uniform weights for performance)
       const labelCounts = new Map<ClusterId, number>();
 
-      // Collect neighbor labels from outgoing edges
-      const outgoingResult = graph.getOutgoingEdges(nodeId);
-      if (outgoingResult.ok) {
-        outgoingResult.value.forEach((edge) => {
-          const neighborLabel = nodeToLabel.get(edge.target);
-          if (neighborLabel !== undefined) {
-            // Use uniform weight of 1.0 for speed (O(m) per iteration instead of O(m*node_lookup))
-            labelCounts.set(
-              neighborLabel,
-              (labelCounts.get(neighborLabel) || 0) + 1.0
-            );
-          }
-        });
+      // Collect neighbor labels from outgoing edges (using cached adjacency list)
+      const outgoing = outgoingNeighbors.get(nodeId) || [];
+      for (const neighborId of outgoing) {
+        const neighborLabel = nodeToLabel.get(neighborId);
+        if (neighborLabel !== undefined) {
+          labelCounts.set(
+            neighborLabel,
+            (labelCounts.get(neighborLabel) || 0) + 1.0
+          );
+        }
       }
 
       // Collect neighbor labels from incoming edges (for directed graphs)
       if (graph.isDirected()) {
-        const incoming = incomingEdges.get(nodeId) || [];
-        incoming.forEach((edge) => {
-          const neighborLabel = nodeToLabel.get(edge.source);
+        const incoming = incomingNeighbors.get(nodeId) || [];
+        for (const neighborId of incoming) {
+          const neighborLabel = nodeToLabel.get(neighborId);
           if (neighborLabel !== undefined) {
-            // Use uniform weight of 1.0 for speed
             labelCounts.set(
               neighborLabel,
               (labelCounts.get(neighborLabel) || 0) + 1.0
             );
           }
-        });
+        }
       }
 
       // Find most frequent label (majority voting)
