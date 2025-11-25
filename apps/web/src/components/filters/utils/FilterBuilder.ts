@@ -9,6 +9,15 @@ import type { EntityFilters, EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 
 /**
+ * Filter validation results
+ */
+export interface FilterValidationResult {
+  isValid: boolean;
+  errors: Record<string, string>;
+  warnings: Record<string, string>;
+}
+
+/**
  * Configuration options for filter conversion
  */
 export interface FilterBuilderOptions {
@@ -20,15 +29,6 @@ export interface FilterBuilderOptions {
   includeEmpty?: boolean;
   /** Logical operator for combining multiple filters */
   logicalOperator?: "AND" | "OR";
-}
-
-/**
- * Result of filter validation
- */
-export interface FilterValidationResult {
-  isValid: boolean;
-  errors: string[];
-  warnings: string[];
 }
 
 /**
@@ -216,13 +216,13 @@ export class FilterBuilder {
   }: {
     filters: EntityFilters | Partial<EntityFilters>;
     entityType: EntityType;
-  }): FilterValidationResult {
-    const errors: string[] = [];
-    const warnings: string[] = [];
+  }) {
+    const errors: Record<string, string> = {};
+    const warnings: Record<string, string> = {};
 
     // Basic validation
     if (!filters || typeof filters !== "object") {
-      errors.push("Filters must be a valid object");
+      errors.general = "Filters must be a valid object";
       return { isValid: false, errors, warnings };
     }
 
@@ -246,7 +246,7 @@ export class FilterBuilder {
         pattern.test(field),
       );
       if (!isKnownPattern) {
-        warnings.push(`Unknown filter field: ${field}`);
+        warnings[field] = `Unknown filter field: ${field}`;
       }
 
       // Validate date fields
@@ -255,7 +255,7 @@ export class FilterBuilder {
         typeof value === "string" &&
         !this.isValidDateString(value)
       ) {
-        errors.push(`Invalid date format for field ${field}: ${value}`);
+        errors[field] = `Invalid date format for field ${field}: ${value}`;
       }
 
       // Validate numeric fields
@@ -265,7 +265,7 @@ export class FilterBuilder {
         value !== undefined &&
         !this.isValidNumericFilter(value)
       ) {
-        errors.push(`Invalid numeric value for field ${field}: ${value}`);
+        errors[field] = `Invalid numeric value for field ${field}: ${value}`;
       }
 
       // Validate boolean fields
@@ -275,14 +275,12 @@ export class FilterBuilder {
         value !== null &&
         value !== undefined
       ) {
-        warnings.push(
-          `Expected boolean value for field ${field}, got: ${typeof value}`,
-        );
+        warnings[field] = `Expected boolean value for field ${field}, got: ${typeof value}`;
       }
     });
 
     return {
-      isValid: errors.length === 0,
+      isValid: Object.keys(errors).length === 0,
       errors,
       warnings,
     };
@@ -358,10 +356,7 @@ export class FilterBuilder {
   }: {
     filters: EntityFilters | Partial<EntityFilters> | null | undefined;
     entityType?: EntityType;
-  }): {
-    queryString: string;
-    validation?: FilterValidationResult;
-  } {
+  }) {
     const validation =
       entityType && this.options.validateInputs && filters
         ? this.validateFilters({ filters, entityType })
@@ -450,6 +445,6 @@ export function validateFilters({
 }: {
   filters: EntityFilters | Partial<EntityFilters>;
   entityType: EntityType;
-}): FilterValidationResult {
+}) {
   return strictFilterBuilder.validateFilters({ filters, entityType });
 }
