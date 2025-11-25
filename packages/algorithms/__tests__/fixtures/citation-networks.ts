@@ -8,6 +8,23 @@
 import { Graph } from '../../src/graph/graph';
 
 /**
+ * Simple seeded PRNG using Mulberry32 algorithm.
+ * Provides deterministic random numbers for reproducible test graphs.
+ *
+ * @param seed - Seed value for reproducibility
+ * @returns Function that returns random numbers in [0, 1)
+ */
+function seededRandom(seed: number): () => number {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
  * Paper node for citation networks.
  */
 export interface PaperNode {
@@ -54,6 +71,9 @@ export interface CitationEdge {
 export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
   const graph = new Graph<PaperNode, CitationEdge>(true); // Directed graph
 
+  // Use seeded RNG for deterministic graph generation
+  const random = seededRandom(12345);
+
   const communityNames = [
     'Machine Learning',
     'Natural Language Processing',
@@ -86,7 +106,7 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
     for (let i = startIdx; i < endIdx; i++) {
       // Each paper cites 8 papers within its community
       for (let j = 0; j < 8; j++) {
-        let target = startIdx + Math.floor(Math.random() * 20);
+        let target = startIdx + Math.floor(random() * 20);
 
         // Avoid self-loops and duplicate edges
         if (target === i) {
@@ -113,9 +133,9 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
     // Each paper cites 2 papers from other communities
     for (let j = 0; j < 2; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(Math.random() * 4)) % 5;
+      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 4)) % 5;
       const targetStart = targetCommunity * 20;
-      const target = targetStart + Math.floor(Math.random() * 20);
+      const target = targetStart + Math.floor(random() * 20);
 
       const edge: CitationEdge = {
         id: `E${i}-${target}-inter`,
@@ -155,6 +175,9 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
 export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
   const graph = new Graph<PaperNode, CitationEdge>(true); // Directed graph
 
+  // Use seeded RNG for deterministic graph generation
+  const random = seededRandom(67890);
+
   const communityNames = [
     'Machine Learning',
     'Natural Language Processing',
@@ -192,7 +215,7 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
     for (let i = startIdx; i < endIdx; i++) {
       // Each paper cites 8 papers within its community
       for (let j = 0; j < 8; j++) {
-        let target = startIdx + Math.floor(Math.random() * 100);
+        let target = startIdx + Math.floor(random() * 100);
 
         // Avoid self-loops and duplicate edges
         if (target === i) {
@@ -219,9 +242,9 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
     // Each paper cites 2 papers from other communities
     for (let j = 0; j < 2; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(Math.random() * 9)) % 10;
+      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 9)) % 10;
       const targetStart = targetCommunity * 100;
-      const target = targetStart + Math.floor(Math.random() * 100);
+      const target = targetStart + Math.floor(random() * 100);
 
       const edge: CitationEdge = {
         id: `E${i}-${target}-inter`,
