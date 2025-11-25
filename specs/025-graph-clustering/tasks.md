@@ -37,14 +37,14 @@ Each user story is independently testable and delivers incremental value.
 
 ### Tasks
 
-- [ ] T006 Implement modularity calculation in packages/algorithms/src/metrics/modularity.ts (Newman-Girvan formula: Q = 1/(2m) Σ[A_ij - k_i*k_j/(2m)]δ(c_i,c_j))
-- [ ] T007 [P] Implement conductance calculation in packages/algorithms/src/metrics/conductance.ts (φ(S) = |cut(S)| / min(vol(S), vol(V\S)))
-- [ ] T008 [P] Implement density calculation in packages/algorithms/src/metrics/cluster-quality.ts
-- [ ] T009 [P] Implement ClusterMetrics aggregation utilities in packages/algorithms/src/metrics/cluster-quality.ts
-- [ ] T010 Create test fixtures: smallCitationNetwork() in packages/algorithms/test/fixtures/citation-networks.ts (100 papers, 5 known communities)
-- [ ] T011 [P] Create test fixtures: largeCitationNetwork() in packages/algorithms/test/fixtures/citation-networks.ts (1000 papers for performance testing)
-- [ ] T012 [P] Create test fixtures: topicHierarchyGraph() in packages/algorithms/test/fixtures/topic-hierarchies.ts (50 topics, 3 levels)
-- [ ] T013 [P] Create test fixtures: knownCommunityGraph() in packages/algorithms/test/fixtures/known-clusters.ts (with ground truth labels)
+- [X] T006 Implement modularity calculation in packages/algorithms/src/metrics/modularity.ts (Newman-Girvan formula: Q = 1/(2m) Σ[A_ij - k_i*k_j/(2m)]δ(c_i,c_j))
+- [X] T007 [P] Implement conductance calculation in packages/algorithms/src/metrics/conductance.ts (φ(S) = |cut(S)| / min(vol(S), vol(V\S)))
+- [X] T008 [P] Implement density calculation in packages/algorithms/src/metrics/cluster-quality.ts
+- [X] T009 [P] Implement ClusterMetrics aggregation utilities in packages/algorithms/src/metrics/cluster-quality.ts
+- [X] T010 Create test fixtures: smallCitationNetwork() in packages/algorithms/test/fixtures/citation-networks.ts (100 papers, 5 known communities)
+- [X] T011 [P] Create test fixtures: largeCitationNetwork() in packages/algorithms/test/fixtures/citation-networks.ts (1000 papers for performance testing)
+- [X] T012 [P] Create test fixtures: topicHierarchyGraph() in packages/algorithms/test/fixtures/topic-hierarchies.ts (50 topics, 3 levels)
+- [X] T013 [P] Create test fixtures: knownCommunityGraph() in packages/algorithms/test/fixtures/known-clusters.ts (with ground truth labels)
 - [ ] T014 Write unit tests for modularity calculation in packages/algorithms/test/metrics/modularity.test.ts
 - [ ] T015 [P] Write unit tests for conductance calculation in packages/algorithms/test/metrics/conductance.test.ts
 - [ ] T016 [P] Write unit tests for ClusterMetrics utilities in packages/algorithms/test/metrics/cluster-quality.test.ts
