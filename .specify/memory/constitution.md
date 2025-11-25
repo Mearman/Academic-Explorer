@@ -1,15 +1,25 @@
 <!--
 Sync Impact Report:
-Version: 2.4.3 → 2.4.4 (PATCH: Fix Principle X to require SlashCommand tool usage)
+Version: 2.4.4 → 2.5.0 (MINOR: Added Principle XI - Complete Implementation)
+Added Sections:
+  - Principle XI (Complete Implementation): Never fall back to simplified alternatives - always
+    implement/fix the full version as specified. No "basic" or "simplified" fallbacks allowed.
 Modified Principles:
-  - Principle X (Continuous Execution): Updated automatic workflow progression section to
-    require using SlashCommand tool instead of vague "automatically invoke" language
+  - Principle IX (Deployment Readiness): Added reference to Principle XI in Relationship section
+  - Principle X (Continuous Execution): Added reference to Principle XI in Relationship section
+  - Constitution Check section: Added Principle XI verification requirement
+  - Quality Gates section: Added Complete Implementation verification
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ No template updates required - SlashCommand tool invocation already documented in
-    Development Workflow section
+  - ✅ plan-template.md: Constitution Check section already uses numbered list that
+    accommodates new principle without structural changes
+  - ✅ spec-template.md: Constitution Alignment section already uses bullet list that
+    accommodates new principle without structural changes
+  - ✅ tasks-template.md: Constitution compliance verification already uses checklist that
+    can expand to include new principle
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.4.4: Fix Principle X to require SlashCommand tool usage
   - v2.4.3: Add slash command invocation guidance to Development Workflow
   - v2.4.2: Strengthened prohibition against relative imports between packages
   - v2.4.1: Strengthened backward compatibility prohibition in Principle VII
@@ -406,6 +416,10 @@ This principle ensures:
 breaking changes during development, it does NOT allow leaving the codebase in an
 undeployable state. Breaking changes are acceptable; broken builds are not.
 
+**Relationship to Complete Implementation (Principle XI)**: Deployment readiness requires
+implementing the FULL version of features, not simplified fallbacks that might pass quality
+gates but don't deliver complete functionality.
+
 **Temporary Exception Handling**: If pre-existing issues are discovered that are genuinely
 outside the scope of current work AND would require significant effort to fix:
 1. Create a GitHub issue documenting the problem
@@ -490,6 +504,78 @@ while commits happen frequently to persist progress.
 until deployment readiness is achieved. If pre-existing issues block deployment, they
 MUST be resolved as part of the continuous execution flow, not deferred to a separate session.
 
+**Relationship to Complete Implementation (Principle XI)**: Continuous execution continues
+until the FULL implementation is complete. If a "simple" version is initially attempted,
+execution MUST continue to implement the complete version without pausing or requiring
+user permission to proceed.
+
+### XI. Complete Implementation (NON-NEGOTIABLE)
+
+**NEVER fall back to a "simple" or "basic" implementation when the full version encounters
+difficulties**. When a feature or fix is specified, the FULL version MUST be implemented
+as designed. Simplified alternatives are NOT acceptable fallbacks when the complete
+implementation proves challenging.
+
+Complete implementation requirements:
+- If the specification describes a feature, implement it completely as specified
+- If a bug requires a complex fix, implement the complete fix (not a workaround)
+- If initial implementation attempts fail, debug and resolve the issues (do not simplify)
+- If a "full version" exists alongside a proposed "simple version", ALWAYS implement the full version
+- Simplified fallbacks are ONLY acceptable if explicitly approved by the user AFTER explaining why the full version is impossible
+
+**Prohibited fallback patterns**:
+- "Let me try a simpler approach instead" - NO, fix the complex approach
+- "The full version is too difficult, here's a basic version" - NO, implement the full version
+- "This workaround is easier than the proper fix" - NO, implement the proper fix
+- "We can start with basic functionality and add the rest later" - NO, implement complete functionality now
+- "The edge cases are hard, let's skip them" - NO, handle all edge cases
+- "Let's use a library instead of implementing the algorithm" - Only if the library provides the FULL required functionality
+
+**When encountering implementation difficulties**:
+1. **Diagnose**: Understand what is blocking the full implementation
+2. **Research**: Investigate solutions, techniques, or documentation needed
+3. **Debug**: Fix errors, resolve conflicts, or address technical obstacles
+4. **Persist**: Continue attempts to implement the full version until successful
+5. **Escalate**: If genuinely impossible, explain to user why full version cannot be achieved and get explicit approval for alternative
+
+**Acceptable exceptions** (require user approval):
+- Genuine impossibility due to platform/language limitations (explain why)
+- External dependency unavailability (explain why full version requires it)
+- Specification ambiguity requiring user clarification (ask for clarification)
+- Security or safety concerns with the full implementation (explain risks)
+
+**Rationale**: This PhD research project requires fully functional, production-quality
+implementations to support academic demonstrations and reproducible research. Simplified
+fallbacks create technical debt, incomplete functionality, and unreliable results. Research
+productivity depends on complete, working implementations that don't require revisiting.
+
+Simplified fallbacks harm the project by:
+1. **Creating technical debt** - "Simple" versions must eventually be replaced with full versions
+2. **Wasting time** - Implementing twice (simple then full) costs more than implementing once
+3. **Breaking trust** - Users expect specified functionality, not reduced alternatives
+4. **Reducing quality** - Simplified versions often lack proper error handling, edge cases, or performance
+5. **Blocking research** - Incomplete implementations prevent running full experiments
+6. **Hiding problems** - Fallbacks mask underlying issues that should be fixed
+
+This principle ensures:
+- Features work completely as specified on the first implementation
+- Bugs receive proper fixes, not temporary workarounds
+- Technical challenges are solved, not avoided
+- Research demonstrations showcase full functionality
+- No revisiting "temporary" simplified implementations later
+
+**Relationship to Development-Stage Pragmatism (Principle VII)**: While breaking changes
+are acceptable during development, they must still implement the FULL new version, not a
+simplified alternative.
+
+**Relationship to Deployment Readiness (Principle IX)**: Deployment requires COMPLETE
+implementations. Simplified fallbacks that "technically work" but lack full functionality
+do not satisfy deployment readiness.
+
+**Relationship to Continuous Execution (Principle X)**: If a simplified fallback is attempted
+and recognized, continuous execution MUST continue to implement the full version without
+pausing for user approval.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -546,13 +632,20 @@ two places, extract it to `packages/utils` or create a shared package.
 4. Create a conventional commit with clear type and scope
 5. Push commits regularly to avoid losing work
 
+**Complete implementation discipline**: When encountering implementation challenges:
+1. Do NOT immediately propose a simplified alternative
+2. Debug and resolve issues with the full implementation
+3. Research solutions and techniques needed for the full version
+4. Only escalate to user if the full version is genuinely impossible
+5. Never assume a "simpler approach" is acceptable without user approval
+
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all ten core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all eleven core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
-development-stage pragmatism, test-first bug fixes, deployment readiness, and continuous
-execution.
+development-stage pragmatism, test-first bug fixes, deployment readiness, continuous
+execution, and complete implementation.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -584,6 +677,13 @@ MUST be documented in commit messages and changelogs.
 - CI/CD pipeline MUST be able to deploy without manual intervention
 - Any use of `--no-verify` MUST be followed by immediate fix commits
 
+**Complete implementation verification**:
+- Feature implementations MUST match specifications completely
+- No simplified fallbacks accepted without documented user approval
+- Bug fixes MUST address root causes, not symptoms
+- Edge cases and error handling MUST be complete
+- Performance requirements MUST be fully met, not approximated
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -599,4 +699,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.4.3 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.5.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-25

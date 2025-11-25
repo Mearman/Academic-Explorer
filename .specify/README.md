@@ -87,7 +87,7 @@ After setup, the following slash commands are available in Claude Code:
 
 The project constitution is located at `.specify/memory/constitution.md` and defines:
 
-- **Core Principles**: Type Safety (no `any`), Test-First Development, Monorepo Architecture, Storage Abstraction, Performance & Memory, Atomic Conventional Commits, Development-Stage Pragmatism, Test-First Bug Fixes
+- **Core Principles**: Type Safety (no `any`), Test-First Development, Monorepo Architecture, Storage Abstraction, Performance & Memory, Atomic Conventional Commits, Development-Stage Pragmatism, Test-First Bug Fixes, Deployment Readiness, Continuous Execution, Complete Implementation
 - **Development Workflow**: Fail-fast test execution, quality pipeline (typecheck/test/build/lint), Nx-managed dependencies
 - **Quality Gates**: Constitution compliance, complexity justification, test coverage requirements
 - **Governance**: Amendment process, versioning, compliance verification
@@ -156,5 +156,5 @@ Spec Kit is configured to work with:
 ## Version
 
 **Spec Kit Version**: Latest (from git)
-**Constitution Version**: 1.5.0
+**Constitution Version**: 2.5.0
 **Installed**: 2025-11-11
