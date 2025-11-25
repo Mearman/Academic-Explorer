@@ -1,14 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 2.4.2 → 2.4.3 (PATCH: Add slash command invocation guidance)
-Modified Principles: None
-Added Sections:
-  - "Slash Command Invocation" subsection in Development Workflow (after Spec file discipline)
+Version: 2.4.3 → 2.4.4 (PATCH: Fix Principle X to require SlashCommand tool usage)
+Modified Principles:
+  - Principle X (Continuous Execution): Updated automatic workflow progression section to
+    require using SlashCommand tool instead of vague "automatically invoke" language
 Removed Sections: None
 Templates Requiring Updates:
-  - ⚠ .specify/templates/commands/*.md (May need to reference SlashCommand tool usage pattern)
+  - ✅ No template updates required - SlashCommand tool invocation already documented in
+    Development Workflow section
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.4.3: Add slash command invocation guidance to Development Workflow
   - v2.4.2: Strengthened prohibition against relative imports between packages
   - v2.4.1: Strengthened backward compatibility prohibition in Principle VII
   - v2.4.0: Added no re-export requirement to Principle III
@@ -433,13 +435,25 @@ Continuous execution requirements:
 - Only stop when ALL phases are complete or a blocking error occurs
 
 **Automatic workflow progression**:
-- After completing `/speckit.plan`, if there are NO outstanding questions or clarifications needed, AUTOMATICALLY invoke `/speckit.tasks` then `/speckit.implement`
+- After completing `/speckit.plan`, if there are NO outstanding questions or
+  clarifications needed, MUST use SlashCommand tool to invoke `/speckit.tasks`
+  then `/speckit.implement`
+- Correct invocation pattern:
+  ```
+  <invoke name="SlashCommand">
+  <parameter name="command">/speckit.tasks</parameter>
+  </invoke>
+  ```
 - Do NOT wait for user approval to proceed from planning to task generation
 - Do NOT wait for user approval to proceed from task generation to implementation
-- Check for blockers: unresolved NEEDS CLARIFICATION markers, failed validations, missing dependencies
-- If NO blockers exist, immediately proceed to next phase
+- Do NOT use vague language like "will automatically invoke" - use SlashCommand
+  tool explicitly
+- Check for blockers: unresolved NEEDS CLARIFICATION markers, failed validations,
+  missing dependencies
+- If NO blockers exist, immediately use SlashCommand tool to proceed to next phase
 - User intervention is ONLY required when blockers are discovered or errors occur
-- Example flow: `/speckit.specify` → `/speckit.plan` → (auto) `/speckit.tasks` → (auto) `/speckit.implement`
+- Example flow: `/speckit.specify` → `/speckit.plan` → (SlashCommand tool)
+  `/speckit.tasks` → (SlashCommand tool) `/speckit.implement`
 
 Resource management during continuous execution:
 - Use efficient tool calls (parallel when possible, minimal reads)
