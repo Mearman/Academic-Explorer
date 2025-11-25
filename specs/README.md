@@ -11,7 +11,7 @@ This directory contains all feature specifications for Academic Explorer, organi
 | 📝 Draft | 10 |
 | ⚠️ Archived | 2 |
 
-## Completed Specifications
+## Specifications
 
 ### spec-001: Storage Abstraction
 **Status**: ✅ Complete | **Completed**: 2025-11-17
@@ -22,12 +22,66 @@ Storage provider interface abstraction enabling swappable implementations. Index
 
 ---
 
+### spec-002: Fix Catalogue Tests
+**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
+
+Catalogue E2E test failures resolved by spec-001 (storage abstraction). All tests now passing. Issue resolved through InMemoryStorageProvider implementation.
+
+[View Spec](./002-fix-catalogue-tests/)
+
+---
+
 ### spec-003: Fix Vite Compilation
 **Status**: ✅ Complete | **Completed**: 2025-11-17
 
 Resolved tsconfig/Vite issue causing files to compile in-place rather than to dist folder. Fixed build configuration for proper output directory structure.
 
 [View Spec](./003-fix-vite-compilation/)
+
+---
+
+### spec-004: Fix Failing Tests
+**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
+
+All test failures resolved. Current status: 1,422 tests passing (605 web + 817 graph), zero failures. Resolved through multiple implementations including storage abstraction, layout fixes, and history tracking.
+
+[View Spec](./004-fix-failing-tests/)
+
+---
+
+### spec-005: Test Environment MSW
+**Status**: 📝 Draft
+
+Mock Service Worker (MSW) integration for test environment API mocking. E2E tests to run reliably without external API dependencies.
+
+[View Spec](./005-test-environment-msw/)
+
+---
+
+### spec-006: Application Rename
+**Status**: 📝 Draft
+
+Rename application to reflect updated scope and branding.
+
+[View Spec](./006-application-rename/)
+
+---
+
+### spec-007: Multi-Provider Support
+**Status**: 📝 Draft
+
+Support for multiple storage provider implementations simultaneously.
+
+[View Spec](./007-multi-provider-support/)
+
+---
+
+### spec-008: Bookmark Query Views
+**Status**: 📝 Draft
+
+Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations.
+
+[View Spec](./008-bookmark-query-views/)
 
 ---
 
@@ -76,6 +130,15 @@ OpenAlex Walden (Data Version 2) support with xpac works (datasets, software, sp
 
 ---
 
+### spec-014: Edge Direction Correction
+**Status**: 🚧 In Progress | **Last Updated**: 2025-11-18
+
+Correcting graph edge directions to match OpenAlex data ownership model. User Story 2 (P2) implemented. Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup.
+
+[View Spec](./014-edge-direction-correction/)
+
+---
+
 ### spec-015: OpenAlex Relationships
 **Status**: ✅ Complete | **Completed**: 2025-11-18
 
@@ -91,62 +154,6 @@ Complete relationship implementation across all OpenAlex entity types. 90 tasks 
 Enhanced entity detail pages with relationship visualization capabilities. Type filtering, count summaries, localStorage persistence, loading/error states. 80 tasks with <1s rendering for 50-100 items.
 
 [View Spec](./016-entity-relationship-viz/)
-
----
-
-### spec-019: Full Entity Support
-**Status**: ✅ Complete | **Completed**: 2025-11-21
-
-Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities).
-
-[View Spec](./019-full-entity-support/)
-
----
-
-### spec-021: Mantine Responsive Layout
-**Status**: ✅ Complete | **Completed**: 2025-11-21
-
-Mantine UI responsive layout configuration corrections. Fixed layout issues with proper breakpoint configuration and auto-layout settings. Mobile search Enter-key trigger implemented.
-
-[View Spec](./021-mantine-responsive-layout/)
-
----
-
-### spec-024: Algorithms Package
-**Status**: ✅ Complete | **Completed**: 2025-11-25
-
-Core graph algorithms with Result/Option error handling. Traversal (DFS, BFS), pathfinding (Dijkstra), and analysis (connected components, SCC, cycle detection, topological sort). 112/112 tests passing.
-
-[View Spec](./024-algorithms-package/)
-
----
-
-### spec-025: Graph Clustering
-**Status**: ✅ Complete | **Completed**: 2025-11-25
-
-9 clustering algorithms implemented: Louvain, Spectral, Hierarchical, K-Core, Leiden, Label Propagation, Infomap, Core-Periphery, Biconnected Components. 134 tasks, 51/65 tests passing (79%).
-
-[View Spec](./025-graph-clustering/)
-
----
-
-### spec-027: Louvain Scaling Optimization
-**Status**: ✅ Complete | **Completed**: 2025-11-25
-
-Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 443ms for 1000 nodes (baseline: 15.4s).
-
-[View Spec](./027-louvain-scaling-optimization/)
-
----
-
-## In Progress Specifications
-
-### spec-014: Edge Direction Correction
-**Status**: 🚧 In Progress | **Last Updated**: 2025-11-18
-
-Correcting graph edge directions to match OpenAlex data ownership model. User Story 2 (P2) implemented. Outbound edges represent data stored on source entity; inbound edges discovered via reverse lookup.
-
-[View Spec](./014-edge-direction-correction/)
 
 ---
 
@@ -168,6 +175,15 @@ EntityType consolidation to `@academic-explorer/types` as single source of truth
 
 ---
 
+### spec-019: Full Entity Support
+**Status**: ✅ Complete | **Completed**: 2025-11-21
+
+Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities).
+
+[View Spec](./019-full-entity-support/)
+
+---
+
 ### spec-020: E2E Test Coverage
 **Status**: 🚧 In Progress | **Progress**: 0/109 tasks
 
@@ -177,41 +193,12 @@ E2E test coverage enhancement. Plan to add missing tests for untested routes, im
 
 ---
 
-## Draft Specifications
+### spec-021: Mantine Responsive Layout
+**Status**: ✅ Complete | **Completed**: 2025-11-21
 
-### spec-005: Test Environment MSW
-**Status**: 📝 Draft
+Mantine UI responsive layout configuration corrections. Fixed layout issues with proper breakpoint configuration and auto-layout settings. Mobile search Enter-key trigger implemented.
 
-Mock Service Worker (MSW) integration for test environment API mocking. E2E tests to run reliably without external API dependencies.
-
-[View Spec](./005-test-environment-msw/)
-
----
-
-### spec-006: Application Rename
-**Status**: 📝 Draft
-
-Rename application to reflect updated scope and branding.
-
-[View Spec](./006-application-rename/)
-
----
-
-### spec-007: Multi-Provider Support
-**Status**: 📝 Draft
-
-Support for multiple storage provider implementations simultaneously.
-
-[View Spec](./007-multi-provider-support/)
-
----
-
-### spec-008: Bookmark Query Views
-**Status**: 📝 Draft
-
-Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations.
-
-[View Spec](./008-bookmark-query-views/)
+[View Spec](./021-mantine-responsive-layout/)
 
 ---
 
@@ -233,6 +220,24 @@ CI/CD pipeline optimization for faster build and deployment times. Build artifac
 
 ---
 
+### spec-024: Algorithms Package
+**Status**: ✅ Complete | **Completed**: 2025-11-25
+
+Core graph algorithms with Result/Option error handling. Traversal (DFS, BFS), pathfinding (Dijkstra), and analysis (connected components, SCC, cycle detection, topological sort). 112/112 tests passing.
+
+[View Spec](./024-algorithms-package/)
+
+---
+
+### spec-025: Graph Clustering
+**Status**: ✅ Complete | **Completed**: 2025-11-25
+
+9 clustering algorithms implemented: Louvain, Spectral, Hierarchical, K-Core, Leiden, Label Propagation, Infomap, Core-Periphery, Biconnected Components. 134 tasks, 51/65 tests passing (79%).
+
+[View Spec](./025-graph-clustering/)
+
+---
+
 ### spec-026: Graph Extraction
 **Status**: 📝 Draft
 
@@ -242,32 +247,21 @@ Academic graph pattern extraction including ego networks, path analysis, motif d
 
 ---
 
+### spec-027: Louvain Scaling Optimization
+**Status**: ✅ Complete | **Completed**: 2025-11-25
+
+Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 443ms for 1000 nodes (baseline: 15.4s).
+
+[View Spec](./027-louvain-scaling-optimization/)
+
+---
+
 ### spec-028: Complete OpenAlex Relationships
 **Status**: 📝 Draft
 
 Extension of spec-015 for complete relationship coverage including funding sources, publishers, and additional relationship types. Renumbered from 020 to resolve duplicate spec numbering.
 
 [View Spec](./028-complete-openalex-relationships/)
-
----
-
-## Archived Specifications
-
-### spec-002: Fix Catalogue Tests
-**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
-
-Catalogue E2E test failures resolved by spec-001 (storage abstraction). All tests now passing. Issue resolved through InMemoryStorageProvider implementation.
-
-[View Spec](./002-fix-catalogue-tests/)
-
----
-
-### spec-004: Fix Failing Tests
-**Status**: ⚠️ Archived (Obsolete) | **Obsoleted**: 2025-11-17
-
-All test failures resolved. Current status: 1,422 tests passing (605 web + 817 graph), zero failures. Resolved through multiple implementations including storage abstraction, layout fixes, and history tracking.
-
-[View Spec](./004-fix-failing-tests/)
 
 ---
 
