@@ -95,9 +95,10 @@ export function calculateModularity<N extends Node, E extends Edge>(
       }
 
       // A_ij - adjacency matrix value (1 if edge exists, 0 otherwise)
-      const outgoingEdgesResult = graph.getOutgoingEdges(nodeI.id);
-      const A_ij = outgoingEdgesResult.ok &&
-                   outgoingEdgesResult.value.some(e => e.target === nodeJ.id) ? 1 : 0;
+      // For undirected graphs, check neighbors (symmetric adjacency)
+      const neighborsResult = graph.getNeighbors(nodeI.id);
+      const A_ij = neighborsResult.ok &&
+                   neighborsResult.value.includes(nodeJ.id) ? 1 : 0;
 
       // k_i and k_j - degrees
       const k_i = degrees.get(nodeI.id) || 0;
@@ -166,10 +167,10 @@ export function calculateCommunityModularity<N extends Node, E extends Edge>(
       const nodeIStr = typeof nodeI === 'string' ? nodeI : String(nodeI);
       const nodeJStr = typeof nodeJ === 'string' ? nodeJ : String(nodeJ);
 
-      // A_ij
-      const outgoingEdgesResult = graph.getOutgoingEdges(nodeIStr);
-      const A_ij = outgoingEdgesResult.ok &&
-                   outgoingEdgesResult.value.some(e => e.target === nodeJStr) ? 1 : 0;
+      // A_ij - check if nodes are neighbors
+      const neighborsResult = graph.getNeighbors(nodeIStr);
+      const A_ij = neighborsResult.ok &&
+                   neighborsResult.value.includes(nodeJStr) ? 1 : 0;
 
       // k_i and k_j
       const k_i = degrees.get(nodeI) || 0;

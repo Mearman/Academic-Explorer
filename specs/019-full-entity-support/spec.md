@@ -2,7 +2,8 @@
 
 **Feature Branch**: `019-full-entity-support`
 **Created**: 2025-11-21
-**Status**: Draft
+**Status**: Completed
+**Completed**: 2025-11-21
 **Input**: User description: "ensure we have FULL support for ALL of these (including licenses) and have corresponding http://localhost:5173/#/{TYPE}/{ID} pages to support them"
 
 ## User Scenarios & Testing *(mandatory)*

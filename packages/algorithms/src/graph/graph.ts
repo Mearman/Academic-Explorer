@@ -321,6 +321,9 @@ export class Graph<N extends Node, E extends Edge> {
   /**
    * Get all outgoing edges from a node.
    *
+   * For directed graphs: Returns edges where node is the source.
+   * For undirected graphs: Returns edges where node is either source or target.
+   *
    * @param id - Node ID to get outgoing edges from
    * @returns Result containing array of outgoing edges, or error if node not found
    *
@@ -345,6 +348,9 @@ export class Graph<N extends Node, E extends Edge> {
 
     for (const edge of this.edges.values()) {
       if (edge.source === id) {
+        outgoing.push(edge);
+      } else if (!this.directed && edge.target === id) {
+        // For undirected graphs, include edges where this node is the target
         outgoing.push(edge);
       }
     }

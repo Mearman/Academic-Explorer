@@ -74,9 +74,16 @@ export function calculateDensity<N extends Node, E extends Edge>(
 
       // Check if edge exists
       const outgoingEdgesResult = graph.getOutgoingEdges(nodeI.id);
-      if (outgoingEdgesResult.ok &&
-          outgoingEdgesResult.value.some(e => e.target === nodeJ.id)) {
-        actualEdges++;
+      if (outgoingEdgesResult.ok) {
+        // For undirected graphs, edges may have nodeI as source OR target
+        const hasEdge = graph.isDirected()
+          ? outgoingEdgesResult.value.some(e => e.target === nodeJ.id)
+          : outgoingEdgesResult.value.some(e =>
+              e.target === nodeJ.id || e.source === nodeJ.id);
+
+        if (hasEdge) {
+          actualEdges++;
+        }
       }
     });
   });
@@ -172,9 +179,16 @@ export function calculateCoverageRatio<N extends Node, E extends Edge>(
         }
 
         const outgoingEdgesResult = graph.getOutgoingEdges(nodeI.id);
-        if (outgoingEdgesResult.ok &&
-            outgoingEdgesResult.value.some(e => e.target === nodeJ.id)) {
-          internalEdges++;
+        if (outgoingEdgesResult.ok) {
+          // For undirected graphs, edges may have nodeI as source OR target
+          const hasEdge = graph.isDirected()
+            ? outgoingEdgesResult.value.some(e => e.target === nodeJ.id)
+            : outgoingEdgesResult.value.some(e =>
+                e.target === nodeJ.id || e.source === nodeJ.id);
+
+          if (hasEdge) {
+            internalEdges++;
+          }
         }
       });
     });
