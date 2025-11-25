@@ -131,3 +131,5 @@
 - **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes
 - **Deployment Readiness**: Implementation must resolve all pre-existing blockers; entire monorepo must be deployable on completion
 - **Continuous Execution**: Implementation will proceed through all phases without pausing; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
+- **Complete Implementation**: Full feature as specified will be implemented; no simplified fallbacks without explicit user approval
+- **Spec Index Maintenance**: specs/README.md will be updated when spec status changes; committed alongside spec changes

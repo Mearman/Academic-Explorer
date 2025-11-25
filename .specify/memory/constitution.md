@@ -1,14 +1,13 @@
 <!--
 Sync Impact Report:
-Version: 2.4.4 → 2.5.0 (MINOR: Added Principle XI - Complete Implementation)
+Version: 2.5.0 → 2.6.0 (MINOR: Added Principle XII - Spec Index Maintenance)
 Added Sections:
-  - Principle XI (Complete Implementation): Never fall back to simplified alternatives - always
-    implement/fix the full version as specified. No "basic" or "simplified" fallbacks allowed.
+  - Principle XII (Spec Index Maintenance): specs/README.md MUST be maintained as a current
+    index of all feature specifications with status, completion dates, and links.
 Modified Principles:
-  - Principle IX (Deployment Readiness): Added reference to Principle XI in Relationship section
-  - Principle X (Continuous Execution): Added reference to Principle XI in Relationship section
-  - Constitution Check section: Added Principle XI verification requirement
-  - Quality Gates section: Added Complete Implementation verification
+  - Principle VI (Atomic Conventional Commits): Added reference to Principle XII in spec commit requirements
+  - Constitution Check section: Added Principle XII verification requirement
+  - Quality Gates section: Added Spec Index maintenance verification
 Removed Sections: None
 Templates Requiring Updates:
   - ✅ plan-template.md: Constitution Check section already uses numbered list that
@@ -17,8 +16,10 @@ Templates Requiring Updates:
     accommodates new principle without structural changes
   - ✅ tasks-template.md: Constitution compliance verification already uses checklist that
     can expand to include new principle
-Follow-up TODOs: None
+Follow-up TODOs:
+  - Create initial specs/README.md file with current spec statuses
 Previous Amendments:
+  - v2.5.0: Added Principle XI - Complete Implementation
   - v2.4.4: Fix Principle X to require SlashCommand tool usage
   - v2.4.3: Add slash command invocation guidance to Development Workflow
   - v2.4.2: Strengthened prohibition against relative imports between packages
@@ -256,6 +257,7 @@ Staging requirements:
 - Phase completion = all tasks in that phase marked complete + any generated artifacts
 - Do NOT wait until feature completion to commit spec changes
 - Enables tracking of progress even if implementation is interrupted
+- **When spec status changes (draft → complete, etc.), update specs/README.md in the same commit** (see Principle XII)
 
 **Rationale**: The PhD research workflow involves iterative experimentation where the ability
 to bisect, revert, and understand historical changes is critical. Atomic commits enable:
@@ -576,6 +578,60 @@ do not satisfy deployment readiness.
 and recognized, continuous execution MUST continue to implement the full version without
 pausing for user approval.
 
+### XII. Spec Index Maintenance (NON-NEGOTIABLE)
+
+**The `specs/README.md` file MUST be maintained as a current, accurate index of all feature
+specifications in the repository**. This index serves as the single source of truth for
+spec status, completion dates, and navigation.
+
+Spec index requirements:
+- **MUST exist** at `specs/README.md` in the repository root
+- **MUST list ALL specs** in the `specs/` directory (no omissions)
+- **MUST include for each spec**:
+  - Spec number and name (e.g., "024 - Algorithms Package")
+  - Current status (Draft, In Progress, Complete, Archived, Blocked)
+  - Completion date (if status is Complete)
+  - Brief description or link to spec.md
+- **MUST be updated** whenever:
+  - A new spec is created (`/speckit.specify`)
+  - A spec's status changes (Draft → In Progress → Complete)
+  - A spec is archived or deprecated
+  - Major phase completions occur
+- **Format MUST be consistent** (markdown table or structured list)
+- **MUST be committed** alongside spec status changes (see Principle VI)
+
+**Update workflow**:
+- When creating new spec: Add entry to specs/README.md with status "Draft"
+- When starting implementation: Update status to "In Progress"
+- When completing spec: Update status to "Complete" and add completion date
+- When archiving spec: Update status to "Archived" with reason
+- Commit specs/README.md changes in same commit as spec status changes
+
+**Rationale**: The project contains 27+ feature specifications spanning 2+ years of PhD
+research development. Without a maintained index:
+1. **Discovery failure** - Developers can't find existing specs or related work
+2. **Duplicate work** - Similar features get re-specified because past specs are invisible
+3. **Status confusion** - No clear understanding of which specs are complete vs abandoned
+4. **Navigation burden** - Must manually explore directory structure to understand project scope
+5. **Onboarding friction** - New contributors or future researchers can't quickly assess project state
+6. **Historical context lost** - Completed specs are forgotten rather than serving as reference
+
+A maintained index ensures:
+- **Quick discovery** - Find relevant specs in seconds, not minutes
+- **Status transparency** - Immediately see which specs are active, complete, or blocked
+- **Project overview** - Single-page view of all feature development history
+- **Duplicate prevention** - Check for similar specs before creating new ones
+- **Research continuity** - PhD research remains navigable across time gaps
+- **Knowledge preservation** - Completed specs remain accessible for reference
+
+**Relationship to Atomic Commits (Principle VI)**: specs/README.md updates MUST be
+committed atomically alongside the spec status changes they document, using the same
+`docs(spec-###):` commit message format.
+
+**Relationship to Continuous Execution (Principle X)**: After completing a spec
+implementation, continuous execution includes updating specs/README.md status before
+moving to the next spec.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -604,6 +660,12 @@ upstream projects have type errors.
 3. Stage ONLY the spec directory files: `git add specs/###-feature-name/`
 4. Create spec commit: `git commit -m "docs(spec-###): complete Phase X - <description>"`
 5. Continue to next phase without pausing
+
+**Spec index maintenance**: After completing a spec or changing its status:
+1. Update `specs/README.md` with new status and completion date (if applicable)
+2. Stage both the spec directory and specs/README.md: `git add specs/###-feature-name/ specs/README.md`
+3. Create commit: `git commit -m "docs(spec-###): mark spec as complete"`
+4. Keep specs/README.md current to maintain project navigability
 
 **Slash command invocation**: When invoking SpecKit workflow commands or other custom
 slash commands from the available commands list:
@@ -641,11 +703,11 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all eleven core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all twelve core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
 development-stage pragmatism, test-first bug fixes, deployment readiness, continuous
-execution, and complete implementation.
+execution, complete implementation, and spec index maintenance.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -684,6 +746,12 @@ MUST be documented in commit messages and changelogs.
 - Edge cases and error handling MUST be complete
 - Performance requirements MUST be fully met, not approximated
 
+**Spec index maintenance verification**:
+- specs/README.md MUST list all specs in specs/ directory
+- specs/README.md MUST be updated when spec status changes
+- specs/README.md updates MUST be committed with spec changes
+- No specs should be "hidden" or missing from the index
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -699,4 +767,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.5.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-25
+**Version**: 2.6.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-25
