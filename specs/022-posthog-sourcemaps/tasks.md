@@ -1,7 +1,7 @@
 # Implementation Tasks: PostHog Source Map Upload
 
-**Feature**: 018-posthog-sourcemaps
-**Branch**: `018-posthog-sourcemaps`
+**Feature**: 022-posthog-sourcemaps
+**Branch**: `022-posthog-sourcemaps`
 **Generated**: 2025-11-21
 **Spec**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md)
 
@@ -39,7 +39,7 @@ All tasks follow this format:
 
 ### Tasks
 
-- [X] T001 Verify on correct feature branch `018-posthog-sourcemaps`
+- [X] T001 Verify on correct feature branch `022-posthog-sourcemaps`
 - [X] T002 [P] Verify PostHog account has project created with EU instance
 - [X] T003 [P] Locate existing Vite configuration file at `apps/web/vite.config.ts`
 - [X] T004 [P] Locate existing GitHub Actions workflow file at `.github/workflows/ci.yml`
@@ -234,7 +234,7 @@ All tasks follow this format:
 
 ### Verification Documentation
 
-- [ ] T068 [US3] Create verification checklist in `specs/018-posthog-sourcemaps/verification-checklist.md`
+- [ ] T068 [US3] Create verification checklist in `specs/022-posthog-sourcemaps/verification-checklist.md`
 - [ ] T069 [US3] Document step-by-step PostHog Symbol Sets verification process in checklist
 - [ ] T070 [US3] Add screenshot locations for PostHog dashboard navigation (Project Settings → Symbol Sets)
 - [ ] T071 [US3] Document expected Symbol Set attributes: release version (git SHA), file count (10-50), upload timestamp

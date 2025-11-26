@@ -1,6 +1,6 @@
 # Feature Specification: PostHog Source Map Upload
 
-**Feature Branch**: `018-posthog-sourcemaps`
+**Feature Branch**: `022-posthog-sourcemaps`
 **Created**: 2025-11-21
 **Status**: Draft
 **Input**: User description: "Implement PostHog source map upload for error tracking with proper stack traces in production"

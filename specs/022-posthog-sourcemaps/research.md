@@ -1,6 +1,6 @@
 # Research: PostHog Source Map Upload
 
-**Feature**: 018-posthog-sourcemaps
+**Feature**: 022-posthog-sourcemaps
 **Phase**: 0 - Outline & Research
 **Date**: 2025-11-21
 

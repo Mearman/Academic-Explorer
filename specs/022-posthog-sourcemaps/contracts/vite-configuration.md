@@ -1,6 +1,6 @@
 # Vite Configuration Contract
 
-**Feature**: 018-posthog-sourcemaps
+**Feature**: 022-posthog-sourcemaps
 **Phase**: 1 - Design & Contracts
 **Date**: 2025-11-21
 

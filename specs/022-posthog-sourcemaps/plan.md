@@ -1,7 +1,7 @@
 # Implementation Plan: PostHog Source Map Upload
 
-**Branch**: `018-posthog-sourcemaps` | **Date**: 2025-11-21 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/018-posthog-sourcemaps/spec.md`
+**Branch**: `022-posthog-sourcemaps` | **Date**: 2025-11-21 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/022-posthog-sourcemaps/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
