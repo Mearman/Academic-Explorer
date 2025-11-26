@@ -4,6 +4,12 @@
 **Created**: 2025-11-21-012431
 **Priority**: P1 (Critical - Technical Debt Reduction)
 
+---
+
+**Package Migration Note (Added 2025-11-26)**: This specification references `packages/graph/` which was removed on 2025-11-24. The spec was created before the refactoring but remains in progress. Package structure references below are outdated - current packages are: algorithms, client, types, ui, utils.
+
+---
+
 ## Problem Statement
 
 OpenAlex entity type definitions, metadata, and classifications are duplicated across multiple files throughout the codebase:

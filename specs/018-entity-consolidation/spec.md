@@ -5,6 +5,12 @@
 **Status**: Near Complete (39/40 tasks)
 **Input**: User description: "I think there are still many places we list the OpenAlex entity permutations, classifications, identifications, types, etc. Identify, unify, deduplicate and centralise them into the types package"
 
+---
+
+**Package Migration Note (Added 2025-11-26)**: This specification references `packages/graph/` which was removed on 2025-11-24. The spec was created before the refactoring but remains in progress. Package structure references below are outdated - current packages are: algorithms, client, types, ui, utils.
+
+---
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Single Source of Truth for Entity Definitions (Priority: P1)
