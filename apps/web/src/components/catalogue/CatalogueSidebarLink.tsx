@@ -2,18 +2,15 @@
  * Sidebar link component for catalogue navigation
  */
 
-import React from "react";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconList } from "@tabler/icons-react";
-import { useNavigate } from "@tanstack/react-router";
+import React from "react";
 
 interface CatalogueSidebarLinkProps {
   onClose?: () => void;
 }
 
 export function CatalogueSidebarLink({ onClose }: CatalogueSidebarLinkProps) {
-  const navigate = useNavigate();
-
   const handleClick = () => {
     // Navigate to catalogue page
     window.location.hash = "/catalogue";

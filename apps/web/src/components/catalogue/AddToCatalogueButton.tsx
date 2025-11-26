@@ -3,7 +3,7 @@
  * Integrates with existing bookmark system and entity detail components
  */
 
-import React, { useState } from "react";
+import type { EntityType } from "@academic-explorer/types";
 import {
   ActionIcon,
   Menu,
@@ -18,15 +18,16 @@ import {
   Textarea,
   Checkbox,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconPlus,
   IconBookmark,
   IconList,
   IconBook,
 } from "@tabler/icons-react";
+import React, { useState } from "react";
+
 import { useCatalogue } from "@/hooks/useCatalogue";
-import type { EntityType } from "@academic-explorer/types";
-import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
 
 interface AddToCatalogueButtonProps {
@@ -284,21 +285,26 @@ export function AddToCatalogueButton({
           <Menu.Dropdown>
             {compatibleLists.length > 0 ? (
               <>
-                {compatibleLists.slice(0, 5).map((list) => (
-                  <Menu.Item
-                    key={list.id}
-                    leftSection={
-                      list.type === "bibliography" ? (
-                        <IconBook size={14} />
-                      ) : (
-                        <IconList size={14} />
-                      )
-                    }
-                    onClick={() => handleAddToList(list.id!, list.title)}
-                  >
-                    {list.title}
-                  </Menu.Item>
-                ))}
+                {compatibleLists.slice(0, 5).map((list) => {
+                  if (!list.id) return null;
+                  const listId = list.id;
+                  const listTitle = list.title;
+                  return (
+                    <Menu.Item
+                      key={listId}
+                      leftSection={
+                        list.type === "bibliography" ? (
+                          <IconBook size={14} />
+                        ) : (
+                          <IconList size={14} />
+                        )
+                      }
+                      onClick={() => handleAddToList(listId, listTitle)}
+                    >
+                      {listTitle}
+                    </Menu.Item>
+                  );
+                })}
                 {compatibleLists.length > 5 && (
                   <Menu.Item disabled>
                     ... and {compatibleLists.length - 5} more
@@ -350,21 +356,26 @@ export function AddToCatalogueButton({
         <Menu.Dropdown>
           {compatibleLists.length > 0 ? (
             <>
-              {compatibleLists.slice(0, 5).map((list) => (
-                <Menu.Item
-                  key={list.id}
-                  leftSection={
-                    list.type === "bibliography" ? (
-                      <IconBook size={14} />
-                    ) : (
-                      <IconList size={14} />
-                    )
-                  }
-                  onClick={() => handleAddToList(list.id!, list.title)}
-                >
-                  {list.title}
-                </Menu.Item>
-              ))}
+              {compatibleLists.slice(0, 5).map((list) => {
+                if (!list.id) return null;
+                const listId = list.id;
+                const listTitle = list.title;
+                return (
+                  <Menu.Item
+                    key={listId}
+                    leftSection={
+                      list.type === "bibliography" ? (
+                        <IconBook size={14} />
+                      ) : (
+                        <IconList size={14} />
+                      )
+                    }
+                    onClick={() => handleAddToList(listId, listTitle)}
+                  >
+                    {listTitle}
+                  </Menu.Item>
+                );
+              })}
               {compatibleLists.length > 5 && (
                 <Menu.Item disabled>
                   ... and {compatibleLists.length - 5} more

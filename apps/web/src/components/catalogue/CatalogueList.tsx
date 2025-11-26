@@ -2,7 +2,8 @@
  * Catalogue list component for displaying and managing lists
  */
 
-import React, { useState } from "react";
+import type { EntityType } from "@academic-explorer/types";
+import { type CatalogueList } from "@academic-explorer/utils"
 import {
   Card,
   Group,
@@ -20,6 +21,8 @@ import {
   TagsInput,
   Box,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 import {
   IconExternalLink,
   IconEdit,
@@ -29,11 +32,9 @@ import {
   IconCopy,
   IconCheck,
 } from "@tabler/icons-react";
+import React, { useState } from "react";
+
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { type CatalogueList } from "@academic-explorer/utils"
-import type { EntityType } from "@academic-explorer/types";
-import { modals } from "@mantine/modals";
-import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
 
 interface CatalogueListProps {
@@ -53,10 +54,9 @@ interface ListCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onShare: () => void;
-  onNavigate?: (url: string) => void;
 }
 
-function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNavigate }: ListCardProps) {
+function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare }: ListCardProps) {
   const [stats, setStats] = useState<{
     totalEntities: number;
     entityCounts: Record<EntityType, number>;
@@ -66,16 +66,15 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNav
 
   // Load stats when component mounts
   React.useEffect(() => {
-    if (list.id) {
-      getListStats(list.id)
-        .then(setStats)
-        .catch((error) => {
-          logger.warn("catalogue-ui", "Failed to load list stats", {
-            listId: list.id,
-            error
-          });
+    if (!list.id) return;
+    getListStats(list.id)
+      .then(setStats)
+      .catch((error) => {
+        logger.warn("catalogue-ui", "Failed to load list stats", {
+          listId: list.id,
+          error
         });
-    }
+      });
   }, [list.id, getListStats]);
 
   const handleCopyLink = async () => {
@@ -267,7 +266,8 @@ function EditListModal({
         isPublic,
       };
 
-      await updateList(list.id!, updateData);
+      if (!list.id) return;
+      await updateList(list.id, updateData);
       onSave(updateData);
       onClose();
 
@@ -275,7 +275,7 @@ function EditListModal({
         listId: list.id,
         updateData
       });
-    } catch (error) {
+    } catch (err) {
       logger.error("catalogue-ui", "Failed to update list", {
         listId: list.id,
         updateData: {
@@ -284,7 +284,7 @@ function EditListModal({
           tags: tags.filter(tag => tag.trim().length > 0),
           isPublic,
         },
-        error
+        error: err
       });
     } finally {
       setIsSubmitting(false);
@@ -351,7 +351,6 @@ export function CatalogueListComponent({
   selectedListId,
   onSelectList,
   onDeleteList,
-  onNavigate,
   isLoading,
   listType,
 }: CatalogueListProps) {
@@ -379,13 +378,14 @@ export function CatalogueListComponent({
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          await onDeleteList(list.id!);
+          if (!list.id) return;
+          await onDeleteList(list.id);
           notifications.show({
             title: "Deleted",
             message: `${list.type === "bibliography" ? "Bibliography" : "List"} deleted successfully`,
             color: "green",
           });
-        } catch (error) {
+        } catch {
           notifications.show({
             title: "Error",
             message: `Failed to delete ${list.type}`,
@@ -397,8 +397,9 @@ export function CatalogueListComponent({
   };
 
   const handleShareList = async (list: CatalogueList) => {
+    if (!list.id) return;
     try {
-      const shareUrl = await generateShareUrl(list.id!);
+      const shareUrl = await generateShareUrl(list.id);
       await navigator.clipboard.writeText(shareUrl);
       notifications.show({
         title: "Share URL Copied",
@@ -459,18 +460,21 @@ export function CatalogueListComponent({
   return (
     <>
       <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
-        {lists.map((list) => (
-          <ListCard
-            key={list.id}
-            list={list}
-            isSelected={selectedListId === list.id}
-            onSelect={() => handleSelectList(list.id!)}
-            onEdit={() => handleEditList(list)}
-            onDelete={() => handleDeleteList(list)}
-            onShare={() => handleShareList(list)}
-            onNavigate={onNavigate}
-          />
-        ))}
+        {lists.map((list) => {
+          if (!list.id) return null;
+          const listId = list.id;
+          return (
+            <ListCard
+              key={listId}
+              list={list}
+              isSelected={selectedListId === listId}
+              onSelect={() => handleSelectList(listId)}
+              onEdit={() => handleEditList(list)}
+              onDelete={() => handleDeleteList(list)}
+              onShare={() => handleShareList(list)}
+            />
+          );
+        })}
       </SimpleGrid>
 
       {editingList && (

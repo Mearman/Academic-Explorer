@@ -2,7 +2,7 @@
  * Modal component for adding entities to catalogue lists
  */
 
-import React, { useState } from "react";
+import type { EntityType } from "@academic-explorer/types";
 import {
   Select,
   Button,
@@ -13,11 +13,13 @@ import {
   Alert,
   Loader,
 } from "@mantine/core";
-import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
-import { useCatalogue } from "@/hooks/useCatalogue";
-import type { EntityType } from "@academic-explorer/types";
-import { logger } from "@/lib/logger";
 import { notifications } from "@mantine/notifications";
+import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
+import React, { useState } from "react";
+
+import { useCatalogue } from "@/hooks/useCatalogue";
+import { logger } from "@/lib/logger";
+
 
 interface AddToListModalProps {
   entityType: EntityType;
@@ -137,10 +139,12 @@ export function AddToListModal({
           placeholder="Choose a list"
           value={selectedListId}
           onChange={setSelectedListId}
-          data={availableLists.map(list => ({
-            value: list.id!,
-            label: `${list.title} (${list.type})`,
-          }))}
+          data={availableLists
+            .filter((list): list is typeof list & { id: string } => !!list.id)
+            .map(list => ({
+              value: list.id,
+              label: `${list.title} (${list.type})`,
+            }))}
           required
           aria-required="true"
           searchable

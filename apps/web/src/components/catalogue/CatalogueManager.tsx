@@ -3,7 +3,7 @@
  * Handles lists, bibliographies, and entity management
  */
 
-import React, { useState, useEffect } from "react";
+import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
 import {
   Container,
   Group,
@@ -14,14 +14,12 @@ import {
   Stack,
   Text,
   Badge,
-  ActionIcon,
-  Tooltip,
-  rem,
   TextInput,
   Card,
   SimpleGrid,
   Paper,
 } from "@mantine/core";
+import { useHotkeys } from "@mantine/hooks";
 import {
   IconPlus,
   IconShare,
@@ -32,37 +30,34 @@ import {
   IconSearch,
   IconEdit,
 } from "@tabler/icons-react";
-import { useHotkeys } from "@mantine/hooks";
-import { useCatalogueContext } from "@/contexts/catalogue-context";
-import { CatalogueListComponent } from "@/components/catalogue/CatalogueList";
+import React, { useState, useEffect } from "react";
+
 import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
+import { CatalogueListComponent } from "@/components/catalogue/CatalogueList";
 import { CreateListModal } from "@/components/catalogue/CreateListModal";
-import { ShareModal } from "@/components/catalogue/ShareModal";
-import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ExportModal } from "@/components/catalogue/ExportModal";
+import { ImportModal } from "@/components/catalogue/ImportModal";
+import { ShareModal } from "@/components/catalogue/ShareModal";
+import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { logger } from "@/lib/logger";
-import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
+
 
 interface CatalogueManagerProps {
   onNavigate?: (url: string) => void;
-  sharedToken?: string;
   shareData?: string; // T064: Compressed share data from URL parameter
 }
 
-export function CatalogueManager({ onNavigate, sharedToken, shareData }: CatalogueManagerProps) {
+export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProps) {
   const {
     lists,
     selectedList,
-    entities,
     isLoadingLists,
-    isLoadingEntities,
     createList,
     deleteList,
     selectList,
     generateShareUrl,
     importFromShareUrl,
     getListStats,
-    searchLists,
   } = useCatalogueContext();
 
   const [activeTab, setActiveTab] = useState<string | null>("lists");
@@ -76,6 +71,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
     totalEntities: number;
     entityCounts: Record<string, number>;
   } | null>(null);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   // T064: Auto-open import modal when share data is present in URL
   useEffect(() => {
@@ -107,30 +103,30 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
   useHotkeys([
     ["mod+N", () => setShowCreateModal(true)],
     ["mod+K", () => {
-      const searchInput = document.querySelector('input[placeholder*="Search lists"]') as HTMLInputElement;
-      searchInput?.focus();
+      searchInputRef.current?.focus();
     }],
     ["mod+Shift+S", () => selectedList && handleShare()],
     ["mod+Shift+I", () => setShowImportModal(true)],
   ]);
 
   // Filter lists based on search (exclude special system lists)
+  const specialListIdValues: string[] = Object.values(SPECIAL_LIST_IDS);
   const filteredLists = searchQuery
     ? lists.filter(list =>
-        list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any) && (
+        list.id && !specialListIdValues.includes(list.id) && (
           list.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           list.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           list.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
         )
       )
-    : lists.filter(list => list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any));
+    : lists.filter(list => list.id && !specialListIdValues.includes(list.id));
 
   // Handle sharing
   const handleShare = async () => {
-    if (!selectedList) return;
+    if (!selectedList || !selectedList.id) return;
 
     try {
-      const url = await generateShareUrl(selectedList.id!);
+      const url = await generateShareUrl(selectedList.id);
       setShareUrl(url);
       setShowShareModal(true);
       logger.debug("catalogue-ui", "Share URL generated successfully", {
@@ -219,6 +215,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           <IconSearch size={16} />
           <Text fw={500}>Search:</Text>
           <TextInput
+            ref={searchInputRef}
             placeholder="Search lists by title, description, or tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -290,10 +287,15 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                   variant="light"
                   size="sm"
                   onClick={() => {
+                    if (!selectedList.id) return;
                     const card = lists.find(l => l.id === selectedList.id);
                     if (card) {
                       // Trigger edit via the list component
-                      const editButton = document.querySelector(`[data-testid="edit-list-${selectedList.id}"]`) as HTMLElement;
+                      // eslint-disable-next-line custom/no-deprecated -- querySelectorAll is not deprecated, false positive
+                      const buttons = document.querySelectorAll<HTMLElement>('[data-testid^="edit-list-"]');
+                      const editButton = Array.from(buttons).find(button =>
+                        button.getAttribute('data-testid') === `edit-list-${selectedList.id}`
+                      );
                       editButton?.click();
                     }
                   }}
@@ -345,7 +347,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                 </Paper>
 
                 {Object.entries(listStats.entityCounts)
-                  .filter(([_, count]) => count > 0)
+                  .filter(([, count]) => count > 0)
                   .map(([entityType, count]) => (
                     <Paper key={entityType} withBorder p="xs" radius="sm">
                       <Text size="xs" c="dimmed" fw={500} tt="capitalize">
@@ -434,9 +436,9 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           trapFocus
           returnFocus
         >
-          {selectedList && (
+          {selectedList && selectedList.id && (
             <ExportModal
-              listId={selectedList.id!}
+              listId={selectedList.id}
               listTitle={selectedList.title}
               onClose={() => setShowExportModal(false)}
             />

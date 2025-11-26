@@ -2,7 +2,6 @@
  * Modal component for sharing catalogue lists
  */
 
-import React, { useState, useEffect } from "react";
 import {
   Button,
   Group,
@@ -12,7 +11,6 @@ import {
   CopyButton,
   ActionIcon,
   Tooltip,
-  Modal,
   Loader,
   Box,
 } from "@mantine/core";
@@ -23,6 +21,8 @@ import {
   IconExternalLink,
 } from "@tabler/icons-react";
 import QRCode from "qrcode";
+import React, { useState, useEffect } from "react";
+
 import { logger } from "@/lib/logger";
 
 interface ShareModalProps {

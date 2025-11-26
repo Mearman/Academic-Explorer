@@ -2,11 +2,10 @@
  * Modal component for creating new catalogue lists
  */
 
-import React, { useState } from "react";
+import type { ListType } from "@academic-explorer/utils";
 import {
   TextInput,
   Textarea,
-  Select,
   TagsInput,
   Button,
   Group,
@@ -16,7 +15,8 @@ import {
   Checkbox,
   Text as MantineText,
 } from "@mantine/core";
-import type { ListType } from "@academic-explorer/utils";
+import React, { useState } from "react";
+
 import { logger } from "@/lib/logger";
 
 interface CreateListModalProps {

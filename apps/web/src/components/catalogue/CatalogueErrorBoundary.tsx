@@ -6,7 +6,6 @@
  * with automatic error tracking to PostHog.
  */
 
-import React, { ReactNode, FunctionComponent } from "react";
 import {
   Alert,
   Button,
@@ -16,9 +15,10 @@ import {
   Text,
   Code,
 } from "@mantine/core";
-import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
 import { PostHogErrorBoundary } from "@posthog/react";
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
+import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
+import React, { ReactNode, FunctionComponent } from "react";
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;
@@ -127,5 +127,3 @@ export function CatalogueErrorBoundary({
     </PostHogErrorBoundary>
   );
 }
-
-export default CatalogueErrorBoundary;

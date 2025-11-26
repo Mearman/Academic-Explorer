@@ -3,7 +3,26 @@
  * Supports sorting, filtering, and entity operations
  */
 
-import React, { useState, useRef } from "react";
+import type { EntityType } from "@academic-explorer/types";
+import { ENTITY_METADATA } from "@academic-explorer/types";
+import { type CatalogueEntity } from "@academic-explorer/utils"
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+
+  useSortable} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Card,
   Group,
@@ -24,6 +43,7 @@ import {
   Checkbox,
   Box,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconExternalLink,
   IconEdit,
@@ -33,31 +53,10 @@ import {
   IconDots,
   IconGripVertical,
 } from "@tabler/icons-react";
-import {
-  DndContext,
-  closestCenter,
-  DragEndEvent,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  KeyboardSensor,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import React, { useState, useRef } from "react";
+
 import { useCatalogueContext } from "@/contexts/catalogue-context";
-import { type CatalogueEntity, type CatalogueList } from "@academic-explorer/utils"
-import type { EntityType } from "@academic-explorer/types";
-import { ENTITY_METADATA } from "@academic-explorer/types";
-import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
 import {
   isWorkMetadata,
@@ -207,7 +206,7 @@ function SortableEntityRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: entity.id! });
+  } = useSortable({ id: entity.id ?? "" });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -220,7 +219,8 @@ function SortableEntityRow({
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const handleSaveNotes = () => {
-    onEditNotes(entity.id!, notes);
+    if (!entity.id) return;
+    onEditNotes(entity.id, notes);
     setEditingNotes(false);
   };
 
@@ -230,7 +230,10 @@ function SortableEntityRow({
         <Table.Td w={40}>
           <Checkbox
             checked={isSelected}
-            onChange={() => onToggleSelect(entity.id!)}
+            onChange={() => {
+              if (!entity.id) return;
+              onToggleSelect(entity.id);
+            }}
             aria-label={`Select ${entity.entityId}`}
           />
         </Table.Td>
@@ -362,7 +365,8 @@ function SortableEntityRow({
               color="red"
               data-testid="confirm-remove-entity-button"
               onClick={async () => {
-                await onRemove(entity.id!);
+                if (!entity.id) return;
+                await onRemove(entity.id);
                 setShowRemoveConfirm(false);
               }}
             >
@@ -471,15 +475,18 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     const items = arrayMove(sortedEntities, oldIndex, newIndex);
 
     // Update positions
-    const reorderedIds = items.map((entity, index) => {
-      entity.position = index + 1;
-      return entity.id!;
-    });
+    const reorderedIds = items
+      .filter((entity): entity is typeof entity & { id: string } => !!entity.id)
+      .map((entity, index) => {
+        entity.position = index + 1;
+        return entity.id;
+      });
 
     try {
-      await reorderEntities(selectedList.id!, reorderedIds);
+      if (!selectedList.id) return;
+      await reorderEntities(selectedList.id, reorderedIds);
       logger.debug("catalogue-ui", "Entities reordered successfully", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         entityCount: reorderedIds.length
       });
 
@@ -492,7 +499,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
       });
     } catch (error) {
       logger.error("catalogue-ui", "Failed to reorder entities", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         error
       });
       notifications.show({
@@ -504,12 +511,12 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   const handleRemoveEntity = async (entityRecordId: string) => {
-    if (!selectedList) return;
+    if (!selectedList || !selectedList.id) return;
 
     try {
-      await removeEntityFromList(selectedList.id!, entityRecordId);
+      await removeEntityFromList(selectedList.id, entityRecordId);
       logger.debug("catalogue-ui", "Entity removed from list", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         entityRecordId
       });
       notifications.show({
@@ -519,7 +526,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
       });
     } catch (error) {
       logger.error("catalogue-ui", "Failed to remove entity from list", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         entityRecordId,
         error
       });
@@ -561,7 +568,11 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     if (selectedEntities.size === sortedEntities.length) {
       setSelectedEntities(new Set());
     } else {
-      setSelectedEntities(new Set(sortedEntities.map(e => e.id!)));
+      setSelectedEntities(new Set(
+        sortedEntities
+          .filter((e): e is typeof e & { id: string } => !!e.id)
+          .map(e => e.id)
+      ));
     }
   };
 
@@ -576,13 +587,13 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   const handleBulkRemove = async () => {
-    if (!selectedList || selectedEntities.size === 0) return;
+    if (!selectedList || !selectedList.id || selectedEntities.size === 0) return;
 
     try {
-      await bulkRemoveEntities(selectedList.id!, Array.from(selectedEntities));
+      await bulkRemoveEntities(selectedList.id, Array.from(selectedEntities));
 
       logger.debug("catalogue-ui", "Bulk remove completed", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         removedCount: selectedEntities.size
       });
 
@@ -596,7 +607,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
       setShowBulkConfirm(false);
     } catch (error) {
       logger.error("catalogue-ui", "Failed to bulk remove entities", {
-        listId: selectedList.id!,
+        listId: selectedList.id,
         error
       });
       notifications.show({
@@ -608,13 +619,13 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   const handleBulkMove = async () => {
-    if (!selectedList || !targetListId || selectedEntities.size === 0) return;
+    if (!selectedList || !selectedList.id || !targetListId || selectedEntities.size === 0) return;
 
     try {
-      await bulkMoveEntities(selectedList.id!, targetListId, Array.from(selectedEntities));
+      await bulkMoveEntities(selectedList.id, targetListId, Array.from(selectedEntities));
 
       logger.debug("catalogue-ui", "Bulk move completed", {
-        sourceListId: selectedList.id!,
+        sourceListId: selectedList.id,
         targetListId,
         movedCount: selectedEntities.size
       });
@@ -630,7 +641,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
       setTargetListId(null);
     } catch (error) {
       logger.error("catalogue-ui", "Failed to bulk move entities", {
-        sourceListId: selectedList.id!,
+        sourceListId: selectedList.id,
         targetListId,
         error
       });
@@ -805,7 +816,9 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
                     onDragEnd={handleDragEnd}
                   >
                     <SortableContext
-                      items={sortedEntities.map(entity => entity.id!)}
+                      items={sortedEntities
+                        .filter((entity): entity is typeof entity & { id: string } => !!entity.id)
+                        .map(entity => entity.id)}
                       strategy={verticalListSortingStrategy}
                     >
                       {useVirtualization ? (
@@ -912,9 +925,9 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
             value={targetListId}
             onChange={(value) => setTargetListId(value)}
             data={lists
-              .filter((list) => list.id !== selectedList?.id)
+              .filter((list): list is typeof list & { id: string } => list.id !== selectedList?.id && !!list.id)
               .map((list) => ({
-                value: list.id!,
+                value: list.id,
                 label: list.title,
               }))}
             searchable

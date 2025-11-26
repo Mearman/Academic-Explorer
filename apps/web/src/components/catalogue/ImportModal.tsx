@@ -2,7 +2,7 @@
  * Modal component for importing catalogue lists from files and compressed data
  */
 
-import React, { useState, useCallback } from "react";
+import type { EntityType } from "@academic-explorer/types";
 import {
   TextInput,
   Button,
@@ -27,10 +27,12 @@ import {
   IconFile,
   IconCheck,
 } from "@tabler/icons-react";
-import { logger } from "@/lib/logger";
+import React, { useState, useCallback } from "react";
+
 import { useCatalogue } from "@/hooks/useCatalogue";
+import { logger } from "@/lib/logger";
 import type { ExportFormat } from "@/types/catalogue";
-import type { EntityType } from "@academic-explorer/types";
+
 
 interface ImportModalProps {
   onClose: () => void;
@@ -156,26 +158,6 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
     setError(null);
   }, []);
 
-  // Validate compressed data
-  const handleValidateCompressed = useCallback(async () => {
-    if (!compressedData.trim()) return;
-
-    setIsValidating(true);
-    setError(null);
-
-    try {
-      // Try to decompress and validate
-      const { importListCompressed: tempImport } = useCatalogue();
-      // We can't actually call this without importing, so we'll just validate format
-      setValidationResult({ valid: true, errors: [] });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Invalid compressed data";
-      setError(errorMessage);
-      setValidationResult({ valid: false, errors: [errorMessage] });
-    } finally {
-      setIsValidating(false);
-    }
-  }, [compressedData]);
 
   // Handle paste from clipboard (T063)
   const handlePaste = useCallback(async () => {
@@ -453,7 +435,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
                 </Table.Thead>
                 <Table.Tbody>
                   {Object.entries(preview.entityTypes)
-                    .filter(([_, count]) => count > 0)
+                    .filter(([, count]) => count > 0)
                     .map(([type, count]) => (
                       <Table.Tr key={type}>
                         <Table.Td>{type}</Table.Td>

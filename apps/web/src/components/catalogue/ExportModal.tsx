@@ -2,7 +2,6 @@
  * Modal component for exporting catalogue lists
  */
 
-import React, { useState } from "react";
 import {
   Radio,
   Button,
@@ -10,12 +9,14 @@ import {
   Stack,
   Text,
   Alert,
-  Code,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck, IconDownload } from "@tabler/icons-react";
+import React, { useState } from "react";
+
 import { useCatalogue } from "@/hooks/useCatalogue";
 import { logger } from "@/lib/logger";
-import { notifications } from "@mantine/notifications";
+
 
 type ExportFormat = "compressed" | "json" | "csv" | "bibtex";
 
