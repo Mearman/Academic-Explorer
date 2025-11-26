@@ -344,7 +344,7 @@
     "test:unit": {
       "executor": "@nx/vitest:test",
       "options": {
-        "testNamePattern": "unit",
+        "include": ["src/**/*.unit.test.{ts,tsx}"],
         "passWithNoTests": true,
         "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/unit"
       },
@@ -361,7 +361,7 @@
     "test:component": {
       "executor": "@nx/vitest:test",
       "options": {
-        "testNamePattern": "component",
+        "include": ["src/**/*.component.test.{ts,tsx}"],
         "passWithNoTests": true,
         "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/component"
       },
@@ -380,7 +380,7 @@
     "test:integration": {
       "executor": "@nx/vitest:test",
       "options": {
-        "testNamePattern": "integration",
+        "include": ["src/**/*.integration.test.{ts,tsx}"],
         "passWithNoTests": true,
         "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/integration"
       },
