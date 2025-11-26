@@ -1,4 +1,5 @@
 {
+  "nx": { "includedScripts": [] },
   "name": "@academic-explorer/algorithms",
   "version": "0.1.0",
   "description": "Zero-dependency TypeScript graph algorithms: DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, and strongly connected components. Generic types support heterogeneous graphs with O(V+E) performance.",
