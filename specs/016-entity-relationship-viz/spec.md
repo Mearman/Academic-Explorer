@@ -6,6 +6,12 @@
 **Completed**: 2025-11-20
 **Input**: User description: "Add incoming/outgoing relationship visualization to entity detail pages"
 
+---
+
+**Package Migration Note (Added 2025-11-26)**: This specification references `packages/graph/src/types/core.ts` which was removed on 2025-11-24. Relationship types migrated to `packages/types/src/relationships.ts`. Core implementation remains valid; specific file paths are outdated.
+
+---
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Incoming Relationships (Priority: P1)

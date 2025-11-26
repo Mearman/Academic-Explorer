@@ -6,6 +6,12 @@
 **Input**: User description: "correct the edge directions to match the open alex data structure"
 **Last Updated**: 2025-11-18
 
+---
+
+**Package Migration Note (Added 2025-11-26)**: This specification references `packages/graph/` which was removed on 2025-11-24. Relationship and edge-related functionality migrated to `packages/types/src/relationships.ts` and `packages/utils/src/services/entity-detection/`. Core implementation remains valid; specific file paths are outdated.
+
+---
+
 ## Implementation Status
 
 - ✅ **User Story 1 (P1)**: Accurate Citation Network Visualization - Implemented

@@ -86,9 +86,9 @@ Advanced query and filtering capabilities for bookmark management. Ability to bo
 ---
 
 ### spec-009: Graph Rendering Abstraction
-**Status**: ✅ Complete (tasks untracked) | **Completed**: 2025-11-17
+**Status**: ✅ Complete (tasks untracked) | **Completed**: 2025-11-17 | **Superseded**: 2025-11-24
 
-Decoupled graph rendering from specific graph packages. Force simulation in `packages/simulation/`, graph data structures in `packages/graph/`. Supports multiple node/edge types, directional edges, and custom forces. 817 tests passing. Implementation completed outside tasks.md workflow.
+Decoupled graph rendering from specific graph packages. Originally implemented in `packages/graph/` and `packages/simulation/`. Refactored 2025-11-24 into `packages/algorithms/`, `packages/utils/`, and `packages/types/` for improved separation of concerns. Supports multiple node/edge types, directional edges, and custom forces. Implementation completed outside tasks.md workflow.
 
 [View Spec](./009-graph-rendering-abstraction/)
 
