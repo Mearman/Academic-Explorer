@@ -3,6 +3,13 @@
  * Separated for better testability
  */
 
+import { existsSync, readFileSync } from "fs"
+import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
+import { dirname, join, resolve } from "path"
+import { fileURLToPath } from "url"
+
+import { cachedOpenAlex, CachedOpenAlexClient } from "@academic-explorer/client/cached-client"
+import { staticDataProvider } from "@academic-explorer/client/internal/static-data-provider"
 import { logError, logger } from "@academic-explorer/utils/logger"
 import {
 	getStaticDataCachePath,
@@ -10,13 +17,7 @@ import {
 	type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
 	type UnifiedIndex,
 } from "@academic-explorer/utils/static-data/cache-utilities"
-import { existsSync, readFileSync } from "fs"
-import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
 import { z } from "zod"
-import { cachedOpenAlex, CachedOpenAlexClient } from "@academic-explorer/client/cached-client"
-import { staticDataProvider } from "@academic-explorer/client/internal/static-data-provider"
 
 import type { StaticEntityType } from "./entity-detection.js"
 
@@ -207,15 +208,12 @@ const NO_CONTENT_CHANGES_MESSAGE = "- no content changes"
 const QUERY_INDEX_UPDATE_NOT_IMPLEMENTED_MESSAGE =
 	"Query index update not implemented for unified format yet"
 const FAILED_TO_GET_CACHE_STATS_MESSAGE = "Failed to get cache stats"
-const _CACHE_STATS_NOT_AVAILABLE_MESSAGE = "Cache stats not available - client disabled"
 const FIELD_COVERAGE_ANALYSIS_NOT_AVAILABLE_MESSAGE =
 	"Field coverage analysis not available in CLI mode"
 const WELL_POPULATED_ENTITIES_ANALYSIS_NOT_AVAILABLE_MESSAGE =
 	"Well-populated entities analysis not available - synthetic cache disabled"
 const POPULAR_COLLECTIONS_ANALYSIS_NOT_AVAILABLE_MESSAGE =
 	"Popular collections analysis not available - synthetic cache disabled"
-const _SYNTHETIC_CACHE_CLEAR_NOT_AVAILABLE_MESSAGE =
-	"Synthetic cache clear not available - client disabled"
 const FAILED_TO_GET_WELL_POPULATED_ENTITIES_MESSAGE = "Failed to get well-populated entities"
 const FAILED_TO_GET_POPULAR_COLLECTIONS_MESSAGE = "Failed to get popular collections"
 const FAILED_TO_ANALYZE_STATIC_DATA_USAGE_MESSAGE = "Failed to analyze static data usage"

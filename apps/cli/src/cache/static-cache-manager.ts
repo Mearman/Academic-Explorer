@@ -3,11 +3,13 @@
  * Handles environment-aware static data cache operations
  */
 
-import { logError, logger } from "@academic-explorer/utils/logger"
 import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "fs/promises"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
+
+import { logError, logger } from "@academic-explorer/utils/logger"
 import { z } from "zod"
+
 import type { StaticEntityType } from "../entity-detection.js"
 
 // Environment detection

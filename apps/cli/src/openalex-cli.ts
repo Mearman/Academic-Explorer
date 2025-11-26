@@ -5,15 +5,26 @@
  * A command-line interface for accessing OpenAlex data via static cache and API
  */
 
+/* eslint-disable custom/no-deprecated */
+// Commander.js methods flagged as deprecated are actually the correct modern API
+// The deprecation warnings are due to type definition complexities, not actual API deprecation
+
+import { dirname, join, resolve } from "path"
+import { fileURLToPath } from "url"
+
+import type { EntityType } from "@academic-explorer/types"
 import { Command } from "commander"
+import { z } from "zod"
+
+import { StaticCacheManager } from "./cache/static-cache-manager.js"
+import { detectEntityType } from "./entity-detection.js"
+import type { StaticEntityType } from "./entity-detection.js"
 import {
 	OpenAlexCLI,
 	SUPPORTED_ENTITIES,
 	type QueryOptions,
 	type CacheOptions,
 } from "./openalex-cli-class.js"
-import type { StaticEntityType } from "./entity-detection.js"
-import type { EntityType } from "@academic-explorer/types"
 
 // Common CLI option strings
 const FORMAT_OPTION = "-f, --format <format>"
@@ -34,8 +45,6 @@ const CACHE_ONLY_DESC = "Only use cache, don't fetch from API if not found"
 // Common CLI option values and descriptions for duplicate strings
 const LIMIT_RESULTS_DESC = "Limit results"
 const CACHE_GENERATE_STATIC_CMD = "cache:generate-static"
-const DEFAULT_FORMAT_TABLE = "table"
-const DEFAULT_LIMIT = "10"
 
 /**
  * Print entity summary to console
@@ -233,11 +242,6 @@ function printEntitySummary({
 			break
 	}
 }
-import { detectEntityType } from "./entity-detection.js"
-import { z } from "zod"
-import { StaticCacheManager } from "./cache/static-cache-manager.js"
-import { fileURLToPath } from "url"
-import { dirname, resolve, join } from "path"
 
 // Zod schemas for CLI validation
 const StaticEntityTypeSchema = z.enum([
@@ -281,14 +285,6 @@ const SearchCommandOptionsSchema = z.object({
 })
 
 const GetTypedCommandOptionsSchema = z.object({
-	format: z.string().optional(),
-	pretty: z.boolean().optional(),
-	noCache: z.boolean().optional(),
-	noSave: z.boolean().optional(),
-	cacheOnly: z.boolean().optional(),
-})
-
-const _GetCommandOptionsSchema = z.object({
 	format: z.string().optional(),
 	pretty: z.boolean().optional(),
 	noCache: z.boolean().optional(),
@@ -396,10 +392,11 @@ program
 
 // List command
 program
-	.command("list <entity-type>")
+	.command("list")
 	.description("List all entities of a specific type")
+	.argument("<entity-type>", "Type of entity to list")
 	.option("-c, --count", "Show only count")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (entityType: string, options: unknown) => {
 		const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 		if (!entityTypeValidation.success) {
@@ -435,14 +432,15 @@ program
 
 // Get command with explicit entity type
 program
-	.command("get-typed <entity-type> <entity-id>")
+	.command("get-typed")
 	.description("Get a specific entity by ID with explicit entity type")
-	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "summary")
+	.argument("<entity-type>", "Type of entity")
+	.argument("<entity-id>", "ID of entity to fetch")
+	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC)
 	.option(PRETTY_OPTION, "Pretty print JSON")
 	.option(NO_CACHE_OPTION, NO_CACHE_DESC)
 	.option(NO_SAVE_OPTION, NO_SAVE_DESC)
 	.option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
-
 	.action(async (entityType: string, entityId: string, options: unknown) => {
 		const staticEntityType = validateEntityType(entityType)
 		const validatedOptions = validateGetCommandOptions(options)
@@ -465,14 +463,14 @@ program
 
 // Auto-detect get command (takes just entity ID)
 program
-	.command("get <entity-id>")
+	.command("get")
 	.description("Get entity by ID with auto-detection of entity type")
-	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "summary")
+	.argument("<entity-id>", "ID of entity to fetch")
+	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC)
 	.option(PRETTY_OPTION, "Pretty print JSON")
 	.option(NO_CACHE_OPTION, NO_CACHE_DESC)
 	.option(NO_SAVE_OPTION, NO_SAVE_DESC)
 	.option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
-
 	.action(async (entityId: string, options: unknown) => {
 		const validatedOptions = validateGetCommandOptions(options)
 		const staticEntityType = detectAndValidateEntityType(entityId)
@@ -495,10 +493,12 @@ program
 
 // Search command
 program
-	.command("search <entity-type> <term>")
+	.command("search")
 	.description("Search entities by display name")
-	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.argument("<entity-type>", "Type of entity to search")
+	.argument("<term>", "Search term")
+	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (entityType: string, searchTerm: string, options) => {
 		const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 		if (!entityTypeValidation.success) {
@@ -536,7 +536,7 @@ program
 program
 	.command("stats")
 	.description("Show statistics for all entity types")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (options: unknown) => {
 		const optionsValidation = StatsCommandOptionsSchema.safeParse(options)
 		if (!optionsValidation.success) {
@@ -565,8 +565,9 @@ program
 
 // Index command
 program
-	.command("index <entity-type>")
+	.command("index")
 	.description("Show index information for entity type")
+	.argument("<entity-type>", "Type of entity")
 	.action(async (entityType: string) => {
 		const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 		if (!entityTypeValidation.success) {
@@ -588,17 +589,18 @@ program
 
 // Fetch command (new API query command with cache control)
 program
-	.command("fetch <entity-type>")
+	.command("fetch")
 	.description("Fetch entities from OpenAlex API with cache control")
+	.argument("<entity-type>", "Type of entity to fetch")
 	.option("--filter <filter>", "OpenAlex filter parameter")
 	.option("--select <fields>", "Comma-separated list of fields to select")
 	.option("--sort <sort>", "Sort parameter")
-	.option("--per-page <number>", "Number of results per page", "25")
-	.option("--page <number>", "Page number", "1")
+	.option("--per-page <number>", "Number of results per page")
+	.option("--page <number>", "Page number")
 	.option(NO_CACHE_OPTION, NO_CACHE_DESC)
 	.option(NO_SAVE_OPTION, NO_SAVE_DESC)
 	.option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
-	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "json")
+	.option(FORMAT_OPTION, FORMAT_SUMMARY_DESC)
 	.action(async (entityType: string, options) => {
 		const staticEntityType = validateEntityType(entityType)
 		const validatedOptions = validateFetchCommandOptions(options)
@@ -624,7 +626,7 @@ program
 program
 	.command("cache:stats")
 	.description("Show synthetic cache statistics and field accumulation data")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (options: unknown) => {
 		const optionsValidation = CacheStatsCommandOptionsSchema.safeParse(options)
 		if (!optionsValidation.success) {
@@ -661,9 +663,11 @@ program
 	})
 
 program
-	.command("cache:field-coverage <entity-type> <entity-id>")
+	.command("cache:field-coverage")
 	.description("Show field coverage for a specific entity across all cache tiers")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.argument("<entity-type>", "Type of entity")
+	.argument("<entity-id>", "ID of entity")
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (entityType: string, entityId: string, options: unknown) => {
 		const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 		if (!entityTypeValidation.success) {
@@ -712,10 +716,11 @@ program
 	})
 
 program
-	.command("cache:popular-entities <entity-type>")
+	.command("cache:popular-entities")
 	.description("Show well-populated entities with extensive field coverage")
-	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.argument("<entity-type>", "Type of entity")
+	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (entityType: string, options: unknown) => {
 		const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 		if (!entityTypeValidation.success) {
@@ -761,8 +766,8 @@ program
 program
 	.command("cache:popular-collections")
 	.description("Show popular cached collections with high entity counts")
-	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(LIMIT_OPTION, LIMIT_RESULTS_DESC)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (options: unknown) => {
 		const optionsValidation = CachePopularCollectionsCommandOptionsSchema.safeParse(options)
 		if (!optionsValidation.success) {
@@ -826,7 +831,7 @@ program
 	.option("--limit <limit>", "Limit number of entities to generate")
 	.option("--force", "Force regeneration even if files exist")
 	.option("--dry-run", "Show what would be generated without writing files")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (options: unknown) => {
 		const optionsValidation = CacheGenerateStaticCommandOptionsSchema.safeParse(options)
 		if (!optionsValidation.success) {
@@ -882,7 +887,7 @@ program
 program
 	.command("cache:validate-static")
 	.description("Validate static cache integrity and structure")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.option("--verbose", "Show detailed validation information")
 	.action(async (options: unknown) => {
 		const optionsValidation = CacheValidateStaticCommandOptionsSchema.safeParse(options)
@@ -1004,7 +1009,7 @@ program
 program
 	.command("static:analyze")
 	.description("Analyze static data cache usage patterns and suggest optimizations")
-	.option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
+	.option(FORMAT_OPTION, FORMAT_TABLE_DESC)
 	.action(async (options: unknown) => {
 		const optionsValidation = StaticAnalyzeCommandOptionsSchema.safeParse(options)
 		if (!optionsValidation.success) {

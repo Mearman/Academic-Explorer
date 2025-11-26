@@ -3,6 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { detectEntityType, toStaticEntityType } from "./entity-detection.js"
 import { OpenAlexCLI } from "./openalex-cli-class.js"
 

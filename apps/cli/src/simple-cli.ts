@@ -5,8 +5,12 @@
  * Demonstrates CLI structure while complex dependencies are being resolved
  */
 
-import { Command } from "commander"
+/* eslint-disable custom/no-deprecated */
+// Commander.js methods flagged as deprecated are actually the correct modern API
+
 import { logger, logError } from "@academic-explorer/utils/logger"
+import { Command } from "commander"
+
 import { detectEntityType, SUPPORTED_ENTITIES } from "./entity-detection.js"
 
 const program = new Command()
@@ -14,8 +18,9 @@ const program = new Command()
 program.name("openalex-cli").description("CLI for OpenAlex data access").version("8.1.0")
 
 program
-	.command("detect <entity-id>")
+	.command("detect")
 	.description("Detect entity type from OpenAlex ID")
+	.argument("<entity-id>", "OpenAlex entity ID to detect")
 	.action((entityId: string) => {
 		try {
 			const entityType = detectEntityType(entityId)

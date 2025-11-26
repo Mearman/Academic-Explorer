@@ -2,7 +2,9 @@
  * Unit tests for OpenAlex CLI
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+/* eslint-disable import/order */
+// Import order is intentional: vitest must be imported first for mocking setup
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Test constants
 const TEST_AUTHOR_ID_1 = "A123456789"
@@ -36,8 +38,8 @@ class NodeJSError extends Error {
 	}
 }
 
-// Type for testing invalid entity types
-type _InvalidEntityType = string & { readonly __invalid: unique symbol }
+// Type for testing invalid entity types (unused, reserved for future validation tests)
+// type _InvalidEntityType = string & { readonly __invalid: unique symbol }
 
 vi.mock("fs/promises", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("fs/promises")>()
@@ -169,10 +171,12 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 }))
 
 // Import after mocks are set up
-import { OpenAlexCLI } from "./openalex-cli-class.js"
-import type { StaticEntityType } from "./entity-detection.js"
 import { readFile, access, writeFile, mkdir } from "fs/promises"
+
 import { logger, logError } from "@academic-explorer/utils/logger"
+
+import type { StaticEntityType } from "./entity-detection.js"
+import { OpenAlexCLI } from "./openalex-cli-class.js"
 
 describe("OpenAlexCLI", () => {
 	let cli: OpenAlexCLI
