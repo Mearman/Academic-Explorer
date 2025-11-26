@@ -306,6 +306,9 @@
         "command": "tsc --noEmit",
         "cwd": "{projectRoot}"
       },
+      "dependsOn": [
+        "barrelsby"
+      ],
       "inputs": [
         "source",
         "configs",

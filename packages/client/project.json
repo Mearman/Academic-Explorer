@@ -4,32 +4,28 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
+    "barrelsby": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "build": {
-      "executor": "@nx/rollup:rollup",
+      "executor": "@nx/js:tsc",
       "outputs": [
-        "{workspaceRoot}/packages/client/dist"
-      ],
-      "dependsOn": [
-        "^build"
+        "{projectRoot}/dist"
       ],
       "options": {
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
         "tsConfig": "packages/client/tsconfig.json",
-        "format": [
-          "esm"
-        ],
-        "compiler": "tsc",
-        "generateExportsField": false,
-        "project": "packages/client/package.json",
-        "declaration": true,
-        "sourcemap": "inline",
-        "additionalEntryPoints": [
-          "packages/client/src/client.ts",
-          "packages/client/src/types.ts"
-        ]
+        "assets": []
       },
-      "cache": true
+      "dependsOn": [
+        "^build"
+      ]
     },
     "dev": {
       "executor": "@nx/rollup:rollup",

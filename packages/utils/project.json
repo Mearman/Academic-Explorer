@@ -4,14 +4,24 @@
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
   "targets": {
-    "build": {
+    "barrelsby": {
       "executor": "nx:run-commands",
+      "options": {
+        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
       "outputs": [
         "{projectRoot}/dist"
       ],
       "options": {
-        "command": "pnpm build",
-        "cwd": "packages/utils"
+        "main": "packages/utils/src/index.ts",
+        "outputPath": "packages/utils/dist",
+        "tsConfig": "packages/utils/tsconfig.json",
+        "assets": []
       },
       "dependsOn": [
         "types:build"

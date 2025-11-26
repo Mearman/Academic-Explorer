@@ -4,14 +4,22 @@
   "sourceRoot": "packages/ui/src",
   "projectType": "library",
   "targets": {
-    "build": {
+    "barrelsby": {
       "executor": "nx:run-commands",
+      "options": {
+        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "build": {
+      "executor": "@nx/vite:build",
       "outputs": [
-        "{options.outputPath}"
+        "{projectRoot}/dist"
       ],
       "options": {
-        "command": "vite build",
-        "cwd": "packages/ui"
+        "configFile": "packages/ui/vite.config.ts",
+        "outputPath": "packages/ui/dist"
       },
       "dependsOn": [
         "types:build",
@@ -20,11 +28,14 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
+      "outputs": [],
       "options": {
-        "command": "echo 'UI package uses Vite for type checking during build'"
+        "command": "tsc --noEmit",
+        "cwd": "packages/ui"
       },
       "dependsOn": [
-        "build"
+        "types:build",
+        "utils:build"
       ]
     },
     "test:unit": {},

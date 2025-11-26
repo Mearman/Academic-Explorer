@@ -4,6 +4,14 @@
   "sourceRoot": "apps/web/src",
   "projectType": "application",
   "targets": {
+    "barrelsby": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "barrelsby --config ../../.barrelsby.json --directory ./src/components",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
@@ -11,10 +19,10 @@
       }
     },
     "e2e": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
       "options": {
-        "command": "playwright test",
-        "cwd": "apps/web"
+        "config": "apps/web/playwright.config.ts"
       },
       "dependsOn": ["build"]
     },
