@@ -7,6 +7,23 @@
 **Superseded**: 2025-11-24
 **Input**: User description: "implement a graph rendering component that is not coupled to a specific graph package. it should be able to displaying nodes of multiple types and edges of different types, including ones that are directional and not. as not all graph rendering packages we should be able to decouple the force simulation from the rendering. for the force simulation, forces should should be able to applied by nodes as well as edges. the implementations should be completely agnostic of the academic explorer use-case. one of our use-cases will be the number of citations a (work) paper has (even if those edges are not shown in the graph) modifying it's size and/or force applied directly to nodes or given edges of a given type etc."
 
+---
+
+## ⚠️ HISTORICAL DOCUMENTATION WARNING
+
+**This specification describes OUTDATED architecture that was superseded on 2025-11-24.**
+
+The packages described below (`packages/graph/` and `packages/simulation/`) **NO LONGER EXIST**. They were removed and refactored into:
+- `packages/algorithms/` - Graph data structures and algorithms
+- `packages/utils/` - Entity detection and event bus
+- `packages/types/` - Type definitions
+
+This document is preserved for historical context only. For current architecture, see:
+- `packages/algorithms/src/graph/` - Current graph implementation
+- spec-024: Algorithms Package - Current graph algorithms specification
+
+---
+
 **Implementation Note**: Core functionality implemented pragmatically for Academic Explorer's needs. Force simulation successfully decoupled in `packages/simulation/`, graph data structures in `packages/graph/`. 817 tests passing.
 
 **Refactoring Note (2025-11-24)**: The original `packages/graph/` and `packages/simulation/` packages were removed and functionality refactored into a cleaner architecture:

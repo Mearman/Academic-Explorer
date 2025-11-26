@@ -6,6 +6,23 @@
 **Completed**: 2025-11-21
 **Input**: User description: "correctly implement handling of ALL relationships"
 
+---
+
+## ⚠️ HISTORICAL DOCUMENTATION WARNING
+
+**This specification contains OUTDATED file path references that were superseded on 2025-11-24.**
+
+Many file paths below reference `packages/graph/` which **NO LONGER EXISTS**. The package was removed and functionality refactored into:
+- `packages/types/src/relationships.ts` - RelationType enum and relationship definitions
+- `packages/utils/src/services/entity-detection/` - Relationship detection logic
+- Service layers distributed across the application
+
+The core relationship implementation remains valid, but specific file paths and package structure described below are outdated. This document is preserved for historical context. For current relationship implementation, see:
+- `packages/types/src/relationships.ts` - Current relationship types
+- `packages/utils/src/services/entity-detection/` - Current detection logic
+
+---
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Authorship Relationships Correctly (Priority: P1)
