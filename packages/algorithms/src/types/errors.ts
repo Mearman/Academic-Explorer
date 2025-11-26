@@ -78,3 +78,49 @@ export type GraphError =
   | NegativeWeightError
   | CycleDetectedError
   | DuplicateNodeError;
+
+/**
+ * Node not found error (seed node doesn't exist in graph).
+ */
+export type NodeNotFoundError = {
+  type: 'node-not-found';
+  message: string;
+  nodeId: string;
+};
+
+/**
+ * Invalid radius error (negative or non-integer radius).
+ */
+export type InvalidRadiusError = {
+  type: 'invalid-radius';
+  message: string;
+  radius: number;
+};
+
+/**
+ * Invalid filter error (malformed filter specification).
+ */
+export type InvalidFilterError = {
+  type: 'invalid-filter';
+  message: string;
+  filter: unknown;
+};
+
+/**
+ * Invalid truss value error (k < 2).
+ */
+export type InvalidTrussError = {
+  type: 'invalid-truss';
+  message: string;
+  k: number;
+};
+
+/**
+ * Extraction error discriminated union for graph extraction operations.
+ */
+export type ExtractionError =
+  | InvalidInputError
+  | NodeNotFoundError
+  | InvalidRadiusError
+  | InvalidFilterError
+  | InvalidTrussError;

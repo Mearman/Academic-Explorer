@@ -5,6 +5,7 @@
 export * from "./analysis/index";
 export * from "./clustering/index";
 export * from "./decomposition/index";
+export * from "./extraction/index";
 export * from "./graph/index";
 export * from "./hierarchical/index";
 export * from "./metrics/index";
