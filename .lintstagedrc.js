@@ -1,8 +1,9 @@
 export default {
   // Package.json files - run syncpack to fix versions and formatting
+  // Use function form to prevent lint-staged from passing filenames as args
   '**/package.json': [
-    'syncpack fix-mismatches',
-    'syncpack format'
+    () => 'syncpack fix-mismatches',
+    () => 'syncpack format'
   ],
 
   // TypeScript and JavaScript files in packages and apps

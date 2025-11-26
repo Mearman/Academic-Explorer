@@ -79,6 +79,7 @@
     "@nx/rollup": "22.0.2",
     "@nx/storybook": "22.0.2",
     "@nx/vite": "22.0.2",
+    "@nx/vitest": "22.1.2",
     "@nx/web": "22.0.2",
     "@octokit/rest": "22.0.1",
     "@playwright/test": "1.55.1",
