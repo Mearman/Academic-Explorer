@@ -114,14 +114,7 @@ export default tseslint.config([
             "import": importPlugin,
         },
         rules: {
-            "@typescript-eslint/no-unused-vars": [
-                "error",
-                {
-                    "argsIgnorePattern": "^_",
-                    "varsIgnorePattern": "^_",
-                    "caughtErrorsIgnorePattern": "^_"
-                }
-            ],
+            "@typescript-eslint/no-unused-vars": "error",
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/no-non-null-assertion": "error",
 
@@ -129,6 +122,8 @@ export default tseslint.config([
             "import/no-relative-packages": "error",
             "import/no-cycle": "error",
             "import/no-self-import": "error",
+            "import/no-duplicates": "error",
+            "import/export": "error",
             "import/order": ["error", {
                 "groups": [
                     "builtin",
