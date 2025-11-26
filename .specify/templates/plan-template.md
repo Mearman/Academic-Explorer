@@ -45,6 +45,8 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
 11. **Complete Implementation**: Implement full version as specified; no simplified fallbacks without user approval
 12. **Spec Index Maintenance**: specs/README.md updated when spec status changes; committed alongside spec changes
+13. **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
+14. **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts cleaned up before commit
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure

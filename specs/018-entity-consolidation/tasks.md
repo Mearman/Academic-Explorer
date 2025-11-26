@@ -399,7 +399,7 @@
     ```
   - **Validation**: Report generated and reviewed
 
-- [ ] T040 [P1] [US1] Commit documentation updates
+- [x] T040 [P1] [US1] Commit documentation updates
   - **Files**: `CLAUDE.md`, `verification-report.txt`
   - **Message**: `docs(docs): update CLAUDE.md with entity type consolidation notes`
   - **Body**:

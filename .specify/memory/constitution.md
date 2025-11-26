@@ -1,24 +1,23 @@
 <!--
 Sync Impact Report:
-Version: 2.5.0 → 2.6.0 (MINOR: Added Principle XII - Spec Index Maintenance)
+Version: 2.7.0 → 2.8.0 (MINOR: Added Principle XIV - Working Files Hygiene)
 Added Sections:
-  - Principle XII (Spec Index Maintenance): specs/README.md MUST be maintained as a current
-    index of all feature specifications with status, completion dates, and links.
+  - Principle XIV (Working Files Hygiene): Temporary debug files, fix chain documents,
+    and other working artifacts MUST be cleaned up and NEVER committed to the repository.
 Modified Principles:
-  - Principle VI (Atomic Conventional Commits): Added reference to Principle XII in spec commit requirements
-  - Constitution Check section: Added Principle XII verification requirement
-  - Quality Gates section: Added Spec Index maintenance verification
+  - Constitution Check section: Added Principle XIV verification requirement
+  - Quality Gates section: Added Working Files Hygiene verification requirement
+  - Development Workflow section: Added working files cleanup discipline
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ plan-template.md: Constitution Check section already uses numbered list that
-    accommodates new principle without structural changes
-  - ✅ spec-template.md: Constitution Alignment section already uses bullet list that
-    accommodates new principle without structural changes
-  - ✅ tasks-template.md: Constitution compliance verification already uses checklist that
-    can expand to include new principle
-Follow-up TODOs:
-  - Create initial specs/README.md file with current spec statuses
+  - ✅ plan-template.md: Constitution Check section uses numbered list that accommodates new principle
+  - ✅ spec-template.md: Constitution Alignment section uses bullet list that accommodates new principle
+  - ✅ tasks-template.md: Constitution compliance verification checklist can expand for new principle
+Follow-up TODOs: None
+Note: .gitignore now ignores ALL *.md, *.png, *.jpg, *.jpeg files - force-add required for intentional commits
 Previous Amendments:
+  - v2.7.0: Added Principle XIII - Build Output Isolation
+  - v2.6.0: Added Principle XII - Spec Index Maintenance
   - v2.5.0: Added Principle XI - Complete Implementation
   - v2.4.4: Fix Principle X to require SlashCommand tool usage
   - v2.4.3: Add slash command invocation guidance to Development Workflow
@@ -632,6 +631,140 @@ committed atomically alongside the spec status changes they document, using the 
 implementation, continuous execution includes updating specs/README.md status before
 moving to the next spec.
 
+### XIII. Build Output Isolation (NON-NEGOTIABLE)
+
+**TypeScript builds MUST output to `dist/` directories, NEVER alongside source files**.
+All `tsconfig.json` files in the monorepo MUST specify `outDir` and `rootDir` to ensure
+compiled JavaScript, declaration files, and source maps are isolated from source code.
+
+Build configuration requirements:
+- **ALL `tsconfig.json` files** MUST include:
+  ```json
+  {
+    "compilerOptions": {
+      "rootDir": "./src",
+      "outDir": "./dist"
+    }
+  }
+  ```
+- **NEVER omit `outDir`** - this causes TypeScript to emit files in-place
+- **Compiled outputs** (`.js`, `.d.ts`, `.js.map`, `.d.ts.map`) MUST NEVER appear in `src/` directories
+- **Build artifacts in `dist/`** are gitignored and MUST NOT be committed
+- **Source files in `src/`** remain clean TypeScript only
+
+Prohibited patterns:
+- `tsconfig.json` without `outDir` specified
+- Compiled `.js` files alongside `.ts` source files
+- Declaration files (`.d.ts`) in source directories (except `vite-env.d.ts`)
+- Source maps in source directories
+
+**Detection and enforcement**:
+```bash
+# Check for compiled files in source directories (should return nothing)
+find apps/*/src packages/*/src -name "*.js" -o -name "*.d.ts" -o -name "*.js.map" | grep -v vite-env
+
+# Verify all tsconfig.json files have outDir
+grep -L '"outDir"' apps/*/tsconfig.json packages/*/tsconfig.json
+```
+
+**Rationale**: In-place compilation pollutes source directories, breaks gitignore patterns,
+confuses IDE tooling, and creates ambiguity about which files are source vs artifacts. The
+monorepo requires clear separation between:
+1. **Source code** (`src/`) - version controlled, human-edited TypeScript
+2. **Build artifacts** (`dist/`) - generated, gitignored, disposable
+
+Build output isolation ensures:
+1. **Clean source directories** - Only `.ts`/`.tsx` files in `src/`
+2. **Reliable gitignore** - `dist/` patterns work consistently
+3. **Clear artifact boundaries** - No confusion about what to commit
+4. **IDE performance** - Tooling doesn't index compiled duplicates
+5. **Build reproducibility** - `dist/` can be deleted and regenerated
+6. **Monorepo consistency** - All packages follow same output structure
+
+**Relationship to Monorepo Architecture (Principle III)**: Build output isolation
+complements the monorepo structure by ensuring each package's `dist/` directory contains
+only that package's compiled output, enabling proper Nx caching and dependency tracking.
+
+### XIV. Working Files Hygiene (NON-NEGOTIABLE)
+
+**Temporary working files MUST be cleaned up and NEVER committed to the repository**.
+Debug screenshots, fix chain documents, verification logs, and other transient artifacts
+created during development MUST be removed before committing.
+
+Working file requirements:
+- **Debug screenshots** (e.g., `debug-*.png`, `screenshot-*.png`) MUST NOT be committed
+- **Fix chain documents** (e.g., `*-FIX-*.md`, `*-FIX-CHAIN-*.md`) MUST NOT be committed
+- **Verification documents** (e.g., `*-VERIFICATION-*.md`, `COMPLETE-*.md`) MUST NOT be committed
+- **Temporary analysis files** (e.g., `CRITICAL-*.md`, `analysis-*.md`) MUST NOT be committed
+- **Working notes** outside of `specs/` directory MUST NOT be committed
+- **Test artifacts** not in designated test output directories MUST NOT be committed
+
+**Gitignore enforcement**:
+- ALL markdown (`.md`) and image files (`.png`, `.jpg`, `.jpeg`) are gitignored by default
+- Intentional documentation MUST be force-added: `git add -f <file>`
+- This prevents accidental commits of working files
+- Force-add requires explicit intent to commit documentation/images
+
+**Primary mechanism is still active cleanup**:
+- Delete working files immediately after they serve their purpose
+- Do NOT leave working files in the repository even if gitignored
+- Clean working directory = professional development practice
+
+**Cleanup workflow**:
+1. Delete working files immediately after use (don't leave them around)
+2. Before staging, verify no working files exist in the directory
+3. Use explicit file paths when staging (`git add file1.ts file2.ts`)
+4. For intentional docs/images, use `git add -f path/to/file.md`
+5. Verify staged files with `git status` before committing
+
+**Acceptable locations for documentation**:
+- `specs/###-feature/` - Feature specifications and implementation plans
+- `docs/` - Project documentation (if exists)
+- `.specify/memory/` - Constitution and system memory
+- `.specify/templates/` - Template files
+- `README.md` files - Standard documentation
+
+**Prohibited patterns**:
+- Debug screenshots in `apps/` directories (e.g., `apps/web/debug-sidebar.png`)
+- Fix chain documents in `apps/` directories (e.g., `apps/web/COMPLETE-FIX-CHAIN-*.md`)
+- Temporary markdown files at project root or in `apps/` (outside `specs/`)
+- Analysis artifacts scattered through the codebase
+
+**Rationale**: The repository shows evidence of working files that were accidentally
+committed or left behind during development:
+- `apps/web/COMPLETE-FIX-CHAIN-2025-10-29.md`
+- `apps/web/COMPLETE-VERIFICATION-2025-10-29.md`
+- `apps/web/CRITICAL-FIX-ENTITY-LIST.md`
+- `apps/web/debug-sidebar-content.png`
+
+These files pollute the repository, confuse version control, and create noise in diffs.
+They serve no purpose after the immediate development session ends.
+
+Working files hygiene ensures:
+1. **Clean repository** - Only source code and intentional documentation in version control
+2. **Meaningful diffs** - PRs show actual code changes, not debug artifacts
+3. **Professional codebase** - Repository represents production-quality work
+4. **Disk space efficiency** - No accumulation of stale debug images
+5. **Clear intent** - Every committed file has a purpose
+6. **Research credibility** - Academic repository maintains standards
+
+**Relationship to Atomic Commits (Principle VI)**: Proper cleanup before staging ensures
+atomic commits contain only relevant changes, not accidentally included working files.
+
+**Relationship to Deployment Readiness (Principle IX)**: Working files can block deployment
+if they trigger lint warnings or contain sensitive debug information. Cleanup is part of
+deployment readiness.
+
+**Detection and enforcement**:
+```bash
+# Check for common working file patterns (should return nothing)
+find . -name "debug-*.png" -o -name "*-FIX-*.md" -o -name "*-VERIFICATION-*.md" \
+       -o -name "COMPLETE-*.md" -o -name "CRITICAL-*.md" | grep -v node_modules
+
+# Review unstaged files before committing
+git status --porcelain | grep -E '\.(png|jpg|md)$'
+```
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -642,6 +775,21 @@ moving to the next spec.
 2. `pnpm test` - Full test suite (serially managed by Nx) across ALL packages
 3. `pnpm build` - Production build verification across ALL packages
 4. `pnpm lint` - ESLint checking across ALL packages
+
+**Build output verification**: Before committing, verify no compiled files in source directories:
+```bash
+# Should return nothing - any output indicates build output pollution
+find apps/*/src packages/*/src -name "*.js" -o -name "*.d.ts" | grep -v vite-env
+```
+
+**Working files cleanup**: Before staging any files:
+```bash
+# Check for temporary working files (should return nothing)
+find . -name "debug-*.png" -o -name "*-FIX-*.md" -o -name "COMPLETE-*.md" | grep -v node_modules
+
+# Delete any found working files
+rm -f apps/web/debug-*.png apps/web/*-FIX-*.md apps/web/COMPLETE-*.md apps/web/CRITICAL-*.md
+```
 
 **Nx-managed dependencies**: Use `nx affected:test` and `nx affected:build` to test/build
 only changed projects. The dependency graph prevents building downstream projects when
@@ -689,10 +837,11 @@ two places, extract it to `packages/utils` or create a shared package.
 
 **Commit discipline**: After completing each atomic task:
 1. Verify all quality gates pass for the changes
-2. Stage ONLY the files related to the completed task using explicit paths
-3. Review staged changes with `git status` and `git diff --staged`
-4. Create a conventional commit with clear type and scope
-5. Push commits regularly to avoid losing work
+2. Clean up any temporary working files (debug screenshots, fix documents)
+3. Stage ONLY the files related to the completed task using explicit paths
+4. Review staged changes with `git status` and `git diff --staged`
+5. Create a conventional commit with clear type and scope
+6. Push commits regularly to avoid losing work
 
 **Complete implementation discipline**: When encountering implementation challenges:
 1. Do NOT immediately propose a simplified alternative
@@ -703,11 +852,12 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all twelve core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all fourteen core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
 development-stage pragmatism, test-first bug fixes, deployment readiness, continuous
-execution, complete implementation, and spec index maintenance.
+execution, complete implementation, spec index maintenance, build output isolation, and
+working files hygiene.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -752,6 +902,19 @@ MUST be documented in commit messages and changelogs.
 - specs/README.md updates MUST be committed with spec changes
 - No specs should be "hidden" or missing from the index
 
+**Build output isolation verification**:
+- All `tsconfig.json` files MUST specify `outDir` and `rootDir`
+- No compiled files (`.js`, `.d.ts`, `.js.map`) in `src/` directories
+- Build artifacts exist only in `dist/` directories
+- Source directories contain only TypeScript source files
+
+**Working files hygiene verification**:
+- No debug screenshots in committed files
+- No fix chain or verification documents in committed files
+- No temporary analysis files outside `specs/` directory
+- Working directory clean of transient artifacts before commit
+- `.gitignore` includes patterns for common working file types
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -767,4 +930,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.6.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-25
+**Version**: 2.8.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-26

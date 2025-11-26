@@ -173,6 +173,8 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] All pre-existing issues resolved; entire monorepo deployable (Deployment Readiness)
   - [ ] Full feature implemented as specified; no simplified fallbacks (Complete Implementation)
   - [ ] specs/README.md updated with spec status (Spec Index Maintenance)
+  - [ ] TypeScript builds output to dist/, not alongside source files (Build Output Isolation)
+  - [ ] Working files cleaned up before commit (Working Files Hygiene)
 
 ---
 
