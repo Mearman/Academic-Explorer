@@ -65,32 +65,30 @@ export function calculateDensity<N extends Node, E extends Edge>(
   let actualEdges = 0;
 
   const nodesArray = Array.from(clusterNodes);
-  nodesArray.forEach((nodeI) => {
-    nodesArray.forEach((nodeJ) => {
-      // Skip self-loops
-      if (nodeI.id === nodeJ.id) {
-        return;
+  for (let i = 0; i < nodesArray.length; i++) {
+    for (let j = i + 1; j < nodesArray.length; j++) {
+      const nodeI = nodesArray[i];
+      const nodeJ = nodesArray[j];
+
+      // Check if edge exists in either direction
+      const outgoingFromI = graph.getOutgoingEdges(nodeI.id);
+      const outgoingFromJ = graph.getOutgoingEdges(nodeJ.id);
+
+      let hasEdge = false;
+
+      if (outgoingFromI.ok) {
+        hasEdge = outgoingFromI.value.some(e => e.target === nodeJ.id);
       }
 
-      // Check if edge exists
-      const outgoingEdgesResult = graph.getOutgoingEdges(nodeI.id);
-      if (outgoingEdgesResult.ok) {
-        // For undirected graphs, edges may have nodeI as source OR target
-        const hasEdge = graph.isDirected()
-          ? outgoingEdgesResult.value.some(e => e.target === nodeJ.id)
-          : outgoingEdgesResult.value.some(e =>
-              e.target === nodeJ.id || e.source === nodeJ.id);
-
-        if (hasEdge) {
-          actualEdges++;
-        }
+      if (!hasEdge && outgoingFromJ.ok && !graph.isDirected()) {
+        // For undirected graphs, also check the reverse direction
+        hasEdge = outgoingFromJ.value.some(e => e.target === nodeI.id);
       }
-    });
-  });
 
-  // For undirected graphs, we've double-counted edges
-  if (!graph.isDirected()) {
-    actualEdges = actualEdges / 2;
+      if (hasEdge) {
+        actualEdges++;
+      }
+    }
   }
 
   const density = actualEdges / possibleEdges;
@@ -172,32 +170,32 @@ export function calculateCoverageRatio<N extends Node, E extends Edge>(
   clusters.forEach((cluster) => {
     const nodesArray = Array.from(cluster);
 
-    nodesArray.forEach((nodeI) => {
-      nodesArray.forEach((nodeJ) => {
-        if (nodeI.id === nodeJ.id) {
-          return;
+    for (let i = 0; i < nodesArray.length; i++) {
+      for (let j = i + 1; j < nodesArray.length; j++) {
+        const nodeI = nodesArray[i];
+        const nodeJ = nodesArray[j];
+
+        // Check if edge exists in either direction
+        const outgoingFromI = graph.getOutgoingEdges(nodeI.id);
+        const outgoingFromJ = graph.getOutgoingEdges(nodeJ.id);
+
+        let hasEdge = false;
+
+        if (outgoingFromI.ok) {
+          hasEdge = outgoingFromI.value.some(e => e.target === nodeJ.id);
         }
 
-        const outgoingEdgesResult = graph.getOutgoingEdges(nodeI.id);
-        if (outgoingEdgesResult.ok) {
-          // For undirected graphs, edges may have nodeI as source OR target
-          const hasEdge = graph.isDirected()
-            ? outgoingEdgesResult.value.some(e => e.target === nodeJ.id)
-            : outgoingEdgesResult.value.some(e =>
-                e.target === nodeJ.id || e.source === nodeJ.id);
-
-          if (hasEdge) {
-            internalEdges++;
-          }
+        if (!hasEdge && outgoingFromJ.ok && !graph.isDirected()) {
+          // For undirected graphs, also check the reverse direction
+          hasEdge = outgoingFromJ.value.some(e => e.target === nodeI.id);
         }
-      });
-    });
+
+        if (hasEdge) {
+          internalEdges++;
+        }
+      }
+    }
   });
-
-  // For undirected graphs, we've double-counted
-  if (!graph.isDirected()) {
-    internalEdges = internalEdges / 2;
-  }
 
   const coverage = internalEdges / totalEdges;
 

@@ -78,39 +78,78 @@ export function calculateModularity<N extends Node, E extends Edge>(
   let Q = 0.0;
   const twoM = 2 * m;
 
-  // Iterate over all pairs of nodes
-  allNodes.forEach((nodeI) => {
-    allNodes.forEach((nodeJ) => {
-      // Check if nodes are in the same community
-      const communityI = nodeToCommunity.get(nodeI.id);
-      const communityJ = nodeToCommunity.get(nodeJ.id);
+  // For directed graphs: iterate over all pairs
+  // For undirected graphs: iterate over unique pairs (i, j) where i <= j
+  if (graph.isDirected()) {
+    allNodes.forEach((nodeI) => {
+      allNodes.forEach((nodeJ) => {
+        // Check if nodes are in the same community
+        const communityI = nodeToCommunity.get(nodeI.id);
+        const communityJ = nodeToCommunity.get(nodeJ.id);
 
-      // δ(c_i, c_j) - Kronecker delta (1 if same community, 0 otherwise)
-      if (communityI === undefined || communityJ === undefined) {
-        return; // Skip nodes not assigned to any community
-      }
+        // δ(c_i, c_j) - Kronecker delta (1 if same community, 0 otherwise)
+        if (communityI === undefined || communityJ === undefined) {
+          return; // Skip nodes not assigned to any community
+        }
 
-      if (communityI !== communityJ) {
-        return; // Different communities, contribution is 0
-      }
+        if (communityI !== communityJ) {
+          return; // Different communities, contribution is 0
+        }
 
-      // A_ij - adjacency matrix value (1 if edge exists, 0 otherwise)
-      // For undirected graphs, check neighbors (symmetric adjacency)
-      const neighborsResult = graph.getNeighbors(nodeI.id);
-      const A_ij = neighborsResult.ok &&
-                   neighborsResult.value.includes(nodeJ.id) ? 1 : 0;
+        // A_ij - adjacency matrix value (1 if edge exists, 0 otherwise)
+        const neighborsResult = graph.getNeighbors(nodeI.id);
+        const A_ij = neighborsResult.ok &&
+                     neighborsResult.value.includes(nodeJ.id) ? 1 : 0;
 
-      // k_i and k_j - degrees
-      const k_i = degrees.get(nodeI.id) || 0;
-      const k_j = degrees.get(nodeJ.id) || 0;
+        // k_i and k_j - degrees
+        const k_i = degrees.get(nodeI.id) || 0;
+        const k_j = degrees.get(nodeJ.id) || 0;
 
-      // Expected number of edges under null model
-      const expected = (k_i * k_j) / twoM;
+        // Expected number of edges under null model
+        const expected = (k_i * k_j) / twoM;
 
-      // Contribution to modularity
-      Q += A_ij - expected;
+        // Contribution to modularity
+        Q += A_ij - expected;
+      });
     });
-  });
+  } else {
+    // Undirected graph: iterate over unique pairs and count self-loops once
+    for (let i = 0; i < allNodes.length; i++) {
+      for (let j = i; j < allNodes.length; j++) {
+        const nodeI = allNodes[i];
+        const nodeJ = allNodes[j];
+
+        // Check if nodes are in the same community
+        const communityI = nodeToCommunity.get(nodeI.id);
+        const communityJ = nodeToCommunity.get(nodeJ.id);
+
+        // δ(c_i, c_j) - Kronecker delta (1 if same community, 0 otherwise)
+        if (communityI === undefined || communityJ === undefined) {
+          continue; // Skip nodes not assigned to any community
+        }
+
+        if (communityI !== communityJ) {
+          continue; // Different communities, contribution is 0
+        }
+
+        // A_ij - adjacency matrix value (1 if edge exists, 0 otherwise)
+        const neighborsResult = graph.getNeighbors(nodeI.id);
+        const A_ij = neighborsResult.ok &&
+                     neighborsResult.value.includes(nodeJ.id) ? 1 : 0;
+
+        // k_i and k_j - degrees
+        const k_i = degrees.get(nodeI.id) || 0;
+        const k_j = degrees.get(nodeJ.id) || 0;
+
+        // Expected number of edges under null model
+        const expected = (k_i * k_j) / twoM;
+
+        // Contribution to modularity (multiply by 2 for non-diagonal elements)
+        const weight = (i === j) ? 1 : 2;
+        Q += weight * (A_ij - expected);
+      }
+    }
+  }
 
   // Normalize by 2m
   Q /= twoM;
@@ -160,29 +199,59 @@ export function calculateCommunityModularity<N extends Node, E extends Edge>(
     }
   });
 
-  // Iterate over all pairs within the community
+  // Iterate over pairs within the community
   const nodesArray = Array.from(community.nodes);
-  nodesArray.forEach((nodeI) => {
-    nodesArray.forEach((nodeJ) => {
-      const nodeIStr = typeof nodeI === 'string' ? nodeI : String(nodeI);
-      const nodeJStr = typeof nodeJ === 'string' ? nodeJ : String(nodeJ);
 
-      // A_ij - check if nodes are neighbors
-      const neighborsResult = graph.getNeighbors(nodeIStr);
-      const A_ij = neighborsResult.ok &&
-                   neighborsResult.value.includes(nodeJStr) ? 1 : 0;
+  if (graph.isDirected()) {
+    // Directed: iterate over all pairs
+    nodesArray.forEach((nodeI) => {
+      nodesArray.forEach((nodeJ) => {
+        const nodeIStr = typeof nodeI === 'string' ? nodeI : String(nodeI);
+        const nodeJStr = typeof nodeJ === 'string' ? nodeJ : String(nodeJ);
 
-      // k_i and k_j
-      const k_i = degrees.get(nodeI) || 0;
-      const k_j = degrees.get(nodeJ) || 0;
+        // A_ij - check if nodes are neighbors
+        const neighborsResult = graph.getNeighbors(nodeIStr);
+        const A_ij = neighborsResult.ok &&
+                     neighborsResult.value.includes(nodeJStr) ? 1 : 0;
 
-      // Expected edges under null model
-      const expected = (k_i * k_j) / twoM;
+        // k_i and k_j
+        const k_i = degrees.get(nodeI) || 0;
+        const k_j = degrees.get(nodeJ) || 0;
 
-      // Contribution
-      Q_c += A_ij - expected;
+        // Expected edges under null model
+        const expected = (k_i * k_j) / twoM;
+
+        // Contribution
+        Q_c += A_ij - expected;
+      });
     });
-  });
+  } else {
+    // Undirected: iterate over unique pairs
+    for (let i = 0; i < nodesArray.length; i++) {
+      for (let j = i; j < nodesArray.length; j++) {
+        const nodeI = nodesArray[i];
+        const nodeJ = nodesArray[j];
+        const nodeIStr = typeof nodeI === 'string' ? nodeI : String(nodeI);
+        const nodeJStr = typeof nodeJ === 'string' ? nodeJ : String(nodeJ);
+
+        // A_ij - check if nodes are neighbors
+        const neighborsResult = graph.getNeighbors(nodeIStr);
+        const A_ij = neighborsResult.ok &&
+                     neighborsResult.value.includes(nodeJStr) ? 1 : 0;
+
+        // k_i and k_j
+        const k_i = degrees.get(nodeI) || 0;
+        const k_j = degrees.get(nodeJ) || 0;
+
+        // Expected edges under null model
+        const expected = (k_i * k_j) / twoM;
+
+        // Contribution (multiply by 2 for non-diagonal elements)
+        const weight = (i === j) ? 1 : 2;
+        Q_c += weight * (A_ij - expected);
+      }
+    }
+  }
 
   // Normalize
   Q_c /= twoM;
