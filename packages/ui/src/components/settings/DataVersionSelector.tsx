@@ -9,8 +9,8 @@
  * - 013-walden-research
  */
 
-import React from "react";
 import { Select, Stack, Text } from "@mantine/core";
+import React from "react";
 
 export interface DataVersionSelectorProps {
 	/**

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { Table, Pagination, Group, TextInput, Select, Text, Box } from '@mantine/core';
+import { IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,8 +11,7 @@ import {
   type ColumnFiltersState,
   type ColumnDef,
 } from '@tanstack/react-table';
-import { Table, Pagination, Group, TextInput, Select, Text, Box } from '@mantine/core';
-import { IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
+import { useState } from 'react';
 
 export interface BaseTableProps<T> {
   data: T[];

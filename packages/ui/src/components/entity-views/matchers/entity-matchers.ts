@@ -1,14 +1,17 @@
 // Matcher utilities for entity views
+import type { OpenAlexEntity } from "@academic-explorer/types";
+import type { ComponentType } from "react";
+
 export interface EntityMatcher {
-	test: (entity: any) => boolean;
-	component: React.ComponentType<any>;
+	test: (entity: OpenAlexEntity) => boolean;
+	component: ComponentType<{ entity: OpenAlexEntity }>;
 }
 
-export function createMatcher(pattern: string | RegExp | ((entity: any) => boolean)): EntityMatcher {
+export function createMatcher(pattern: string | RegExp | ((entity: OpenAlexEntity) => boolean)): EntityMatcher {
 	const test = typeof pattern === "string"
-		? (entity: any) => entity.display_name?.includes(pattern)
+		? (entity: OpenAlexEntity) => entity.display_name?.includes(pattern)
 		: pattern instanceof RegExp
-		? (entity: any) => pattern.test(entity.display_name || "")
+		? (entity: OpenAlexEntity) => pattern.test(entity.display_name || "")
 		: pattern;
 
 	return {

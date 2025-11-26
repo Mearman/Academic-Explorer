@@ -8,7 +8,7 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
-import { Combobox, Group, Pill, PillsInput, useCombobox } from "@mantine/core";
+import { Combobox, Pill, PillsInput, useCombobox } from "@mantine/core";
 import { useState } from "react";
 
 export interface TagInputProps {

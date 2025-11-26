@@ -1,6 +1,6 @@
-import { Badge } from "@mantine/core";
 import type { EntityType } from "@academic-explorer/types";
 import { ENTITY_METADATA } from "@academic-explorer/types";
+import { Badge } from "@mantine/core";
 
 export interface EntityTypeBadgeProps {
 	entityType: EntityType;

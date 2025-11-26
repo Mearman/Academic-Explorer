@@ -9,14 +9,14 @@
  * - User Story 2: Bookmark Custom Field Views
  */
 
-import { Badge, Group, Text, Tooltip, Stack } from "@mantine/core";
-import { IconListDetails } from "@tabler/icons-react";
 import {
 	generateCompactFieldSummary,
 	generateDetailedFieldSummary,
 	generateFieldListPreview,
 	generateSmartFieldSummary,
 } from "@academic-explorer/utils";
+import { Badge, Group, Text, Tooltip, Stack } from "@mantine/core";
+import { IconListDetails } from "@tabler/icons-react";
 
 export interface FieldSelectionPreviewProps {
 	/**

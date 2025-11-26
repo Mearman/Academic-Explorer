@@ -1,8 +1,8 @@
-/// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
 import "@testing-library/jest-dom/vitest"
 import { MantineProvider } from "@mantine/core"
+import { render, screen, fireEvent } from "@testing-library/react"
+import { describe, it, expect, vi } from "vitest"
+
 import { BookmarkButton } from "./BookmarkButton"
 
 // Wrapper with Mantine provider

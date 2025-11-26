@@ -1,8 +1,8 @@
-/// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom/vitest";
-import { SectionKit } from "./SectionKit";
+import "@testing-library/jest-dom/vitest"
+import { render, screen } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+
+import { SectionKit } from "./SectionKit"
 
 describe("SectionKit", () => {
   it("renders children", () => {

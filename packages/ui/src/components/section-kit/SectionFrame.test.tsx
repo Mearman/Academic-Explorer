@@ -1,9 +1,9 @@
-/// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom/vitest";
-import { MantineProvider } from "@mantine/core";
+import "@testing-library/jest-dom/vitest"
+import { MantineProvider } from "@mantine/core"
+import { render, screen, fireEvent } from "@testing-library/react"
 import type { ReactNode } from "react"
+import { describe, it, expect, vi } from "vitest"
+
 import { SectionFrame } from "./SectionFrame";
 
 // Test wrapper with MantineProvider

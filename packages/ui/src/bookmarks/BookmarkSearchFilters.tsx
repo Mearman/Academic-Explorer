@@ -10,10 +10,11 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
+import type { EntityType } from "@academic-explorer/types";
 import { ActionIcon, Group, Select, Stack, TextInput, Tooltip } from "@mantine/core";
 import { IconFilter, IconSearch, IconX } from "@tabler/icons-react";
-import type { EntityType } from "@academic-explorer/types";
 import { useState } from "react";
+
 import { TagBadge } from "./TagBadge";
 
 export interface BookmarkSearchFiltersProps {

@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from "node:url";
 import { resolve } from "path";
+
 import { defineConfig } from "vite";
 
 // UI library Vite configuration

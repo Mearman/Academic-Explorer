@@ -1,7 +1,7 @@
-import { useState } from "react"
-import type { ReactNode, FC } from "react"
 import { Paper, Title, Text, Box, Group, Button, Collapse } from "@mantine/core"
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
+import { useState } from "react"
+import type { ReactNode, FC } from "react"
 
 export type SectionFrameProps = {
 	children: ReactNode

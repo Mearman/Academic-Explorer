@@ -4,9 +4,9 @@
  * Temporarily available during November 2025 transition period
  */
 
-import React from "react";
 import { Badge, Group, Stack, Text, Tooltip } from "@mantine/core";
 import { IconArrowUp, IconArrowDown, IconEqual, IconInfoCircle } from "@tabler/icons-react";
+import React from "react";
 
 export interface VersionComparisonIndicatorProps {
   currentVersion: '1' | '2' | undefined;

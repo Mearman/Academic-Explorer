@@ -1,31 +1,30 @@
-/// <reference types="vitest" />
-/// <reference types="@testing-library/jest-dom/vitest" />
-import { vi } from "vitest"
 import "@testing-library/jest-dom/vitest"
+import { vi } from "vitest"
 
 // Fix lru-cache ES module compatibility issue
-let originalLruCache: any = null
+let originalLruCache: unknown = null
 
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   originalLruCache = require('lru-cache')
-} catch (error) {
-  console.warn('lru-cache module not available during setup:', error)
+} catch {
+  console.warn('lru-cache module not available during setup')
 }
 
 // Create a compatible LRUCache class that works in both CommonJS and ES module contexts
-class CompatibleLRUCache {
-  private cache = new Map()
+class CompatibleLRUCache<K = unknown, V = unknown> {
+  private cache = new Map<K, V>()
   private maxSize: number
 
   constructor(maxSize = 1000) {
     this.maxSize = maxSize
   }
 
-  get(key: any) {
+  get(key: K): V | undefined {
     return this.cache.get(key)
   }
 
-  set(key: any, value: any) {
+  set(key: K, value: V): this {
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value
       if (firstKey !== undefined) {
@@ -36,25 +35,35 @@ class CompatibleLRUCache {
     return this
   }
 
-  has(key: any) {
+  has(key: K): boolean {
     return this.cache.has(key)
   }
 
-  delete(key: any) {
+  delete(key: K): boolean {
     return this.cache.delete(key)
   }
 
-  clear() {
+  clear(): void {
     this.cache.clear()
   }
 
-  get size() {
+  get size(): number {
     return this.cache.size
   }
 }
 
+// Type guard for lru-cache module structure
+interface LruCacheModule {
+  LRUCache?: typeof CompatibleLRUCache;
+  default?: typeof CompatibleLRUCache;
+}
+
+function isLruCacheModule(value: unknown): value is LruCacheModule {
+  return typeof value === 'object' && value !== null;
+}
+
 // Patch the lru-cache module globally before any tests run
-if (originalLruCache) {
+if (isLruCacheModule(originalLruCache)) {
   if (!originalLruCache.LRUCache && originalLruCache.default) {
     originalLruCache.LRUCache = originalLruCache.default
   }

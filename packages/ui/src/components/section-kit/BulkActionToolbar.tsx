@@ -1,4 +1,3 @@
-import type { ReactNode } from "react"
 import { Group, Button, Checkbox, Text, ActionIcon, Tooltip, Menu } from "@mantine/core"
 import {
 	IconEye,
@@ -10,6 +9,7 @@ import {
 	IconZoomIn,
 	IconZoomOut,
 } from "@tabler/icons-react"
+import type { ReactNode } from "react"
 
 export type BulkActionToolbarProps = {
 	// Selection state

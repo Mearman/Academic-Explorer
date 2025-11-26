@@ -1,7 +1,4 @@
 /// <reference types="vite/client" />
-import { Component } from "react";
-import * as React from "react";
-import type { ErrorInfo, ReactNode } from "react"
 import {
 	Container,
 	Stack,
@@ -17,6 +14,7 @@ import {
 	ActionIcon,
 	Tooltip,
 } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
 import {
 	IconAlertTriangle,
 	IconRefresh,
@@ -25,7 +23,9 @@ import {
 	IconBug,
 	IconExternalLink,
 } from "@tabler/icons-react"
-import { notifications } from "@mantine/notifications"
+import { Component } from "react";
+import * as React from "react";
+import type { ErrorInfo, ReactNode } from "react"
 
 export type ErrorBoundaryProps = {
 	children: ReactNode

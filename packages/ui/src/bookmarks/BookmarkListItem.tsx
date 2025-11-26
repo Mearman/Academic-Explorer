@@ -2,6 +2,7 @@ import type { Bookmark, EntityType } from "@academic-explorer/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip, Button } from "@mantine/core";
 import { IconTrash, IconEdit, IconCheck, IconX } from "@tabler/icons-react";
 import { useState } from "react";
+
 import { FieldSelectionPreview } from "./FieldSelectionPreview";
 import { TagList } from "./TagBadge";
 import { TagInput } from "./TagInput";
@@ -207,7 +208,7 @@ export function BookmarkListItem({
 			try {
 				await onUpdateTags(bookmark.id, editedTags);
 				setIsEditingTags(false);
-			} catch (err) {
+			} catch {
 				// Keep editing mode open on error
 			}
 		}

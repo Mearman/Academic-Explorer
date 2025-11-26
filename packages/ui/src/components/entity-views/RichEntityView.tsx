@@ -1,7 +1,8 @@
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import { ReactNode } from "react";
 
 export interface RichEntityViewProps {
-	entity: any;
+	entity: OpenAlexEntity;
 	entityType: string;
 	fields: string[];
 	viewMode: "compact" | "detailed" | "raw";
@@ -36,7 +37,7 @@ export function RichEntityView({
 	return (
 		<div className={`rich-entity-view ${viewMode} ${className || ""}`}>
 			<div className="entity-header">
-				<h2>{entity.display_name || entity.title || "Unknown Entity"}</h2>
+				<h2>{entity.display_name || ("title" in entity ? entity.title : null) || "Unknown Entity"}</h2>
 				<span className="entity-type">{entityType}</span>
 			</div>
 
@@ -44,7 +45,7 @@ export function RichEntityView({
 				{viewMode === "compact" && (
 					<div className="compact-view">
 						{entity.display_name && <p>{entity.display_name}</p>}
-						{entity.description && <p>{entity.description}</p>}
+						{"description" in entity && entity.description && <p>{entity.description}</p>}
 					</div>
 				)}
 
@@ -53,7 +54,7 @@ export function RichEntityView({
 						{fields.map(field => (
 							<div key={field} className="field">
 								<span className="field-label">{field}:</span>
-								<span className="field-value">{String(entity[field] || "N/A")}</span>
+								<span className="field-value">{String(field in entity ? entity[field as keyof typeof entity] : "N/A")}</span>
 							</div>
 						))}
 					</div>

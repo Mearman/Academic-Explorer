@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
-import type { ReactNode } from "react"
 import { ScrollArea, TextInput, Group, Chip, Stack, Text, Box, Center, Loader } from "@mantine/core"
 import { IconSearch, IconX } from "@tabler/icons-react"
+import { useState, useMemo, useEffect } from "react";
+import type { ReactNode } from "react"
 
 export type FilterChip = {
 	label: string

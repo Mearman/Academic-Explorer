@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import type { Bookmark, EntityType } from "@academic-explorer/types";
 import { Stack, Text, Group, Divider, Box, Center, Loader } from "@mantine/core";
 import { IconBookmarkOff } from "@tabler/icons-react";
-import type { Bookmark, EntityType } from "@academic-explorer/types";
-import { EntityTypeBadge } from "./EntityTypeBadge";
+import { useMemo } from "react";
+
 import { BookmarkListItem } from "./BookmarkListItem";
+import { EntityTypeBadge } from "./EntityTypeBadge";
 
 export interface BookmarkListProps {
 	/**

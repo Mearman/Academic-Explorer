@@ -51,7 +51,9 @@ export function useAsyncOperation<T = unknown>(
       }
 
       setState(prev => ({ ...prev, loading: false, error: lastError }))
-      onError?.(lastError!)
+      if (lastError) {
+        onError?.(lastError)
+      }
     },
     [retryCount, retryDelay, onError, onSuccess]
   )
