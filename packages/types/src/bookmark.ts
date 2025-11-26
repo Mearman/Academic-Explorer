@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+
 import type { EntityType } from "./entities/entities.js";
 
 /**
@@ -40,7 +41,7 @@ export interface BookmarkMetadata {
  * Zod schema for BookmarkMetadata validation
  */
 export const BookmarkMetadataSchema = z.object({
-	url: z.string().url(),
+	url: z.url(),
 	title: z.string(),
 	entityType: z
 		.enum([

@@ -5,7 +5,7 @@
 import { z } from "zod"
 
 // Response types - schema-based types
-export const OpenAlexResponseSchema = <T extends z.ZodTypeAny>(resultSchema: T) =>
+export const OpenAlexResponseSchema = <T extends z.ZodType>(resultSchema: T) =>
 	z.object({
 		results: z.array(resultSchema),
 		meta: z.object({

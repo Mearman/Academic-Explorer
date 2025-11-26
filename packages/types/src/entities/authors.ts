@@ -3,8 +3,9 @@
  */
 
 import { z } from "zod"
-import { AuthorsFiltersSchema } from "./filters"
+
 import { BaseAutocompleteOptionsSchema } from "./common"
+import { AuthorsFiltersSchema } from "./filters"
 import { authorSchema } from "./schemas"
 import { createSchemaTypeGuard } from "./utils"
 

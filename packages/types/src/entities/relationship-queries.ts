@@ -80,7 +80,6 @@ export interface EmbeddedRelationshipQuery {
  * @template TargetType - The type of the target entity (the entity type returned by the query)
  */
 export type RelationshipQueryConfig<
-  SourceType extends EntityType = EntityType,
   TargetType extends EntityType = EntityType
 > = {
   /** The type of relationship (e.g., AUTHORSHIP, REFERENCE) */

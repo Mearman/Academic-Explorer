@@ -3,6 +3,7 @@
  */
 
 import { z } from "zod"
+
 import { BaseAutocompleteOptionsSchema } from "./common"
 import { funderSchema } from "./schemas"
 import { createSchemaTypeGuard } from "./utils"

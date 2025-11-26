@@ -330,7 +330,7 @@ export const institutionSchema = baseEntitySchema.extend({
 })
 
 // Generic OpenAlex response schema
-export const openAlexResponseSchema = <T extends z.ZodTypeAny>(resultSchema: T) =>
+export const openAlexResponseSchema = <T extends z.ZodType>(resultSchema: T) =>
 	z.object({
 		results: z.array(resultSchema),
 		meta: metaSchema,

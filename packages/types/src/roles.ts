@@ -3,8 +3,8 @@
  * Cross-entity mappings via entity.roles[] array
  */
 
-import { RelationType } from "./relationships"
 import type { EntityType } from "./entities"
+import { RelationType } from "./relationships"
 
 /**
  * Role relationship from OpenAlex entity.roles[] array

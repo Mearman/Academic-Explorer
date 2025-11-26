@@ -2,16 +2,16 @@
  * Entity Type Guards and Utilities - Central functions for entity type detection
  */
 
-import type { OpenAlexEntity, EntityType } from "./entities"
-import { isWork } from "./works"
 import { isAuthor } from "./authors"
-import { isSource } from "./sources"
-import { isInstitution } from "./institutions"
-import { isTopic } from "./topics"
 import { isConcept } from "./concepts"
-import { isPublisher } from "./publishers"
+import type { OpenAlexEntity, EntityType } from "./entities"
 import { isFunder } from "./funders"
+import { isInstitution } from "./institutions"
 import { isKeyword } from "./keywords"
+import { isPublisher } from "./publishers"
+import { isSource } from "./sources"
+import { isTopic } from "./topics"
+import { isWork } from "./works"
 
 export function getEntityType(entity: OpenAlexEntity): EntityType {
 	if (isWork(entity)) return "works"

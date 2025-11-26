@@ -24,22 +24,6 @@ export enum RelationType {
 	INSTITUTION_ASSOCIATED = "institution_associated", // Institution → Institution (via associated_institutions[])
 	INSTITUTION_HAS_REPOSITORY = "institution_has_repository", // Institution → Source (via repositories[])
 
-	// Backwards-compatible aliases (deprecated - use noun form above)
-	/** @deprecated Use AUTHORSHIP instead */
-	AUTHORED = "AUTHORSHIP",
-	/** @deprecated Use AFFILIATION instead */
-	AFFILIATED = "AFFILIATION",
-	/** @deprecated Use PUBLICATION instead */
-	PUBLISHED_IN = "PUBLICATION",
-	/** @deprecated Use REFERENCE instead */
-	REFERENCES = "REFERENCE",
-	/** @deprecated Use HOST_ORGANIZATION instead */
-	SOURCE_PUBLISHED_BY = "HOST_ORGANIZATION",
-	/** @deprecated Use LINEAGE instead */
-	INSTITUTION_CHILD_OF = "LINEAGE",
-	/** @deprecated Use TOPIC instead */
-	WORK_HAS_TOPIC = "TOPIC",
-
 	// Additional relationship types (less commonly used)
 	AUTHOR_RESEARCHES = "author_researches", // Author → Topic
 	FIELD_PART_OF_DOMAIN = "field_part_of_domain", // Field → Domain

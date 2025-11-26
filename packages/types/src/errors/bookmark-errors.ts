@@ -3,7 +3,6 @@
  * Provides type-safe error handling for bookmark operations
  */
 
-import type { Bookmark, BookmarkMetadata } from "../bookmark.js";
 import { BookmarkMetadataSchema } from "../bookmark.js";
 
 /**
