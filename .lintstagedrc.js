@@ -1,4 +1,10 @@
 export default {
+  // Package.json files - run syncpack to fix versions and formatting
+  '**/package.json': [
+    'syncpack fix-mismatches',
+    'syncpack format'
+  ],
+
   // TypeScript and JavaScript files in packages and apps
   '{packages,apps}/**/*.{ts,tsx,js,jsx}': [
     // Run cached lint:fix for affected projects using Nx
