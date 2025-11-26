@@ -6,8 +6,8 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 18 |
-| 🚧 In Progress | 5 |
+| ✅ Complete | 19 |
+| 🚧 In Progress | 4 |
 | 📝 Draft | 3 |
 | ⚠️ Archived | 2 |
 
@@ -77,9 +77,9 @@ Support for multiple storage provider implementations simultaneously.
 ---
 
 ### spec-008: Bookmark Query Views
-**Status**: 🚧 In Progress | **Progress**: 24/57 tasks (42%)
+**Status**: ✅ Complete | **Completed**: 2025-11-24
 
-Advanced query and filtering capabilities for bookmark management. Ability to bookmark entity/query pages and create views with select parameter variations. Phase 1-2 foundational work complete, User Story 1 in progress.
+Advanced query and filtering capabilities for bookmark management. User Stories 1-3 complete: entity/query bookmarking, custom field views with select parameters, tagging, search/filter, and export. Polish tasks (keyboard shortcuts, virtualization) deferred.
 
 [View Spec](./008-bookmark-query-views/)
 

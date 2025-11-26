@@ -91,17 +91,17 @@ description: "Task list for Bookmark Query Views feature implementation"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T025 [P] [US2] E2E test for bookmarking custom field views in `apps/web/src/test/e2e/bookmark-custom-fields.e2e.test.ts`
-- [ ] T026 [P] [US2] Unit test for select parameter preservation in `packages/utils/src/url-parser.test.ts`
+- [X] T025 [P] [US2] E2E test for bookmarking custom field views in `apps/web/src/test/e2e/bookmark-custom-fields.e2e.test.ts`
+- [X] T026 [P] [US2] Unit test for select parameter preservation in `packages/utils/src/url-parser.test.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T027 [US2] Extend bookmark entity model to store select parameters in `packages/types/src/bookmark.ts`
-- [ ] T028 [US2] Update URL parameter extraction to handle select parameter in `packages/utils/src/url-parser.ts`
-- [ ] T029 [US2] Add field summary generation from select parameter in `packages/utils/src/field-summary.ts`
-- [ ] T030 [US2] Display field selection preview in bookmark list items in `packages/ui/src/bookmarks/FieldSelectionPreview.tsx`
-- [ ] T031 [US2] Update bookmark restoration to apply select parameter to entity routes in `apps/web/src/services/bookmark-service.ts`
-- [ ] T032 [US2] Handle multiple bookmarks for same entity with different field selections in `apps/web/src/hooks/useBookmarks.ts`
+- [X] T027 [US2] Extend bookmark entity model to store select parameters in `packages/types/src/bookmark.ts`
+- [X] T028 [US2] Update URL parameter extraction to handle select parameter in `packages/utils/src/url-parser.ts`
+- [X] T029 [US2] Add field summary generation from select parameter in `packages/utils/src/field-summary.ts`
+- [X] T030 [US2] Display field selection preview in bookmark list items in `packages/ui/src/bookmarks/FieldSelectionPreview.tsx`
+- [X] T031 [US2] Update bookmark restoration to apply select parameter to entity routes in `apps/web/src/services/bookmark-service.ts`
+- [X] T032 [US2] Handle multiple bookmarks for same entity with different field selections in `apps/web/src/hooks/useBookmarks.ts`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -115,22 +115,22 @@ description: "Task list for Bookmark Query Views feature implementation"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T033 [P] [US3] E2E test for bookmark tagging in `apps/web/src/test/e2e/bookmark-tagging.e2e.test.ts`
-- [ ] T034 [P] [US3] E2E test for bookmark search in `apps/web/src/test/e2e/bookmark-search.e2e.test.ts`
-- [ ] T035 [P] [US3] Unit test for bookmark filtering logic in `packages/utils/src/bookmark-filters.test.ts`
+- [X] T033 [P] [US3] E2E test for bookmark tagging in `apps/web/src/test/e2e/bookmark-tagging.e2e.test.ts`
+- [X] T034 [P] [US3] E2E test for bookmark search in `apps/web/src/test/e2e/bookmark-search.e2e.test.ts`
+- [X] T035 [P] [US3] Unit test for bookmark filtering logic in `packages/utils/src/bookmark-filters.test.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T036 [P] [US3] Create tag input component in `packages/ui/src/bookmarks/TagInput.tsx`
-- [ ] T037 [P] [US3] Create tag badge component in `packages/ui/src/bookmarks/TagBadge.tsx`
-- [ ] T038 [US3] Add tag storage to bookmark entity model in `packages/types/src/bookmark.ts`
-- [ ] T039 [US3] Implement bookmark search functionality in `apps/web/src/services/bookmark-service.ts`
-- [ ] T040 [US3] Create search input for bookmarks catalogue in `packages/ui/src/bookmarks/BookmarkSearch.tsx`
-- [ ] T041 [US3] Add entity type filter dropdown in `packages/ui/src/bookmarks/EntityTypeFilter.tsx`
-- [ ] T042 [US3] Add tag filter chips in `packages/ui/src/bookmarks/TagFilter.tsx`
-- [ ] T043 [US3] Implement sort options (date, title, entity type) in `packages/ui/src/bookmarks/BookmarkSort.tsx`
-- [ ] T044 [US3] Add bookmark export functionality using catalogue export in `apps/web/src/services/bookmark-service.ts`
-- [ ] T045 [US3] Create export button in bookmarks catalogue toolbar in `apps/web/src/routes/bookmarks/index.tsx`
+- [X] T036 [P] [US3] Create tag input component in `packages/ui/src/bookmarks/TagInput.tsx`
+- [X] T037 [P] [US3] Create tag badge component in `packages/ui/src/bookmarks/TagBadge.tsx`
+- [X] T038 [US3] Add tag storage to bookmark entity model in `packages/types/src/bookmark.ts`
+- [X] T039 [US3] Implement bookmark search functionality in `apps/web/src/services/bookmark-service.ts`
+- [X] T040 [US3] Create search input for bookmarks catalogue in `packages/ui/src/bookmarks/BookmarkSearchFilters.tsx`
+- [X] T041 [US3] Add entity type filter dropdown in `packages/ui/src/bookmarks/BookmarkSearchFilters.tsx`
+- [X] T042 [US3] Add tag filter chips in `packages/ui/src/bookmarks/BookmarkSearchFilters.tsx`
+- [X] T043 [US3] Implement sort options (date, title, entity type) in `packages/ui/src/bookmarks/BookmarkList.tsx`
+- [X] T044 [US3] Add bookmark export functionality using catalogue export in `apps/web/src/services/bookmark-service.ts`
+- [X] T045 [US3] Create export button in bookmarks catalogue toolbar in `apps/web/src/routes/bookmarks/index.tsx`
 
 **Checkpoint**: All user stories should now be independently functional
 
