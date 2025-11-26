@@ -6,6 +6,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BaseSPAPageObject } from '@/test/page-objects/BaseSPAPageObject';
@@ -309,5 +310,20 @@ test.describe('@utility History Page', () => {
 		} else {
 			expect(remainingCount).toBe(initialCount - 1);
 		}
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		const pageObject = new BaseSPAPageObject(page);
+
+		// Navigate to history page
+		await pageObject.goto(`${BASE_URL}/#/history`);
+		await waitForAppReady(page);
+
+		// Run accessibility scan
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

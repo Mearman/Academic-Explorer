@@ -12,6 +12,7 @@
  */
 
 import { test, expect } from "@playwright/test";
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
@@ -93,5 +94,18 @@ test.describe("@utility Cache Page", () => {
 		// Verify proper spacing by checking container exists
 		// Note: Padding classes may vary based on Mantine version
 		expect(await container.count()).toBeGreaterThan(0);
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to cache page
+		await cachePage.goto("/#/cache");
+		await waitForAppReady(page);
+
+		// Run accessibility scan
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

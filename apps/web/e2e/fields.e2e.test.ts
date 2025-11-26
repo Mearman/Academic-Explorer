@@ -9,6 +9,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { FieldsDetailPage } from '@/test/page-objects/FieldsDetailPage';
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
@@ -196,5 +197,18 @@ test.describe('@entity Fields Detail Page', () => {
 			const subfieldPageName = await heading.textContent();
 			expect(subfieldPageName).toBeTruthy();
 		}
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		const fieldsPage = new FieldsDetailPage(page);
+		await fieldsPage.gotoField('F17');
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

@@ -13,6 +13,7 @@
  */
 
 import { test, expect } from "@playwright/test";
+import AxeBuilder from '@axe-core/playwright';
 
 import { SettingsPage } from "@/test/page-objects/SettingsPage";
 import { waitForAppReady } from "@/test/helpers/app-ready";
@@ -300,5 +301,20 @@ test.describe("@utility Settings Page", () => {
 		// Verify warning alert has proper role
 		const alert = page.locator("[role='alert']").first();
 		await expect(alert).toBeVisible();
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		const settingsPage = new SettingsPage(page);
+
+		// Navigate to settings page
+		await page.goto(`${BASE_URL}/settings`);
+		await waitForAppReady(page);
+
+		// Run accessibility scan
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

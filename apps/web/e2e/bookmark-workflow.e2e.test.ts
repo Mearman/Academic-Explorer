@@ -15,6 +15,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady, waitForEntityData } from '../src/test/helpers/app-ready';
 
@@ -57,6 +58,18 @@ test.describe('@workflow Bookmark Workflow', () => {
 				});
 			}
 		});
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 
 	test('should bookmark a work entity and verify persistence', async ({ page }) => {

@@ -7,6 +7,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -15,6 +16,18 @@ test.describe('@workflow Catalogue Workflow', () => {
 	const testBibliographyTitle = `Test Bibliography ${Date.now()}`;
 	let createdListId: string | null = null;
 	let createdBibliographyId: string | null = null;
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to catalogues page
+		await page.goto('/catalogue');
+		await waitForAppReady(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
+	});
 
 	test.afterEach(async ({ page }) => {
 		// Clean up: delete created lists if they exist

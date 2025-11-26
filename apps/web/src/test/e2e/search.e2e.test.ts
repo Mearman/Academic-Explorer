@@ -10,6 +10,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { SearchPage } from '@/test/page-objects/SearchPage';
 import { waitForAppReady, waitForSearchResults } from '@/test/helpers/app-ready';
@@ -168,5 +169,18 @@ test.describe('@utility Search Page', () => {
 		if (pageTitleBox && searchInputBox) {
 			expect(pageTitleBox.y).toBeLessThan(searchInputBox.y);
 		}
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to search page
+		await searchPage.gotoSearch();
+		await waitForAppReady(page);
+
+		// Run accessibility scan
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

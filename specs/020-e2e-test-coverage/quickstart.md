@@ -1,8 +1,8 @@
-# E2E Test Quickstart Guide
+# E2E Test Coverage - Quick Start Guide
 
 **Feature**: E2E Test Coverage Enhancement
-**Date**: 2025-11-23
-**Phase**: Phase 1 (Design & Data Models)
+**Date**: 2025-11-26
+**Status**: Complete (Phases 1-6)
 
 ## Overview
 
@@ -30,16 +30,12 @@ pnpm exec playwright install chromium
 
 ## Running E2E Tests
 
-### Smoke Suite (32 tests, ~2 minutes)
+### Smoke Suite (Default)
 
 The smoke suite runs a subset of critical tests for quick validation:
 
 ```bash
-# Run smoke suite
 pnpm nx e2e web
-
-# Alternative: Direct Playwright command
-pnpm exec playwright test apps/web/e2e/sample-urls-ci.e2e.test.ts
 ```
 
 **What's tested**:
@@ -48,16 +44,12 @@ pnpm exec playwright test apps/web/e2e/sample-urls-ci.e2e.test.ts
 - Basic error scenarios
 - Essential smoke tests
 
-### Full Suite (~642 tests, ~30 minutes)
+### Full Suite
 
 The full suite runs ALL E2E tests across the application:
 
 ```bash
-# Run full suite
 E2E_FULL_SUITE=true pnpm nx e2e web
-
-# With HTML report
-E2E_FULL_SUITE=true pnpm nx e2e web --reporter=html
 ```
 
 **What's tested**:
@@ -67,19 +59,60 @@ E2E_FULL_SUITE=true pnpm nx e2e web --reporter=html
 - Performance benchmarks
 - Manual test automation
 
-### Specific Test Files
+### By Category
 
-Run individual test files for focused testing:
+Run tests filtered by category tags:
 
 ```bash
+# Entity tests
+pnpm nx e2e web --grep="@entity"
+
+# Workflow tests
+pnpm nx e2e web --grep="@workflow"
+
+# Error tests
+pnpm nx e2e web --grep="@error"
+
+# Automated manual tests
+pnpm nx e2e web --grep="@automated-manual"
+
+# Utility pages
+pnpm nx e2e web --grep="@utility"
+```
+
+### Individual Tests
+
+Run specific test files or patterns:
+
+```bash
+# Run specific entity tests
+pnpm nx e2e web --grep="domains"
+pnpm nx e2e web --grep="works"
+pnpm nx e2e web --grep="authors"
+
+# Run specific workflow
+pnpm nx e2e web --grep="search-workflow"
+
 # Run specific test file
 pnpm exec playwright test apps/web/e2e/domains.e2e.test.ts
+```
 
-# Run tests matching pattern
-pnpm exec playwright test --grep "entity detail"
+### Debug Mode
 
-# Run tests in specific directory
-pnpm exec playwright test apps/web/src/test/e2e/
+Debug tests with visual browser and step-through execution:
+
+```bash
+# Run with visible browser
+pnpm nx e2e web --headed
+
+# Run with debugging (Playwright Inspector)
+pnpm nx e2e web --debug
+
+# Run with slow motion
+pnpm nx e2e web --headed --slow-mo=1000
+
+# Debug specific test
+pnpm exec playwright test --debug apps/web/e2e/domains.e2e.test.ts
 ```
 
 ### UI Mode (Interactive Testing)
@@ -100,6 +133,98 @@ pnpm exec playwright test --ui apps/web/e2e/works.e2e.test.ts
 - Inspect DOM at any point
 - View screenshots and traces
 - Re-run failed tests
+
+---
+
+## Test Organization
+
+Test files are organized by feature area and time period:
+
+- `apps/web/e2e/` - Modern E2E tests (spec-013+)
+- `apps/web/src/test/e2e/` - Legacy E2E tests
+- `apps/web/src/test/page-objects/` - Page object implementations
+- `apps/web/src/test/helpers/` - Test utilities
+
+### Page Object Hierarchy
+
+```
+BasePageObject → BaseSPAPageObject → BaseEntityPageObject → [Entity]DetailPage
+```
+
+**Example**: `DomainsDetailPage extends BaseEntityPageObject`
+
+---
+
+## Troubleshooting
+
+### Memory Issues
+
+Tests run serially to prevent OOM errors. If you see memory issues:
+
+```bash
+NODE_OPTIONS=--max-old-space-size=8192 pnpm nx e2e web
+```
+
+### Flaky Tests
+
+Use deterministic wait helpers instead of `networkidle`:
+
+```typescript
+import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
+
+// Good: Deterministic wait
+await page.goto('/#/works/W123', { waitUntil: 'commit' });
+await waitForEntityData(page);
+
+// Bad: Non-deterministic wait
+await page.goto('/#/works/W123', { waitUntil: 'networkidle' });
+```
+
+### Nx Cache Issues
+
+If tests behave unexpectedly due to cache corruption:
+
+```bash
+nx reset
+pnpm nx e2e web
+```
+
+### Storage Pollution
+
+Clear storage between tests to prevent pollution:
+
+```typescript
+test.beforeEach(async ({ page }) => {
+  await page.evaluate(() => {
+    indexedDB.deleteDatabase('academic-explorer');
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+});
+```
+
+### Element Not Found
+
+Use deterministic selectors and waits:
+
+```typescript
+// Good: Wait for specific element
+await page.waitForSelector('[data-testid="entity-title"]', { state: 'visible' });
+
+// Bad: Arbitrary timeout
+await page.waitForTimeout(1000);
+```
+
+### Test Timeouts
+
+Increase timeout for slow operations:
+
+```typescript
+test('slow operation', async ({ page }) => {
+  test.setTimeout(60000); // 60 seconds
+  // ... test code
+});
+```
 
 ---
 
@@ -131,17 +256,16 @@ touch apps/web/e2e/domains.e2e.test.ts
 
 ### 3. Write Test Using Page Objects
 
-Use page objects from `specs/020-e2e-test-coverage/contracts/page-objects.ts`:
+Use page objects from `apps/web/src/test/page-objects/`:
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import type { EntityDetailPage } from '@/specs/020-e2e-test-coverage/contracts/page-objects';
+import { DomainsDetailPage } from '@/test/page-objects/domains-detail-page';
 
 test.describe('Domains Entity Detail', () => {
-  let detailPage: EntityDetailPage;
+  let detailPage: DomainsDetailPage;
 
   test.beforeEach(async ({ page }) => {
-    // Initialize page object (implementation TBD)
     detailPage = new DomainsDetailPage(page);
   });
 
@@ -222,38 +346,7 @@ Closes: Coverage Gap #gap-domains-detail (P1)"
 
 ---
 
-## Debugging Failed Tests
-
-### Headed Mode (See Browser)
-
-Run tests with visible browser to observe interactions:
-
-```bash
-# Run with headed browser
-pnpm exec playwright test --headed apps/web/e2e/domains.e2e.test.ts
-
-# Run with headed + slow motion
-pnpm exec playwright test --headed --slow-mo=1000 apps/web/e2e/domains.e2e.test.ts
-```
-
-### Debug Mode (Step Through)
-
-Use Playwright Inspector to step through tests:
-
-```bash
-# Run test with debugging
-pnpm exec playwright test --debug apps/web/e2e/domains.e2e.test.ts
-
-# Run test with debugging from specific line
-PWDEBUG=console pnpm exec playwright test apps/web/e2e/domains.e2e.test.ts
-```
-
-**Inspector Features**:
-- Set breakpoints
-- Step over/into actions
-- Inspect page state
-- View console logs
-- Record new actions
+## Debugging Tools
 
 ### View Test Report
 
@@ -293,255 +386,23 @@ pnpm exec playwright show-trace apps/web/test-results/domains-should-display/tra
 - DOM snapshots
 - Time-travel debugging
 
-### Common Issues and Solutions
+### List Available Tests
 
-**Issue: Test timeout**
-```typescript
-// Increase timeout for specific test
-test('slow operation', async ({ page }) => {
-  test.setTimeout(60000); // 60 seconds
-  // ... test code
-});
-```
-
-**Issue: Element not found**
-```typescript
-// Use deterministic wait instead of sleep
-await page.waitForSelector('[data-testid="entity-title"]', { state: 'visible' });
-
-// NOT: await page.waitForTimeout(1000);
-```
-
-**Issue: Flaky test (passes sometimes)**
-```typescript
-// Use app-ready checks instead of networkidle
-await page.goto('/#/works/W123', { waitUntil: 'commit' });
-await page.waitForSelector('[data-testid="entity-data"]', { state: 'visible' });
-
-// NOT: await page.goto('/#/works/W123', { waitUntil: 'networkidle' });
-```
-
-**Issue: Storage pollution between tests**
-```typescript
-// Clear storage in beforeEach
-test.beforeEach(async ({ page }) => {
-  // Clear IndexedDB, localStorage, sessionStorage
-  await page.evaluate(() => {
-    indexedDB.deleteDatabase('academic-explorer');
-    localStorage.clear();
-    sessionStorage.clear();
-  });
-});
-```
-
----
-
-## Performance Optimization
-
-### Serial Execution (Required)
-
-Tests MUST run serially to prevent OOM errors:
-
-**playwright.config.ts**:
-```typescript
-export default defineConfig({
-  workers: 1, // Serial execution
-  fullyParallel: false,
-  maxConcurrency: 1,
-});
-```
-
-**Why**: Parallel execution causes memory exhaustion with 8GB heap limit.
-
-### Memory Management
+View all available tests without running them:
 
 ```bash
-# Run tests with increased memory (if needed)
-NODE_OPTIONS="--max-old-space-size=8192" pnpm exec playwright test
+# List all tests
+pnpm nx e2e web --list
 
-# Monitor memory usage during test run
-NODE_OPTIONS="--max-old-space-size=8192 --expose-gc" pnpm exec playwright test
-```
-
-### Test Isolation
-
-Each test should be fully isolated:
-
-```typescript
-test.beforeEach(async ({ page, context }) => {
-  // Clear storage
-  await context.clearCookies();
-  await context.clearPermissions();
-
-  // Reset API mocks
-  await resetMswHandlers();
-
-  // Initialize fresh state
-  await initializeSpecialLists();
-});
-```
-
----
-
-## Accessibility Testing
-
-### Run Accessibility Scans
-
-Use `@axe-core/playwright` for WCAG 2.1 AA validation:
-
-```typescript
-import { test, expect } from '@playwright/test';
-import { injectAxe, checkA11y } from '@axe-core/playwright';
-
-test('domain detail page is accessible', async ({ page }) => {
-  await page.goto('/#/domains/D12345');
-  await page.waitForSelector('[data-testid="entity-data"]');
-
-  // Inject axe-core
-  await injectAxe(page);
-
-  // Run accessibility scan
-  await checkA11y(page, null, {
-    detailedReport: true,
-    detailedReportOptions: { html: true },
-  });
-});
-```
-
-### Accessibility Report
-
-```bash
-# Run accessibility tests
-pnpm exec playwright test --grep "@a11y"
-
-# View accessibility violations in report
-pnpm exec playwright show-report
-```
-
----
-
-## Coverage Reporting
-
-### Generate Coverage Report
-
-**Route Coverage** (Primary Metric):
-```bash
-# Run full suite with coverage tracking
-E2E_FULL_SUITE=true pnpm nx e2e web
-
-# Coverage script (TBD in Phase 3)
-pnpm run coverage:routes
-```
-
-**Code Coverage** (Secondary Metric):
-```bash
-# Run tests with V8 coverage (requires @bgotink/playwright-coverage)
-E2E_FULL_SUITE=true pnpm exec playwright test --coverage
-
-# View coverage report
-pnpm exec playwright show-report
-```
-
-### Coverage Goals
-
-**Success Criteria**:
-- SC-011: Route coverage increases by 20+ percentage points
-- SC-008: Individual test execution time <60 seconds
-- SC-009: Smoke suite <10 minutes, full suite <30 minutes
-
----
-
-## CI/CD Integration
-
-### GitHub Actions
-
-E2E tests run in CI pipeline (`.github/workflows/ci.yml`):
-
-```yaml
-e2e:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Install dependencies
-      run: pnpm install
-
-    - name: Install Playwright
-      run: pnpm exec playwright install --with-deps chromium
-
-    - name: Run E2E tests
-      run: E2E_FULL_SUITE=true pnpm nx e2e web
-      env:
-        NODE_OPTIONS: --max-old-space-size=8192
-
-    - name: Upload test report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report
-        path: apps/web/playwright-report/
-```
-
-### Local CI Simulation
-
-Simulate CI environment locally:
-
-```bash
-# Run tests in CI mode
-CI=true E2E_FULL_SUITE=true pnpm nx e2e web
-
-# With exact CI environment
-NODE_OPTIONS="--max-old-space-size=8192" NX_DAEMON=false pnpm nx e2e web
-```
-
----
-
-## Configuration Files
-
-### Playwright Config
-
-**Location**: `apps/web/playwright.config.ts`
-
-**Key settings**:
-```typescript
-export default defineConfig({
-  testDir: './e2e',
-  testMatch: process.env.E2E_FULL_SUITE
-    ? ['**/*.e2e.test.ts']
-    : ['**/sample-urls-ci.e2e.test.ts'],
-  workers: 1, // Serial execution
-  timeout: 60000, // 60 seconds per test
-  expect: { timeout: 5000 },
-  use: {
-    baseURL: process.env.CI
-      ? 'http://localhost:4173' // Preview server in CI
-      : 'http://localhost:5173', // Dev server locally
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-  },
-});
-```
-
-### TypeScript Config
-
-**Location**: `apps/web/tsconfig.json`
-
-**Path mappings**:
-```json
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/specs/*": ["../../specs/*"]
-    }
-  }
-}
+# List tests matching pattern
+pnpm nx e2e web --grep="@entity" --list
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Use Deterministic Waits
+### Use Deterministic Waits
 
 ❌ **Bad**:
 ```typescript
@@ -552,10 +413,10 @@ await page.goto('/#/works/W123', { waitUntil: 'networkidle' }); // Generic wait
 ✅ **Good**:
 ```typescript
 await page.waitForSelector('[data-testid="entity-title"]', { state: 'visible' });
-await page.waitForFunction(() => window.appReady === true);
+await waitForEntityData(page);
 ```
 
-### 2. Isolate Storage
+### Isolate Storage
 
 ❌ **Bad**:
 ```typescript
@@ -581,7 +442,7 @@ test.beforeEach(async ({ page }) => {
 });
 ```
 
-### 3. Use Page Objects
+### Use Page Objects
 
 ❌ **Bad**:
 ```typescript
@@ -601,7 +462,7 @@ test('test', async ({ page }) => {
 });
 ```
 
-### 4. Test One Thing
+### Test One Thing
 
 ❌ **Bad**:
 ```typescript
@@ -622,7 +483,7 @@ test('should display relationships', async ({ page }) => {
 });
 ```
 
-### 5. Use Test Tags
+### Use Test Tags
 
 ```typescript
 test('critical path @smoke', async ({ page }) => {
@@ -639,13 +500,86 @@ test('accessibility check @a11y @slow', async ({ page }) => {
 
 ---
 
-## Next Steps
+## Advanced Usage
 
-1. **Implement Phase 2**: Run `/speckit.tasks` to generate task breakdown
-2. **Create Page Objects**: Implement interfaces from `contracts/page-objects.ts`
-3. **Create Test Helpers**: Implement interfaces from `contracts/test-helpers.ts`
-4. **Write Tests**: Follow coverage gap analysis from spec.md
-5. **Verify Coverage**: Run coverage scripts and verify 20+ percentage point increase
+### CI/CD Simulation
+
+Simulate CI environment locally:
+
+```bash
+# Run tests in CI mode
+CI=true E2E_FULL_SUITE=true pnpm nx e2e web
+
+# With exact CI environment variables
+NODE_OPTIONS="--max-old-space-size=8192" NX_DAEMON=false pnpm nx e2e web
+```
+
+### Custom Reporters
+
+Generate different report formats:
+
+```bash
+# HTML report (default)
+pnpm nx e2e web --reporter=html
+
+# JSON report
+pnpm nx e2e web --reporter=json
+
+# Line reporter (minimal output)
+pnpm nx e2e web --reporter=line
+
+# Multiple reporters
+pnpm nx e2e web --reporter=html,json
+```
+
+### Video Recording
+
+Capture video of test execution:
+
+```bash
+# Record all tests
+pnpm nx e2e web --video=on
+
+# Record only failures
+pnpm nx e2e web --video=retain-on-failure
+
+# Disable video
+pnpm nx e2e web --video=off
+```
+
+---
+
+## Configuration Reference
+
+### Playwright Config
+
+**Location**: `apps/web/playwright.config.ts`
+
+**Key settings**:
+```typescript
+export default defineConfig({
+  testDir: './e2e',
+  testMatch: process.env.E2E_FULL_SUITE
+    ? ['**/*.e2e.test.ts']
+    : ['**/sample-urls-ci.e2e.test.ts'],
+  workers: 1, // Serial execution (prevents OOM)
+  timeout: 60000, // 60 seconds per test
+  expect: { timeout: 5000 },
+  use: {
+    baseURL: 'http://localhost:5173', // Dev server
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+});
+```
+
+### Environment Variables
+
+- `E2E_FULL_SUITE=true` - Run full test suite (all tests)
+- `CI=true` - CI mode (affects baseURL and behavior)
+- `NODE_OPTIONS=--max-old-space-size=8192` - Increase memory limit
+- `NX_DAEMON=false` - Disable Nx daemon (CI mode)
 
 ---
 
@@ -653,11 +587,12 @@ test('accessibility check @a11y @slow', async ({ page }) => {
 
 - **Playwright Documentation**: https://playwright.dev/docs/intro
 - **Academic Explorer Spec**: `specs/020-e2e-test-coverage/spec.md`
+- **Page Objects**: `apps/web/src/test/page-objects/`
+- **Test Helpers**: `apps/web/src/test/helpers/`
 - **Research Findings**: `specs/020-e2e-test-coverage/research.md`
-- **Data Models**: `specs/020-e2e-test-coverage/data-model.md`
-- **Constitution**: `.specify/memory/constitution.md`
 
 ---
 
-**Last Updated**: 2025-11-23
-**Version**: 1.0.0
+**Last Updated**: 2025-11-26
+**Version**: 2.0.0
+**Status**: Complete (Phases 1-6)

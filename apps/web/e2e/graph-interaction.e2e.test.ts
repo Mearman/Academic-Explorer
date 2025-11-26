@@ -14,6 +14,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import {
 	waitForAppReady,
@@ -40,6 +41,23 @@ test.describe('@workflow Graph Interaction', () => {
 		page.on('pageerror', (error) => {
 			console.error('Page error:', error.message);
 		});
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to entity detail page with graph
+		await page.goto(`/#/works/${TEST_WORK_ID}`, {
+			waitUntil: 'domcontentloaded',
+		});
+
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+		await waitForGraphReady(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 
 	test('should render graph on entity detail page', async ({ page }) => {
@@ -468,6 +486,34 @@ test.describe('@workflow Graph Interaction', () => {
 		} else {
 			console.log('⚠️  SVG container not visible for stability test');
 		}
+	});
+
+	test('should render graph within performance target (<5s for 50 nodes)', async ({ page }) => {
+		const startTime = Date.now();
+
+		// Navigate to work entity with graph
+		await page.goto(`/#/works/${TEST_WORK_ID}`, {
+			waitUntil: 'domcontentloaded',
+		});
+
+		await waitForAppReady(page);
+		await waitForGraphReady(page);
+
+		const endTime = Date.now();
+		const renderTime = endTime - startTime;
+
+		console.log(`Graph render time: ${renderTime}ms`);
+
+		// Verify graph actually rendered
+		const nodes = page.locator('svg g.nodes circle, svg g.nodes rect');
+		const nodeCount = await nodes.count();
+		console.log(`Graph rendered with ${nodeCount} nodes`);
+		expect(nodeCount).toBeGreaterThan(0);
+
+		// Target: <5000ms for initial graph render
+		expect(renderTime).toBeLessThan(5000);
+
+		console.log(`✅ Graph rendered in ${renderTime}ms (target: <5000ms)`);
 	});
 });
 

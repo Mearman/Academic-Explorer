@@ -7,6 +7,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { DomainsDetailPage } from '@/test/page-objects/DomainsDetailPage';
@@ -176,5 +177,40 @@ test.describe('@entity Domains Detail Page', () => {
     expect(secondTitle).toBe(firstTitle);
     expect(secondFieldCount).toBe(firstFieldCount);
     expect(secondSubfieldCount).toBe(firstSubfieldCount);
+  });
+
+  test('should load entity detail page within performance target (<2s)', async ({ page }) => {
+    const domainsPage = new DomainsDetailPage(page);
+
+    // Measure page load time
+    const startTime = Date.now();
+    await domainsPage.gotoDomain(TEST_DOMAIN_ID);
+    await waitForAppReady(page);
+    await waitForEntityData(page);
+    await domainsPage.expectDomainLoaded();
+    const endTime = Date.now();
+
+    const loadTime = endTime - startTime;
+    console.log(`Entity detail page load time: ${loadTime}ms`);
+
+    // Target: <2000ms for entity detail page
+    expect(loadTime).toBeLessThan(2000);
+
+    // Verify entity title is displayed
+    const title = await domainsPage.getDomainName();
+    expect(title).toBeTruthy();
+  });
+
+  test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+    const domainsPage = new DomainsDetailPage(page);
+    await domainsPage.gotoDomain(TEST_DOMAIN_ID);
+    await waitForAppReady(page);
+    await waitForEntityData(page);
+
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 });

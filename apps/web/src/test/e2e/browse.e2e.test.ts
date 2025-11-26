@@ -10,6 +10,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';
@@ -396,5 +397,20 @@ test.describe('@utility Browse Page', () => {
 		// Should still have all cards
 		const cardCount = await browsePage.getEntityTypeCount();
 		expect(cardCount).toBe(12);
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		const browsePage = new BrowsePage(page);
+
+		// Navigate to browse page
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+
+		// Run accessibility scan
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

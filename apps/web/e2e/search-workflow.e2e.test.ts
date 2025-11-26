@@ -14,6 +14,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { SearchPage } from '@/test/page-objects/SearchPage';
 import {
@@ -30,6 +31,17 @@ test.describe('@workflow Search Workflow', () => {
 		searchPage = new SearchPage(page);
 		await searchPage.gotoSearch();
 		await waitForAppReady(page);
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Search page is already loaded via beforeEach
+		// App is already ready via beforeEach
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 
 	test('should complete full search workflow: query → results → detail page', async ({
@@ -377,6 +389,33 @@ test.describe('@workflow Search Workflow', () => {
 			// If bookmark functionality is not available, skip
 			console.log('Bookmark functionality not available for this search');
 		}
+	});
+
+	test('should complete search within performance target (<3s)', async ({ page }) => {
+		const searchPage = new SearchPage(page);
+		await searchPage.gotoSearch();
+		await waitForAppReady(page);
+
+		// Enter search query
+		const testQuery = 'machine learning';
+		await searchPage.enterSearchQuery(testQuery);
+
+		// Measure search execution time
+		const startTime = Date.now();
+		await searchPage.submitSearch();
+		await waitForSearchResults(page);
+		await waitForNoLoading(page);
+		const endTime = Date.now();
+
+		const searchTime = endTime - startTime;
+		console.log(`Search execution time: ${searchTime}ms`);
+
+		// Target: <3000ms for search results
+		expect(searchTime).toBeLessThan(3000);
+
+		// Verify results were returned
+		const resultCount = await searchPage.getResultCount();
+		expect(resultCount).toBeGreaterThan(0);
 	});
 });
 

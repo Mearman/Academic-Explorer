@@ -8,11 +8,25 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';
 
 test.describe('@workflow Browse Workflow', () => {
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		// Navigate to browse page
+		const browsePage = new BrowsePage(page);
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
+	});
+
 	test('should complete full workflow: browse → works index → work detail', async ({ page }) => {
 		// Step 1: Navigate to browse page
 		const browsePage = new BrowsePage(page);

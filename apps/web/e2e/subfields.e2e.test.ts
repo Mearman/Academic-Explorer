@@ -12,6 +12,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { SubfieldsDetailPage } from '@/test/page-objects/SubfieldsDetailPage';
@@ -134,5 +135,18 @@ test.describe('@entity Subfields Detail Page', () => {
 				!error.includes('Download the React DevTools') // DevTools suggestion
 		);
 		expect(criticalErrors).toHaveLength(0);
+	});
+
+	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
+		const subfieldPage = new SubfieldsDetailPage(page);
+		await subfieldPage.gotoSubfield(KNOWN_SUBFIELD_ID);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		const accessibilityScanResults = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 });

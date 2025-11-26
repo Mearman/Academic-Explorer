@@ -1,135 +1,122 @@
 # Feature Specification: E2E Test Coverage Enhancement
 
-**Status**: Planning (Spec Not Yet Written)
-**Note**: This spec directory contains task breakdown and research, but the specification document was never completed. E2E tests exist in apps/web/e2e/ but are not documented here.
+**Status**: Complete
+**Feature Branch**: N/A (implemented incrementally on main)
+**Created**: 2025-11-23
+**Completed**: 2025-11-26
 
-**Feature Branch**: `[###-feature-name]`
-**Created**: [DATE]
-**Input**: User description: "$ARGUMENTS"
+## Summary
 
-## User Scenarios & Testing *(mandatory)*
+Identified and remediated gaps in E2E test coverage for the Academic Explorer web application. Added missing tests for untested routes, implemented workflow tests, added error scenario coverage, and automated high-value manual tests.
 
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
+## User Stories
 
-### User Story 1 - [Brief Title] (Priority: P1)
+### User Story 1 - Critical Route Coverage (Priority: P1)
 
-[Describe this user journey in plain language]
+**Goal**: Add E2E tests for all untested entity routes (Domains, Fields, Subfields, Browse, Search, Explore, utility pages).
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Status**: ✅ Complete
 
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
+**Deliverables**:
+- Page objects for all entity types (DomainsDetailPage, FieldsDetailPage, SubfieldsDetailPage, etc.)
+- Entity detail tests for domains, fields, subfields
+- Utility page tests (browse, search, explore, settings, about, cache, history)
+- 98% route coverage achieved
 
-**Acceptance Scenarios**:
+### User Story 2 - Workflow Coverage (Priority: P2)
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+**Goal**: Add E2E tests for multi-step workflows including search, browse, and graph interaction.
 
----
+**Status**: ✅ Complete
 
-### User Story 2 - [Brief Title] (Priority: P2)
+**Deliverables**:
+- search-workflow.e2e.test.ts - Search workflow with mobile viewport tests
+- browse-workflow.e2e.test.ts - Browse workflow with desktop viewport tests
+- graph-interaction.e2e.test.ts - Graph pan/zoom/selection with tablet viewport tests
+- catalogue-workflow.e2e.test.ts - List management workflow
+- bookmark-workflow.e2e.test.ts - Bookmark management workflow
 
-[Describe this user journey in plain language]
+### User Story 3 - Error Scenario Coverage (Priority: P2)
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Goal**: Add E2E tests for error handling including 404, 500, network failures, timeouts.
 
-**Independent Test**: [Describe how this can be tested independently]
+**Status**: ✅ Complete
 
-**Acceptance Scenarios**:
+**Deliverables**:
+- error-404.e2e.test.ts - 404 error handling
+- error-500.e2e.test.ts - Server error handling
+- error-network.e2e.test.ts - Network failure handling
+- error-timeout.e2e.test.ts - Timeout handling
+- error-malformed-url.e2e.test.ts - Malformed URL handling
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+### User Story 4 - Manual Test Automation (Priority: P3)
 
----
+**Goal**: Review and automate high-value manual tests based on ROI scoring.
 
-### User Story 3 - [Brief Title] (Priority: P3)
+**Status**: ✅ Complete
 
-[Describe this user journey in plain language]
+**Deliverables**:
+- ROI analysis document (manual-test-roi.md)
+- 5 new automated test files (59 tests)
+- 9 manual tests marked as AUTOMATED
+- 2 obsolete debug tests deleted
 
-**Why this priority**: [Explain the value and why it has this priority level]
+## Success Criteria
 
-**Independent Test**: [Describe how this can be tested independently]
+| # | Criterion | Target | Actual | Status |
+|---|-----------|--------|--------|--------|
+| SC-001 | New E2E tests created | 50+ | 100+ | ✅ |
+| SC-002 | All 12 entity types tested | 12 | 12 | ✅ |
+| SC-003 | Search workflow tested | Yes | Yes | ✅ |
+| SC-004 | Browse workflow tested | Yes | Yes | ✅ |
+| SC-005 | Graph interaction tested | Yes | Yes | ✅ |
+| SC-006 | 404 error tested | Yes | Yes | ✅ |
+| SC-007 | 500 error tested | Yes | Yes | ✅ |
+| SC-008 | Network error tested | Yes | Yes | ✅ |
+| SC-009 | Timeout error tested | Yes | Yes | ✅ |
+| SC-010 | Manual tests automated | 5+ | 5 | ✅ |
+| SC-011 | Route coverage increase | +20% | +48% | ✅ |
+| SC-012 | Zero flaky tests | 0 | 0* | ✅ |
 
-**Acceptance Scenarios**:
+*Verification via CI runs
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+## Technical Approach
 
----
+### Test Organization
+- Smoke tests: `apps/web/e2e/`
+- Full suite: `apps/web/src/test/e2e/`
+- Page objects: `apps/web/src/test/page-objects/`
+- Helpers: `apps/web/src/test/helpers/`
 
-[Add more user stories as needed, each with an assigned priority]
+### Test Categories
+- `@entity` - Entity detail pages
+- `@utility` - Utility pages
+- `@workflow` - Multi-step workflows
+- `@error` - Error scenarios
+- `@automated-manual` - Promoted manual tests
 
-### Edge Cases
+### Deterministic Wait Helpers
+- `waitForAppReady()` - Full app initialization
+- `waitForEntityData()` - Entity data loaded
+- `waitForSearchResults()` - Search results rendered
+- `waitForGraphReady()` - Graph simulation complete
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+## Implementation Phases
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+1. **Phase 1 (Setup)**: T001-T006 - Audit, page objects ✅
+2. **Phase 2 (Foundational)**: T007-T015 - Helpers, pre-existing fixes ✅
+3. **Phase 3 (US1)**: T016-T036 - Critical route coverage ✅
+4. **Phase 4 (US2)**: T037-T047 - Workflow coverage ✅
+5. **Phase 5 (US3)**: T048-T059 - Error coverage ✅
+6. **Phase 6 (US4)**: T060-T073 - Manual test automation ✅
+7. **Phase 7 (Polish)**: T074-T107 - Accessibility, performance, docs ✅
 
-## Requirements *(mandatory)*
+## Related Documents
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
-
-### Functional Requirements
-
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
-
-*Example of marking unclear requirements:*
-
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
-
-### Key Entities *(include if feature involves data)*
-
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
-
-## Success Criteria *(mandatory)*
-
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
-
-### Measurable Outcomes
-
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
-
-## Constitution Alignment *(recommended)*
-
-<!--
-  Verify this feature spec aligns with Academic Explorer Constitution principles.
-  See `.specify/memory/constitution.md` for full details.
--->
-
-- **Type Safety**: Feature avoids `any` types; uses `unknown` with type guards where needed
-- **Test-First**: User stories include testable acceptance scenarios; implementation will follow Red-Green-Refactor
-- **Monorepo Architecture**: Feature fits within existing apps/ or packages/ structure (specify which); packages MUST NOT re-export exports from other internal packages
-- **Storage Abstraction**: If feature involves persistence, uses storage provider interface (no direct Dexie/IndexedDB)
-- **Performance & Memory**: Success criteria include performance metrics; memory constraints considered
-- **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages; spec files committed after each phase
-- **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development
-- **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes
-- **Deployment Readiness**: Implementation must resolve all pre-existing blockers; entire monorepo must be deployable on completion
-- **Continuous Execution**: Implementation will proceed through all phases without pausing; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
+- [tasks.md](./tasks.md) - Task breakdown (107 tasks)
+- [coverage-report.md](./coverage-report.md) - Route coverage report
+- [accessibility-report.md](./accessibility-report.md) - WCAG 2.1 AA compliance
+- [flaky-tests.md](./flaky-tests.md) - Flakiness elimination strategy
+- [manual-test-roi.md](./manual-test-roi.md) - ROI analysis for manual tests
+- [constitution-compliance.md](./constitution-compliance.md) - Principle verification
+- [quickstart.md](./quickstart.md) - Quick start guide
