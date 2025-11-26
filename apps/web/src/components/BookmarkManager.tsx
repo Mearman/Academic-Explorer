@@ -2,28 +2,8 @@
  * Bookmark manager component for displaying and managing user bookmarks
  */
 
-import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { logger } from "@academic-explorer/utils/logger";
 import { type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
-import {
-  BookmarkSelectionProvider,
-  useBookmarkSelection,
-  useBookmarkSelectionActions,
-  useSelectionCount,
-  useSelectedBookmarks,
-} from "@/contexts/bookmark-selection-context";
-import {
-  IconBookmark,
-  IconBookmarkOff,
-  IconSearch,
-  IconExternalLink,
-  IconCheckbox,
-  IconSquare,
-  IconTrash,
-  IconTag,
-  IconNotes,
-} from "@tabler/icons-react";
-import { useState, useEffect } from "react";
 import {
   TextInput,
   Button,
@@ -36,13 +16,27 @@ import {
   SimpleGrid,
   Tooltip,
   Checkbox,
-  Modal,
   ActionIcon,
   Divider,
-  TagsInput,
-  Textarea,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import {
+  IconBookmark,
+  IconBookmarkOff,
+  IconSearch,
+  IconExternalLink,
+  IconTrash,
+} from "@tabler/icons-react";
+import { useState, useEffect } from "react";
+
+import {
+  BookmarkSelectionProvider,
+  useBookmarkSelection,
+  useBookmarkSelectionActions,
+  useSelectionCount,
+  useSelectedBookmarks,
+} from "@/contexts/bookmark-selection-context";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;
@@ -183,12 +177,6 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
     return titleMatch?.[1] || bookmark.entityId;
   };
 
-  const extractTags = (bookmark: CatalogueEntity): string[] => {
-    // For bookmarks, tags might be stored in a special format in notes
-    // This is a placeholder - tags may need to be stored differently
-    return [];
-  };
-
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
         (bookmark) => {
@@ -238,7 +226,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
           });
 
           deselectAll();
-        } catch (error) {
+        } catch {
           // Show error modal
           modals.open({
             title: "Error",

@@ -5,8 +5,9 @@
  * Uses EU hosting, cookieless mode, and GDPR-compliant settings
  */
 
-import React, { ReactNode } from 'react'
 import { PostHogProvider as PostHogReactProvider } from '@posthog/react'
+import React, { ReactNode } from 'react'
+
 import {
   POSTHOG_API_KEY,
   POSTHOG_CONFIG,
@@ -33,7 +34,7 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
   // Only initialize PostHog if enabled and configured
   if (!POSTHOG_ENABLED || !shouldInitializePostHog()) {
     if (import.meta.env.DEV) {
-      console.info('📊 PostHog analytics disabled - missing API key or invalid configuration')
+      console.info('PostHog analytics disabled - missing API key or invalid configuration')
     }
     return <>{children}</>
   }
@@ -47,8 +48,6 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
     </PostHogReactProvider>
   )
 }
-
-export default PostHogProvider
 
 // Re-export the official usePostHog hook for convenience
 export { usePostHog } from '@posthog/react'

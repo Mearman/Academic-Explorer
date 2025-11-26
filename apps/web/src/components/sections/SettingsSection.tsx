@@ -2,7 +2,11 @@
  * Settings section for user preferences and data management
  */
 
-import React from "react";
+import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@academic-explorer/client";
+import { XpacToggle, DataVersionSelector } from "@academic-explorer/ui";
+import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
+import { clearAllCacheLayers , clearAppMetadata } from "@academic-explorer/utils/cache";
+import { logger } from "@academic-explorer/utils/logger";
 import {
   Button,
   Stack,
@@ -13,6 +17,7 @@ import {
   Tooltip,
   Divider,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconTrash,
   IconRefresh,
@@ -24,16 +29,11 @@ import {
   IconX,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
-import { clearAllCacheLayers } from "@academic-explorer/utils/cache";
-import { clearAppMetadata } from "@academic-explorer/utils/cache";
-import { useLayoutStore } from "@/stores/layout-store";
+import React from "react";
+
 import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance } from "@/stores/settings-store";
-import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@academic-explorer/client";
-import { logger } from "@academic-explorer/utils/logger";
-import { XpacToggle, DataVersionSelector } from "@academic-explorer/ui";
-import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
+
 
 interface ResetState {
   clearingCache: boolean;
@@ -48,7 +48,7 @@ export const SettingsSection: React.FC = () => {
 
   // Settings store - using simplified API
   const politePoolEmail = usePolitePoolEmail();
-  const { setPolitePoolEmail, setApiKey, isValidEmail, getApiKey } = useSettingsStore(
+  const { setPolitePoolEmail, setApiKey, isValidEmail } = useSettingsStore(
     (state) => state,
   );
 

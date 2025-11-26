@@ -1,6 +1,6 @@
-import React from "react";
 import { Text, Code, Stack, Container, Paper, Title, Alert, Group, Flex } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import React from "react";
 
 interface ErrorStateProps {
   entityType: string;

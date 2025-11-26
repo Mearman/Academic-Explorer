@@ -3,7 +3,6 @@
  * Provides a central hub for researchers to manage their research workflow
  */
 
-import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -15,22 +14,19 @@ import {
   ActionIcon,
   Button,
   Stack,
-  Progress,
   List,
   ThemeIcon,
   SimpleGrid,
-  Tabs,
   TextInput,
   Select,
-  NumberInput,
   Alert,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconSearch,
   IconBook,
   IconUsers,
   IconBuilding,
-  IconBrain,
   IconTrendingUp,
   IconClock,
   IconDownload,
@@ -44,9 +40,11 @@ import {
   IconNews,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
-import { logger } from "@/lib/logger";
+import React, { useState, useEffect } from "react";
+
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { notifications } from "@mantine/notifications";
+import { logger } from "@/lib/logger";
+
 
 interface QuickSearchProps {
   onSearch: (query: string, entityType: string) => void;

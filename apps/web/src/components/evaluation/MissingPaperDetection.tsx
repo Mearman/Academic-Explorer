@@ -3,8 +3,12 @@
  * Provides UI for identifying potentially missed papers in systematic reviews
  */
 
-import React, { useState, useMemo } from "react";
-import { IconClipboard, IconAlertTriangle } from "@tabler/icons-react";
+import type {
+  MissingPaperDetectionResults,
+  MissingPaperDetectionConfig,
+  DetectionProgress,
+ STARDataset, WorkReference } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 import {
   Button,
   Group,
@@ -13,26 +17,18 @@ import {
   Paper,
   Card,
   Title,
-  TextInput,
   NumberInput,
   Switch,
   SimpleGrid,
-  Grid,
   Progress,
   Alert,
   Tabs,
   Badge,
-  Divider,
   Box,
   rem
 } from "@mantine/core";
-import type {
-  MissingPaperDetectionResults,
-  MissingPaperDetectionConfig,
-  DetectionProgress,
-} from "@academic-explorer/utils";
-import type { STARDataset, WorkReference } from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils/logger";
+import { IconClipboard, IconAlertTriangle } from "@tabler/icons-react";
+import React, { useState, useMemo } from "react";
 
 interface MissingPaperDetectionProps {
   dataset: STARDataset;

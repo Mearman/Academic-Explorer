@@ -3,8 +3,6 @@
  * Displays application version, commit hash, build timestamp, and release links
  */
 
-import React from "react";
-import { Text, Group, Tooltip, Paper, Flex, Anchor } from "@mantine/core";
 import {
   getBuildInfo,
   formatBuildTimestamp,
@@ -12,13 +10,17 @@ import {
   getReleaseUrl,
   getRelativeBuildTime,
 } from "@academic-explorer/utils";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { Text, Group, Tooltip, Paper, Anchor } from "@mantine/core";
 import {
   IconBrandGithub,
   IconTag,
   IconGitCommit,
   IconClock,
 } from "@tabler/icons-react";
+import React from "react";
+
+import { useThemeColors } from "@/hooks/use-theme-colors";
+
 
 export const BuildInfo: React.FC = () => {
   const themeColors = useThemeColors();

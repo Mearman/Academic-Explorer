@@ -3,7 +3,6 @@
  * Provides sophisticated search options with filters and refinements
  */
 
-import React, { useState, useEffect } from "react";
 import {
   Card,
   TextInput,
@@ -22,9 +21,8 @@ import {
   Text,
   Title,
   Divider,
-  Checkbox,
-  Tooltip,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconSearch,
   IconFilter,
@@ -33,12 +31,12 @@ import {
   IconDownload,
   IconShare,
   IconAdjustmentsHorizontal,
-  IconCalendar,
-  IconClock,
   IconTrendingUp,
 } from "@tabler/icons-react";
+import React, { useState, useEffect } from "react";
+
 import { logger } from "@/lib/logger";
-import { notifications } from "@mantine/notifications";
+
 
 interface SearchFilters {
   query: string;

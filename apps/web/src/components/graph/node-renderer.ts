@@ -9,6 +9,7 @@
  */
 
 import type { GraphNode } from "@academic-explorer/types";
+
 import {
   getConditionalNodeStyle,
   getNodeAccessibilityLabel,

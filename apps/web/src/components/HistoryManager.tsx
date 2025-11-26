@@ -3,17 +3,8 @@
  * Refactored to use catalogue-based history system via useUserInteractions hook
  */
 
-import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useNavigate } from "@tanstack/react-router";
-import {
-  IconHistory,
-  IconSearch,
-  IconExternalLink,
-  IconTrash,
-} from "@tabler/icons-react";
-import { useState } from "react";
+import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import {
   TextInput,
   Button,
@@ -27,6 +18,16 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import {
+  IconHistory,
+  IconSearch,
+  IconExternalLink,
+  IconTrash,
+} from "@tabler/icons-react";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 interface HistoryManagerProps {
   onNavigate?: (url: string) => void;
@@ -37,7 +38,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Use the refactored user interactions hook for history
-  const { recentHistory, clearHistory, isLoadingHistory } = useUserInteractions();
+  const { recentHistory, clearHistory } = useUserInteractions();
 
   // Filter history entries based on search query
   const filteredEntries = recentHistory.filter(
@@ -98,13 +99,13 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
     }
   };
 
-  const handleDeleteHistoryEntry = (entityRecordId: string, entityTitle: string) => {
+  const handleDeleteHistoryEntry = (entityRecordId: string, entryTitle?: string) => {
     modals.openConfirmModal({
       title: "Delete History Entry",
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this history entry? This action cannot be undone.
+          Are you sure you want to delete {entryTitle ? `"${entryTitle}"` : "this history entry"}? This action cannot be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },

@@ -1,8 +1,11 @@
-import React from "react";
-import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
-import { logger } from "@/lib/logger";
-import type { EntityTypeConfig } from "./EntityTypeConfig";
 import type { EntityType } from "@academic-explorer/types";
+import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
+import React from "react";
+
+import { logger } from "@/lib/logger";
+
+import type { EntityTypeConfig } from "./EntityTypeConfig";
+
 
 interface LoadingStateProps {
   entityType: string;

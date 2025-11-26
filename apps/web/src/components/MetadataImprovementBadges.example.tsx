@@ -9,6 +9,7 @@
  */
 
 import { Stack, Title, Text } from "@mantine/core";
+
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 
 /**

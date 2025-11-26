@@ -6,7 +6,8 @@
  * Renders ALL fields from the API response.
  */
 
-import React from "react";
+import { VersionComparisonIndicator } from "@academic-explorer/ui";
+import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
 import {
   Anchor,
   Badge,
@@ -17,14 +18,12 @@ import {
   Stack,
   Flex,
   Group,
-  List,
   Table,
   TableTbody,
   TableTr,
   TableTd,
   Container,
   Title,
-  Divider,
   Box
 } from "@mantine/core";
 import {
@@ -42,11 +41,12 @@ import {
   IconFile,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
+import React from "react";
+
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
-import { VersionComparisonIndicator } from "@academic-explorer/ui";
-import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
+import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
+
 
 interface ThemeColors {
   background: {

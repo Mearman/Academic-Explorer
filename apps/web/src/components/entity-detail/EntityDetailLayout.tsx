@@ -1,14 +1,17 @@
+import type { EntityType } from "@academic-explorer/types";
+import { Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
+import { IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
-import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
-import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck, IconNetwork } from "@tabler/icons-react";
-import { logger } from "@/lib/logger";
-import { useUserInteractions } from "@/hooks/use-user-interactions";
+
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import type { EntityTypeConfig } from "./EntityTypeConfig";
-import type { EntityType } from "@academic-explorer/types";
-import { EntityDataDisplay } from "../EntityDataDisplay";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { logger } from "@/lib/logger";
+
 import { AddToListModal } from "../catalogue/AddToListModal";
+import { EntityDataDisplay } from "../EntityDataDisplay";
+
+import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 export type DetailViewMode = "rich" | "raw";
 

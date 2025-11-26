@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { logger } from "@academic-explorer/utils/logger";
+import { useEffect } from 'react';
 
 /**
  * Component that fixes URL display issues immediately when mounted.
@@ -21,9 +21,9 @@ export function UrlFixer() {
       }
 
       // Fix collapsed protocol slashes (https:/doi.org should become https://doi.org)
-      const collapsedPattern = /(^|\/)(https?:\/)([^\/])/;
-      if (collapsedPattern.test(fixedHash)) {
-        fixedHash = fixedHash.replace(collapsedPattern, '$1$2/$3');
+      const collapsedRegex = new RegExp('(^|\\/)(https?:\\/\\/)([^\\/])', 'g');
+      if (collapsedRegex.test(fixedHash)) {
+        fixedHash = fixedHash.replace(collapsedRegex, '$1$2$3');
         needsUpdate = true;
       }
 

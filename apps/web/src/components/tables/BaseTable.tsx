@@ -1,16 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  flexRender,
-  type SortingState,
-  type ColumnFiltersState,
-  type ColumnDef,
-} from "@tanstack/react-table";
-import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
+import { logger } from "@academic-explorer/utils";
 import {
   Table,
   Pagination,
@@ -26,9 +14,22 @@ import {
   IconSortAscending,
   IconSortDescending,
 } from "@tabler/icons-react";
-import { logger } from "@academic-explorer/utils";
-import { BORDER_GRAY_LIGHT } from "@/constants/styles";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  type SortingState,
+  type ColumnFiltersState,
+  type ColumnDef,
+} from "@tanstack/react-table";
+import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
+import { useState, useRef, useEffect } from "react";
+
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
+import { BORDER_GRAY_LIGHT } from "@/constants/styles";
 
 interface BaseTableProps<T> {
   data: T[];

@@ -1,10 +1,13 @@
+import {
+  buildFilterString,
+  cachedOpenAlex as openAlex,
+} from "@academic-explorer/client";
 import type {
   Author,
   Concept,
   EntityType,
   Funder,
   InstitutionEntity,
-  InstitutionsFilters,
   Keyword,
   OpenAlexResponse,
   Publisher,
@@ -12,21 +15,19 @@ import type {
   Topic,
   Work,
 } from "@academic-explorer/types";
-import {
-  buildFilterString,
-  cachedOpenAlex as openAlex,
-} from "@academic-explorer/client";
-import { logger } from "@academic-explorer/utils";
 import { DataState, useAsyncOperation } from "@academic-explorer/ui";
-import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
+import { logger } from "@academic-explorer/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
+
+import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
+
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
-import { ViewModeToggle, type TableViewMode } from "./ViewModeToggle";
 import type { ColumnConfig as BaseColumnConfig } from "./types";
+import { ViewModeToggle, type TableViewMode } from "./ViewModeToggle";
 
 type Entity =
   | Funder
@@ -187,13 +188,12 @@ export function EntityList({
           ? buildFilterString(urlFilters)
           : searchParams?.filter;
         // Type assertion needed: URL params are valid but don't match strict InstitutionSearchOptions types
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         response = await openAlex.client.institutions.getInstitutions({
           per_page: searchParams?.per_page ?? perPage,
           page: searchParams?.page ?? currentPage,
           filter: institutionsFilter,
           sort: searchParams?.sort,
-        } as any);
+        } as Parameters<typeof openAlex.client.institutions.getInstitutions>[0]);
         break;
       }
       case "concepts":

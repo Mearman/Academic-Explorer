@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
 import { Center, Text, Stack } from "@mantine/core";
 import { IconLoader } from "@tabler/icons-react";
+import React, { Suspense } from "react";
 
 interface LazyRouteProps {
   children: React.ReactNode;

@@ -10,12 +10,12 @@
  * - 013-metadata-improvement-badges
  */
 
-import { Group, Badge } from "@mantine/core";
 import {
 	detectMetadataImprovements,
 	type WorkMetadata,
 	type MetadataImprovement,
 } from "@academic-explorer/utils";
+import { Group, Badge } from "@mantine/core";
 
 export interface MetadataImprovementBadgesProps {
 	/**

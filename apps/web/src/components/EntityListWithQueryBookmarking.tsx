@@ -3,12 +3,13 @@
  * Wraps the existing EntityList to add query bookmarking controls
  */
 
+import type { EntityType } from "@academic-explorer/types";
 import { Group, Stack, Title, Text } from "@mantine/core";
+
+import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
+
 import { EntityList, type EntityListProps } from "./EntityList";
 import { QueryBookmarkButton } from "./QueryBookmarkButton";
-import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
-import type { OpenAlexSearchParams } from "@/lib/route-schemas";
-import type { EntityType } from "@academic-explorer/types";
 
 interface EntityListWithQueryBookmarkingProps extends Omit<EntityListProps, "title"> {
   entityType: EntityType;

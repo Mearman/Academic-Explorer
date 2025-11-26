@@ -9,6 +9,7 @@
  */
 
 import type { GraphEdge } from "@academic-explorer/types";
+
 import {
   getEdgeStyle,
   getEdgeHoverStyle,
@@ -158,8 +159,8 @@ export function createEdgeCanvasObjectFunction() {
   ): void => {
     // Get source and target node positions from edge object
     // react-force-graph adds source/target as objects with x,y properties
-    const source = (edge as any).source;
-    const target = (edge as any).target;
+    const source = (edge as GraphEdge & { source: { x: number; y: number } }).source;
+    const target = (edge as GraphEdge & { target: { x: number; y: number } }).target;
 
     if (!source || !target) {
       return;

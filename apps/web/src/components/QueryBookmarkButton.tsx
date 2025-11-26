@@ -4,15 +4,16 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
+import { ActionIcon, Tooltip, Text } from "@mantine/core";
 import {
   IconBookmark,
-  IconBookmarkOff,
   IconBookmarkFilled,
   IconLoader
 } from "@tabler/icons-react";
-import { ActionIcon, Tooltip, Text } from "@mantine/core";
-import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useState } from "react";
+
+import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
+
 
 interface QueryBookmarkButtonProps {
   entityType: string;

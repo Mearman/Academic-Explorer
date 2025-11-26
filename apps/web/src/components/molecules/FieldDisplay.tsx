@@ -3,11 +3,12 @@
  * Shows cached values or clickable placeholders for missing data
  */
 
-import React, { useState } from "react";
 import { Group, Text, Skeleton, ActionIcon, Tooltip } from "@mantine/core";
 import { IconRefresh, IconClick } from "@tabler/icons-react";
-import { useFieldFetch } from "@/hooks/use-field-fetch";
+import React, { useState } from "react";
+
 import type { CacheKeyType } from "@/config/cache";
+import { useFieldFetch } from "@/hooks/use-field-fetch";
 
 interface FieldDisplayProps {
   label: string;

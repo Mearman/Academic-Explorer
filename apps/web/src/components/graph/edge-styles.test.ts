@@ -3,9 +3,10 @@
  * Tests all combinations of relationship types and directions (7 types × 2 directions = 14)
  */
 
-import { describe, it, expect } from 'vitest';
 import type { GraphEdge } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/types';
+import { describe, it, expect } from 'vitest';
+
 import {
   getEdgeStyle,
   getOutboundStyle,
