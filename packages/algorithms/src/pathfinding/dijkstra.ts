@@ -141,7 +141,8 @@ export function dijkstra<N extends Node, E extends Edge>(
       break;
     }
 
-    const currentDistance = distances.get(currentId)!;
+    const currentDistance = distances.get(currentId);
+    if (currentDistance === undefined) continue;
 
     // Get all outgoing edges
     const edgesResult = graph.getOutgoingEdges(currentId);
@@ -164,7 +165,8 @@ export function dijkstra<N extends Node, E extends Edge>(
       const edgeWeight = weightFn(edge, sourceNodeResult.value, targetNodeResult.value);
 
       const tentativeDistance = currentDistance + edgeWeight;
-      const currentNeighborDistance = distances.get(neighborId)!;
+      const currentNeighborDistance = distances.get(neighborId);
+      if (currentNeighborDistance === undefined) continue;
 
       if (tentativeDistance < currentNeighborDistance) {
         distances.set(neighborId, tentativeDistance);

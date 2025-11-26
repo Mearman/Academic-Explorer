@@ -50,10 +50,18 @@ export function stronglyConnectedComponents<N extends Node, E extends Edge = Edg
         if (!index.has(neighborId)) {
           // Successor not yet visited; recurse
           strongConnect(neighborId);
-          lowlink.set(nodeId, Math.min(lowlink.get(nodeId)!, lowlink.get(neighborId)!));
+          const nodeLowlink = lowlink.get(nodeId);
+          const neighborLowlink = lowlink.get(neighborId);
+          if (nodeLowlink !== undefined && neighborLowlink !== undefined) {
+            lowlink.set(nodeId, Math.min(nodeLowlink, neighborLowlink));
+          }
         } else if (onStack.has(neighborId)) {
           // Successor is on stack and hence in current SCC
-          lowlink.set(nodeId, Math.min(lowlink.get(nodeId)!, index.get(neighborId)!));
+          const nodeLowlink = lowlink.get(nodeId);
+          const neighborIndex = index.get(neighborId);
+          if (nodeLowlink !== undefined && neighborIndex !== undefined) {
+            lowlink.set(nodeId, Math.min(nodeLowlink, neighborIndex));
+          }
         }
       }
     }
@@ -64,7 +72,9 @@ export function stronglyConnectedComponents<N extends Node, E extends Edge = Edg
       let w: string;
 
       do {
-        w = stack.pop()!;
+        const popped = stack.pop();
+        if (popped === undefined) break;
+        w = popped;
         onStack.delete(w);
 
         const node = graph.getNode(w);

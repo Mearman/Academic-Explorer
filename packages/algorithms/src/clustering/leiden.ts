@@ -114,7 +114,10 @@ export function leiden<N extends Node, E extends Edge>(
           if (!incomingEdges.has(edge.target)) {
             incomingEdges.set(edge.target, []);
           }
-          incomingEdges.get(edge.target)!.push(edge);
+          const targetEdges = incomingEdges.get(edge.target);
+          if (targetEdges !== undefined) {
+            targetEdges.push(edge);
+          }
         });
       }
     });
@@ -234,10 +237,14 @@ export function leiden<N extends Node, E extends Edge>(
       const superNodeOrder = shuffleArray([...superNodes.keys()]);
 
       for (const superNodeId of superNodeOrder) {
-        const currentCommunityId = nodeToCommunity.get(superNodeId)!;
-        const _currentCommunity = communities.get(currentCommunityId)!;
+        const currentCommunityId = nodeToCommunity.get(superNodeId);
+        if (currentCommunityId === undefined) continue;
 
-        const memberNodes = superNodes.get(superNodeId)!;
+        const _currentCommunity = communities.get(currentCommunityId);
+        if (_currentCommunity === undefined) continue;
+
+        const memberNodes = superNodes.get(superNodeId);
+        if (memberNodes === undefined) continue;
         const neighborCommunities = findNeighborCommunitiesForSuperNode(
           graph,
           memberNodes,
@@ -258,7 +265,8 @@ export function leiden<N extends Node, E extends Edge>(
         for (const [neighborCommunityId, kIn] of neighborCommunities.entries()) {
           if (neighborCommunityId === currentCommunityId) continue;
 
-          const neighborCommunity = communities.get(neighborCommunityId)!;
+          const neighborCommunity = communities.get(neighborCommunityId);
+          if (neighborCommunity === undefined) continue;
 
           const deltaQ = calculateModularityDelta(
             superNodeDegree,
@@ -394,8 +402,11 @@ function refineCommunities<N extends Node, E extends Edge>(
     visited.add(superNodeIds[0]);
 
     while (queue.length > 0) {
-      const currentSuperNodeId = queue.shift()!;
-      const currentMemberNodes = superNodes.get(currentSuperNodeId)!;
+      const currentSuperNodeId = queue.shift();
+      if (currentSuperNodeId === undefined) continue;
+
+      const currentMemberNodes = superNodes.get(currentSuperNodeId);
+      if (currentMemberNodes === undefined) continue;
 
       // Find all super-nodes connected to this one
       currentMemberNodes.forEach((nodeId) => {
@@ -442,7 +453,9 @@ function refineCommunities<N extends Node, E extends Edge>(
   let maxCommunityId = Math.max(...Array.from(communities.keys()));
 
   communitiesToSplit.forEach((communityId) => {
-    const community = communities.get(communityId)!;
+    const community = communities.get(communityId);
+    if (community === undefined) return;
+
     const superNodeIds = Array.from(community.nodes);
 
     // Find connected components within this community
@@ -459,9 +472,12 @@ function refineCommunities<N extends Node, E extends Edge>(
       const component: string[] = [];
 
       while (queue.length > 0) {
-        const currentSuperNodeId = queue.shift()!;
+        const currentSuperNodeId = queue.shift();
+        if (currentSuperNodeId === undefined) continue;
+
         component.push(currentSuperNodeId);
-        const currentMemberNodes = superNodes.get(currentSuperNodeId)!;
+        const currentMemberNodes = superNodes.get(currentSuperNodeId);
+        if (currentMemberNodes === undefined) continue;
 
         currentMemberNodes.forEach((nodeId) => {
           const outgoingResult = graph.getOutgoingEdges(nodeId);
@@ -519,10 +535,15 @@ function refineCommunities<N extends Node, E extends Edge>(
 
       // Reassign super-nodes to new communities
       superNodeIds.forEach((superNodeId) => {
-        const componentIdx = componentAssignment.get(superNodeId)!;
+        const componentIdx = componentAssignment.get(superNodeId);
+        if (componentIdx === undefined) return;
+
         const newCommunityId = componentIdx === 0 ? communityId : maxCommunityId - (componentId - 1 - componentIdx);
 
-        newCommunities.get(newCommunityId)!.nodes.add(superNodeId);
+        const newCommunity = newCommunities.get(newCommunityId);
+        if (newCommunity !== undefined) {
+          newCommunity.nodes.add(superNodeId);
+        }
         nodeToCommunity.set(superNodeId, newCommunityId);
       });
 
@@ -677,9 +698,14 @@ function moveSuperNode(
   superNodes: Map<string, Set<string>>,
   nodeDegrees: Map<string, number>
 ): void {
-  const fromCommunity = communities.get(fromCommunityId)!;
-  const toCommunity = communities.get(toCommunityId)!;
-  const memberNodes = superNodes.get(superNodeId)!;
+  const fromCommunity = communities.get(fromCommunityId);
+  if (fromCommunity === undefined) return;
+
+  const toCommunity = communities.get(toCommunityId);
+  if (toCommunity === undefined) return;
+
+  const memberNodes = superNodes.get(superNodeId);
+  if (memberNodes === undefined) return;
 
   let superNodeDegree = 0;
   memberNodes.forEach((nodeId) => {
@@ -731,7 +757,10 @@ function buildLeidenResults<N extends Node, E extends Edge>(
 
     const nodeOption = graph.getNode(nodeId);
     if (nodeOption.some) {
-      communityMap.get(communityId)!.add(nodeOption.value);
+      const communityNodes = communityMap.get(communityId);
+      if (communityNodes !== undefined) {
+        communityNodes.add(nodeOption.value);
+      }
     }
   });
 
@@ -818,7 +847,8 @@ function validateConnectivity<N extends Node, E extends Edge>(
   visited.add(startNode.id);
 
   while (queue.length > 0) {
-    const current = queue.shift()!;
+    const current = queue.shift();
+    if (current === undefined) continue;
 
     const outgoingResult = graph.getOutgoingEdges(current.id);
     if (outgoingResult.ok) {

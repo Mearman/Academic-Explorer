@@ -139,7 +139,8 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
     }
 
     // Get node with minimum degree from current bin
-    const nodeIdx = bins[currentBin].pop()!;
+    const nodeIdx = bins[currentBin].pop();
+    if (nodeIdx === undefined) break;
     const nodeId = nodeIds[nodeIdx];
     const currentDegree = degrees.get(nodeId) || 0;
 
@@ -175,7 +176,8 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
         degrees.set(neighborId, newDegree);
 
         // Move neighbor to lower bin using O(1) position lookup
-        const neighborIdx = nodeIndex.get(neighborId)!;
+        const neighborIdx = nodeIndex.get(neighborId);
+        if (neighborIdx === undefined) return;
         const neighborPos = binPosition.get(neighborIdx);
 
         if (neighborPos !== undefined) {

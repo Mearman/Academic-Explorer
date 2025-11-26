@@ -64,7 +64,8 @@ export function bfs<N extends Node, E extends Edge = Edge>(
 
   while (queue.length > 0) {
     // Dequeue from front (FIFO)
-    const currentId = queue.shift()!;
+    const currentId = queue.shift();
+    if (currentId === undefined) break;
 
     // Add current node to visit order
     const currentNode = graph.getNode(currentId);

@@ -30,15 +30,6 @@ import { Ok, Err } from '../types/result';
 type LinkageMethod = 'single' | 'complete' | 'average';
 
 /**
- * Internal cluster representation during hierarchical clustering.
- */
-interface ClusterNode {
-  id: number; // Negative for leaves, non-negative for internal nodes
-  nodes: Set<string>; // Set of leaf node IDs
-  size: number;
-}
-
-/**
  * Distance matrix for efficient lookup.
  * Stored as upper triangular matrix (i < j).
  */

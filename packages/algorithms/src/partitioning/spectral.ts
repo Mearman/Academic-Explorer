@@ -505,7 +505,10 @@ function buildPartitions<N extends Node, E extends Edge>(
 
   nodes.forEach((node, idx) => {
     const partitionId = assignments[idx];
-    partitionNodes.get(partitionId)!.add(node);
+    const partition = partitionNodes.get(partitionId);
+    if (partition) {
+      partition.add(node);
+    }
   });
 
   // Calculate edge cuts for each partition
@@ -514,7 +517,8 @@ function buildPartitions<N extends Node, E extends Edge>(
   const idealSize = totalNodes / k;
 
   for (let partitionId = 0; partitionId < k; partitionId++) {
-    const partitionNodeSet = partitionNodes.get(partitionId)!;
+    const partitionNodeSet = partitionNodes.get(partitionId);
+    if (!partitionNodeSet) continue;
     let edgeCuts = 0;
 
     // Count edges that cross partition boundary

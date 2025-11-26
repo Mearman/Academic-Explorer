@@ -101,7 +101,10 @@ export function labelPropagation<N extends Node, E extends Edge>(
         if (!incomingNeighbors.has(edge.target)) {
           incomingNeighbors.set(edge.target, []);
         }
-        incomingNeighbors.get(edge.target)!.push(edge.source);
+        const targetNeighbors = incomingNeighbors.get(edge.target);
+        if (targetNeighbors) {
+          targetNeighbors.push(edge.source);
+        }
       });
     }
     outgoingNeighbors.set(node.id, outgoing);
@@ -137,7 +140,8 @@ export function labelPropagation<N extends Node, E extends Edge>(
     const randomOrder = shuffleArray(nodeIds);
 
     for (const nodeId of randomOrder) {
-      const currentLabel = nodeToLabel.get(nodeId)!;
+      const currentLabel = nodeToLabel.get(nodeId);
+      if (currentLabel === undefined) continue;
 
       // Count neighbor labels (use uniform weights for performance)
       const labelCounts = new Map<ClusterId, number>();
@@ -209,11 +213,16 @@ export function labelPropagation<N extends Node, E extends Edge>(
   const labelToNodes = new Map<ClusterId, Set<N>>();
 
   allNodes.forEach((node) => {
-    const label = nodeToLabel.get(node.id)!;
+    const label = nodeToLabel.get(node.id);
+    if (label === undefined) return;
+
     if (!labelToNodes.has(label)) {
       labelToNodes.set(label, new Set());
     }
-    labelToNodes.get(label)!.add(node);
+    const labelNodes = labelToNodes.get(label);
+    if (labelNodes) {
+      labelNodes.add(node);
+    }
   });
 
   // Convert to LabelCluster array

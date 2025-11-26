@@ -175,11 +175,17 @@ export class Graph<N extends Node, E extends Edge> {
     this.edges.set(edge.id, edge);
 
     // Add to adjacency list
-    this.adjacencyList.get(edge.source)!.add(edge.target);
+    const sourceAdj = this.adjacencyList.get(edge.source);
+    if (sourceAdj) {
+      sourceAdj.add(edge.target);
+    }
 
     // For undirected graphs, add reverse edge to adjacency list
     if (!this.directed) {
-      this.adjacencyList.get(edge.target)!.add(edge.source);
+      const targetAdj = this.adjacencyList.get(edge.target);
+      if (targetAdj) {
+        targetAdj.add(edge.source);
+      }
     }
 
     return Ok(undefined);

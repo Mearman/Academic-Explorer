@@ -75,10 +75,12 @@ export class MinHeap<T> {
     }
 
     // Move last element to root and bubble down
-    const last = this.heap.pop()!;
-    this.heap[0] = last;
-    this.positions.set(last.element, 0);
-    this.bubbleDown(0);
+    const last = this.heap.pop();
+    if (last !== undefined) {
+      this.heap[0] = last;
+      this.positions.set(last.element, 0);
+      this.bubbleDown(0);
+    }
 
     return Some(min.element);
   }

@@ -123,12 +123,15 @@ function tarjanDFS<N extends Node, E extends Edge>(
       tarjanDFS(graph, v, state, false);
 
       // Update low-link value
-      const lowV = state.low.get(v)!;
-      const lowU = state.low.get(u)!;
-      state.low.set(u, Math.min(lowU, lowV));
+      const lowV = state.low.get(v);
+      const lowU = state.low.get(u);
+      const discU = state.disc.get(u);
 
-      // Check if u is articulation point
-      const discU = state.disc.get(u)!;
+      if (lowV === undefined || lowU === undefined || discU === undefined) {
+        continue;
+      }
+
+      state.low.set(u, Math.min(lowU, lowV));
 
       // Case 1: u is root and has > 1 child
       if (isRoot && childCount > 1) {
@@ -149,12 +152,21 @@ function tarjanDFS<N extends Node, E extends Edge>(
       }
     } else if (v !== state.parent.get(u)) {
       // v is already visited and not parent (back edge)
-      const lowU = state.low.get(u)!;
-      const discV = state.disc.get(v)!;
+      const lowU = state.low.get(u);
+      const discV = state.disc.get(v);
+
+      if (lowU === undefined || discV === undefined) {
+        continue;
+      }
+
       state.low.set(u, Math.min(lowU, discV));
 
       // Push back edge to stack (only if disc[v] < disc[u] to avoid duplicates)
-      const discU = state.disc.get(u)!;
+      const discU = state.disc.get(u);
+      if (discU === undefined) {
+        continue;
+      }
+
       if (discV < discU) {
         state.edgeStack.push({ source: u, target: v });
       }
@@ -180,7 +192,11 @@ function extractComponent(state: TarjanState, u: string, v: string): Biconnected
 
   // Pop edges until we find the edge (u, v) or (v, u)
   while (state.edgeStack.length > 0) {
-    const edge = state.edgeStack.pop()!;
+    const edge = state.edgeStack.pop();
+    if (edge === undefined) {
+      break;
+    }
+
     nodes.add(edge.source);
     nodes.add(edge.target);
     edgeCount++;
@@ -225,7 +241,11 @@ function extractRemainingComponent(state: TarjanState): BiconnectedComponent<str
 
   // Pop all remaining edges
   while (state.edgeStack.length > 0) {
-    const edge = state.edgeStack.pop()!;
+    const edge = state.edgeStack.pop();
+    if (edge === undefined) {
+      break;
+    }
+
     nodes.add(edge.source);
     nodes.add(edge.target);
     edgeCount++;

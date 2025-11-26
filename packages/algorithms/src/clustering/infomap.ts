@@ -173,8 +173,10 @@ export function infomap<N extends Node, E extends Edge>(
     const nodeOrder = shuffleArray([...allNodes.map(n => n.id)], seed ? seed + iteration : undefined);
 
     for (const nodeId of nodeOrder) {
-      const currentModuleId = nodeToModule.get(nodeId)!;
-      const _currentModule = modules.get(currentModuleId)!;
+      const currentModuleId = nodeToModule.get(nodeId);
+      if (currentModuleId === undefined) continue;
+      const _currentModule = modules.get(currentModuleId);
+      if (_currentModule === undefined) continue;
 
       // Try moving to neighboring modules (allow moves even if not sole member)
       const neighborModules = findNeighborModules(
@@ -202,8 +204,7 @@ export function infomap<N extends Node, E extends Edge>(
           neighborModuleId,
           modules,
           nodeToModule,
-          transitions,
-          visitProbabilities
+          transitions
         );
 
         if (delta < bestDelta) {
@@ -396,7 +397,10 @@ function calculateVisitProbabilities<N extends Node, E extends Edge>(
     if (!transitionMap.has(t.from)) {
       transitionMap.set(t.from, []);
     }
-    transitionMap.get(t.from)!.push({ to: t.to, prob: t.probability });
+    const fromTransitions = transitionMap.get(t.from);
+    if (fromTransitions) {
+      fromTransitions.push({ to: t.to, prob: t.probability });
+    }
   });
 
   // Power iteration (PageRank algorithm)
@@ -557,8 +561,7 @@ function calculateMoveDelta(
   toModuleId: number,
   modules: Map<number, InternalModule>,
   nodeToModule: Map<string, number>,
-  transitions: Transition[],
-  visitProbabilities: Map<string, number>
+  transitions: Transition[]
 ): number {
   const fromModule = modules.get(fromModuleId);
   const toModule = modules.get(toModuleId);
@@ -568,20 +571,14 @@ function calculateMoveDelta(
     return 100.0; // Large penalty for invalid moves
   }
 
-  const _nodeVisitProb = visitProbabilities.get(nodeId) || 0;
-
   // Calculate exit probability changes for the node
-  let _nodeExitProb = 0;
   let nodeToFromModuleProb = 0;
   let nodeToToModuleProb = 0;
 
   transitions.forEach((t) => {
     if (t.from === nodeId) {
       const targetModuleId = nodeToModule.get(t.to);
-      if (targetModuleId !== fromModuleId && targetModuleId !== toModuleId) {
-        // Edge leaving both modules
-        _nodeExitProb += t.probability;
-      } else if (targetModuleId === fromModuleId && targetModuleId !== toModuleId) {
+      if (targetModuleId === fromModuleId && targetModuleId !== toModuleId) {
         // Edge from node to fromModule (will become exit edge)
         nodeToFromModuleProb += t.probability;
       } else if (targetModuleId === toModuleId && targetModuleId !== fromModuleId) {
@@ -591,21 +588,13 @@ function calculateMoveDelta(
     }
     if (t.to === nodeId) {
       const sourceModuleId = nodeToModule.get(t.from);
-      if (sourceModuleId !== fromModuleId && sourceModuleId !== toModuleId) {
-        // Edge entering from outside
-        _nodeExitProb += t.probability;
-      } else if (sourceModuleId === fromModuleId && sourceModuleId !== toModuleId) {
+      if (sourceModuleId === fromModuleId && sourceModuleId !== toModuleId) {
         nodeToFromModuleProb += t.probability;
       } else if (sourceModuleId === toModuleId && sourceModuleId !== fromModuleId) {
         nodeToToModuleProb += t.probability;
       }
     }
   });
-
-  // Improved heuristic: favor moves that reduce exit probability
-  // and increase module visit probability balance
-  const _fromModuleSizeAfter = fromModule.nodes.size - 1;
-  const _toModuleSizeAfter = toModule.nodes.size + 1;
 
   // Favor moves that make internal edges vs external edges
   // Negative delta = beneficial move
@@ -625,8 +614,10 @@ function moveNode(
   nodeToModule: Map<string, number>,
   visitProbabilities: Map<string, number>
 ): void {
-  const fromModule = modules.get(fromModuleId)!;
-  const toModule = modules.get(toModuleId)!;
+  const fromModule = modules.get(fromModuleId);
+  const toModule = modules.get(toModuleId);
+  if (!fromModule || !toModule) return;
+
   const _nodeVisitProb = visitProbabilities.get(nodeId) || 0;
 
   // Remove node from old module

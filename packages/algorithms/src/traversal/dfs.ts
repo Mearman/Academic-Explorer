@@ -66,7 +66,9 @@ export function dfs<N extends Node, E extends Edge = Edge>(
   parents.set(startId, null); // Root has no parent
 
   while (stack.length > 0) {
-    const [currentId, isReturning] = stack.pop()!;
+    const entry = stack.pop();
+    if (entry === undefined) break;
+    const [currentId, isReturning] = entry;
 
     if (isReturning) {
       // Finishing the node - record finish time
