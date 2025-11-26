@@ -4,8 +4,8 @@
  * Manages user settings with IndexedDB persistence
  */
 
-import Dexie, { type Table } from "dexie";
 import { logger } from "@academic-explorer/utils/logger";
+import Dexie, { type Table } from "dexie";
 
 // Database schema
 interface SettingsRecord {

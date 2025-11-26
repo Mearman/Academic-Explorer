@@ -2,10 +2,10 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { renderHook, waitFor, act } from "@testing-library/react";
 import type { ProviderType } from "@academic-explorer/types";
+import { renderHook, act } from "@testing-library/react";
 import React from "react";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
 // Mock Dexie to prevent IndexedDB operations in tests
 vi.mock("dexie", () => {
@@ -18,9 +18,8 @@ vi.mock("dexie", () => {
 
   const DexieMock = vi.fn().mockImplementation(function (
     this: Record<string, unknown>,
-    _name?: string,
   ) {
-    this.version = vi.fn().mockImplementation((_version: number) => {
+    this.version = vi.fn().mockImplementation(() => {
       return {
         stores: vi.fn().mockImplementation((schema: Record<string, unknown>) => {
           // Set up the table properties based on the schema

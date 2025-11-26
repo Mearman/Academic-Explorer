@@ -4,16 +4,15 @@
  * React Context-based implementation replacing Zustand
  */
 
-import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
-import { logger } from "@academic-explorer/utils/logger";
 import type {
   ExpansionSettings,
   ExpansionTarget,
   SortCriteria,
   FilterCriteria,
 } from "@academic-explorer/types";
-import { getDefaultSettingsForTarget } from "@academic-explorer/types";
-import { RelationType } from "@academic-explorer/types";
+import { getDefaultSettingsForTarget , RelationType } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils/logger";
+import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
 
 interface ExpansionSettingsState {
   /** Settings per target type */
@@ -57,33 +56,33 @@ const initializeDefaultSettings = (): Record<
     subfields: getDefaultSettingsForTarget("subfields"),
 
     // Relation types - each unique and specific
-    [RelationType.AUTHORED]: getDefaultSettingsForTarget(RelationType.AUTHORED),
-    [RelationType.AFFILIATED]: getDefaultSettingsForTarget(
-      RelationType.AFFILIATED,
+    [RelationType.AUTHORSHIP]: getDefaultSettingsForTarget(RelationType.AUTHORSHIP),
+    [RelationType.AFFILIATION]: getDefaultSettingsForTarget(
+      RelationType.AFFILIATION,
     ),
-    [RelationType.PUBLISHED_IN]: getDefaultSettingsForTarget(
-      RelationType.PUBLISHED_IN,
+    [RelationType.PUBLICATION]: getDefaultSettingsForTarget(
+      RelationType.PUBLICATION,
     ),
     [RelationType.FUNDED_BY]: getDefaultSettingsForTarget(
       RelationType.FUNDED_BY,
     ),
-    [RelationType.REFERENCES]: getDefaultSettingsForTarget(
-      RelationType.REFERENCES,
+    [RelationType.REFERENCE]: getDefaultSettingsForTarget(
+      RelationType.REFERENCE,
     ),
     [RelationType.RELATED_TO]: getDefaultSettingsForTarget(
       RelationType.RELATED_TO,
     ),
-    [RelationType.SOURCE_PUBLISHED_BY]: getDefaultSettingsForTarget(
-      RelationType.SOURCE_PUBLISHED_BY,
+    [RelationType.HOST_ORGANIZATION]: getDefaultSettingsForTarget(
+      RelationType.HOST_ORGANIZATION,
     ),
-    [RelationType.INSTITUTION_CHILD_OF]: getDefaultSettingsForTarget(
-      RelationType.INSTITUTION_CHILD_OF,
+    [RelationType.LINEAGE]: getDefaultSettingsForTarget(
+      RelationType.LINEAGE,
     ),
     [RelationType.PUBLISHER_CHILD_OF]: getDefaultSettingsForTarget(
       RelationType.PUBLISHER_CHILD_OF,
     ),
-    [RelationType.WORK_HAS_TOPIC]: getDefaultSettingsForTarget(
-      RelationType.WORK_HAS_TOPIC,
+    [RelationType.TOPIC]: getDefaultSettingsForTarget(
+      RelationType.TOPIC,
     ),
     [RelationType.WORK_HAS_KEYWORD]: getDefaultSettingsForTarget(
       RelationType.WORK_HAS_KEYWORD,

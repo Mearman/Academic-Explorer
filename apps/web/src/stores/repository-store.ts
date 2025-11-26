@@ -4,14 +4,13 @@
  * Provides separate space for search results and filtered content before adding to main graph
  */
 
-import Dexie, { type Table } from "dexie";
+import { RelationType } from "@academic-explorer/types";
 import type {
   GraphNode,
   GraphEdge,
-} from "@academic-explorer/types";
-import { RelationType } from "@academic-explorer/types";
-import type { EntityType } from "@academic-explorer/types";
+ EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
+import Dexie, { type Table } from "dexie";
 
 // Database schema
 interface RepositoryConfigRecord {
@@ -104,16 +103,16 @@ export const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
 });
 
 const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
-  [RelationType.AUTHORED]: true,
-  [RelationType.AFFILIATED]: true,
-  [RelationType.PUBLISHED_IN]: true,
+  [RelationType.AUTHORSHIP]: true,
+  [RelationType.AFFILIATION]: true,
+  [RelationType.PUBLICATION]: true,
   [RelationType.FUNDED_BY]: true,
-  [RelationType.REFERENCES]: true,
+  [RelationType.REFERENCE]: true,
   [RelationType.RELATED_TO]: true,
-  [RelationType.SOURCE_PUBLISHED_BY]: true,
-  [RelationType.INSTITUTION_CHILD_OF]: true,
+  [RelationType.HOST_ORGANIZATION]: true,
+  [RelationType.LINEAGE]: true,
   [RelationType.PUBLISHER_CHILD_OF]: true,
-  [RelationType.WORK_HAS_TOPIC]: true,
+  [RelationType.TOPIC]: true,
   [RelationType.WORK_HAS_KEYWORD]: true,
   [RelationType.AUTHOR_RESEARCHES]: true,
   [RelationType.INSTITUTION_LOCATED_IN]: true,

@@ -11,9 +11,10 @@
  * The React hooks API (useExpansionSettingsActions) should be used for full functionality.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { expansionSettingsActions } from "./expansion-settings-store";
 import { RelationType } from "@academic-explorer/types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { expansionSettingsActions } from "./expansion-settings-store";
 
 // Mock logger to prevent console output during tests
 vi.mock("@academic-explorer/utils/logger", () => ({

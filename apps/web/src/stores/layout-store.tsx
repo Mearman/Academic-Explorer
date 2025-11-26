@@ -3,10 +3,10 @@
  * React Context-based implementation replacing Zustand
  */
 
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
-import Dexie, { type Table } from "dexie";
 import type { ProviderType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
+import Dexie, { type Table } from "dexie";
+import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
 
 // Database schema for layout persistence
 interface LayoutRecord {

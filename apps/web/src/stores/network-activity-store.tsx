@@ -3,8 +3,8 @@
  * Replaces Zustand with built-in React patterns for tracking network requests
  */
 
-import React, { createContext, useContext, useReducer, useCallback, useMemo, type ReactNode } from "react";
 import { logger } from "@academic-explorer/utils/logger";
+import React, { createContext, useContext, useReducer, useCallback, useMemo, type ReactNode } from "react";
 
 export interface NetworkRequest {
   id: string;
@@ -179,7 +179,9 @@ const networkActivityReducer = (
     }
 
     case "REMOVE_REQUEST": {
-      const { [action.payload]: _removed, ...rest } = state.requests;
+      const { [action.payload]: removed, ...rest } = state.requests;
+      void removed; // Mark as intentionally unused
+
       return {
         ...state,
         requests: rest,
@@ -684,8 +686,6 @@ export const selectFilteredRequests = (state: NetworkActivityState) => {
 // Standalone store object for non-React usage
 export const networkActivityStore = (() => {
   let currentState: NetworkActivityState = getInitialState();
-
-  const getState = (): NetworkActivityState => ({ ...currentState });
 
   const setState = (updater: NetworkActivityState | ((state: NetworkActivityState) => NetworkActivityState)) => {
     currentState = typeof updater === 'function' ? updater(currentState) : updater;

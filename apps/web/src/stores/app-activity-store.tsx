@@ -3,9 +3,9 @@
  * Monitors user interactions, component lifecycle, performance metrics, and system state
  */
 
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
 import { logger } from "@academic-explorer/utils/logger";
 import Dexie, { type Table } from "dexie";
+import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
 
 // Dexie database for persistent app activity storage
 interface StoredAppActivityEvent extends Omit<AppActivityEvent, "id"> {
@@ -356,7 +356,8 @@ const appActivityReducer = (
     }
 
     case "REMOVE_EVENT": {
-      const { [action.payload]: _removed, ...newEvents } = state.events;
+      const { [action.payload]: removed, ...newEvents } = state.events;
+      void removed; // Mark as intentionally unused
 
       return {
         ...state,
