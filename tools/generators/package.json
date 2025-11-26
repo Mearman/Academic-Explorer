@@ -1,30 +1,30 @@
 {
   "name": "@academic-explorer/generators",
-  "version": "0.0.0",
   "description": "Custom Nx generators for Academic Explorer monorepo",
-  "main": "./index.ts",
+  "version": "0.0.0",
   "type": "module",
-  "keywords": [
-    "nx",
-    "generators",
-    "academic-explorer",
-    "monorepo",
-    "typescript"
-  ],
-  "author": "Joe Mearman",
-  "license": "MIT",
   "dependencies": {
-    "@nx/devkit": "^21.5.0",
-    "@nx/js": "^21.5.0",
-    "@nx/workspace": "^21.5.0"
+    "@nx/devkit": "22.0.2",
+    "@nx/js": "22.0.2",
+    "@nx/workspace": "22.0.2"
   },
   "devDependencies": {
-    "@nx/workspace": "^21.5.0",
-    "typescript": "~5.9.2"
+    "@nx/workspace": "22.0.2",
+    "typescript": "5.9.2"
   },
+  "author": "Joe Mearman",
   "generators": {
     "library": "./library/generator.json",
     "component": "./component/generator.json",
     "entity-view": "./entity-view/generator.json"
-  }
+  },
+  "keywords": [
+    "academic-explorer",
+    "generators",
+    "monorepo",
+    "nx",
+    "typescript"
+  ],
+  "license": "MIT",
+  "main": "./index.ts"
 }

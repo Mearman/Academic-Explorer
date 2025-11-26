@@ -1,23 +1,38 @@
 {
-  "nx": { "includedScripts": [] },
   "name": "@academic-explorer/cli",
+  "description": "Command-line interface for OpenAlex data access",
   "version": "0.0.0",
   "type": "module",
-  "description": "Command-line interface for OpenAlex data access",
-  "keywords": [
-    "cli",
-    "openalex",
-    "academic",
-    "research",
-    "typescript"
-  ],
-  "author": "Joe Mearman",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mearman/Academic-Explorer.git",
     "directory": "apps/cli"
   },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "dev": "tsx src/openalex-cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@academic-explorer/client": "workspace:*",
+    "@academic-explorer/types": "workspace:*",
+    "@academic-explorer/utils": "workspace:*",
+    "commander": "14.0.1",
+    "zod": "4.1.13"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "24.10.0",
+    "eslint": "9.39.1",
+    "msw": "2.12.3",
+    "tsx": "4.20.6",
+    "typescript": "5.9.2",
+    "vitest": "4.0.10"
+  },
+  "author": "Joe Mearman",
   "bin": {
     "openalex-cli": "./dist/src/openalex-cli.js"
   },
@@ -25,29 +40,16 @@
     "dist",
     "README.md"
   ],
-  "scripts": {
-    "build": "tsc -b",
-    "clean": "rm -rf dist",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "dev": "tsx src/openalex-cli.ts"
-  },
-  "dependencies": {
-    "@academic-explorer/client": "workspace:*",
-    "@academic-explorer/types": "workspace:*",
-    "@academic-explorer/utils": "workspace:*",
-    "commander": "^14.0.1",
-    "zod": "^4.1.13"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.5.2",
-    "eslint": "^9.36.0",
-    "msw": "^2.12.3",
-    "tsx": "^4.20.5",
-    "typescript": "~5.9.2",
-    "vitest": "^3.2.4"
+  "keywords": [
+    "academic",
+    "cli",
+    "openalex",
+    "research",
+    "typescript"
+  ],
+  "license": "MIT",
+  "nx": {
+    "includedScripts": []
   },
   "publishConfig": {
     "access": "public"

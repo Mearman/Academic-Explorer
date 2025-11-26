@@ -1,12 +1,19 @@
 {
-  "nx": { "includedScripts": [] },
   "name": "@academic-explorer/algorithms",
-  "version": "0.1.0",
   "description": "Zero-dependency TypeScript graph algorithms: DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, and strongly connected components. Generic types support heterogeneous graphs with O(V+E) performance.",
+  "version": "0.1.0",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "vite-plugin-dts": "4.5.4"
+  },
+  "author": "Academic Explorer",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,42 +24,37 @@
     "dist",
     "README.md"
   ],
-  "scripts": {
-    "build": "vite build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
-  },
   "keywords": [
-    "graph",
+    "academic-research",
+    "adjacency-list",
     "algorithms",
+    "bfs",
+    "citation-network",
+    "connected-components",
+    "cycle-detection",
+    "dfs",
+    "dijkstra",
+    "directed-graph",
+    "generic-types",
+    "graph",
     "graph-algorithms",
     "graph-theory",
-    "traversal",
-    "pathfinding",
-    "dfs",
-    "bfs",
-    "dijkstra",
-    "topological-sort",
-    "cycle-detection",
-    "connected-components",
-    "strongly-connected-components",
-    "scc",
-    "tarjan",
-    "adjacency-list",
-    "directed-graph",
-    "undirected-graph",
-    "citation-network",
     "network-analysis",
-    "academic-research",
+    "pathfinding",
+    "scc",
+    "strongly-connected-components",
+    "tarjan",
+    "topological-sort",
+    "traversal",
     "typescript",
-    "zero-dependencies",
-    "generic-types"
+    "undirected-graph",
+    "zero-dependencies"
   ],
-  "author": "Academic Explorer",
   "license": "MIT",
-  "devDependencies": {
-    "vite-plugin-dts": "^4.5.4"
-  }
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "nx": {
+    "includedScripts": []
+  },
+  "types": "./dist/index.d.ts"
 }

@@ -1,64 +1,64 @@
 {
-  "nx": {
-    "includedScripts": []
-  },
   "name": "@academic-explorer/types",
+  "description": "Type definitions, schemas, and type guards for Academic Explorer",
   "version": "0.0.0",
   "type": "module",
-  "description": "Type definitions, schemas, and type guards for Academic Explorer",
-  "keywords": [
-    "types",
-    "entities",
-    "schemas",
-    "type-guards",
-    "academic",
-    "research",
-    "typescript",
-    "zod"
-  ],
-  "author": "Joe Mearman",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mearman/Academic-Explorer.git",
     "directory": "packages/types"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "dev": "tsc -b --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "4.1.13"
+  },
+  "devDependencies": {
+    "eslint": "9.39.1",
+    "typescript": "5.9.2",
+    "vite": "7.2.4",
+    "vite-plugin-dts": "4.5.4",
+    "vitest": "4.0.10"
+  },
+  "author": "Joe Mearman",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./entities": {
+      "types": "./dist/entities/index.d.ts",
+      "import": "./dist/entities/index.js"
+    }
   },
   "files": [
     "dist",
     "src",
     "README.md"
   ],
+  "keywords": [
+    "academic",
+    "entities",
+    "research",
+    "schemas",
+    "type-guards",
+    "types",
+    "typescript",
+    "zod"
+  ],
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./entities": {
-      "import": "./dist/entities/index.js",
-      "types": "./dist/entities/index.d.ts"
-    }
-  },
-  "scripts": {
-    "build": "tsc -b",
-    "clean": "rm -rf dist",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "dev": "tsc -b --watch"
-  },
-  "dependencies": {
-    "zod": "^4.1.13"
-  },
-  "devDependencies": {
-    "eslint": "^9.36.0",
-    "typescript": "~5.9.2",
-    "vite": "^7.2.4",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.0.10"
+  "nx": {
+    "includedScripts": []
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "types": "./dist/index.d.ts"
 }
