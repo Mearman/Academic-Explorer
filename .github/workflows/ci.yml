@@ -86,15 +86,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -112,49 +113,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Setup Nx cache
         uses: actions/cache@v4
-        id: nx-cache
         with:
-          path: |
-            .nx/cache
-            **/node_modules/.cache
-            **/.vite
+          path: .nx/cache
           key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
             ${{ runner.os }}-nx-cache-v3-
-
-      - name: Cache analytics
-        run: |
-          echo "📊 Cache Hit Status:"
-          echo "  pnpm cache: ${{ steps.pnpm-cache.outputs.cache-hit == 'true' && '✅ HIT' || '❌ MISS' }}"
-          echo "  Nx cache: ${{ steps.nx-cache.outputs.cache-hit == 'true' && '✅ HIT' || '❌ MISS' }}"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -200,38 +176,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Setup Nx cache
         uses: actions/cache@v4
         with:
-          path: |
-            .nx/cache
-            **/node_modules/.cache
-            **/.vite
+          path: .nx/cache
           key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
             ${{ runner.os }}-nx-cache-v3-
@@ -285,30 +244,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -316,10 +261,7 @@ jobs:
       - name: Setup Nx cache
         uses: actions/cache@v4
         with:
-          path: |
-            .nx/cache
-            **/node_modules/.cache
-            **/.vite
+          path: .nx/cache
           key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
             ${{ runner.os }}-nx-cache-v3-
@@ -370,30 +312,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -401,10 +329,7 @@ jobs:
       - name: Setup Nx cache
         uses: actions/cache@v4
         with:
-          path: |
-            .nx/cache
-            **/node_modules/.cache
-            **/.vite
+          path: .nx/cache
           key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
             ${{ runner.os }}-nx-cache-v3-
@@ -450,30 +375,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -491,30 +402,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v6
         with:
-          path: |
-            ${{ env.STORE_PATH }}
-            **/node_modules
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
