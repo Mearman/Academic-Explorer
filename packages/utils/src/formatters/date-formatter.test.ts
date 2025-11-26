@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import { formatRelativeTime, formatAbsoluteTime, formatTimestamp } from './date-formatter.js';
 
 describe('date-formatter', () => {

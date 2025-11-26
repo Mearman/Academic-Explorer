@@ -79,10 +79,7 @@ export const FILTER_WIDTHS = {
 
 export function BaseFilter<T = unknown>({
 	value,
-	operator,
-	config,
 	onValueChange,
-	onOperatorChange,
 	disabled = false,
 	compact = false,
 	fieldId,

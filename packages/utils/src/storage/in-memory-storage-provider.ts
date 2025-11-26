@@ -3,6 +3,10 @@
  * Uses JavaScript Maps for fast, isolated test execution
  */
 
+import type { EntityType } from '@academic-explorer/types';
+
+import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
+import { SPECIAL_LIST_IDS } from './catalogue-db.js';
 import type {
 	CatalogueStorageProvider,
 	CreateListParams,
@@ -13,9 +17,7 @@ import type {
 	BatchAddResult,
 	ShareAccessResult,
 } from './catalogue-storage-provider.js';
-import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
-import { SPECIAL_LIST_IDS } from './catalogue-db.js';
-import type { EntityType } from '@academic-explorer/types';
+
 
 /**
  * In-memory storage provider for E2E and unit testing
@@ -306,7 +308,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 
 				this.entities.set(id, entity);
 				success++;
-			} catch (error) {
+			} catch {
 				failed++;
 			}
 		}
@@ -385,7 +387,9 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 			accessCount: 0,
 		};
 
-		this.shares.set(shareRecord.id!, shareRecord);
+		if (shareRecord.id) {
+			this.shares.set(shareRecord.id, shareRecord);
+		}
 
 		// Update list with share token
 		const updatedList: CatalogueList = {
@@ -423,7 +427,9 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 			accessCount: shareRecord.accessCount + 1,
 			lastAccessedAt: new Date(),
 		};
-		this.shares.set(shareRecord.id!, updatedShareRecord);
+		if (shareRecord.id) {
+			this.shares.set(shareRecord.id, updatedShareRecord);
+		}
 
 		const list = await this.getList(shareRecord.listId);
 		return { list, valid: true };
@@ -465,7 +471,8 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	}
 
 	isSpecialList(listId: string): boolean {
-		return Object.values(SPECIAL_LIST_IDS).includes(listId as any);
+		const specialIds: string[] = Object.values(SPECIAL_LIST_IDS);
+		return specialIds.includes(listId);
 	}
 
 	async addBookmark(params: AddBookmarkParams): Promise<string> {
@@ -529,12 +536,14 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 				addedAt: params.timestamp || new Date(),
 				notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
 			};
-			this.entities.set(existingEntity.id!, updatedEntity);
+			if (existingEntity.id) {
+				this.entities.set(existingEntity.id, updatedEntity);
 
-			// Update list's updated timestamp
-			await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+				// Update list's updated timestamp
+				await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
 
-			return existingEntity.id!;
+				return existingEntity.id;
+			}
 		}
 
 		// Add new history entry
@@ -573,7 +582,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	async getNonSystemLists(): Promise<CatalogueList[]> {
 		const allLists = await this.getAllLists();
 		return allLists.filter(
-			(list) => !this.isSpecialList(list.id!) && !list.tags?.includes('system')
+			(list) => list.id && !this.isSpecialList(list.id) && !list.tags?.includes('system')
 		);
 	}
 }

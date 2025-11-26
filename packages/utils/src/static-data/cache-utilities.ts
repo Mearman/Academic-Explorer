@@ -5,8 +5,9 @@
  */
 
 import path from "node:path"
-import { logger } from "../logger.js"
+
 import type { CacheStorageType } from "../cache-browser/types.js"
+import { logger } from "../logger.js"
 
 export function isCacheStorageType(value: string): value is CacheStorageType {
 	const validCacheTypes: readonly string[] = [
@@ -652,21 +653,6 @@ export function extractEntityType(pathOrUrl: string): CacheStorageType | null {
 
 	// Handle file paths
 	const segments = pathOrUrl.split("/").filter(Boolean)
-	const _validCacheTypes: readonly CacheStorageType[] = [
-		"works",
-		"authors",
-		"sources",
-		"institutions",
-		"topics",
-		"publishers",
-		"funders",
-		"concepts",
-		"keywords",
-		"autocomplete",
-		"domains",
-		"fields",
-		"subfields",
-	]
 
 	for (const segment of segments) {
 		if (isCacheStorageType(segment)) {

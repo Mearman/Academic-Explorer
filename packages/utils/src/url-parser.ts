@@ -7,6 +7,7 @@
  */
 
 import type { EntityType } from "@academic-explorer/types"
+
 import { inferEntityTypeFromOpenAlexId } from "./entity-type-inference"
 
 /**

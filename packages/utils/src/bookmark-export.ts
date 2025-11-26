@@ -321,12 +321,13 @@ export function downloadExport(content: string, format: ExportFormat, filename?:
 
 	const blob = new Blob([content], { type: mimeTypes[format] });
 	const url = URL.createObjectURL(blob);
-	const link = document.createElement("a");
+	// eslint-disable-next-line custom/no-deprecated
+	const link = globalThis.document.createElement("a");
 	link.href = url;
 	link.download = defaultFilename;
-	document.body.appendChild(link);
+	globalThis.document.body.appendChild(link);
 	link.click();
-	document.body.removeChild(link);
+	globalThis.document.body.removeChild(link);
 	URL.revokeObjectURL(url);
 }
 

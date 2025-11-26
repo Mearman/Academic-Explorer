@@ -160,7 +160,7 @@ export interface MissingPaperDetectionResults {
  * Parse STAR file format
  * Stub implementation - applications should provide their own
  */
-export function parseSTARFile(_file: File): Promise<ParseResult> {
+export function parseSTARFile(): Promise<ParseResult> {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "parseSTARFile: Using stub implementation")
 	return Promise.resolve({
 		success: false,
@@ -250,8 +250,8 @@ export function compareAcademicExplorerResults(
  * Stub implementation - applications should provide their own
  */
 export function searchBasedOnSTARDataset(
-	dataset: STARDataset,
-	_config: typeof DEFAULT_SEARCH_CONFIG = DEFAULT_SEARCH_CONFIG
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	_dataset: STARDataset
 ): WorkReference[] {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "searchBasedOnSTARDataset: Using stub implementation")
 	return []

@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { useParams, useSearch } from "@tanstack/react-router";
-import type { EntityType } from "@academic-explorer/types";
+import { useState } from "react";
+
 import { logger } from "../logger.js";
 
 export interface EntityRouteConfig {
@@ -52,8 +52,7 @@ export interface UseEntityRouteResult<T = unknown> {
  * TODO: Implement with proper app-specific hooks or move to apps/web
  */
 export function useEntityRoute<T = unknown>(
-	config: EntityRouteConfig,
-	_options: UseEntityRouteOptions = {}
+	config: EntityRouteConfig
 ): UseEntityRouteResult<T> {
 	const params = useParams({ strict: false }) as Record<string, string>;
 	const search = useSearch({ strict: false }) as Record<string, unknown>;

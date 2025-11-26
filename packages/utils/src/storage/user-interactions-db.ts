@@ -4,6 +4,7 @@
  */
 
 import Dexie from "dexie"
+
 import { GenericLogger } from "../logger.js"
 
 // Event system for notifying components of data changes
@@ -41,10 +42,8 @@ class BookmarkEventEmitter {
 export const bookmarkEventEmitter = new BookmarkEventEmitter();
 
 // Constants for logging and database operations
-const _EXAMPLE_URL_PREFIX = "https://api.openalex.org"
 const LOG_CATEGORY = "user-interactions"
 const DB_NAME = "user-interactions"
-const _SEARCH_ENDPOINT = "/search"
 
 // Database schema version constants
 const DB_VERSION_UNIFIED_REQUEST_SCHEMA = 3
@@ -206,7 +205,7 @@ export function apiUrlToInternalPath(apiUrl: string): string {
  */
 export function createApiUrlRequest(
 	internalPath: string,
-	params: Record<string, any>,
+	params: Record<string, unknown>,
 	hash: string
 ): StoredNormalizedRequest {
 	const apiUrl = internalPathToApiUrl(internalPath)
@@ -543,7 +542,6 @@ export class UserInteractionsService {
 	 */
 	async isSearchBookmarked({
 		searchQuery,
-		filters: _filters,
 	}: {
 		searchQuery: string
 		filters?: Record<string, unknown>
@@ -579,7 +577,6 @@ export class UserInteractionsService {
 	 */
 	async getSearchBookmark({
 		searchQuery,
-		filters: _filters,
 	}: {
 		searchQuery: string
 		filters?: Record<string, unknown>

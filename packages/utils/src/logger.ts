@@ -134,12 +134,13 @@ export class GenericLogger {
 		const data = JSON.stringify(this.logs, null, 2)
 		const blob = new Blob([data], { type: "application/json" })
 		const url = URL.createObjectURL(blob)
-		const a = document.createElement("a")
+		// eslint-disable-next-line custom/no-deprecated
+		const a = globalThis.document.createElement("a")
 		a.href = url
 		a.download = `logs-${new Date().toISOString().split("T")[0]}.json`
-		document.body.appendChild(a)
+		globalThis.document.body.appendChild(a)
 		a.click()
-		document.body.removeChild(a)
+		globalThis.document.body.removeChild(a)
 		URL.revokeObjectURL(url)
 	}
 
@@ -302,7 +303,12 @@ interface PostHogErrorData {
 function sendErrorToPostHog(errorData: PostHogErrorData) {
 	try {
 		if (typeof window !== 'undefined' && 'posthog' in window) {
-			const posthog = (window as any).posthog;
+			interface WindowWithPostHog extends Window {
+				posthog?: {
+					capture(eventName: string, properties: unknown): void
+				}
+			}
+			const posthog = (window as WindowWithPostHog).posthog;
 			if (posthog) {
 				posthog.capture('error_occurred', errorData);
 			}

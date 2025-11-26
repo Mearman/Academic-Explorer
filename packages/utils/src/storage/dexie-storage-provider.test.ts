@@ -4,9 +4,10 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { InMemoryStorageProvider } from './in-memory-storage-provider.js';
-import type { CatalogueStorageProvider } from './catalogue-storage-provider.js';
+
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
+import type { CatalogueStorageProvider } from './catalogue-storage-provider.js';
+import { InMemoryStorageProvider } from './in-memory-storage-provider.js';
 
 describe('Bookmark Storage Operations', () => {
 	let provider: CatalogueStorageProvider;

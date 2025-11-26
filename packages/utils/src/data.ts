@@ -155,8 +155,7 @@ export function sortByStringProperty<T>(
  */
 export function groupByProperty<T>(
 	items: T[],
-	getGroupKey: (item: T) => string | number,
-	_defaultKey = "Unknown"
+	getGroupKey: (item: T) => string | number
 ): Record<string, T[]> {
 	return groupBy(items, (item) => {
 		const key = getGroupKey(item)

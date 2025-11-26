@@ -18,12 +18,11 @@ export interface EntityNavigator {
  */
 export class NavigationHelper {
 	static createEntityNavigator(config: NavigationConfig): EntityNavigator {
-		const { entityType, routePath, logContext = "EntityRoute" } = config;
+		const { entityType, logContext = "EntityRoute" } = config;
 
 		return {
 			handleMalformedUrl: (
-				entityId: string,
-				navigate: (options: { to: string; params: Record<string, string>; replace: boolean }) => void
+				entityId: string
 			) => {
 				// This is a placeholder implementation
 				// In a real scenario, this would handle malformed URLs and redirect to correct ones

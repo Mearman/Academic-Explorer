@@ -8,8 +8,9 @@
  * and identifier format specifications.
  */
 
-import { logger } from "./logger.js"
 import type { EntityType } from "@academic-explorer/types"
+
+import { logger } from "./logger.js"
 
 /**
  * Detection result containing the detected entity type and normalized identifier

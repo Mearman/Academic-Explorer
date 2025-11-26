@@ -4,6 +4,7 @@
  */
 
 import Dexie from "dexie"
+
 import { GenericLogger } from "../logger.js"
 
 // Generic storage interface compatible with various state management libraries
@@ -22,7 +23,7 @@ export interface StorageConfig {
 
 // Dexie database class for key-value storage
 class KeyValueDB extends Dexie {
-	keyValueStore!: Dexie.Table<{ key: string; value: string }, string>
+	keyValueStore: Dexie.Table<{ key: string; value: string }, string>
 
 	constructor({
 		dbName,

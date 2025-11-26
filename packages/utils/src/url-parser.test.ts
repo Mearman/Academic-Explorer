@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest"
+
 import { parseURL, extractSelectFields, reconstructURL } from "./url-parser"
 
 describe("extractSelectFields", () => {

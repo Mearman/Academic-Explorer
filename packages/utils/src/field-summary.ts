@@ -314,7 +314,6 @@ export function areFieldSelectionsEquivalent(
 		return false
 	}
 
-	const setA = new Set(fieldsA)
 	const setB = new Set(fieldsB)
 
 	return fieldsA.every((field) => setB.has(field))

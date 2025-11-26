@@ -9,13 +9,15 @@
  * @see {@link https://github.com/joe/Academic-Explorer/specs/001-storage-abstraction/spec.md}
  */
 
+import type { EntityType } from '@academic-explorer/types';
+
+import type { GenericLogger } from '../logger.js';
+
 import type {
   CatalogueList,
   CatalogueEntity,
-  CatalogueShareRecord,
   ListType,
 } from './catalogue-db.js';
-import type { EntityType } from '@academic-explorer/types';
 
 /**
  * Parameters for creating a new catalogue list
@@ -635,4 +637,4 @@ export interface CatalogueStorageProvider {
  * await provider.initializeSpecialLists();
  * ```
  */
-export type StorageProviderFactory = (logger?: any) => CatalogueStorageProvider;
+export type StorageProviderFactory = (logger?: GenericLogger) => CatalogueStorageProvider;

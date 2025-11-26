@@ -1,5 +1,3 @@
-import { logger as _logger } from "../logger.js"
-
 /**
  * Base activity tracking interface
  */

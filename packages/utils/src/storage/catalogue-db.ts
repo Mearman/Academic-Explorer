@@ -3,10 +3,10 @@
  * Extends user interactions with specialized list management
  */
 
-import Dexie from "dexie";
-import { logger } from "../logger.js";
-import type { GenericLogger } from "../logger.js";
 import type { EntityType } from "@academic-explorer/types";
+import Dexie from "dexie";
+
+import type { GenericLogger } from "../logger.js";
 
 // Event system for catalogue changes
 type CatalogueEventListener = (event: {
@@ -628,10 +628,12 @@ export class CatalogueService {
       }
 
       // Update access count
-      await this.db.catalogueShares.update(shareRecord.id!, {
-        accessCount: shareRecord.accessCount + 1,
-        lastAccessedAt: new Date(),
-      });
+      if (shareRecord.id) {
+        await this.db.catalogueShares.update(shareRecord.id, {
+          accessCount: shareRecord.accessCount + 1,
+          lastAccessedAt: new Date(),
+        });
+      }
 
       const list = await this.getList(shareRecord.listId);
       return { list, valid: true };
@@ -741,7 +743,8 @@ export class CatalogueService {
    * Check if a list is a special system list
    */
   isSpecialList(listId: string): boolean {
-    return Object.values(SPECIAL_LIST_IDS).includes(listId as any);
+    const specialIds: string[] = Object.values(SPECIAL_LIST_IDS);
+    return specialIds.includes(listId);
   }
 
   /**
@@ -853,15 +856,17 @@ export class CatalogueService {
 
     if (existing) {
       // Update existing record with new timestamp
-      await this.db.catalogueEntities.update(existing.id!, {
-        addedAt: params.timestamp || new Date(),
-        notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
-      });
+      if (existing.id) {
+        await this.db.catalogueEntities.update(existing.id, {
+          addedAt: params.timestamp || new Date(),
+          notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
+        });
 
-      // Update list's updated timestamp
-      await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+        // Update list's updated timestamp
+        await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
 
-      return existing.id!;
+        return existing.id;
+      }
     }
 
     // Add new history entry
@@ -907,7 +912,7 @@ export class CatalogueService {
     try {
       const allLists = await this.getAllLists();
       return allLists.filter(list =>
-        !this.isSpecialList(list.id!) &&
+        list.id && !this.isSpecialList(list.id) &&
         !list.tags?.includes("system")
       );
     } catch (error) {

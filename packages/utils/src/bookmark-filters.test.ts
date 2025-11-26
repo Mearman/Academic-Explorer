@@ -8,8 +8,9 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
-import { describe, it, expect } from "vitest";
 import type { Bookmark, EntityType } from "@academic-explorer/types";
+import { describe, it, expect } from "vitest";
+
 import { filterBySearch, filterByEntityType, filterByTags } from "./bookmark-filters.js";
 
 // Mock bookmark data for testing

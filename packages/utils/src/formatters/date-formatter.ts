@@ -123,7 +123,7 @@ export function formatAbsoluteTime(date: Date): string {
 		});
 
 		return `${dateFormatter.format(date)} at ${timeFormatter.format(date)}`;
-	} catch (error) {
+	} catch {
 		// Fallback to ISO string if Intl fails
 		return date.toISOString();
 	}

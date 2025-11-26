@@ -5,7 +5,8 @@
  * Provides a unified interface for selecting and configuring cache strategies.
  */
 
-import { EnvironmentDetector, EnvironmentMode, type BuildContext } from "./environment-detector.js"
+import { logger } from "../logger.js"
+
 import { CacheConfigFactory, type CacheConfig } from "./cache-config.js"
 import {
 	CacheStrategySelector,
@@ -15,7 +16,8 @@ import {
 	CacheBackendType,
 	type CacheStrategyConfig,
 } from "./cache-strategies.js"
-import { logger } from "../logger.js"
+import { EnvironmentDetector, EnvironmentMode, type BuildContext } from "./environment-detector.js"
+
 
 /**
  * Runtime mode configuration options

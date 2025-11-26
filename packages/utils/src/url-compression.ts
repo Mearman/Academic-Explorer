@@ -3,10 +3,10 @@
  * Enables sharing catalogue lists via compressed URL parameters
  */
 
-import { deflate, inflate } from "pako";
-import { logger } from "./logger.js";
-import type { GenericLogger } from "./logger.js";
 import type { EntityType } from "@academic-explorer/types";
+import { deflate, inflate } from "pako";
+
+import type { GenericLogger } from "./logger";
 
 // Constants
 const LOG_CATEGORY = "url-compression";
@@ -99,7 +99,7 @@ export function decompressListData(compressedData: string): CompressedListData |
     }
 
     return parsed.d as CompressedListData;
-  } catch (error) {
+  } catch {
     // Return null instead of throwing for invalid data
     return null;
   }
@@ -161,23 +161,26 @@ export function extractListDataFromUrl(
 /**
  * Validate compressed list data structure
  */
-export function validateListData(data: any): data is CompressedListData {
+export function validateListData(data: unknown): data is CompressedListData {
   if (!data || typeof data !== 'object') {
     return false;
   }
 
-  const { list, entities } = data;
+  const dataObj = data as Record<string, unknown>;
+  const list = dataObj.list;
+  const entities = dataObj.entities;
 
   // Validate list structure
   if (!list || typeof list !== 'object') {
     return false;
   }
 
-  if (!list.title || typeof list.title !== 'string') {
+  const listObj = list as Record<string, unknown>;
+  if (!listObj.title || typeof listObj.title !== 'string') {
     return false;
   }
 
-  if (list.type && !['list', 'bibliography'].includes(list.type)) {
+  if (listObj.type && !['list', 'bibliography'].includes(listObj.type as string)) {
     return false;
   }
 

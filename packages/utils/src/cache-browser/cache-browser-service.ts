@@ -4,9 +4,11 @@
  * Simplified from hybrid approach - no localStorage scanning
  */
 
-import { Dexie, type Table } from "dexie"
+import { Dexie } from "dexie"
+
 type DexieInstance = InstanceType<typeof Dexie>
 import type { GenericLogger } from "../logger.js"
+
 import type {
 	CachedEntityMetadata,
 	CacheBrowserStats,
@@ -229,8 +231,11 @@ export class CacheBrowserService {
 			// Note: Dexie doesn't expose tables directly, so we'll get them from the schema
 			const tableNames: string[] = []
 			// Try to access table names through the internal schema
-			if ('tables' in db && Array.isArray((db as any).tables)) {
-				tableNames.push(...(db as any).tables.map((table: any) => table.name))
+			interface DexieWithTables {
+				tables: Array<{ name: string }>
+			}
+			if ('tables' in db && Array.isArray((db as DexieWithTables).tables)) {
+				tableNames.push(...(db as DexieWithTables).tables.map((table) => table.name))
 			} else {
 				// Fallback: try common OpenAlex table names
 				tableNames.push('works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'keywords', 'concepts', 'autocomplete')
@@ -596,7 +601,10 @@ export class CacheBrowserService {
 			// We'll use dynamic table access since we need to scan arbitrary stores
 			this.dbCache = new Dexie(this.config.dbName)
 			// Open the database without schema definition to allow dynamic access
-			await (this.dbCache as any).open()
+			interface DexieOpenable {
+				open(): Promise<DexieInstance>
+			}
+			await (this.dbCache as DexieOpenable).open()
 		}
 		return this.dbCache
 	}
