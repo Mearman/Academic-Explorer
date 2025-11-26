@@ -9,7 +9,7 @@ import { vi } from "vitest";
 /**
  * Mock router with commonly used methods and properties
  */
-export const createMockRouter = (): any => (overrides: Record<string, unknown> = {}) => ({
+export const createMockRouter = (overrides: Record<string, unknown> = {}): any => ({
   navigate: vi.fn(),
   back: vi.fn(),
   forward: vi.fn(),

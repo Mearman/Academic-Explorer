@@ -39,7 +39,7 @@ test.describe('Filesystem Cache', () => {
     // Verify the page loaded (look for any heading or content)
     const bodyText = await page.textContent('body');
     expect(bodyText).toBeTruthy();
-    expect(bodyText.length).toBeGreaterThan(100); // Page has content
+    expect(bodyText!.length).toBeGreaterThan(100); // Page has content
 
     console.log(`✅ Test completed - Author page loaded`);
   });
@@ -99,7 +99,7 @@ test.describe('Filesystem Cache', () => {
 
       const bodyText = await page.textContent('body');
       expect(bodyText).toBeTruthy();
-      expect(bodyText.length).toBeGreaterThan(100);
+      expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -115,7 +115,7 @@ test.describe('Filesystem Cache', () => {
 
       const bodyText = await page.textContent('body');
       expect(bodyText).toBeTruthy();
-      expect(bodyText.length).toBeGreaterThan(100);
+      expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -131,7 +131,7 @@ test.describe('Filesystem Cache', () => {
 
       const bodyText = await page.textContent('body');
       expect(bodyText).toBeTruthy();
-      expect(bodyText.length).toBeGreaterThan(100);
+      expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -151,8 +151,8 @@ test.describe('Filesystem Cache', () => {
     // Both should have content (cache persisted)
     expect(firstBodyText).toBeTruthy();
     expect(secondBodyText).toBeTruthy();
-    expect(firstBodyText.length).toBeGreaterThan(100);
-    expect(secondBodyText.length).toBeGreaterThan(100);
+    expect(firstBodyText!.length).toBeGreaterThan(100);
+    expect(secondBodyText!.length).toBeGreaterThan(100);
 
     console.log(`✅ Cache persisted across reloads`);
   });

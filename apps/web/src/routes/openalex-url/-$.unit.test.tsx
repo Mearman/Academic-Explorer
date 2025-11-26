@@ -22,7 +22,8 @@ vi.mock("@academic-explorer/utils", async (importOriginal) => {
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
 describe("OpenAlexUrl Route Unit Tests", () => {
-  const renderComponent = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const renderComponent = (url?: string) => {
     return renderHook(() => <OpenAlexUrlComponent />, {
       wrapper: ({ children }: any) => <div>{children}</div>,
     });

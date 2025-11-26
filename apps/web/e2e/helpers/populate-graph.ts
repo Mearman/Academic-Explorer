@@ -27,6 +27,7 @@ export async function populateWorkCitations(page: Page): Promise<void> {
     // Create target work node
     const workNode: GraphNode = {
       id: 'W2741809807',
+      entityId: 'W2741809807',
       label: 'Test Work with Citations',
       entityType: 'works',
       entityData: {
@@ -34,14 +35,16 @@ export async function populateWorkCitations(page: Page): Promise<void> {
         display_name: 'Test Work with Citations',
         type: 'article',
       },
-      position: { x: 0, y: 0 },
-      depth: 0,
+      x: 0,
+      y: 0,
+      externalIds: [],
     };
 
     // Create 3 citing works
     const citingWorks: GraphNode[] = [
       {
         id: 'W100',
+        entityId: 'W100',
         label: 'Citing Work 1',
         entityType: 'works',
         entityData: {
@@ -49,11 +52,13 @@ export async function populateWorkCitations(page: Page): Promise<void> {
           display_name: 'Citing Work 1',
           type: 'article',
         },
-        position: { x: 100, y: 0 },
-        depth: 1,
+        x: 100,
+        y: 0,
+        externalIds: [],
       },
       {
         id: 'W101',
+        entityId: 'W101',
         label: 'Citing Work 2',
         entityType: 'works',
         entityData: {
@@ -61,11 +66,13 @@ export async function populateWorkCitations(page: Page): Promise<void> {
           display_name: 'Citing Work 2',
           type: 'article',
         },
-        position: { x: 100, y: 100 },
-        depth: 1,
+        x: 100,
+        y: 100,
+        externalIds: [],
       },
       {
         id: 'W102',
+        entityId: 'W102',
         label: 'Citing Work 3',
         entityType: 'works',
         entityData: {
@@ -73,8 +80,9 @@ export async function populateWorkCitations(page: Page): Promise<void> {
           display_name: 'Citing Work 3',
           type: 'article',
         },
-        position: { x: 100, y: 200 },
-        depth: 1,
+        x: 100,
+        y: 200,
+        externalIds: [],
       },
     ];
 
@@ -121,29 +129,35 @@ export async function populateAuthorWorks(page: Page, authorId: string = 'A123')
 
     const authorNode: GraphNode = {
       id: aid,
+      entityId: aid,
       label: 'Test Author',
       entityType: 'authors',
       entityData: { id: aid, display_name: 'Test Author' },
-      position: { x: 0, y: 0 },
-      depth: 0,
+      x: 0,
+      y: 0,
+      externalIds: [],
     };
 
     const works: GraphNode[] = [
       {
         id: 'W200',
+        entityId: 'W200',
         label: 'Authored Work 1',
         entityType: 'works',
         entityData: { id: 'W200', display_name: 'Authored Work 1' },
-        position: { x: 100, y: 0 },
-        depth: 1,
+        x: 100,
+        y: 0,
+        externalIds: [],
       },
       {
         id: 'W201',
+        entityId: 'W201',
         label: 'Authored Work 2',
         entityType: 'works',
         entityData: { id: 'W201', display_name: 'Authored Work 2' },
-        position: { x: 100, y: 100 },
-        depth: 1,
+        x: 100,
+        y: 100,
+        externalIds: [],
       },
     ];
 

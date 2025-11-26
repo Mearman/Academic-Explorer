@@ -50,7 +50,8 @@ describe("OpenAlexUrl Route Integration Tests", () => {
     vi.clearAllMocks();
   });
 
-  const renderComponent = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const renderComponent = (url?: string) => {
     // For now, skip the full component test since it requires router context
     // Just test that the component can be imported and basic structure exists
     expect(OpenAlexUrlComponent).toBeDefined();
