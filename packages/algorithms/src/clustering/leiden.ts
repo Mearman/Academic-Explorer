@@ -149,7 +149,7 @@ export function leiden<N extends Node, E extends Edge>(
   if (m === 0) {
     // No edges - return each node as separate community
     const endTime = performance.now();
-    const finalCommunities = buildLeidenResults(graph, nodeToCommunity);
+    const finalCommunities = buildLeidenResults(graph, nodeToCommunity, incomingEdges);
     const communitiesForMetrics = finalCommunities.map(leidenToCommunity);
     const metrics = calculateClusterMetrics(graph, communitiesForMetrics);
     return Ok({
@@ -307,7 +307,8 @@ export function leiden<N extends Node, E extends Edge>(
       communities,
       nodeToCommunity,
       superNodes,
-      nodeToSuperNode
+      nodeToSuperNode,
+      incomingEdges
     );
 
     // PHASE 3: Aggregation
@@ -349,7 +350,7 @@ export function leiden<N extends Node, E extends Edge>(
     }
   });
 
-  const finalCommunities = buildLeidenResults(graph, finalNodeToCommunity);
+  const finalCommunities = buildLeidenResults(graph, finalNodeToCommunity, incomingEdges);
   const communitiesForMetrics = finalCommunities.map(leidenToCommunity);
   const metrics = calculateClusterMetrics(graph, communitiesForMetrics);
   const endTime = performance.now();
@@ -377,7 +378,8 @@ function refineCommunities<N extends Node, E extends Edge>(
   communities: Map<number, InternalCommunity>,
   nodeToCommunity: Map<string, number>,
   superNodes: Map<string, Set<string>>,
-  nodeToSuperNode: Map<string, string>
+  nodeToSuperNode: Map<string, string>,
+  incomingEdges: Map<string, E[]>
 ): void {
   const communitiesToSplit: number[] = [];
 
@@ -412,25 +414,18 @@ function refineCommunities<N extends Node, E extends Edge>(
           });
         }
 
-        // Check incoming edges for directed graphs
+        // Check incoming edges for directed graphs (use pre-computed map for efficiency)
         if (graph.isDirected()) {
-          const allNodes = graph.getAllNodes();
-          for (const node of allNodes) {
-            const outResult = graph.getOutgoingEdges(node.id);
-            if (outResult.ok) {
-              for (const edge of outResult.value) {
-                if (edge.target === nodeId) {
-                  const sourceSuperNodeId = nodeToSuperNode.get(node.id);
-                  if (
-                    sourceSuperNodeId &&
-                    community.nodes.has(sourceSuperNodeId) &&
-                    !visited.has(sourceSuperNodeId)
-                  ) {
-                    visited.add(sourceSuperNodeId);
-                    queue.push(sourceSuperNodeId);
-                  }
-                }
-              }
+          const incoming = incomingEdges.get(nodeId) || [];
+          for (const edge of incoming) {
+            const sourceSuperNodeId = nodeToSuperNode.get(edge.source);
+            if (
+              sourceSuperNodeId &&
+              community.nodes.has(sourceSuperNodeId) &&
+              !visited.has(sourceSuperNodeId)
+            ) {
+              visited.add(sourceSuperNodeId);
+              queue.push(sourceSuperNodeId);
             }
           }
         }
@@ -485,23 +480,16 @@ function refineCommunities<N extends Node, E extends Edge>(
           }
 
           if (graph.isDirected()) {
-            const allNodes = graph.getAllNodes();
-            for (const node of allNodes) {
-              const outResult = graph.getOutgoingEdges(node.id);
-              if (outResult.ok) {
-                for (const edge of outResult.value) {
-                  if (edge.target === nodeId) {
-                    const sourceSuperNodeId = nodeToSuperNode.get(node.id);
-                    if (
-                      sourceSuperNodeId &&
-                      community.nodes.has(sourceSuperNodeId) &&
-                      !visited.has(sourceSuperNodeId)
-                    ) {
-                      visited.add(sourceSuperNodeId);
-                      queue.push(sourceSuperNodeId);
-                    }
-                  }
-                }
+            const incoming = incomingEdges.get(nodeId) || [];
+            for (const edge of incoming) {
+              const sourceSuperNodeId = nodeToSuperNode.get(edge.source);
+              if (
+                sourceSuperNodeId &&
+                community.nodes.has(sourceSuperNodeId) &&
+                !visited.has(sourceSuperNodeId)
+              ) {
+                visited.add(sourceSuperNodeId);
+                queue.push(sourceSuperNodeId);
               }
             }
           }
@@ -732,7 +720,8 @@ function removeEmptyCommunities(
  */
 function buildLeidenResults<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
-  nodeToCommunity: Map<string, number>
+  nodeToCommunity: Map<string, number>,
+  incomingEdges: Map<string, E[]>
 ): LeidenCommunity<N>[] {
   const communityMap = new Map<number, Set<N>>();
 
@@ -752,7 +741,7 @@ function buildLeidenResults<N extends Node, E extends Edge>(
 
   communityMap.forEach((nodes, originalId) => {
     // Validate connectivity
-    const isConnected = validateConnectivity(graph, nodes);
+    const isConnected = validateConnectivity(graph, nodes, incomingEdges);
 
     // Calculate conductance
     const conductance = calculateConductance(graph, nodes);
@@ -820,7 +809,8 @@ function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>):
  */
 function validateConnectivity<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
-  community: Set<N>
+  community: Set<N>,
+  incomingEdges: Map<string, E[]>
 ): boolean {
   if (community.size === 0) return true;
   if (community.size === 1) return true;
@@ -846,16 +836,12 @@ function validateConnectivity<N extends Node, E extends Edge>(
     }
 
     if (graph.isDirected()) {
-      const allNodes = graph.getAllNodes();
-      for (const node of allNodes) {
-        const outResult = graph.getOutgoingEdges(node.id);
-        if (outResult.ok) {
-          for (const edge of outResult.value) {
-            if (edge.target === current.id && community.has(node) && !visited.has(node.id)) {
-              visited.add(node.id);
-              queue.push(node);
-            }
-          }
+      const incoming = incomingEdges.get(current.id) || [];
+      for (const edge of incoming) {
+        const sourceOption = graph.getNode(edge.source);
+        if (sourceOption.some && community.has(sourceOption.value) && !visited.has(edge.source)) {
+          visited.add(edge.source);
+          queue.push(sourceOption.value);
         }
       }
     }

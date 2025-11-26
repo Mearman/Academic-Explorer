@@ -120,7 +120,9 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
   let processedCount = 0;
 
   for (let i = 0; i < nodeIds.length; i++) {
-    // Find the minimum non-empty bin (search from 0 each time)
+    // Find the minimum non-empty bin
+    // Note: We must search from 0 each time because when we decrement neighbor degrees,
+    // we may move nodes to bins lower than the current minBin
     let currentBin = -1;
     for (let b = 0; b < bins.length; b++) {
       if (bins[b].length > 0) {
