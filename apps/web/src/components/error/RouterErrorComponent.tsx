@@ -1,8 +1,19 @@
-import React from "react";
-import { ErrorComponentProps } from "@tanstack/react-router";
+import { logger } from "@academic-explorer/utils/logger";
 import { Container, Alert, Text, Button, Stack, Group } from "@mantine/core";
 import { IconAlertTriangle, IconRefresh, IconHome } from "@tabler/icons-react";
-import { logger } from "@academic-explorer/utils/logger";
+import { ErrorComponentProps } from "@tanstack/react-router";
+import React from "react";
+
+// PostHog type for window object
+interface PostHogInstance {
+  capture: (event: string, properties?: Record<string, unknown>) => void;
+}
+
+declare global {
+  interface Window {
+    posthog?: PostHogInstance;
+  }
+}
 
 /**
  * Router Error Component
@@ -30,7 +41,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
     // Send error to PostHog for analytics
     try {
       if (typeof window !== 'undefined' && 'posthog' in window) {
-        const posthog = (window as any).posthog;
+        const posthog = window.posthog;
         if (posthog) {
           posthog.capture('error_occurred', {
             error_type: 'router_error',

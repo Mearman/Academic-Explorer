@@ -2,12 +2,23 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/utils";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useMemo } from "react";
+
+import { useAppActivityStore } from "@/stores/app-activity-store";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { logger } from "@/lib/logger";
+
+// PostHog type for window object
+interface PostHogInstance {
+  capture: (event: string, properties?: Record<string, unknown>) => void;
+}
+
+declare global {
+  interface Window {
+    posthog?: PostHogInstance;
+  }
+}
 
 export function NavigationTracker() {
   const location = useLocation();
@@ -31,8 +42,9 @@ export function NavigationTracker() {
 
     return (pathname: string, search: Record<string, unknown>) => {
       const key = `${pathname}|${JSON.stringify(search)}`;
-      if (cache.has(key)) {
-        return cache.get(key)!;
+      const cached = cache.get(key);
+      if (cached !== undefined) {
+        return cached;
       }
 
       const result = extractPageInfo(pathname, search);
@@ -80,7 +92,7 @@ export function NavigationTracker() {
         // Send page view to PostHog
         try {
           if (typeof window !== 'undefined' && 'posthog' in window) {
-            const posthog = (window as any).posthog;
+            const posthog = window.posthog;
             if (posthog) {
               const eventProperties = {
                 page_type: pageInfo.isEntityPage ? 'entity_detail' : 'search',
@@ -239,39 +251,3 @@ function getUserAgentGroup(): string {
   return 'other';
 }
 
-/**
- * Get entity category for analytics (privacy-safe grouping)
- */
-function getEntityCategory(entityType: string): string {
-  const workTypes = ['works'];
-  const peopleTypes = ['authors'];
-  const institutionTypes = ['institutions'];
-  const publicationTypes = ['sources', 'publishers'];
-  const researchTypes = ['topics', 'concepts'];
-  const fundingTypes = ['funders'];
-  const discoveryTypes = ['keywords'];
-
-  if (workTypes.includes(entityType)) return 'academic_work';
-  if (peopleTypes.includes(entityType)) return 'researcher';
-  if (institutionTypes.includes(entityType)) return 'research_institution';
-  if (publicationTypes.includes(entityType)) return 'publication_venue';
-  if (researchTypes.includes(entityType)) return 'research_topic';
-  if (fundingTypes.includes(entityType)) return 'funding_organization';
-  if (discoveryTypes.includes(entityType)) return 'discovery_term';
-
-  return 'other_entity';
-}
-
-/**
- * Get search category for analytics (privacy-safe grouping without revealing actual queries)
- */
-function getSearchCategory(query: string): string {
-  if (!query || typeof query !== 'string') return 'empty_search';
-
-  const trimmed = query.trim();
-  if (trimmed.length === 0) return 'empty_search';
-  if (trimmed.length < 5) return 'short_search';
-  if (trimmed.length < 10) return 'medium_search';
-  if (trimmed.length < 20) return 'long_search';
-  return 'very_long_search';
-}
