@@ -14,8 +14,8 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 test.describe('Author Verification Indicators', () => {
   test('should show indicator for unverified authors without Author IDs', async ({ page }) => {

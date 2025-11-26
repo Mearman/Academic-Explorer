@@ -5,9 +5,10 @@
  * 2. New entities fetched from API are written to filesystem cache
  */
 
-import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import { test, expect } from '@playwright/test';
 
 // Note: When running E2E tests via Playwright, cwd is already 'apps/web'
 const CACHE_DIR = path.join(process.cwd(), 'public/data/openalex');

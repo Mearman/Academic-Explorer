@@ -11,8 +11,8 @@
  * - Data attributes for testing and assistive technology
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
   test('should have no axe violations on page with graph edges', async ({ page }) => {

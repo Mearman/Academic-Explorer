@@ -14,8 +14,8 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 test.describe('Graph XPAC Styling', () => {
   test('should load graph exploration page successfully', async ({ page }) => {

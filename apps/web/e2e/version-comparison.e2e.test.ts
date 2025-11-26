@@ -17,8 +17,8 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 test.describe('Version Metadata Comparison Display', () => {
   test('should display version comparison indicator for Works with differences', async ({ page }) => {
@@ -347,7 +347,6 @@ test.describe('Version Metadata Comparison Display', () => {
 
     if (indicatorExists) {
       // Get all badge texts
-      const badges = indicator.locator('[role="img"]').or(indicator.locator('span'));
       const badgeTexts: string[] = [];
 
       const badgeElements = indicator.locator('[data-testid^="version-comparison-indicator-"]');

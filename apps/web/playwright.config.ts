@@ -3,8 +3,9 @@
  * Uses Playwright's built-in test runner and web server management
  */
 
-import { defineConfig, devices } from "@playwright/test";
 import * as fs from "fs";
+
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   // Test directory - using src and e2e for all tests

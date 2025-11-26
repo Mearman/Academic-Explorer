@@ -69,7 +69,7 @@ test.describe('xpac Works Default Inclusion', () => {
         try {
           const data = await response.json();
           apiResponses.push({ url, data });
-        } catch (error) {
+        } catch {
           // Ignore non-JSON responses
         }
       }
@@ -82,6 +82,7 @@ test.describe('xpac Works Default Inclusion', () => {
     // Wait for API responses
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
       // Timeout is acceptable - we just need some responses
+      // Ignore errors from timeout
     });
 
     // Verify page loaded successfully
@@ -96,7 +97,7 @@ test.describe('xpac Works Default Inclusion', () => {
         // Check if response has is_xpac field
         return data && (
           'is_xpac' in data ||
-          data.hasOwnProperty('is_xpac')
+          Object.prototype.hasOwnProperty.call(data, 'is_xpac')
         );
       });
 
@@ -176,7 +177,7 @@ test.describe('xpac Works Default Inclusion', () => {
         try {
           const data = await response.json();
           apiResponses.push({ url, data });
-        } catch (error) {
+        } catch {
           // Ignore non-JSON responses
         }
       }
@@ -189,6 +190,7 @@ test.describe('xpac Works Default Inclusion', () => {
     // Wait for API responses
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
       // Timeout is acceptable
+      // Ignore errors from timeout
     });
 
     // Verify page loaded successfully

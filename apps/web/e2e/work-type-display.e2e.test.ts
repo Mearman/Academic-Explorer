@@ -14,18 +14,8 @@
  * - RichEntityDisplay component: apps/web/src/components/molecules/RichEntityDisplay.tsx
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-
-/**
- * Work type color mapping (from RichEntityDisplay component)
- */
-const WORK_TYPE_COLORS: Record<string, string> = {
-  dataset: 'cyan',
-  software: 'violet',
-  specimen: 'teal',
-  other: 'orange',
-};
+import { test, expect } from '@playwright/test';
 
 /**
  * Test work IDs for different types

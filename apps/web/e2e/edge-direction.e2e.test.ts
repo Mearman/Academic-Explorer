@@ -20,9 +20,9 @@ import { test, expect } from '@playwright/test';
 async function getGraphEdges(page: any): Promise<any[]> {
   // Try to get graph data from window object
   const edges = await page.evaluate(() => {
-    // @ts-ignore - accessing window object
+    // @ts-expect-error accessing custom window property in test environment
     if (window.__GRAPH_DATA__?.edges) {
-      // @ts-ignore
+      // @ts-expect-error accessing custom window property in test environment
       return window.__GRAPH_DATA__.edges;
     }
     return null;

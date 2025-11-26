@@ -67,7 +67,7 @@ test.describe('Data Version 2 Default Behavior', () => {
         try {
           const data = await response.json();
           apiResponses.push({ url, data });
-        } catch (error) {
+        } catch {
           // Ignore non-JSON responses
         }
       }
@@ -80,6 +80,7 @@ test.describe('Data Version 2 Default Behavior', () => {
     // Wait for API responses
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
       // Timeout is acceptable - we just need some responses
+      // Ignore errors from timeout
     });
 
     // Verify we received responses
@@ -93,7 +94,7 @@ test.describe('Data Version 2 Default Behavior', () => {
       // Note: is_xpac may be true, false, or undefined, but presence indicates v2
       return data && (
         'is_xpac' in data ||
-        data.hasOwnProperty('is_xpac')
+        Object.prototype.hasOwnProperty.call(data, 'is_xpac')
       );
     });
 

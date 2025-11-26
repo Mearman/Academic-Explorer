@@ -350,13 +350,8 @@ test.describe('Xpac Toggle Functionality', () => {
     if (await switchInput.isChecked()) {
       await switchInput.click();
 
-      // Look for notification
-      const notification = page.locator('[role="status"]').filter({
-        hasText: /xpac|extended research/i,
-      });
-
-      // Notification may appear briefly, so check if it exists at any point
-      // Sometimes notifications disappear quickly, so we just verify the toggle works
+      // Notification may appear briefly, but may disappear quickly
+      // Just verify the toggle works
       await expect(switchInput).not.toBeChecked();
     }
 

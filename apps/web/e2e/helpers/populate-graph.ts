@@ -5,9 +5,8 @@
  * @module populate-graph
  */
 
-import type { Page } from '@playwright/test';
 import type { GraphNode, GraphEdge } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import type { Page } from '@playwright/test';
 
 /**
  * Populate graph with citation relationships for work W2741809807

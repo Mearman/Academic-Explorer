@@ -19,8 +19,8 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { test, expect } from "@playwright/test";
 
 test.describe("Data Version Selector November Availability", () => {
   test("should show data version selector when date is in November 2025", async ({
@@ -265,14 +265,6 @@ test.describe("Data Version Selector November Availability", () => {
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
-
-    // Listen for notification
-    let notificationShown = false;
-    page.on("console", (msg) => {
-      if (msg.text().includes("Data Version")) {
-        notificationShown = true;
-      }
-    });
 
     // Change the version
     await selector.click();

@@ -3,9 +3,11 @@
  * Handles storage state persistence and HAR caching for faster e2e tests
  */
 
-import { chromium, FullConfig } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
+
+import { chromium, FullConfig } from "@playwright/test";
+
 import { startMSWServer } from "./test/setup/msw-setup";
 
 // Use relative paths to avoid import.meta issues
@@ -260,4 +262,5 @@ async function globalSetup(config: FullConfig) {
   console.log(`   HAR cache: ${HAR_CACHE_DIR}`);
 }
 
+// eslint-disable-next-line import/no-default-export -- Playwright convention
 export default globalSetup;

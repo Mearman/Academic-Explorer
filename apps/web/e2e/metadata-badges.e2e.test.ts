@@ -16,8 +16,8 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 test.describe('Metadata Improvement Badges', () => {
   test('should render badges for work with improved metadata', async ({ page }) => {
