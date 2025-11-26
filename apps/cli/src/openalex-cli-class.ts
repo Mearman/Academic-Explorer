@@ -15,7 +15,8 @@ import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 import { z } from "zod"
-import { cachedOpenAlex, staticDataProvider, CachedOpenAlexClient } from "@academic-explorer/client"
+import { cachedOpenAlex, CachedOpenAlexClient } from "@academic-explorer/client/cached-client"
+import { staticDataProvider } from "@academic-explorer/client/internal/static-data-provider"
 
 import type { StaticEntityType } from "./entity-detection.js"
 

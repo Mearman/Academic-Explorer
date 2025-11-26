@@ -1,7 +1,7 @@
 {
   "name": "@academic-explorer/client",
   "version": "0.0.0",
-  "description": "TypeScript client for the OpenAlex API with comprehensive entity support and utilities",
+  "description": "TypeScript client for the OpenAlex API with extensive entity support and utilities",
   "keywords": [
     "openalex",
     "academic",
@@ -28,6 +28,14 @@
     "./client": {
       "types": "./dist/src/client.d.ts",
       "import": "./dist/src/client.js"
+    },
+    "./cached-client": {
+      "types": "./dist/src/cached-client.d.ts",
+      "import": "./dist/src/cached-client.js"
+    },
+    "./internal/static-data-provider": {
+      "types": "./dist/src/internal/static-data-provider.d.ts",
+      "import": "./dist/src/internal/static-data-provider.js"
     }
   },
   "files": [
