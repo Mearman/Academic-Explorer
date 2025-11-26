@@ -250,7 +250,7 @@ Academic graph pattern extraction including ego networks, path analysis, motif d
 ### spec-027: Louvain Scaling Optimization
 **Status**: 🚧 In Progress (Core Complete) | **Progress**: 53/72 tasks (74%)
 
-Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 443ms for 1000 nodes (baseline: 15.4s). Core objectives achieved; verification and polish tasks remain.
+Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 5.6-10.3s for 1000 nodes (70.6% speedup from 15.4s baseline). Core objectives achieved; verification and polish tasks remain.
 
 [View Spec](./027-louvain-scaling-optimization/)
 
