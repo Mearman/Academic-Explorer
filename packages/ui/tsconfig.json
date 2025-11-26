@@ -7,9 +7,9 @@
     "baseUrl": ".",
     "paths": {
       "@/ui/section-kit": ["./src/components/section-kit"],
-      "@academic-explorer/types": ["../types/dist/index.d.ts"],
-      "@academic-explorer/utils": ["../utils/dist/index.d.ts"],
-      "@academic-explorer/client": ["../client/dist/index.d.ts"]
+      "@academic-explorer/types": ["../types/src/index.ts"],
+      "@academic-explorer/utils": ["../utils/src/index.ts"],
+      "@academic-explorer/client": ["../client/src/index.ts"]
     },
     "types": ["node"],
     "declaration": true,
