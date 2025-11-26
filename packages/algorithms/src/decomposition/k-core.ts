@@ -108,11 +108,15 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
 
   // Map node IDs to array indices for efficient lookup
   const nodeIndex = new Map<string, number>();
+  // Map node index -> position within its current bin for O(1) removal (instead of indexOf)
+  const binPosition = new Map<number, number>();
+
   nodeIds.forEach((nodeId, idx) => {
     nodeIndex.set(nodeId, idx);
     const degree = degrees.get(nodeId) || 0;
+    const posInBin = bins[degree].length;
     bins[degree].push(idx);
-    position.set(nodeId, idx);
+    binPosition.set(idx, posInBin);
   });
 
   // Step 4: Process nodes in degree order (Batagelj-Zaversnik algorithm)
@@ -170,17 +174,30 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
 
       if (neighborDegree > 0) {
         // Decrement neighbor's degree
-        degrees.set(neighborId, neighborDegree - 1);
+        const newDegree = neighborDegree - 1;
+        degrees.set(neighborId, newDegree);
 
-        // Move neighbor to lower bin
+        // Move neighbor to lower bin using O(1) position lookup
         const neighborIdx = nodeIndex.get(neighborId)!;
-        const neighborPos = bins[neighborDegree].indexOf(neighborIdx);
+        const neighborPos = binPosition.get(neighborIdx);
 
-        if (neighborPos !== -1) {
-          // Remove from old bin
-          bins[neighborDegree].splice(neighborPos, 1);
-          // Add to new bin (which is lower, so may be processed next iteration)
-          bins[neighborDegree - 1].push(neighborIdx);
+        if (neighborPos !== undefined) {
+          const oldBin = bins[neighborDegree];
+
+          // Remove from old bin using swap-and-pop for O(1) removal
+          const lastIdx = oldBin[oldBin.length - 1];
+          oldBin[neighborPos] = lastIdx;
+          oldBin.pop();
+
+          // Update position of swapped node (if different)
+          if (lastIdx !== neighborIdx) {
+            binPosition.set(lastIdx, neighborPos);
+          }
+
+          // Add to new bin and update position
+          const newPos = bins[newDegree].length;
+          bins[newDegree].push(neighborIdx);
+          binPosition.set(neighborIdx, newPos);
         }
       }
     });
