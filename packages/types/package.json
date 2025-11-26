@@ -1,5 +1,7 @@
 {
-  "nx": { "includedScripts": [] },
+  "nx": {
+    "includedScripts": []
+  },
   "name": "@academic-explorer/types",
   "version": "0.0.0",
   "type": "module",
@@ -52,6 +54,8 @@
   "devDependencies": {
     "eslint": "^9.36.0",
     "typescript": "~5.9.2",
+    "vite": "^7.2.4",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.10"
   },
   "publishConfig": {
