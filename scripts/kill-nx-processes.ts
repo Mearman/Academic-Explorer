@@ -14,6 +14,10 @@ const isDarwin = platform() === "darwin"
 function killNxProcesses(): void {
 	console.log("🔍 Finding and killing Nx processes...")
 
+	// Get current process PID to exclude ourselves
+	const currentPid = process.pid.toString()
+	const parentPid = process.ppid?.toString() || ""
+
 	try {
 		if (isWindows) {
 			// Windows: Find and kill nx processes
@@ -22,11 +26,15 @@ function killNxProcesses(): void {
 				const nxProcesses = tasklist
 					.split("\n")
 					.filter((line) => line.includes("nx") || (line.includes("node") && line.includes("nx")))
+					// Exclude our own script
+					.filter((line) => !line.includes("kill-nx"))
 					.map((line) => {
 						const parts = line.split(",")
 						return parts[1]?.replace(/"/g, "") // PID is in second column
 					})
 					.filter(Boolean)
+					// Exclude current and parent PID
+					.filter((pid) => pid !== currentPid && pid !== parentPid)
 
 				for (const pid of nxProcesses) {
 					try {
@@ -56,6 +64,10 @@ function killNxProcesses(): void {
 					const pids = execSync(`pgrep -f "${cmd}"`, { encoding: "utf8" }).trim()
 					if (pids) {
 						for (const pid of pids.split("\n").filter(Boolean)) {
+							// Skip our own process and parent (pnpm/tsx)
+							if (pid === currentPid || pid === parentPid) {
+								continue
+							}
 							try {
 								execSync(`kill -TERM ${pid}`, { stdio: "ignore" })
 								console.log(`  ✅ Killed ${cmd} process ${pid}`)
@@ -84,8 +96,12 @@ function killNxProcesses(): void {
 				const nxNodeProcesses = nodeProcesses
 					.split("\n")
 					.filter((line) => line.includes("nx") || line.includes(".nx") || line.includes("nx-daemon"))
+					// Exclude lines that contain "kill-nx" (our own script)
+					.filter((line) => !line.includes("kill-nx"))
 					.map((line) => line.trim().split(/\s+/)[1])
 					.filter(Boolean)
+					// Exclude our own PID and parent
+					.filter((pid) => pid !== currentPid && pid !== parentPid)
 
 				for (const pid of nxNodeProcesses) {
 					try {
