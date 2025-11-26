@@ -3,10 +3,9 @@
  * Provides consistent access to theme colors across light and dark modes
  */
 
+import { detectEntityType , getEntityColor as getTaxonomyColorName } from "@academic-explorer/types";
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useMemo, useCallback } from "react";
-import { detectEntityType } from "@academic-explorer/types";
-import { getEntityColor as getTaxonomyColorName } from "@academic-explorer/types";
 
 export function useThemeColors() {
   const theme = useMantineTheme();

@@ -3,20 +3,26 @@
  * Provides CRUD operations for lists and bibliographies
  */
 
-import { useCallback, useEffect, useState } from "react";
+import type { EntityType } from "@academic-explorer/types";
 import {
   catalogueEventEmitter,
   type CatalogueList,
   type CatalogueEntity,
   type ListType,
+  compressListData,
+  createShareUrl,
+  validateListData,
+  type CompressedListData,
+  decompressListData,
 } from "@academic-explorer/utils";
-import { compressListData, createShareUrl, extractListDataFromUrl, validateListData, type CompressedListData, decompressListData } from "@academic-explorer/utils";
-import type { EntityType } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils/logger";
+import QRCode from "qrcode";
+import { useCallback, useEffect, useState } from "react";
+
+import { useStorageProvider } from "@/contexts/storage-provider-context";
 import type { ExportFormat } from "@/types/catalogue";
 import { validateExportFormat } from "@/utils/catalogue-validation";
-import { logger } from "@academic-explorer/utils/logger";
-import { useStorageProvider } from "@/contexts/storage-provider-context";
-import QRCode from "qrcode";
+
 
 const CATALOGUE_LOGGER_CONTEXT = "catalogue-hook";
 
@@ -147,9 +153,9 @@ export interface UseCatalogueReturn {
   exportListAsFile: (listId: string, format: "json" | "compressed") => Promise<void>;
 
   // Import Methods
-  importList: (data: ExportFormat, mergeIfExists?: boolean) => Promise<string>;
-  importListCompressed: (compressed: string, mergeIfExists?: boolean) => Promise<string>;
-  importListFromFile: (file: File, mergeIfExists?: boolean) => Promise<string>;
+  importList: (data: ExportFormat) => Promise<string>;
+  importListCompressed: (compressed: string) => Promise<string>;
+  importListFromFile: (file: File) => Promise<string>;
   validateImportData: (data: unknown) => { valid: boolean; errors: string[]; warnings?: string[] };
   previewImport: (data: ExportFormat) => Promise<{
     listTitle: string;
@@ -382,8 +388,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     try {
       await storage.updateEntityNotes(entityRecordId, notes);
       // Refresh entities to show updated notes
-      if (selectedList) {
-        await refreshEntities(selectedList.id!);
+      if (selectedList && selectedList.id) {
+        await refreshEntities(selectedList.id);
       }
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to update entity notes", {
@@ -436,7 +442,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     try {
       // Get the entities from source list
       const sourceEntities = await storage.getListEntities(sourceListId);
-      const entitiesToMove = sourceEntities.filter(e => entityIds.includes(e.id!));
+      const entitiesToMove = sourceEntities.filter(e => e.id && entityIds.includes(e.id));
 
       // Move entities one by one
       for (const entity of entitiesToMove) {
@@ -449,7 +455,9 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         });
 
         // Remove from source list
-        await storage.removeEntityFromList(sourceListId, entity.id!);
+        if (entity.id) {
+          await storage.removeEntityFromList(sourceListId, entity.id);
+        }
       }
 
       // T085: Refresh source list after bulk move to update UI
@@ -633,36 +641,11 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Copy text to clipboard
   const copyToClipboard = useCallback(async (text: string): Promise<void> => {
     try {
-      // Try modern Clipboard API first
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-        logger.debug(CATALOGUE_LOGGER_CONTEXT, "Text copied to clipboard using Clipboard API", {
-          textLength: text.length,
-        });
-        return;
-      }
-
-      // Fallback for older browsers or non-secure contexts
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (!successful) {
-          throw new Error("execCommand('copy') failed");
-        }
-        logger.debug(CATALOGUE_LOGGER_CONTEXT, "Text copied to clipboard using fallback method", {
-          textLength: text.length,
-        });
-      } finally {
-        document.body.removeChild(textArea);
-      }
+      // Use modern Clipboard API
+      await navigator.clipboard.writeText(text);
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Text copied to clipboard using Clipboard API", {
+        textLength: text.length,
+      });
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to copy to clipboard", { error });
       throw error;
@@ -788,13 +771,13 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
           position: entity.position,
           note: entity.notes,
           addedAt: entity.addedAt instanceof Date ? entity.addedAt.toISOString() : entity.addedAt,
-          // For now, create minimal metadata since CatalogueEntity doesn't store full metadata
+          // Minimal metadata since CatalogueEntity doesn't store full metadata
           metadata: {
             type: entity.entityType,
             displayName: entity.entityId,
             worksCount: 0,
             citedByCount: 0,
-          } as any,
+          },
         })),
       };
 
@@ -898,7 +881,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       const blob = new Blob([data], { type: mimeType });
       const url = URL.createObjectURL(blob);
 
-      // Create temporary anchor element
+      // Create temporary anchor element for download (standard approach)
+      // eslint-disable-next-line custom/no-deprecated
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
@@ -925,7 +909,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   }, [storage, exportList, exportListCompressed]);
 
   // Import list from ExportFormat data
-  const importList = useCallback(async (data: ExportFormat, mergeIfExists = false): Promise<string> => {
+  const importList = useCallback(async (data: ExportFormat): Promise<string> => {
     try {
       // Validate the data first
       validateExportFormat(data);
@@ -980,7 +964,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   }, [storage]);
 
   // Import list from compressed Base64URL string
-  const importListCompressed = useCallback(async (compressed: string, mergeIfExists = false): Promise<string> => {
+  const importListCompressed = useCallback(async (compressed: string): Promise<string> => {
     try {
       // Decompress the data
       const listData = decompressListData(compressed);
@@ -1012,13 +996,13 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
               displayName: entity.entityId,
               worksCount: 0,
               citedByCount: 0,
-            } as any,
+            },
           };
         }),
       };
 
       // Use importList to handle the actual import
-      return await importList(exportData, mergeIfExists);
+      return await importList(exportData);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to import compressed list", { error });
       throw error;
@@ -1026,7 +1010,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   }, [importList]);
 
   // Import list from File object
-  const importListFromFile = useCallback(async (file: File, mergeIfExists = false): Promise<string> => {
+  const importListFromFile = useCallback(async (file: File): Promise<string> => {
     try {
       // Read file as text
       const text = await file.text();
@@ -1048,17 +1032,17 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         } else {
           throw new Error("Not an ExportFormat JSON");
         }
-      } catch (jsonError) {
+      } catch {
         // If JSON parsing fails, treat as compressed data
         try {
-          return await importListCompressed(text.trim(), mergeIfExists);
-        } catch (compressedError) {
+          return await importListCompressed(text.trim());
+        } catch {
           throw new Error("File contains invalid data: not valid JSON or compressed format");
         }
       }
 
       // Use importList to handle the actual import
-      return await importList(data, mergeIfExists);
+      return await importList(data);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to import list from file", {
         fileName: file.name,
@@ -1146,7 +1130,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       const allLists = await storage.getAllLists();
 
       for (const list of allLists) {
-        const listEntities = await storage.getListEntities(list.id!);
+        if (!list.id) continue;
+        const listEntities = await storage.getListEntities(list.id);
         const existingEntityIds = new Set(listEntities.map(e => e.entityId));
 
         for (const entity of data.entities) {

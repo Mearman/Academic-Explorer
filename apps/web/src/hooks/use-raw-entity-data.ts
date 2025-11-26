@@ -3,11 +3,11 @@
  * Uses the proper cache system with Memory → IndexedDB → localStorage → API hierarchy
  */
 
-import type { OpenAlexEntity, QueryParams } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { EntityDetectionService } from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils";
+import type { OpenAlexEntity, QueryParams } from "@academic-explorer/types";
+import { EntityDetectionService , logger } from "@academic-explorer/utils";
 import { useQuery } from "@tanstack/react-query";
+
 import type { CacheKeyType } from "../config/cache";
 import { ENTITY_CACHE_TIMES } from "../config/cache";
 

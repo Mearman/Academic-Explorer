@@ -3,15 +3,16 @@
  * Refactored to use catalogue service for bookmarks and history
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation } from "@tanstack/react-router";
+import type { EntityType } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils/logger";
 import {
   catalogueService,
   catalogueEventEmitter,
   type CatalogueEntity,
   SPECIAL_LIST_IDS,
 } from "@academic-explorer/utils/storage/catalogue-db";
-import { logger } from "@academic-explorer/utils/logger";
+import { useLocation } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const USER_INTERACTIONS_LOGGER_CONTEXT = "user-interactions";
 
@@ -105,7 +106,7 @@ export function useUserInteractions(
   const location = (() => {
     try {
       return useLocation();
-    } catch (error) {
+    } catch {
       // Return a fallback location object when router is not available
       return {
         pathname: '',
@@ -169,7 +170,7 @@ export function useUserInteractions(
         // Check bookmark status based on content type
         if (entityId && entityType) {
           const bookmarked = await catalogueService.isBookmarked(
-            entityType as any,
+            entityType as EntityType,
             entityId
           );
           if (isMountedRef.current) {
@@ -243,7 +244,7 @@ export function useUserInteractions(
           const currentUrl = location.pathname + location.search;
 
           await catalogueService.addToHistory({
-            entityType: entityType as any,
+            entityType: entityType as EntityType,
             entityId: entityId,
             url: currentUrl,
             title: `${entityType}: ${entityId}`,
@@ -308,7 +309,7 @@ export function useUserInteractions(
         }
 
         await catalogueService.addToHistory({
-          entityType: metadata.entityType as any,
+          entityType: metadata.entityType as EntityType,
           entityId: metadata.entityId,
           url,
           title: metadata.searchQuery ? `Search: ${metadata.searchQuery}` : `${metadata.entityType}: ${metadata.entityId}`,
@@ -349,7 +350,7 @@ export function useUserInteractions(
         const currentUrl = location.pathname + location.search;
 
         await catalogueService.addBookmark({
-          entityType: entityType as any,
+          entityType: entityType as EntityType,
           entityId: entityId,
           url: currentUrl,
           title,

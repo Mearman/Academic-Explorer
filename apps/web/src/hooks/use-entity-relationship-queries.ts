@@ -5,22 +5,19 @@
  * @module use-entity-relationship-queries
  */
 
-import React from 'react';
+import { getWorks, getAuthors, getSources, getInstitutions } from '@academic-explorer/client';
+import { RelationType, getInboundQueries, getOutboundQueries } from '@academic-explorer/types';
+import type { EntityType , RelationshipQueryConfig } from '@academic-explorer/types';
 import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import type { EntityType, RelationshipTypeString } from '@academic-explorer/types';
-import {
-  getInboundQueries,
-  getOutboundQueries,
-  type RelationshipQueryConfig,
-} from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import React from 'react';
+
 import type {
   RelationshipSection,
   RelationshipItem,
   PaginationState,
 } from '@/types/relationship';
-import { RELATIONSHIP_TYPE_LABELS, DEFAULT_PAGE_SIZE } from '@/types/relationship';
-import { getWorks, getAuthors, getSources, getInstitutions } from '@academic-explorer/client';
+import { DEFAULT_PAGE_SIZE } from '@/types/relationship';
+
 
 /**
  * Type guard to check if a string is a valid RelationType enum value
@@ -40,29 +37,6 @@ function isOpenAlexIdUrl(displayName: string): boolean {
   return displayName.startsWith('https://openalex.org/');
 }
 
-/**
- * Extract entity type from OpenAlex ID URL
- * E.g., "https://openalex.org/I123" → "institutions"
- */
-function getEntityTypeFromId(id: string): EntityType | null {
-  const match = id.match(/https:\/\/openalex\.org\/([A-Z])/);
-  if (!match) return null;
-
-  const prefix = match[1];
-  const typeMap: Record<string, EntityType> = {
-    W: 'works',
-    A: 'authors',
-    S: 'sources',
-    I: 'institutions',
-    P: 'publishers',
-    F: 'funders',
-    T: 'topics',
-    C: 'concepts',
-    K: 'keywords',
-  };
-
-  return typeMap[prefix] || null;
-}
 
 export interface UseEntityRelationshipQueriesResult {
   /** Incoming relationship sections from API queries */
@@ -108,14 +82,24 @@ export function useEntityRelationshipQueries(
       // Inbound queries
       ...inboundConfigs.map((config) => ({
         queryKey: ['entity-relationships', 'inbound', entityType, entityId, config.type],
-        queryFn: () => executeRelationshipQuery(entityId!, entityType, config),
+        queryFn: () => {
+          if (!entityId) {
+            throw new Error('Entity ID is required');
+          }
+          return executeRelationshipQuery(entityId, entityType, config);
+        },
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
       })),
       // Outbound queries
       ...outboundConfigs.map((config) => ({
         queryKey: ['entity-relationships', 'outbound', entityType, entityId, config.type],
-        queryFn: () => executeRelationshipQuery(entityId!, entityType, config),
+        queryFn: () => {
+          if (!entityId) {
+            throw new Error('Entity ID is required');
+          }
+          return executeRelationshipQuery(entityId, entityType, config);
+        },
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
       })),

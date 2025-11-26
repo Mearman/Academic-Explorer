@@ -2,9 +2,14 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import {
+  MantineTheme,
+  useMantineColorScheme,
+  useMantineTheme,
+} from "@mantine/core";
 import { renderHook } from "@testing-library/react";
-import { MantineTheme } from "@mantine/core";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { useThemeColors } from "./use-theme-colors";
 
 // Mock the Mantine hooks
@@ -16,9 +21,6 @@ vi.mock("@mantine/core", async () => {
     useMantineTheme: vi.fn(),
   };
 });
-
-// Import the mocked functions
-import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 
 describe("useThemeColors", () => {
   let mockTheme: Partial<MantineTheme>;

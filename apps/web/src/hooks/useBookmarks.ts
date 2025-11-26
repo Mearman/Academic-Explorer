@@ -3,14 +3,15 @@
  * Provides reactive bookmark state and CRUD operations
  */
 
-import { useCallback, useEffect, useState } from "react";
+import type { EntityType } from "@academic-explorer/types";
 import {
   catalogueEventEmitter,
   logger,
   type CatalogueEntity,
   type AddBookmarkParams
 } from "@academic-explorer/utils";
-import type { EntityType } from "@academic-explorer/types";
+import { useCallback, useEffect, useState } from "react";
+
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 
 const BOOKMARKS_LOGGER_CONTEXT = "bookmarks-hook";

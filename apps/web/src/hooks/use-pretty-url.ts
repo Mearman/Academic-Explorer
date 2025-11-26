@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { logger } from "@academic-explorer/utils/logger";
+import { useEffect } from "react";
 
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version

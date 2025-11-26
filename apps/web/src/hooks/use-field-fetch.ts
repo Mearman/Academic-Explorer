@@ -3,10 +3,11 @@
  * Uses the OpenAlex `select` parameter to fetch only requested fields
  */
 
-import { useState, useCallback } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import type { OpenAlexEntity } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils";
+import { useState, useCallback } from "react";
+
 import type { CacheKeyType } from "../config/cache";
 
 interface UseFieldFetchOptions {

@@ -3,9 +3,10 @@
  * Extends the existing user interactions system with pagination-aware query bookmarking
  */
 
-import { useCallback, useMemo } from "react";
+import { logger } from "@academic-explorer/utils/logger";
 import { useLocation, useSearch } from "@tanstack/react-router";
-import { useUserInteractions } from "./use-user-interactions";
+import { useCallback, useMemo } from "react";
+
 import {
   extractQueryParameters,
   createQueryBookmarkRequest,
@@ -15,7 +16,10 @@ import {
   areQueriesEquivalent,
   type OpenAlexSearchParams
 } from "@/lib/query-bookmarking";
-import { logger } from "@academic-explorer/utils/logger";
+
+import { useUserInteractions } from "./use-user-interactions";
+
+
 
 const QUERY_BOOKMARKING_LOGGER_CONTEXT = "query-bookmarking";
 
@@ -58,11 +62,6 @@ export function useQueryBookmarking({
   entityId,
   disabled = false
 }: UseQueryBookmarkingOptions): UseQueryBookmarkingReturn {
-
-  // Check if we're in a test environment without router context
-  const isTestEnvironment = typeof window !== 'undefined' && window.location.pathname === '' ||
-                            typeof window === 'undefined' ||
-                            process.env.NODE_ENV === 'test';
 
   // Get current route search parameters
   const searchParams = useSearch({ strict: false }) as OpenAlexSearchParams;
@@ -194,7 +193,7 @@ export function useQueryBookmarking({
             return bookmarkUrl.includes(searchParams.toString());
           }
           return false;
-        } catch (error) {
+        } catch {
           return false;
         }
       });

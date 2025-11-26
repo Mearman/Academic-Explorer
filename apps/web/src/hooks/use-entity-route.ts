@@ -3,9 +3,10 @@
  * This replaces the stub in @academic-explorer/utils with actual data fetching
  */
 
-import { useState, useCallback } from "react";
-import { useParams, useSearch } from "@tanstack/react-router";
 import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@academic-explorer/utils";
+import { useParams, useSearch } from "@tanstack/react-router";
+import { useState, useCallback } from "react";
+
 import { useRawEntityData } from "./use-raw-entity-data";
 import { useUserInteractions } from "./use-user-interactions";
 
@@ -16,7 +17,6 @@ export function useEntityRoute<T = unknown>(
   const params = useParams({ strict: false }) as Record<string, string>;
   const search = useSearch({ strict: false }) as Record<string, unknown>;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
-  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Extract entity ID from params using the config's paramKey
   const rawId = params[config.paramKey] || "";
@@ -32,6 +32,9 @@ export function useEntityRoute<T = unknown>(
     },
   });
 
+  // Random entity loading was removed - define as constant false
+  const isLoadingRandom = false;
+
   // Get user interactions
   const userInteractions = useUserInteractions();
 
@@ -44,21 +47,21 @@ export function useEntityRoute<T = unknown>(
 
   // Mini graph data - stubbed (graph store removed)
   const miniGraphData = {
-    data: rawEntityData.data,
-    isLoading: rawEntityData.isLoading,
-    error: rawEntityData.error,
+    data: null,
+    isLoading: false,
+    error: null,
   };
 
   // Stubbed load functions (graph store removed)
   const wrappedLoadEntity = useCallback(
-    (_entity: unknown) => {
+    () => {
       // Graph store removed - no-op
     },
     []
   );
 
   const wrappedLoadEntityIntoGraph = useCallback(
-    (_entity: unknown) => {
+    () => {
       // Graph store removed - no-op
     },
     []

@@ -3,8 +3,8 @@
  * Allows setting page titles based on entity data or route content
  */
 
-import { useEffect, useRef } from "react";
 import { logger } from "@academic-explorer/utils/logger";
+import { useEffect, useRef } from "react";
 
 interface UseDocumentTitleOptions {
   /**

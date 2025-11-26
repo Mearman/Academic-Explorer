@@ -5,9 +5,10 @@
  * @module use-entity-relationships-from-data
  */
 
-import { useMemo } from 'react';
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/types';
+import { useMemo } from 'react';
+
 import type {
   RelationshipSection,
   RelationshipItem,
@@ -183,14 +184,18 @@ function extractAuthorRelationships(
   if (affiliations && affiliations.length > 0) {
     const affiliationItems: RelationshipItem[] = affiliations
       .filter(aff => aff.institution?.id && aff.institution?.display_name)
-      .map(aff => createRelationshipItem(
-        authorId,
-        aff.institution!.id!,
-        'authors' as EntityType,
-        'institutions' as EntityType,
-        RelationType.AFFILIATION,
-        'outbound',
-        aff.institution!.display_name!));
+      .map(aff => {
+        const institution = aff.institution;
+        return createRelationshipItem(
+          authorId,
+          institution?.id || '',
+          'authors' as EntityType,
+          'institutions' as EntityType,
+          RelationType.AFFILIATION,
+          'outbound',
+          institution?.display_name || '',
+        );
+      });
 
     if (affiliationItems.length > 0) {
       outgoing.push(createRelationshipSection(
@@ -213,14 +218,19 @@ function extractAuthorRelationships(
   if (topics && topics.length > 0) {
     const topicItems: RelationshipItem[] = topics
       .filter(topic => topic.id && topic.display_name)
-      .map(topic => createRelationshipItem(
-        authorId,
-        topic.id!,
-        'authors' as EntityType,
-        'topics' as EntityType,
-        RelationType.AUTHOR_RESEARCHES,
-        'outbound',
-        topic.display_name!));
+      .map(topic => {
+        const topicId = topic.id || '';
+        const topicName = topic.display_name || '';
+        return createRelationshipItem(
+          authorId,
+          topicId,
+          'authors' as EntityType,
+          'topics' as EntityType,
+          RelationType.AUTHOR_RESEARCHES,
+          'outbound',
+          topicName,
+        );
+      });
 
     if (topicItems.length > 0) {
       outgoing.push(createRelationshipSection(
@@ -256,14 +266,18 @@ function extractWorkRelationships(
   if (authorships && authorships.length > 0) {
     const authorItems: RelationshipItem[] = authorships
       .filter(auth => auth.author?.id && auth.author?.display_name)
-      .map(auth => createRelationshipItem(
-        workId,
-        auth.author!.id!,
-        'works' as EntityType,
-        'authors' as EntityType,
-        RelationType.AUTHORSHIP,
-        'outbound',
-        auth.author!.display_name!));
+      .map(auth => {
+        const author = auth.author;
+        return createRelationshipItem(
+          workId,
+          author?.id || '',
+          'works' as EntityType,
+          'authors' as EntityType,
+          RelationType.AUTHORSHIP,
+          'outbound',
+          author?.display_name || '',
+        );
+      });
 
     if (authorItems.length > 0) {
       outgoing.push(createRelationshipSection(
@@ -337,14 +351,19 @@ function extractWorkRelationships(
   if (workTopics && workTopics.length > 0) {
     const topicItems: RelationshipItem[] = workTopics
       .filter(topic => topic.id && topic.display_name)
-      .map(topic => createRelationshipItem(
-        workId,
-        topic.id!,
-        'works' as EntityType,
-        'topics' as EntityType,
-        RelationType.TOPIC,
-        'outbound',
-        topic.display_name!));
+      .map(topic => {
+        const topicId = topic.id || '';
+        const topicName = topic.display_name || '';
+        return createRelationshipItem(
+          workId,
+          topicId,
+          'works' as EntityType,
+          'topics' as EntityType,
+          RelationType.TOPIC,
+          'outbound',
+          topicName,
+        );
+      });
 
     if (topicItems.length > 0) {
       outgoing.push(createRelationshipSection(
