@@ -9,11 +9,11 @@
  * @category @utility
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
-import { SearchPage } from '@/test/page-objects/SearchPage';
 import { waitForAppReady, waitForSearchResults } from '@/test/helpers/app-ready';
+import { SearchPage } from '@/test/page-objects/SearchPage';
 
 test.describe('@utility Search Page', () => {
 	let searchPage: SearchPage;

@@ -10,8 +10,8 @@
 
 import { test, expect } from "@playwright/test";
 
-import { ErrorPage } from "@/test/page-objects/ErrorPage";
 import { waitForAppReady } from "@/test/helpers/app-ready";
+import { ErrorPage } from "@/test/page-objects/ErrorPage";
 
 test.describe("@error 404 Not Found Errors", () => {
 	let errorPage: ErrorPage;
@@ -52,13 +52,13 @@ test.describe("@error 404 Not Found Errors", () => {
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 
-	test("should display 404 error for non-existent source", async ({ page }) => {
+	test("should display 404 error for non-existent source", async () => {
 		await errorPage.gotoNonExistentEntity("sources", "S9999999999999");
 
 		await errorPage.expectNotFoundError();
 	});
 
-	test("should display 404 error for non-existent topic", async ({ page }) => {
+	test("should display 404 error for non-existent topic", async () => {
 		await errorPage.gotoNonExistentEntity("topics", "T9999999999999");
 
 		await errorPage.expectNotFoundError();
@@ -132,9 +132,7 @@ test.describe("@error 404 Not Found Errors", () => {
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 
-	test("should handle 404 error with retry button if available", async ({
-		page,
-	}) => {
+	test("should handle 404 error with retry button if available", async () => {
 		await errorPage.gotoNonExistentEntity("works", "W9999999999999");
 
 		// Check if retry button is visible
@@ -148,9 +146,7 @@ test.describe("@error 404 Not Found Errors", () => {
 		}
 	});
 
-	test("should handle 404 error with home button if available", async ({
-		page,
-	}) => {
+	test("should handle 404 error with home button if available", async () => {
 		await errorPage.gotoNonExistentEntity("works", "W9999999999999");
 
 		// Check if home button is visible

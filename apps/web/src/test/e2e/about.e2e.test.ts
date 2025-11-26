@@ -7,11 +7,11 @@
  * @see CLAUDE.md - E2E Testing Patterns section
  */
 
-import { test, expect } from "@playwright/test";
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
 
-import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
 import { waitForAppReady } from "@/test/helpers/app-ready";
+import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
 
 const BASE_URL = "http://localhost:5173";
 

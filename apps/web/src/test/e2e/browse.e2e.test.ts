@@ -9,8 +9,8 @@
  * @see spec-020 Phase 2: Utility page E2E tests
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';

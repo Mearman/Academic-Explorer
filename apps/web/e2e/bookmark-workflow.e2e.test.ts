@@ -14,8 +14,8 @@
  * @tag @workflow
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '../src/test/helpers/app-ready';
 

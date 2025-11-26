@@ -140,4 +140,3 @@ export class BrowsePage extends BaseSPAPageObject {
 export { BrowsePage as BrowsePageObject };
 
 // Default export
-export default BrowsePage;

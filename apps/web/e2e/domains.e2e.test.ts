@@ -6,8 +6,8 @@
  * @see spec-020 Phase 1: T010 - Domain entity E2E tests
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { DomainsDetailPage } from '@/test/page-objects/DomainsDetailPage';

@@ -271,4 +271,4 @@ function main() {
 main();
 
 export { calculateCoverage, generateReport, ROUTE_MANIFEST };
-export type { CoverageResult, CoverageSummary };
+export type { CoverageResult, CoverageSummary, RouteCategory };

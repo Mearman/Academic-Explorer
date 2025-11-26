@@ -13,16 +13,16 @@
  * @see spec-020 Phase 1: Search workflow testing
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
-import { SearchPage } from '@/test/page-objects/SearchPage';
 import {
 	waitForAppReady,
 	waitForSearchResults,
 	waitForEntityData,
 	waitForNoLoading,
 } from '@/test/helpers/app-ready';
+import { SearchPage } from '@/test/page-objects/SearchPage';
 
 test.describe('@workflow Search Workflow', () => {
 	let searchPage: SearchPage;

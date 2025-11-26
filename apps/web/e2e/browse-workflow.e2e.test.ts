@@ -7,8 +7,8 @@
  * @see spec-020 Phase 2: Browse page E2E tests
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';

@@ -171,7 +171,7 @@ export async function waitForNoLoading(
 	for (const selector of loadingSelectors) {
 		try {
 			await page.waitForSelector(selector, {
-				timeout: 5000,
+				timeout: Math.min(timeout, 5000),
 				state: 'hidden',
 			});
 		} catch {

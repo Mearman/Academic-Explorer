@@ -18,7 +18,7 @@ test.describe('@error Timeout Errors', () => {
 
   test('should handle request timeout gracefully', async ({ page }) => {
     // Simulate a very slow response that will timeout
-    await page.route('**/api.openalex.org/**', async (route) => {
+    await page.route('**/api.openalex.org/**', async () => {
       // Never respond - will cause timeout
       await new Promise(() => {}); // Hang forever
     });
@@ -74,15 +74,13 @@ test.describe('@error Timeout Errors', () => {
   });
 
   test('should abort slow requests on navigation', async ({ page }) => {
-    let requestAborted = false;
-
     await page.route('**/api.openalex.org/**', async (route) => {
       try {
         // Long delay
         await new Promise(resolve => setTimeout(resolve, 30000));
         await route.continue();
       } catch {
-        requestAborted = true;
+        // Request was aborted, which is expected behavior
       }
     });
 

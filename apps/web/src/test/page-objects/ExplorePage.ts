@@ -12,8 +12,9 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
-import { BaseSPAPageObject } from "./BaseSPAPageObject";
 import { waitForGraphReady } from "../helpers/app-ready";
+
+import { BaseSPAPageObject } from "./BaseSPAPageObject";
 
 export class ExplorePage extends BaseSPAPageObject {
 	// Explore-specific selectors
@@ -186,4 +187,3 @@ export class ExplorePage extends BaseSPAPageObject {
 	}
 }
 
-export default ExplorePage;

@@ -10,15 +10,10 @@
 
 import { test, expect } from '@playwright/test';
 
-import { ErrorPage } from '@/test/page-objects/ErrorPage';
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
 test.describe('@error 500 Server Errors', () => {
-  let errorPage: ErrorPage;
-
   test.beforeEach(async ({ page }) => {
-    errorPage = new ErrorPage(page);
-
     // Set up console error monitoring
     page.on('console', (msg) => {
       if (msg.type() === 'error') {

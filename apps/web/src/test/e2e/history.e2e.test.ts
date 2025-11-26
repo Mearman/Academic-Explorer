@@ -5,8 +5,8 @@
  * @category @utility
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BaseSPAPageObject } from '@/test/page-objects/BaseSPAPageObject';

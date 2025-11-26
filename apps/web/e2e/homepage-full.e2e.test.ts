@@ -7,7 +7,8 @@
  */
 
 import { expect, test } from "@playwright/test";
-import { waitForAppReady, waitForNoLoading } from "@/test/helpers/app-ready";
+
+import { waitForAppReady } from "@/test/helpers/app-ready";
 
 test.describe("Homepage E2E Tests @automated-manual", () => {
   test("should load homepage without infinite loops", async ({ page }) => {

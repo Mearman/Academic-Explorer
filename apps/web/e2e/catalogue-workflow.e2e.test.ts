@@ -6,8 +6,8 @@
  * @module catalogue-workflow.e2e
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -15,7 +15,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 	const testListTitle = `Test List ${Date.now()}`;
 	const testBibliographyTitle = `Test Bibliography ${Date.now()}`;
 	let createdListId: string | null = null;
-	let createdBibliographyId: string | null = null;
+	const createdBibliographyId: string | null = null;
 
 	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
 		// Navigate to catalogues page

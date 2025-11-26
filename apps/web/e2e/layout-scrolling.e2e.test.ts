@@ -12,6 +12,7 @@
  */
 
 import { test, expect } from "@playwright/test";
+
 import { waitForAppReady, waitForNoLoading } from "@/test/helpers/app-ready";
 
 test.describe("Layout Scrolling Behavior @automated-manual", () => {

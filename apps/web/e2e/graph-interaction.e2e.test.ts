@@ -13,8 +13,8 @@
  * @see spec-014 Edge direction correction
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import {
 	waitForAppReady,

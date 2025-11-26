@@ -86,4 +86,3 @@ export class DomainsDetailPage extends BaseEntityPageObject {
 export { DomainsDetailPage as DomainsDetailPageObject };
 
 // Default export
-export default DomainsDetailPage;

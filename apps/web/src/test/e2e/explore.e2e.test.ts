@@ -7,12 +7,11 @@
  * @see spec-020 Phase 1: Utility pages
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { ExplorePage } from '@/test/page-objects/ExplorePage';
-import { waitForAppReady, waitForGraphReady } from '@/test/helpers/app-ready';
+import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+import { waitForAppReady, waitForGraphReady } from '@/test/helpers/app-ready';
+import { ExplorePage } from '@/test/page-objects/ExplorePage';
 
 test.describe('@utility Explore Page', () => {
 	test.setTimeout(60000); // 60 seconds for graph rendering
@@ -131,11 +130,8 @@ test.describe('@utility Explore Page', () => {
 				// Wait for zoom animation
 				await page.waitForTimeout(500);
 
-				// Verify SVG transform or zoom level changed
-				const svg = page.locator('svg');
-				const transform = await svg.getAttribute('transform');
-				// Transform might be on a child element or managed differently
-				// Just verify no errors occurred
+				// Verify no errors occurred after zoom
+				// (SVG transform might be on child element or managed differently)
 				const errorCount = await page.locator('[role="alert"]').count();
 				expect(errorCount).toBe(0);
 			}

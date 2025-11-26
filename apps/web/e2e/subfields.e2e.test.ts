@@ -11,8 +11,8 @@
  * @see spec-020 Phase 6: E2E test coverage for Subfields entity
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { SubfieldsDetailPage } from '@/test/page-objects/SubfieldsDetailPage';

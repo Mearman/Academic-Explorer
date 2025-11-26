@@ -127,4 +127,3 @@ export class SearchPage extends BaseSPAPageObject {
 export { SearchPage as SearchPageObject };
 
 // Default export
-export default SearchPage;

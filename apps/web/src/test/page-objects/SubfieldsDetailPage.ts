@@ -108,4 +108,3 @@ export class SubfieldsDetailPage extends BaseEntityPageObject {
 }
 
 // Named export
-export { SubfieldsDetailPage as default };

@@ -113,4 +113,3 @@ export class SettingsPage extends BaseSPAPageObject {
 export { SettingsPage as SettingsPageObject };
 
 // Default export
-export default SettingsPage;

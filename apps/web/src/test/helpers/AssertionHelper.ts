@@ -1,4 +1,4 @@
-import { expect, type Page, type Locator } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 /**
  * Enhanced Playwright assertion helper for Academic Explorer E2E tests.
@@ -100,7 +100,7 @@ export class AssertionHelper {
 	 * TODO: Integrate @axe-core/playwright for full accessibility testing.
 	 */
 	async expectAccessible(): Promise<void> {
-		// eslint-disable-next-line no-console
+		 
 		console.log("AssertionHelper: expectAccessible() - Placeholder for axe-core integration");
 	}
 }

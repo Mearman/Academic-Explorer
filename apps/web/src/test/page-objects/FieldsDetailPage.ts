@@ -114,4 +114,3 @@ export class FieldsDetailPage extends BaseEntityPageObject {
 	}
 }
 
-export default FieldsDetailPage;

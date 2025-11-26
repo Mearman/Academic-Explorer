@@ -8,11 +8,11 @@
  * @see spec-020 E2E Test Coverage
  */
 
-import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test';
 
-import { FieldsDetailPage } from '@/test/page-objects/FieldsDetailPage';
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
+import { FieldsDetailPage } from '@/test/page-objects/FieldsDetailPage';
 
 test.describe('@entity Fields Detail Page', () => {
 	let fieldsPage: FieldsDetailPage;
@@ -179,9 +179,6 @@ test.describe('@entity Fields Detail Page', () => {
 
 		// If subfields exist, test navigation
 		if (subfields.length > 0) {
-			// Get first subfield name
-			const firstSubfieldName = subfields[0];
-
 			// Click first subfield
 			await fieldsPage.clickRelatedSubfield(0);
 			await waitForEntityData(page);

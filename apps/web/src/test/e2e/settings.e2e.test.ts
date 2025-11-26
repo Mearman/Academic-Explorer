@@ -12,11 +12,11 @@
  * @category @utility
  */
 
-import { test, expect } from "@playwright/test";
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
 
-import { SettingsPage } from "@/test/page-objects/SettingsPage";
 import { waitForAppReady } from "@/test/helpers/app-ready";
+import { SettingsPage } from "@/test/page-objects/SettingsPage";
 
 test.describe("@utility Settings Page", () => {
 	const BASE_URL = "http://localhost:5173";
@@ -31,7 +31,6 @@ test.describe("@utility Settings Page", () => {
 	test("should load settings page with heading and sections", async ({
 		page,
 	}) => {
-		const settingsPage = new SettingsPage(page);
 
 		// Navigate to settings
 		await page.goto(`${BASE_URL}/settings`, { waitUntil: "networkidle" });
@@ -135,7 +134,6 @@ test.describe("@utility Settings Page", () => {
 	test("should display storage and cache management sections", async ({
 		page,
 	}) => {
-		const settingsPage = new SettingsPage(page);
 
 		// Navigate to settings
 		await page.goto(`${BASE_URL}/settings`);
@@ -237,7 +235,6 @@ test.describe("@utility Settings Page", () => {
 	test("should display reset preferences button with loading state", async ({
 		page,
 	}) => {
-		const settingsPage = new SettingsPage(page);
 
 		// Navigate to settings
 		await page.goto(`${BASE_URL}/settings`);
@@ -274,7 +271,6 @@ test.describe("@utility Settings Page", () => {
 	test("should have accessible form elements with proper ARIA attributes", async ({
 		page,
 	}) => {
-		const settingsPage = new SettingsPage(page);
 
 		// Navigate to settings
 		await page.goto(`${BASE_URL}/settings`);
@@ -304,7 +300,6 @@ test.describe("@utility Settings Page", () => {
 	});
 
 	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
-		const settingsPage = new SettingsPage(page);
 
 		// Navigate to settings page
 		await page.goto(`${BASE_URL}/settings`);
