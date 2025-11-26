@@ -2,11 +2,19 @@
 
 **Feature Branch**: `009-graph-rendering-abstraction`
 **Created**: 2025-01-12
-**Status**: Completed
+**Status**: Superseded
 **Completed**: 2025-11-17
+**Superseded**: 2025-11-24
 **Input**: User description: "implement a graph rendering component that is not coupled to a specific graph package. it should be able to displaying nodes of multiple types and edges of different types, including ones that are directional and not. as not all graph rendering packages we should be able to decouple the force simulation from the rendering. for the force simulation, forces should should be able to applied by nodes as well as edges. the implementations should be completely agnostic of the academic explorer use-case. one of our use-cases will be the number of citations a (work) paper has (even if those edges are not shown in the graph) modifying it's size and/or force applied directly to nodes or given edges of a given type etc."
 
 **Implementation Note**: Core functionality implemented pragmatically for Academic Explorer's needs. Force simulation successfully decoupled in `packages/simulation/`, graph data structures in `packages/graph/`. 817 tests passing.
+
+**Refactoring Note (2025-11-24)**: The original `packages/graph/` and `packages/simulation/` packages were removed and functionality refactored into a cleaner architecture:
+- Graph data structures and algorithms → `packages/algorithms/` (see `packages/algorithms/src/graph/`)
+- Entity detection and event bus → `packages/utils/`
+- Type definitions → `packages/types/`
+
+This refactoring improved separation of concerns by moving domain-agnostic graph algorithms to a dedicated algorithms package, removing coupling between graph visualization and the Academic Explorer domain model. The core principles from this spec (rendering abstraction, force simulation decoupling, multi-type nodes/edges) informed the refactored architecture.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -174,7 +182,7 @@ A developer wants node properties (e.g., citation count) to influence layout for
 
 - **Type Safety**: Component uses strict TypeScript with generic type parameters for node/edge data; no `any` types; uses `unknown` with type guards for dynamic property access
 - **Test-First**: Each user story has explicit acceptance scenarios; implementation will follow test-driven development with unit tests for forces, integration tests for simulation, and visual regression tests for rendering
-- **Monorepo Architecture**: Component will be implemented as a new package `packages/graph-renderer` with clear separation between simulation (`packages/graph-renderer/simulation`) and rendering adapters (`packages/graph-renderer/renderers`)
+- **Monorepo Architecture**: Originally implemented as `packages/graph/` and `packages/simulation/`. Later refactored (2025-11-24) with graph algorithms moved to `packages/algorithms/`, utilities to `packages/utils/`, and types to `packages/types/` for better separation of concerns
 - **Storage Abstraction**: Component does not involve persistence; operates entirely on in-memory graph data structures
 - **Performance & Memory**: Success criteria include performance targets (60fps, 500 nodes, 3s stabilization); simulation will use efficient spatial indexing; rendering will use RAF-based updates
 - **Atomic Conventional Commits**: Implementation will be committed in atomic units: `feat(graph-renderer): add node type system`, `feat(graph-renderer): add force simulation engine`, etc.
