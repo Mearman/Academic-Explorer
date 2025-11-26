@@ -18,7 +18,7 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
-        "moduleResolution": "node",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

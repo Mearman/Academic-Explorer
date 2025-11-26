@@ -1,12 +1,23 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "declaration": false,
-    "outDir": "./dist",
+    "baseUrl": ".",
+    "noEmit": true,
     "composite": false,
-    "noEmit": true
+    "declaration": false,
+    "paths": {
+      "@/ui/section-kit": ["./src/components/section-kit"],
+      "@academic-explorer/types": ["../types/src/index.ts"],
+      "@academic-explorer/utils": ["../utils/src/index.ts"],
+      "@academic-explorer/client": ["../client/src/index.ts"]
+    },
+    "types": ["node"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "bundler",
+    "skipLibCheck": true
   },
-  "include": ["src/**/*", "**/*.test.*", "**/*.spec.*"],
-  "exclude": ["dist"],
-  "references": [{ "path": "../utils" }]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }

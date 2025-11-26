@@ -30,13 +30,9 @@
       "executor": "nx:run-commands",
       "outputs": [],
       "options": {
-        "command": "tsc --noEmit",
+        "command": "tsc --noEmit -p tsconfig.typecheck.json",
         "cwd": "packages/ui"
-      },
-      "dependsOn": [
-        "types:build",
-        "utils:build"
-      ]
+      }
     },
     "test:unit": {},
     "test:component": {},
