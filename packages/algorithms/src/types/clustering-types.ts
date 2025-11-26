@@ -132,7 +132,7 @@ export interface Partition<N> {
  * Merge step in hierarchical clustering dendrogram.
  * Represents joining two clusters at a specific distance/height.
  */
-export interface MergeStep<N = string> {
+export interface MergeStep {
   /** Index of first cluster being merged (< 0 for leaves) */
   cluster1: number;
 
@@ -466,12 +466,10 @@ export interface AlteredCommunitiesState {
  *
  * **Lifecycle**:
  * - Initialized as empty Map at the start of each local moving phase
- * - Populated lazily when getCommunityEdgeWeight() is called (cache miss)
  * - Invalidated when a node moves (delete entries involving affected communities)
  *
- * **Expected Performance**:
- * - Cache hit rate: >80% after first iteration
- * - Speedup: 20-40% reduction in runtime for 1000-node graphs
+ * **Note**: Cache population logic was removed in final optimization phase due to
+ * complexity and lack of measured performance benefit for citation networks.
  *
  * @since Phase 5 (spec-027, Community Caching)
  */

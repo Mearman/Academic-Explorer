@@ -37,10 +37,8 @@ export type WeightFunction<N extends Node, E extends Edge> = (
  * Default weight function that uses edge.weight with fallback to 1.
  * This maintains backward compatibility with existing behavior.
  */
-export function defaultWeightFunction<N extends Node, E extends Edge>(
-  edge: E,
-  _sourceNode: N,
-  _targetNode: N
+export function defaultWeightFunction<E extends Edge>(
+  edge: E
 ): number {
   return edge.weight ?? 1;
 }
