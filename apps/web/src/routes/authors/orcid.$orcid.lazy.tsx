@@ -1,12 +1,12 @@
+import { EntityDetectionService } from "@academic-explorer/utils";
+import { logError, logger } from "@academic-explorer/utils/logger";
+import { IconUser } from "@tabler/icons-react";
 import {
   useNavigate,
   useParams,
   createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { IconUser } from "@tabler/icons-react";
-import { EntityDetectionService } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
 
 function ORCIDAuthorRoute() {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });

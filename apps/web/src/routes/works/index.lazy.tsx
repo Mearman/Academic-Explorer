@@ -1,14 +1,14 @@
-import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
-import type { ColumnConfig } from "@/components/types";
 import { createFilterBuilder } from "@academic-explorer/client";
 import type { Work } from "@academic-explorer/types/entities";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { Anchor } from "@mantine/core";
-import type { OpenAlexSearchParams } from "@/lib/route-schemas";
-
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
+
+import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
+import type { ColumnConfig } from "@/components/types";
 import type { TableViewMode } from "@/components/ViewModeToggle";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 const worksColumns: ColumnConfig[] = [
   {

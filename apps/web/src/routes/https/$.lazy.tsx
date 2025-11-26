@@ -33,7 +33,7 @@ function parseUrlPathAndSearch(urlString: string): {
     });
 
     return { path: url.pathname, search };
-  } catch (error) {
+  } catch {
     // If URL parsing fails, return empty
     return { path: "", search: {} };
   }
@@ -68,7 +68,7 @@ function HttpsRoute() {
         // Check if this is a full URL that should be handled
         if (decodedId.match(/^https?:\/\//i)) {
           // Parse the URL to extract query parameters
-          const { path: urlPath, search: urlSearch } = parseUrlPathAndSearch(decodedId);
+          const { search: urlSearch } = parseUrlPathAndSearch(decodedId);
 
           // Try to detect entity type and normalize ID
           const detection = EntityDetectionService.detectEntity(decodedId);

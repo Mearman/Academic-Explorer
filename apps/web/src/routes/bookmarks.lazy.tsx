@@ -1,9 +1,6 @@
-import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import type { BookmarksSearch } from "./bookmarks";
-import { useBookmarks } from "@/hooks/useBookmarks";
+import type { EntityType, Bookmark } from "@academic-explorer/types";
 import { BookmarkList, BookmarkSearchFilters } from "@academic-explorer/ui";
 import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@academic-explorer/utils";
-import type { EntityType, Bookmark } from "@academic-explorer/types";
 import type { ExportFormat, ExportOptions, CatalogueEntity } from "@academic-explorer/utils";
 import {
 	Container,
@@ -20,6 +17,7 @@ import {
 	Checkbox,
 	Select,
 } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import {
 	IconBookmark,
 	IconAlertCircle,
@@ -27,9 +25,13 @@ import {
 	IconSortDescending,
 	IconSortAscending,
 } from "@tabler/icons-react";
+import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
+
 import { useStorageProvider } from "@/contexts/storage-provider-context";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useBookmarks } from "@/hooks/useBookmarks";
+
+import type { BookmarksSearch } from "./bookmarks";
 
 /**
  * Convert CatalogueEntity to Bookmark type
@@ -166,7 +168,8 @@ function BookmarksIndexPage() {
 		try {
 			const urlObj = new URL(url, window.location.origin);
 			const path = urlObj.pathname + urlObj.search + urlObj.hash;
-			navigate({ to: path as any });
+			// Use window.location for navigation to avoid type issues with dynamic paths
+			window.location.href = path;
 		} catch (err) {
 			logger.error("bookmarks", "Failed to navigate to bookmark", { url, error: err });
 		}

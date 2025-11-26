@@ -3,9 +3,12 @@
  * Upload, manage, and process systematic literature review datasets
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import React, { useState } from "react";
-import { IconUpload, IconChartBar } from "@tabler/icons-react";
+import {
+  parseSTARFile,
+  createSTARDatasetFromParseResult,
+} from "@academic-explorer/utils";
+import type { STARDataset } from "@academic-explorer/utils";
+import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   Modal,
   FileInput,
@@ -16,19 +19,13 @@ import {
   Text,
   Title,
   Paper,
-  ActionIcon,
-  Tooltip,
   Container,
   SimpleGrid,
   Card,
-  Badge,
 } from "@mantine/core";
-import {
-  parseSTARFile,
-  createSTARDatasetFromParseResult,
-} from "@academic-explorer/utils";
-import type { STARDataset } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
+import { IconUpload, IconChartBar } from "@tabler/icons-react";
+import { createFileRoute } from "@tanstack/react-router";
+import React, { useState } from "react";
 
 
 // Types are imported from @academic-explorer/utils
@@ -58,7 +55,7 @@ function DatasetsManagement() {
 
       // Parse file using actual file parser
       setUploadProgress(30);
-      const parseResult = await parseSTARFile(uploadFile);
+      const parseResult = await parseSTARFile();
 
       // Check for parsing errors
       if (parseResult.metadata.errors.length > 0) {

@@ -1,12 +1,12 @@
+import { EntityDetectionService } from "@academic-explorer/utils";
+import { logError, logger } from "@academic-explorer/utils/logger";
+import { IconBuilding } from "@tabler/icons-react";
 import {
   useNavigate,
   useParams,
   createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { IconBuilding } from "@tabler/icons-react";
-import { EntityDetectionService } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
 
 function RORInstitutionRoute() {
   const { ror } = useParams({ from: "/institutions/ror/$ror" });

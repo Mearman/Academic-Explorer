@@ -1,17 +1,18 @@
-import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { cachedOpenAlex } from "@academic-explorer/client";
+import { type Keyword, type KeywordField } from "@academic-explorer/types/entities";
+import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { KEYWORD_FIELDS, type Keyword, type KeywordField } from "@academic-explorer/types/entities";
-import { useQuery } from "@tanstack/react-query";
-import { decodeEntityId } from "@/utils/url-decoding";
+
 import { EntityDetailLayout,  type DetailViewMode } from "@/components/entity-detail/EntityDetailLayout";
-import { LoadingState } from "@/components/entity-detail/LoadingState";
-import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
+import { ErrorState } from "@/components/entity-detail/ErrorState";
+import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function KeywordRoute() {
   const { keywordId: rawKeywordId } = useParams({ from: "/keywords/$keywordId" });

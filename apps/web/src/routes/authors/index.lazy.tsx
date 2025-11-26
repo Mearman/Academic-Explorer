@@ -1,10 +1,12 @@
+import type { Author } from "@academic-explorer/types/entities";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+
 import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
-import type { Author } from "@academic-explorer/types/entities";
 import type { TableViewMode } from "@/components/ViewModeToggle";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
-import { useState } from "react";
+
 
 const authorsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },

@@ -1,17 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-/**
- * Main evaluation dashboard for STAR methodology integration
- * Provides PhD thesis evaluation capabilities using systematic literature reviews
- */
-
 import { logger } from "@academic-explorer/utils/logger";
-import {
-  IconBulb,
-  IconChartBar,
-  IconSearch,
-  IconTrendingUp,
-} from "@tabler/icons-react";
-import { useNavigate, Link } from "@tanstack/react-router";
 import {
   Container,
   Title,
@@ -24,10 +11,21 @@ import {
   SimpleGrid,
   Paper,
 } from "@mantine/core";
+import {
+  IconBulb,
+  IconChartBar,
+  IconSearch,
+  IconTrendingUp,
+} from "@tabler/icons-react";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+/**
+ * Main evaluation dashboard for STAR methodology integration
+ * Provides PhD thesis evaluation capabilities using systematic literature reviews
+ */
+
 
 
 function EvaluationDashboard() {
-  const navigate = useNavigate();
 
   return (
     <Container size="xl" p="xl" mx="auto">

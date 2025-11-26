@@ -1,3 +1,4 @@
+import type { EntityDetectionService } from "@academic-explorer/utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the route for testing
@@ -37,9 +38,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-// Import after mocks
 import { Route as OpenAlexUrlRoute } from "./$";
-import { EntityDetectionService } from "@academic-explorer/utils";
 
 // Extract the component from the route
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
@@ -51,7 +50,7 @@ describe("OpenAlexUrl Route Integration Tests", () => {
     vi.clearAllMocks();
   });
 
-  const renderComponent = (_splat: string) => {
+  const renderComponent = () => {
     // For now, skip the full component test since it requires router context
     // Just test that the component can be imported and basic structure exists
     expect(OpenAlexUrlComponent).toBeDefined();

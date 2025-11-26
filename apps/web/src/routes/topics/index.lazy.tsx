@@ -1,10 +1,13 @@
+import type { Topic } from "@academic-explorer/types";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
-import type { Topic } from "@academic-explorer/types";
-import type { OpenAlexSearchParams } from "@/lib/route-schemas";
-import { useState } from "react";
 import type { TableViewMode } from "@/components/ViewModeToggle";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+
+
 
 const topicsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },

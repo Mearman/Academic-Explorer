@@ -1,4 +1,3 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
 import {
   Title,
   Text,
@@ -9,6 +8,8 @@ import {
   Group,
   Divider,
 } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { pageTitle, pageDescription } from "../styles/layout.css";

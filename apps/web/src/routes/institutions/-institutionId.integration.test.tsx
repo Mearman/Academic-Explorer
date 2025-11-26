@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MantineProvider } from "@mantine/core";
 import { cachedOpenAlex } from "@academic-explorer/client";
+import { MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useParams, useSearch } from "@tanstack/react-router";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock cachedOpenAlex client
 vi.mock("@academic-explorer/client", async (importOriginal) => {
@@ -31,8 +32,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-// Import after mocks
-import { useParams, useSearch } from "@tanstack/react-router";
+ 
 import InstitutionRoute from "./$_.lazy";
 
 // Synthetic mock data for institution

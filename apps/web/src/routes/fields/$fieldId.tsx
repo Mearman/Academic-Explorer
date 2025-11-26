@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy } from "react";
-import { LazyRoute } from "@/components/routing/LazyRoute";
 import { z } from "zod";
+
+import { LazyRoute } from "@/components/routing/LazyRoute";
 
 const FieldRoute = lazy(() =>
   import("./$fieldId.lazy").then((m) => ({ default: m.default })),
 );
 
-export const Route = createFileRoute("/fields/$fieldId" as any)({
+export const Route = createFileRoute("/fields/$fieldId")({
   component: () => (
     <LazyRoute>
       <FieldRoute />

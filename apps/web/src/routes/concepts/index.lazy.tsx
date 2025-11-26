@@ -1,11 +1,12 @@
-import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList } from "@/components/EntityList";
-import type { ColumnConfig } from "@/components/types";
-import type { OpenAlexSearchParams } from "@/lib/route-schemas";
-import { useState } from "react";
-import type { TableViewMode } from "@/components/ViewModeToggle";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { EntityList } from "@/components/EntityList";
+import type { ColumnConfig } from "@/components/types";
+import type { TableViewMode } from "@/components/ViewModeToggle";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 const conceptsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },

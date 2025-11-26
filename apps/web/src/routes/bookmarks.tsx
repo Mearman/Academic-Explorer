@@ -1,8 +1,9 @@
+import type {   EntityType } from "@academic-explorer/types"
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy } from "react";
+
 import { LazyRoute } from "@/components/routing/LazyRoute";
-import type {  } from "@academic-explorer/types"
-import type { EntityType } from "@academic-explorer/types";
+
 
 const BookmarksIndexPage = lazy(() => import("./bookmarks.lazy"));
 

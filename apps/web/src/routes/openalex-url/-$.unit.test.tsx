@@ -1,7 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
-import { renderHook } from "@testing-library/react";
-import { Route as OpenAlexUrlRoute } from "./$";
 import { EntityDetectionService } from "@academic-explorer/utils";
+import { renderHook } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+
+import { Route as OpenAlexUrlRoute } from "./$";
+
 
 // Extract the component from the route
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
@@ -20,7 +22,7 @@ vi.mock("@academic-explorer/utils", async (importOriginal) => {
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
 describe("OpenAlexUrl Route Unit Tests", () => {
-  const renderComponent = (_splat: string) => {
+  const renderComponent = () => {
     return renderHook(() => <OpenAlexUrlComponent />, {
       wrapper: ({ children }: any) => <div>{children}</div>,
     });

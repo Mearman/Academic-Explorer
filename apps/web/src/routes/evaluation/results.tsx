@@ -3,14 +3,10 @@
  * Display precision/recall metrics and thesis-ready statistics
  */
 
-import { createFileRoute } from "@tanstack/react-router";
-import React, { useState, useMemo, useEffect } from "react";
-import { IconChartBar, IconSearch, IconBulb } from "@tabler/icons-react";
+
 import {
   compareAcademicExplorerResults,
   DEFAULT_MATCHING_CONFIG,
-} from "@academic-explorer/utils";
-import {
   searchBasedOnSTARDataset,
   calculateSearchCoverage,
   DEFAULT_SEARCH_CONFIG,
@@ -20,7 +16,20 @@ import type {
   ComparisonResults as ComparisonResultsType,
   WorkReference,
   ComparisonProgress,
+  MissingPaperDetectionResults,
 } from "@academic-explorer/utils";
+import { logError, logger } from "@academic-explorer/utils/logger";
+import { IconChartBar, IconSearch, IconBulb } from "@tabler/icons-react";
+import { createFileRoute } from "@tanstack/react-router";
+import React, { useState, useMemo, useEffect } from "react";
+
+import {
+  PerformanceComparisonChart,
+  PrecisionRecallScatterPlot,
+  ConfusionMatrixHeatmap,
+  DatasetStatisticsOverview,
+} from "@/components/evaluation/MetaAnalysisCharts";
+import { MissingPaperDetection } from "@/components/evaluation/MissingPaperDetection";
 import { BORDER_DEFAULT } from "@/constants/styles";
 
 // Type guard for STARDataset array
@@ -39,15 +48,6 @@ function isSTARDatasetArray(data: unknown): data is STARDataset[] {
     )
   );
 }
-import {
-  PerformanceComparisonChart,
-  PrecisionRecallScatterPlot,
-  ConfusionMatrixHeatmap,
-  DatasetStatisticsOverview,
-} from "@/components/evaluation/MetaAnalysisCharts";
-import { MissingPaperDetection } from "@/components/evaluation/MissingPaperDetection";
-import type { MissingPaperDetectionResults } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
 
 export const Route = createFileRoute("/evaluation/results")({
   component: ComparisonResults,
@@ -150,7 +150,7 @@ function ComparisonResults() {
   ): WorkReference[] => {
     try {
       // Use the optimized search based on the STAR dataset criteria
-      const results = searchBasedOnSTARDataset(dataset, DEFAULT_SEARCH_CONFIG);
+      const results = searchBasedOnSTARDataset(dataset);
 
       // Calculate and log search coverage for debugging
       const coverage = calculateSearchCoverage({

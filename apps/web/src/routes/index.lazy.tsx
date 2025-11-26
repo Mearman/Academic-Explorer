@@ -1,4 +1,3 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Title,
   Text,
@@ -15,9 +14,11 @@ import {
   IconBrandReact,
   IconDatabase,
 } from "@tabler/icons-react";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+
 import { useDocumentTitle } from "@/hooks/use-document-title";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");

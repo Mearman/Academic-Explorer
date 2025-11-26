@@ -3,7 +3,6 @@ import {
   type AutocompleteResult,
 } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
-import { useThemeColors } from "@/hooks/use-theme-colors";
 import {
   Alert,
   Anchor,
@@ -20,6 +19,8 @@ import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 
 function AutocompleteGeneralRoute() {

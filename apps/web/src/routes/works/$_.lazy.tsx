@@ -1,20 +1,19 @@
-import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
-import { useParams, useSearch } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { WORK_FIELDS, type Work, type WorkField } from "@academic-explorer/types/entities";
-import { useQuery } from "@tanstack/react-query";
-import { decodeEntityId } from "@/utils/url-decoding";
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
-import { useUrlNormalization } from "@/hooks/use-url-normalization";
-import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { type Work, type WorkField } from "@academic-explorer/types/entities";
 import { EntityDetectionService } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils/logger";
+import { useQuery } from "@tanstack/react-query";
+import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { useUrlNormalization } from "@/hooks/use-url-normalization";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });

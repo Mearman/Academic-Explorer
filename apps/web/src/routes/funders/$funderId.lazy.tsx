@@ -1,16 +1,16 @@
-import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useParams, useSearch } from "@tanstack/react-router";
-import { useState } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { FUNDER_FIELDS, type Funder, type FunderField } from "@academic-explorer/types/entities";
+import { type Funder, type FunderField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
-import { decodeEntityId } from "@/utils/url-decoding";
-import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function FunderRoute() {
   const { funderId: rawFunderId } = useParams({ strict: false });

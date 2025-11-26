@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy } from "react";
-import { LazyRoute } from "@/components/routing/LazyRoute";
 import { z } from "zod";
+
+import { LazyRoute } from "@/components/routing/LazyRoute";
 
 const InstitutionRoute = lazy(() =>
   import("./$_.lazy").then((m) => ({ default: m.default })),

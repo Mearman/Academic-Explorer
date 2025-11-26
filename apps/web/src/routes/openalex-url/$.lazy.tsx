@@ -5,6 +5,7 @@ import {
   createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
+
 // Temporarily remove logger import to avoid potential issues
 import { logger } from "@/lib/logger";
 

@@ -1,8 +1,8 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
+import { createFilterBuilder } from "@academic-explorer/client";
+import { createLazyFileRoute , useSearch } from "@tanstack/react-router";
+
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
-import { createFilterBuilder } from "@academic-explorer/client";
 
 const keywordsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },

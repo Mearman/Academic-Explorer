@@ -1,11 +1,8 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
-import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { cachedOpenAlex } from "@academic-explorer/client";
+import { ENTITY_METADATA, toEntityType } from "@academic-explorer/types";
 import type { AutocompleteResult } from "@academic-explorer/types/entities";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
-import { ENTITY_METADATA, toEntityType } from "@academic-explorer/types";
 import {
   Alert,
   Anchor,
@@ -24,9 +21,12 @@ import {
   IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearch , createLazyFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-
 import { useEffect, useMemo, useState } from "react";
+
+import { useUserInteractions } from "@/hooks/use-user-interactions";
+
 import { SearchInterface } from "../components/search/SearchInterface";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";

@@ -1,9 +1,11 @@
+import { logger } from "@academic-explorer/utils/logger";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { NavigationTracker } from "@/components/NavigationTracker";
 import { UrlFixer } from "@/components/UrlFixer";
-import { logger } from "@academic-explorer/utils/logger";
-import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
+
 import { themeClass } from "../styles/theme.css";
 
 function RootLayout() {
@@ -120,8 +122,8 @@ export const Route = createRootRoute({
 
       if (sourceToFix) {
         // Look for collapsed protocol patterns
-        const collapsedHttpsPattern = /(^|\/)(https?:\/)([^\/])/;
-        const collapsedRorPattern = /(^|\/)(ror:\/)([^\/])/;
+        const collapsedHttpsPattern = /(^|\/)https?:\/([^/])/;
+        const collapsedRorPattern = /(^|\/)ror:\/([^/])/;
 
         let fixedSource = sourceToFix;
 

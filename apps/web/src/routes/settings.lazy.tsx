@@ -1,11 +1,12 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
 import {
   Title,
   Stack,
   Card,
 } from "@mantine/core";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { createLazyFileRoute } from "@tanstack/react-router";
+
 import { SettingsSection } from "@/components/sections/SettingsSection";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { pageTitle } from "../styles/layout.css";
 

@@ -1,8 +1,10 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { CatalogueManager } from "@/components/catalogue/CatalogueManager";
-import { CatalogueErrorBoundary } from "@/components/catalogue/CatalogueErrorBoundary";
-import { CatalogueProvider } from "@/contexts/catalogue-context";
 import { logger } from "@academic-explorer/utils/logger";
+import { createLazyFileRoute } from "@tanstack/react-router";
+
+import { CatalogueErrorBoundary } from "@/components/catalogue/CatalogueErrorBoundary";
+import { CatalogueManager } from "@/components/catalogue/CatalogueManager";
+import { CatalogueProvider } from "@/contexts/catalogue-context";
+
 import type { CatalogueSearch } from "./catalogue";
 
 // T078: Wrap CatalogueManager in error boundary for graceful error handling
