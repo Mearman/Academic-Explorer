@@ -6,9 +6,9 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 17 |
+| ✅ Complete | 18 |
 | 🚧 In Progress | 5 |
-| 📝 Draft | 4 |
+| 📝 Draft | 3 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -158,9 +158,9 @@ Enhanced entity detail pages with relationship visualization capabilities. Type 
 ---
 
 ### spec-017: Entity Taxonomy Centralization
-**Status**: 🚧 In Progress | **Progress**: 13/34 tasks (38%)
+**Status**: ✅ Complete | **Superseded**: 2025-11-21 by spec-018
 
-Centralize entity taxonomy definitions and metadata to `@academic-explorer/types`. Phase 1 complete, Phase 2 in progress. Predecessor work for spec-018 (Entity Consolidation).
+Centralized entity taxonomy definitions and ENTITY_METADATA to `@academic-explorer/types`. Core implementation in entity-metadata.ts. Remaining tasks completed as part of spec-018 (Entity Consolidation).
 
 [View Spec](./017-entity-taxonomy-centralization/)
 
