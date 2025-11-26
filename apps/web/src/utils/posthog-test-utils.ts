@@ -8,6 +8,20 @@
 import { POSTHOG_API_KEY, POSTHOG_HOST, POSTHOG_ENABLED } from '@/lib/posthog';
 
 /**
+ * PostHog instance type definition
+ */
+interface PostHogInstance {
+  capture: (eventName: string, properties?: Record<string, unknown>) => void;
+}
+
+/**
+ * Window with PostHog instance
+ */
+interface WindowWithPostHog {
+  posthog?: PostHogInstance;
+}
+
+/**
  * Test PostHog configuration and privacy settings
  */
 export function testPostHogConfiguration(): {
@@ -79,8 +93,8 @@ export function testPostHogAvailability(): {
     };
   }
 
-  const posthog = (window as any).posthog;
-  const isInitialized = typeof posthog.capture === 'function';
+  const posthog = (window as unknown as WindowWithPostHog).posthog;
+  const isInitialized = posthog !== undefined && typeof posthog.capture === 'function';
 
   if (!isInitialized) {
     issues.push('PostHog capture function not available');
@@ -156,7 +170,7 @@ export function testPostHogEventCapture(): Promise<{
       return;
     }
 
-    const posthog = (window as any).posthog;
+    const posthog = (window as unknown as WindowWithPostHog).posthog;
     if (!posthog || typeof posthog.capture !== 'function') {
       resolve({
         canCapture: false,
@@ -171,7 +185,7 @@ export function testPostHogEventCapture(): Promise<{
       const originalCapture = posthog.capture;
       let eventCaptured = false;
 
-      posthog.capture = (eventName: string, properties?: any) => {
+      posthog.capture = (eventName: string, properties?: Record<string, unknown>) => {
         if (eventName === 'test_event') {
           eventCaptured = true;
           // Restore original capture

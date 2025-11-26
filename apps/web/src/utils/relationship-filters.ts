@@ -6,8 +6,9 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 3)
  */
 
-import type { RelationshipSection } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
+
+import type { RelationshipSection } from '@/types/relationship';
 
 export type EdgeDirectionFilter = 'outbound' | 'inbound' | 'both';
 

@@ -30,7 +30,7 @@ export function decodeEntityId(encodedId: string | undefined): string | undefine
   // Handle double-encoded slashes first (%252F -> %2F)
   // This is needed because we double-encode slashes in the openalex-url route
   // to prevent TanStack Router from collapsing them
-  let processedId = encodedId.replace(/%252F/gi, '%2F');
+  const processedId = encodedId.replace(/%252F/gi, '%2F');
 
   // Decode URL encoding
   let decodedId = decodeURIComponent(processedId);

@@ -5,13 +5,29 @@
  * Designed to provide insights while maintaining user privacy and GDPR compliance.
  */
 
-import type { AcademicEventType, AcademicEventProperties } from '@/lib/posthog';
+import type { AcademicEventType, AcademicEventProperties, EntityTypeType } from '@/lib/posthog';
+
+/**
+ * PostHog instance type definition
+ */
+interface PostHogInstance {
+  capture: (eventName: string, properties?: Record<string, unknown>) => void;
+  identify: (userId: string, properties?: Record<string, unknown>) => void;
+  reset: () => void;
+}
+
+/**
+ * Window with PostHog instance
+ */
+interface WindowWithPostHog {
+  posthog?: PostHogInstance;
+}
 
 /**
  * Academic Analytics Service
  * Provides privacy-compliant analytics tracking for academic research workflows
  */
-export class AcademicAnalytics {
+class AcademicAnalytics {
   private static posthogAvailable(): boolean {
     return typeof window !== 'undefined' && 'posthog' in window;
   }
@@ -35,7 +51,7 @@ export class AcademicAnalytics {
     }
 
     try {
-      const posthog = (window as any).posthog;
+      const posthog = (window as unknown as WindowWithPostHog).posthog;
       if (!posthog) return;
 
       // Enhanced properties with privacy-safe data
@@ -61,7 +77,7 @@ export class AcademicAnalytics {
    */
   static trackSearchPerformed(entityType: string, resultCount: number, hasFilters: boolean): void {
     this.capture('search_performed', {
-      entity_type: entityType as any,
+      entity_type: entityType as EntityTypeType,
       search_category: 'literature_search',
       result_count: Math.min(resultCount, 1000), // Cap for privacy
       has_filters: hasFilters,
@@ -74,7 +90,7 @@ export class AcademicAnalytics {
    */
   static trackEntityView(entityType: string): void {
     this.capture('entity_view', {
-      entity_type: entityType as any,
+      entity_type: entityType as EntityTypeType,
       feature_name: 'entity_detail_layout',
     });
   }
@@ -85,7 +101,7 @@ export class AcademicAnalytics {
   static trackGraphLoaded(nodeCount: number, edgeCount: number): void {
     this.capture('graph_loaded', {
       graph_size: Math.min(nodeCount + edgeCount, 1000), // Cap for privacy
-      interaction_type: 'navigate' as any,
+      interaction_type: 'navigate',
       feature_name: 'graph_visualization',
     });
   }
@@ -95,7 +111,7 @@ export class AcademicAnalytics {
    */
   static trackNodeSelected(nodeType: string): void {
     this.capture('node_selected', {
-      node_type: nodeType as any,
+      node_type: nodeType as EntityTypeType,
       interaction_type: 'select',
       feature_name: 'graph_visualization',
     });
@@ -104,7 +120,7 @@ export class AcademicAnalytics {
   /**
    * Track filter application
    */
-  static trackFilterApplied(filterType: string, hasResults: boolean): void {
+  static trackFilterApplied(): void {
     this.capture('filter_applied', {
       feature_name: 'relationship_filtering',
       interaction_type: 'filter',
@@ -114,11 +130,11 @@ export class AcademicAnalytics {
   /**
    * Track relationship exploration
    */
-  static trackRelationshipExplored(entityType: string, relationshipType: string): void {
+  static trackRelationshipExplored(entityType: string): void {
     this.capture('relationship_explored', {
-      entity_type: entityType as any,
+      entity_type: entityType as EntityTypeType,
       interaction_type: 'navigate',
-      feature_name: 'relationship_filtering' as any,
+      feature_name: 'relationship_filtering',
     });
   }
 
@@ -136,7 +152,7 @@ export class AcademicAnalytics {
    */
   static trackBookmarkAdded(entityType: string): void {
     this.capture('bookmark_added', {
-      entity_type: entityType as any,
+      entity_type: entityType as EntityTypeType,
       feature_name: 'bookmarking',
     });
   }
@@ -153,7 +169,7 @@ export class AcademicAnalytics {
   /**
    * Track data export operations
    */
-  static trackExportPerformed(format: string): void {
+  static trackExportPerformed(): void {
     this.capture('export_performed', {
       feature_name: 'data_export',
     });
@@ -242,7 +258,7 @@ export class AcademicAnalytics {
 
     let sessionId = sessionStorage.getItem(SESSION_KEY);
     if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
       sessionStorage.setItem(SESSION_KEY, sessionId);
     }
 
@@ -256,7 +272,7 @@ export class AcademicAnalytics {
     if (!this.posthogAvailable()) return;
 
     try {
-      const posthog = (window as any).posthog;
+      const posthog = (window as unknown as WindowWithPostHog).posthog;
       if (!posthog) return;
 
       // Generate anonymous user ID based on browser fingerprint (privacy-safe)
@@ -277,7 +293,7 @@ export class AcademicAnalytics {
   private static generateAnonymousId(): string {
     // Create a hash from browser features (not fingerprinting for tracking, but for session consistency)
     const features = [
-      navigator.userAgent?.slice(0, 100) || '', // Limited UA slice
+      navigator.userAgent?.substring(0, 100) || '', // Limited UA slice
       navigator.language || '',
       new Date().getTimezoneOffset().toString(),
     ].join('|');
@@ -300,7 +316,7 @@ export class AcademicAnalytics {
     if (!this.posthogAvailable()) return;
 
     try {
-      const posthog = (window as any).posthog;
+      const posthog = (window as unknown as WindowWithPostHog).posthog;
       if (!posthog) return;
 
       posthog.reset();
@@ -310,6 +326,11 @@ export class AcademicAnalytics {
     }
   }
 }
+
+/**
+ * Export AcademicAnalytics class for direct usage
+ */
+export { AcademicAnalytics };
 
 /**
  * Hook for easy access to academic analytics in React components
@@ -335,5 +356,3 @@ export function useAcademicAnalytics() {
     resetUser: AcademicAnalytics.resetUser.bind(AcademicAnalytics),
   };
 }
-
-export default AcademicAnalytics;

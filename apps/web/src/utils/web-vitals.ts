@@ -6,6 +6,17 @@
 import { logger } from "@academic-explorer/utils";
 import type { Metric } from "web-vitals";
 
+// PostHog type for window object
+interface PostHogInstance {
+  capture: (event: string, properties?: Record<string, unknown>) => void;
+}
+
+declare global {
+  interface Window {
+    posthog?: PostHogInstance;
+  }
+}
+
 // Core Web Vitals thresholds (from web.dev)
 const THRESHOLDS = {
   // Largest Contentful Paint (LCP) - should be < 2.5s
@@ -59,7 +70,7 @@ function reportMetric(metric: Metric) {
   // Send to PostHog for performance analytics
   try {
     if (typeof window !== 'undefined' && 'posthog' in window) {
-      const posthog = (window as any).posthog;
+      const posthog = window.posthog;
       if (posthog) {
         posthog.capture('performance_metric', {
           metric_name: metric.name.toLowerCase(),

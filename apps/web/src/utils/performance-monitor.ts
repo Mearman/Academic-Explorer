@@ -1,5 +1,30 @@
 import { logger } from "@academic-explorer/utils/logger";
-import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals";
+import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
+
+/**
+ * Chrome-specific Performance interface with memory property
+ */
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
+/**
+ * Window with optional dynamic import
+ */
+interface WindowWithImport {
+  import?: (...args: unknown[]) => Promise<unknown>;
+}
+
+/**
+ * Window with performance monitor instance
+ */
+interface WindowWithPerformanceMonitor {
+  performanceMonitor?: PerformanceMonitor;
+}
 
 /**
  * Performance monitoring configuration
@@ -100,23 +125,31 @@ class PerformanceMonitor {
    * Monitor Web Vitals
    */
   private observeWebVitals(): void {
-    const vitalsConfig = {
-      CLS: onCLS,
-      FCP: onFCP,
-      INP: onINP,
-      LCP: onLCP,
-      TTFB: onTTFB,
-    };
+    // Set up individual handlers to avoid type issues with dynamic property access
+    onCLS((value: Metric) => {
+      this.metrics.CLS = value.value;
+      this.analyzeMetric("CLS", value);
+    }, { reportAllChanges: true });
 
-    Object.entries(vitalsConfig).forEach(([metric, onMetric]) => {
-      (onMetric as any)(
-        (value: any) => {
-          this.metrics[metric as keyof PerformanceMetrics] = value;
-          this.analyzeMetric(metric, value);
-        },
-        { reportAllChanges: true }
-      );
-    });
+    onFCP((value: Metric) => {
+      this.metrics.FCP = value.value;
+      this.analyzeMetric("FCP", value);
+    }, { reportAllChanges: true });
+
+    onINP((value: Metric) => {
+      this.metrics.INP = value.value;
+      this.analyzeMetric("INP", value);
+    }, { reportAllChanges: true });
+
+    onLCP((value: Metric) => {
+      this.metrics.LCP = value.value;
+      this.analyzeMetric("LCP", value);
+    }, { reportAllChanges: true });
+
+    onTTFB((value: Metric) => {
+      this.metrics.TTFB = value.value;
+      this.analyzeMetric("TTFB", value);
+    }, { reportAllChanges: true });
   }
 
   /**
@@ -163,8 +196,9 @@ class PerformanceMonitor {
    * Monitor memory usage (Chrome-specific)
    */
   private observeMemoryUsage(): void {
-    if ("memory" in performance) {
-      const memory = (performance as any).memory;
+    const perfWithMemory = performance as PerformanceWithMemory;
+    if ("memory" in performance && perfWithMemory.memory) {
+      const memory = perfWithMemory.memory;
       this.metrics.memoryUsage = {
         usedJSHeapSize: memory.usedJSHeapSize,
         totalJSHeapSize: memory.totalJSHeapSize,
@@ -173,12 +207,14 @@ class PerformanceMonitor {
 
       // Monitor memory periodically
       setInterval(() => {
-        const currentMemory = (performance as any).memory;
-        const memoryDiff = currentMemory.usedJSHeapSize - this.metrics.memoryUsage!.usedJSHeapSize;
+        const currentMemory = perfWithMemory.memory;
+        if (!currentMemory) return;
+        const previousMemoryUsage = this.metrics.memoryUsage?.usedJSHeapSize || 0;
+        const memoryDiff = currentMemory.usedJSHeapSize - previousMemoryUsage;
 
         if (memoryDiff > 10 * 1024 * 1024) { // 10MB increase
           logger.warn("performance", "Memory usage increased significantly", {
-            before: this.formatBytes(this.metrics.memoryUsage!.usedJSHeapSize),
+            before: this.formatBytes(previousMemoryUsage),
             after: this.formatBytes(currentMemory.usedJSHeapSize),
             increase: this.formatBytes(memoryDiff),
           });
@@ -224,12 +260,13 @@ class PerformanceMonitor {
     });
 
     // Monitor dynamic imports - note: window.import may not exist in all browsers
-    if ('import' in window && typeof (window as any).import === 'function') {
-      const originalImport = (window as any).import;
-      (window as any).import = (...args: any[]) => {
+    const windowWithImport = window as unknown as WindowWithImport;
+    if ('import' in window && typeof windowWithImport.import === 'function') {
+      const originalImport = windowWithImport.import;
+      windowWithImport.import = (...args: unknown[]) => {
         const startTime = performance.now();
         return originalImport(...args).then(
-          (module: any) => {
+          (module: unknown) => {
             const loadTime = performance.now() - startTime;
             if (loadTime > 100) { // Log slow dynamic imports
               logger.debug("performance", "Dynamic import loaded", {
@@ -239,7 +276,7 @@ class PerformanceMonitor {
             }
             return module;
           },
-          (error: any) => {
+          (error: unknown) => {
             const loadTime = performance.now() - startTime;
             const errorMessage = error instanceof Error ? error.message : String(error);
             logger.error("performance", "Dynamic import failed", {
@@ -267,11 +304,11 @@ class PerformanceMonitor {
   /**
    * Analyze individual metric against thresholds
    */
-  private analyzeMetric(metric: string, value: any): void {
+  private analyzeMetric(metric: string, value: Metric): void {
     const threshold = this.config.thresholds[metric as keyof typeof this.config.thresholds];
     if (!threshold) return;
 
-    const numericValue = typeof value === 'object' && value !== null && 'value' in value ? (value as { value: number }).value : value;
+    const numericValue = value.value;
     const status = this.getMetricStatus(numericValue, threshold);
 
     if (status === 'poor') {
@@ -421,11 +458,12 @@ export function initPerformanceMonitoring(config?: Partial<PerformanceConfig>): 
  * Get performance metrics for debugging
  */
 export function getPerformanceMetrics(): PerformanceMetrics | null {
-  if (typeof window === 'undefined' || !(window as any).performanceMonitor) {
+  const windowWithMonitor = window as unknown as WindowWithPerformanceMonitor;
+  if (typeof window === 'undefined' || !windowWithMonitor.performanceMonitor) {
     return null;
   }
 
-  return (window as any).performanceMonitor.getMetrics();
+  return windowWithMonitor.performanceMonitor.getMetrics();
 }
 
 /**
@@ -433,7 +471,7 @@ export function getPerformanceMetrics(): PerformanceMetrics | null {
  */
 let performanceMonitor: PerformanceMonitor | null = null;
 
-export default function usePerformanceMonitoring(): PerformanceMonitor | null {
+export function usePerformanceMonitoring(): PerformanceMonitor | null {
   if (!performanceMonitor && typeof window !== 'undefined') {
     performanceMonitor = initPerformanceMonitoring();
   }
