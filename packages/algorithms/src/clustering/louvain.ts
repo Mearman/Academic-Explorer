@@ -16,7 +16,7 @@
 
 import type { Graph } from '../graph/graph';
 import { calculateModularityDelta } from '../metrics/modularity';
-import type { Community, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
+import type { Community } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import type { WeightFunction } from '../types/weight-function';
 import { convertToCSR, type CSRGraph } from '../utils/csr';
@@ -385,7 +385,6 @@ export function detectCommunities<N extends Node, E extends Edge>(
 
       for (const superNodeId of superNodeOrder) {
         const currentCommunityId = nodeToCommunity.get(superNodeId)!;
-        const _currentCommunity = communities.get(currentCommunityId)!;
 
         // Calculate weights to neighboring communities for this super-node
         const memberNodes = superNodes.get(superNodeId)!;
@@ -492,7 +491,7 @@ export function detectCommunities<N extends Node, E extends Edge>(
       }
 
       // Remove empty communities
-      removeEmptyCommunities(communities, nodeToCommunity);
+      removeEmptyCommunities(communities);
 
       // T013: Early convergence detection (spec-027 Phase 1)
       // Already implemented: aggressive early stopping for large graphs
@@ -636,150 +635,6 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
 }
 
 /**
- * Generate cache key for community pair edge weight lookup.
- *
- * @param fromId - Source community ID
- * @param toId - Target community ID
- * @returns Cache key string in format "fromId-toId"
- *
- * @remarks
- * Used to create unique keys for CommunityHashTable lookups.
- * Key format enables O(1) cache access for community edge weights during ΔQ calculations.
- *
- * @since Phase 5 (spec-027, T048)
- */
-function communityKey(fromId: number, toId: number): string {
-  return `${fromId}-${toId}`;
-}
-
-/**
- * Get total edge weight from one community to another with lazy caching.
- *
- * @param cache - Community edge weight cache
- * @param fromCommunity - Source community ID
- * @param toCommunity - Target community ID
- * @param csrGraph - CSR graph representation
- * @param nodeToCommunity - Map from node ID to community ID
- * @param communities - Map from community ID to set of node IDs
- * @returns Total weight of edges from fromCommunity to toCommunity
- *
- * @remarks
- * **Cache Strategy**:
- * - Cache hit: Return cached value (O(1))
- * - Cache miss: Calculate via CSR iteration, populate cache, return value
- *
- * **Algorithm** (on cache miss):
- * 1. For each node in fromCommunity
- * 2. Iterate through CSR neighbors using offsets/edges/weights
- * 3. Sum weights for neighbors in toCommunity
- * 4. Store result in cache for future lookups
- *
- * **Performance**:
- * - Expected cache hit rate: >80% after first iteration
- * - Cache hit: O(1), Cache miss: O(E_community) where E_community = edges from fromCommunity
- *
- * @since Phase 5 (spec-027, T049)
- */
-function getCommunityEdgeWeight<N extends Node, E extends Edge>(
-  cache: CommunityHashTable,
-  fromCommunity: number,
-  toCommunity: number,
-  csrGraph: CSRGraph<N, E>,
-  nodeToCommunity: Map<string, number>,
-  communities: Map<number, Set<string>>
-): number {
-  // Check cache first
-  const key = communityKey(fromCommunity, toCommunity);
-  const cached = cache.get(key);
-  if (cached !== undefined) {
-    return cached;
-  }
-
-  // Cache miss: calculate edge weight
-  let totalWeight = 0;
-
-  const fromNodes = communities.get(fromCommunity);
-  if (!fromNodes) {
-    // Empty community - cache and return 0
-    cache.set(key, 0);
-    return 0;
-  }
-
-  // For each node in source community
-  for (const nodeId of fromNodes) {
-    const nodeIdx = csrGraph.nodeIndex.get(nodeId);
-    if (nodeIdx === undefined) continue;
-
-    const start = csrGraph.offsets[nodeIdx];
-    const end = csrGraph.offsets[nodeIdx + 1];
-
-    // Iterate through CSR-packed neighbors
-    for (let i = start; i < end; i++) {
-      const targetIdx = csrGraph.edges[i];
-      const targetNodeId = csrGraph.nodeIds[targetIdx];
-      const targetCommunity = nodeToCommunity.get(targetNodeId);
-
-      // If neighbor is in target community, add edge weight
-      if (targetCommunity === toCommunity) {
-        totalWeight += csrGraph.weights[i];
-      }
-    }
-  }
-
-  // Populate cache and return
-  cache.set(key, totalWeight);
-  return totalWeight;
-}
-
-/**
- * Invalidate cache entries involving a specific community.
- *
- * @param cache - Community edge weight cache
- * @param communityId - Community ID whose cache entries should be invalidated
- *
- * @remarks
- * When a node moves from one community to another, edge weights to/from both
- * affected communities change. This function removes all cache entries where
- * communityId appears as either source or target.
- *
- * **Algorithm**:
- * 1. Iterate through all cache keys in format "fromId-toId"
- * 2. Parse fromId and toId from each key
- * 3. Delete entry if either fromId or toId equals communityId
- *
- * **Performance**: O(C²) where C = number of communities (cache size)
- * - Typically C << N (nodes), so this is acceptable
- * - Called once per node move in local moving phase
- *
- * @since Phase 5 (spec-027, T050)
- */
-function invalidateCommunityCache(
-  cache: CommunityHashTable,
-  communityId: number
-): void {
-  const keysToDelete: string[] = [];
-
-  // Collect keys to delete (can't delete during iteration)
-  for (const key of cache.keys()) {
-    const parts = key.split('-');
-    if (parts.length === 2) {
-      const fromId = parseInt(parts[0], 10);
-      const toId = parseInt(parts[1], 10);
-
-      // Delete if communityId appears in either position
-      if (fromId === communityId || toId === communityId) {
-        keysToDelete.push(key);
-      }
-    }
-  }
-
-  // Delete collected keys
-  for (const key of keysToDelete) {
-    cache.delete(key);
-  }
-}
-
-/**
  * Find neighboring communities and calculate edge weights to each (for super-nodes).
  *
  * For a super-node (which contains multiple original nodes), this finds all edges
@@ -884,68 +739,13 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
 }
 
 /**
- * Find neighboring communities and calculate edge weights to each.
- */
-function findNeighborCommunitiesForNode<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  nodeToCommunity: Map<string, number>,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
-): Map<number, number> {
-  const neighborCommunities = new Map<number, number>(); // communityId -> total weight
-
-  // Outgoing edges
-  const outgoingResult = graph.getOutgoingEdges(nodeId);
-  if (outgoingResult.ok) {
-    outgoingResult.value.forEach((edge) => {
-      const neighborId = edge.target;
-      const neighborCommunityId = nodeToCommunity.get(neighborId);
-      if (neighborCommunityId !== undefined) {
-        const sourceOption = graph.getNode(edge.source);
-        const targetOption = graph.getNode(edge.target);
-        if (sourceOption.some && targetOption.some) {
-          const weight = weightFn(edge, sourceOption.value, targetOption.value);
-          neighborCommunities.set(
-            neighborCommunityId,
-            (neighborCommunities.get(neighborCommunityId) || 0) + weight
-          );
-        }
-      }
-    });
-  }
-
-  // Incoming edges (for directed graphs) - use pre-computed cache
-  if (graph.isDirected()) {
-    const incoming = incomingEdges.get(nodeId) || [];
-    incoming.forEach((edge) => {
-      const neighborId = edge.source;
-      const neighborCommunityId = nodeToCommunity.get(neighborId);
-      if (neighborCommunityId !== undefined) {
-        const sourceOption = graph.getNode(edge.source);
-        const targetOption = graph.getNode(edge.target);
-        if (sourceOption.some && targetOption.some) {
-          const weight = weightFn(edge, sourceOption.value, targetOption.value);
-          neighborCommunities.set(
-            neighborCommunityId,
-            (neighborCommunities.get(neighborCommunityId) || 0) + weight
-          );
-        }
-      }
-    });
-  }
-
-  return neighborCommunities;
-}
-
-/**
  * Move a super-node from one community to another.
  *
  * This is similar to moveNode but works with super-nodes, which contain
  * multiple original nodes. The sigmaTot and sigmaIn calculations need to
  * account for all edges between the member nodes.
  */
-function moveSuperNode<N extends Node, E extends Edge>(
+function moveSuperNode(
   superNodeId: string,
   fromCommunityId: number,
   toCommunityId: number,
@@ -982,106 +782,10 @@ function moveSuperNode<N extends Node, E extends Edge>(
 }
 
 /**
- * Move a node from one community to another.
- */
-function moveNode<N extends Node, E extends Edge>(
-  nodeId: string,
-  fromCommunityId: number,
-  toCommunityId: number,
-  communities: Map<number, LouvainCommunity>,
-  nodeToCommunity: Map<string, number>,
-  graph: Graph<N, E>,
-  weightFn: WeightFunction<N, E>,
-  nodeDegrees: Map<string, number>,
-  incomingEdges: Map<string, E[]>
-): void {
-  const fromCommunity = communities.get(fromCommunityId)!;
-  const toCommunity = communities.get(toCommunityId)!;
-
-  // Remove node from old community
-  fromCommunity.nodes.delete(nodeId);
-
-  // Update sigma_tot for old community
-  const nodeDegree = nodeDegrees.get(nodeId) || 0;
-  fromCommunity.sigmaTot -= nodeDegree;
-
-  // Update sigma_in for old community (remove internal edges)
-  const internalEdgesToOldCommunity = calculateInternalEdgeWeight(
-    graph,
-    nodeId,
-    fromCommunity.nodes,
-    weightFn,
-    incomingEdges
-  );
-  fromCommunity.sigmaIn -= internalEdgesToOldCommunity;
-
-  // Add node to new community
-  toCommunity.nodes.add(nodeId);
-  toCommunity.sigmaTot += nodeDegree;
-
-  // Update sigma_in for new community (add internal edges)
-  const internalEdgesToNewCommunity = calculateInternalEdgeWeight(
-    graph,
-    nodeId,
-    toCommunity.nodes,
-    weightFn,
-    incomingEdges
-  );
-  toCommunity.sigmaIn += internalEdgesToNewCommunity;
-
-  // Update node mapping
-  nodeToCommunity.set(nodeId, toCommunityId);
-}
-
-/**
- * Calculate weight of edges from a node to nodes in a community.
- */
-function calculateInternalEdgeWeight<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  communityNodes: Set<string>,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
-): number {
-  let weight = 0;
-
-  // Outgoing edges
-  const outgoingResult = graph.getOutgoingEdges(nodeId);
-  if (outgoingResult.ok) {
-    outgoingResult.value.forEach((edge) => {
-      if (communityNodes.has(edge.target)) {
-        const sourceOption = graph.getNode(edge.source);
-        const targetOption = graph.getNode(edge.target);
-        if (sourceOption.some && targetOption.some) {
-          weight += weightFn(edge, sourceOption.value, targetOption.value);
-        }
-      }
-    });
-  }
-
-  // Incoming edges (for directed graphs) - use pre-computed cache
-  if (graph.isDirected()) {
-    const incoming = incomingEdges.get(nodeId) || [];
-    incoming.forEach((edge) => {
-      if (communityNodes.has(edge.source)) {
-        const sourceOption = graph.getNode(edge.source);
-        const targetOption = graph.getNode(edge.target);
-        if (sourceOption.some && targetOption.some) {
-          weight += weightFn(edge, sourceOption.value, targetOption.value);
-        }
-      }
-    });
-  }
-
-  return weight;
-}
-
-/**
  * Remove empty communities from the map.
  */
 function removeEmptyCommunities(
-  communities: Map<number, LouvainCommunity>,
-  nodeToCommunity: Map<string, number>
+  communities: Map<number, LouvainCommunity>
 ): void {
   const emptyCommunityIds: number[] = [];
 
