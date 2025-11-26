@@ -1,11 +1,13 @@
-import { tanstackRouter } from "@tanstack/router-vite-plugin";
-import react from "@vitejs/plugin-react";
-import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
-import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { tanstackRouter } from "@tanstack/router-vite-plugin";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import react from "@vitejs/plugin-react";
 import type { Plugin } from "vite";
+
+import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

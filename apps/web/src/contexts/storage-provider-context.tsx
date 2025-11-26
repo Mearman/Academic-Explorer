@@ -3,8 +3,8 @@
  * Allows swapping between production (IndexedDB) and testing (in-memory) storage
  */
 
-import { createContext, useContext, type ReactNode } from 'react';
 import type { CatalogueStorageProvider } from '@academic-explorer/utils';
+import { createContext, useContext, type ReactNode } from 'react';
 
 /**
  * Context for providing storage implementation

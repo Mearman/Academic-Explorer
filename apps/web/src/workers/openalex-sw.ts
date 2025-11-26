@@ -82,7 +82,8 @@ declare const self: ServiceWorkerGlobalScope & {
 
 // Workbox precache manifest injection point
 // Workbox will replace this array with the actual precache manifest
-const precacheManifest = self.__WB_MANIFEST;
+// Note: precacheManifest contains the list of files to cache
+// const precacheManifest = self.__WB_MANIFEST;
 
 const sw = self;
 
@@ -100,7 +101,7 @@ interface FetchEvent extends ExtendableEvent {
 }
 
 // Install event - set up the service worker
-sw.addEventListener("install", (_event) => {
+sw.addEventListener("install", () => {
   // Service worker installation starting - activating immediately
   sw.skipWaiting(); // Activate immediately
 });
@@ -139,12 +140,12 @@ function isDevelopmentEnvironment(): boolean {
  */
 async function handleDevelopmentRequest({
   request,
-  url,
+  url: devUrl,
 }: {
   request: Request;
   url: URL;
 }): Promise<Response> {
-  const proxyUrl = `/api/openalex${url.pathname}${url.search}`;
+  const proxyUrl = `/api/openalex${devUrl.pathname}${devUrl.search}`;
   // In development, proxy OpenAlex API requests to local development server
 
   const proxyRequest = new Request(proxyUrl, {
@@ -168,7 +169,7 @@ async function tryStaticFile(url: URL): Promise<Response | null> {
       // Static file found and served successfully
       return staticResponse;
     }
-  } catch (error) {
+  } catch {
     // Static file not available or failed to load
   }
   return null;
@@ -179,10 +180,9 @@ async function tryStaticFile(url: URL): Promise<Response | null> {
  */
 async function tryCache({
   request,
-  url,
 }: {
   request: Request;
-  url: URL;
+  url?: URL;
 }): Promise<Response | null> {
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
@@ -199,11 +199,10 @@ async function tryCache({
 async function validateAndCacheResponse({
   request,
   response,
-  url,
 }: {
   request: Request;
   response: Response;
-  url: URL;
+  url?: URL;
 }): Promise<Response> {
   if (!response.ok) return response;
 
@@ -222,7 +221,7 @@ async function validateAndCacheResponse({
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response.clone());
     // Successfully cached validated OpenAlex response
-  } catch (error) {
+  } catch {
     // Response validation failed, not caching this response
     // Error details captured in service worker debugging
   }
@@ -271,7 +270,7 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
     const response = await fetch(request);
 
     return validateAndCacheResponse({ request, response, url });
-  } catch (error) {
+  } catch {
     // Error in service worker, falling back to direct network request
     // Fallback to normal fetch
     return fetch(request);

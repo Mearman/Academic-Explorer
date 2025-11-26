@@ -8,6 +8,7 @@
  */
 
 import React, { createContext, useContext, type ReactNode } from "react";
+
 import { useCatalogue, type UseCatalogueReturn } from "@/hooks/useCatalogue";
 
 // Create context with undefined default (will throw if used outside provider)

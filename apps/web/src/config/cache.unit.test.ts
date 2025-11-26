@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import type { EntityType } from "@academic-explorer/types";
+
 import {
   CACHE_CONFIG,
   ENTITY_CACHE_TIMES,

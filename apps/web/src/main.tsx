@@ -1,21 +1,26 @@
-import { createRoot } from "react-dom/client";
+import { cachedOpenAlex } from "@academic-explorer/client";
+import { DexieStorageProvider } from "@academic-explorer/utils";
+import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
+import { MantineProvider, createTheme } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createRouter,
   RouterProvider,
   createHashHistory,
 } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MantineProvider, createTheme } from "@mantine/core";
-import { Notifications } from "@mantine/notifications";
-import { ModalsProvider } from "@mantine/modals";
-import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
-import { DexieStorageProvider } from "@academic-explorer/utils";
-import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
-import { initializeNetworkMonitoring } from "./services/network-interceptor";
-import { initWebVitals } from "@/utils/web-vitals";
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { PostHogProvider } from "@/components/PostHogProvider";
 import posthog from "posthog-js";
+import { createRoot } from "react-dom/client";
+
+import { PostHogProvider } from "@/components/PostHogProvider";
+import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
+import { AppActivityProvider } from "@/stores/app-activity-store";
+import { LayoutProvider } from "@/stores/layout-store";
+import { initWebVitals } from "@/utils/web-vitals";
+
+import { routeTree } from "./routeTree.gen";
+import { initializeNetworkMonitoring } from "./services/network-interceptor";
 
 // Fix URL display issues immediately when page loads
 // This runs before React mounts to fix browser address bar display
@@ -77,7 +82,7 @@ if (typeof window !== "undefined") {
 
     // Check for collapsed protocol slashes in the (potentially updated) hash
     if (!needsUpdate) {
-      const collapsedPattern = /(https?:\/)([^\/])/;
+      const collapsedPattern = /(https?:\/)([^/])/;
       if (collapsedPattern.test(fixedHash)) {
         // Fix collapsed patterns in the hash portion only
         fixedHash = fixedHash
@@ -142,9 +147,9 @@ if (typeof window !== "undefined") {
     }
 
     // Fix collapsed protocol slashes
-    const collapsedPattern = /(^|\/)(https?:\/)([^\/])/;
+    const collapsedPattern = /(^|\/)https?:\/([^/])/;
     if (collapsedPattern.test(fixedHash)) {
-      fixedHash = fixedHash.replace(collapsedPattern, '$1$2/$3');
+      fixedHash = fixedHash.replace(collapsedPattern, '$1https://$2');
       needsUpdate = true;
     }
 
@@ -169,13 +174,6 @@ import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 
 // Import { registerOpenAlexServiceWorker } from "@/lib/service-worker";
-
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen";
-
-// Load persisted app activity events on app start
-import { AppActivityProvider } from "@/stores/app-activity-store";
-import { LayoutProvider } from "@/stores/layout-store";
 
 // Create Mantine theme using design tokens
 const theme = createTheme({

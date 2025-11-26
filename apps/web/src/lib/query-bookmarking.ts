@@ -3,8 +3,9 @@
  * Handles bookmarking of complex API queries while excluding pagination parameters
  */
 
-import { type OpenAlexSearchParams } from "./route-schemas";
 import { createApiUrlRequest } from "@academic-explorer/utils/storage/user-interactions-db";
+
+import { type OpenAlexSearchParams } from "./route-schemas";
 
 // Re-export the type for use in other modules
 export type { OpenAlexSearchParams };

@@ -10,7 +10,9 @@ import {
   type DirectoryIndex,
   type FileEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
-import type { StaticEntityType } from "@academic-explorer/client";
+
+// Local type definition (not exported from @academic-explorer/client)
+type StaticEntityType = 'author' | 'work' | 'source' | 'institution' | 'topic' | 'publisher' | 'funder';
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import("node:fs/promises");
@@ -94,16 +96,16 @@ export async function generateAllIndexes(
     // Generate indexes for each entity type
     const results = await Promise.allSettled(
       entityDirs.map(async (entityType) => {
-        const entityDir = path.join(staticDataDir, entityType);
+        const dir = path.join(staticDataDir, entityType);
         console.log(`Processing ${entityType} directory...`);
 
         await (options.autoDownload
           ? generateIndexWithAutoDownload({
-              entityDir,
+              entityDir: dir,
               entityType,
               staticDataDir,
             })
-          : generateIndexForEntityType(entityDir, entityType));
+          : generateIndexForEntityType(dir, entityType));
       }),
     );
 
@@ -138,11 +140,10 @@ export async function generateAllIndexes(
 export async function generateIndexWithAutoDownload({
   entityDir,
   entityType,
-  staticDataDir,
 }: {
   entityDir: string;
   entityType: StaticEntityType;
-  staticDataDir: string;
+  staticDataDir?: string;
 }): Promise<void> {
   await initializeNodeModules();
   try {
@@ -169,8 +170,9 @@ export async function generateIndexWithAutoDownload({
 export async function generateIndexForEntityType(
   entityDir: string,
   entityType: StaticEntityType,
-  recursive = true,
+  recursive?: boolean,
 ): Promise<void> {
+  const shouldRecurse = recursive ?? true;
   await initializeNodeModules();
   try {
     console.log(`Generating index for ${entityType}...`);
@@ -203,9 +205,9 @@ export async function generateIndexForEntityType(
     let directories: Record<string, DirectoryEntry> = {};
     let maxLastUpdated = new Date().toISOString();
 
-    if (recursive) {
+    if (shouldRecurse) {
       const { directories: subDirs, maxLastUpdated: subMaxUpdated } =
-        await processSubdirectories({ entityDir, entityType, recursive });
+        await processSubdirectories({ entityDir, entityType, recursive: shouldRecurse });
       directories = subDirs;
       maxLastUpdated = subMaxUpdated;
     }
@@ -404,11 +406,10 @@ async function processJsonFiles({
 async function processSubdirectories({
   entityDir,
   entityType,
-  recursive,
 }: {
   entityDir: string;
   entityType: StaticEntityType;
-  recursive: boolean;
+  recursive?: boolean;
 }): Promise<{
   directories: Record<string, DirectoryEntry>;
   maxLastUpdated: string;
@@ -506,7 +507,7 @@ async function validateIndexFiles({
   let missingFiles = 0;
 
   if (index.files) {
-    for (const [_key, fileEntry] of Object.entries(index.files)) {
+    for (const [, fileEntry] of Object.entries(index.files)) {
       const fileName = (fileEntry as FileEntry).$ref.replace("./", "");
       const filePath = path.join(entityDir, fileName);
       if (!(await fileExists(filePath))) {

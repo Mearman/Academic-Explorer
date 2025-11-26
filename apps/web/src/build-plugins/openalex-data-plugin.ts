@@ -6,11 +6,6 @@
  * - Generates and maintains complete index files for all entity types
  * - Always runs at build time to ensure complete data availability
  */
-import { logger } from "@academic-explorer/utils";
-import {
-  generateContentHash,
-  type UnifiedIndexEntry,
-} from "@academic-explorer/utils/static-data/cache-utilities";
 import {
   access,
   mkdir,
@@ -21,6 +16,12 @@ import {
   writeFile,
 } from "fs/promises";
 import { join } from "path";
+
+import { logger } from "@academic-explorer/utils";
+import {
+  generateContentHash,
+  type UnifiedIndexEntry,
+} from "@academic-explorer/utils/static-data/cache-utilities";
 import type { Plugin } from "vite";
 import { z } from "zod";
 
