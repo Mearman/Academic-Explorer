@@ -8,7 +8,7 @@ import { Anchor } from "@mantine/core";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 import { useState } from "react";
-import type { ViewMode } from "@/components/ViewModeToggle";
+import type { TableViewMode } from "@/components/ViewModeToggle";
 
 const worksColumns: ColumnConfig[] = [
   {

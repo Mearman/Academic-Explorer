@@ -4,7 +4,7 @@ import type { ColumnConfig } from "@/components/types";
 import type { Topic } from "@academic-explorer/types";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";
-import type { ViewMode } from "@/components/ViewModeToggle";
+import type { TableViewMode } from "@/components/ViewModeToggle";
 
 const topicsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },

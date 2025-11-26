@@ -10,7 +10,7 @@ import {
   type DirectoryIndex,
   type FileEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
-import type { StaticEntityType } from "@academic-explorer/utils";
+import type { StaticEntityType } from "@academic-explorer/client";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import("node:fs/promises");
@@ -49,14 +49,13 @@ export interface IndexGenerationOptions {
 }
 
 const VALID_ENTITY_TYPES: StaticEntityType[] = [
-  "works",
-  "authors",
-  "sources",
-  "institutions",
-  "topics",
-  "publishers",
-  "funders",
-  "concepts",
+  "work",
+  "author",
+  "source",
+  "institution",
+  "topic",
+  "publisher",
+  "funder",
 ];
 
 const INDEX_FILENAME = "index.json";

@@ -3,7 +3,7 @@ import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";
-import type { ViewMode } from "@/components/ViewModeToggle";
+import type { TableViewMode } from "@/components/ViewModeToggle";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 
