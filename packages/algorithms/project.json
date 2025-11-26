@@ -5,14 +5,7 @@
   "projectType": "library",
   "tags": ["type:package", "scope:algorithms"],
   "targets": {
-    "barrelsby": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
-    },
+    "barrelsby": {},
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{projectRoot}/dist"],
@@ -38,19 +31,7 @@
         "watch": true
       }
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "packages/algorithms"
-      },
-      "cache": true,
-      "inputs": [
-        "{projectRoot}/src/**/*.ts",
-        "{projectRoot}/tsconfig.json",
-        "{workspaceRoot}/tsconfig.base.json"
-      ]
-    },
+    "typecheck": {},
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],

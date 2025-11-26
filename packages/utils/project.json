@@ -4,14 +4,7 @@
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
   "targets": {
-    "barrelsby": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
-    },
+    "barrelsby": {},
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": [
