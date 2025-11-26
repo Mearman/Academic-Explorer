@@ -6,7 +6,6 @@ export * from "./advanced-field-selection";
 export * from "./cached-client";
 export * from "./client";
 export * from "./helpers";
-export * from "./types";
 export * from "./cache/index";
 export * from "./data-pipeline/index";
 export * from "./entities/index";

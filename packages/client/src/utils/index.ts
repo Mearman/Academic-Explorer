@@ -12,5 +12,4 @@ export * from "./query-params";
 export * from "./request-normalizer";
 export * from "./sampling";
 export * from "./statistics";
-export * from "./text-analysis";
 export * from "./transformers";
