@@ -800,7 +800,7 @@ function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>):
   const density = maxPossibleEdges > 0 ? leidenCommunity.internalEdges / maxPossibleEdges : 0;
 
   // Calculate external edges
-  let externalEdges = 0;
+  const externalEdges = 0;
   // Note: This is a simplification - external edges should be counted during community building
   // For now, we estimate based on conductance if available
 

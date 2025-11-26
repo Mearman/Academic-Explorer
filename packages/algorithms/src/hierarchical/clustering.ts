@@ -122,7 +122,7 @@ function buildAdjacencyMatrix<N extends Node, E extends Edge>(
       adjMatrix[sourceIdx][targetIdx] = 1;
 
       // For undirected graphs or treating directed as undirected
-      if (!graph.isDirected() || true) {
+      if (!graph.isDirected()) {
         adjMatrix[targetIdx][sourceIdx] = 1;
       }
     }
