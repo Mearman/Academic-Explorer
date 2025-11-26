@@ -62,14 +62,12 @@ node_modules/**/lib/
 # But ignore compiled lib in tools
 tools/dist/**/lib/
 
-# TypeScript compiled outputs (anywhere in project)
+# TypeScript compiled outputs in source directories
+# (dist/ is already ignored above, node_modules/ has its own ignore)
 **/*.js
 **/*.d.ts
 **/*.js.map
 **/*.d.ts.map
-# Allow third-party and build outputs only
-!**/dist/**
-!**/node_modules/**
 # Allow Vite environment type definitions
 !**/vite-env.d.ts
 
@@ -96,7 +94,15 @@ graph.json
 # Test cache data files (generated during test execution with unified hex encoding)
 
 test-results.json
-debug-homepage.png
+
+# Working files protection (Constitution Principle XIV - Working Files Hygiene)
+# ALL markdown and image files are ignored by default
+# Intentional documentation MUST be force-added: git add -f <file>
+# Primary mechanism is still active cleanup - delete working files before staging
+*.md
+*.png
+*.jpg
+*.jpeg
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
