@@ -64,7 +64,8 @@ function CreateAndAddModal({
 }: CreateAndAddModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  // Tags feature not yet implemented - using empty array for now
+  const tags: string[] = [];
   const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

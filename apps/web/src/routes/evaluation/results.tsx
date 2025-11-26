@@ -9,7 +9,6 @@ import {
   DEFAULT_MATCHING_CONFIG,
   searchBasedOnSTARDataset,
   calculateSearchCoverage,
-  DEFAULT_SEARCH_CONFIG,
 } from "@academic-explorer/utils";
 import type {
   STARDataset,

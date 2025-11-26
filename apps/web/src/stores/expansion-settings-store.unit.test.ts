@@ -46,8 +46,8 @@ describe("Expansion Settings Store - Standalone API", () => {
       expect(getSettings("funders")).toBeDefined();
 
       // Should have settings for relation types
-      expect(getSettings(RelationType.REFERENCES)).toBeDefined();
-      expect(getSettings(RelationType.AUTHORED)).toBeDefined();
+      expect(getSettings(RelationType.REFERENCE)).toBeDefined();
+      expect(getSettings(RelationType.AUTHORSHIP)).toBeDefined();
     });
 
     it("should have valid default settings structure", () => {
@@ -128,21 +128,15 @@ describe("Expansion Settings Store - Standalone API", () => {
       const { getSettings } = expansionSettingsActions;
 
       const relationTypes = [
-        RelationType.AUTHORED,
-        RelationType.AFFILIATED,
-        RelationType.PUBLISHED_IN,
-        RelationType.FUNDED_BY,
-        RelationType.REFERENCES,
-        RelationType.RELATED_TO,
-        RelationType.SOURCE_PUBLISHED_BY,
-        RelationType.INSTITUTION_CHILD_OF,
-        RelationType.PUBLISHER_CHILD_OF,
-        RelationType.WORK_HAS_TOPIC,
-        RelationType.WORK_HAS_KEYWORD,
+        RelationType.AUTHORSHIP,
+        RelationType.AFFILIATION,
+        RelationType.PUBLICATION,
+        RelationType.REFERENCE,
+        RelationType.TOPIC,
+        RelationType.HOST_ORGANIZATION,
+        RelationType.LINEAGE,
         RelationType.AUTHOR_RESEARCHES,
-        RelationType.INSTITUTION_LOCATED_IN,
-        RelationType.FUNDER_LOCATED_IN,
-        RelationType.TOPIC_PART_OF_FIELD,
+        RelationType.FUNDED_BY,
       ];
 
       relationTypes.forEach((relationType) => {
