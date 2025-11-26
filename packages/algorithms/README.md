@@ -13,6 +13,8 @@ This package provides type-safe graph algorithms designed for academic entity re
 - **Graph Traversal**: DFS, BFS algorithms with type preservation
 - **Path Finding**: Dijkstra's shortest path with weighted edges
 - **Graph Analysis**: Topological sort, cycle detection, connected components, strongly connected components
+- **Graph Extraction**: Ego networks, subgraph filtering, path analysis, motif detection, k-truss
+- **Clustering**: Louvain, Leiden, label propagation, Infomap, spectral partitioning, hierarchical
 - **Type Safety**: Discriminated unions for heterogeneous graphs (e.g., `WorkNode | AuthorNode | InstitutionNode`)
 - **Error Handling**: Result/Option types - no exceptions thrown
 - **Performance**: Optimized for graphs with 10,000+ nodes
@@ -729,6 +731,151 @@ if (result.ok) {
   });
 }
 ```
+
+## Graph Extraction Algorithms
+
+The package includes 5 graph extraction algorithms for subgraph analysis:
+
+### 17. Ego Network Extraction
+
+Extracts k-hop neighborhoods around seed nodes.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, extractEgoNetwork, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(true);
+
+// Build citation network
+// ... add nodes and edges ...
+
+// Extract 2-hop neighborhood around paper P123
+const result = extractEgoNetwork(graph, {
+  radius: 2,
+  seedNodes: ['P123'],
+  includeSeed: true,
+});
+
+if (result.ok) {
+  console.log(`Found ${result.value.getNodeCount()} papers in 2-hop neighborhood`);
+}
+```
+
+### 18. Subgraph Filtering
+
+Filters graphs by node/edge attributes.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V' + E')
+
+```typescript
+import { Graph, filterSubgraph, type Node, type Edge } from '@academic-explorer/algorithms';
+
+interface WorkNode extends Node {
+  year: number;
+  citationCount: number;
+}
+
+const graph = new Graph<WorkNode, Edge>(true);
+// ... add nodes and edges ...
+
+// Filter for recent high-impact papers
+const result = filterSubgraph(graph, {
+  nodePredicate: (node) => node.year >= 2020 && node.citationCount >= 100,
+  edgeTypes: new Set(['cites']),
+  combineMode: 'and',
+});
+
+if (result.ok) {
+  console.log(`Filtered to ${result.value.getNodeCount()} nodes`);
+}
+```
+
+### 19. Path Analysis
+
+Find shortest paths and extract reachability subgraphs.
+
+**Time Complexity**: O(V + E)
+**Space Complexity**: O(V)
+
+```typescript
+import { Graph, findShortestPath, extractReachabilitySubgraph, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(true);
+// ... add nodes and edges ...
+
+// Find shortest citation path
+const pathResult = findShortestPath(graph, 'P1', 'P10');
+if (pathResult.ok && pathResult.value.some) {
+  console.log('Path:', pathResult.value.value.path.map(n => n.id).join(' → '));
+  console.log('Distance:', pathResult.value.value.distance);
+}
+
+// Extract all papers reachable from P1
+const reachableResult = extractReachabilitySubgraph(graph, ['P1'], 'forward');
+if (reachableResult.ok) {
+  console.log(`${reachableResult.value.getNodeCount()} reachable papers`);
+}
+```
+
+### 20. Motif Detection
+
+Detect triangles, stars, co-citations, and bibliographic coupling.
+
+**Time Complexity**: O(E√E) for triangles, O(V + E) for others
+**Space Complexity**: O(triangles/patterns found)
+
+```typescript
+import { Graph, detectTriangles, detectCoCitations, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(true);
+// ... add nodes and edges ...
+
+// Find all triangles (collaboration clusters)
+const triangleResult = detectTriangles(graph);
+if (triangleResult.ok) {
+  console.log(`Found ${triangleResult.value.length} triangles`);
+}
+
+// Find co-citation pairs (papers cited together)
+const coCiteResult = detectCoCitations(graph);
+if (coCiteResult.ok) {
+  coCiteResult.value.forEach(pair => {
+    console.log(`${pair.paper1} and ${pair.paper2} co-cited ${pair.count} times`);
+  });
+}
+```
+
+### 21. K-Truss Extraction
+
+Extract dense subgraphs where every edge is part of at least k-2 triangles.
+
+**Time Complexity**: O(E^1.5)
+**Space Complexity**: O(V + E)
+
+```typescript
+import { Graph, extractKTruss, type Node, type Edge } from '@academic-explorer/algorithms';
+
+const graph = new Graph<Node, Edge>(false); // undirected
+// ... add nodes and edges ...
+
+// Extract 3-truss (every edge in at least 1 triangle)
+const result = extractKTruss(graph, { k: 3 });
+
+if (result.ok) {
+  console.log(`3-truss: ${result.value.getNodeCount()} nodes, ${result.value.getEdgeCount()} edges`);
+}
+```
+
+| Algorithm | Use Case | Time Complexity | Key Feature |
+|-----------|----------|-----------------|-------------|
+| **Ego Network** | Citation context exploration | O(V + E) | k-hop neighborhoods |
+| **Subgraph Filter** | Attribute-based subsetting | O(V + E) | Flexible predicates |
+| **Path Analysis** | Intellectual lineage tracing | O(V + E) | Forward/backward reachability |
+| **Motif Detection** | Pattern identification | O(E√E) | Triangles, stars, co-citations |
+| **K-Truss** | Dense community extraction | O(E^1.5) | Triangle-based cohesion |
 
 ## Clustering & Partitioning Algorithms
 
