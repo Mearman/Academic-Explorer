@@ -3,7 +3,7 @@
 **Feature Branch**: `015-openalex-relationships`
 **Created**: 2025-11-18
 **Status**: Completed
-**Completed**: 2025-11-18
+**Completed**: 2025-11-21
 **Input**: User description: "correctly implement handling of ALL relationships"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -260,7 +260,7 @@ As a publishing analyst, I want to see which publishers host which journals/sour
 
 **Progress**: 90/90 tasks (100%) complete ✅
 **Status**: ✅ All phases complete
-**Completed**: 2025-11-18
+**Completed**: 2025-11-21
 
 ### Completed Phases
 
@@ -423,3 +423,18 @@ Following OpenAlex API verification, three additional relationships were impleme
 **Total Tasks**: 90 tasks complete
 **Test Strategy**: Test-first development (RED-GREEN-REFACTOR) throughout
 **Constitution Compliance**: ✅ No `any` types, atomic commits, full test coverage
+
+---
+
+### Package Migration Note
+
+**Date**: 2025-11-24
+
+The `packages/graph/` package referenced throughout this specification was removed on 2025-11-24. All core relationship functionality has been migrated to:
+
+- **packages/types/src/relationships.ts** - Core relationship type definitions and utilities
+
+This migration consolidated relationship types into the types package for better reusability across the monorepo. Key file references in this specification:
+- `packages/graph/src/types/core.ts` → `packages/types/src/relationships.ts`
+- `packages/graph/src/providers/openalex-provider.ts` → Functionality distributed across service layers
+- `packages/graph/src/types/expansion.ts` → `packages/types/src/relationships.ts`
