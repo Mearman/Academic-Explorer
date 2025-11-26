@@ -27,12 +27,12 @@
 
 **Purpose**: Project initialization and test infrastructure setup
 
-- [ ] T001 Audit existing E2E test suite for failures in apps/web/e2e/ and apps/web/src/test/e2e/
-- [ ] T002 Document all failing tests in specs/020-e2e-test-coverage/audit-results.md
-- [ ] T003 Update playwright.config.ts to enforce serial execution (workers: 1, maxConcurrency: 1)
-- [ ] T004 [P] Create BasePageObject implementation in apps/web/src/test/page-objects/BasePageObject.ts
-- [ ] T005 [P] Create BaseSPAPageObject implementation in apps/web/src/test/page-objects/BaseSPAPageObject.ts
-- [ ] T006 [P] Create BaseEntityPageObject implementation in apps/web/src/test/page-objects/BaseEntityPageObject.ts
+- [x] T001 Audit existing E2E test suite for failures in apps/web/e2e/ and apps/web/src/test/e2e/
+- [x] T002 Document all failing tests in specs/020-e2e-test-coverage/audit-results.md
+- [x] T003 Update playwright.config.ts to enforce serial execution (workers: 1, maxConcurrency: 1)
+- [x] T004 [P] Create BasePageObject implementation in apps/web/src/test/page-objects/BasePageObject.ts
+- [x] T005 [P] Create BaseSPAPageObject implementation in apps/web/src/test/page-objects/BaseSPAPageObject.ts
+- [x] T006 [P] Create BaseEntityPageObject implementation in apps/web/src/test/page-objects/BaseEntityPageObject.ts
 
 ---
 
@@ -42,14 +42,14 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 [P] Implement NavigationHelper in apps/web/src/test/helpers/NavigationHelper.ts
-- [ ] T008 [P] Implement StorageTestHelper in apps/web/src/test/helpers/StorageTestHelper.ts
-- [ ] T009 [P] Implement AssertionHelper in apps/web/src/test/helpers/AssertionHelper.ts
-- [ ] T010 [P] Implement ApiMockHelper in apps/web/src/test/helpers/ApiMockHelper.ts
-- [ ] T011 [P] Implement PerformanceHelper in apps/web/src/test/helpers/PerformanceHelper.ts
-- [ ] T012 Create app-ready check helper in apps/web/src/test/helpers/app-ready.ts
-- [ ] T013 Fix all pre-existing test failures documented in audit-results.md
-- [ ] T014 Verify smoke suite passes (32 tests) with pnpm nx e2e web
+- [x] T007 [P] Implement NavigationHelper in apps/web/src/test/helpers/NavigationHelper.ts
+- [x] T008 [P] Implement StorageTestHelper in apps/web/src/test/helpers/StorageTestHelper.ts
+- [x] T009 [P] Implement AssertionHelper in apps/web/src/test/helpers/AssertionHelper.ts
+- [x] T010 [P] Implement ApiMockHelper in apps/web/src/test/helpers/ApiMockHelper.ts
+- [x] T011 [P] Implement PerformanceHelper in apps/web/src/test/helpers/PerformanceHelper.ts
+- [x] T012 Create app-ready check helper in apps/web/src/test/helpers/app-ready.ts
+- [x] T013 Fix all pre-existing test failures documented in audit-results.md
+- [x] T014 Verify smoke suite passes (32 tests) with pnpm nx e2e web
 - [ ] T015 Create route manifest in apps/web/coverage/route-manifest.ts with all 46 route patterns
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
@@ -66,36 +66,36 @@
 
 ### Page Objects for User Story 1
 
-- [ ] T016 [P] [US1] Create DomainsDetailPage in apps/web/src/test/page-objects/DomainsDetailPage.ts
-- [ ] T017 [P] [US1] Create FieldsDetailPage in apps/web/src/test/page-objects/FieldsDetailPage.ts
-- [ ] T018 [P] [US1] Create SubfieldsDetailPage in apps/web/src/test/page-objects/SubfieldsDetailPage.ts
-- [ ] T019 [P] [US1] Create BrowsePage in apps/web/src/test/page-objects/BrowsePage.ts
-- [ ] T020 [P] [US1] Create SearchPage in apps/web/src/test/page-objects/SearchPage.ts
-- [ ] T021 [P] [US1] Create ExplorePage in apps/web/src/test/page-objects/ExplorePage.ts
-- [ ] T022 [P] [US1] Create SettingsPage in apps/web/src/test/page-objects/SettingsPage.ts
+- [x] T016 [P] [US1] Create DomainsDetailPage in apps/web/src/test/page-objects/DomainsDetailPage.ts
+- [x] T017 [P] [US1] Create FieldsDetailPage in apps/web/src/test/page-objects/FieldsDetailPage.ts
+- [x] T018 [P] [US1] Create SubfieldsDetailPage in apps/web/src/test/page-objects/SubfieldsDetailPage.ts
+- [x] T019 [P] [US1] Create BrowsePage in apps/web/src/test/page-objects/BrowsePage.ts
+- [x] T020 [P] [US1] Create SearchPage in apps/web/src/test/page-objects/SearchPage.ts
+- [x] T021 [P] [US1] Create ExplorePage in apps/web/src/test/page-objects/ExplorePage.ts
+- [x] T022 [P] [US1] Create SettingsPage in apps/web/src/test/page-objects/SettingsPage.ts
 
 ### Entity Detail Tests (P1 - Critical)
 
-- [ ] T023 [P] [US1] Create domains.e2e.test.ts in apps/web/e2e/ with tests for domain title, metadata, relationships
-- [ ] T024 [P] [US1] Create fields.e2e.test.ts in apps/web/e2e/ with tests for field title, metadata, relationships
-- [ ] T025 [P] [US1] Create subfields.e2e.test.ts in apps/web/e2e/ with tests for subfield title, metadata, relationships
+- [x] T023 [P] [US1] Create domains.e2e.test.ts in apps/web/e2e/ with tests for domain title, metadata, relationships
+- [x] T024 [P] [US1] Create fields.e2e.test.ts in apps/web/e2e/ with tests for field title, metadata, relationships
+- [x] T025 [P] [US1] Create subfields.e2e.test.ts in apps/web/e2e/ with tests for subfield title, metadata, relationships
 - [ ] T026 [US1] Verify all 12 entity types have detail page tests (run coverage check)
 
 ### Utility Page Tests (P1 - Critical)
 
-- [ ] T027 [P] [US1] Create browse.e2e.test.ts in apps/web/src/test/e2e/ with tests for entity type grid, navigation
-- [ ] T028 [P] [US1] Create search.e2e.test.ts in apps/web/src/test/e2e/ with tests for search input, basic results display
-- [ ] T029 [P] [US1] Create explore.e2e.test.ts in apps/web/src/test/e2e/ with tests for explore page rendering
-- [ ] T030 [P] [US1] Create settings.e2e.test.ts in apps/web/src/test/e2e/ with tests for settings toggles, persistence
-- [ ] T031 [P] [US1] Create about.e2e.test.ts in apps/web/src/test/e2e/ with tests for about page content
-- [ ] T032 [P] [US1] Create cache.e2e.test.ts in apps/web/src/test/e2e/ with tests for cache management UI
-- [ ] T033 [P] [US1] Create history.e2e.test.ts in apps/web/src/test/e2e/ with tests for history catalogue display
+- [x] T027 [P] [US1] Create browse.e2e.test.ts in apps/web/src/test/e2e/ with tests for entity type grid, navigation
+- [x] T028 [P] [US1] Create search.e2e.test.ts in apps/web/src/test/e2e/ with tests for search input, basic results display
+- [x] T029 [P] [US1] Create explore.e2e.test.ts in apps/web/src/test/e2e/ with tests for explore page rendering
+- [x] T030 [P] [US1] Create settings.e2e.test.ts in apps/web/src/test/e2e/ with tests for settings toggles, persistence
+- [x] T031 [P] [US1] Create about.e2e.test.ts in apps/web/src/test/e2e/ with tests for about page content
+- [x] T032 [P] [US1] Create cache.e2e.test.ts in apps/web/src/test/e2e/ with tests for cache management UI
+- [x] T033 [P] [US1] Create history.e2e.test.ts in apps/web/src/test/e2e/ with tests for history catalogue display
 
 ### Validation for User Story 1
 
 - [ ] T034 [US1] Run route coverage script (create if needed) to verify 20+ percentage point increase
 - [ ] T035 [US1] Verify all US1 tests pass in isolation with pnpm exec playwright test --grep="@entity|@utility"
-- [ ] T036 [US1] Commit US1 tests with conventional commit message: test(e2e): add critical route coverage tests
+- [x] T036 [US1] Commit US1 tests with conventional commit message: test(e2e): add critical route coverage tests
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - all entity routes and utility pages have basic E2E test coverage. Route coverage should increase by 20+ percentage points.
 

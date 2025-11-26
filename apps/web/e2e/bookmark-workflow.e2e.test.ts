@@ -1,0 +1,325 @@
+/**
+ * E2E Workflow Tests for Bookmark Functionality
+ *
+ * Tests the complete bookmark workflow:
+ * 1. Navigate to entity detail page
+ * 2. Bookmark entity
+ * 3. Verify bookmark state persistence
+ * 4. Navigate to bookmarks page
+ * 5. Verify entity appears in bookmarks list
+ * 6. Remove bookmark
+ * 7. Verify entity removed from bookmarks
+ *
+ * @module bookmark-workflow.e2e
+ * @tag @workflow
+ */
+
+import { test, expect } from '@playwright/test';
+
+import { waitForAppReady, waitForEntityData } from '../src/test/helpers/app-ready';
+
+/**
+ * Test entity IDs for different entity types
+ */
+const TEST_ENTITIES = {
+	work: {
+		id: 'W2741809807',
+		expectedTitle: 'W2741809807', // Will be replaced by actual title in tests
+	},
+	author: {
+		id: 'A5023888391',
+		expectedTitle: 'A5023888391',
+	},
+	institution: {
+		id: 'I33213144',
+		expectedTitle: 'I33213144',
+	},
+};
+
+test.describe('@workflow Bookmark Workflow', () => {
+	test.beforeEach(async ({ page, context }) => {
+		// Clear storage before each test for isolation
+		await context.clearCookies();
+		await page.goto('/');
+		await waitForAppReady(page);
+
+		// Clear IndexedDB and localStorage
+		await page.evaluate(() => {
+			localStorage.clear();
+			// Clear all IndexedDB databases
+			if (window.indexedDB && window.indexedDB.databases) {
+				window.indexedDB.databases().then((dbs) => {
+					dbs.forEach((db) => {
+						if (db.name) {
+							window.indexedDB.deleteDatabase(db.name);
+						}
+					});
+				});
+			}
+		});
+	});
+
+	test('should bookmark a work entity and verify persistence', async ({ page }) => {
+		// 1. Navigate to work detail page
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// Get the actual entity title for verification
+		const entityTitle = await page.locator('h1').first().textContent();
+		expect(entityTitle).toBeTruthy();
+
+		// 2. Verify bookmark button is not bookmarked initially
+		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await expect(bookmarkButton).toBeVisible();
+
+		// Check initial state - button should not be in "filled" variant
+		const initialVariant = await bookmarkButton.getAttribute('data-variant');
+		expect(initialVariant).not.toBe('filled');
+
+		// 3. Click bookmark button to bookmark entity
+		await bookmarkButton.click();
+
+		// Wait for bookmark operation to complete
+		await page.waitForTimeout(500);
+
+		// 4. Verify bookmark button state changes to bookmarked
+		await expect(bookmarkButton).toHaveAttribute('data-variant', 'filled');
+
+		// 5. Reload page to verify persistence
+		await page.reload();
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// 6. Verify bookmark persists after reload
+		const bookmarkButtonAfterReload = page.locator('[data-testid="entity-bookmark-button"]');
+		await expect(bookmarkButtonAfterReload).toHaveAttribute('data-variant', 'filled');
+
+		// 7. Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// 8. Verify entity appears in bookmarks list
+		const bookmarksPage = page.locator('[data-testid="bookmarks-page"]');
+		await expect(bookmarksPage).toBeVisible();
+
+		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(1);
+
+		// Verify the bookmarked entity title appears
+		const bookmarkTitle = page.locator('[data-testid="bookmark-title-link"]').first();
+		await expect(bookmarkTitle).toBeVisible();
+		const bookmarkTitleText = await bookmarkTitle.textContent();
+		expect(bookmarkTitleText).toContain(TEST_ENTITIES.work.id);
+
+		// 9. Navigate back to entity and unbookmark
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// 10. Click bookmark button to remove bookmark
+		const unbookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await unbookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// 11. Verify bookmark button state changes to not bookmarked
+		await expect(unbookmarkButton).not.toHaveAttribute('data-variant', 'filled');
+
+		// 12. Navigate back to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// 13. Verify entity is removed from bookmarks list
+		const emptyBookmarksMessage = page.getByText(/no bookmarks yet/i);
+		await expect(emptyBookmarksMessage).toBeVisible();
+	});
+
+	test('should bookmark author entity from detail page', async ({ page }) => {
+		// Navigate to author detail page
+		await page.goto(`/authors/${TEST_ENTITIES.author.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// Get entity title
+		const entityTitle = await page.locator('h1').first().textContent();
+		expect(entityTitle).toBeTruthy();
+
+		// Click bookmark button
+		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await expect(bookmarkButton).toBeVisible();
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Verify bookmarked state
+		await expect(bookmarkButton).toHaveAttribute('data-variant', 'filled');
+
+		// Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// Verify author appears in bookmarks
+		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(1);
+
+		const bookmarkTitle = page.locator('[data-testid="bookmark-title-link"]').first();
+		const bookmarkTitleText = await bookmarkTitle.textContent();
+		expect(bookmarkTitleText).toContain(TEST_ENTITIES.author.id);
+	});
+
+	test('should handle multiple bookmarks', async ({ page }) => {
+		// Bookmark first entity (work)
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		let bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Bookmark second entity (author)
+		await page.goto(`/authors/${TEST_ENTITIES.author.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// Verify both entities appear
+		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(2);
+
+		// Verify both entity IDs are present
+		const bookmarkTitles = await page.locator('[data-testid="bookmark-title-link"]').allTextContents();
+		expect(bookmarkTitles.some(title => title.includes(TEST_ENTITIES.work.id))).toBe(true);
+		expect(bookmarkTitles.some(title => title.includes(TEST_ENTITIES.author.id))).toBe(true);
+	});
+
+	test('should remove bookmark from bookmarks page', async ({ page }) => {
+		// Bookmark an entity
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// Verify bookmark exists
+		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(1);
+
+		// Click the entity link to navigate back
+		const bookmarkTitleLink = page.locator('[data-testid="bookmark-title-link"]').first();
+		await bookmarkTitleLink.click();
+
+		// Wait for navigation
+		await page.waitForURL(/\/works\//);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// Unbookmark the entity
+		const unbookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await unbookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Go back to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// Verify bookmark is removed
+		const emptyMessage = page.getByText(/no bookmarks yet/i);
+		await expect(emptyMessage).toBeVisible();
+	});
+
+	test('should persist bookmarks across page navigation', async ({ page }) => {
+		// Bookmark an entity
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Navigate away to another page
+		await page.goto('/explore');
+		await waitForAppReady(page);
+
+		// Navigate to settings
+		await page.goto('/settings');
+		await waitForAppReady(page);
+
+		// Navigate back to entity
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// Verify bookmark still exists
+		const persistedBookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await expect(persistedBookmarkButton).toHaveAttribute('data-variant', 'filled');
+
+		// Verify in bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(1);
+	});
+
+	test('should search bookmarks by title', async ({ page }) => {
+		// Bookmark multiple entities
+		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		let bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		await page.goto(`/authors/${TEST_ENTITIES.author.id}`);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+		await bookmarkButton.click();
+		await page.waitForTimeout(500);
+
+		// Navigate to bookmarks page
+		await page.goto('/bookmarks');
+		await waitForAppReady(page);
+
+		// Verify both bookmarks exist
+		let bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(2);
+
+		// Search for work entity
+		const searchInput = page.getByPlaceholder(/search bookmarks/i);
+		await expect(searchInput).toBeVisible();
+		await searchInput.fill(TEST_ENTITIES.work.id);
+		await page.waitForTimeout(300);
+
+		// Verify only work entity is shown
+		bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(1);
+
+		const visibleTitle = await page.locator('[data-testid="bookmark-title-link"]').first().textContent();
+		expect(visibleTitle).toContain(TEST_ENTITIES.work.id);
+
+		// Clear search
+		await searchInput.clear();
+		await page.waitForTimeout(300);
+
+		// Verify all bookmarks are shown again
+		bookmarkCards = page.locator('[data-testid="bookmark-card"]');
+		await expect(bookmarkCards).toHaveCount(2);
+	});
+});
