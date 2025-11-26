@@ -1,7 +1,7 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Test Environment MSW Setup
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Branch**: `005-test-environment-msw` | **Date**: 2025-11-11 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/005-test-environment-msw/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 

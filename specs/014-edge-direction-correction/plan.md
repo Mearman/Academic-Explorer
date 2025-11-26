@@ -1,13 +1,13 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Edge Direction Correction
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Branch**: `014-edge-direction-correction` | **Date**: 2025-11-17 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/014-edge-direction-correction/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+**Note**: This plan.md file was never completed. The spec exists but implementation planning was not done through the `/speckit.plan` workflow.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+This plan document was created as a placeholder but never filled in with actual implementation details. See spec.md for feature requirements.
 
 ## Technical Context
 
