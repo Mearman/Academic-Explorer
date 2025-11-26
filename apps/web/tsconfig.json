@@ -8,7 +8,12 @@
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@academic-explorer/types": ["../../packages/types/src/index.ts"],
+      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
+      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
+      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
+      "@academic-explorer/algorithms": ["../../packages/algorithms/src/index.ts"]
     }
   },
   "include": [
@@ -30,11 +35,5 @@
   ],
   "exclude": [
     "../../config/test-utils/render-helpers.tsx"
-  ],
-  "references": [
-    { "path": "../../packages/client" },
-    { "path": "../../packages/types" },
-    { "path": "../../packages/ui" },
-    { "path": "../../packages/utils" }
   ]
 }

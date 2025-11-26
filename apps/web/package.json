@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.build.json && vite build",
+    "build": "vite build",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest",
@@ -31,6 +31,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite"
+  },
+  "nx": {
+    "includedScripts": []
   },
   "dependencies": {
     "@academic-explorer/client": "workspace:*",

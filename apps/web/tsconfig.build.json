@@ -1,15 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "sourceMap": true,
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "noEmit": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"
@@ -20,11 +13,5 @@
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
     "src/test/**/*"
-  ],
-  "references": [
-    { "path": "../../packages/client" },
-    { "path": "../../packages/types" },
-    { "path": "../../packages/ui" },
-    { "path": "../../packages/utils" }
   ]
 }
