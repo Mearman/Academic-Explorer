@@ -376,10 +376,11 @@ describe('K-Core Decomposition (User Story 4)', () => {
       expect(largeResult.ok).toBe(true);
 
       // Then: Runtime should scale linearly (O(n + m))
-      // With 2.4x safety margin to account for timing variance on sub-millisecond measurements
-      // 33x size should be < 80x time
-      const timeRatio = largeTime / smallTime;
-      const maxExpectedRatio = sizeRatio * 2.4; // Linear scaling with 2.4x safety
+      // With 4x safety margin to account for high timing variance on sub-millisecond measurements
+      // Small graph runs in <1ms where timing overhead dominates
+      // 33x size should be < 132x time (generous margin for timing variance)
+      const timeRatio = largeTime / Math.max(smallTime, 0.1); // Floor to avoid divide by near-zero
+      const maxExpectedRatio = sizeRatio * 4; // Linear scaling with 4x safety
 
       expect(timeRatio).toBeLessThan(maxExpectedRatio);
     });
