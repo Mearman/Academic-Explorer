@@ -21,7 +21,7 @@ import type {
 
 // Import filter types and builder from canonical source (not re-exported)
 import type { FilterCondition, FilterExpression } from "./filter-builder.js";
-import { buildFilterString as buildFilterStringFromFilters } from "./filter-builder.js";
+import { buildFilterStringFromFilters } from "./filter-builder.js";
 
 /**
  * Sort options for different entity types
@@ -229,7 +229,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    * @returns The filter string ready for the API
    */
   buildFilterString(): string {
-    return buildFilterString(this.filters);
+    return buildFilterStringFromFilters(this.filters);
   }
 
   /**

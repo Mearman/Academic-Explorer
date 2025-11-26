@@ -407,23 +407,17 @@ export function createFilterBuilder(
 }
 
 /**
- * Quick utility function to convert a simple filter object to filter string
+ * Internal utility function to convert a simple filter object to filter string
  *
- * Convenience function for one-off filter conversions without creating a builder instance.
+ * This is an internal function used by query-builder.ts which wraps it as buildFilterString
+ * External consumers should use the buildFilterString export from query-builder.ts
  *
  * @param filters - The filter object to convert
  * @param options - Optional builder configuration
  * @returns Formatted filter string for the OpenAlex API
- *
- * @example
- * ```typescript
- * const filterString = buildFilterString({
- *   'publication_year': 2023,
- *   'is_oa': true
- * });
- * ```
+ * @internal
  */
-export function buildFilterString(
+export function buildFilterStringFromFilters(
   filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>,
   options?: FilterBuilderOptions,
 ): string {

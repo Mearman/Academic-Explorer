@@ -546,3 +546,6 @@ export async function getCachePerformanceMetrics(): Promise<{
     environment,
   };
 }
+
+// Re-export staticDataProvider from internal for external consumers (e.g., CLI)
+export { staticDataProvider } from "./internal/static-data-provider";
