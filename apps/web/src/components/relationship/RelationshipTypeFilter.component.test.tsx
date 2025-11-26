@@ -2,12 +2,14 @@
  * Component tests for RelationshipTypeFilter
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within, cleanup } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
-import { MantineProvider } from '@mantine/core';
-import { RelationshipTypeFilter } from './RelationshipTypeFilter';
 import { RelationType } from '@academic-explorer/types';
+import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+import { RelationshipTypeFilter } from './RelationshipTypeFilter';
+
 
 describe('RelationshipTypeFilter', () => {
   const mockOnChange = vi.fn();

@@ -6,8 +6,8 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 4)
  */
 
-import React from 'react';
 import { Group, Badge, Paper, Text } from '@mantine/core';
+import React from 'react';
 
 export interface RelationshipCountsProps {
   /** Total number of incoming relationships */

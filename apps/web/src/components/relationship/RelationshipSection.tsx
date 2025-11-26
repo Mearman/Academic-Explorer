@@ -7,11 +7,14 @@
  * @see specs/016-entity-relationship-viz/spec.md
  */
 
-import React from 'react';
 import { Stack, Group, Text, Badge, Paper, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { RelationshipList } from './RelationshipList';
+import React from 'react';
+
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
+
+import { RelationshipList } from './RelationshipList';
+
 
 export interface RelationshipSectionProps {
   /** The relationship section data to display */

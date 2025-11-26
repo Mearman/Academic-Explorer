@@ -3,12 +3,11 @@
  * Tests for incoming relationship display with error handling and retry functionality
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { IncomingRelationships } from './IncomingRelationships';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock the hooks
 vi.mock('@/hooks/use-entity-relationship-queries', () => ({
@@ -22,6 +21,8 @@ vi.mock('@/hooks/use-entity-relationships-from-data', () => ({
 // Import after mocking
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
+
+import { IncomingRelationships } from './IncomingRelationships';
 
 // Helper to render with providers
 const renderWithProvider = (component: React.ReactElement) => {

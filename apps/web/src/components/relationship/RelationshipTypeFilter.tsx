@@ -6,9 +6,10 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 3)
  */
 
-import React from 'react';
-import { Stack, Checkbox, Group, Button, Paper, Title } from '@mantine/core';
 import { RelationType } from '@academic-explorer/types';
+import { Stack, Checkbox, Group, Button, Paper, Title } from '@mantine/core';
+import React from 'react';
+
 import { RELATIONSHIP_TYPE_LABELS } from '@/types/relationship';
 
 export interface RelationshipTypeFilterProps {

@@ -4,15 +4,18 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import { MantineProvider } from '@mantine/core';
-import '@testing-library/jest-dom';
-import { RelationshipSection } from './RelationshipSection';
-import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
+import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { axe } from 'vitest-axe';
 import * as matchers from 'vitest-axe/matchers';
+
+import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
+
+import '@testing-library/jest-dom';
+
+import { RelationshipSection } from './RelationshipSection';
 
 // Extend Vitest matchers
 expect.extend(matchers);
@@ -187,7 +190,7 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should provide context for screen readers', () => {
     const section = createMockSection(10, true);
-    const { container } = render(
+    render(
       <TestWrapper>
         <RelationshipSection section={section} />
       </TestWrapper>

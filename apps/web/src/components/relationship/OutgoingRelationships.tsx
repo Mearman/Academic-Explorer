@@ -6,12 +6,14 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 2, User Story 3)
  */
 
-import React, { useState, useEffect } from 'react';
-import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/types';
-import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
+import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
+import React, { useState, useEffect } from 'react';
+
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
+
 import { RelationshipSection } from './RelationshipSection';
 import { RelationshipTypeFilter } from './RelationshipTypeFilter';
 
@@ -45,7 +47,7 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
         const parsed = JSON.parse(stored);
         return Array.isArray(parsed) ? parsed : [];
       }
-    } catch (error) {
+    } catch {
       // Ignore parse errors, use empty array
     }
     return [];
@@ -55,7 +57,7 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
   useEffect(() => {
     try {
       localStorage.setItem(storageKey, JSON.stringify(selectedTypes));
-    } catch (error) {
+    } catch {
       // Ignore storage errors (e.g., quota exceeded)
     }
   }, [selectedTypes, storageKey]);

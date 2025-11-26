@@ -3,14 +3,17 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within, cleanup } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
-import { MantineProvider } from '@mantine/core';
-import '@testing-library/jest-dom';
-import { RelationshipList } from './RelationshipList';
-import type { RelationshipSection, RelationshipItem } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
+import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+import type { RelationshipSection, RelationshipItem } from '@/types/relationship';
+
+import '@testing-library/jest-dom';
+
+import { RelationshipList } from './RelationshipList';
 
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

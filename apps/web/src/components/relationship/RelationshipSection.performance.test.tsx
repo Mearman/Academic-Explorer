@@ -4,12 +4,15 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
-import { MantineProvider } from '@mantine/core';
-import { RelationshipSection } from './RelationshipSection';
-import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
+import { MantineProvider } from '@mantine/core';
+import { render } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
+
+import { RelationshipSection } from './RelationshipSection';
+
 
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

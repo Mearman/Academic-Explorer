@@ -2,9 +2,10 @@
  * Component tests for RelationshipCounts
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+
 import { RelationshipCounts } from './RelationshipCounts';
 
 describe('RelationshipCounts', () => {

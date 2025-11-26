@@ -6,9 +6,10 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import React from 'react';
 import { Anchor, Text, Group, Stack } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
+import React from 'react';
+
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
 
 export interface RelationshipItemProps {

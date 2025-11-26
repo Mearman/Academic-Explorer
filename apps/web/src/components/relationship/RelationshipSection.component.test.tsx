@@ -3,13 +3,16 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import { MantineProvider } from '@mantine/core';
-import '@testing-library/jest-dom';
-import { RelationshipSection } from './RelationshipSection';
-import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/types';
+import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
+
+import '@testing-library/jest-dom';
+
+import { RelationshipSection } from './RelationshipSection';
 
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -232,7 +235,7 @@ describe('RelationshipSection', () => {
     it('should show icon in warning message', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
 
-      const { container } = render(
+      render(
         <TestWrapper>
           <RelationshipSection section={section} />
         </TestWrapper>

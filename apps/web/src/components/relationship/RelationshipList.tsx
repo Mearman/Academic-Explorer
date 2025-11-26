@@ -6,11 +6,14 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import React, { useState, useCallback } from 'react';
 import { Stack, Button, Text } from '@mantine/core';
-import { RelationshipItem } from './RelationshipItem';
+import React, { useState, useCallback } from 'react';
+
+
 import type { RelationshipSection } from '@/types/relationship';
 import { DEFAULT_PAGE_SIZE } from '@/types/relationship';
+
+import { RelationshipItem } from './RelationshipItem';
 
 export interface RelationshipListProps {
   /** The relationship section containing items to display */
