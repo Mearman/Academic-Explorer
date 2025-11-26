@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
+import { debouncedSearch, normalizeSearchQuery, isValidSearchQuery } from "@academic-explorer/utils";
 import { Group, TextInput, Button, Stack, Paper, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { debouncedSearch, normalizeSearchQuery, isValidSearchQuery } from "@academic-explorer/utils";
+import { useState, useCallback } from "react";
 
 interface SearchFilters {
   query: string;

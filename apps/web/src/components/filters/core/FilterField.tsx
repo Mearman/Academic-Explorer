@@ -3,24 +3,27 @@
  * Provides the foundation for all filter field types with consistent UI and behavior
  */
 
-import React, { useCallback, useMemo } from "react";
+import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@academic-explorer/utils/ui";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import React, { useCallback, useMemo } from "react";
+
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+
+
+
+import { BooleanFilter } from "../fields/BooleanFilter";
+import { DateFilter } from "../fields/DateFilter";
+import { EntityFilter } from "../fields/EntityFilter";
+import { EnumFilter } from "../fields/EnumFilter";
+import { NumericFilter } from "../fields/NumericFilter";
+import { TextFilter } from "../fields/TextFilter";
 import type {
   FilterFieldProps,
   FilterCondition,
   EntityFilters,
 } from "../types/filter-ui";
-import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@academic-explorer/utils/ui";
-
-import { TextFilter } from "../fields/TextFilter";
-import { NumericFilter } from "../fields/NumericFilter";
-import { DateFilter } from "../fields/DateFilter";
-import { BooleanFilter } from "../fields/BooleanFilter";
-import { EnumFilter } from "../fields/EnumFilter";
-import { EntityFilter } from "../fields/EntityFilter";
 
 interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
   extends FilterFieldProps<T> {

@@ -9,8 +9,6 @@ import type {
   AuthorsFilters,
   EntityType,
 } from "@academic-explorer/types";
-
-// Import filter base types from utils package for local use and re-export
 import type {
   FilterOperator,
   FilterFieldConfig,

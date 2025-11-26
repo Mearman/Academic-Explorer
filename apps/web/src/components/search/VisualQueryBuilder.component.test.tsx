@@ -3,9 +3,12 @@
  * @vitest-environment jsdom
  */
 
+import { MantineProvider } from "@mantine/core";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
 
 // Mock ResizeObserver before importing Mantine
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -28,9 +31,6 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
-
-import { MantineProvider } from "@mantine/core";
-import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
 
 // Mock DnD Kit
 vi.mock("@dnd-kit/core", () => ({

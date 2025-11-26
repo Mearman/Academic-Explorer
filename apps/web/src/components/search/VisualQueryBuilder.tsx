@@ -42,7 +42,9 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
+
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+
 import type { LogicalOperator } from "../filters/types/filter-ui";
 
 // Query builder types

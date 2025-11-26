@@ -3,11 +3,13 @@
  * This demonstrates how to integrate the visual query builder into your application
  */
 
-import React, { useState } from "react";
-import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
-import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
 import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils";
+import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
+import React, { useState } from "react";
+
+import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
+
 
 export function VisualQueryBuilderExample() {
   const [entityType, setEntityType] = useState<EntityType>("works");

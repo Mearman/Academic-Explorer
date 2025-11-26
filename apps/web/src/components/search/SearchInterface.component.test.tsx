@@ -3,6 +3,7 @@
  * @vitest-environment jsdom
  */
 
+import { MantineProvider } from "@mantine/core";
 import {
   cleanup,
   fireEvent,
@@ -11,6 +12,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { SearchInterface } from "./SearchInterface";
 
 // Mock ResizeObserver before importing Mantine
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -33,9 +36,6 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
-
-import { MantineProvider } from "@mantine/core";
-import { SearchInterface } from "./SearchInterface";
 
 // Mock the data-helpers module
 vi.mock("@academic-explorer/utils", () => ({

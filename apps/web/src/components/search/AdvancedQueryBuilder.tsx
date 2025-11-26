@@ -1,4 +1,3 @@
-import React, { useState, useCallback } from "react";
 import {
   Stack,
   Group,
@@ -12,9 +11,10 @@ import {
   Box,
 } from "@mantine/core";
 import { IconPlus, IconTrash, IconSearch } from "@tabler/icons-react";
+import React, { useState, useCallback } from "react";
 // Simple ID generator for query terms
 const generateId = () =>
-  `query-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  `query-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
 // TypeScript interfaces for query structure
 export interface QueryTerm {
@@ -246,4 +246,3 @@ export const AdvancedQueryBuilder: React.FC<AdvancedQueryBuilderProps> = ({
   );
 };
 
-export default AdvancedQueryBuilder;

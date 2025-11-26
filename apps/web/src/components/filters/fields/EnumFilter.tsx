@@ -1,11 +1,13 @@
-import { MultiSelect, Select } from "@mantine/core";
+import type { FilterFieldOption as UtilsFilterFieldOption } from "@academic-explorer/utils/ui";
 import {
   BaseFilter,
   createEnumOptions,
   type BaseFilterRenderProps,
 } from "@academic-explorer/utils/ui/filter-base";
+import { MultiSelect, Select } from "@mantine/core";
+
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
-import type { FilterFieldOption as UtilsFilterFieldOption } from "@academic-explorer/utils/ui";
+
 
 interface EnumFilterProps {
   value: string | string[];

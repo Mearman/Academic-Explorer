@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Stack, Paper, Title, Tabs, Text, Center } from "@mantine/core";
 import {
   IconSearch,
@@ -6,6 +5,7 @@ import {
   IconEye,
   IconBookmark,
 } from "@tabler/icons-react";
+import { useState } from "react";
 
 interface UnifiedSearchProps {
   defaultTab?: string;
