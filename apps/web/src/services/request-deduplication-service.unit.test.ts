@@ -3,13 +3,15 @@
  * Tests request deduplication, caching, and error handling
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import { QueryClient } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   RequestDeduplicationService,
   createRequestDeduplicationService,
 } from "./request-deduplication-service";
-import type { OpenAlexEntity } from "@academic-explorer/types";
+
 
 // Mock logger to prevent console output during tests
 vi.mock("@academic-explorer/utils/logger", () => ({

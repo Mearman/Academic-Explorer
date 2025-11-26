@@ -3,12 +3,12 @@
  * Converts expansion settings to OpenAlex API query parameters
  */
 
-import { logger } from "@academic-explorer/utils/logger";
 import type {
   ExpansionSettings,
   SortCriteria,
   FilterCriteria,
 } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils/logger";
 
 export interface OpenAlexQueryParams {
   filter?: string;

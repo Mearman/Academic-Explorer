@@ -8,6 +8,7 @@
  * @module bookmark-service
  */
 
+import type { EntityType } from "@academic-explorer/types";
 import type {
   AddBookmarkParams,
   CatalogueStorageProvider,
@@ -19,7 +20,6 @@ import {
   extractEntityId,
   logger,
 } from "@academic-explorer/utils";
-import type { EntityType } from "@academic-explorer/types";
 
 const LOG_CATEGORY = "bookmark-service";
 

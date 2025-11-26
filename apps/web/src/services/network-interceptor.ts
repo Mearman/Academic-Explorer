@@ -4,6 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
+
 import { networkActivityStore } from "../stores/network-activity-store";
 import type { NetworkRequest } from "../stores/network-activity-store";
 
@@ -53,18 +54,10 @@ export class NetworkInterceptor {
         Promise.reject(
           new Error("fetch not available in Node.js"),
         )) satisfies typeof fetch;
-      this.originalXhrOpen = function (
-        _method: string,
-        _url: string | URL,
-        _async?: boolean,
-        _user?: string | null,
-        _password?: string | null,
-      ): void {
+      this.originalXhrOpen = function (): void {
         // No-op for Node.js environment
       } satisfies typeof XMLHttpRequest.prototype.open;
-      this.originalXhrSend = function (
-        _body?: Document | XMLHttpRequestBodyInit | null,
-      ): void {
+      this.originalXhrSend = function (): void {
         // No-op for Node.js environment
       } satisfies typeof XMLHttpRequest.prototype.send;
     }
@@ -364,11 +357,10 @@ export class NetworkInterceptor {
    */
   private createRequestInfo({
     url,
-    method: _method,
     headers,
   }: {
     url: string;
-    method: string;
+    method?: string;
     headers?: HeadersInit;
   }): {
     entityType: NetworkRequest["entityType"];

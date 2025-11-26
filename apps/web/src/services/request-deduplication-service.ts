@@ -3,11 +3,13 @@
  * Ensures only one request per entity ID is made at a time
  */
 
-import { QueryClient } from "@tanstack/react-query";
-import { logger } from "@academic-explorer/utils/logger";
-import { trackDeduplication, trackCacheOperation } from "./network-interceptor";
 import type { OpenAlexEntity } from "@academic-explorer/types";
 import { isOpenAlexEntity } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils/logger";
+import { QueryClient } from "@tanstack/react-query";
+
+import { trackDeduplication, trackCacheOperation } from "./network-interceptor";
+
 
 interface RequestCacheEntry {
   promise: Promise<OpenAlexEntity>;
