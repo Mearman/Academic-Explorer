@@ -3,16 +3,16 @@
  * Handles requests, rate limiting, error handling, and response parsing
  */
 
+import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-explorer/types";
+import { validateWithSchema } from "@academic-explorer/types/entities";
 import { logger } from "@academic-explorer/utils";
+import { z } from "zod";
+
 import { apiInterceptor, type InterceptedRequest } from "./interceptors/api-interceptor";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import {
-  isValidApiResponse,
   validateApiResponse,
 } from "./internal/type-helpers";
-import { validateWithSchema } from "@academic-explorer/types/entities";
-import { z } from "zod";
-import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-explorer/types";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -505,6 +505,7 @@ export class OpenAlexBaseClient {
 
   private buildRequestOptions(options: RequestInit): RequestInit {
     // Filter out signal entirely - we'll handle it separately to prevent test environment errors
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { signal, ...filteredOptions } = options;
 
     return {
@@ -543,6 +544,7 @@ export class OpenAlexBaseClient {
       );
       await this.sleep(waitTime);
       // Create clean options without signal for retry to prevent AbortSignal issues
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { signal, ...cleanOptions } = options;
       return await this.makeRequest({
         url,
@@ -583,6 +585,7 @@ export class OpenAlexBaseClient {
           : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
       await this.sleep(waitTime);
       // Create clean options without signal for retry to prevent AbortSignal issues
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { signal, ...cleanOptions } = options;
       return await this.makeRequest({
         url,
@@ -706,7 +709,7 @@ export class OpenAlexBaseClient {
           options.signal.addEventListener("abort", () => {
             controller.abort();
           });
-        } catch (e) {
+        } catch {
           // Signal is not a valid AbortSignal (e.g., polyfill issues), continue without signal merging
         }
       }
@@ -778,6 +781,7 @@ export class OpenAlexBaseClient {
             : calculateRetryDelay(retryCount, RETRY_CONFIG.network);
         await this.sleep(waitTime);
         // Create clean options without signal for retry to prevent AbortSignal issues
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { signal, ...cleanOptions } = options;
         return this.makeRequest({ url, options: cleanOptions, retryCount: retryCount + 1 });
       }

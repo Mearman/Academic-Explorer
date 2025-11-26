@@ -3,45 +3,24 @@
  * Provides methods for interacting with Keywords (research keywords) through the OpenAlex API
  */
 
-import { OpenAlexBaseClient } from "../client";
-import {
-  extractPropertyValue,
-  trustObjectShape,
-} from "@academic-explorer/types/entities";
 import type {
   Keyword,
   KeywordsFilters,
   OpenAlexResponse,
   QueryParams,
 } from "@academic-explorer/types";
+import {
+  extractPropertyValue,
+  trustObjectShape,
+} from "@academic-explorer/types/entities";
+
+import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 // Replace lodash-es with native JavaScript
 function isString(value: unknown): value is string {
   return typeof value === "string";
 }
 
-function _isKeywordSortOption(value: unknown): value is KeywordSortOption {
-  if (!isString(value)) {
-    return false;
-  }
-  const baseFields = [
-    "relevance_score",
-    "cited_by_count",
-    "works_count",
-    "created_date",
-    "updated_date",
-    "display_name",
-    "random",
-  ];
-  const [field, direction] = value.split(":");
-  if (!baseFields.includes(field)) {
-    return false;
-  }
-  if (direction && direction !== "asc" && direction !== "desc") {
-    return false;
-  }
-  return true;
-}
 
 /**
  * Strict query parameters specific to Keywords API

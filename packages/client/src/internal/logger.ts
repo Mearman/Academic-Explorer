@@ -16,7 +16,9 @@ class InternalLogger {
 	private enableConsoleOutput = false; // Disabled by default for package use
 
 	log(level: LogLevel, message: string, data?: unknown) {
-		const _entry: LogEntry = {
+		// Entry structure kept for potential future use (e.g., log aggregation)
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const entry: LogEntry = {
 			timestamp: new Date(),
 			level,
 			message,

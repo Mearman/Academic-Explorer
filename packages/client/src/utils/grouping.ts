@@ -3,10 +3,12 @@
  * Provides advanced grouping and aggregation functionality
  */
 
-import { OpenAlexBaseClient } from "../client";
 import type { EntityType, QueryParams, GroupParams } from "@academic-explorer/types";
-import { logger } from "../internal/logger";
 import { extractPropertyValue } from "@academic-explorer/types/entities";
+
+import { OpenAlexBaseClient } from "../client";
+import { logger } from "../internal/logger";
+
 
 /**
  * Raw group item from OpenAlex API response
@@ -345,7 +347,6 @@ export class GroupingApi {
     const {
       primary_group_by,
       secondary_group_by,
-      tertiary_group_by: _tertiary_group_by,
       max_groups_per_dimension = 10,
       ...baseParams
     } = params;

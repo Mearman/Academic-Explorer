@@ -19,9 +19,10 @@ import type {
   Work,
   OpenAlexId,
 } from "@academic-explorer/types/entities";
+import { logger } from "@academic-explorer/utils";
+
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
 
 /**
  * Authors API class providing comprehensive methods for author entity operations

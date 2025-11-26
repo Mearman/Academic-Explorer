@@ -3,10 +3,11 @@
  * Tests the autocomplete functionality without making real API calls
  */
 
+import type { EntityType } from "@academic-explorer/types";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { CompleteAutocompleteApi } from "../autocomplete";
-import type { AutocompleteResult, EntityType } from "@academic-explorer/types";
+
 import type { OpenAlexBaseClient } from "../../client";
+import { CompleteAutocompleteApi } from "../autocomplete";
 
 // Mock client
 const createMockClient = () => ({

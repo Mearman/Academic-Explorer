@@ -12,10 +12,11 @@ import type {
   QueryParams,
   AutocompleteResult,
 } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils";
+
 import { OpenAlexBaseClient } from "../client";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
 
 /**
  * Search options for topics API

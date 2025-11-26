@@ -25,7 +25,6 @@ Object.defineProperty(global, "performance", {
 });
 
 // Mock Date.now to be consistent with performance.now
-const originalDateNow = Date.now;
 Date.now = () => mockTime;
 
 // Mock Worker types
@@ -50,6 +49,7 @@ global.Worker = class MockWorker {
   onmessage: ((event: MockMessageEvent) => void) | null = null;
   onerror: ((event: MockErrorEvent) => void) | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(_scriptURL: string | URL) {
     // Mock worker initialization
   }
@@ -461,6 +461,7 @@ class MockHighPerformanceCache {
   private initializeBackgroundWorker(): void {
     try {
       this.backgroundWorker = new Worker("/cache-worker.js");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       this.backgroundWorker.onmessage = (_event) => {
         // Handle background sync results
       };
@@ -514,7 +515,6 @@ function generateLargeDataset(
 
 describe("Cache Performance Tests", () => {
   let performanceCache: MockHighPerformanceCache;
-  const _originalPerformanceNow = performance.now;
 
   beforeEach(() => {
     // Setup performance.now mock with realistic timing
@@ -627,7 +627,7 @@ describe("Cache Performance Tests", () => {
       ];
 
       const startTime = Date.now();
-      const promises = datasets.map((dataset, _index) =>
+      const promises = datasets.map((dataset) =>
         performanceCache.writeBatch(dataset),
       );
 
@@ -829,7 +829,7 @@ describe("Cache Performance Tests", () => {
       expect(stats.memoryUsage).toBeLessThanOrEqual(256 * 1024);
 
       // Cache should still be functional
-      const _testRead = await recoveryCache.read(
+      await recoveryCache.read(
         Array.from(massiveDataset.keys())[0],
       );
       // Should either have the data or return null, but not throw

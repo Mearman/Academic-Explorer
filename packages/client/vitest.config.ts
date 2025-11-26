@@ -1,8 +1,9 @@
 /// <reference types='vitest' />
-import { nxCopyAssetsPlugin } from "@nx/vite/plugins/nx-copy-assets.plugin";
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import { defineConfig, mergeConfig } from "vite";
-import { baseVitestConfig } from "../../vitest.config.base";
+import { nxCopyAssetsPlugin } from "@nx/vite/plugins/nx-copy-assets.plugin"
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin"
+import { defineConfig, mergeConfig } from "vite"
+
+import { baseVitestConfig } from "../../vitest.config.base"
 
 export default defineConfig(
   mergeConfig(baseVitestConfig, {

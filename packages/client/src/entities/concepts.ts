@@ -3,11 +3,6 @@
  * Provides methods for interacting with concept entities
  */
 
-import { logger } from "@academic-explorer/utils";
-import { conceptSchema } from "@academic-explorer/types/entities";
-import type { OpenAlexBaseClient } from "../client";
-import type { ZodType } from "zod";
-
 import type {
   AutocompleteResult,
   BaseAutocompleteOptions,
@@ -16,10 +11,11 @@ import type {
   OpenAlexResponse,
   QueryParams,
   ConceptsQueryParams,
-  ConceptSortOption,
-  ConceptSelectField,
   ConceptSearchOptions,
 } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils";
+
+import type { OpenAlexBaseClient } from "../client";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";

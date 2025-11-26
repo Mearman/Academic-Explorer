@@ -5,19 +5,6 @@
  * These functions use a shared client instance for simplicity.
  */
 
-import { OpenAlexBaseClient } from "./client";
-import { AuthorsApi } from "./entities/authors";
-import { ConceptsApi } from "./entities/concepts";
-import { FundersApi } from "./entities/funders";
-import {
-  InstitutionsApi,
-  InstitutionSearchOptions,
-} from "./entities/institutions";
-import { KeywordsApi } from "./entities/keywords";
-import { PublishersApi, PublisherSearchOptions } from "./entities/publishers";
-import { SourcesApi, SourceSearchOptions } from "./entities/sources";
-import { TopicsApi, TopicSearchOptions } from "./entities/topics";
-import { WorksApi } from "./entities/works";
 import type {
   Author,
   Concept,
@@ -31,6 +18,20 @@ import type {
   Topic,
   Work,
 } from "@academic-explorer/types";
+
+import { OpenAlexBaseClient } from "./client";
+import { AuthorsApi } from "./entities/authors";
+import { ConceptsApi } from "./entities/concepts";
+import { FundersApi } from "./entities/funders";
+import {
+  InstitutionsApi,
+  InstitutionSearchOptions,
+} from "./entities/institutions";
+import { KeywordsApi } from "./entities/keywords";
+import { PublishersApi, PublisherSearchOptions } from "./entities/publishers";
+import { SourcesApi, SourceSearchOptions } from "./entities/sources";
+import { TopicsApi, TopicSearchOptions } from "./entities/topics";
+import { WorksApi } from "./entities/works";
 
 // Shared client instance for helper functions
 let _sharedClient: OpenAlexBaseClient | null = null;

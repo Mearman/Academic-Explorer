@@ -4,6 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils";
+
 import { RETRY_CONFIG, calculateRetryDelay } from "../internal/rate-limit";
 
 /**
@@ -169,7 +170,7 @@ export class RequestPipeline {
    */
   async execute(url: string, options: RequestInit = {}): Promise<Response> {
     const context: RequestContext = {
-      requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      requestId: `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       url,
       method: options.method ?? "GET",
       options,
@@ -472,7 +473,6 @@ export class RequestPipeline {
    */
   private async executionMiddleware({
     context,
-    next: _next,
   }: {
     context: RequestContext;
     next?: () => Promise<ResponseContext>;

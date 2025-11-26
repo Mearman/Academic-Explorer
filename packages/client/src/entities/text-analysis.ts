@@ -4,6 +4,7 @@
  */
 
 import type { OpenAlexId, QueryParams } from "@academic-explorer/types";
+
 import type { OpenAlexBaseClient } from "../client";
 
 /**

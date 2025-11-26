@@ -3,8 +3,6 @@
  * Provides methods for interacting with OpenAlex funders endpoint
  */
 
-import { logger } from "@academic-explorer/utils";
-import { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,
   Funder,
@@ -14,6 +12,9 @@ import type {
   QueryParams,
   Work,
 } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils";
+
+import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 
 /**

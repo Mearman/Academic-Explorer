@@ -19,8 +19,7 @@ import type {
   FundersFilters,
 } from "@academic-explorer/types";
 
-// Import filter types and builder from canonical source (not re-exported)
-import type { FilterCondition, FilterExpression } from "./filter-builder.js";
+// Import filter builder from canonical source
 import { buildFilterStringFromFilters } from "./filter-builder.js";
 
 /**

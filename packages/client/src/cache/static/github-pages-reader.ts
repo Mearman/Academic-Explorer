@@ -3,10 +3,12 @@
  * Fetches static data from GitHub Pages URL in production mode with caching and retry logic
  */
 
-import { MemoryCache } from "@academic-explorer/utils/cache";
-import { logger } from "@academic-explorer/utils";
-import { validateStaticData } from "../../internal/type-helpers";
 import type { OpenAlexEntity, OpenAlexResponse } from "@academic-explorer/types";
+import { logger } from "@academic-explorer/utils";
+import { MemoryCache } from "@academic-explorer/utils/cache";
+
+import { validateStaticData } from "../../internal/type-helpers";
+
 
 /**
  * Configuration for GitHub Pages reader

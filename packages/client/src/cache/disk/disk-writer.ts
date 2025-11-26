@@ -4,7 +4,7 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import type { LogCategory } from "@academic-explorer/utils";
+import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "@academic-explorer/types";
 import { logError, logger } from "@academic-explorer/utils";
 import {
   DirectoryIndex,
@@ -14,19 +14,17 @@ import {
   sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
 } from "@academic-explorer/utils/static-data/cache-utilities";
-import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "@academic-explorer/types";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
-let fs: any;
-let path: any;
-let crypto: any;
+let fs: typeof import("node:fs/promises") | undefined;
+let path: typeof import("node:path") | undefined;
+let crypto: typeof import("node:crypto") | undefined;
 
 // Constants for error messages and file names
 const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
 const __ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED =
   "Entity info extraction failed";
 const INDEX_FILE_NAME = "index.json";
-const _LOGGER_NAME = "disk-writer";
 const UNKNOWN_ERROR_MESSAGE = "Unknown error";
 
 /**
@@ -66,9 +64,9 @@ async function initializeNodeModules(): Promise<void> {
  * Get initialized Node modules (throws if not initialized)
  */
 function getNodeModules(): {
-  fs: any;
-  path: any;
-  crypto: any;
+  fs: typeof import("node:fs/promises");
+  path: typeof import("node:path");
+  crypto: typeof import("node:crypto");
 } {
   if (!fs || !path || !crypto) {
     throw new Error(
@@ -265,14 +263,6 @@ interface FileLock {
   filePath: string;
 }
 
-/**
- * Disk space information (unused but kept for future implementation)
- */
-interface _DiskSpaceInfo {
-  available: number;
-  total: number;
-  used: number;
-}
 
 /**
  * Comprehensive disk cache writer with atomic operations and concurrent access control
@@ -770,7 +760,8 @@ export class DiskCacheWriter {
       responseData !== null &&
       "meta" in responseData
     ) {
-      const { meta: _meta, ...rest } = responseData as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { meta, ...rest } = responseData as Record<string, unknown>;
       return rest;
     }
     return responseData;

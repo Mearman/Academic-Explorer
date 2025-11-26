@@ -3,10 +3,11 @@
  * Provides shared types and base class for autocomplete functionality across all OpenAlex entity types
  */
 
+import type { AutocompleteResult, EntityType, QueryParams } from "@academic-explorer/types";
+import { isRecord } from "@academic-explorer/types/entities";
+
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
-import { isRecord } from "@academic-explorer/types/entities";
-import type { AutocompleteResult, EntityType, QueryParams } from "@academic-explorer/types";
 
 /**
  * Autocomplete request options interface

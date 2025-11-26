@@ -12,9 +12,10 @@ import type {
   Author,
   AutocompleteResult,
 } from "@academic-explorer/types";
+
 import { OpenAlexBaseClient } from "../client";
-import { buildFilterString } from "../utils/query-builder";
 import type { AutocompleteOptions } from "../utils/autocomplete";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended query parameters specific to institutions API
@@ -187,7 +188,7 @@ export class InstitutionsApi {
       }));
     } catch (error: unknown) {
       // Format error for logging using type guards
-      const _errorDetails = this.formatErrorForLogging(error);
+      this.formatErrorForLogging(error);
       return [];
     }
   }

@@ -148,12 +148,14 @@ export class FilterBuilder {
    * ```
    */
   buildFromObject(
-    _filters:
+    filters:
       | EntityFilters
       | Partial<EntityFilters>
       | Record<string, FilterValue>,
   ): string {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - filters will be used in implementation
+    void filters;
     throw new Error("FilterBuilder.buildFromObject not yet implemented");
   }
 
@@ -183,8 +185,10 @@ export class FilterBuilder {
    * });
    * ```
    */
-  buildFromExpression(_expression: FilterExpression): string {
+  buildFromExpression(expression: FilterExpression): string {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - expression will be used in implementation
+    void expression;
     throw new Error("FilterBuilder.buildFromExpression not yet implemented");
   }
 
@@ -205,8 +209,10 @@ export class FilterBuilder {
    * ]);
    * ```
    */
-  buildFromConditions(_conditions: FilterCondition[]): string {
+  buildFromConditions(conditions: FilterCondition[]): string {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - conditions will be used in implementation
+    void conditions;
     throw new Error("FilterBuilder.buildFromConditions not yet implemented");
   }
 
@@ -232,9 +238,11 @@ export class FilterBuilder {
    * ```
    */
   validateFilters(
-    _filters: Record<string, FilterValue>,
+    filters: Record<string, FilterValue>,
   ): FilterValidationResult {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - filters will be used in implementation
+    void filters;
     throw new Error("FilterBuilder.validateFilters not yet implemented");
   }
 
@@ -247,8 +255,10 @@ export class FilterBuilder {
    * @param expression - The filter expression to validate
    * @returns Validation result with any error details
    */
-  validateExpression(_expression: FilterExpression): FilterValidationResult {
+  validateExpression(expression: FilterExpression): FilterValidationResult {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - expression will be used in implementation
+    void expression;
     throw new Error("FilterBuilder.validateExpression not yet implemented");
   }
 
@@ -267,8 +277,10 @@ export class FilterBuilder {
    * // Returns properly escaped value for OpenAlex API
    * ```
    */
-  escapeValue(_value: string): string {
+  escapeValue(value: string): string {
     // Implementation will be added in separate task
+    // Suppress unused variable warning - value will be used in implementation
+    void value;
     throw new Error("FilterBuilder.escapeValue not yet implemented");
   }
 

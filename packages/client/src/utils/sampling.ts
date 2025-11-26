@@ -3,7 +3,6 @@
  * Provides random sampling functionality across all entity types
  */
 
-import { OpenAlexBaseClient } from "../client";
 import type {
   OpenAlexEntity,
   EntityType,
@@ -11,6 +10,8 @@ import type {
   SampleParams,
   OpenAlexResponse,
 } from "@academic-explorer/types";
+
+import { OpenAlexBaseClient } from "../client";
 import { logger, logError } from "../internal/logger";
 
 /**

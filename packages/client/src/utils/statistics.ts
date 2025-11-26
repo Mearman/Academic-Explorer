@@ -3,8 +3,9 @@
  * Provides database-wide statistics and analytical insights
  */
 
-import { OpenAlexBaseClient } from "../client";
 import type { EntityType } from "@academic-explorer/types";
+
+import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
 
 /**

@@ -13,6 +13,7 @@ Object.defineProperty(global, "fetch", {
   value: mockFetch,
 });
 
+import type { OpenAlexResponse } from "@academic-explorer/types";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
@@ -20,7 +21,6 @@ import {
   OpenAlexApiError,
   type OpenAlexClientConfig,
 } from "./client";
-import type { OpenAlexResponse } from "@academic-explorer/types";
 
 describe("OpenAlexBaseClient", () => {
   let client: OpenAlexBaseClient;

@@ -6,11 +6,12 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import {
   CachedOpenAlexClient,
   type CachedClientConfig,
 } from "../../cached-client";
-import { CacheTier } from "../../internal/static-data-provider";
+import { CacheTier, staticDataProvider } from "../../internal/static-data-provider";
 
 // Mock the static data provider
 vi.mock("../../internal/static-data-provider", () => ({
@@ -37,9 +38,11 @@ vi.mock("../../client", () => ({
       this.config = config;
     }
     config: any;
-    async getById<T>({ endpoint, id, params = {} }: { endpoint: string; id: string; params?: any }): Promise<T> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getById<T>(_params: { endpoint: string; id: string; params?: any }): Promise<T> {
       throw new Error("API call failed");
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateConfig(_config: any): void {
       // Mock implementation
     }
@@ -151,9 +154,6 @@ vi.mock("@academic-explorer/utils", () => ({
     error: vi.fn(),
   },
 }));
-
-// Import the mocked static data provider
-import { staticDataProvider } from "../../internal/static-data-provider";
 
 // Type the mocked functions
 const mockedStaticDataProvider = staticDataProvider as any;

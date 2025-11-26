@@ -4,6 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils";
+
 import type { StaticEntityType } from "./static-data-utils";
 
 export interface StaticDataResult {

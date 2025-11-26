@@ -2,11 +2,12 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
+import type { QueryParams , OpenAlexEntity } from "@academic-explorer/types";
+import { isOpenAlexEntity } from "@academic-explorer/types/entities";
 import { logger } from "@academic-explorer/utils";
-import { validateStaticData } from "./internal/type-helpers";
-import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
-import type { QueryParams } from "@academic-explorer/types";
 import { z } from "zod";
+
+import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
 import { FundersApi } from "./entities/funders";
@@ -26,8 +27,7 @@ import {
   cleanOpenAlexId,
   toStaticEntityType,
 } from "./internal/static-data-utils";
-import type { OpenAlexEntity } from "@academic-explorer/types";
-import { isOpenAlexEntity } from "@academic-explorer/types/entities";
+import { validateStaticData } from "./internal/type-helpers";
 import { AutocompleteApi } from "./utils/autocomplete";
 
 export interface ClientApis {
@@ -213,7 +213,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   private async cacheEntityResult({
     entityType,
     id,
-    _data,
   }: {
     entityType: string;
     id: string;

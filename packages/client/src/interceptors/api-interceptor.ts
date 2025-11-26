@@ -3,8 +3,9 @@
  * Captures API requests and responses in development mode for caching analysis
  */
 
-import { logger } from "../internal/logger";
 import type { EntityType, QueryParams } from "@academic-explorer/types";
+
+import { logger } from "../internal/logger";
 
 /**
  * Represents an intercepted OpenAlex API request

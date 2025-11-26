@@ -3,10 +3,12 @@
  * Tests autocomplete API integration with mocked responses
  */
 
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { setupServer } from "msw/node";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+
 import { CachedOpenAlexClient } from "../../cached-client";
-import type { EntityType } from "@academic-explorer/types";
+
+
 import { autocompleteHandlers } from "./autocomplete-handlers";
 
 // Setup MSW server with autocomplete handlers

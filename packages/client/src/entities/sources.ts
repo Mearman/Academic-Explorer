@@ -77,9 +77,10 @@ import type {
   Work,
   AutocompleteResult,
 } from "@academic-explorer/types";
+
 import { OpenAlexBaseClient } from "../client";
-import { buildFilterString } from "../utils/query-builder";
 import { logger } from "../internal/logger";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Options for searching sources
@@ -492,7 +493,9 @@ export class SourcesApi {
       country_code: countryCode,
     };
 
-    const { filter: _, ...paramsWithoutFilter } = params;
+    // Destructure and ignore the filter parameter (already merged into filters)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { filter, ...paramsWithoutFilter } = params;
     // Type guard function to validate sort parameter
     function isString(value: unknown): value is string {
       return typeof value === "string";

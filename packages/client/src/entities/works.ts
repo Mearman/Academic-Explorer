@@ -11,6 +11,7 @@ import type {
   AutocompleteResult,
   GroupedResponse,
 } from "@academic-explorer/types/entities";
+
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 
