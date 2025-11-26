@@ -146,31 +146,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all projects
-        timeout-minutes: 20
+      - name: Validate all projects (build, typecheck, lint, tests)
+        timeout-minutes: 40
         env:
           GITHUB_PAGES: true
-        run: pnpm nx run-many -t build --parallel=4
-
-      - name: Typecheck all projects
-        timeout-minutes: 10
-        run: pnpm nx run-many -t typecheck --parallel=4
-
-      - name: Lint all projects
-        timeout-minutes: 10
-        run: pnpm nx run-many -t lint --parallel=4
-
-      - name: Run unit tests
-        timeout-minutes: 15
-        run: pnpm nx run-many -t test:unit
-
-      - name: Run component tests
-        timeout-minutes: 15
-        run: pnpm nx run-many -t test:component
-
-      - name: Run integration tests
-        timeout-minutes: 20
-        run: pnpm nx run-many -t test:integration
+        run: pnpm nx run-many -t build typecheck lint test:unit test:component test:integration
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

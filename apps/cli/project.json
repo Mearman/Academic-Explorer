@@ -11,7 +11,9 @@
       "options": {
         "command": "tsc --noEmit -p tsconfig.typecheck.json",
         "cwd": "apps/cli"
-      }
+      },
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "build": {
       "executor": "@nx/js:tsc",

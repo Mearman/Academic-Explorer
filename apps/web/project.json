@@ -24,7 +24,7 @@
       "options": {
         "config": "apps/web/playwright.config.ts"
       },
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "test:integration"]
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -32,7 +32,9 @@
       "options": {
         "command": "tsc --noEmit -p tsconfig.json",
         "cwd": "apps/web"
-      }
+      },
+      "dependsOn": ["barrelsby", "^build"],
+      "cache": true
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

@@ -56,7 +56,9 @@
       "options": {
         "command": "tsc --noEmit -p tsconfig.typecheck.json",
         "cwd": "packages/client"
-      }
+      },
+      "dependsOn": ["barrelsby", "^build"],
+      "cache": true
     }
   },
   "tags": [
