@@ -26,10 +26,10 @@
 
 **Purpose**: Project initialization and extraction module structure
 
-- [ ] T001 Create extraction directory structure in packages/algorithms/src/extraction/
-- [ ] T002 Add ExtractionError types to packages/algorithms/src/types/errors.ts
-- [ ] T003 [P] Create test fixtures for extraction in packages/algorithms/__tests__/fixtures/extraction-graphs.ts
-- [ ] T004 [P] Update packages/algorithms/src/index.ts barrel export with extraction placeholder
+- [X] T001 Create extraction directory structure in packages/algorithms/src/extraction/
+- [X] T002 Add ExtractionError types to packages/algorithms/src/types/errors.ts
+- [X] T003 [P] Create test fixtures for extraction in packages/algorithms/__tests__/fixtures/extraction-graphs.ts
+- [X] T004 [P] Update packages/algorithms/src/index.ts barrel export with extraction placeholder
 
 ---
 
@@ -39,9 +39,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create induced subgraph extraction utility in packages/algorithms/src/extraction/subgraph.ts
-- [ ] T006 [P] Add validation utilities in packages/algorithms/src/extraction/validators.ts
-- [ ] T007 [P] Create extraction barrel export in packages/algorithms/src/extraction/index.ts
+- [X] T005 Create induced subgraph extraction utility in packages/algorithms/src/extraction/subgraph.ts
+- [X] T006 [P] Add validation utilities in packages/algorithms/src/extraction/validators.ts
+- [X] T007 [P] Create extraction barrel export in packages/algorithms/src/extraction/index.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -58,21 +58,21 @@
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts` where type = unit/integration/component/e2e/performance
 
-- [ ] T008 [P] [US1] Unit test: radius-1 ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T009 [P] [US1] Unit test: radius-2 ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T010 [P] [US1] Unit test: multi-source ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T011 [P] [US1] Unit test: disconnected graph handling in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T012 [P] [US1] Unit test: invalid seed node error in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T013 [P] [US1] Unit test: invalid radius error in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
-- [ ] T014 [P] [US1] Performance test: radius-3 on 1000-node graph <500ms in packages/algorithms/__tests__/extraction/ego-network.performance.test.ts
+- [X] T008 [P] [US1] Unit test: radius-1 ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T009 [P] [US1] Unit test: radius-2 ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T010 [P] [US1] Unit test: multi-source ego network extraction in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T011 [P] [US1] Unit test: disconnected graph handling in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T012 [P] [US1] Unit test: invalid seed node error in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T013 [P] [US1] Unit test: invalid radius error in packages/algorithms/__tests__/extraction/ego-network.unit.test.ts
+- [X] T014 [P] [US1] Performance test: radius-3 on 1000-node graph <500ms in packages/algorithms/__tests__/extraction/ego-network.performance.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Implement extractEgoNetwork() in packages/algorithms/src/extraction/ego-network.ts (uses BFS from src/traversal/bfs.ts)
-- [ ] T016 [US1] Implement extractMultiSourceEgoNetwork() convenience wrapper in packages/algorithms/src/extraction/ego-network.ts
-- [ ] T017 [US1] Implement validateEgoNetworkOptions() in packages/algorithms/src/extraction/validators.ts
-- [ ] T018 [US1] Add ego network exports to packages/algorithms/src/extraction/index.ts
-- [ ] T019 [US1] Update packages/algorithms/src/index.ts to export ego network functions
+- [X] T015 [US1] Implement extractEgoNetwork() in packages/algorithms/src/extraction/ego-network.ts (uses BFS from src/traversal/bfs.ts)
+- [X] T016 [US1] Implement extractMultiSourceEgoNetwork() convenience wrapper in packages/algorithms/src/extraction/ego-network.ts
+- [X] T017 [US1] Implement validateEgoNetworkOptions() in packages/algorithms/src/extraction/validators.ts
+- [X] T018 [US1] Add ego network exports to packages/algorithms/src/extraction/index.ts
+- [X] T019 [US1] Update packages/algorithms/src/index.ts to export ego network functions
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently (verify all tests pass, performance target met)
 
@@ -88,21 +88,21 @@
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts` where type = unit/integration/component/e2e/performance
 
-- [ ] T020 [P] [US2] Unit test: node filter by year range in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T021 [P] [US2] Unit test: node filter by citation count in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T022 [P] [US2] Unit test: edge filter by relationship type in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T023 [P] [US2] Unit test: combined node AND edge filters in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T024 [P] [US2] Unit test: combined node OR edge filters in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T025 [P] [US2] Unit test: empty filter result handling in packages/algorithms/__tests__/extraction/filter.unit.test.ts
-- [ ] T026 [P] [US2] Performance test: filtering 10k-node graph <200ms in packages/algorithms/__tests__/extraction/filter.performance.test.ts
+- [X] T020 [P] [US2] Unit test: node filter by year range in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T021 [P] [US2] Unit test: node filter by citation count in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T022 [P] [US2] Unit test: edge filter by relationship type in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T023 [P] [US2] Unit test: combined node AND edge filters in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T024 [P] [US2] Unit test: combined node OR edge filters in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T025 [P] [US2] Unit test: empty filter result handling in packages/algorithms/__tests__/extraction/filter.unit.test.ts
+- [X] T026 [P] [US2] Performance test: filtering 10k-node graph <200ms in packages/algorithms/__tests__/extraction/filter.performance.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T027 [P] [US2] Implement filterSubgraph() in packages/algorithms/src/extraction/filter.ts
-- [ ] T028 [P] [US2] Implement extractInducedSubgraph() utility in packages/algorithms/src/extraction/subgraph.ts
-- [ ] T029 [US2] Implement validateSubgraphFilter() in packages/algorithms/src/extraction/validators.ts
-- [ ] T030 [US2] Add filter exports to packages/algorithms/src/extraction/index.ts
-- [ ] T031 [US2] Update packages/algorithms/src/index.ts to export filter functions
+- [X] T027 [P] [US2] Implement filterSubgraph() in packages/algorithms/src/extraction/filter.ts
+- [X] T028 [P] [US2] Implement extractInducedSubgraph() utility in packages/algorithms/src/extraction/subgraph.ts
+- [X] T029 [US2] Implement validateSubgraphFilter() in packages/algorithms/src/extraction/validators.ts
+- [X] T030 [US2] Add filter exports to packages/algorithms/src/extraction/index.ts
+- [X] T031 [US2] Update packages/algorithms/src/index.ts to export filter functions
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently (verify filtering can scope graphs before ego network extraction)
 
@@ -118,20 +118,20 @@
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts` where type = unit/integration/component/e2e/performance
 
-- [ ] T032 [P] [US3] Unit test: shortest path between two nodes in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T033 [P] [US3] Unit test: no path exists handling in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T034 [P] [US3] Unit test: source equals target edge case in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T035 [P] [US3] Unit test: forward reachability subgraph in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T036 [P] [US3] Unit test: backward reachability subgraph in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T037 [P] [US3] Unit test: multi-source reachability in packages/algorithms/__tests__/extraction/path.unit.test.ts
-- [ ] T038 [P] [US3] Performance test: shortest path on 1000-node graph <100ms in packages/algorithms/__tests__/extraction/path.performance.test.ts
+- [X] T032 [P] [US3] Unit test: shortest path between two nodes in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T033 [P] [US3] Unit test: no path exists handling in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T034 [P] [US3] Unit test: source equals target edge case in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T035 [P] [US3] Unit test: forward reachability subgraph in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T036 [P] [US3] Unit test: backward reachability subgraph in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T037 [P] [US3] Unit test: multi-source reachability in packages/algorithms/__tests__/extraction/path.unit.test.ts
+- [X] T038 [P] [US3] Performance test: shortest path on 1000-node graph <100ms in packages/algorithms/__tests__/extraction/path.performance.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T039 [P] [US3] Implement findShortestPath() in packages/algorithms/src/extraction/path.ts (uses BFS for unweighted, Dijkstra for weighted)
-- [ ] T040 [P] [US3] Implement extractReachabilitySubgraph() in packages/algorithms/src/extraction/path.ts
-- [ ] T041 [US3] Add path analysis exports to packages/algorithms/src/extraction/index.ts
-- [ ] T042 [US3] Update packages/algorithms/src/index.ts to export path analysis functions
+- [X] T039 [P] [US3] Implement findShortestPath() in packages/algorithms/src/extraction/path.ts (uses BFS for unweighted, Dijkstra for weighted)
+- [X] T040 [P] [US3] Implement extractReachabilitySubgraph() in packages/algorithms/src/extraction/path.ts
+- [X] T041 [US3] Add path analysis exports to packages/algorithms/src/extraction/index.ts
+- [X] T042 [US3] Update packages/algorithms/src/index.ts to export path analysis functions
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently (can trace citation paths within filtered ego networks)
 
@@ -147,22 +147,22 @@
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts` where type = unit/integration/component/e2e/performance
 
-- [ ] T043 [P] [US4] Unit test: triangle detection in known graph in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T044 [P] [US4] Unit test: in-star pattern detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T045 [P] [US4] Unit test: out-star pattern detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T046 [P] [US4] Unit test: co-citation pair detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T047 [P] [US4] Unit test: bibliographic coupling detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T048 [P] [US4] Unit test: self-loop and parallel edge handling in packages/algorithms/__tests__/extraction/motif.unit.test.ts
-- [ ] T049 [P] [US4] Performance test: triangle detection on 1000-node/5000-edge graph <2s in packages/algorithms/__tests__/extraction/triangle-detection.performance.test.ts
+- [X] T043 [P] [US4] Unit test: triangle detection in known graph in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T044 [P] [US4] Unit test: in-star pattern detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T045 [P] [US4] Unit test: out-star pattern detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T046 [P] [US4] Unit test: co-citation pair detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T047 [P] [US4] Unit test: bibliographic coupling detection in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T048 [P] [US4] Unit test: self-loop and parallel edge handling in packages/algorithms/__tests__/extraction/motif.unit.test.ts
+- [X] T049 [P] [US4] Performance test: triangle detection on 1000-node/5000-edge graph <2s in packages/algorithms/__tests__/extraction/triangle-detection.performance.test.ts
 
 ### Implementation for User Story 4
 
-- [ ] T050 [P] [US4] Implement detectTriangles() in packages/algorithms/src/extraction/motif.ts
-- [ ] T051 [P] [US4] Implement detectStarPatterns() in packages/algorithms/src/extraction/motif.ts
-- [ ] T052 [P] [US4] Implement detectCoCitations() in packages/algorithms/src/extraction/motif.ts
-- [ ] T053 [P] [US4] Implement detectBibliographicCoupling() in packages/algorithms/src/extraction/motif.ts
-- [ ] T054 [US4] Add motif detection exports to packages/algorithms/src/extraction/index.ts
-- [ ] T055 [US4] Update packages/algorithms/src/index.ts to export motif detection functions
+- [X] T050 [P] [US4] Implement detectTriangles() in packages/algorithms/src/extraction/motif.ts
+- [X] T051 [P] [US4] Implement detectStarPatterns() in packages/algorithms/src/extraction/motif.ts
+- [X] T052 [P] [US4] Implement detectCoCitations() in packages/algorithms/src/extraction/motif.ts
+- [X] T053 [P] [US4] Implement detectBibliographicCoupling() in packages/algorithms/src/extraction/motif.ts
+- [X] T054 [US4] Add motif detection exports to packages/algorithms/src/extraction/index.ts
+- [X] T055 [US4] Update packages/algorithms/src/index.ts to export motif detection functions
 
 **Checkpoint**: At this point, User Stories 1-4 should all work independently (can detect co-citation patterns in extracted ego networks)
 
@@ -178,19 +178,19 @@
 
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts` where type = unit/integration/component/e2e/performance
 
-- [ ] T056 [P] [US5] Unit test: 3-truss extraction in packages/algorithms/__tests__/extraction/truss.unit.test.ts
-- [ ] T057 [P] [US5] Unit test: 4-truss extraction in packages/algorithms/__tests__/extraction/truss.unit.test.ts
-- [ ] T058 [P] [US5] Unit test: k=1 edge case (all edges) in packages/algorithms/__tests__/extraction/truss.unit.test.ts
-- [ ] T059 [P] [US5] Unit test: k > max truss number (empty result) in packages/algorithms/__tests__/extraction/truss.unit.test.ts
-- [ ] T060 [P] [US5] Unit test: triangle support computation in packages/algorithms/__tests__/extraction/truss.unit.test.ts
-- [ ] T061 [P] [US5] Performance test: k=3 truss on 1000-node graph <3s in packages/algorithms/__tests__/extraction/truss.performance.test.ts
+- [X] T056 [P] [US5] Unit test: 3-truss extraction in packages/algorithms/__tests__/extraction/truss.unit.test.ts
+- [X] T057 [P] [US5] Unit test: 4-truss extraction in packages/algorithms/__tests__/extraction/truss.unit.test.ts
+- [X] T058 [P] [US5] Unit test: k=1 edge case (all edges) in packages/algorithms/__tests__/extraction/truss.unit.test.ts
+- [X] T059 [P] [US5] Unit test: k > max truss number (empty result) in packages/algorithms/__tests__/extraction/truss.unit.test.ts
+- [X] T060 [P] [US5] Unit test: triangle support computation in packages/algorithms/__tests__/extraction/truss.unit.test.ts
+- [X] T061 [P] [US5] Performance test: k=3 truss on 1000-node graph <3s in packages/algorithms/__tests__/extraction/truss.performance.test.ts
 
 ### Implementation for User Story 5
 
-- [ ] T062 [US5] Implement computeTriangleSupport() utility in packages/algorithms/src/extraction/truss.ts
-- [ ] T063 [US5] Implement extractKTruss() in packages/algorithms/src/extraction/truss.ts
-- [ ] T064 [US5] Add k-truss exports to packages/algorithms/src/extraction/index.ts
-- [ ] T065 [US5] Update packages/algorithms/src/index.ts to export k-truss functions
+- [X] T062 [US5] Implement computeTriangleSupport() utility in packages/algorithms/src/extraction/truss.ts
+- [X] T063 [US5] Implement extractKTruss() in packages/algorithms/src/extraction/truss.ts
+- [X] T064 [US5] Add k-truss exports to packages/algorithms/src/extraction/index.ts
+- [X] T065 [US5] Update packages/algorithms/src/index.ts to export k-truss functions
 
 **Checkpoint**: All 5 user stories should now be independently functional (can extract dense clusters from filtered ego networks)
 
@@ -200,26 +200,26 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T066 [P] Add comprehensive JSDoc comments to all extraction functions
-- [ ] T067 [P] Create integration tests combining multiple extraction operations in packages/algorithms/__tests__/integration/extraction-workflows.integration.test.ts
-- [ ] T068 [P] Add edge case tests for empty/single-node graphs in packages/algorithms/__tests__/edge-cases/extraction-edge-cases.test.ts
-- [ ] T069 [P] Memory validation: ensure 10k-node operations stay under 50MB in packages/algorithms/__tests__/performance/extraction-memory.performance.test.ts
-- [ ] T070 Update packages/algorithms/README.md with extraction examples
-- [ ] T071 Run pnpm typecheck in packages/algorithms (verify strict TypeScript compliance)
-- [ ] T072 Run pnpm test in packages/algorithms (verify all tests pass serially)
-- [ ] T073 Run pnpm lint in packages/algorithms (verify ESLint compliance)
-- [ ] T074 Run pnpm build in packages/algorithms (verify production build succeeds)
-- [ ] T075 Constitution compliance verification:
-  - [ ] No `any` types in implementation (Type Safety)
-  - [ ] All tests written before implementation (Test-First)
-  - [ ] Proper Nx workspace structure used (Monorepo Architecture)
-  - [ ] No storage operations (Storage Abstraction: N/A)
-  - [ ] Performance requirements met (<500ms, <2s, <3s targets); serial test execution (Performance & Memory)
-  - [ ] Atomic conventional commits created after each task (Atomic Conventional Commits)
-  - [ ] Breaking changes acceptable; no backwards compatibility (Development-Stage Pragmatism)
-  - [ ] Bug regression tests written before fixes if bugs found (Test-First Bug Fixes)
-  - [ ] All packages pass typecheck/test/lint/build (Deployment Readiness)
-  - [ ] Continuous execution from planning through implementation (Continuous Execution)
+- [X] T066 [P] Add comprehensive JSDoc comments to all extraction functions
+- [X] T067 [P] Create integration tests combining multiple extraction operations in packages/algorithms/__tests__/integration/extraction-workflows.integration.test.ts
+- [X] T068 [P] Add edge case tests for empty/single-node graphs in packages/algorithms/__tests__/edge-cases/extraction-edge-cases.test.ts
+- [X] T069 [P] Memory validation: ensure 10k-node operations stay under 50MB in packages/algorithms/__tests__/performance/extraction-memory.performance.test.ts
+- [X] T070 Update packages/algorithms/README.md with extraction examples
+- [X] T071 Run pnpm typecheck in packages/algorithms (verify strict TypeScript compliance)
+- [X] T072 Run pnpm test in packages/algorithms (verify all tests pass serially)
+- [X] T073 Run pnpm lint in packages/algorithms (verify ESLint compliance)
+- [X] T074 Run pnpm build in packages/algorithms (verify production build succeeds)
+- [X] T075 Constitution compliance verification:
+  - [X] No `any` types in implementation (Type Safety)
+  - [X] All tests written before implementation (Test-First)
+  - [X] Proper Nx workspace structure used (Monorepo Architecture)
+  - [X] No storage operations (Storage Abstraction: N/A)
+  - [X] Performance requirements met (<500ms, <2s, <3s targets); serial test execution (Performance & Memory)
+  - [X] Atomic conventional commits created after each task (Atomic Conventional Commits)
+  - [X] Breaking changes acceptable; no backwards compatibility (Development-Stage Pragmatism)
+  - [X] Bug regression tests written before fixes if bugs found (Test-First Bug Fixes)
+  - [X] All packages pass typecheck/test/lint/build (Deployment Readiness)
+  - [X] Continuous execution from planning through implementation (Continuous Execution)
 
 ---
 
