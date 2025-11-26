@@ -1,10 +1,14 @@
 /// <reference types="vitest" />
-import { defineConfig, mergeConfig } from "vitest/config";
-import { baseVitestConfig } from "../../vitest.config.base";
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import react from "@vitejs/plugin-react";
-import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import * as path from "node:path";
+
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import react from "@vitejs/plugin-react";
+import { defineConfig, mergeConfig } from "vitest/config";
+
+import { baseVitestConfig } from "../../vitest.config.base";
+
+
 
 export default defineConfig(
 	mergeConfig(baseVitestConfig, {

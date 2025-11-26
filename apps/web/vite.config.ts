@@ -1,12 +1,15 @@
-import { defineConfig, type UserConfig, type PluginOption } from 'vite';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import react from '@vitejs/plugin-react';
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
-import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { tanstackRouter } from '@tanstack/router-vite-plugin';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import react from '@vitejs/plugin-react';
+import { defineConfig, type UserConfig, type PluginOption } from 'vite';
+
+import { openalexCachePlugin } from "../../config/vite-plugins/openalex-cache";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,7 +50,7 @@ function createWebConfig(): UserConfig {
       nxViteTsPaths(),
       // TanStack Router Plugin - must come before React plugin
       // Use absolute paths to avoid issues during Nx project graph generation
-      TanStackRouterVite({
+      tanstackRouter({
         routesDirectory: resolve(__dirname, 'src/routes'),
         generatedRouteTree: resolve(__dirname, 'src/routeTree.gen.ts'),
       }),
@@ -81,23 +84,21 @@ function createWebConfig(): UserConfig {
           // Removed manual chunking - React 19 has initialization issues with manual vendor chunks
           // Let Vite/Rollup handle chunking automatically
           manualChunks: undefined,
-          chunkFileNames: (chunkInfo) => {
-            const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
+          chunkFileNames: () => {
             return `assets/[name]-[hash].js`;
           },
           assetFileNames: (assetInfo) => {
-            if (!assetInfo.name) {
+            const fileName = assetInfo.names?.[0];
+            if (!fileName) {
               return `assets/[name]-[hash][extname]`;
             }
-            const info = assetInfo.name.split('.');
-            const extType = info[info.length - 1];
-            if (/\.(css)$/.test(assetInfo.name)) {
+            if (/\.(css)$/.test(fileName)) {
               return `assets/css/[name]-[hash][extname]`;
             }
-            if (/\.(png|jpe?g|gif|svg|webp|avif)$/.test(assetInfo.name)) {
+            if (/\.(png|jpe?g|gif|svg|webp|avif)$/.test(fileName)) {
               return `assets/images/[name]-[hash][extname]`;
             }
-            if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
+            if (/\.(woff2?|eot|ttf|otf)$/.test(fileName)) {
               return `assets/fonts/[name]-[hash][extname]`;
             }
             return `assets/[name]-[hash][extname]`;

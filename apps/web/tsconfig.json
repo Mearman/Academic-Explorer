@@ -13,8 +13,17 @@
   },
   "include": [
     "src",
+    "e2e/**/*",
+    "test/**/*",
     "config/**/*",
     "../../config/**/*",
+    "vite.config.ts",
+    "vite.config.minimal.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "playwright.config.ts",
+    "playwright.global-setup.ts",
+    "playwright.global-teardown.ts",
     "../../vite.config.base.ts",
     "../../vitest.config.base.ts",
     "../../scripts/extract-openalex-paths.ts"
