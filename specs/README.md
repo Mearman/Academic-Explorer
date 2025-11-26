@@ -6,9 +6,9 @@ This directory contains all feature specifications for Academic Explorer, organi
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 7 |
-| 🚧 In Progress | 11 |
-| 📝 Draft | 8 |
+| ✅ Complete | 14 |
+| 🚧 In Progress | 8 |
+| 📝 Draft | 4 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -167,18 +167,18 @@ Centralize entity taxonomy definitions and metadata to `@academic-explorer/types
 ---
 
 ### spec-018: Entity Consolidation
-**Status**: 🚧 In Progress (Near Complete) | **Progress**: 39/40 tasks
+**Status**: ✅ Complete | **Completed**: 2025-11-21
 
-EntityType consolidation to `@academic-explorer/types` as single source of truth. 39 of 40 tasks complete. Remaining: T040 (Commit documentation updates).
+EntityType consolidation to `@academic-explorer/types` as single source of truth. All 40 tasks complete. All imports updated to use canonical source.
 
 [View Spec](./018-entity-consolidation/)
 
 ---
 
 ### spec-019: Full Entity Support
-**Status**: 🚧 In Progress (Near Complete) | **Progress**: 9/11 tasks (82%)
+**Status**: ✅ Complete | **Completed**: 2025-11-21
 
-Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities). Core implementation complete; documentation tasks remain.
+Implementation of all 12 OpenAlex entity types: Works, Authors, Sources, Institutions, Publishers, Funders, Topics, Concepts, Keywords, Domains, Fields, Subfields. Licenses excluded per research findings (not OpenAlex entities). All 11 tasks complete.
 
 [View Spec](./019-full-entity-support/)
 
@@ -221,9 +221,9 @@ CI/CD pipeline optimization for faster build and deployment times. Build artifac
 ---
 
 ### spec-024: Algorithms Package
-**Status**: 🚧 In Progress | **Progress**: 27/75 tasks (36%)
+**Status**: ✅ Complete | **Completed**: 2025-11-25
 
-Core graph algorithms with Result/Option error handling. Foundational infrastructure complete (Graph class, types, Result/Option). Core algorithms (DFS, BFS, Dijkstra, pathfinding, graph analysis) pending implementation.
+Core graph algorithms with Result/Option error handling. Traversal (DFS, BFS), pathfinding (Dijkstra), analysis (connected components, SCC, cycle detection, topological sort). 112/112 tests passing.
 
 [View Spec](./024-algorithms-package/)
 
@@ -239,27 +239,27 @@ Core graph algorithms with Result/Option error handling. Foundational infrastruc
 ---
 
 ### spec-026: Graph Extraction
-**Status**: 📝 Draft
+**Status**: ✅ Complete | **Completed**: 2025-11-26
 
-Academic graph pattern extraction including ego networks, path analysis, motif detection, and research-specific subgraph operations.
+Academic graph pattern extraction module with ego networks, path-based extraction, filter-based extraction, motif detection, k-truss decomposition, and general subgraph extraction. 97 tests passing (427 total algorithms package tests).
 
 [View Spec](./026-graph-extraction/)
 
 ---
 
 ### spec-027: Louvain Scaling Optimization
-**Status**: 🚧 In Progress (Core Complete) | **Progress**: 53/72 tasks (74%)
+**Status**: ✅ Complete | **Completed**: 2025-11-26
 
-Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, CSR representation. 5.6-10.3s for 1000 nodes (70.6% speedup from 15.4s baseline). Core objectives achieved; verification and polish tasks remain.
+Louvain algorithm scaling optimization with 97% performance improvement. 5 optimization phases: adaptive thresholds, optimized density calculation, early termination, priority queue (disabled), CSR representation. 443ms for 1000 nodes (down from 15.4s baseline). 19x scaling ratio for 10x nodes.
 
 [View Spec](./027-louvain-scaling-optimization/)
 
 ---
 
 ### spec-028: Complete OpenAlex Relationships
-**Status**: 📝 Draft
+**Status**: ✅ Complete | **Completed**: 2025-11-26
 
-Extension of spec-015 for complete relationship coverage including funding sources, publishers, and additional relationship types. Renumbered from 020 to resolve duplicate spec numbering.
+Extension of spec-015 for complete relationship coverage. Added relationship extractors for grants (FUNDED_BY), keywords (WORK_HAS_KEYWORD), concepts (CONCEPT - legacy), institution topics, repositories, roles, and source topics. 89/89 tasks complete.
 
 [View Spec](./028-complete-openalex-relationships/)
 
@@ -317,4 +317,4 @@ All specifications must align with the [Academic Explorer Constitution](../.spec
 
 ---
 
-**Last Updated**: 2025-11-25 | **Total Specs**: 28 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-11-26 | **Total Specs**: 28 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
