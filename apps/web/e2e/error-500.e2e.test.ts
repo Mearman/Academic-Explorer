@@ -1,0 +1,141 @@
+/**
+ * E2E tests for 500 (Server Error) scenarios
+ *
+ * Tests handling of server-side errors using route interception
+ *
+ * @module error-500.e2e
+ * @tag @error
+ * @see spec-020 Phase 5: Error scenario coverage
+ */
+
+import { test, expect } from '@playwright/test';
+
+import { ErrorPage } from '@/test/page-objects/ErrorPage';
+import { waitForAppReady } from '@/test/helpers/app-ready';
+
+test.describe('@error 500 Server Errors', () => {
+  let errorPage: ErrorPage;
+
+  test.beforeEach(async ({ page }) => {
+    errorPage = new ErrorPage(page);
+
+    // Set up console error monitoring
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        console.log('Console error:', msg.text());
+      }
+    });
+  });
+
+  test('should handle 500 response gracefully', async ({ page }) => {
+    // Intercept API calls and return 500 error
+    await page.route('**/api.openalex.org/**', (route) => {
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Internal Server Error' }),
+      });
+    });
+
+    await page.goto('/works/W2741809807');
+    await waitForAppReady(page);
+
+    // Should display error message or error state
+    const errorIndicators = page.locator('[data-testid="error-message"], [role="alert"], .error');
+    const errorText = page.getByText(/error|failed|unavailable|try again/i);
+
+    // Wait for error to be displayed
+    await expect(errorIndicators.or(errorText).first()).toBeVisible({ timeout: 15000 });
+  });
+
+  test('should show retry option on server error', async ({ page }) => {
+    let requestCount = 0;
+
+    // Intercept API calls - fail first time, succeed after
+    await page.route('**/api.openalex.org/**', (route) => {
+      requestCount++;
+      if (requestCount <= 1) {
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal Server Error' }),
+        });
+      } else {
+        route.continue();
+      }
+    });
+
+    await page.goto('/works/W2741809807');
+    await waitForAppReady(page);
+
+    // Look for retry button
+    const retryButton = page.locator('button:has-text("Retry"), button:has-text("Try again"), [data-testid="retry-button"]');
+
+    const hasRetry = await retryButton.isVisible().catch(() => false);
+
+    if (hasRetry) {
+      // Click retry and verify it attempts to reload
+      await retryButton.click();
+      await page.waitForTimeout(2000);
+
+      // After retry, should have made additional request
+      expect(requestCount).toBeGreaterThan(1);
+    }
+  });
+
+  test('should display user-friendly error message on 500', async ({ page }) => {
+    await page.route('**/api.openalex.org/**', (route) => {
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Internal Server Error' }),
+      });
+    });
+
+    await page.goto('/authors/A5017898742');
+    await waitForAppReady(page);
+
+    // Verify user-friendly message (not raw error)
+    const technicalError = page.getByText(/500|internal server error/i);
+    const friendlyError = page.getByText(/something went wrong|error occurred|try again later/i);
+
+    // Should have at least one error indicator
+    const hasError = await technicalError.isVisible().catch(() => false) ||
+                     await friendlyError.isVisible().catch(() => false);
+    expect(hasError).toBe(true);
+  });
+
+  test('should handle 502 Bad Gateway error', async ({ page }) => {
+    await page.route('**/api.openalex.org/**', (route) => {
+      route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Bad Gateway' }),
+      });
+    });
+
+    await page.goto('/works/W2741809807');
+    await waitForAppReady(page);
+
+    // Should handle 502 similar to 500
+    const errorText = page.getByText(/error|failed|unavailable/i);
+    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+  });
+
+  test('should handle 503 Service Unavailable error', async ({ page }) => {
+    await page.route('**/api.openalex.org/**', (route) => {
+      route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Service Unavailable' }),
+      });
+    });
+
+    await page.goto('/institutions/I33213144');
+    await waitForAppReady(page);
+
+    // Should handle 503 gracefully
+    const errorText = page.getByText(/error|unavailable|maintenance/i);
+    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+  });
+});

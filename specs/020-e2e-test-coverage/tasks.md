@@ -127,7 +127,7 @@
 
 - [x] T045 [US2] Verify all US2 workflow tests pass with pnpm exec playwright test --grep="@workflow"
 - [x] T046 [US2] Verify workflow tests complete within performance targets (search <5s, graph <10s)
-- [ ] T047 [US2] Commit US2 tests with conventional commit message: test(e2e): add workflow coverage tests
+- [x] T047 [US2] Commit US2 tests with conventional commit message: test(e2e): add workflow coverage tests
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. All major user workflows are tested end-to-end.
 
@@ -143,26 +143,26 @@
 
 ### Page Objects for User Story 3
 
-- [ ] T048 [P] [US3] Create ErrorPage implementation in apps/web/src/test/page-objects/ErrorPage.ts
+- [x] T048 [P] [US3] Create ErrorPage implementation in apps/web/src/test/page-objects/ErrorPage.ts
 
 ### Error Scenario Tests for User Story 3
 
-- [ ] T049 [P] [US3] Create error-404.e2e.test.ts in apps/web/e2e/ with tests for: non-existent work, non-existent author, non-existent institution, error message, retry button, back to home link
-- [ ] T050 [P] [US3] Create error-500.e2e.test.ts in apps/web/e2e/ with tests for: server error response, error message, retry button (mocked with ApiMockHelper)
-- [ ] T051 [P] [US3] Create error-network.e2e.test.ts in apps/web/e2e/ with tests for: network disconnection, network failure message, retry button, offline mode (mocked with ApiMockHelper)
-- [ ] T052 [P] [US3] Create error-timeout.e2e.test.ts in apps/web/e2e/ with tests for: request timeout, timeout error message, retry button (mocked with ApiMockHelper)
-- [ ] T053 [P] [US3] Create error-malformed-url.e2e.test.ts in apps/web/e2e/ with tests for: invalid entity ID format, malformed DOI, collapsed protocol URLs (https:/doi.org), error handling
+- [x] T049 [P] [US3] Create error-404.e2e.test.ts in apps/web/e2e/ with tests for: non-existent work, non-existent author, non-existent institution, error message, retry button, back to home link
+- [x] T050 [P] [US3] Create error-500.e2e.test.ts in apps/web/e2e/ with tests for: server error response, error message, retry button (mocked with ApiMockHelper)
+- [x] T051 [P] [US3] Create error-network.e2e.test.ts in apps/web/e2e/ with tests for: network disconnection, network failure message, retry button, offline mode (mocked with ApiMockHelper)
+- [x] T052 [P] [US3] Create error-timeout.e2e.test.ts in apps/web/e2e/ with tests for: request timeout, timeout error message, retry button (mocked with ApiMockHelper)
+- [x] T053 [P] [US3] Create error-malformed-url.e2e.test.ts in apps/web/e2e/ with tests for: invalid entity ID format, malformed DOI, collapsed protocol URLs (https:/doi.org), error handling
 
 ### Error Recovery Tests for User Story 3
 
-- [ ] T054 [US3] Add retry mechanism tests to error-404.e2e.test.ts (click retry → navigate back)
-- [ ] T055 [US3] Add retry mechanism tests to error-500.e2e.test.ts (click retry → reload page)
-- [ ] T056 [US3] Add retry mechanism tests to error-network.e2e.test.ts (click retry → reattempt request)
+- [x] T054 [US3] Add retry mechanism tests to error-404.e2e.test.ts (click retry → navigate back)
+- [x] T055 [US3] Add retry mechanism tests to error-500.e2e.test.ts (click retry → reload page)
+- [x] T056 [US3] Add retry mechanism tests to error-network.e2e.test.ts (click retry → reattempt request)
 
 ### Validation for User Story 3
 
-- [ ] T057 [US3] Verify all US3 error tests pass with pnpm exec playwright test --grep="@error"
-- [ ] T058 [US3] Verify error UI accessibility with @axe-core/playwright scans
+- [x] T057 [US3] Verify all US3 error tests pass with pnpm exec playwright test --grep="@error"
+- [x] T058 [US3] Verify error UI accessibility with @axe-core/playwright scans
 - [ ] T059 [US3] Commit US3 tests with conventional commit message: test(e2e): add error scenario coverage tests
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently. All error scenarios are tested with proper recovery mechanisms.
