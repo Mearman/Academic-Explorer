@@ -61,26 +61,26 @@ Developers and users expect all OpenAlex entity types to be consistently represe
 
 **Acceptance Scenarios**:
 
-1. **Given** the EntityType definition in packages/types, **When** TypeScript compilation runs, **Then** all 13 entity types are present in the union without errors (works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields, licenses)
-2. **Given** the OpenAlex API client, **When** a developer calls client methods, **Then** methods exist for all 13 entity types with proper type signatures
-3. **Given** entity type guard functions, **When** runtime type checking occurs, **Then** guards correctly identify all 13 entity types
-4. **Given** the ENTITY_TYPE_CONFIGS object, **When** the application renders entity UI, **Then** configurations exist for all 13 types with appropriate icons and colors
-5. **Given** autocomplete functionality, **When** users search for entities, **Then** autocomplete routes exist for all applicable entity types (licenses excluded as they don't have autocomplete)
+1. **Given** the EntityType definition in packages/types, **When** TypeScript compilation runs, **Then** all 12 entity types are present in the union without errors (works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields)
+2. **Given** the OpenAlex API client, **When** a developer calls client methods, **Then** methods exist for all 12 entity types with proper type signatures
+3. **Given** entity type guard functions, **When** runtime type checking occurs, **Then** guards correctly identify all 12 entity types
+4. **Given** the ENTITY_TYPE_CONFIGS object, **When** the application renders entity UI, **Then** configurations exist for all 12 types with appropriate icons and colors
+5. **Given** autocomplete functionality, **When** users search for entities, **Then** autocomplete routes exist for all applicable entity types
 
 ---
 
 ### Edge Cases
 
-- What happens when a license ID contains special characters or URL-unsafe characters?
-  - System must URL-decode license IDs and handle percent-encoded characters
+- What happens when a keyword ID contains special characters or URL-unsafe characters?
+  - System must URL-decode keyword IDs and handle percent-encoded characters
   - usePrettyUrl hook should normalize URLs to clean decoded versions
 
-- What happens when a keyword or license has no associated works or relationships?
+- What happens when a keyword has no associated works or relationships?
   - Empty state components should display appropriately
   - Relationship sections should hide gracefully when counts are zero
   - No errors should occur with empty relationship arrays
 
-- What happens when fetching license data fails (404, network error, rate limit)?
+- What happens when fetching keyword data fails (404, network error, rate limit)?
   - ErrorState component displays with retry functionality
   - Loading states properly indicate async operations
   - Query retries according to client retry configuration
@@ -96,54 +96,49 @@ Developers and users expect all OpenAlex entity types to be consistently represe
 
 #### Entity Type System
 
-- **FR-001**: System MUST include all 13 OpenAlex entity types in the EntityType union: works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields, licenses
-- **FR-002**: System MUST provide TypeScript type definitions for all 13 entity types with Zod schema validation
-- **FR-003**: System MUST include all 13 entity types in the OpenAlexEntity union type
-- **FR-004**: System MUST include all 13 entity types in the EntityTypeMap mapping
+- **FR-001**: System MUST include all 12 OpenAlex entity types in the EntityType union: works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields
+- **FR-002**: System MUST provide TypeScript type definitions for all 12 entity types with Zod schema validation
+- **FR-003**: System MUST include all 12 entity types in the OpenAlexEntity union type
+- **FR-004**: System MUST include all 12 entity types in the EntityTypeMap mapping
 
 #### API Client Support
 
-- **FR-005**: OpenAlex API client MUST provide methods to fetch data for all 13 entity types
+- **FR-005**: OpenAlex API client MUST provide methods to fetch data for all 12 entity types
 - **FR-006**: Client methods MUST support the select parameter for field-level caching on all applicable entity types
-- **FR-007**: Client methods MUST handle URL construction correctly for numeric IDs (domains, fields, subfields) vs alphanumeric IDs (licenses, keywords)
+- **FR-007**: Client methods MUST handle URL construction correctly for numeric IDs (domains, fields, subfields) vs alphanumeric IDs (keywords)
 - **FR-008**: Client MUST apply consistent retry logic and rate limiting across all entity type endpoints
 
 #### Routing and Navigation
 
 - **FR-009**: System MUST provide route files for keyword entities at `/keywords/{keywordId}`
-- **FR-010**: System MUST provide route files for license entities at `/licenses/{licenseId}`
-- **FR-011**: Routes MUST use EntityDetailLayout component for consistent UI presentation
-- **FR-012**: Routes MUST implement URL decoding via decodeEntityId utility
-- **FR-013**: Routes MUST implement pretty URL normalization via usePrettyUrl hook
-- **FR-014**: All entity routes MUST support the select query parameter for field-level data fetching
+- **FR-010**: Routes MUST use EntityDetailLayout component for consistent UI presentation
+- **FR-011**: Routes MUST implement URL decoding via decodeEntityId utility
+- **FR-012**: Routes MUST implement pretty URL normalization via usePrettyUrl hook
+- **FR-013**: All entity routes MUST support the select query parameter for field-level data fetching
 
 #### UI and Presentation
 
-- **FR-015**: Keyword pages MUST migrate from legacy EntityDataDisplay to EntityDetailLayout component
-- **FR-016**: License pages MUST use EntityDetailLayout component from initial implementation
-- **FR-017**: ENTITY_TYPE_CONFIGS MUST include configuration entries for licenses with appropriate icons and colors
-- **FR-018**: All entity pages MUST display LoadingState during data fetching
-- **FR-019**: All entity pages MUST display ErrorState on fetch failures with retry functionality
-- **FR-020**: Entity pages MUST support view mode toggle between raw JSON and rich formatted display
+- **FR-014**: Keyword pages MUST migrate from legacy EntityDataDisplay to EntityDetailLayout component
+- **FR-015**: All entity pages MUST display LoadingState during data fetching
+- **FR-016**: All entity pages MUST display ErrorState on fetch failures with retry functionality
+- **FR-017**: Entity pages MUST support view mode toggle between raw JSON and rich formatted display
 
 #### Relationship Visualization
 
-- **FR-021**: Keyword pages MUST display IncomingRelationships and OutgoingRelationships components
-- **FR-022**: Keyword pages MUST display RelationshipCounts component showing incoming/outgoing totals
-- **FR-023**: License pages MUST display relationship components if OpenAlex data model supports license relationships
-- **FR-024**: Relationship components MUST handle empty relationship arrays gracefully (zero counts, hidden sections)
+- **FR-018**: Keyword pages MUST display IncomingRelationships and OutgoingRelationships components
+- **FR-019**: Keyword pages MUST display RelationshipCounts component showing incoming/outgoing totals
+- **FR-020**: Relationship components MUST handle empty relationship arrays gracefully (zero counts, hidden sections)
 
 #### Type Guards and Utilities
 
-- **FR-025**: Type guard functions (isEntityType, isOpenAlexId) MUST recognize all 13 entity types
-- **FR-026**: URL handling utilities MUST correctly parse and format URLs for all entity types
-- **FR-027**: Storage provider interface MUST support caching for all 13 entity types
+- **FR-021**: Type guard functions (isEntityType, isOpenAlexId) MUST recognize all 12 entity types
+- **FR-022**: URL handling utilities MUST correctly parse and format URLs for all entity types
+- **FR-023**: Storage provider interface MUST support caching for all 12 entity types
 
 ### Key Entities *(include if feature involves data)*
 
 - **Keyword**: Represents research keywords with display name, citation counts, works count, year-by-year statistics; relationships to works, topics, and concepts
-- **License**: Represents licensing agreements (e.g., Creative Commons licenses) with identifier, display name, description, usage statistics; relationships to works and sources that use the license
-- **EntityType**: Discriminated union type representing all 13 OpenAlex entity categories; used for type-safe routing, API calls, and UI rendering
+- **EntityType**: Discriminated union type representing all 12 OpenAlex entity categories; used for type-safe routing, API calls, and UI rendering
 - **EntityTypeConfig**: Configuration object mapping each entity type to display metadata (name, icon, color); ensures consistent UI presentation across all entity types
 - **EntityTypeMap**: TypeScript mapped type linking entity type strings to their corresponding TypeScript interfaces; enables type-safe generic functions
 
@@ -151,16 +146,15 @@ Developers and users expect all OpenAlex entity types to be consistently represe
 
 ### Measurable Outcomes
 
-- **SC-001**: All 13 entity types compile without TypeScript errors in strict mode
+- **SC-001**: All 12 entity types compile without TypeScript errors in strict mode
 - **SC-002**: Users can navigate to keyword pages via direct URLs and view complete entity data with relationship visualization
-- **SC-003**: Users can navigate to license pages via direct URLs and view complete entity data
-- **SC-004**: Entity detail pages load and display data within 3 seconds under normal network conditions
-- **SC-005**: Entity pages handle loading states gracefully with visual indicators visible within 200ms of navigation
-- **SC-006**: Entity pages recover from fetch errors with retry buttons that successfully reload data on second attempt
-- **SC-007**: All entity routes support the select parameter and fetch only requested fields (verified via network inspection)
-- **SC-008**: Full validation pipeline (typecheck + lint + test + build) completes successfully with zero errors
-- **SC-009**: All pre-existing tests continue to pass after changes (zero regressions)
-- **SC-010**: New entity pages meet accessibility standards (WCAG 2.1 AA) verified via jest-axe in component tests
+- **SC-003**: Entity detail pages load and display data within 3 seconds under normal network conditions
+- **SC-004**: Entity pages handle loading states gracefully with visual indicators visible within 200ms of navigation
+- **SC-005**: Entity pages recover from fetch errors with retry buttons that successfully reload data on second attempt
+- **SC-006**: All entity routes support the select parameter and fetch only requested fields (verified via network inspection)
+- **SC-007**: Full validation pipeline (typecheck + lint + test + build) completes successfully with zero errors
+- **SC-008**: All pre-existing tests continue to pass after changes (zero regressions)
+- **SC-009**: New entity pages meet accessibility standards (WCAG 2.1 AA) verified via jest-axe in component tests
 
 ## Constitution Alignment *(recommended)*
 
