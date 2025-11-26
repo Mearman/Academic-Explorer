@@ -13,7 +13,8 @@ import { join } from 'path';
 import { test, expect } from '@playwright/test';
 
 // Load sample URLs (30 URLs covering all entity types)
-const urlsPath = join(process.cwd(), '../../openalex-urls-sample.json');
+// Note: process.cwd() is repo root when running via Nx Playwright executor
+const urlsPath = join(process.cwd(), 'openalex-urls-sample.json');
 const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
 // Use Playwright's baseURL from config (no hardcoded fallback to avoid CI/local port mismatch)
