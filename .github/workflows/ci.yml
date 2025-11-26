@@ -43,9 +43,32 @@ jobs:
       docs: ${{ steps.filter.outputs.docs }}
       config: ${{ steps.filter.outputs.config }}
       should-test: ${{ steps.check-event.outputs.should-test }}
+      testable-packages: ${{ steps.detect-packages.outputs.packages }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect testable packages
+        id: detect-packages
+        run: |
+          # Get all projects in apps/ and packages/ directories (these inherit test targets from targetDefaults)
+          packages=$(pnpm nx show projects --projects "apps/*,packages/*" --json)
+          echo "packages=$packages" >> "${GITHUB_OUTPUT}"
+          echo "Detected testable packages: $packages"
 
       - name: Check if tests should run
         id: check-event
@@ -178,7 +201,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, types, ui, utils]
+        package: ${{ fromJson(needs.changes.outputs.testable-packages) }}
     name: unit-tests (${{ matrix.package }})
     steps:
       - name: Checkout
@@ -246,7 +269,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, types, ui, utils]
+        package: ${{ fromJson(needs.changes.outputs.testable-packages) }}
     name: component-tests (${{ matrix.package }})
     steps:
       - name: Checkout
@@ -314,7 +337,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [web, cli, client, types, ui, utils]
+        package: ${{ fromJson(needs.changes.outputs.testable-packages) }}
     name: integration-tests (${{ matrix.package }})
     steps:
       - name: Checkout

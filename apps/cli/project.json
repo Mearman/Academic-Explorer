@@ -30,36 +30,6 @@
         "tsConfig": "apps/cli/tsconfig.json",
         "assets": []
       }
-    },
-    "test:unit": {
-      "executor": "@nx/vitest:test",
-      "options": {
-        "config": "apps/cli/vitest.config.ts",
-        "include": ["src/**/*.unit.test.ts"],
-        "passWithNoTests": true,
-        "coverage": {
-          "enabled": true,
-          "reportsDirectory": "coverage/apps/cli/unit"
-        }
-      }
-    },
-    "test:component": {
-      "executor": "@nx/vitest:test",
-      "options": {
-        "config": "apps/cli/vitest.config.ts",
-        "include": ["src/**/*.component.test.ts"],
-        "passWithNoTests": true,
-        "reportsDirectory": "coverage/apps/cli/component"
-      }
-    },
-    "test:integration": {
-      "executor": "@nx/vitest:test",
-      "options": {
-        "config": "apps/cli/vitest.config.ts",
-        "include": ["src/**/*.integration.test.ts"],
-        "passWithNoTests": true,
-        "reportsDirectory": "coverage/apps/cli/integration"
-      }
     }
   }
 }
