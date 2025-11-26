@@ -3,6 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
+    "composite": false,
+    "declaration": false,
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -10,8 +12,10 @@
     "paths": {
       "@/*": ["src/*"],
       "@academic-explorer/types": ["../../packages/types/src/index.ts"],
+      "@academic-explorer/types/*": ["../../packages/types/src/*"],
       "@academic-explorer/client": ["../../packages/client/src/index.ts"],
       "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
       "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
       "@academic-explorer/algorithms": ["../../packages/algorithms/src/index.ts"]
     }

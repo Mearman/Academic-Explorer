@@ -55,6 +55,14 @@
         "passWithNoTests": true,
         "reportsDirectory": "coverage/apps/web/integration"
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "tsc --noEmit -p tsconfig.json",
+        "cwd": "apps/web"
+      }
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]
