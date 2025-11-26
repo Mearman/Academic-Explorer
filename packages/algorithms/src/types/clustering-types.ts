@@ -152,7 +152,7 @@ export interface MergeStep {
  */
 export interface Dendrogram<N> {
   /** Sequence of cluster merge operations (n-1 merges for n nodes) */
-  merges: MergeStep<N>[];
+  merges: MergeStep[];
 
   /** Height at which each merge occurred (non-decreasing) */
   heights: number[];

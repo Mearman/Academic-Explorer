@@ -253,7 +253,10 @@ export function detectCommunities<N extends Node, E extends Edge>(
           if (!incomingEdges.has(edge.target)) {
             incomingEdges.set(edge.target, []);
           }
-          incomingEdges.get(edge.target)!.push(edge);
+          const targetEdges = incomingEdges.get(edge.target);
+          if (targetEdges) {
+            targetEdges.push(edge);
+          }
         });
       }
     });
@@ -384,10 +387,12 @@ export function detectCommunities<N extends Node, E extends Edge>(
       const superNodeOrder = shuffleArray([...nodesToVisit]);
 
       for (const superNodeId of superNodeOrder) {
-        const currentCommunityId = nodeToCommunity.get(superNodeId)!;
+        const currentCommunityId = nodeToCommunity.get(superNodeId);
+        if (currentCommunityId === undefined) continue;
 
         // Calculate weights to neighboring communities for this super-node
-        const memberNodes = superNodes.get(superNodeId)!;
+        const memberNodes = superNodes.get(superNodeId);
+        if (memberNodes === undefined) continue;
         const neighborCommunities = findNeighborCommunitiesForSuperNode(
           graph,
           memberNodes,
@@ -421,7 +426,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
               continue; // Skip current community
             }
 
-            const neighborCommunity = communities.get(neighborCommunityId)!;
+            const neighborCommunity = communities.get(neighborCommunityId);
+            if (!neighborCommunity) continue;
 
             // Calculate modularity change
             const deltaQ = calculateModularityDelta(
@@ -446,7 +452,8 @@ export function detectCommunities<N extends Node, E extends Edge>(
               continue; // Skip current community
             }
 
-            const neighborCommunity = communities.get(neighborCommunityId)!;
+            const neighborCommunity = communities.get(neighborCommunityId);
+            if (!neighborCommunity) continue;
 
             // Calculate modularity change
             const deltaQ = calculateModularityDelta(
@@ -754,9 +761,14 @@ function moveSuperNode(
   superNodes: Map<string, Set<string>>,
   nodeDegrees: Map<string, number>
 ): void {
-  const fromCommunity = communities.get(fromCommunityId)!;
-  const toCommunity = communities.get(toCommunityId)!;
-  const memberNodes = superNodes.get(superNodeId)!;
+  const fromCommunity = communities.get(fromCommunityId);
+  if (!fromCommunity) return;
+
+  const toCommunity = communities.get(toCommunityId);
+  if (!toCommunity) return;
+
+  const memberNodes = superNodes.get(superNodeId);
+  if (!memberNodes) return;
 
   // Calculate total degree for this super-node (sum of member node degrees)
   let superNodeDegree = 0;
@@ -817,7 +829,10 @@ function buildCommunityResults<N extends Node, E extends Edge>(
 
     const nodeOption = graph.getNode(nodeId);
     if (nodeOption.some) {
-      communityMap.get(communityId)!.add(nodeOption.value);
+      const commNodes = communityMap.get(communityId);
+      if (commNodes) {
+        commNodes.add(nodeOption.value);
+      }
     }
   });
 
@@ -841,7 +856,8 @@ function buildCommunityResults<N extends Node, E extends Edge>(
     if (sourceCommunity === targetCommunity) {
       // Internal edge - count it
       const weight = (edge as { weight?: number }).weight ?? 1.0;
-      sigmaIn.set(sourceCommunity, sigmaIn.get(sourceCommunity)! + weight);
+      const currentSigma = sigmaIn.get(sourceCommunity) ?? 0;
+      sigmaIn.set(sourceCommunity, currentSigma + weight);
     }
   });
 
