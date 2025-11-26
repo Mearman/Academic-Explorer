@@ -111,22 +111,22 @@
 
 ### Workflow Tests for User Story 2
 
-- [ ] T037 [P] [US2] Create search-workflow.e2e.test.ts in apps/web/e2e/ with tests for: query entry → results display → entity type filtering → result click → detail page
-- [ ] T038 [P] [US2] Create browse-workflow.e2e.test.ts in apps/web/e2e/ with tests for: browse page load → entity type selection → index page → entity selection → detail page
-- [ ] T039 [P] [US2] Create graph-interaction.e2e.test.ts in apps/web/e2e/ with tests for: pan, zoom, node selection, node drag, edge filtering
-- [ ] T040 [P] [US2] Create catalogue-workflow.e2e.test.ts in apps/web/e2e/ with tests for: create list → add entities → view list → remove entities → delete list
-- [ ] T041 [P] [US2] Create bookmark-workflow.e2e.test.ts in apps/web/e2e/ with tests for: bookmark entity → view bookmarks → unbookmark entity
+- [x] T037 [P] [US2] Create search-workflow.e2e.test.ts in apps/web/e2e/ with tests for: query entry → results display → entity type filtering → result click → detail page
+- [x] T038 [P] [US2] Create browse-workflow.e2e.test.ts in apps/web/e2e/ with tests for: browse page load → entity type selection → index page → entity selection → detail page
+- [x] T039 [P] [US2] Create graph-interaction.e2e.test.ts in apps/web/e2e/ with tests for: pan, zoom, node selection, node drag, edge filtering
+- [x] T040 [P] [US2] Create catalogue-workflow.e2e.test.ts in apps/web/e2e/ with tests for: create list → add entities → view list → remove entities → delete list
+- [x] T041 [P] [US2] Create bookmark-workflow.e2e.test.ts in apps/web/e2e/ with tests for: bookmark entity → view bookmarks → unbookmark entity
 
 ### Multi-Viewport Tests for User Story 2
 
-- [ ] T042 [P] [US2] Add mobile viewport tests to search-workflow.e2e.test.ts (viewport: 375x667)
-- [ ] T043 [P] [US2] Add tablet viewport tests to graph-interaction.e2e.test.ts (viewport: 768x1024)
-- [ ] T044 [P] [US2] Add desktop viewport tests to browse-workflow.e2e.test.ts (viewport: 1920x1080)
+- [x] T042 [P] [US2] Add mobile viewport tests to search-workflow.e2e.test.ts (viewport: 375x667)
+- [x] T043 [P] [US2] Add tablet viewport tests to graph-interaction.e2e.test.ts (viewport: 768x1024)
+- [x] T044 [P] [US2] Add desktop viewport tests to browse-workflow.e2e.test.ts (viewport: 1920x1080)
 
 ### Validation for User Story 2
 
-- [ ] T045 [US2] Verify all US2 workflow tests pass with pnpm exec playwright test --grep="@workflow"
-- [ ] T046 [US2] Verify workflow tests complete within performance targets (search <5s, graph <10s)
+- [x] T045 [US2] Verify all US2 workflow tests pass with pnpm exec playwright test --grep="@workflow"
+- [x] T046 [US2] Verify workflow tests complete within performance targets (search <5s, graph <10s)
 - [ ] T047 [US2] Commit US2 tests with conventional commit message: test(e2e): add workflow coverage tests
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. All major user workflows are tested end-to-end.

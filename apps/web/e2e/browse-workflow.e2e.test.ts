@@ -323,3 +323,179 @@ test.describe('@workflow Browse Workflow', () => {
 		await browsePage.expectMinimumEntityTypes(10); // Academic Explorer has 12 entity types
 	});
 });
+
+test.describe('@workflow @desktop Browse Workflow - Desktop Viewport', () => {
+	test.use({ viewport: { width: 1920, height: 1080 } });
+
+	test('should display browse grid with optimal layout on desktop', async ({ page }) => {
+		const browsePage = new BrowsePage(page);
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+		await browsePage.expectBrowseLoaded();
+
+		// Verify browse grid is visible
+		const browseGrid = page.locator('[data-testid="browse-grid"]');
+		await expect(browseGrid).toBeVisible();
+
+		// Verify multiple entity type cards are visible simultaneously on wide screen
+		const entityCards = page.locator('[data-testid^="entity-type-card-"]');
+		const visibleCards = await entityCards.evaluateAll((cards) =>
+			cards.filter((card) => {
+				const rect = card.getBoundingClientRect();
+				return rect.width > 0 && rect.height > 0 && rect.top >= 0;
+			}),
+		);
+
+		// On 1920x1080, should see multiple cards per row (at least 3-4)
+		expect(visibleCards.length).toBeGreaterThanOrEqual(10);
+
+		// Verify grid layout uses appropriate spacing for desktop
+		const gridBox = await browseGrid.boundingBox();
+		expect(gridBox).not.toBeNull();
+		if (gridBox) {
+			// Grid should utilize significant horizontal space on desktop
+			expect(gridBox.width).toBeGreaterThan(1200);
+		}
+	});
+
+	test('should display entity type cards with proper spacing on desktop', async ({ page }) => {
+		const browsePage = new BrowsePage(page);
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+		await browsePage.expectBrowseLoaded();
+
+		// Get positions of multiple entity type cards
+		const worksCard = page.locator('[data-testid="entity-type-card-works"]');
+		const authorsCard = page.locator('[data-testid="entity-type-card-authors"]');
+		const institutionsCard = page.locator('[data-testid="entity-type-card-institutions"]');
+
+		await expect(worksCard).toBeVisible();
+		await expect(authorsCard).toBeVisible();
+		await expect(institutionsCard).toBeVisible();
+
+		// Verify cards have appropriate size on desktop
+		const worksBox = await worksCard.boundingBox();
+		expect(worksBox).not.toBeNull();
+		if (worksBox) {
+			// Cards should be substantial but not too wide on desktop
+			expect(worksBox.width).toBeGreaterThan(150);
+			expect(worksBox.width).toBeLessThan(500);
+			expect(worksBox.height).toBeGreaterThan(100);
+		}
+
+		// Verify cards have adequate spacing between them
+		const worksPosition = await worksCard.boundingBox();
+		const authorsPosition = await authorsCard.boundingBox();
+
+		if (worksPosition && authorsPosition) {
+			// Calculate spacing between cards (horizontal or vertical)
+			const horizontalGap = Math.abs(authorsPosition.x - (worksPosition.x + worksPosition.width));
+			const verticalGap = Math.abs(authorsPosition.y - (worksPosition.y + worksPosition.height));
+
+			// Should have at least some spacing (either horizontal or vertical)
+			const hasProperSpacing = horizontalGap > 10 || verticalGap > 10;
+			expect(hasProperSpacing).toBe(true);
+		}
+	});
+
+	test('should display entity index page with full content on desktop', async ({ page }) => {
+		const browsePage = new BrowsePage(page);
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+		await browsePage.expectBrowseLoaded();
+
+		// Navigate to works index
+		await browsePage.clickEntityType('Works');
+		await expect(page).toHaveURL(/\/works\/?/);
+		await waitForAppReady(page);
+
+		// Verify entity list displays with desktop layout
+		const entityList = page.locator('[data-testid="entity-list"]');
+		await expect(entityList).toBeVisible({ timeout: 30000 });
+
+		// On desktop, should see multiple work items without scrolling
+		const workLinks = page.locator('a[href*="/works/W"]');
+		const visibleWorkLinks = await workLinks.evaluateAll((links) =>
+			links.filter((link) => {
+				const rect = link.getBoundingClientRect();
+				return (
+					rect.width > 0 &&
+					rect.height > 0 &&
+					rect.top >= 0 &&
+					rect.top < window.innerHeight
+				);
+			}),
+		);
+
+		// Desktop should show more items in viewport than mobile
+		expect(visibleWorkLinks.length).toBeGreaterThanOrEqual(5);
+
+		// Verify page uses horizontal space effectively
+		const listBox = await entityList.boundingBox();
+		expect(listBox).not.toBeNull();
+		if (listBox) {
+			// List should utilize desktop width
+			expect(listBox.width).toBeGreaterThan(800);
+		}
+	});
+
+	test('should complete full navigation workflow on desktop viewport', async ({ page }) => {
+		// Test complete browse → index → detail → back flow on desktop
+		const browsePage = new BrowsePage(page);
+		await browsePage.gotoBrowse();
+		await waitForAppReady(page);
+		await browsePage.expectBrowseLoaded();
+
+		// Step 1: Browse page with desktop layout
+		const browseGrid = page.locator('[data-testid="browse-grid"]');
+		await expect(browseGrid).toBeVisible();
+
+		const browseGridBox = await browseGrid.boundingBox();
+		expect(browseGridBox).not.toBeNull();
+		if (browseGridBox) {
+			// Verify desktop-sized grid
+			expect(browseGridBox.width).toBeGreaterThan(1200);
+		}
+
+		// Step 2: Navigate to authors index
+		await browsePage.clickEntityType('Authors');
+		await expect(page).toHaveURL(/\/authors\/?/);
+		await waitForAppReady(page);
+
+		const entityList = page.locator('[data-testid="entity-list"]');
+		await expect(entityList).toBeVisible({ timeout: 30000 });
+
+		// Step 3: Navigate to author detail
+		const firstAuthorLink = page.locator('a[href*="/authors/A"]').first();
+		await expect(firstAuthorLink).toBeVisible();
+		await firstAuthorLink.click();
+
+		await expect(page).toHaveURL(/\/authors\/A\d+/);
+		await waitForAppReady(page);
+		await waitForEntityData(page);
+
+		// Verify entity detail displays on desktop
+		const entityTitle = page.locator('[data-testid="entity-title"]');
+		await expect(entityTitle).toBeVisible();
+
+		// Step 4: Navigate back to index
+		await page.goBack();
+		await expect(page).toHaveURL(/\/authors\/?/);
+		await waitForAppReady(page);
+		await expect(entityList).toBeVisible({ timeout: 30000 });
+
+		// Step 5: Navigate back to browse
+		await page.goBack();
+		await expect(page).toHaveURL(/\/browse/);
+		await waitForAppReady(page);
+		await expect(browseGrid).toBeVisible();
+
+		// Verify layout remains consistent throughout navigation
+		const finalBrowseGridBox = await browseGrid.boundingBox();
+		expect(finalBrowseGridBox).not.toBeNull();
+		if (finalBrowseGridBox && browseGridBox) {
+			// Grid dimensions should be consistent
+			expect(Math.abs(finalBrowseGridBox.width - browseGridBox.width)).toBeLessThan(50);
+		}
+	});
+});

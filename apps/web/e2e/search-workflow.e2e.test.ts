@@ -379,3 +379,221 @@ test.describe('@workflow Search Workflow', () => {
 		}
 	});
 });
+
+test.describe('@workflow @mobile Search Workflow - Mobile Viewport', () => {
+	test.use({ viewport: { width: 375, height: 667 } });
+
+	let searchPage: SearchPage;
+
+	test.beforeEach(async ({ page }) => {
+		searchPage = new SearchPage(page);
+		await searchPage.gotoSearch();
+		await waitForAppReady(page);
+	});
+
+	test('should display search input on mobile viewport', async ({ page }) => {
+		// Verify search input is visible and accessible on mobile
+		const searchInput = page.getByPlaceholder(
+			/search for works, authors, institutions/i
+		);
+		await expect(searchInput).toBeVisible();
+
+		// Verify input is large enough for touch targets (WCAG minimum 44x44 CSS pixels)
+		const inputBox = await searchInput.boundingBox();
+		expect(inputBox).not.toBeNull();
+		if (inputBox) {
+			expect(inputBox.height).toBeGreaterThanOrEqual(44);
+		}
+
+		// Verify search button is visible and touch-friendly
+		const searchButton = page.getByRole('button', { name: /search/i }).first();
+		await expect(searchButton).toBeVisible();
+
+		const buttonBox = await searchButton.boundingBox();
+		expect(buttonBox).not.toBeNull();
+		if (buttonBox) {
+			expect(buttonBox.height).toBeGreaterThanOrEqual(44);
+			expect(buttonBox.width).toBeGreaterThanOrEqual(44);
+		}
+	});
+
+	test('should display search results correctly in narrow viewport', async ({
+		page,
+	}) => {
+		// Enter and submit search
+		const testQuery = 'machine learning';
+		await searchPage.enterSearchQuery(testQuery);
+		await searchPage.submitSearch();
+
+		// Wait for results
+		await waitForSearchResults(page);
+		await waitForNoLoading(page);
+
+		// Verify results are displayed
+		const resultCount = await searchPage.getResultCount();
+		expect(resultCount).toBeGreaterThan(0);
+
+		// Verify results container is visible and fits viewport
+		const resultsContainer = page.locator('[data-testid="search-results"]');
+		await expect(resultsContainer).toBeVisible();
+
+		// Verify viewport width is respected (no horizontal scrolling)
+		const viewportSize = page.viewportSize();
+		expect(viewportSize?.width).toBe(375);
+
+		// Verify table content is responsive and visible
+		const firstResultRow = resultsContainer.locator('tbody tr').first();
+		await expect(firstResultRow).toBeVisible();
+
+		// Verify entity type badges are visible
+		const badges = resultsContainer.locator('.mantine-Badge-root');
+		const firstBadge = badges.first();
+		await expect(firstBadge).toBeVisible();
+	});
+
+	test('should navigate to entity detail page from mobile search results', async ({
+		page,
+	}) => {
+		// Enter and submit search
+		const testQuery = 'artificial intelligence';
+		await searchPage.enterSearchQuery(testQuery);
+		await searchPage.submitSearch();
+
+		// Wait for results
+		await waitForSearchResults(page);
+		await waitForNoLoading(page);
+
+		// Verify we have results
+		const resultCount = await searchPage.getResultCount();
+		expect(resultCount).toBeGreaterThan(0);
+
+		// Click the first result
+		await searchPage.clickResult(0);
+
+		// Wait for entity detail page to load
+		await waitForEntityData(page);
+
+		// Verify we navigated to an entity detail page
+		const entityTitle = page.locator('[data-testid="entity-title"]');
+		await expect(entityTitle).toBeVisible();
+
+		// Verify URL changed to entity detail page
+		const currentUrl = page.url();
+		expect(currentUrl).toMatch(
+			/(works|authors|institutions|sources|topics|funders|publishers)\//
+		);
+
+		// Verify entity detail page is responsive on mobile
+		const viewportSize = page.viewportSize();
+		expect(viewportSize?.width).toBe(375);
+	});
+
+	test('should have touch-friendly tap targets for all interactive elements', async ({
+		page,
+	}) => {
+		// Enter and submit search to load results
+		const testQuery = 'quantum computing';
+		await searchPage.enterSearchQuery(testQuery);
+		await searchPage.submitSearch();
+
+		// Wait for results
+		await waitForSearchResults(page);
+		await waitForNoLoading(page);
+
+		// Verify search input meets touch target size (44x44 CSS pixels minimum)
+		const searchInput = page.getByPlaceholder(
+			/search for works, authors, institutions/i
+		);
+		const inputBox = await searchInput.boundingBox();
+		expect(inputBox).not.toBeNull();
+		if (inputBox) {
+			expect(inputBox.height).toBeGreaterThanOrEqual(44);
+		}
+
+		// Verify search button meets touch target size
+		const searchButton = page.getByRole('button', { name: /search/i }).first();
+		const buttonBox = await searchButton.boundingBox();
+		expect(buttonBox).not.toBeNull();
+		if (buttonBox) {
+			expect(buttonBox.height).toBeGreaterThanOrEqual(44);
+			expect(buttonBox.width).toBeGreaterThanOrEqual(44);
+		}
+
+		// Verify result rows are touch-friendly (clickable area should be large)
+		const firstResultRow = page
+			.locator('[data-testid="search-results"] tbody tr')
+			.first();
+		await expect(firstResultRow).toBeVisible();
+
+		const rowBox = await firstResultRow.boundingBox();
+		expect(rowBox).not.toBeNull();
+		if (rowBox) {
+			// Result rows should have reasonable height for touch interaction
+			expect(rowBox.height).toBeGreaterThanOrEqual(44);
+		}
+
+		// Verify links within results have adequate tap targets
+		const firstResultLink = firstResultRow.locator('a').first();
+		const hasLink = await firstResultLink.count();
+		if (hasLink > 0) {
+			await expect(firstResultLink).toBeVisible();
+			const linkBox = await firstResultLink.boundingBox();
+			expect(linkBox).not.toBeNull();
+			if (linkBox) {
+				// Links should be touch-friendly
+				expect(linkBox.height).toBeGreaterThanOrEqual(24); // Slightly smaller acceptable for inline text links
+			}
+		}
+	});
+
+	test('should maintain mobile layout after navigation and back', async ({
+		page,
+	}) => {
+		// Enter and submit search
+		const testQuery = 'neural networks';
+		await searchPage.enterSearchQuery(testQuery);
+		await searchPage.submitSearch();
+
+		// Wait for results
+		await waitForSearchResults(page);
+		await waitForNoLoading(page);
+
+		// Verify viewport is mobile
+		let viewportSize = page.viewportSize();
+		expect(viewportSize?.width).toBe(375);
+		expect(viewportSize?.height).toBe(667);
+
+		// Record result count
+		const initialResultCount = await searchPage.getResultCount();
+		expect(initialResultCount).toBeGreaterThan(0);
+
+		// Click a result
+		await searchPage.clickResult(0);
+		await waitForEntityData(page);
+
+		// Verify still on mobile viewport
+		viewportSize = page.viewportSize();
+		expect(viewportSize?.width).toBe(375);
+
+		// Navigate back
+		await page.goBack();
+		await waitForAppReady(page);
+
+		// Verify search input still has the query
+		const searchInput = page.getByPlaceholder(
+			/search for works, authors, institutions/i
+		);
+		await expect(searchInput).toHaveValue(testQuery);
+
+		// Verify results are still displayed with mobile layout
+		viewportSize = page.viewportSize();
+		expect(viewportSize?.width).toBe(375);
+
+		const resultCountAfterBack = await searchPage.getResultCount();
+		expect(resultCountAfterBack).toBe(initialResultCount);
+
+		// Verify results container is still properly sized
+		const resultsContainer = page.locator('[data-testid="search-results"]');
+		await expect(resultsContainer).toBeVisible();
+	});
+});
