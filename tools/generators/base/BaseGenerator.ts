@@ -218,9 +218,7 @@ export default defineConfig({
   /**
    * Create ESLint configuration
    */
-  protected createEslintConfig(
-    _rules: Record<string, unknown> = {}
-  ): void {
+  protected createEslintConfig(): void {
     const eslintConfig = `import tseslint from 'typescript-eslint'
 import { config } from 'nx/eslint/plugin'
 
@@ -234,7 +232,6 @@ export default tseslint.config(
     },
     rules: {
       // Custom rules can be added here
-      ..._rules,
     },
   },
 )

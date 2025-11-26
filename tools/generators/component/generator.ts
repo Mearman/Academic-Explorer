@@ -158,8 +158,6 @@ export function ${hookName}<T = unknown>() {
   }
 
   protected generateTestContent(): string {
-    const _hasHook = this.options.withHook ? 'hook' : ''
-
     return `import { render, screen } from '@testing-library/react'
 import { ${this.normalizedOptions.className} } from '../${this.normalizedOptions.fileName}'
 ${this.options.withHook ? `import { use${this.normalizedOptions.className} } from '../${this.normalizedOptions.fileName}.hook'` : ''}

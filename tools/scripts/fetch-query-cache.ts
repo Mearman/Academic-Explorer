@@ -8,9 +8,9 @@ import { join } from "path"
 // Actual implementation would require query-cache-builder.ts (not yet implemented)
 // import { fetchAndCacheQueries } from "../../apps/academic-explorer/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/web/src/lib/utils/static-data-index-generator.ts";
-const fetchAndCacheQueries = (..._args: unknown[]) =>
+const fetchAndCacheQueries = () =>
 	Promise.resolve({ success: 0, failed: 0, errors: [] })
-const generateAllIndexes = (..._args: unknown[]) => Promise.resolve()
+const generateAllIndexes = () => Promise.resolve()
 
 /**
  * Predefined queries to cache

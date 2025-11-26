@@ -72,7 +72,7 @@ function getNxProjects(): Record<string, unknown> {
 	try {
 		const output = executeCommand("nx show projects --json", { silent: true })
 		return JSON.parse(output)
-	} catch (_error) {
+	} catch {
 		console.warn("Could not fetch Nx projects, using fallback")
 		return {
 			web: { name: "web", type: "application" },
@@ -182,7 +182,7 @@ function checkOutdatedDependencies(): DependencyIssue[] {
 				recommendation: `Update ${packageName} to latest version`,
 			})
 		}
-	} catch (_error) {
+	} catch {
 		// No outdated dependencies or command failed
 	}
 
