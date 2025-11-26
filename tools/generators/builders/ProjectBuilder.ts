@@ -1,9 +1,10 @@
+import { join } from 'path'
+
 import {
   addProjectConfiguration,
   ProjectConfiguration,
   Tree,
 } from '@nx/devkit'
-import { join } from 'path'
 
 export interface ProjectBuilderOptions {
   name: string

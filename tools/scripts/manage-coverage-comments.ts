@@ -2,6 +2,7 @@
 
 import { exec } from "child_process"
 import { promisify } from "util"
+
 import { Octokit } from "@octokit/rest"
 
 const execAsync = promisify(exec)

@@ -1,4 +1,5 @@
 import { Tree, readProjectConfiguration, updateProjectConfiguration } from '@nx/devkit'
+
 import { EntityViewBase, NormalizedEntityViewOptions, EntityViewGeneratorOptions } from '../base/EntityViewBase'
 
 interface OpenAlexEntityViewNormalizedOptions extends NormalizedEntityViewOptions {
@@ -685,6 +686,7 @@ export const mock${entityName}SearchResult = {
 /**
  * Entity view generator factory
  */
+// eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function entityViewGenerator(
   tree: Tree,
   options: EntityViewGeneratorOptions

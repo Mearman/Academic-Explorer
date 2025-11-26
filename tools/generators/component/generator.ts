@@ -1,4 +1,5 @@
 import { Tree } from '@nx/devkit'
+
 import { ComponentBase, NormalizedComponentOptions, ComponentGeneratorOptions } from '../base/ComponentBase'
 
 interface ReactComponentNormalizedOptions extends NormalizedComponentOptions {
@@ -290,6 +291,7 @@ export type { ${className}Props } from './${fileName}'
 /**
  * Component generator factory
  */
+// eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function componentGenerator(
   tree: Tree,
   options: ComponentGeneratorOptions

@@ -2,6 +2,7 @@
 
 import { join } from "path"
 import { fileURLToPath } from "url"
+
 import { generateAllIndexes } from "@/lib/utils/static-data-index-generator.js"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))

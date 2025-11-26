@@ -1,8 +1,10 @@
+import { join } from 'path'
+
 import {
   GeneratorCallback,
   names,
 } from '@nx/devkit'
-import { join } from 'path'
+
 import { BaseGenerator, NormalizedOptions } from './BaseGenerator'
 
 export interface EntityViewGeneratorOptions extends Record<string, unknown> {

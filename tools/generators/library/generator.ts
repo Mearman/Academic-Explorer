@@ -1,6 +1,7 @@
 import { Tree } from '@nx/devkit'
-import { LibraryBase, LibraryGeneratorOptions } from '../base/LibraryBase'
+
 import { NormalizedOptions } from '../base/BaseGenerator'
+import { LibraryBase, LibraryGeneratorOptions } from '../base/LibraryBase'
 
 export interface NormalizedLibraryGeneratorSchema extends NormalizedOptions {
   // Library-specific normalized options
@@ -315,6 +316,7 @@ export function ${this.normalizedOptions.className}({
 /**
  * Library generator factory
  */
+// eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function libraryGenerator(
   tree: Tree,
   options: LibraryGeneratorOptions

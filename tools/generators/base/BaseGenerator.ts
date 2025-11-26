@@ -1,3 +1,5 @@
+import { join } from 'path'
+
 import {
   GeneratorCallback,
   ProjectConfiguration,
@@ -8,7 +10,6 @@ import {
   formatFiles,
   names,
 } from '@nx/devkit'
-import { join } from 'path'
 // Nx generators available for future use
 // import { libraryGenerator as nxLibraryGenerator } from '@nx/js'
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'

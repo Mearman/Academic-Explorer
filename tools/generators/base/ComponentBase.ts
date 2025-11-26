@@ -1,7 +1,9 @@
+import { join } from 'path'
+
 import {
   GeneratorCallback,
 } from '@nx/devkit'
-import { join } from 'path'
+
 import { BaseGenerator, NormalizedOptions } from './BaseGenerator'
 // Nx component generator available for future use
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'
