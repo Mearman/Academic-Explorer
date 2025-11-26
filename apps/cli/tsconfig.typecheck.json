@@ -1,32 +1,24 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist",
+    "baseUrl": ".",
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "strict": false,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-        "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "assumeChangesOnlyAffectDirectDependencies": true,
-    "composite": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
-      "@academic-explorer/utils": ["../../packages/utils/dist/index.d.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/dist/*"]
+      "@academic-explorer/types": ["../../packages/types/src/index.ts"],
+      "@academic-explorer/types/*": ["../../packages/types/src/*"],
+      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
+      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/src/*"]
     }
   },
-  "include": ["src/**/*", "**/*.test.*", "**/*.spec.*"],
-  "exclude": ["dist"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }
