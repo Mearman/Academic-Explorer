@@ -13,8 +13,6 @@ export * from "./router-mocks";
 export * from "./component-mocks";
 
 // Import specific setup functions for use in setupAllTestMocks
-import { setupComponentMocks } from "./component-mocks";
-import { setupRouterMocks } from "./router-mocks";
 
 // Re-export React Testing Library utilities with common patterns
 export {
@@ -39,11 +37,13 @@ export {
   afterAll,
 } from "vitest";
 
-import React from "react";
-import { render, type RenderOptions } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi as _vi } from "vitest";
+import { render, type RenderOptions } from "@testing-library/react";
+import React from "react";
+
+import { setupComponentMocks } from "./component-mocks";
+import { setupRouterMocks } from "./router-mocks";
 
 /**
  * Test wrapper component that provides common providers

@@ -29,26 +29,26 @@ async function clearBookmarks(page: Page): Promise<void> {
 }
 
 /**
- * Helper to create a bookmark with tags
+ * Helper to create a bookmark with tags (currently unused - for future use)
  */
-async function createBookmarkWithTags(
-	page: Page,
-	entityType: string,
-	entityId: string,
-	tags: string[]
-): Promise<void> {
-	await page.goto(`/${entityType}/${entityId}`);
-	await page.waitForLoadState("networkidle");
-
-	// Click bookmark button
-	const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
-	await expect(bookmarkButton).toBeVisible();
-	await bookmarkButton.click();
-	await page.waitForTimeout(500);
-
-	// TODO: Add tags via tag input (once implemented)
-	// For now, tags would be added through bookmark edit UI
-}
+// async function createBookmarkWithTags(
+//	page: Page,
+//	entityType: string,
+//	entityId: string,
+//	tags: string[]
+// ): Promise<void> {
+//	await page.goto(`/${entityType}/${entityId}`);
+//	await page.waitForLoadState("networkidle");
+//
+//	// Click bookmark button
+//	const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
+//	await expect(bookmarkButton).toBeVisible();
+//	await bookmarkButton.click();
+//	await page.waitForTimeout(500);
+//
+//	// TODO: Add tags via tag input (once implemented)
+//	// For now, tags would be added through bookmark edit UI
+// }
 
 test.describe("Bookmark Tagging", () => {
 	test.beforeEach(async ({ page }) => {
@@ -73,9 +73,8 @@ test.describe("Bookmark Tagging", () => {
 		await expect(bookmarkItem).toBeVisible();
 
 		// Look for edit button or tag input
-		// This test serves as documentation for future implementation
-		const tagInput = bookmarkItem.locator('[data-testid="tag-input"]');
-		// Will be implemented in T036
+		// This test serves as documentation for future implementation (T036)
+		// const tagInput = bookmarkItem.locator('[data-testid="tag-input"]');
 	});
 
 	test("should add a single tag to a bookmark", async ({ page }) => {
@@ -91,9 +90,9 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		// Add tag (implementation pending)
-		const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
-		const tagInput = bookmarkItem.locator('[data-testid="tag-input"]');
+		// Add tag (implementation pending - verify structure for future use)
+		// const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
+		// const tagInput = bookmarkItem.locator('[data-testid="tag-input"]');
 
 		// Future implementation:
 		// await tagInput.fill("machine-learning");
@@ -114,7 +113,7 @@ test.describe("Bookmark Tagging", () => {
 
 		// Future implementation: Add multiple tags
 		// Tags: "ai", "deep-learning", "nlp"
-		const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
+		// const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
 
 		// Expected: All three tags should be visible
 	});
@@ -212,7 +211,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.waitForLoadState("networkidle");
 
 		// Verify tags are still present
-		const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
+		// const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
 		// Expected: Tags should be visible after reload
 	});
 
@@ -226,7 +225,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.waitForLoadState("networkidle");
 
 		// Future implementation: Show "3 tags" indicator
-		const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
+		// const bookmarkItem = page.locator('[data-testid="bookmark-list-item"]').first();
 		// Expected: Tag count badge or text showing number of tags
 	});
 

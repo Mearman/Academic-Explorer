@@ -3,8 +3,8 @@
  * Provides consistent mocking patterns for React Context stores
  */
 
-import { vi } from "vitest";
 import React from "react";
+import { vi } from "vitest";
 
 /**
  * Creates a mock Zustand store for testing

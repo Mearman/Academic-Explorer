@@ -3,10 +3,11 @@
  * Provides HAR recording and cache management utilities
  */
 
-import { test as base, Page } from "@playwright/test";
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import crypto from "crypto";
+
+import { test as base, Page } from "@playwright/test";
 
 interface CacheFixtures {
   cachedPage: Page;

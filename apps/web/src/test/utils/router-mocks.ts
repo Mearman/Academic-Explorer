@@ -3,13 +3,13 @@
  * Provides consistent mocking patterns for router-dependent components
  */
 
-import { vi } from "vitest";
 import React from "react";
+import { vi } from "vitest";
 
 /**
  * Mock router with commonly used methods and properties
  */
-export const createMockRouter = (options?: any): any => (overrides: Record<string, unknown> = {}) => ({
+export const createMockRouter = (): any => (overrides: Record<string, unknown> = {}) => ({
   navigate: vi.fn(),
   back: vi.fn(),
   forward: vi.fn(),

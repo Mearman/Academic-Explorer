@@ -89,7 +89,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await expect(page.locator('input[type="radio"][value="bibtex"]')).toBeDisabled();
   });
 
-  test.skip("should import list from compressed data", async ({ page }) => {
+  test.skip("should import list from compressed data", async () => {
     // SKIPPED: This test requires actual compressed data export functionality
     // which triggers file download (browser download handler) rather than
     // returning data that can be captured programmatically.
@@ -163,7 +163,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await expect(page.locator('text="File Import Test"')).toBeVisible({ timeout: 15000 });
   });
 
-  test.skip("should validate import data structure", async ({ page }) => {
+  test.skip("should validate import data structure", async () => {
     // SKIPPED: Import validation logic exists in ImportModal but validation
     // errors are shown via validateImportData/previewImport methods.
     // The actual validation messages depend on implementation details
@@ -171,7 +171,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     // This test would need to be updated to match actual error messages.
   });
 
-  test.skip("should handle large import data", async ({ page }) => {
+  test.skip("should handle large import data", async () => {
     // SKIPPED: Import Modal uses loading state (aria-busy) but doesn't show
     // a specific "progress" indicator text. The implementation uses isImporting
     // state and loading button but no explicit progress message.
@@ -235,7 +235,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await expect(page.locator('text="Preview Test List"')).toBeVisible({ timeout: 15000 });
   });
 
-  test.skip("should handle duplicate detection during import", async ({ page }) => {
+  test.skip("should handle duplicate detection during import", async () => {
     // SKIPPED: The ImportModal implementation does not have explicit duplicate
     // detection UI. The preview shows duplicate count (line 435-442 in ImportModal)
     // but no "Rename" or "Replace" buttons exist. Imports always create new lists
@@ -295,33 +295,34 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   await page.waitForLoadState("networkidle", { timeout: 30000 });
 }
 
-async function exportAndGetCompressedData(page: Page): Promise<string> {
-  // Create a list with entities
-  await createListWithMultipleEntities(page, "Export Test List");
-
-  // Select the list and export
-  await page.goto("http://localhost:5173/#/catalogue");
-  await page.waitForLoadState("networkidle");
-
-  await page.click('[data-testid="selected-list-title"]:has-text("Export Test List")');
-
-  const exportButton = page.locator('button:has-text("Export"), [aria-label*="export"]');
-  if (await exportButton.isVisible()) {
-    await exportButton.click();
-
-    // Select compressed data export
-    await page.click('input[value="compressed"], label:has-text("Compressed Data")');
-
-    // Look for generated data (might be in a text area or displayed)
-    const compressedDataElement = page.locator('textarea[readonly], input[readonly], code');
-    if (await compressedDataElement.isVisible()) {
-      return await compressedDataElement.inputValue();
-    }
-  }
-
-  // Fallback: return mock data if export UI not fully implemented
-  return JSON.stringify({
-    list: { title: "Export Test List", description: "Test export", type: "list" },
-    entities: [{ entityType: "authors", entityId: "A5017898742" }]
-  });
-}
+// Currently unused - kept for potential future use when file download handling is implemented
+// async function exportAndGetCompressedData(page: Page): Promise<string> {
+//   // Create a list with entities
+//   await createListWithMultipleEntities(page, "Export Test List");
+//
+//   // Select the list and export
+//   await page.goto("http://localhost:5173/#/catalogue");
+//   await page.waitForLoadState("networkidle");
+//
+//   await page.click('[data-testid="selected-list-title"]:has-text("Export Test List")');
+//
+//   const exportButton = page.locator('button:has-text("Export"), [aria-label*="export"]');
+//   if (await exportButton.isVisible()) {
+//     await exportButton.click();
+//
+//     // Select compressed data export
+//     await page.click('input[value="compressed"], label:has-text("Compressed Data")');
+//
+//     // Look for generated data (might be in a text area or displayed)
+//     const compressedDataElement = page.locator('textarea[readonly], input[readonly], code');
+//     if (await compressedDataElement.isVisible()) {
+//       return await compressedDataElement.inputValue();
+//     }
+//   }
+//
+//   // Fallback: return mock data if export UI not fully implemented
+//   return JSON.stringify({
+//     list: { title: "Export Test List", description: "Test export", type: "list" },
+//     entities: [{ entityType: "authors", entityId: "A5017898742" }]
+//   });
+// }

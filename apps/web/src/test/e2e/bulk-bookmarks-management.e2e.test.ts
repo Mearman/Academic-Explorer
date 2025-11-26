@@ -23,7 +23,7 @@ test.describe("Bulk Bookmarks Management", () => {
   });
 
   // Helper function to create test bookmarks
-  async function createTestBookmarks(page) {
+  async function createTestBookmarks(page: any): Promise<void> {
     // Navigate to author page first to ensure context is loaded
     await page.goto("http://localhost:5173/#/authors/A5017898742");
     await page.waitForLoadState("networkidle");
@@ -32,7 +32,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await page.evaluate(async () => {
       try {
         // Access the global user interactions service if it exists
-        // @ts-ignore - Access global service for testing
+        // @ts-expect-error accessing global test service exposed in test environment
         const { userInteractionsService } = window;
 
         if (!userInteractionsService) {

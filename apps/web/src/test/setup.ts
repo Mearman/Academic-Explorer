@@ -11,6 +11,7 @@ import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "
 // This fixes issues with fetch() calls that use AbortSignal in Node.js test environments
 // Note: We prefer native implementations when available to avoid compatibility issues
 if (typeof globalThis.AbortController === "undefined") {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { AbortController: NodeAbortController, AbortSignal: NodeAbortSignal } = require("abort-controller");
   globalThis.AbortController = NodeAbortController;
   globalThis.AbortSignal = NodeAbortSignal;
@@ -41,7 +42,7 @@ try {
   global.TextDecoder = NodeTextDecoder as typeof TextDecoder;
   globalThis.TextEncoder = NodeTextEncoder as typeof TextEncoder;
   globalThis.TextDecoder = NodeTextDecoder as typeof TextDecoder;
-} catch (_err) {
+} catch {
   // If util import fails, create minimal implementations
   global.TextEncoder = class {
     encoding = "utf-8";
@@ -241,7 +242,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
           createFileRoute,
         };
       });
-    } catch (_e) {
+    } catch {
       // If mocking fails (for e.g. running in an environment without vi), ignore
     }
 
@@ -251,7 +252,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
         createBrowserHistory: () => ({ listen: () => {}, push: () => {} }),
         createMemoryHistory: () => ({ listen: () => {}, push: () => {} }),
       }));
-    } catch (_e) {
+    } catch {
       // ignore
     }
   }

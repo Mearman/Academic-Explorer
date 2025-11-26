@@ -11,9 +11,10 @@
  * Tests a representative sample to balance coverage with execution time.
  */
 
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+import { test, expect } from '@playwright/test';
 
 // Load test URLs from JSON file
 const urlsPath = join(process.cwd(), 'src/test/data/openalex-test-urls.json');
@@ -110,7 +111,7 @@ async function waitForContent(page: any, timeout: number): Promise<void> {
     // Try primary selector with shorter timeout
     await page.waitForSelector('main', { timeout: shortTimeout });
     return;
-  } catch (error) {
+  } catch {
     // Try fallback selectors immediately with short timeout
     for (const selector of fallbackSelectors) {
       try {

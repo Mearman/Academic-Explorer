@@ -30,7 +30,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await expect(leftSidebarToggle).toBeVisible({ timeout: 5000 });
 
     // Check if sidebar is already open by looking for the bookmarks content directly
-    let bookmarksSidebar = page.getByRole('heading', { name: /bookmarks/i });
+    const bookmarksSidebar = page.getByRole('heading', { name: /bookmarks/i });
     const isBookmarksVisible = await bookmarksSidebar.isVisible().catch(() => false);
 
     console.log(`Bookmarks sidebar initially visible: ${isBookmarksVisible}`);

@@ -34,8 +34,6 @@ const ENTITY_TYPES = [
   'concepts',
 ] as const;
 
-type EntityType = (typeof ENTITY_TYPES)[number];
-
 test.describe('Autocomplete API Integration', () => {
   test.setTimeout(120000); // 2 minutes total
 

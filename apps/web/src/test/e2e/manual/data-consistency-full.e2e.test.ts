@@ -10,9 +10,10 @@
  * and compares it with what's displayed in the DOM.
  */
 
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+import { test, expect } from '@playwright/test';
 
 // Load all URLs from the JSON file
 const urlsPath = join(process.cwd(), '../../openalex-urls.json');
@@ -76,7 +77,8 @@ test.describe('Data Consistency - All 276 URLs', () => {
     for (const apiUrl of sampleUrls) {
       test(`should display correct data for ${apiUrl}`, async ({ page }) => {
         const appUrl = toAppUrl(apiUrl);
-        const entityType = getEntityType(apiUrl);
+        // Note: entityType would be used for additional validation in enhanced tests
+        // const entityType = getEntityType(apiUrl);
 
         // Navigate to the app URL
         await page.goto(appUrl, { waitUntil: 'networkidle' });

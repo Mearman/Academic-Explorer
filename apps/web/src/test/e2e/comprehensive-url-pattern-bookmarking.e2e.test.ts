@@ -139,7 +139,8 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
         // Check if page loaded successfully
         const pageTitle = await page.title();
-        const hasContent = await page.locator('body').textContent() || '';
+        // Note: hasContent would be used for additional validation in future enhancements
+        // const hasContent = await page.locator('body').textContent() || '';
 
         expect(pageTitle).not.toContain('404');
 
@@ -390,12 +391,12 @@ test.describe('Bookmarking URL Pattern Tests', () => {
   });
 });
 
-// Helper function to extract entity info from URL
-function extractEntityInfo(url: string) {
-  const match = url.match(/https:\/\/api\.openalex\.org\/(\w+)\/?([^?]*)/);
-  if (match) {
-    const [, entityType, entityPath] = match;
-    return { entityType, entityPath: entityPath || 'list' };
-  }
-  return null;
-}
+// Helper function to extract entity info from URL (currently unused - keeping for potential future use)
+// function extractEntityInfo(url: string) {
+//   const match = url.match(/https:\/\/api\.openalex\.org\/(\w+)\/?([^?]*)/);
+//   if (match) {
+//     const [, entityType, entityPath] = match;
+//     return { entityType, entityPath: entityPath || 'list' };
+//   }
+//   return null;
+// }

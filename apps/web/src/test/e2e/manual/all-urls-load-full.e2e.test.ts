@@ -9,10 +9,11 @@
  * This is a smoke test to ensure all routing and data fetching works.
  */
 
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+import { test, expect } from '@playwright/test';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);

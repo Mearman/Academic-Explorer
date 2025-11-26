@@ -1,9 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
 
@@ -30,7 +25,8 @@ test.describe('Data Completeness - Styled View vs API', () => {
     expect(apiData.results.length).toBeGreaterThan(0);
 
     const firstResult = apiData.results[0];
-    const firstResultId = firstResult.id.split('/').pop(); // Extract W... ID
+    // const firstResultId = firstResult.id.split('/').pop(); // Extract W... ID
+    firstResult.id.split('/').pop(); // Used for potential future URL validation
 
     // Test both URL formats
     const urlFormats = [

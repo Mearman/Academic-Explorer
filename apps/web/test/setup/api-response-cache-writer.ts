@@ -3,7 +3,7 @@
  * Intercepts successful API responses and writes them to filesystem cache
  */
 
-import { writeToFilesystemCache, detectEntityType, extractEntityId } from './filesystem-cache';
+import { writeToFilesystemCache } from './filesystem-cache';
 
 /**
  * Intercept and cache successful API responses

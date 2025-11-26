@@ -4,8 +4,11 @@
 
 import { readFileSync } from "fs";
 import { join } from "path";
-import { createServer, defineConfig, type PluginOption } from "vite";
+
+import { createServer, defineConfig } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+// eslint-disable-next-line import/no-relative-packages
 import { openalexCachePlugin } from "../../../../../config/vite-plugins/openalex-cache";
 import testUrls from "../data/openalex-test-urls.json";
 
@@ -29,20 +32,20 @@ interface CacheIndex {
 }
 
 /**
- * Check if a URL is already cached by reading the cache index
+ * Check if a URL is already cached by reading the cache index (currently unused)
  */
-function isUrlCached(url: string, staticDataDir: string): boolean {
-  try {
-    const indexPath = join(staticDataDir, "index.json");
-    const indexContent = readFileSync(indexPath, "utf-8");
-    const index: CacheIndex = JSON.parse(indexContent);
-
-    // Check if any cached file matches this URL
-    return Object.values(index.files).some((entry) => entry.url === url);
-  } catch {
-    return false;
-  }
-}
+// function isUrlCached(url: string, staticDataDir: string): boolean {
+//   try {
+//     const indexPath = join(staticDataDir, "index.json");
+//     const indexContent = readFileSync(indexPath, "utf-8");
+//     const index: CacheIndex = JSON.parse(indexContent);
+//
+//    // Check if any cached file matches this URL
+//    return Object.values(index.files).some((entry) => entry.url === url);
+//  } catch {
+//    return false;
+//  }
+// }
 
 describe("Cache Population Integration Tests", () => {
   const DEV_SERVER_PORT = 5174;
@@ -166,7 +169,7 @@ describe("Cache Population Integration Tests", () => {
         const indexContent = readFileSync(indexPath, "utf-8");
         cacheIndex = JSON.parse(indexContent);
         console.log("✅ Cache index found and loaded successfully");
-      } catch (error) {
+      } catch {
         console.log("ℹ️  Cache index not found (expected on fresh checkout)");
       }
 
@@ -195,7 +198,7 @@ describe("Cache Population Integration Tests", () => {
             const parsedContent = JSON.parse(cachedContent);
             expect(parsedContent).toBeDefined();
             console.log("✅ Cached files are accessible and contain valid JSON");
-          } catch (error) {
+          } catch {
             console.warn(`⚠️  Cache file ${entry.$ref} not accessible`);
           }
         }

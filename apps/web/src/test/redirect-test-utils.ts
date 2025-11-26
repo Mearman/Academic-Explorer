@@ -1,7 +1,9 @@
-import { extractOpenAlexPaths } from "../../../../scripts/extract-openalex-paths";
+import { readFileSync } from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import { readFileSync } from "fs";
+
+// eslint-disable-next-line import/no-relative-packages
+import { extractOpenAlexPaths } from "../../../../scripts/extract-openalex-paths";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

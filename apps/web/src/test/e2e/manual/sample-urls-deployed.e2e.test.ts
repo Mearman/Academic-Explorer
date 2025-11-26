@@ -25,7 +25,7 @@ function toAppUrl(apiUrl: string): string {
 test.describe('Sample URLs - All Entity Types', () => {
   test.setTimeout(30000);
 
-  testUrls.forEach(({ url, type, desc }) => {
+  testUrls.forEach(({ url, desc }) => {
     test(`${desc} should load`, async ({ page }) => {
       const appUrl = toAppUrl(url);
       

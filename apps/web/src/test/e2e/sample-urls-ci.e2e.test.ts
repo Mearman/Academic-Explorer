@@ -7,9 +7,10 @@
  * For full 276-URL testing, use data-consistency.e2e.test.ts locally.
  */
 
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+import { test, expect } from '@playwright/test';
 
 // Load sample URLs (30 URLs covering all entity types)
 const urlsPath = join(process.cwd(), '../../openalex-urls-sample.json');

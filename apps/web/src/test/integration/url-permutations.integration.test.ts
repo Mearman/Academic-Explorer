@@ -12,14 +12,15 @@
  * passed through to the OpenAlex API.
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+import { describe, it, expect, beforeAll } from 'vitest';
 
 // Load test URLs from JSON file
 const urlsPath = join(__dirname, '../data/openalex-test-urls.json');
 let testData: { urls: string[] } = { urls: [] };
-let urlsByEntityType: Record<string, string[]> = {};
+const urlsByEntityType: Record<string, string[]> = {};
 
 beforeAll(() => {
   try {
@@ -146,12 +147,13 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
   describe('URL Format Permutations - Sample Tests', () => {
     it('should validate URL format permutations for sample URLs', () => {
       // Test first 2 URLs of each entity type to keep test suite manageable
-      Object.entries(urlsByEntityType).forEach(([entityType, urls]) => {
+      Object.entries(urlsByEntityType).forEach(([, urls]) => {
         const sampleUrls = urls.slice(0, 2);
 
-        sampleUrls.forEach((apiUrl, urlIndex) => {
+        sampleUrls.forEach((apiUrl) => {
           const permutations = generateUrlPermutations(apiUrl);
-          const { entityId, hasQueryParams } = parseUrl(apiUrl);
+          // const { entityId } = parseUrl(apiUrl);
+          parseUrl(apiUrl); // Entity ID extracted via parseUrl for future enhancements
 
           permutations.forEach(({ format, url }) => {
             // Verify URL structure is correct

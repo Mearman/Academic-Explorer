@@ -6,9 +6,9 @@
  * not actual CSS behavior. E2E tests validate real responsive behavior.
  */
 
-import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 // Mock router hooks and Link component
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -46,7 +46,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
 
   describe('T008-T009: Responsive navigation structure', () => {
     it('should render mobile hamburger menu button', () => {
-      const { container } = render(
+      render(
         <MantineProvider>
           <MainLayout>Test</MainLayout>
         </MantineProvider>

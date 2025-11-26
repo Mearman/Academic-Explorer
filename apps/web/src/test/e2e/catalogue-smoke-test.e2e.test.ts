@@ -3,7 +3,7 @@
  * This test just verifies the catalogue page loads and basic components exist
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Catalogue Smoke Test", () => {
   test("should load catalogue page directly", async ({ page }) => {
@@ -67,7 +67,8 @@ test.describe("Catalogue Smoke Test", () => {
     ]);
 
     // Check if we can access catalogue services via browser context
-    const catalogueServiceExists = await page.evaluate(() => {
+    // Note: catalogue service availability depends on app initialization
+    await page.evaluate(() => {
       try {
         // Check if catalogueService is available on window
         return typeof (window as any).catalogueService !== 'undefined';

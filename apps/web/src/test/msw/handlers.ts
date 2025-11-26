@@ -5,8 +5,8 @@
  * In E2E tests: Check filesystem cache first, then fall back to API or mocks
  */
 
-import { http, HttpResponse, passthrough } from "msw";
 import type { Work, Author, Institution, Authorship } from "@academic-explorer/types";
+import { http, HttpResponse, passthrough } from "msw";
 
 const API_BASE = "https://api.openalex.org";
 
@@ -259,11 +259,11 @@ function createCacheHelpers(cacheUtils?: FilesystemCacheUtils) {
  * Create MSW handlers with optional filesystem cache support
  */
 export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
-  const { tryFilesystemCache, writeToCache, isE2EMode } = createCacheHelpers(cacheUtils);
+  const { tryFilesystemCache, isE2EMode } = createCacheHelpers(cacheUtils);
 
   return [
   // Get single work by ID
-  http.get(`${API_BASE}/works/:id`, async ({ params, request }) => {
+  http.get(`${API_BASE}/works/:id`, async ({ params }) => {
     const { id } = params;
 
     if (typeof id !== "string") {

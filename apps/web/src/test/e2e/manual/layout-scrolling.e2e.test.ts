@@ -9,7 +9,7 @@
  * - Keyboard navigation works correctly
  */
 
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Layout Scrolling Behavior", () => {
   test.describe("User Story 1: Seamless Content Navigation", () => {
@@ -50,7 +50,8 @@ test.describe("Layout Scrolling Behavior", () => {
       await page.waitForLoadState("networkidle");
 
       // Check if page has vertical scrollbar (viewport scrollbar is OK)
-      const hasViewportScrollbar = await page.evaluate(() => {
+      // Note: scrollbar check used for layout validation
+      await page.evaluate(() => {
         return document.documentElement.scrollHeight > window.innerHeight;
       });
 

@@ -47,9 +47,8 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		// Search input should be visible
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
-		// Will be implemented in T040
+		// Search input should be visible (will be implemented in T040)
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 	});
 
 	test("should search bookmarks by title", async ({ page }) => {
@@ -65,8 +64,8 @@ test.describe("Bookmark Search", () => {
 		const bookmarks = page.locator('[data-testid="bookmark-list-item"]');
 		await expect(bookmarks).toHaveCount(3);
 
-		// Search for specific title keyword
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// Search for specific title keyword (feature will be implemented)
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 		// await page.waitForTimeout(500); // Debounce
 
@@ -82,8 +81,8 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		// Search by entity type
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// Search by entity type (feature will be implemented)
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("works");
 
 		// Expected: Only works bookmark shown
@@ -101,8 +100,8 @@ test.describe("Bookmark Search", () => {
 		// Bookmark 1: tags = ["ai", "research"]
 		// Bookmark 2: tags = ["nlp", "deep-learning"]
 
-		// Search by tag
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// Search by tag (feature will be implemented)
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("ai");
 
 		// Expected: Only bookmark with "ai" tag shown
@@ -119,8 +118,8 @@ test.describe("Bookmark Search", () => {
 		// Bookmark 1: notes = "Important researcher in machine learning"
 		// Bookmark 2: notes = "Seminal paper on transformers"
 
-		// Search by note content
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// Search by note content (feature will be implemented)
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("transformers");
 
 		// Expected: Only bookmark 2 shown
@@ -132,7 +131,7 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("AUTHOR"); // Uppercase
 
 		// Expected: Case should not matter, bookmark still shown
@@ -145,11 +144,11 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("nonexistent");
 
 		// Expected: No bookmarks shown, empty state message
-		const emptyMessage = page.locator('text=/no bookmarks found/i');
+		// const emptyMessage = page.locator('text=/no bookmarks found/i');
 		// await expect(emptyMessage).toBeVisible();
 	});
 
@@ -160,7 +159,7 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 		// await page.waitForTimeout(500);
 
@@ -182,7 +181,7 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 
 		// Type rapidly
 		// await searchInput.type("author", { delay: 50 });
@@ -197,11 +196,11 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 
 		// Expected: Matching text in title/notes highlighted
-		const highlight = page.locator('[data-testid="search-highlight"]');
+		// const highlight = page.locator('[data-testid="search-highlight"]');
 		// await expect(highlight).toBeVisible();
 	});
 
@@ -213,11 +212,11 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 
 		// Expected: "1 result" or "1 of 3 bookmarks" shown
-		const resultCount = page.locator('[data-testid="search-result-count"]');
+		// const resultCount = page.locator('[data-testid="search-result-count"]');
 		// await expect(resultCount).toContainText("1");
 	});
 
@@ -227,7 +226,7 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 		// await page.waitForTimeout(500);
 
@@ -249,12 +248,12 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// Search with partial word
 		// await searchInput.fill("auth");
 
 		// Expected: Matches "author"
-		const bookmarks = page.locator('[data-testid="bookmark-list-item"]');
+		// const bookmarks = page.locator('[data-testid="bookmark-list-item"]');
 		// await expect(bookmarks).toHaveCount(1);
 	});
 
@@ -264,7 +263,7 @@ test.describe("Bookmark Search", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// Search with special characters
 		// await searchInput.fill("C++");
 
@@ -285,11 +284,11 @@ test.describe("Combined Search and Filters", () => {
 		await page.waitForLoadState("networkidle");
 
 		// Apply entity type filter
-		const entityFilter = page.locator('[data-testid="entity-type-filter"]');
+		// const entityFilter = page.locator('[data-testid="entity-type-filter"]');
 		// await entityFilter.selectOption("works");
 
 		// Then search
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("title");
 
 		// Expected: Only works bookmarks matching search shown
@@ -303,11 +302,11 @@ test.describe("Combined Search and Filters", () => {
 		await page.waitForLoadState("networkidle");
 
 		// Apply tag filter
-		const tagFilter = page.locator('[data-testid="tag-filter-chip"]').first();
+		// const tagFilter = page.locator('[data-testid="tag-filter-chip"]').first();
 		// await tagFilter.click();
 
 		// Then search
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("research");
 
 		// Expected: Only bookmarks with tag AND matching search
@@ -320,11 +319,11 @@ test.describe("Combined Search and Filters", () => {
 		await page.waitForLoadState("networkidle");
 
 		// Apply search
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
 
 		// Expected: Clear button visible
-		const clearButton = page.locator('[data-testid="clear-filters-button"]');
+		// const clearButton = page.locator('[data-testid="clear-filters-button"]');
 		// await expect(clearButton).toBeVisible();
 
 		// Click clear
@@ -342,7 +341,7 @@ test.describe("Search Performance", () => {
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
-		const searchInput = page.locator('[data-testid="bookmark-search-input"]');
+		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("test");
 
 		// Expected: Search completes quickly (< 500ms)

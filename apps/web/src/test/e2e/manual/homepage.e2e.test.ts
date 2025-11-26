@@ -500,7 +500,8 @@ test.describe("Homepage E2E Tests", () => {
       await expect(instructions).toBeVisible({ timeout: 15000 });
 
       // Verify no text is cut off by checking overflow
-      const hasOverflow = await page.evaluate(() => {
+      // Note: overflow validation would be used in enhanced accessibility tests
+      await page.evaluate(() => {
         const elements = Array.from(document.querySelectorAll("*"));
         return elements.some(
           (el) =>

@@ -36,7 +36,7 @@ test.describe("Catalogue Basic Functionality", () => {
     // Try to clear existing catalogue data, but don't fail if we can't
     await page.evaluate(async () => {
       try {
-        // @ts-ignore - Access global service for testing
+        // @ts-expect-error accessing global test service exposed in test environment
         const { catalogueService } = window;
         if (catalogueService) {
           const lists = await catalogueService.getAllLists();

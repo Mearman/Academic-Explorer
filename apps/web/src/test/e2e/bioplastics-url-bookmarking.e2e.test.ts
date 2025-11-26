@@ -10,8 +10,6 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
   // The exact bioplastics URL pattern from the requirements
   const BIOMATERIALS_URL = "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";
-  const EXPECTED_REDIRECT_ROUTE = "/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";
-  const GITHUB_PAGES_URL = "https://mearman.github.io/Academic-Explorer/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";
 
   test.beforeEach(async ({ page, context }) => {
     // Clear storage before each test to ensure clean state

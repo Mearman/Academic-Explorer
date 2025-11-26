@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
+
 import { generateRedirectTestCases } from "./redirect-test-utils";
 
 describe("Comprehensive Redirect Integration Tests", () => {

@@ -3,8 +3,8 @@
  * Provides mocks for complex external components and libraries
  */
 
-import { vi } from "vitest";
 import React from "react";
+import { vi } from "vitest";
 
 /**
  * Mock XYFlow/React Flow components and hooks

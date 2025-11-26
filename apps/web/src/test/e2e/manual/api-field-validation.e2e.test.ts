@@ -12,7 +12,6 @@
  * https://mearman.github.io/Academic-Explorer/#/works/W2009047091 to fail.
  */
 
-import { test, expect } from '@playwright/test';
 import {
 	WORK_FIELDS,
 	AUTHOR_FIELDS,
@@ -22,15 +21,13 @@ import {
 	FUNDER_FIELDS,
 	TOPIC_FIELDS,
 	KEYWORD_FIELDS,
-	type WorkField,
-	type AuthorField,
-	type InstitutionField,
-	type SourceField,
-	type PublisherField,
-	type FunderField,
-	type TopicField,
-	type KeywordField,
+	// Note: Field type imports left for type checking during test development
+	// type PublisherField,
+	// type FunderField,
+	// type TopicField,
+	// type KeywordField,
 } from '@academic-explorer/types/entities';
+import { test, expect } from '@playwright/test';
 
 const API_BASE = 'https://api.openalex.org';
 

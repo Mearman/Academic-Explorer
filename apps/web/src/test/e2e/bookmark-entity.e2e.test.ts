@@ -18,7 +18,7 @@
  * - Verify storage provider integration works correctly
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Bookmark Entity Pages (T010)", () => {
   const BASE_URL = "http://localhost:5173";

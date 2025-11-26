@@ -3,8 +3,9 @@
  * Captures All Nodes, All Edges, and Node Repository sections
  */
 
-import { test } from "@playwright/test";
 import { join } from "path";
+
+import { test } from "@playwright/test";
 
 test.describe("Section Screenshots", () => {
   const BASE_URL = "http://localhost:5173";

@@ -9,13 +9,14 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
   const BASE_URL = "http://localhost:5173";
 
   // Sample URLs from openalex-urls.json that should be bookmarkable
-  const TEST_URLS = [
-    "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc",
-    "https://api.openalex.org/authors/A5017898742",
-    "https://api.openalex.org/institutions/I27837315",
-    "https://api.openalex.org/sources/S137773608",
-    "https://api.openalex.org/works/W2741809807",
-  ];
+  // (Currently used as documentation of test URL patterns)
+  // const TEST_URLS = [
+  //   "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc",
+  //   "https://api.openalex.org/authors/A5017898742",
+  //   "https://api.openalex.org/institutions/I27837315",
+  //   "https://api.openalex.org/sources/S137773608",
+  //   "https://api.openalex.org/works/W2741809807",
+  // ];
 
   test.beforeEach(async ({ page, context }) => {
     // Clear storage before each test
@@ -26,7 +27,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
   test.describe("URL Redirection", () => {
     test("should redirect OpenAlex API URLs to internal routes", async ({ page }) => {
-      const testUrl = TEST_URLS[0]; // bioplastics works search
+      // Note: bioplastics works search URL used for testing
 
       // Navigate to the OpenAlex URL via our redirection route
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
@@ -45,7 +46,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     });
 
     test("should redirect entity URLs to detail pages", async ({ page }) => {
-      const testUrl = TEST_URLS[1]; // author entity
+      // Note: author entity URL used for testing
 
       // Navigate to the OpenAlex entity URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
@@ -62,7 +63,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     });
 
     test("should handle institution URLs", async ({ page }) => {
-      const testUrl = TEST_URLS[2]; // institution entity
+      // Note: institution entity URL used for testing
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/institutions/I27837315`;
       await page.goto(redirectUrl, {
@@ -77,7 +78,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     });
 
     test("should handle source URLs", async ({ page }) => {
-      const testUrl = TEST_URLS[3]; // source entity
+      // Note: source entity URL used for testing
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/sources/S137773608`;
       await page.goto(redirectUrl, {
@@ -94,7 +95,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
   test.describe("Bookmarking Redirected URLs", () => {
     test("should bookmark redirected OpenAlex URLs", async ({ page }) => {
-      const testUrl = TEST_URLS[0]; // bioplastics works search
+      // Note: bioplastics works search URL used for testing
 
       // Navigate via OpenAlex URL (gets redirected)
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
@@ -131,7 +132,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     });
 
     test("should bookmark entity pages from OpenAlex URLs", async ({ page }) => {
-      const testUrl = TEST_URLS[1]; // author entity
+      // Note: author entity URL used for testing
 
       // Navigate via OpenAlex URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
@@ -165,7 +166,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     });
 
     test("should maintain bookmark state across URL redirections", async ({ page }) => {
-      const testUrl = TEST_URLS[1]; // author entity
+      // Note: author entity URL used for testing
 
       // Navigate via OpenAlex URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
@@ -211,7 +212,8 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
   test.describe("GitHub Pages Deployment URLs", () => {
     test("should handle GitHub Pages deployment URLs", async ({ page }) => {
       // Test with the specific URL format from requirements
-      const githubPagesUrl = "https://mearman.github.io/Academic-Explorer/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";
+      // Note: GitHub Pages URL reference for documentation:
+      // https://mearman.github.io/Academic-Explorer/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc
 
       // For local testing, we'll simulate the hash-based routing
       const localTestUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
@@ -231,7 +233,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
   test.describe("URL Parameter Preservation", () => {
     test("should preserve complex query parameters during redirection", async ({ page }) => {
-      const complexUrl = "https://api.openalex.org/works?filter=publication_year:2023,is_oa:true&sort=cited_by_count:desc&per-page=50";
+      // Note: complex URL with multiple query parameters used for parameter preservation testing
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=publication_year:2023,is_oa:true&sort=cited_by_count:desc&per-page=50`;
 
@@ -253,7 +255,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
   test.describe("Error Handling for Invalid URLs", () => {
     test("should handle invalid OpenAlex URLs gracefully", async ({ page }) => {
-      const invalidUrl = "https://api.openalex.org/invalid-endpoint";
+      // Note: invalid endpoint URL for error handling validation
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/invalid-endpoint`;
 

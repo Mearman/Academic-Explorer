@@ -3,7 +3,7 @@
  * Tests what actually works rather than ideal navigation patterns
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Catalogue Realistic Functionality Tests", () => {
   test("should have accessible catalogue components in the application", async ({ page }) => {
@@ -193,22 +193,21 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
   });
 });
 
-// Helper function to create a test list following the same pattern as basic-functionality tests
-async function createTestList(page: Page, listName: string): Promise<void> {
-  await page.click('button:has-text("Create New List")');
-  await expect(page.locator('[role="dialog"]')).toBeVisible();
-
-  await page.fill('input:below(:text("Title"))', listName);
-  await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
-
-  await page.click('button:has-text("Create List")');
-  await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-
-  // Wait for the list to appear in the selected list details section
-  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
-}
-
-// Helper function to find the add to catalogue button
-function getAddToCatalogueButton(page: Page): any {
-  return page.locator('[data-testid="add-to-catalogue-button"]');
-}
+// Helper functions (currently unused - keeping for potential future use)
+// async function createTestList(page: Page, listName: string): Promise<void> {
+//   await page.click('button:has-text("Create New List")');
+//   await expect(page.locator('[role="dialog"]')).toBeVisible();
+//
+//   await page.fill('input:below(:text("Title"))', listName);
+//   await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
+//
+//   await page.click('button:has-text("Create List")');
+//   await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+//
+//   // Wait for the list to appear in the selected list details section
+//   await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
+// }
+//
+// function getAddToCatalogueButton(page: Page): any {
+//   return page.locator('[data-testid="add-to-catalogue-button"]');
+// }

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
+
 import { generateRedirectTestCases } from "./redirect-test-utils";
 
 describe("Web App Redirect Tests", () => {
-  let _testCases: Awaited<ReturnType<typeof generateRedirectTestCases>>;
-
   beforeAll(async () => {
-    _testCases = await generateRedirectTestCases();
+    // Test cases generated for potential future use
+    await generateRedirectTestCases();
   });
 
   describe("Hash Routing Redirects", () => {

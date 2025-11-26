@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
+
 import { generateRedirectTestCases } from "./redirect-test-utils";
 
 describe("API Redirect Tests", () => {
@@ -17,14 +18,6 @@ describe("API Redirect Tests", () => {
 
       for (const testCase of sampleCases) {
         for (const apiVariation of testCase.apiVariations) {
-          // Mock fetch to test redirect behavior
-          const _mockResponse = {
-            status: 301,
-            headers: { Location: testCase.expectedApiRoute },
-            ok: false,
-            statusText: "Moved Permanently",
-          };
-
           // Verify the redirect logic would work
           expect(apiVariation).toMatch(/^\/api\//);
           expect(testCase.expectedApiRoute).toBe(

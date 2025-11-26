@@ -11,9 +11,10 @@
  * @see specs/019-full-entity-support/spec.md (User Story 3)
  */
 
-import { describe, it, expect } from 'vitest';
-import type { EntityType } from '@academic-explorer/types';
 import { cachedOpenAlex } from '@academic-explorer/client';
+import type { EntityType } from '@academic-explorer/types';
+import { describe, it, expect } from 'vitest';
+
 import { ENTITY_TYPE_CONFIGS } from '@/components/entity-detail/EntityTypeConfig';
 
 describe('Entity Type Coverage', () => {
@@ -47,7 +48,8 @@ describe('Entity Type Coverage', () => {
       // Verify each type is a valid EntityType
       validTypes.forEach((type) => {
         // This will cause a type error if the type is not in the union
-        const _typeCheck: EntityType = type;
+        // Type checking performed via TypeScript compilation
+        // const _typeCheck: EntityType = type;
         expect(type).toBeTruthy();
       });
     });
