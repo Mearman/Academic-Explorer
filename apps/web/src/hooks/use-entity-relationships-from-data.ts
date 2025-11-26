@@ -389,6 +389,110 @@ function extractWorkRelationships(
       true, // Partial data - count only, no actual items
     ));
   }
+
+  // FUNDED_BY: Work → Funders (US1)
+  const grants = data.grants as Array<{
+    funder?: string;
+    funder_display_name?: string;
+    award_id?: string | null;
+  }> | undefined;
+
+  if (grants && grants.length > 0) {
+    const grantItems: RelationshipItem[] = grants
+      .filter(grant => grant.funder && grant.funder_display_name)
+      .map(grant => {
+        const funderId = grant.funder || '';
+        const funderName = grant.funder_display_name || '';
+        return createRelationshipItem(
+          workId,
+          funderId,
+          'works' as EntityType,
+          'funders' as EntityType,
+          RelationType.FUNDED_BY,
+          'outbound',
+          funderName,
+        );
+      });
+
+    if (grantItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.FUNDED_BY,
+        'outbound',
+        RELATIONSHIP_TYPE_LABELS[RelationType.FUNDED_BY],
+        grantItems,
+      ));
+    }
+  }
+
+  // WORK_HAS_KEYWORD: Work → Keywords (US2)
+  const keywords = data.keywords as Array<{
+    id?: string;
+    display_name?: string;
+    score?: number;
+  }> | undefined;
+
+  if (keywords && keywords.length > 0) {
+    const keywordItems: RelationshipItem[] = keywords
+      .filter(keyword => keyword.id && keyword.display_name)
+      .map(keyword => {
+        const keywordId = keyword.id || '';
+        const keywordName = keyword.display_name || '';
+        return createRelationshipItem(
+          workId,
+          keywordId,
+          'works' as EntityType,
+          'keywords' as EntityType,
+          RelationType.WORK_HAS_KEYWORD,
+          'outbound',
+          keywordName,
+        );
+      });
+
+    if (keywordItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.WORK_HAS_KEYWORD,
+        'outbound',
+        RELATIONSHIP_TYPE_LABELS[RelationType.WORK_HAS_KEYWORD],
+        keywordItems,
+      ));
+    }
+  }
+
+  // CONCEPT: Work → Concepts (US6 - legacy)
+  const concepts = data.concepts as Array<{
+    id?: string;
+    display_name?: string;
+    score?: number;
+    level?: number;
+    wikidata?: string;
+  }> | undefined;
+
+  if (concepts && concepts.length > 0) {
+    const conceptItems: RelationshipItem[] = concepts
+      .filter(concept => concept.id && concept.display_name)
+      .map(concept => {
+        const conceptId = concept.id || '';
+        const conceptName = concept.display_name || '';
+        return createRelationshipItem(
+          workId,
+          conceptId,
+          'works' as EntityType,
+          'concepts' as EntityType,
+          RelationType.CONCEPT,
+          'outbound',
+          conceptName,
+        );
+      });
+
+    if (conceptItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.CONCEPT,
+        'outbound',
+        RELATIONSHIP_TYPE_LABELS[RelationType.CONCEPT],
+        conceptItems,
+      ));
+    }
+  }
 }
 
 /**
@@ -426,6 +530,115 @@ function extractInstitutionRelationships(
       ));
     }
   }
+
+  // TOPIC: Institution → Topics (US5)
+  const topics = data.topics as Array<{
+    id?: string;
+    display_name?: string;
+    count?: number;
+    score?: number;
+  }> | undefined;
+
+  if (topics && topics.length > 0) {
+    const topicItems: RelationshipItem[] = topics
+      .filter(topic => topic.id && topic.display_name)
+      .map(topic => {
+        const topicId = topic.id || '';
+        const topicName = topic.display_name || '';
+        return createRelationshipItem(
+          institutionId,
+          topicId,
+          'institutions' as EntityType,
+          'topics' as EntityType,
+          RelationType.TOPIC,
+          'outbound',
+          topicName,
+        );
+      });
+
+    if (topicItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.TOPIC,
+        'outbound',
+        'Research Focus',
+        topicItems,
+      ));
+    }
+  }
+
+  // INSTITUTION_HAS_REPOSITORY: Institution → Sources (US7)
+  const repositories = data.repositories as Array<{
+    id?: string;
+    display_name?: string;
+    host_organization?: string;
+  }> | undefined;
+
+  if (repositories && repositories.length > 0) {
+    const repoItems: RelationshipItem[] = repositories
+      .filter(repo => repo.id && repo.display_name)
+      .map(repo => {
+        const repoId = repo.id || '';
+        const repoName = repo.display_name || '';
+        return createRelationshipItem(
+          institutionId,
+          repoId,
+          'institutions' as EntityType,
+          'sources' as EntityType,
+          RelationType.INSTITUTION_HAS_REPOSITORY,
+          'outbound',
+          repoName,
+        );
+      });
+
+    if (repoItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.INSTITUTION_HAS_REPOSITORY,
+        'outbound',
+        RELATIONSHIP_TYPE_LABELS[RelationType.INSTITUTION_HAS_REPOSITORY],
+        repoItems,
+      ));
+    }
+  }
+
+  // HAS_ROLE: Institution → Other Entities (US8)
+  const roles = data.roles as Array<{
+    role?: string;
+    id?: string;
+    works_count?: number;
+  }> | undefined;
+
+  if (roles && roles.length > 0) {
+    const roleItems: RelationshipItem[] = roles
+      .filter(role => role.role && role.id)
+      .map(role => {
+        const targetId = role.id || '';
+        const roleName = role.role || '';
+        // Infer target entity type from role
+        let targetType: EntityType = 'works';
+        if (roleName === 'funder') targetType = 'funders';
+        else if (roleName === 'institution') targetType = 'institutions';
+        else if (roleName === 'publisher') targetType = 'publishers';
+
+        return createRelationshipItem(
+          institutionId,
+          targetId,
+          'institutions' as EntityType,
+          targetType,
+          RelationType.HAS_ROLE,
+          'outbound',
+          `as ${roleName}`,
+        );
+      });
+
+    if (roleItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.HAS_ROLE,
+        'outbound',
+        RELATIONSHIP_TYPE_LABELS[RelationType.HAS_ROLE],
+        roleItems,
+      ));
+    }
+  }
 }
 
 /**
@@ -456,6 +669,41 @@ function extractSourceRelationships(
       RELATIONSHIP_TYPE_LABELS[RelationType.HOST_ORGANIZATION],
       [publisherItem],
     ));
+  }
+
+  // TOPIC: Source → Topics (US4)
+  const topics = data.topics as Array<{
+    id?: string;
+    display_name?: string;
+    count?: number;
+    score?: number;
+  }> | undefined;
+
+  if (topics && topics.length > 0) {
+    const topicItems: RelationshipItem[] = topics
+      .filter(topic => topic.id && topic.display_name)
+      .map(topic => {
+        const topicId = topic.id || '';
+        const topicName = topic.display_name || '';
+        return createRelationshipItem(
+          sourceId,
+          topicId,
+          'sources' as EntityType,
+          'topics' as EntityType,
+          RelationType.TOPIC,
+          'outbound',
+          topicName,
+        );
+      });
+
+    if (topicItems.length > 0) {
+      outgoing.push(createRelationshipSection(
+        RelationType.TOPIC,
+        'outbound',
+        'Topic Coverage',
+        topicItems,
+      ));
+    }
   }
 }
 
