@@ -227,7 +227,7 @@ export function infomap<N extends Node, E extends Edge>(
     }
 
     // Remove empty modules
-    removeEmptyModules(modules, nodeToModule);
+    removeEmptyModules(modules);
 
     // Recalculate exit probabilities
     updateExitProbabilities(modules, nodeToModule, transitions);
@@ -580,7 +580,7 @@ function calculateMoveDelta(
       const targetModuleId = nodeToModule.get(t.to);
       if (targetModuleId !== fromModuleId && targetModuleId !== toModuleId) {
         // Edge leaving both modules
-        __nodeExitProb += t.probability;
+        _nodeExitProb += t.probability;
       } else if (targetModuleId === fromModuleId && targetModuleId !== toModuleId) {
         // Edge from node to fromModule (will become exit edge)
         nodeToFromModuleProb += t.probability;
@@ -645,8 +645,7 @@ function moveNode(
  * Remove empty modules from the map.
  */
 function removeEmptyModules(
-  modules: Map<number, InternalModule>,
-  nodeToModule: Map<string, number>
+  modules: Map<number, InternalModule>
 ): void {
   const emptyModuleIds: number[] = [];
 

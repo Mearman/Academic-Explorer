@@ -20,7 +20,6 @@ import type {
   Dendrogram,
   MergeStep,
   HierarchicalResult,
-  HierarchicalError,
 } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import { Ok, Err } from '../types/result';
@@ -33,9 +32,9 @@ type LinkageMethod = 'single' | 'complete' | 'average';
 /**
  * Internal cluster representation during hierarchical clustering.
  */
-interface ClusterNode<N> {
+interface ClusterNode {
   id: number; // Negative for leaves, non-negative for internal nodes
-  nodes: Set<N>; // Set of leaf node IDs
+  nodes: Set<string>; // Set of leaf node IDs
   size: number;
 }
 
@@ -203,7 +202,7 @@ function updateDistances(
  */
 function buildDendrogram<N extends Node>(
   nodes: N[],
-  merges: MergeStep<string>[],
+  merges: MergeStep[],
   heights: number[]
 ): Dendrogram<string> {
   const leafNodes = nodes.map((node) => node.id);
@@ -390,7 +389,7 @@ export function hierarchicalClustering<N extends Node, E extends Edge>(
   });
 
   // Merge history
-  const merges: MergeStep<string>[] = [];
+  const merges: MergeStep[] = [];
   const heights: number[] = [];
 
   let nextClusterId = n; // Start from n (after leaf nodes 0 to n-1)

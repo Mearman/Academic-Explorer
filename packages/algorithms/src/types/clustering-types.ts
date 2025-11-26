@@ -132,7 +132,7 @@ export interface Partition<N> {
  * Merge step in hierarchical clustering dendrogram.
  * Represents joining two clusters at a specific distance/height.
  */
-export interface MergeStep<N> {
+export interface MergeStep<N = string> {
   /** Index of first cluster being merged (< 0 for leaves) */
   cluster1: number;
 

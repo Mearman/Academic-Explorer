@@ -19,7 +19,6 @@ import type { Graph } from '../graph/graph';
 import type {
   CorePeripheryResult,
   CorePeripheryStructure,
-  DecompositionError,
 } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import { Ok, Err } from '../types/result';
@@ -195,8 +194,7 @@ export function corePeripheryDecomposition<N extends Node, E extends Edge>(
   const fitQuality = calculateFitQuality(
     graph,
     coreNodes,
-    peripheryNodes,
-    adjacency
+    peripheryNodes
   );
 
   const structure: CorePeripheryStructure<string> = {
@@ -336,17 +334,6 @@ function calculateCorrelationFit<E extends Edge>(
   let sumCorenessProduct = 0;
   let count = 0;
 
-  // For all possible edges, calculate coreness products
-  const edgeSet = new Set(edges.map((e) => `${e.source}-${e.target}`));
-
-  // Get all unique node IDs
-  const allNodeIds = new Set<string>();
-  for (const edge of edges) {
-    allNodeIds.add(edge.source);
-    allNodeIds.add(edge.target);
-  }
-  const nodeArray = Array.from(allNodeIds);
-
   // Sample coreness products for efficiency (use all edges + some non-edges)
   for (const edge of edges) {
     const c_i = corenessScores.get(edge.source) ?? 0;
@@ -423,8 +410,7 @@ function applyCoreThreshold(
 function calculateFitQuality<N extends Node, E extends Edge>(
   graph: Graph<N, E>,
   coreNodes: Set<string>,
-  peripheryNodes: Set<string>,
-  adjacency: Map<string, Set<string>>
+  peripheryNodes: Set<string>
 ): number {
   const edges = graph.getAllEdges();
 

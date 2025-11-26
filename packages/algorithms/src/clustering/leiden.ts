@@ -289,7 +289,7 @@ export function leiden<N extends Node, E extends Edge>(
         }
       }
 
-      removeEmptyCommunities(communities, nodeToCommunity);
+      removeEmptyCommunities(communities);
 
       if (movesThisRound === 0) {
         consecutiveNoImprovementRounds++;
@@ -668,7 +668,7 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
 /**
  * Move a super-node from one community to another.
  */
-function moveSuperNode<N extends Node, E extends Edge>(
+function moveSuperNode(
   superNodeId: string,
   fromCommunityId: number,
   toCommunityId: number,
@@ -699,8 +699,7 @@ function moveSuperNode<N extends Node, E extends Edge>(
  * Remove empty communities.
  */
 function removeEmptyCommunities(
-  communities: Map<number, InternalCommunity>,
-  nodeToCommunity: Map<string, number>
+  communities: Map<number, InternalCommunity>
 ): void {
   const emptyCommunityIds: number[] = [];
 
@@ -739,7 +738,7 @@ function buildLeidenResults<N extends Node, E extends Edge>(
   const communities: LeidenCommunity<N>[] = [];
   let communityIndex = 0;
 
-  communityMap.forEach((nodes, originalId) => {
+  communityMap.forEach((nodes) => {
     // Validate connectivity
     const isConnected = validateConnectivity(graph, nodes, incomingEdges);
 
@@ -748,7 +747,6 @@ function buildLeidenResults<N extends Node, E extends Edge>(
 
     // Count internal and external edges
     let internalEdges = 0;
-    let externalEdges = 0;
     nodes.forEach((node) => {
       const outgoingResult = graph.getOutgoingEdges(node.id);
       if (outgoingResult.ok) {
@@ -757,8 +755,6 @@ function buildLeidenResults<N extends Node, E extends Edge>(
           if (targetOption.some) {
             if (nodes.has(targetOption.value)) {
               internalEdges++;
-            } else {
-              externalEdges++;
             }
           }
         });

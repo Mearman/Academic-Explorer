@@ -65,7 +65,6 @@ export function labelPropagation<N extends Node, E extends Edge>(
   const startTime = performance.now();
 
   const {
-    weightFn = () => 1.0,
     maxIterations = 10, // Label propagation typically converges in 3-5 iterations
     seed = Date.now(),
   } = options;

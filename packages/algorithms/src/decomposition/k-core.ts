@@ -15,9 +15,9 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Core, KCoreResult, DecompositionError } from '../types/clustering-types';
+import type { Core, KCoreResult } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
-import { type Result, Ok, Err } from '../types/result';
+import { Ok, Err } from '../types/result';
 
 /**
  * K-Core Decomposition using Batagelj-Zaversnik algorithm.
@@ -66,7 +66,6 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
   const nodeIds = nodes.map((node) => node.id);
   const degrees = new Map<string, number>(); // Current degree of each node
   const coreNumbers = new Map<string, number>(); // Core number of each node
-  const position = new Map<string, number>(); // Position in sorted array
   const removed = new Set<string>(); // Nodes that have been removed
 
   // Step 2: Compute initial degrees (treat directed graphs as undirected)
@@ -121,7 +120,6 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
 
   // Step 4: Process nodes in degree order (Batagelj-Zaversnik algorithm)
   let degeneracy = 0;
-  let processedCount = 0;
 
   for (let i = 0; i < nodeIds.length; i++) {
     // Find the minimum non-empty bin
@@ -144,7 +142,6 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
     const nodeIdx = bins[currentBin].pop()!;
     const nodeId = nodeIds[nodeIdx];
     const currentDegree = degrees.get(nodeId) || 0;
-    processedCount++;
 
     // Verify that degree map and bin position are in sync
     if (currentDegree !== currentBin) {

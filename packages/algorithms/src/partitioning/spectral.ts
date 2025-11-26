@@ -128,8 +128,7 @@ export function spectralPartition<N extends Node, E extends Edge>(
     assignments,
     k,
     weightFn,
-    nodeIdToIndex,
-    balanceTolerance
+    nodeIdToIndex
   );
 
   return Ok(partitions);
@@ -416,7 +415,6 @@ function rebalancePartitions(
   balanceTolerance: number
 ): number[] {
   const idealSize = nodeCount / k;
-  const maxSize = Math.floor(idealSize * balanceTolerance);
 
   // Count partition sizes
   const partitionSizes = Array(k).fill(0);
@@ -497,8 +495,7 @@ function buildPartitions<N extends Node, E extends Edge>(
   assignments: number[],
   k: number,
   weightFn: WeightFunction<N, E>,
-  nodeIdToIndex: Map<string, number>,
-  balanceTolerance: number
+  nodeIdToIndex: Map<string, number>
 ): Partition<N>[] {
   // Group nodes by partition
   const partitionNodes: Map<number, Set<N>> = new Map();

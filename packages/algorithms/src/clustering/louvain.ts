@@ -15,9 +15,8 @@
  */
 
 import type { Graph } from '../graph/graph';
-import { calculateDensity } from '../metrics/cluster-quality';
 import { calculateModularityDelta } from '../metrics/modularity';
-import type { Community, LouvainConfiguration, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
+import type { Community, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import type { WeightFunction } from '../types/weight-function';
 import { convertToCSR, type CSRGraph } from '../utils/csr';
@@ -92,7 +91,7 @@ export function getAdaptiveIterationLimit(nodeCount: number, level: number): num
  *
  * @since Phase 4 (spec-027, Fast Louvain)
  */
-export function determineOptimalMode(nodeCount: number): "best" | "random" {
+export function determineOptimalMode(): "best" | "random" {
   // Always use best mode after Phase 4 debugging
   // Random mode caused quality loss (Q: 0.37 → 0.05) and slower convergence (103 → 201 iterations)
   return "best";
@@ -141,85 +140,6 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
   }
 
   return array;
-}
-
-/**
- * Get nodes to visit based on altered communities heuristic.
- *
- * @param alteredState - Altered communities state tracking
- * @param superNodes - Map of super-node ID → set of original node IDs
- * @param nodeToCommunity - Map of super-node ID → community ID
- * @param graph - Input graph
- * @param nodeToSuperNode - Map of original node ID → super-node ID
- * @param incomingEdges - Pre-computed incoming edges map
- * @returns Set of super-node IDs that should be checked for movement
- *
- * @remarks
- * Returns nodes in altered communities plus their neighbors (nodes with edges to/from altered communities).
- * This reduces redundant computation by only revisiting nodes likely to move.
- *
- * **First Iteration**: alteredCommunities contains all community IDs → returns all nodes
- * **Subsequent Iterations**: Only returns nodes in changed communities + their neighbors
- *
- * @since Phase 4 (spec-027, Altered Communities)
- */
-function getNodesToVisit<N extends Node, E extends Edge>(
-  alteredState: AlteredCommunitiesState,
-  superNodes: Map<string, Set<string>>,
-  nodeToCommunity: Map<string, number>,
-  graph: Graph<N, E>,
-  nodeToSuperNode: Map<string, string>,
-  incomingEdges: Map<string, E[]>
-): Set<string> {
-  const nodesToVisit = new Set<string>();
-
-  // If no communities altered, return empty set (early termination will handle this)
-  if (alteredState.alteredCommunities.size === 0) {
-    return nodesToVisit;
-  }
-
-  // Add all super-nodes in altered communities
-  superNodes.forEach((memberNodes, superNodeId) => {
-    const communityId = nodeToCommunity.get(superNodeId);
-    if (communityId !== undefined && alteredState.alteredCommunities.has(communityId)) {
-      nodesToVisit.add(superNodeId);
-    }
-  });
-
-  // Add neighbors of nodes in altered communities
-  // For each super-node in altered communities, find its neighbors and add them
-  const alteredSuperNodes = new Set(nodesToVisit);
-  alteredSuperNodes.forEach((superNodeId) => {
-    const memberNodes = superNodes.get(superNodeId);
-    if (!memberNodes) return;
-
-    // For each original node in this super-node, find its neighbors
-    memberNodes.forEach((nodeId) => {
-      // Outgoing edges
-      const outgoingResult = graph.getOutgoingEdges(nodeId);
-      if (outgoingResult.ok) {
-        outgoingResult.value.forEach((edge) => {
-          const targetSuperNode = nodeToSuperNode.get(edge.target);
-          if (targetSuperNode) {
-            nodesToVisit.add(targetSuperNode);
-          }
-        });
-      }
-
-      // Incoming edges (for directed graphs)
-      if (graph.isDirected()) {
-        const incoming = incomingEdges.get(nodeId) || [];
-        incoming.forEach((edge) => {
-          const sourceSuperNode = nodeToSuperNode.get(edge.source);
-          if (sourceSuperNode) {
-            nodesToVisit.add(sourceSuperNode);
-          }
-        });
-      }
-    });
-  });
-
-  return nodesToVisit;
 }
 
 /**
@@ -320,7 +240,7 @@ export function detectCommunities<N extends Node, E extends Edge>(
   // T025: Resolve neighbor selection mode (spec-027 Phase 4)
   const { mode = "auto", seed } = options;
   const resolvedMode: "best" | "random" = mode === "auto"
-    ? determineOptimalMode(allNodes.length)
+    ? determineOptimalMode()
     : mode;
 
   // Pre-compute incoming edges for directed graphs (O(m) instead of O(n²))
