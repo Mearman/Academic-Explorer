@@ -213,9 +213,7 @@
         "{workspaceRoot}/tsconfig*.json",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": [
-        "{projectRoot}/dist/tsc"
-      ],
+      "outputs": [],
       "cache": true
     }
   },

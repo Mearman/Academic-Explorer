@@ -33,10 +33,7 @@
         "command": "tsc --noEmit -p tsconfig.typecheck.json",
         "cwd": "packages/ui"
       }
-    },
-    "test:unit": {},
-    "test:component": {},
-    "test:integration": {}
+    }
   },
   "tags": [
     "type:library",

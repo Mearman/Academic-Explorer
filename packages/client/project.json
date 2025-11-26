@@ -57,10 +57,7 @@
         "command": "tsc --noEmit -p tsconfig.typecheck.json",
         "cwd": "packages/client"
       }
-    },
-    "test:unit": {},
-    "test:component": {},
-    "test:integration": {}
+    }
   },
   "tags": [
     "type:library",

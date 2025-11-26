@@ -37,10 +37,7 @@
       "dependsOn": [
         "types:build"
       ]
-    },
-    "test:unit": {},
-    "test:component": {},
-    "test:integration": {}
+    }
   },
   "tags": [
     "type:library",
