@@ -20,6 +20,10 @@
     "paths": {
       "@/*": ["../apps/web/src/*"],
       "@nx/devkit": ["../node_modules/@nx/devkit"],
+      "@academic-explorer/utils": ["../packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["../packages/utils/src/*"],
+      "@academic-explorer/types": ["../packages/types/src/index.ts"],
+      "@academic-explorer/types/*": ["../packages/types/src/*"],
       "*": ["node_modules/*", "../node_modules/*"]
     },
     "noUnusedLocals": false,

@@ -4,7 +4,14 @@
   "sourceRoot": "tools/scripts",
   "projectType": "library",
   "targets": {
-    "typecheck": "typecheck",
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "tsc --noEmit -p tsconfig.json",
+        "cwd": "tools"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {

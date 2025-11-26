@@ -8,9 +8,18 @@ import { join } from "path"
 // Actual implementation would require query-cache-builder.ts (not yet implemented)
 // import { fetchAndCacheQueries } from "../../apps/academic-explorer/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/web/src/lib/utils/static-data-index-generator.ts";
-const fetchAndCacheQueries = () =>
-	Promise.resolve({ success: 0, failed: 0, errors: [] })
-const generateAllIndexes = () => Promise.resolve()
+const fetchAndCacheQueries = (
+	queries: Array<{ url: string; entityType: string }>,
+	outputDir: string
+) => {
+	void queries
+	void outputDir
+	return Promise.resolve({ success: 0, failed: 0, errors: [] as Array<{ url: string; error: string }> })
+}
+const generateAllIndexes = (outputDir: string) => {
+	void outputDir
+	return Promise.resolve()
+}
 
 /**
  * Predefined queries to cache
