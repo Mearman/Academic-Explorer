@@ -137,6 +137,17 @@ export type EntityMetadata =
   | PublisherMetadata
   | ConceptMetadata;
 
+/**
+ * Minimal metadata for export when full metadata is not available
+ * Used when CatalogueEntity doesn't store full entity metadata
+ */
+export interface MinimalExportMetadata {
+  type: EntityType;
+  displayName: string;
+  worksCount: number;
+  citedByCount: number;
+}
+
 // ==================
 // Import/Export
 // ==================
@@ -157,6 +168,6 @@ export interface ExportFormat {
     position: number;
     note?: string;
     addedAt: string;
-    metadata: EntityMetadata;
+    metadata: EntityMetadata | MinimalExportMetadata;
   }>;
 }
