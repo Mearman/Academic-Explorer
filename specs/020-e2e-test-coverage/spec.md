@@ -1,8 +1,10 @@
-# Feature Specification: [FEATURE NAME]
+# Feature Specification: E2E Test Coverage Enhancement
 
-**Feature Branch**: `[###-feature-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
+**Status**: Planning (Spec Not Yet Written)
+**Note**: This spec directory contains task breakdown and research, but the specification document was never completed. E2E tests exist in apps/web/e2e/ but are not documented here.
+
+**Feature Branch**: `[###-feature-name]`
+**Created**: [DATE]
 **Input**: User description: "$ARGUMENTS"
 
 ## User Scenarios & Testing *(mandatory)*
