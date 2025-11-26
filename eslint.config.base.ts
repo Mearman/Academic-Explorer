@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
 import importPlugin from "eslint-plugin-import";
+import { customRulesPlugin } from "./tools/eslint-rules/index.js";
 
 /**
  * Simplified ESLint configuration for debugging
@@ -21,6 +22,14 @@ export default tseslint.config([
             "**/generated/**/*",
             "**/*.js",
             "**/*.js.map",
+            // Config files outside tsconfig rootDir - excluded from lint
+            "**/vitest.config.ts",
+            "**/vitest.setup.ts",
+            "**/vite.config.ts",
+            "**/vite.config.*.ts",
+            "**/eslint.config.*.ts",
+            "**/.storybook/**/*",
+            "**/tests/setup.ts",
         ],
     },
     // Base configuration for all TypeScript files
@@ -58,6 +67,8 @@ export default tseslint.config([
                     "**/*.config.ts",
                     "**/*.config.js",
                     "**/*.config.mjs",
+                    "**/vitest.setup.ts",
+                    "**/tests/setup.ts",
                     // Source files that might not be in tsconfig
                     "src/**/*.ts",
                     "src/**/*.tsx",
@@ -112,11 +123,13 @@ export default tseslint.config([
         plugins: {
             "@typescript-eslint": tseslint.plugin,
             "import": importPlugin,
+            "custom": customRulesPlugin,
         },
         rules: {
             "@typescript-eslint/no-unused-vars": "error",
-            "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
+            "custom/no-deprecated": "error",
 
             // Import rules
             "import/no-relative-packages": "error",
@@ -154,11 +167,12 @@ export default tseslint.config([
     },
     // Configuration for test files
     {
-        files: ["**/*.{test,spec}.{ts,tsx}"],
+        files: ["**/*.{test,spec}.{ts,tsx}", "**/*.e2e.test.{ts,tsx}", "**/test/**/*.ts", "**/e2e/**/*.ts"],
         rules: {
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "no-console": "off",
+            "custom/no-deprecated": "off", // Disable for test files due to TypeScript service issues
         },
     },
     // Allow default exports for config files and special cases
@@ -170,9 +184,11 @@ export default tseslint.config([
             "**/.storybook/**/*",
             "**/routes/**/*.tsx", // TanStack Router route files
             "**/routeTree.gen.ts",
+            "**/config/**/*", // Config directory files
         ],
         rules: {
             "import/no-default-export": "off",
+            "import/no-relative-packages": "off", // Allow relative imports in config files
         },
     },
 ]);
