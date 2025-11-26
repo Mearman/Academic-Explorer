@@ -3,20 +3,17 @@
  * Carefully re-enabled components to prevent React 19 infinite loops
  */
 
-import React, { useState, useCallback, useRef } from "react";
 import {
   AppShell,
+  Button,
   Group,
   Text,
   ActionIcon,
-  Button,
   useMantineColorScheme,
   Stack,
   Title,
   Box,
   rem,
-  TextInput,
-  Card,
   Menu,
 } from "@mantine/core";
 import {
@@ -32,14 +29,17 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
+import React, { useState, useCallback, useRef } from "react";
+
+import { useLayoutStore } from "@/stores/layout-store";
+
 import { BookmarksSidebar } from "./BookmarksSidebar";
+import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
-import { SidebarFallback } from "./SidebarFallback";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
-import { HeaderSearchInput } from "./HeaderSearchInput";
-import { useLayoutStore, useLayoutActions } from "@/stores/layout-store";
+
+
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -50,7 +50,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // Layout store for sidebar state management
   const layoutStore = useLayoutStore();
-  const layoutActions = useLayoutActions();
+
   const {
     leftSidebarOpen,
     rightSidebarOpen,

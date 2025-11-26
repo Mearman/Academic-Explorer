@@ -3,15 +3,10 @@
  * Ensures sidebar content always renders regardless of data loading issues
  */
 
-import { useState } from "react";
 import {
   TextInput,
-  Button,
   Card,
   Text,
-  Group,
-  Stack,
-  Badge,
   ActionIcon,
   Title,
 } from "@mantine/core";
@@ -20,6 +15,8 @@ import {
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
+import { useState } from "react";
+
 import * as styles from "./sidebar.css";
 
 interface SidebarFallbackProps {

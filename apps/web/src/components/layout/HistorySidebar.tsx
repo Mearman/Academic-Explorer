@@ -2,10 +2,20 @@
  * History sidebar component for managing navigation history in the right sidebar
  */
 
-import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
+import {
+  TextInput,
+  Card,
+  Text,
+  Group,
+  Stack,
+  ActionIcon,
+  Title,
+  Divider,
+  Tooltip,
+} from "@mantine/core";
+import { modals } from "@mantine/modals";
 import {
   IconHistory,
   IconSearch,
@@ -14,21 +24,11 @@ import {
   IconX,
   IconSettings,
 } from "@tabler/icons-react";
-import { useState, useEffect } from "react";
-import {
-  TextInput,
-  Button,
-  Card,
-  Text,
-  Group,
-  Stack,
-  ActionIcon,
-  ScrollArea,
-  Title,
-  Divider,
-  Tooltip,
-} from "@mantine/core";
-import { modals } from "@mantine/modals";
+import { useNavigate, Link } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { useUserInteractions } from "@/hooks/use-user-interactions";
+
 import * as styles from "./sidebar.css";
 
 interface HistorySidebarProps {
@@ -40,7 +40,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Use the refactored user interactions hook for history
-  const { recentHistory, clearHistory, isLoadingHistory } = useUserInteractions();
+  const { recentHistory, clearHistory } = useUserInteractions();
 
   // Filter history entries based on search query
   const filteredEntries = recentHistory.filter(
@@ -88,13 +88,13 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     }
   };
 
-  const handleDeleteHistoryEntry = (entityRecordId: string, entityTitle: string) => {
+  const handleDeleteHistoryEntry = (entityRecordId: string, entryTitle?: string) => {
     modals.openConfirmModal({
       title: "Delete History Entry",
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this history entry? This action cannot be undone.
+          Are you sure you want to delete {entryTitle ? `"${entryTitle}"` : "this history entry"}? This action cannot be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
@@ -249,7 +249,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                     {entries.length} {entries.length === 1 ? 'item' : 'items'}
                   </Text>
                 </div>
-                {entries.map((entry, index) => {
+{entries.map((entry) => {
                   // Extract title from entry notes or use entity ID
                   let title = entry.entityId;
                   const titleMatch = entry.notes?.match(/Title: ([^\n]+)/);

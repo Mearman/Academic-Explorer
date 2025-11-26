@@ -2,10 +2,22 @@
  * Bookmarks sidebar component for managing bookmarks in the left sidebar
  */
 
-import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logger } from "@academic-explorer/utils/logger";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
+import {
+  TextInput,
+  Card,
+  Text,
+  Group,
+  Stack,
+  Badge,
+  Loader,
+  ActionIcon,
+  Tooltip,
+  Title,
+  Button,
+} from "@mantine/core";
+import { modals } from "@mantine/modals";
 import {
   IconBookmark,
   IconBookmarkOff,
@@ -17,24 +29,12 @@ import {
   IconSettings,
   IconList,
 } from "@tabler/icons-react";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  TextInput,
-  Button,
-  Card,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Loader,
-  ActionIcon,
-  Tooltip,
-  ScrollArea,
-  Title,
-} from "@mantine/core";
-import { modals } from "@mantine/modals";
+
+import { useUserInteractions } from "@/hooks/use-user-interactions";
+
 import * as styles from "./sidebar.css";
-import { SidebarFallback } from "./SidebarFallback";
 
 interface BookmarksSidebarProps {
   onClose?: () => void;

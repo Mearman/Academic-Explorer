@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
 import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
+import { useState, useCallback, useEffect } from "react";
 
 export function HeaderSearchInput() {
   const navigate = useNavigate();
