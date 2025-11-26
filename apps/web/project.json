@@ -23,19 +23,9 @@
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
       "options": {
         "config": "apps/web/playwright.config.ts"
-      },
-      "dependsOn": ["build", "test:integration"]
+      }
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "command": "tsc --noEmit -p tsconfig.json",
-        "cwd": "apps/web"
-      },
-      "dependsOn": ["barrelsby", "^build"],
-      "cache": true
-    }
+    "typecheck": {}
   },
   "tags": ["type:app", "scope:web", "layer:app"]
 }
