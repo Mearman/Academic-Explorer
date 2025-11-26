@@ -31,6 +31,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import React, { useState, useCallback, useRef } from "react";
 
+import { RepositoryAlgorithmsPanel } from "@/components/algorithms";
 import { useLayoutStore } from "@/stores/layout-store";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
@@ -571,7 +572,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
                   <Text size="xs" c="dimmed">
-                    Right Panel
+                    Graph Analysis
                   </Text>
                   <Group gap="xs">
                     <ActionIcon
@@ -595,6 +596,17 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
+
+                {/* Graph Algorithms Panel */}
+                <Box
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "auto",
+                  }}
+                >
+                  <RepositoryAlgorithmsPanel />
+                </Box>
               </Box>
             </>
           )}
