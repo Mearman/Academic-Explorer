@@ -1,8 +1,8 @@
 import { type Graph } from '../graph/graph';
-import { type Node, type Edge } from '../types/graph';
 import { type TraversalResult } from '../types/algorithm-results';
-import { type Result, Ok, Err } from '../types/result';
 import { type InvalidInputError } from '../types/errors';
+import { type Node, type Edge } from '../types/graph';
+import { type Result, Ok, Err } from '../types/result';
 
 /**
  * Breadth-First Search (BFS) traversal algorithm.

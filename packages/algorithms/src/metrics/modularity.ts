@@ -6,8 +6,8 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
 import type { Community } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
 
 /**
  * Calculate modularity (Q) for a graph partitioned into communities.

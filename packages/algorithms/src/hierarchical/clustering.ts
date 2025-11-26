@@ -16,13 +16,13 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
 import type {
   Dendrogram,
   MergeStep,
   HierarchicalResult,
   HierarchicalError,
 } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
 import { Ok, Err } from '../types/result';
 
 /**

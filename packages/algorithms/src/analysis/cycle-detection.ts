@@ -1,9 +1,9 @@
 import { type Graph } from '../graph/graph';
-import { type Node, type Edge } from '../types/graph';
 import { type CycleInfo } from '../types/algorithm-results';
-import { type Result, Ok, Err } from '../types/result';
-import { type Option, Some, None } from '../types/option';
 import { type InvalidInputError } from '../types/errors';
+import { type Node, type Edge } from '../types/graph';
+import { type Option, Some, None } from '../types/option';
+import { type Result, Ok, Err } from '../types/result';
 
 /**
  * Detect cycles in a graph using DFS.

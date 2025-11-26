@@ -15,15 +15,15 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
 import type {
   LabelCluster,
   ClusterId,
   ClusteringError,
   LabelPropagationResult,
 } from '../types/clustering-types';
-import type { WeightFunction } from '../types/weight-function';
+import type { Node, Edge } from '../types/graph';
 import { Ok, Err } from '../types/result';
+import type { WeightFunction } from '../types/weight-function';
 
 /**
  * Label Propagation clustering algorithm.

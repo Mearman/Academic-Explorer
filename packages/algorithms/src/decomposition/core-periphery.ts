@@ -15,14 +15,14 @@
  * @module decomposition/core-periphery
  */
 
-import type { Node, Edge } from '../types/graph';
 import type { Graph } from '../graph/graph';
-import { Ok, Err } from '../types/result';
 import type {
   CorePeripheryResult,
   CorePeripheryStructure,
   DecompositionError,
 } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
+import { Ok, Err } from '../types/result';
 
 /**
  * Default parameters for core-periphery decomposition.

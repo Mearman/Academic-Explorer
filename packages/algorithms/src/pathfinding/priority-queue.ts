@@ -1,6 +1,6 @@
+import { type InvalidInputError } from '../types/errors';
 import { type Option, Some, None } from '../types/option';
 import { type Result, Ok, Err } from '../types/result';
-import { type InvalidInputError } from '../types/errors';
 
 /**
  * Entry in the min-heap priority queue.

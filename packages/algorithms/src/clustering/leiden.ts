@@ -17,14 +17,14 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
-import type { LeidenCommunity, Community, ClusterMetrics, ClusteringError } from '../types/clustering-types';
-import type { WeightFunction } from '../types/weight-function';
-import type { Result } from '../types/result';
-import { Ok, Err } from '../types/result';
-import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateClusterMetrics } from '../metrics/cluster-quality';
 import { calculateConductance } from '../metrics/conductance';
+import { calculateModularityDelta } from '../metrics/modularity';
+import type { LeidenCommunity, Community, ClusterMetrics, ClusteringError } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
+import type { Result } from '../types/result';
+import { Ok, Err } from '../types/result';
+import type { WeightFunction } from '../types/weight-function';
 
 /**
  * Internal representation of a community during Leiden execution.
@@ -235,7 +235,7 @@ export function leiden<N extends Node, E extends Edge>(
 
       for (const superNodeId of superNodeOrder) {
         const currentCommunityId = nodeToCommunity.get(superNodeId)!;
-        const currentCommunity = communities.get(currentCommunityId)!;
+        const _currentCommunity = communities.get(currentCommunityId)!;
 
         const memberNodes = superNodes.get(superNodeId)!;
         const neighborCommunities = findNeighborCommunitiesForSuperNode(
@@ -789,7 +789,7 @@ function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>):
   const density = maxPossibleEdges > 0 ? leidenCommunity.internalEdges / maxPossibleEdges : 0;
 
   // Calculate external edges
-  const externalEdges = 0;
+  const _externalEdges = 0;
   // Note: This is a simplification - external edges should be counted during community building
   // For now, we estimate based on conductance if available
 
@@ -797,7 +797,7 @@ function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>):
     id: leidenCommunity.id,
     nodes: leidenCommunity.nodes,
     internalEdges: leidenCommunity.internalEdges,
-    externalEdges: externalEdges,
+    externalEdges: _externalEdges,
     modularity: leidenCommunity.modularity,
     density: density,
     size: size,

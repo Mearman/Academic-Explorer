@@ -1,7 +1,7 @@
-import { type Node, type Edge } from '../types/graph';
-import { type Result } from '../types/result';
-import { type Option } from '../types/option';
 import { type GraphError } from '../types/errors';
+import { type Node, type Edge } from '../types/graph';
+import { type Option } from '../types/option';
+import { type Result } from '../types/result';
 
 /**
  * Type guard to check if a value is a Node.

@@ -15,9 +15,9 @@
  */
 
 import type { Graph } from '../graph/graph';
+import type { Core, KCoreResult, DecompositionError } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import { type Result, Ok, Err } from '../types/result';
-import type { Core, KCoreResult, DecompositionError } from '../types/clustering-types';
 
 /**
  * K-Core Decomposition using Batagelj-Zaversnik algorithm.

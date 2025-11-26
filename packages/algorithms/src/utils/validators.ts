@@ -1,5 +1,5 @@
-import { type Edge } from '../types/graph';
 import { type InvalidInputError, type InvalidWeightError, type NegativeWeightError } from '../types/errors';
+import { type Edge } from '../types/graph';
 import { Err, type Result, Ok } from '../types/result';
 
 /**

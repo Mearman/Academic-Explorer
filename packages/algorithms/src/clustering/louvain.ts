@@ -15,11 +15,11 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
-import type { Community, LouvainConfiguration, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
-import type { WeightFunction } from '../types/weight-function';
-import { calculateModularityDelta } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
+import { calculateModularityDelta } from '../metrics/modularity';
+import type { Community, LouvainConfiguration, AlteredCommunitiesState, CommunityHashTable } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
+import type { WeightFunction } from '../types/weight-function';
 import { convertToCSR, type CSRGraph } from '../utils/csr';
 
 /**
@@ -465,7 +465,7 @@ export function detectCommunities<N extends Node, E extends Edge>(
 
       for (const superNodeId of superNodeOrder) {
         const currentCommunityId = nodeToCommunity.get(superNodeId)!;
-        const currentCommunity = communities.get(currentCommunityId)!;
+        const _currentCommunity = communities.get(currentCommunityId)!;
 
         // Calculate weights to neighboring communities for this super-node
         const memberNodes = superNodes.get(superNodeId)!;

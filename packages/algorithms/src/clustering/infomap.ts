@@ -18,12 +18,12 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
-import type { InfomapModule, InfomapResult, ClusteringError } from '../types/clustering-types';
-import type { WeightFunction } from '../types/weight-function';
-import { Err, Ok } from '../types/result';
-import { calculateModularity } from '../metrics/modularity';
 import { calculateDensity } from '../metrics/cluster-quality';
+import { calculateModularity } from '../metrics/modularity';
+import type { InfomapModule, InfomapResult } from '../types/clustering-types';
+import type { Node, Edge } from '../types/graph';
+import { Err, Ok } from '../types/result';
+import type { WeightFunction } from '../types/weight-function';
 
 /**
  * Internal representation of a module during Infomap execution.
@@ -174,7 +174,7 @@ export function infomap<N extends Node, E extends Edge>(
 
     for (const nodeId of nodeOrder) {
       const currentModuleId = nodeToModule.get(nodeId)!;
-      const currentModule = modules.get(currentModuleId)!;
+      const _currentModule = modules.get(currentModuleId)!;
 
       // Try moving to neighboring modules (allow moves even if not sole member)
       const neighborModules = findNeighborModules(
@@ -568,10 +568,10 @@ function calculateMoveDelta(
     return 100.0; // Large penalty for invalid moves
   }
 
-  const nodeVisitProb = visitProbabilities.get(nodeId) || 0;
+  const _nodeVisitProb = visitProbabilities.get(nodeId) || 0;
 
   // Calculate exit probability changes for the node
-  let nodeExitProb = 0;
+  let _nodeExitProb = 0;
   let nodeToFromModuleProb = 0;
   let nodeToToModuleProb = 0;
 
@@ -580,7 +580,7 @@ function calculateMoveDelta(
       const targetModuleId = nodeToModule.get(t.to);
       if (targetModuleId !== fromModuleId && targetModuleId !== toModuleId) {
         // Edge leaving both modules
-        nodeExitProb += t.probability;
+        __nodeExitProb += t.probability;
       } else if (targetModuleId === fromModuleId && targetModuleId !== toModuleId) {
         // Edge from node to fromModule (will become exit edge)
         nodeToFromModuleProb += t.probability;
@@ -593,7 +593,7 @@ function calculateMoveDelta(
       const sourceModuleId = nodeToModule.get(t.from);
       if (sourceModuleId !== fromModuleId && sourceModuleId !== toModuleId) {
         // Edge entering from outside
-        nodeExitProb += t.probability;
+        _nodeExitProb += t.probability;
       } else if (sourceModuleId === fromModuleId && sourceModuleId !== toModuleId) {
         nodeToFromModuleProb += t.probability;
       } else if (sourceModuleId === toModuleId && sourceModuleId !== fromModuleId) {
@@ -604,8 +604,8 @@ function calculateMoveDelta(
 
   // Improved heuristic: favor moves that reduce exit probability
   // and increase module visit probability balance
-  const fromModuleSizeAfter = fromModule.nodes.size - 1;
-  const toModuleSizeAfter = toModule.nodes.size + 1;
+  const _fromModuleSizeAfter = fromModule.nodes.size - 1;
+  const _toModuleSizeAfter = toModule.nodes.size + 1;
 
   // Favor moves that make internal edges vs external edges
   // Negative delta = beneficial move
@@ -627,15 +627,15 @@ function moveNode(
 ): void {
   const fromModule = modules.get(fromModuleId)!;
   const toModule = modules.get(toModuleId)!;
-  const nodeVisitProb = visitProbabilities.get(nodeId) || 0;
+  const _nodeVisitProb = visitProbabilities.get(nodeId) || 0;
 
   // Remove node from old module
   fromModule.nodes.delete(nodeId);
-  fromModule.visitProbability -= nodeVisitProb;
+  fromModule.visitProbability -= _nodeVisitProb;
 
   // Add node to new module
   toModule.nodes.add(nodeId);
-  toModule.visitProbability += nodeVisitProb;
+  toModule.visitProbability += _nodeVisitProb;
 
   // Update mapping
   nodeToModule.set(nodeId, toModuleId);

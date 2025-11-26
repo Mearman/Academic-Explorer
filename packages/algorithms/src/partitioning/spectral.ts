@@ -15,10 +15,10 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
 import type { Partition, PartitioningError } from '../types/clustering-types';
-import type { WeightFunction } from '../types/weight-function';
+import type { Node, Edge } from '../types/graph';
 import { Ok, Err, type Result } from '../types/result';
+import type { WeightFunction } from '../types/weight-function';
 
 /**
  * Perform spectral graph partitioning.

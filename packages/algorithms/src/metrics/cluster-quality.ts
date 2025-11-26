@@ -6,10 +6,11 @@
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
 import type { Community, ClusterMetrics } from '../types/clustering-types';
-import { calculateModularity } from './modularity';
+import type { Node, Edge } from '../types/graph';
+
 import { calculateAverageConductance } from './conductance';
+import { calculateModularity } from './modularity';
 
 /**
  * Calculate density for a cluster/community.

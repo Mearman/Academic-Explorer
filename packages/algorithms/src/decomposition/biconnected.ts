@@ -18,11 +18,11 @@
  * @module decomposition/biconnected
  */
 
+import type { Graph } from '../graph/graph';
+import type { BiconnectedComponent, BiconnectedResult, DecompositionError } from '../types/clustering-types';
 import type { Node, Edge } from '../types/graph';
 import type { Result } from '../types/result';
-import type { BiconnectedComponent, BiconnectedResult, DecompositionError } from '../types/clustering-types';
 import { Ok, Err } from '../types/result';
-import type { Graph } from '../graph/graph';
 
 /**
  * Edge representation for stack-based component extraction.

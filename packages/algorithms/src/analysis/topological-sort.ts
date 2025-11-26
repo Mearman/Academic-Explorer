@@ -1,7 +1,7 @@
 import { type Graph } from '../graph/graph';
+import { type CycleDetectedError, type InvalidInputError } from '../types/errors';
 import { type Node, type Edge } from '../types/graph';
 import { type Result, Ok, Err } from '../types/result';
-import { type CycleDetectedError, type InvalidInputError } from '../types/errors';
 
 /**
  * Topological sort using DFS-based reverse postorder.

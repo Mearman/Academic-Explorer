@@ -1,8 +1,8 @@
 import { type Graph } from '../graph/graph';
-import { type Node, type Edge } from '../types/graph';
 import { type Component } from '../types/algorithm-results';
-import { type Result, Ok, Err } from '../types/result';
 import { type InvalidInputError } from '../types/errors';
+import { type Node, type Edge } from '../types/graph';
+import { type Result, Ok, Err } from '../types/result';
 
 /**
  * Find all connected components in an undirected graph (or weakly connected components in directed graph).

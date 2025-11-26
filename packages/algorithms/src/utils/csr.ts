@@ -8,8 +8,8 @@
  * @since Phase 5 (spec-027)
  */
 
-import { type Node, type Edge } from '../types/graph';
 import { Graph } from '../graph/graph';
+import { type Node, type Edge } from '../types/graph';
 
 /**
  * Compressed Sparse Row (CSR) graph representation.
