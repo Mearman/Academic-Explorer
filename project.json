@@ -4,6 +4,19 @@
   "sourceRoot": ".",
   "projectType": "application",
   "targets": {
+    "syncpack:lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "syncpack lint"
+      },
+      "inputs": [
+        "{workspaceRoot}/**/package.json",
+        "{workspaceRoot}/syncpack.config.ts",
+        "{workspaceRoot}/pnpm-lock.yaml"
+      ],
+      "outputs": [],
+      "cache": true
+    },
     "coverage:report": {
       "executor": "nx:run-commands",
       "dependsOn": ["test"],

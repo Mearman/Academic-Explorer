@@ -97,11 +97,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-v3-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Check dependency versions
-        run: pnpm syncpack lint
+        run: pnpm nx syncpack:lint academic-explorer
 
   # Main build job - builds once and shares artifacts with all other jobs
   build:
