@@ -27,7 +27,7 @@ import { RelationType } from '@academic-explorer/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import { GraphAlgorithmsPanel } from '@/components/algorithms';
+import { GraphAlgorithmsPanel } from '@/components/algorithms/GraphAlgorithmsPanel';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 /**

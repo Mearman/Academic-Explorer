@@ -157,7 +157,7 @@ export function createGraph(
   for (const edge of edges) {
     const algorithmEdge = toAlgorithmEdge(edge);
     const result = graph.addEdge(algorithmEdge);
-    if (!result.ok) {
+    if (!result.ok && 'error' in result) {
       // Edge references non-existent node, skip it
       console.debug(`Skipping edge ${edge.id}: ${result.error.message}`);
     }

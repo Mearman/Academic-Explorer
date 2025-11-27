@@ -31,7 +31,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import React, { useState, useCallback, useRef } from "react";
 
-import { RepositoryAlgorithmsPanel } from "@/components/algorithms";
+import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
