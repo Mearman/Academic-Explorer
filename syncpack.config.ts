@@ -24,7 +24,7 @@ const config: RcFile = {
       label: 'Use exact versions (pinned)',
       packages: ['**'],
       dependencies: ['**'],
-      dependencyTypes: ['prod', 'dev', 'peer', 'optional'],
+      dependencyTypes: ['prod', 'dev', 'peer', 'optional', 'pnpmOverrides'],
       range: '',
     },
   ],
