@@ -25,14 +25,14 @@
         "command": "nx serve web --watch"
       }
     },
-    "e2e": {
+    "test:e2e": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
       "options": {
         "config": "apps/web/playwright.config.ts"
       }
     },
-    "e2e:headed": {
+    "test:e2e:headed": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
       "options": {
@@ -40,7 +40,7 @@
         "headed": true
       }
     },
-    "e2e:ui": {
+    "test:e2e:ui": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
       "options": {
