@@ -47,6 +47,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 12. **Spec Index Maintenance**: specs/README.md updated when spec status changes; committed alongside spec changes
 13. **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
 14. **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts cleaned up before commit
+15. **DRY Code & Configuration**: No duplicate logic; extract shared code to utils; configuration extends shared base; proactive cruft cleanup
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure

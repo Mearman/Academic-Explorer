@@ -135,3 +135,4 @@
 - **Spec Index Maintenance**: specs/README.md will be updated when spec status changes; committed alongside spec changes
 - **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
 - **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts will be cleaned up before commit
+- **DRY Code & Configuration**: No duplicate logic; shared utilities extracted to packages; configuration extends shared base; cruft cleaned proactively

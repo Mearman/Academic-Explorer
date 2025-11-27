@@ -1,22 +1,20 @@
 <!--
 Sync Impact Report:
-Version: 2.8.0 → 2.9.0 (MINOR: Strengthened Principle IX to eliminate "pre-existing" excuse)
-Modified Principles:
-  - Principle IX: Renamed "Deployment Readiness" → "Repository Integrity" with absolute
-    accountability. Removed "Temporary Exception Handling" loophole. Added explicit prohibition
-    against using "pre-existing" as an excuse. Expanded scope to include audit, warnings.
-  - Quality Gates section: Updated to reference "Repository Integrity" and expanded coverage
-  - Development Workflow section: Added repository integrity verification
+Version: 2.9.0 → 2.10.0 (MINOR: Added Principle XV - DRY Code & Configuration)
+Modified Principles: None
 Added Sections:
-  - "Pre-existing is not an excuse" subsection in Principle IX
-Removed Sections:
-  - "Temporary Exception Handling" subsection (was providing loophole to defer fixes)
+  - Principle XV: DRY Code & Configuration - requires eliminating duplication in code,
+    configuration, and tooling; proactive cruft cleanup; single source of truth
+  - Quality Gates section: Added DRY verification gate
+  - Development Workflow section: Added DRY verification checks
+Removed Sections: None
 Templates Requiring Updates:
-  - ✅ plan-template.md: Constitution Check section uses numbered list that accommodates changes
-  - ✅ spec-template.md: Constitution Alignment section uses bullet list that accommodates changes
-  - ✅ tasks-template.md: Constitution compliance verification checklist updated language
+  - ✅ plan-template.md: Constitution Check section updated with principle 15
+  - ✅ spec-template.md: Constitution Alignment section updated with principle 15
+  - ✅ tasks-template.md: Constitution compliance verification checklist updated with principle 15
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.9.0: Strengthened Principle IX "Pre-existing is not an excuse"
   - v2.8.0: Added Principle XIV - Working Files Hygiene
   - v2.7.0: Added Principle XIII - Build Output Isolation
   - v2.6.0: Added Principle XII - Spec Index Maintenance
@@ -772,6 +770,134 @@ find . -name "debug-*.png" -o -name "*-FIX-*.md" -o -name "*-VERIFICATION-*.md" 
 git status --porcelain | grep -E '\.(png|jpg|md)$'
 ```
 
+### XV. DRY Code & Configuration (NON-NEGOTIABLE)
+
+**Duplication is a bug**. All code, configuration, and tooling MUST follow the DRY (Don't
+Repeat Yourself) principle. When the same logic, pattern, or configuration appears in
+multiple places, it MUST be extracted to a single source of truth.
+
+**Code DRY requirements**:
+- If the same logic appears in 2+ files, extract it to a shared utility
+- Utility functions belong in `@academic-explorer/utils` or the most foundational applicable package
+- Type definitions MUST have a single canonical location (`@academic-explorer/types`)
+- Magic numbers and strings MUST be defined as named constants
+- Repeated patterns MUST be extracted to reusable abstractions
+- Copy-paste code is a code smell that MUST be addressed immediately
+
+**Configuration DRY requirements**:
+- Shared TypeScript configuration in `tsconfig.base.json` - packages extend it
+- Shared ESLint configuration at root - packages extend it
+- Shared Vitest/test configuration where possible
+- Build configurations in `project.json` files MUST NOT duplicate common patterns
+- Environment variables MUST NOT be duplicated across files
+- NPM scripts MUST NOT duplicate functionality available through Nx targets
+
+**Tooling DRY requirements**:
+- Single package manager (pnpm) for all dependency operations
+- Nx for all build orchestration - do not bypass with direct tool invocations
+- Shared formatting/linting rules - no per-package deviations without justification
+- CI/CD workflows MUST reuse jobs/steps rather than duplicating commands
+- Git hooks configured once at root, not per-package
+
+**Proactive cruft cleanup** (MANDATORY):
+- Unused dependencies MUST be removed immediately when discovered
+- Dead code MUST be deleted, not commented out
+- Orphaned configuration files MUST be removed
+- Outdated documentation MUST be updated or deleted
+- Empty directories MUST be removed
+- Unused exports MUST be removed from package index files
+- Stale imports MUST be cleaned up
+- **Do NOT wait to be asked** - clean cruft proactively when you see it
+
+**Single source of truth examples**:
+```typescript
+// ❌ WRONG: Duplicated entity type list
+// In file A:
+const entityTypes = ['works', 'authors', 'sources', 'institutions'];
+// In file B:
+const validTypes = ['works', 'authors', 'sources', 'institutions'];
+
+// ✅ CORRECT: Single source of truth
+// In @academic-explorer/types:
+export const ENTITY_TYPES = ['works', 'authors', 'sources', 'institutions'] as const;
+// Both files import from canonical source
+```
+
+```json
+// ❌ WRONG: Duplicated tsconfig settings in every package
+// packages/utils/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "strict": true,
+    // ... 20 more lines
+  }
+}
+
+// ✅ CORRECT: Extend shared base
+// packages/utils/tsconfig.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  }
+}
+```
+
+**Detection patterns**:
+```bash
+# Find potential code duplication (similar function names)
+grep -rh "export function" packages/ | sort | uniq -c | sort -rn | head -20
+
+# Find duplicated configuration patterns
+diff packages/*/tsconfig.json | grep -E "^[<>]"
+
+# Find unused exports (requires build)
+# Run TypeScript with noUnusedLocals and examine output
+
+# Find orphaned dependencies
+pnpm why <package-name>  # If nothing uses it, remove it
+```
+
+**Cruft indicators to watch for**:
+- Comments containing `TODO(cleanup)`, `FIXME`, `HACK`, or `TEMPORARY`
+- Functions/variables prefixed with `old_`, `deprecated_`, `unused_`
+- Files ending in `.bak`, `.old`, `.disabled`
+- Commented-out code blocks
+- Empty or near-empty files
+- Configuration overrides that match defaults
+- Dependencies not imported anywhere
+
+**Rationale**: Duplication creates maintenance burden, increases bug surface area, and
+leads to drift where copies diverge over time. In a PhD research project with limited
+time, every duplicate is a tax on productivity.
+
+DRY code and configuration ensures:
+1. **Single point of change** - Updates happen in one place, propagate everywhere
+2. **Consistency** - Behavior is identical across all usages
+3. **Reduced bugs** - Fewer places for inconsistencies to hide
+4. **Easier refactoring** - Changes affect one location, not many
+5. **Clear architecture** - Shared code reveals actual dependencies
+6. **Smaller codebase** - Less code to read, understand, and maintain
+
+Proactive cruft cleanup ensures:
+1. **No accumulation** - Technical debt is paid immediately, not deferred
+2. **Clear signal** - Every file/function has a purpose; nothing is abandoned
+3. **Faster navigation** - Less noise when exploring codebase
+4. **Accurate dependencies** - No phantom dependencies on removed code
+5. **Professional quality** - Research codebase reflects academic standards
+
+**Relationship to Monorepo Architecture (Principle III)**: DRY reinforces monorepo
+benefits—shared packages exist to eliminate duplication between apps.
+
+**Relationship to Repository Integrity (Principle IX)**: Cruft and duplication degrade
+repository quality. Cleanup is part of leaving the repo better than you found it.
+
+**Relationship to Development-Stage Pragmatism (Principle VII)**: During development,
+aggressively delete and consolidate without worrying about backward compatibility.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -805,6 +931,18 @@ find . -name "debug-*.png" -o -name "*-FIX-*.md" -o -name "COMPLETE-*.md" | grep
 
 # Delete any found working files
 rm -f apps/web/debug-*.png apps/web/*-FIX-*.md apps/web/COMPLETE-*.md apps/web/CRITICAL-*.md
+```
+
+**DRY verification**: During code review and before commits:
+```bash
+# Check for similar function definitions across packages
+grep -rh "export function" packages/ | sort | uniq -c | sort -rn | head -10
+
+# Check for duplicate type definitions
+grep -rh "export type\|export interface" packages/ | sort | uniq -c | sort -rn | head -10
+
+# Check for unused dependencies
+pnpm dedupe --check
 ```
 
 **Nx-managed dependencies**: Use `nx affected:test` and `nx affected:build` to test/build
@@ -868,12 +1006,12 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all fourteen core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all fifteen core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
 development-stage pragmatism, test-first bug fixes, repository integrity, continuous
-execution, complete implementation, spec index maintenance, build output isolation, and
-working files hygiene.
+execution, complete implementation, spec index maintenance, build output isolation,
+working files hygiene, and DRY code & configuration.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -932,6 +1070,14 @@ MUST be documented in commit messages and changelogs.
 - Working directory clean of transient artifacts before commit
 - `.gitignore` includes patterns for common working file types
 
+**DRY code & configuration verification**:
+- No duplicate logic across multiple files
+- Configuration files extend shared base where possible
+- Type definitions have single canonical source
+- No orphaned/unused code or dependencies
+- No commented-out code blocks in production files
+- Proactive cruft cleanup performed during every session
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -947,4 +1093,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.9.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-27
+**Version**: 2.10.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-27

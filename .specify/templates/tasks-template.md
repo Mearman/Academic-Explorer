@@ -175,6 +175,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] specs/README.md updated with spec status (Spec Index Maintenance)
   - [ ] TypeScript builds output to dist/, not alongside source files (Build Output Isolation)
   - [ ] Working files cleaned up before commit (Working Files Hygiene)
+  - [ ] No duplicate logic; shared code extracted; configuration extends base; cruft cleaned (DRY Code & Configuration)
 
 ---
 
