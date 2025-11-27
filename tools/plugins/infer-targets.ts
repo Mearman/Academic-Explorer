@@ -14,22 +14,32 @@
  *           { "target": "barrelsby", "when": { "pathExists": "src" } },
  *           { "target": "typecheck", "when": { "pathExists": "tsconfig.json" } },
  *           { "target": "storybook", "when": { "hasTag": "type:ui" } },
- *           { "target": "e2e", "when": { "hasAnyTag": ["type:app", "scope:web"] } }
+ *           { "target": "lint", "when": { "not": { "hasTag": "no-lint" } } },
+ *           { "target": "e2e", "when": { "or": [{ "hasTag": "type:app" }, { "hasTag": "scope:e2e" }] } }
  *         ]
  *       }
  *     }
  *   ]
  * }
  *
- * Supported conditions:
+ * Primitive conditions:
  * - pathExists: string - File/directory exists in project
- * - pathNotExists: string - File/directory doesn't exist
  * - hasTarget: string - Project has the specified target
- * - notHasTarget: string - Project doesn't have the target
  * - hasTag: string - Project has the specified tag
- * - notHasTag: string - Project doesn't have the tag
  * - hasAnyTag: string[] - Project has any of the tags
  * - hasAllTags: string[] - Project has all of the tags
+ *
+ * Logical operators (JSON Logic-inspired, recursive):
+ * - not: Condition - Negates a condition
+ * - and: Condition[] - All conditions must be true
+ * - or: Condition[] - At least one condition must be true
+ * - xor: Condition[] - Exactly one condition must be true (A ⊕ B)
+ *
+ * Examples:
+ * - { "not": { "pathExists": ".eslintrc.js" } }
+ * - { "and": [{ "pathExists": "src" }, { "hasTag": "type:lib" }] }
+ * - { "or": [{ "hasTag": "type:app" }, { "hasTag": "type:e2e" }] }
+ * - { "xor": [{ "hasTag": "scope:web" }, { "hasTag": "scope:cli" }] }
  */
 
 import {
@@ -39,32 +49,24 @@ import {
 	createNodesFromFiles,
 	ProjectConfiguration,
 } from "@nx/devkit"
-import { existsSync, statSync } from "fs"
+import { existsSync } from "fs"
 import { dirname, join } from "path"
 
-// Rule condition types
+// ============================================================================
+// Condition Types - JSON Logic-inspired syntax
+// ============================================================================
+
+// Primitive conditions (base building blocks)
 interface PathExistsCondition {
 	pathExists: string
-}
-
-interface PathNotExistsCondition {
-	pathNotExists: string
 }
 
 interface HasTargetCondition {
 	hasTarget: string
 }
 
-interface NotHasTargetCondition {
-	notHasTarget: string
-}
-
 interface HasTagCondition {
 	hasTag: string
-}
-
-interface NotHasTagCondition {
-	notHasTag: string
 }
 
 interface HasAnyTagCondition {
@@ -75,15 +77,36 @@ interface HasAllTagsCondition {
 	hasAllTags: string[]
 }
 
-type RuleCondition =
+type PrimitiveCondition =
 	| PathExistsCondition
-	| PathNotExistsCondition
 	| HasTargetCondition
-	| NotHasTargetCondition
 	| HasTagCondition
-	| NotHasTagCondition
 	| HasAnyTagCondition
 	| HasAllTagsCondition
+
+// Logical operators (recursive)
+interface NotCondition {
+	not: RuleCondition
+}
+
+interface AndCondition {
+	and: RuleCondition[]
+}
+
+interface OrCondition {
+	or: RuleCondition[]
+}
+
+// XOR: exactly one condition is true
+// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
+interface XorCondition {
+	xor: RuleCondition[]
+}
+
+type LogicalCondition = NotCondition | AndCondition | OrCondition | XorCondition
+
+// Combined type
+type RuleCondition = PrimitiveCondition | LogicalCondition
 
 interface TargetRule {
 	target: string
@@ -117,30 +140,39 @@ interface ProjectContext {
 }
 
 function checkCondition(condition: RuleCondition, ctx: ProjectContext): boolean {
+	// Logical operators (recursive)
+	if ("not" in condition) {
+		return !checkCondition(condition.not, ctx)
+	}
+
+	if ("and" in condition) {
+		return condition.and.every((c) => checkCondition(c, ctx))
+	}
+
+	if ("or" in condition) {
+		return condition.or.some((c) => checkCondition(c, ctx))
+	}
+
+	if ("xor" in condition) {
+		// XOR: exactly one condition is true
+		// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
+		const results = condition.xor.map((c) => checkCondition(c, ctx))
+		const trueCount = results.filter(Boolean).length
+		return trueCount === 1
+	}
+
+	// Primitive conditions
 	if ("pathExists" in condition) {
 		const fullPath = join(ctx.workspaceRoot, ctx.projectRoot, condition.pathExists)
 		return existsSync(fullPath)
-	}
-
-	if ("pathNotExists" in condition) {
-		const fullPath = join(ctx.workspaceRoot, ctx.projectRoot, condition.pathNotExists)
-		return !existsSync(fullPath)
 	}
 
 	if ("hasTarget" in condition) {
 		return condition.hasTarget in ctx.existingTargets
 	}
 
-	if ("notHasTarget" in condition) {
-		return !(condition.notHasTarget in ctx.existingTargets)
-	}
-
 	if ("hasTag" in condition) {
 		return ctx.tags.includes(condition.hasTag)
-	}
-
-	if ("notHasTag" in condition) {
-		return !ctx.tags.includes(condition.notHasTag)
 	}
 
 	if ("hasAnyTag" in condition) {

@@ -14,21 +14,21 @@ interface ProjectJson {
 	[key: string]: unknown
 }
 
-// Rule condition types (same as infer-targets plugin)
+// ============================================================================
+// Condition Types - JSON Logic-inspired syntax (same as infer-targets plugin)
+// ============================================================================
+
+// Primitive conditions
 interface PathExistsCondition {
 	pathExists: string
 }
 
-interface PathNotExistsCondition {
-	pathNotExists: string
+interface HasTargetCondition {
+	hasTarget: string
 }
 
 interface HasTagCondition {
 	hasTag: string
-}
-
-interface NotHasTagCondition {
-	notHasTag: string
 }
 
 interface HasAnyTagCondition {
@@ -39,13 +39,36 @@ interface HasAllTagsCondition {
 	hasAllTags: string[]
 }
 
-type RuleCondition =
+type PrimitiveCondition =
 	| PathExistsCondition
-	| PathNotExistsCondition
+	| HasTargetCondition
 	| HasTagCondition
-	| NotHasTagCondition
 	| HasAnyTagCondition
 	| HasAllTagsCondition
+
+// Logical operators (recursive)
+interface NotCondition {
+	not: RuleCondition
+}
+
+interface AndCondition {
+	and: RuleCondition[]
+}
+
+interface OrCondition {
+	or: RuleCondition[]
+}
+
+// XOR: exactly one condition is true
+// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
+interface XorCondition {
+	xor: RuleCondition[]
+}
+
+type LogicalCondition = NotCondition | AndCondition | OrCondition | XorCondition
+
+// Combined type
+type RuleCondition = PrimitiveCondition | LogicalCondition
 
 interface TargetRule {
 	target: string
@@ -61,6 +84,7 @@ interface ProjectContext {
 	tree: Tree
 	projectRoot: string
 	tags: string[]
+	existingTargets: Record<string, unknown>
 }
 
 // Default rules if none found in nx.json
@@ -78,22 +102,39 @@ const defaultRules: TargetRule[] = [
 ]
 
 function checkCondition(condition: RuleCondition, ctx: ProjectContext): boolean {
+	// Logical operators (recursive)
+	if ("not" in condition) {
+		return !checkCondition(condition.not, ctx)
+	}
+
+	if ("and" in condition) {
+		return condition.and.every((c) => checkCondition(c, ctx))
+	}
+
+	if ("or" in condition) {
+		return condition.or.some((c) => checkCondition(c, ctx))
+	}
+
+	if ("xor" in condition) {
+		// XOR: exactly one condition is true
+		// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
+		const results = condition.xor.map((c) => checkCondition(c, ctx))
+		const trueCount = results.filter(Boolean).length
+		return trueCount === 1
+	}
+
+	// Primitive conditions
 	if ("pathExists" in condition) {
 		const fullPath = `${ctx.projectRoot}/${condition.pathExists}`
 		return ctx.tree.exists(fullPath)
 	}
 
-	if ("pathNotExists" in condition) {
-		const fullPath = `${ctx.projectRoot}/${condition.pathNotExists}`
-		return !ctx.tree.exists(fullPath)
+	if ("hasTarget" in condition) {
+		return condition.hasTarget in ctx.existingTargets
 	}
 
 	if ("hasTag" in condition) {
 		return ctx.tags.includes(condition.hasTag)
-	}
-
-	if ("notHasTag" in condition) {
-		return !ctx.tags.includes(condition.notHasTag)
 	}
 
 	if ("hasAnyTag" in condition) {
@@ -186,6 +227,7 @@ export default async function syncTargetsGenerator(
 			tree,
 			projectRoot: projectConfig.root,
 			tags: projectJson.tags ?? [],
+			existingTargets: projectJson.targets,
 		}
 
 		// Check each rule
