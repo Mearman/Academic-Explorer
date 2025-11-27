@@ -17,14 +17,12 @@ export default {
     () => 'nx affected --target=typecheck'
   ],
 
-  // GitHub workflow files
-  '.github/**/*.yml': [
-    // Validate GitHub workflows with actionlint
+  // GitHub workflow files (actionlint only validates workflow files in .github/workflows/)
+  '.github/workflows/*.yml': [
     'actionlint'
   ],
 
-  '.github/**/*.yaml': [
-    // Validate GitHub workflows with actionlint
+  '.github/workflows/*.yaml': [
     'actionlint'
   ]
 };
