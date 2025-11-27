@@ -69,6 +69,7 @@ export default defineConfig(
 						name: "unit",
 						include: ["src/**/*.unit.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: ["./src/test/setup.ts"],
 					},
 				},
 				{
@@ -76,6 +77,7 @@ export default defineConfig(
 						name: "component",
 						include: ["src/**/*.component.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: ["./src/test/setup.ts"],
 					},
 				},
 				{
@@ -83,6 +85,7 @@ export default defineConfig(
 						name: "integration",
 						include: ["src/**/*.integration.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: ["./src/test/setup.ts"],
 						testTimeout: 30000,
 					},
 				},
