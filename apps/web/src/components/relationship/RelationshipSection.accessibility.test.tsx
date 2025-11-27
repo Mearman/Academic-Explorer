@@ -13,8 +13,6 @@ import * as matchers from 'vitest-axe/matchers';
 
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 
-import '@testing-library/jest-dom';
-
 import { RelationshipSection } from './RelationshipSection';
 
 // Extend Vitest matchers

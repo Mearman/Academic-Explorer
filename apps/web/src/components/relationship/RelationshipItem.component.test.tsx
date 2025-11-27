@@ -11,8 +11,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
 
-import '@testing-library/jest-dom';
-
 import { RelationshipItem } from './RelationshipItem';
 
 // Mock useNavigate hook

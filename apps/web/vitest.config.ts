@@ -86,30 +86,60 @@ export default defineConfig(
 			},
 
 			// Named projects for targeted test execution
-			// Note: Each project must inherit setupFiles since projects run independently
+			// Note: Each project must explicitly set plugins, resolve.alias, setupFiles, and deps since projects run independently
 			projects: [
 				{
+					plugins: [nxViteTsPaths(), react(), vanillaExtractPlugin()],
+					resolve: {
+						alias: {
+							"@": path.resolve(__dirname, "./src"),
+						},
+					},
 					test: {
 						name: "unit",
 						include: ["src/**/*.unit.test.{ts,tsx}"],
 						environment: "jsdom",
+						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+						deps: {
+							inline: [/@academic-explorer\/.*/],
+						},
 					},
 				},
 				{
+					plugins: [nxViteTsPaths(), react(), vanillaExtractPlugin()],
+					resolve: {
+						alias: {
+							"@": path.resolve(__dirname, "./src"),
+						},
+					},
 					test: {
 						name: "component",
 						include: ["src/**/*.component.test.{ts,tsx}"],
 						environment: "jsdom",
+						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+						deps: {
+							inline: [/@academic-explorer\/.*/],
+						},
 					},
 				},
 				{
+					plugins: [nxViteTsPaths(), react(), vanillaExtractPlugin()],
+					resolve: {
+						alias: {
+							"@": path.resolve(__dirname, "./src"),
+						},
+					},
 					test: {
 						name: "integration",
 						include: ["src/**/*.integration.test.{ts,tsx}"],
 						environment: "jsdom",
+						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+						deps: {
+							inline: [/@academic-explorer\/.*/],
+						},
 						testTimeout: 30000,
 					},
 				},

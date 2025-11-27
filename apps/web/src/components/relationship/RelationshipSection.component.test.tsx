@@ -10,8 +10,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 
-import '@testing-library/jest-dom';
-
 import { RelationshipSection } from './RelationshipSection';
 
 // Test wrapper with MantineProvider
