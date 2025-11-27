@@ -34,6 +34,7 @@ export default defineConfig(
 			},
 
 		test: {
+			watch: false,
 			environment: "jsdom",
 			setupFiles: ["./src/test/setup.ts"],
 			typecheck: {
@@ -42,6 +43,31 @@ export default defineConfig(
 			coverage: {
 			 reportsDirectory: "../../coverage/packages/ui",
 			},
+			// Named projects for targeted test execution
+			projects: [
+				{
+					test: {
+						name: "unit",
+						include: ["src/**/*.unit.test.{ts,tsx}"],
+						environment: "jsdom",
+					},
+				},
+				{
+					test: {
+						name: "component",
+						include: ["src/**/*.component.test.{ts,tsx}"],
+						environment: "jsdom",
+					},
+				},
+				{
+					test: {
+						name: "integration",
+						include: ["src/**/*.integration.test.{ts,tsx}"],
+						environment: "jsdom",
+						testTimeout: 30000,
+					},
+				},
+			],
 		},
 	})
 )

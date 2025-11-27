@@ -437,10 +437,10 @@
       ]
     },
     "test:unit": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --passWithNoTests '.unit.test.'",
-        "cwd": "{projectRoot}"
+        "configFile": "{projectRoot}/vitest.config.ts",
+        "project": "unit"
       },
       "cache": true,
       "dependsOn": ["^build"],
@@ -455,10 +455,10 @@
       ]
     },
     "test:component": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --passWithNoTests '.component.test.'",
-        "cwd": "{projectRoot}"
+        "configFile": "{projectRoot}/vitest.config.ts",
+        "project": "component"
       },
       "cache": true,
       "dependsOn": [
@@ -476,10 +476,10 @@
       ]
     },
     "test:integration": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --passWithNoTests '.integration.test.'",
-        "cwd": "{projectRoot}"
+        "configFile": "{projectRoot}/vitest.config.ts",
+        "project": "integration"
       },
       "cache": true,
       "dependsOn": [

@@ -45,6 +45,7 @@ export default defineConfig(
 		},
 
 		test: {
+			watch: false,
 			// Override for React/DOM environment
 			environment: "jsdom",
 			setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
@@ -75,6 +76,32 @@ export default defineConfig(
 			coverage: {
 				reportsDirectory: "../../coverage/apps/web",
 			},
+
+			// Named projects for targeted test execution
+			projects: [
+				{
+					test: {
+						name: "unit",
+						include: ["src/**/*.unit.test.{ts,tsx}"],
+						environment: "jsdom",
+					},
+				},
+				{
+					test: {
+						name: "component",
+						include: ["src/**/*.component.test.{ts,tsx}"],
+						environment: "jsdom",
+					},
+				},
+				{
+					test: {
+						name: "integration",
+						include: ["src/**/*.integration.test.{ts,tsx}"],
+						environment: "jsdom",
+						testTimeout: 30000,
+					},
+				},
+			],
 		},
 	}),
 );

@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    watch: false,
     include: ['__tests__/**/*.test.ts'],
     coverage: {
       provider: 'v8',
@@ -19,5 +20,23 @@ export default defineConfig({
     },
     maxConcurrency: 1,
     maxWorkers: 1,
+    // Named projects for targeted test execution
+    projects: [
+      {
+        test: {
+          name: 'unit',
+          include: ['__tests__/**/*.test.ts', 'src/**/*.unit.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
+          name: 'integration',
+          include: ['src/**/*.integration.test.ts'],
+          environment: 'node',
+          testTimeout: 30000,
+        },
+      },
+    ],
   },
 });
