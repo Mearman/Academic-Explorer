@@ -67,6 +67,13 @@
         "{workspaceRoot}/README.md"
       ],
       "cache": true
+    },
+    "build": {
+      "executor": "nx:noop",
+      "dependsOn": [
+        "docs:task-graph"
+      ],
+      "cache": true
     }
   },
   "tags": ["scope:workspace", "type:root"]
