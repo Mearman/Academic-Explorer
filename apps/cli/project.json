@@ -19,7 +19,8 @@
         "outputPath": "apps/cli/dist",
         "main": "apps/cli/src/openalex-cli.ts",
         "tsConfig": "apps/cli/tsconfig.json",
-        "assets": []
+        "assets": [],
+        "updateBuildableProjectDepsInPackageJson": false
       }
     }
   }
