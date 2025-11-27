@@ -63,8 +63,7 @@
     "test:web": "nx run web:test",
     "typecheck": "nx run-many -t typecheck",
     "typecheck:ci": "nx run-many -t typecheck --verbose",
-    "typecheck:fast": "tsx scripts/fast-typecheck.ts",
-    "validate": "nx run-many -t validate"
+    "typecheck:fast": "tsx scripts/fast-typecheck.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "20.0.0",

@@ -489,22 +489,6 @@
         "{workspaceRoot}/coverage/{projectRoot}/integration"
       ]
     },
-    "validate": {
-      "cache": true,
-      "dependsOn": [
-        "build",
-        "typecheck",
-        "lint",
-        "test:unit",
-        "test:component",
-        "test:integration"
-      ],
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "outputs": []
-    },
     "clean": {
       "cache": false,
       "inputs": [],
