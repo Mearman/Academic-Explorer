@@ -50,28 +50,16 @@
       "outputs": [],
       "cache": true
     },
-    "coverage:report": {
+    "deps:audit": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test"],
       "options": {
-        "command": "tsx workspace-coverage.config.ts",
-        "cwd": "{workspaceRoot}"
+        "command": "pnpm audit --audit-level moderate"
       },
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/coverage"]
-    },
-    "coverage:ci": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["test"],
-      "options": {
-        "command": "tsx workspace-coverage.config.ts",
-        "cwd": "{workspaceRoot}"
-      },
-      "configurations": {
-        "ci": {
-          "command": "tsx workspace-coverage.config.ts"
-        }
-      }
+      "inputs": [
+        "{workspaceRoot}/pnpm-lock.yaml"
+      ],
+      "outputs": [],
+      "cache": true
     },
     "deps:check": {
       "executor": "nx:run-commands",

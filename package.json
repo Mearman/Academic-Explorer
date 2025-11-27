@@ -16,7 +16,7 @@
     "clean": "nx reset && rm -rf dist coverage .nx/cache .tanstack node_modules/.vite && pnpm --filter='*' clean",
     "cli": "tsx apps/cli/src/openalex-cli.ts",
     "deps:analyze": "nx show project web --json | jq '.implicitDependencies' && nx graph --file=deps-graph.json && echo 'Dependency graph generated'",
-    "deps:audit": "pnpm audit --audit-level moderate",
+    "deps:audit": "nx run academic-explorer:deps:audit",
     "deps:check": "tsx tools/scripts/check-dependencies.ts",
     "deps:outdated": "pnpm outdated",
     "deps:update": "pnpm update --interactive --latest",
