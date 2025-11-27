@@ -12,7 +12,7 @@
   "scripts": {
     "barrels": "nx run-many -t barrelsby",
     "barrels:dry": "barrelsby --config .barrelsby.json --delete false",
-    "build": "nx run-many -t build || nx run-many -t build",
+    "build": "nx run-many -t build",
     "ci:logs": "tsx scripts/monitor-ci.ts logs",
     "ci:status": "tsx scripts/monitor-ci.ts status",
     "ci:watch": "tsx scripts/monitor-ci.ts watch",
