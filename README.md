@@ -88,7 +88,7 @@ tools/          # Development tools
 
 <!-- nx-task-graph-start -->
 ```mermaid
-flowchart TB
+flowchart LR
 
     subgraph algorithms["algorithms"]
         algorithms_build[["build"]]
