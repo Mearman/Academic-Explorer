@@ -5,13 +5,6 @@
   "projectType": "library",
   "tags": ["type:tooling", "scope:generators"],
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "tools/generators"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {

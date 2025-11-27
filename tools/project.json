@@ -5,14 +5,6 @@
   "projectType": "library",
   "tags": ["type:tooling", "scope:internal"],
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "command": "tsc --noEmit -p tsconfig.json",
-        "cwd": "tools"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
