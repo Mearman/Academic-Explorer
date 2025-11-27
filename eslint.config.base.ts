@@ -177,6 +177,19 @@ export default tseslint.config([
             "custom/no-deprecated": "off", // Disable for test files due to TypeScript service issues
         },
     },
+    // Skip type-aware linting for algorithms __tests__ (pre-existing type issues per CLAUDE.md)
+    {
+        files: ["packages/algorithms/__tests__/**/*.ts"],
+        languageOptions: {
+            parserOptions: {
+                projectService: false,
+                project: null,
+            },
+        },
+        rules: {
+            "custom/no-deprecated": "off",
+        },
+    },
     // Allow default exports for config files and special cases
     {
         files: [

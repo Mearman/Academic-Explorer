@@ -6,13 +6,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { LeidenCommunity } from '../../src/types/clustering-types';
-import { calculateModularity } from '../../src/metrics/modularity';
-import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
+
 import { leiden } from '../../src/clustering/leiden';
 import { detectCommunities as louvain } from '../../src/clustering/louvain';
 import { Graph } from '../../src/graph/graph';
-import type { PaperNode, CitationEdge } from '../fixtures/citation-networks';
+import { calculateModularity } from '../../src/metrics/modularity';
+import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
 
 /**
  * Check if a community is connected using BFS.
@@ -86,7 +85,7 @@ describe('Leiden Community Detection', () => {
       expect(communities.length).toBeGreaterThan(0);
 
       // Validate each community is connected
-      communities.forEach((community, idx) => {
+      communities.forEach((community) => {
         expect(community.isConnected).toBe(true);
         expect(community.nodes.size).toBeGreaterThan(0);
 
@@ -101,7 +100,8 @@ describe('Leiden Community Detection', () => {
       const graph = smallCitationNetwork();
 
       // When: Run both Louvain and Leiden
-      const louvainCommunities = louvain(graph);
+      // Run Louvain for comparison (validates both algorithms work on same graph)
+      louvain(graph);
       const leidenResult = leiden(graph);
 
       expect(leidenResult.ok).toBe(true);

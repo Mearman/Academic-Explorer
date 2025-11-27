@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { extractEgoNetwork } from '../../src/extraction/ego-network';
 import { createRandomGraph } from '../fixtures/extraction-graphs';
 

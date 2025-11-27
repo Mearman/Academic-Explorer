@@ -18,11 +18,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { detectCommunities } from '../../src/clustering/louvain';
+import { Graph } from '../../src/graph/graph';
 import { calculateModularity } from '../../src/metrics/modularity';
 import { smallCitationNetwork, largeCitationNetwork, generateCitationNetwork } from '../fixtures/citation-networks';
 import type { PaperNode, CitationEdge } from '../fixtures/citation-networks';
-import { Graph } from '../../src/graph/graph';
 
 /**
  * Create a medium-sized citation network (500 nodes) for scaling tests.

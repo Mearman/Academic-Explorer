@@ -6,14 +6,15 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
-import type { Node, Edge } from '../../src/types/graph';
-import type { Community } from '../../src/types/clustering-types';
 import {
   calculateModularity,
   calculateCommunityModularity,
   calculateModularityDelta,
 } from '../../src/metrics/modularity';
+import type { Community } from '../../src/types/clustering-types';
+import type { Node, Edge } from '../../src/types/graph';
 import { knownCommunityGraph, karateClubGraph } from '../fixtures/known-clusters';
 
 describe('calculateModularity', () => {

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
 import { dijkstra } from '../../src/pathfinding/dijkstra';
 import { type Node, type Edge } from '../../src/types/graph';

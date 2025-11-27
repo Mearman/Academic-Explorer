@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { infomap } from '../../src/clustering/infomap';
 import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
 
@@ -26,7 +27,7 @@ describe('Infomap Clustering', () => {
       expect(result.ok).toBe(true);
       if (!result.ok) return;
 
-      const { modules, metrics, compressionRatio } = result.value;
+      const { modules } = result.value;
 
       // Should detect communities (not just single module)
       expect(modules.length).toBeGreaterThan(1);

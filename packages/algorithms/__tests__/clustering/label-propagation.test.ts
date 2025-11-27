@@ -6,10 +6,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { labelPropagation } from '../../src/clustering/label-propagation';
+import { Graph } from '../../src/graph/graph';
 import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
 import type { PaperNode, CitationEdge } from '../fixtures/citation-networks';
-import { Graph } from '../../src/graph/graph';
 
 /**
  * Create a 10k-node citation network for scalability testing.
@@ -82,7 +83,7 @@ function extraLargeCitationNetwork(): Graph<PaperNode, CitationEdge> {
     // Each paper cites 2 papers from other communities
     for (let j = 0; j < 2; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(Math.random() * 9)) % 10;
+      const targetCommunity = (sourceCommunity + 1 + Math.floor(Math.random() * 9)) % 10;
       const targetStart = targetCommunity * 1000;
       const target = targetStart + Math.floor(Math.random() * 1000);
 

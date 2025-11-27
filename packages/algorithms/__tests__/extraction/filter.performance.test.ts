@@ -2,6 +2,7 @@
  * Performance tests for attribute-based subgraph filtering
  */
 import { describe, it, expect } from 'vitest';
+
 import { filterSubgraph } from '../../src/extraction/filter';
 import { Graph } from '../../src/graph/graph';
 import type { Node, Edge } from '../../src/types/graph';

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
+
+import { findShortestPath, extractReachabilitySubgraph } from '../../src/extraction/path';
 import { Graph } from '../../src/graph/graph';
 import type { Node, Edge } from '../../src/types/graph';
-import { findShortestPath, extractReachabilitySubgraph } from '../../src/extraction/path';
 import {
   createChainGraph,
   createDisconnectedGraph,

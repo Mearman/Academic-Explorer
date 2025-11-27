@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
 import { dfs } from '../../src/traversal/dfs';
 import { type Node, type Edge } from '../../src/types/graph';

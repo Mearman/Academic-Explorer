@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { findShortestPath } from '../../src/extraction/path';
 import { createCitationNetwork } from '../fixtures/extraction-graphs';
 

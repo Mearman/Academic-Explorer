@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { detectTriangles } from '../../src/extraction/motif';
 import { createRandomGraph } from '../fixtures/extraction-graphs';
 

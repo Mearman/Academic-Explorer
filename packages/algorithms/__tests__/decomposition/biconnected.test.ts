@@ -6,8 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { biconnectedComponents } from '../../src/decomposition/biconnected';
+import { Graph } from '../../src/graph/graph';
 import type { PaperNode, CitationEdge } from '../fixtures/citation-networks';
 
 describe('Biconnected Component Decomposition', () => {

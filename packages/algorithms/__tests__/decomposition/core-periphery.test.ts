@@ -6,8 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { corePeripheryDecomposition } from '../../src/decomposition/core-periphery';
+import { Graph } from '../../src/graph/graph';
 import type { CorePeripheryResult } from '../../src/types/clustering-types';
 
 /**

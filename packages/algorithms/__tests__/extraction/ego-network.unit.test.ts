@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest';
+
 import { extractEgoNetwork, extractMultiSourceEgoNetwork } from '../../src/extraction/ego-network';
+import { Graph } from '../../src/graph/graph';
+import type { Node, Edge } from '../../src/types/graph';
 import {
   createStarGraph,
   createChainGraph,
   createDisconnectedGraph,
 } from '../fixtures/extraction-graphs';
-import { Graph } from '../../src/graph/graph';
-import type { Node, Edge } from '../../src/types/graph';
 
 describe('extractEgoNetwork', () => {
   describe('radius-1 ego network', () => {

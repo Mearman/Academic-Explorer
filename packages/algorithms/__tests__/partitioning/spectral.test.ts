@@ -6,9 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { Partition } from '../../src/types/clustering-types';
-import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
+
 import { spectralPartition } from '../../src/partitioning/spectral';
+import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
 
 describe('Spectral Graph Partitioning', () => {
   describe('User Story 2 - Scenario 1: Balanced Partitions', () => {
@@ -37,7 +37,6 @@ describe('Spectral Graph Partitioning', () => {
         const idealSize = totalNodes / k;
         const sizes = partitions.map(p => p.size);
         const maxSize = Math.max(...sizes);
-        const minSize = Math.min(...sizes);
         const balanceRatio = maxSize / idealSize;
 
         // Balance ratio should be <= 1.2 (within 20% of ideal)

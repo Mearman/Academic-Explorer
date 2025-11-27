@@ -6,8 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { kCoreDecomposition } from '../../src/decomposition/k-core';
+import { Graph } from '../../src/graph/graph';
 import { largeCitationNetwork } from '../fixtures/citation-networks';
 
 /**
@@ -219,7 +220,7 @@ describe('K-Core Decomposition (User Story 4)', () => {
       const { coreNumbers, degeneracy } = result.value;
 
       // All core numbers should be in range [0, degeneracy]
-      coreNumbers.forEach((coreNumber, nodeId) => {
+      coreNumbers.forEach((coreNumber) => {
         expect(coreNumber).toBeGreaterThanOrEqual(0);
         expect(coreNumber).toBeLessThanOrEqual(degeneracy);
       });

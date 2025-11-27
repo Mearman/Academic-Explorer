@@ -6,9 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
-import type { Node, Edge } from '../../src/types/graph';
-import type { Community } from '../../src/types/clustering-types';
 import {
   calculateDensity,
   calculateAverageDensity,
@@ -16,6 +15,8 @@ import {
   calculateClusterMetrics,
   updateCommunityDensities,
 } from '../../src/metrics/cluster-quality';
+import type { Community } from '../../src/types/clustering-types';
+import type { Node, Edge } from '../../src/types/graph';
 import { knownCommunityGraph, ringOfCliquesGraph } from '../fixtures/known-clusters';
 
 describe('calculateDensity', () => {
@@ -142,7 +143,7 @@ describe('calculateDensity', () => {
 
     // Get first clique (complete graph K5)
     const firstCliqueNodes = Array.from(groundTruth.assignments.entries())
-      .filter(([_, communityId]) => communityId === 0)
+      .filter((entry) => entry[1] === 0)
       .map(([nodeId]) => graph.getNode(nodeId).value!)
       .filter((node): node is Node => node !== undefined);
 

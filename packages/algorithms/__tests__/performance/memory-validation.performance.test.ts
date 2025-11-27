@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { Graph, dfs, bfs, dijkstra, connectedComponents, type Node, type Edge } from '../../src/index';
 
 describe('memory validation (SC-007)', () => {
