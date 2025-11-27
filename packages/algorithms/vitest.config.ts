@@ -1,6 +1,8 @@
+import * as path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  root: __dirname,
   resolve: {
     // Use source condition to resolve workspace packages to source files
     conditions: ["source", "import", "module", "default"],
