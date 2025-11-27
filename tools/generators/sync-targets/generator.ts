@@ -182,7 +182,6 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 		// ========== Comparison Operators ==========
 		case "==": {
 			const [a, b] = evalArgs()
-			// eslint-disable-next-line eqeqeq
 			return a == b
 		}
 
@@ -193,7 +192,6 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 
 		case "!=": {
 			const [a, b] = evalArgs()
-			// eslint-disable-next-line eqeqeq
 			return a != b
 		}
 

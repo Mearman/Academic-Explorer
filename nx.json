@@ -437,28 +437,28 @@
       ]
     },
     "test:unit": {
-      "executor": "@nx/vitest:test",
+      "executor": "nx:run-commands",
       "options": {
-        "include": ["src/**/*.unit.test.{ts,tsx}"],
-        "passWithNoTests": true,
-        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/unit"
+        "command": "vitest run --passWithNoTests '.unit.test.'",
+        "cwd": "{projectRoot}"
       },
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": [
         "default",
-        "^production"
+        "^production",
+        "{workspaceRoot}/vitest.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
         "{workspaceRoot}/coverage/{projectRoot}/unit"
       ]
     },
     "test:component": {
-      "executor": "@nx/vitest:test",
+      "executor": "nx:run-commands",
       "options": {
-        "include": ["src/**/*.component.test.{ts,tsx}"],
-        "passWithNoTests": true,
-        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/component"
+        "command": "vitest run --passWithNoTests '.component.test.'",
+        "cwd": "{projectRoot}"
       },
       "cache": true,
       "dependsOn": [
@@ -467,18 +467,19 @@
       ],
       "inputs": [
         "default",
-        "^production"
+        "^production",
+        "{workspaceRoot}/vitest.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
         "{workspaceRoot}/coverage/{projectRoot}/component"
       ]
     },
     "test:integration": {
-      "executor": "@nx/vitest:test",
+      "executor": "nx:run-commands",
       "options": {
-        "include": ["src/**/*.integration.test.{ts,tsx}"],
-        "passWithNoTests": true,
-        "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/integration"
+        "command": "vitest run --passWithNoTests '.integration.test.'",
+        "cwd": "{projectRoot}"
       },
       "cache": true,
       "dependsOn": [
@@ -487,7 +488,9 @@
       ],
       "inputs": [
         "default",
-        "^production"
+        "^production",
+        "{workspaceRoot}/vitest.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
         "{workspaceRoot}/coverage/{projectRoot}/integration"
