@@ -334,7 +334,7 @@
       "cache": false
     },
     "preview": {
-      "cache": true,
+      "cache": false,
       "dependsOn": [
         "build"
       ]
