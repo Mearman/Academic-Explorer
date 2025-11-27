@@ -1,6 +1,6 @@
 {
   "name": "academic-explorer",
-  "version": "21.0.1",
+  "version": "21.0.2",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.18.3",

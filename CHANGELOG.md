@@ -1,3 +1,9 @@
+## <small>21.0.2 (2025-11-27)</small>
+
+* fix(config): handle missing coverage artifacts gracefully ([e55fdc7](https://github.com/Mearman/Academic-Explorer/commit/e55fdc7))
+* fix(graph): increase label propagation scaling test margin for CI ([b78ba7a](https://github.com/Mearman/Academic-Explorer/commit/b78ba7a))
+* chore(release): 21.0.1 [skip ci] ([1331796](https://github.com/Mearman/Academic-Explorer/commit/1331796))
+
 ## <small>21.0.1 (2025-11-27)</small>
 
 * fix(cli): use importOriginal in logger mock to preserve all exports ([8a65e9e](https://github.com/Mearman/Academic-Explorer/commit/8a65e9e))
