@@ -115,6 +115,25 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 			return getVar(data, path)
 		}
 
+		case "missing": {
+			const keys = Array.isArray(args) ? args : [args]
+			return keys.filter((key) => {
+				const val = getVar(data, evalArg(key))
+				return val === null || val === undefined || val === ""
+			})
+		}
+
+		case "missing_some": {
+			const [minRequired, keys] = Array.isArray(args) ? args : [1, [args]]
+			const evalKeys = Array.isArray(keys) ? keys : [keys]
+			const missing = evalKeys.filter((key) => {
+				const val = getVar(data, evalArg(key))
+				return val === null || val === undefined || val === ""
+			})
+			const present = evalKeys.length - missing.length
+			return present >= minRequired ? [] : missing
+		}
+
 		// ========== Logical Operators ==========
 		case "and": {
 			const conditions = Array.isArray(args) ? args : [args]
@@ -211,6 +230,44 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 			return false
 		}
 
+		// ========== Numeric Operators ==========
+		case "max": {
+			const vals = evalArgs()
+			return Math.max(...vals.map(Number))
+		}
+
+		case "min": {
+			const vals = evalArgs()
+			return Math.min(...vals.map(Number))
+		}
+
+		case "+": {
+			const vals = evalArgs()
+			if (vals.length === 1) return Number(vals[0])
+			return vals.reduce((sum, v) => sum + Number(v), 0)
+		}
+
+		case "-": {
+			const vals = evalArgs()
+			if (vals.length === 1) return -Number(vals[0])
+			return Number(vals[0]) - Number(vals[1])
+		}
+
+		case "*": {
+			const vals = evalArgs()
+			return vals.reduce((prod, v) => prod * Number(v), 1)
+		}
+
+		case "/": {
+			const [a, b] = evalArgs()
+			return Number(a) / Number(b)
+		}
+
+		case "%": {
+			const [a, b] = evalArgs()
+			return Number(a) % Number(b)
+		}
+
 		// ========== Array/String Operators ==========
 		case "in": {
 			const [needle, haystack] = evalArgs()
@@ -248,6 +305,66 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 				const itemData = { ...data, "": item }
 				return !!evaluate(condition, itemData, fsContext)
 			})
+		}
+
+		case "map": {
+			const [arr, mapper] = Array.isArray(args) ? args : [args, { var: "" }]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return []
+			return evalArr.map((item) => {
+				const itemData = { ...data, "": item }
+				return evaluate(mapper, itemData, fsContext)
+			})
+		}
+
+		case "filter": {
+			const [arr, condition] = Array.isArray(args) ? args : [args, true]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return []
+			return evalArr.filter((item) => {
+				const itemData = { ...data, "": item }
+				return !!evaluate(condition, itemData, fsContext)
+			})
+		}
+
+		case "reduce": {
+			const [arr, reducer, initial] = Array.isArray(args) ? args : [args, { var: "current" }, 0]
+			const evalArr = evalArg(arr)
+			const evalInitial = evalArg(initial)
+			if (!Array.isArray(evalArr)) return evalInitial
+			return evalArr.reduce((acc, item) => {
+				const itemData = { ...data, "": item, current: acc, accumulator: acc }
+				return evaluate(reducer, itemData, fsContext)
+			}, evalInitial)
+		}
+
+		case "merge": {
+			const vals = evalArgs()
+			return vals.flat()
+		}
+
+		// ========== String Operators ==========
+		case "cat": {
+			const vals = evalArgs()
+			return vals.map(String).join("")
+		}
+
+		case "substr": {
+			const vals = evalArgs()
+			const str = String(vals[0])
+			const start = Number(vals[1])
+			const length = vals.length > 2 ? Number(vals[2]) : undefined
+			const actualStart = start < 0 ? Math.max(0, str.length + start) : start
+			if (length === undefined) return str.substring(actualStart)
+			if (length < 0) return str.substring(actualStart, str.length + length)
+			return str.substring(actualStart, actualStart + length)
+		}
+
+		// ========== Miscellaneous ==========
+		case "log": {
+			const val = evalArg(Array.isArray(args) ? args[0] : args)
+			console.log("JsonLogic log:", val)
+			return val
 		}
 
 		// ========== Extensions ==========

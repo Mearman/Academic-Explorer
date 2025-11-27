@@ -2,7 +2,7 @@
  * Infer Targets Plugin
  *
  * Automatically infers targets for projects based on declarative rules in nx.json.
- * Uses JSON Logic (jsonlogic.com) compliant syntax for conditions.
+ * Uses JSON Logic (jsonlogic.com) fully compliant syntax for conditions.
  *
  * Data context available via `var`:
  * - tags: string[] - Project tags
@@ -26,19 +26,38 @@
  *   ]
  * }
  *
- * JSON Logic operators (jsonlogic.com compliant):
- * - var: Access data (e.g., { "var": "tags" }, { "var": "targets" })
- * - and: All conditions truthy
- * - or: Any condition truthy
- * - !: Negation (alias: not)
- * - !!: Double negation (truthy coercion)
- * - if: Conditional [condition, then, else, ...]
+ * JSON Logic operators (jsonlogic.com fully compliant):
+ *
+ * Data Access:
+ * - var: Access data ({ "var": "tags" }, { "var": "" } for iteration context)
+ * - missing: Returns array of missing keys ({ "missing": ["a", "b"] })
+ * - missing_some: Returns missing if below minimum ({ "missing_some": [2, ["a", "b", "c"]] })
+ *
+ * Logic/Boolean:
+ * - if: Conditional ({ "if": [cond, then, else] })
  * - ==, ===, !=, !==: Equality operators
- * - <, >, <=, >=: Comparison operators (supports 3-arg between)
+ * - !, !!: Negation and double-negation (truthy cast)
+ * - or, and: Logical operators (short-circuit evaluation)
+ *
+ * Numeric:
+ * - <, >, <=, >=: Comparison (supports 3-arg between: { "<": [1, x, 10] })
+ * - max, min: Maximum/minimum of values
+ * - +, -, *, /, %: Arithmetic operators
+ *
+ * Array:
  * - in: Array membership or substring check
- * - some: Any array element passes condition
- * - all: All array elements pass condition
- * - none: No array elements pass condition
+ * - some, all, none: Test array elements against condition
+ * - map: Transform array elements ({ "map": [arr, mapper] })
+ * - filter: Keep elements passing test ({ "filter": [arr, condition] })
+ * - reduce: Combine elements ({ "reduce": [arr, reducer, initial] })
+ * - merge: Flatten arrays ({ "merge": [[1,2], [3,4]] } → [1,2,3,4])
+ *
+ * String:
+ * - cat: Concatenate strings ({ "cat": ["a", "b"] } → "ab")
+ * - substr: Extract substring ({ "substr": [str, start, length?] })
+ *
+ * Miscellaneous:
+ * - log: Console log and pass through value
  *
  * Extensions:
  * - xor: Exactly one condition true (A ⊕ B)
@@ -170,6 +189,29 @@ function evaluate(
 			return getVar(data, path)
 		}
 
+		case "missing": {
+			// Returns array of keys that are missing (null/undefined) in data
+			const keys = Array.isArray(args) ? args : [args]
+			return keys.filter((key) => {
+				const val = getVar(data, evalArg(key))
+				return val === null || val === undefined || val === ""
+			})
+		}
+
+		case "missing_some": {
+			// { "missing_some": [min_required, ["a", "b", "c"]] }
+			// Returns empty array if at least min_required keys are present
+			// Otherwise returns the missing keys
+			const [minRequired, keys] = Array.isArray(args) ? args : [1, [args]]
+			const evalKeys = Array.isArray(keys) ? keys : [keys]
+			const missing = evalKeys.filter((key) => {
+				const val = getVar(data, evalArg(key))
+				return val === null || val === undefined || val === ""
+			})
+			const present = evalKeys.length - missing.length
+			return present >= minRequired ? [] : missing
+		}
+
 		// ========== Logical Operators ==========
 		case "and": {
 			const conditions = Array.isArray(args) ? args : [args]
@@ -284,6 +326,52 @@ function evaluate(
 			return false
 		}
 
+		// ========== Numeric Operators ==========
+		case "max": {
+			const vals = evalArgs()
+			return Math.max(...vals.map(Number))
+		}
+
+		case "min": {
+			const vals = evalArgs()
+			return Math.min(...vals.map(Number))
+		}
+
+		case "+": {
+			const vals = evalArgs()
+			// Single arg: cast to number
+			if (vals.length === 1) {
+				return Number(vals[0])
+			}
+			// Multiple args: sum
+			return vals.reduce((sum, v) => sum + Number(v), 0)
+		}
+
+		case "-": {
+			const vals = evalArgs()
+			// Single arg: negate
+			if (vals.length === 1) {
+				return -Number(vals[0])
+			}
+			// Two args: subtract
+			return Number(vals[0]) - Number(vals[1])
+		}
+
+		case "*": {
+			const vals = evalArgs()
+			return vals.reduce((prod, v) => prod * Number(v), 1)
+		}
+
+		case "/": {
+			const [a, b] = evalArgs()
+			return Number(a) / Number(b)
+		}
+
+		case "%": {
+			const [a, b] = evalArgs()
+			return Number(a) % Number(b)
+		}
+
 		// ========== Array/String Operators ==========
 		case "in": {
 			const [needle, haystack] = evalArgs()
@@ -325,6 +413,79 @@ function evaluate(
 				const itemData = { ...data, "": item }
 				return !!evaluate(condition, itemData, fsContext)
 			})
+		}
+
+		case "map": {
+			const [arr, mapper] = Array.isArray(args) ? args : [args, { var: "" }]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return []
+			return evalArr.map((item) => {
+				const itemData = { ...data, "": item }
+				return evaluate(mapper, itemData, fsContext)
+			})
+		}
+
+		case "filter": {
+			const [arr, condition] = Array.isArray(args) ? args : [args, true]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return []
+			return evalArr.filter((item) => {
+				const itemData = { ...data, "": item }
+				return !!evaluate(condition, itemData, fsContext)
+			})
+		}
+
+		case "reduce": {
+			// { "reduce": [array, mapper, initial] }
+			const [arr, reducer, initial] = Array.isArray(args) ? args : [args, { var: "current" }, 0]
+			const evalArr = evalArg(arr)
+			const evalInitial = evalArg(initial)
+			if (!Array.isArray(evalArr)) return evalInitial
+			return evalArr.reduce((acc, item) => {
+				const itemData = { ...data, "": item, current: acc, accumulator: acc }
+				return evaluate(reducer, itemData, fsContext)
+			}, evalInitial)
+		}
+
+		case "merge": {
+			// Merge multiple arrays into one
+			const vals = evalArgs()
+			return vals.flat()
+		}
+
+		// ========== String Operators ==========
+		case "cat": {
+			// Concatenate all arguments as strings
+			const vals = evalArgs()
+			return vals.map(String).join("")
+		}
+
+		case "substr": {
+			// { "substr": [string, start, length?] }
+			const vals = evalArgs()
+			const str = String(vals[0])
+			const start = Number(vals[1])
+			const length = vals.length > 2 ? Number(vals[2]) : undefined
+
+			// Handle negative start (from end)
+			const actualStart = start < 0 ? Math.max(0, str.length + start) : start
+
+			if (length === undefined) {
+				return str.substring(actualStart)
+			}
+			// Handle negative length (characters from end to stop before)
+			if (length < 0) {
+				return str.substring(actualStart, str.length + length)
+			}
+			return str.substring(actualStart, actualStart + length)
+		}
+
+		// ========== Miscellaneous ==========
+		case "log": {
+			// Log to console and pass through the value
+			const val = evalArg(Array.isArray(args) ? args[0] : args)
+			console.log("JsonLogic log:", val)
+			return val
 		}
 
 		// ========== Extensions ==========
