@@ -440,7 +440,7 @@
         "reportsDirectory": "{workspaceRoot}/coverage/{projectRoot}/unit"
       },
       "cache": true,
-      "dependsOn": [],
+      "dependsOn": ["^build"],
       "inputs": [
         "default",
         "^production"
@@ -458,6 +458,7 @@
       },
       "cache": true,
       "dependsOn": [
+        "^build",
         "test:unit"
       ],
       "inputs": [
@@ -477,6 +478,7 @@
       },
       "cache": true,
       "dependsOn": [
+        "^build",
         "test:unit"
       ],
       "inputs": [
