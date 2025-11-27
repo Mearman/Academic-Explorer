@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { extractKTruss } from '../../src/extraction/truss';
 import { createRandomGraph } from '../fixtures/extraction-graphs';
 

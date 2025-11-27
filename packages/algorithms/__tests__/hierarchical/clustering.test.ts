@@ -6,9 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { topicHierarchyGraph } from '../fixtures/topic-hierarchies';
+
 import { hierarchicalClustering } from '../../src/hierarchical/clustering';
-import type { Dendrogram } from '../../src/types/clustering-types';
+import { topicHierarchyGraph } from '../fixtures/topic-hierarchies';
 
 describe('Hierarchical Clustering', () => {
   describe('User Story 3 - Scenario 1: Topic Hierarchy Grouping', () => {

@@ -6,10 +6,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { computeTriangleSupport, extractKTruss } from '../../src/extraction/truss';
-import { createCompleteGraph, createTriangleGraph } from '../fixtures/extraction-graphs';
+import { Graph } from '../../src/graph/graph';
 import type { Node, Edge } from '../../src/types/graph';
+import { createCompleteGraph, createTriangleGraph } from '../fixtures/extraction-graphs';
 
 describe('K-Truss Extraction (User Story 5)', () => {
   describe('Triangle Support Computation', () => {

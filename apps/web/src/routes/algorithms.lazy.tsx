@@ -2,6 +2,8 @@
  * Algorithms Page - Graph algorithms demonstration and analysis
  */
 
+import type { GraphNode, GraphEdge, EntityType } from '@academic-explorer/types';
+import { RelationType } from '@academic-explorer/types';
 import {
   Container,
   Title,
@@ -18,12 +20,9 @@ import {
 } from '@mantine/core';
 import {
   IconGraph,
-  IconPlus,
   IconRefresh,
   IconInfoCircle,
 } from '@tabler/icons-react';
-import type { GraphNode, GraphEdge, EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo } from 'react';
 

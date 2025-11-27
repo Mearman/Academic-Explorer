@@ -327,12 +327,10 @@ export function ringOfCliquesGraph(): {
 
   const numCliques = 5;
   const cliqueSize = 5;
-  const totalNodes = numCliques * cliqueSize;
 
   // Create nodes
   for (let c = 0; c < numCliques; c++) {
     for (let i = 0; i < cliqueSize; i++) {
-      const nodeIdx = c * cliqueSize + i;
       const node: ClusterNode = {
         id: `C${c}N${i}`,
         label: `Clique ${c} Node ${i}`,

@@ -425,10 +425,9 @@ export function getModularityScore(
   const communityNodes = new Map<number, Set<AcademicNode>>();
   for (const node of graph.getAllNodes()) {
     const communityId = nodeIdToCommunity.get(node.id) ?? 0;
-    if (!communityNodes.has(communityId)) {
-      communityNodes.set(communityId, new Set());
-    }
-    communityNodes.get(communityId)!.add(node);
+    const nodeSet = communityNodes.get(communityId) ?? new Set<AcademicNode>();
+    nodeSet.add(node);
+    communityNodes.set(communityId, nodeSet);
   }
 
   // Convert to Community array for modularity calculation

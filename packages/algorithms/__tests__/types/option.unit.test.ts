@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { type Option, Some, None } from '../../src/types/option';
 
 describe('Option<T>', () => {

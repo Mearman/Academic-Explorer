@@ -6,9 +6,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
-import { convertToCSR } from '../../src/utils/csr';
 import { type Node, type Edge } from '../../src/types/graph';
+import { convertToCSR } from '../../src/utils/csr';
 
 interface TestNode extends Node {
   id: string;
@@ -180,7 +181,6 @@ describe('CSR Graph Conversion', () => {
       const graph = new Graph<TestNode, TestEdge>(true);
 
       // Mock graph with excessive node count
-      // @ts-expect-error - Testing internal behavior
       graph.getAllNodes = () => new Array(0x100000000); // 2^32 nodes
 
       expect(() => convertToCSR(graph)).toThrow(RangeError);

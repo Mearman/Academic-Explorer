@@ -6,10 +6,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { Community } from '../../src/types/clustering-types';
+
+import { detectCommunities } from '../../src/clustering/louvain';
 import { calculateModularity } from '../../src/metrics/modularity';
 import { smallCitationNetwork, largeCitationNetwork } from '../fixtures/citation-networks';
-import { detectCommunities } from '../../src/clustering/louvain';
 
 describe('Louvain Community Detection', () => {
   describe('User Story 1 - Scenario 1: Citation Network Clustering', () => {

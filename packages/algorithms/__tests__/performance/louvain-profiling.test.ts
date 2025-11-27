@@ -15,10 +15,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { detectCommunities } from '../../src/clustering/louvain';
-import { generateCitationNetwork } from '../fixtures/citation-networks';
 import type { Node, Edge } from '../../src/types/graph';
+import { generateCitationNetwork } from '../fixtures/citation-networks';
 
 interface WorkNode extends Node {
   id: string;

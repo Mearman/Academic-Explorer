@@ -8,5 +8,5 @@
     "types": ["node", "vitest"]
   },
   "include": ["src/**/*", "*.config.ts", "*.config.mts"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "__tests__"]
 }

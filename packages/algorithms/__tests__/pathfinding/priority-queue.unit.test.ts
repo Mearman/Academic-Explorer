@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { MinHeap } from '../../src/pathfinding/priority-queue';
 
 describe('MinHeap (Priority Queue)', () => {

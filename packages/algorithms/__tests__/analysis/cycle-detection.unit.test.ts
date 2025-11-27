@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+
 import { detectCycle } from '../../src/analysis/cycle-detection';
+import { Graph } from '../../src/graph/graph';
 import { type Node, type Edge } from '../../src/types/graph';
 
 interface TestNode extends Node {

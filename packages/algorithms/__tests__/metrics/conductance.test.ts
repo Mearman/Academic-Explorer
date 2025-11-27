@@ -6,13 +6,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { Graph } from '../../src/graph/graph';
-import type { Node, Edge } from '../../src/types/graph';
 import {
   calculateConductance,
   calculateAverageConductance,
   calculateWeightedAverageConductance,
 } from '../../src/metrics/conductance';
+import type { Node, Edge } from '../../src/types/graph';
 import { knownCommunityGraph, ringOfCliquesGraph } from '../fixtures/known-clusters';
 
 describe('calculateConductance', () => {
@@ -137,7 +138,7 @@ describe('calculateConductance', () => {
 
     // Test first community
     const firstCommunityNodes = Array.from(groundTruth.assignments.entries())
-      .filter(([_, communityId]) => communityId === 0)
+      .filter(([, communityId]) => communityId === 0)
       .map(([nodeId]) => graph.getNode(nodeId).value!)
       .filter((node): node is Node => node !== undefined);
 
@@ -159,7 +160,7 @@ describe('calculateConductance', () => {
 
     // Test first clique (complete graph K5)
     const firstCliqueNodes = Array.from(groundTruth.assignments.entries())
-      .filter(([_, communityId]) => communityId === 0)
+      .filter(([, communityId]) => communityId === 0)
       .map(([nodeId]) => graph.getNode(nodeId).value!)
       .filter((node): node is Node => node !== undefined);
 

@@ -1,11 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Graph } from '../../src/graph/graph';
+import { describe, it, expect } from 'vitest';
+
 import {
   detectTriangles,
   detectStarPatterns,
   detectCoCitations,
   detectBibliographicCoupling,
 } from '../../src/extraction/motif';
+import { Graph } from '../../src/graph/graph';
 import { type Node, type Edge } from '../../src/types/graph';
 import {
   createTriangleGraph,

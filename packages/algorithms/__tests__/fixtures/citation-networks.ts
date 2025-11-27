@@ -29,9 +29,11 @@ function seededRandom(seed: number): () => number {
  */
 export interface PaperNode {
   id: string;
+  type: 'paper';
   title: string;
   year: number;
   community?: number; // Known ground truth community assignment
+  [key: string]: unknown; // Index signature for Node compatibility
 }
 
 /**
@@ -41,7 +43,9 @@ export interface CitationEdge {
   id: string;
   source: string;
   target: string;
+  type: 'citation';
   year: number;
+  [key: string]: unknown; // Index signature for Edge compatibility
 }
 
 /**
@@ -108,6 +112,7 @@ export function generateCitationNetwork(
 
     const node: PaperNode = {
       id: `P${i}`,
+      type: 'paper',
       title: `${communityNames[communityId % communityNames.length]} Paper ${paperInCommunity}`,
       year: 2015 + Math.floor(i / nodesPerCommunity),
       community: communityId,
@@ -134,6 +139,7 @@ export function generateCitationNetwork(
         id: `E${i}-${target}`,
         source: `P${i}`,
         target: `P${target}`,
+        type: 'citation',
         year: 2015 + Math.floor(i / nodesPerCommunity),
       };
 
@@ -147,7 +153,7 @@ export function generateCitationNetwork(
 
     for (let j = 0; j < interEdgesPerNode; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * (communityCount - 1))) % communityCount;
+      const targetCommunity = (sourceCommunity + 1 + Math.floor(random() * (communityCount - 1))) % communityCount;
       const targetStart = targetCommunity * nodesPerCommunity;
       const targetEnd = Math.min(targetStart + nodesPerCommunity, nodeCount);
       const target = targetStart + Math.floor(random() * (targetEnd - targetStart));
@@ -156,6 +162,7 @@ export function generateCitationNetwork(
         id: `E${i}-${target}-inter`,
         source: `P${i}`,
         target: `P${target}`,
+        type: 'citation',
         year: 2015 + Math.floor(i / nodesPerCommunity),
       };
 
@@ -211,6 +218,7 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
 
     const node: PaperNode = {
       id: `P${i}`,
+      type: 'paper',
       title: `${communityNames[communityId]} Paper ${paperInCommunity}`,
       year: 2020 + Math.floor(i / 10),
       community: communityId,
@@ -239,6 +247,7 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
           id: `E${i}-${target}`,
           source: `P${i}`,
           target: `P${target}`,
+          type: 'citation',
           year: 2020 + Math.floor(i / 10),
         };
 
@@ -255,7 +264,7 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
     // Each paper cites 2 papers from other communities
     for (let j = 0; j < 2; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 4)) % 5;
+      const targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 4)) % 5;
       const targetStart = targetCommunity * 20;
       const target = targetStart + Math.floor(random() * 20);
 
@@ -263,6 +272,7 @@ export function smallCitationNetwork(): Graph<PaperNode, CitationEdge> {
         id: `E${i}-${target}-inter`,
         source: `P${i}`,
         target: `P${target}`,
+        type: 'citation',
         year: 2020 + Math.floor(i / 10),
       };
 
@@ -320,6 +330,7 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
 
     const node: PaperNode = {
       id: `P${i}`,
+      type: 'paper',
       title: `${communityNames[communityId]} Paper ${paperInCommunity}`,
       year: 2015 + Math.floor(i / 100),
       community: communityId,
@@ -348,6 +359,7 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
           id: `E${i}-${target}`,
           source: `P${i}`,
           target: `P${target}`,
+          type: 'citation',
           year: 2015 + Math.floor(i / 100),
         };
 
@@ -364,7 +376,7 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
     // Each paper cites 2 papers from other communities
     for (let j = 0; j < 2; j++) {
       // Pick a different community
-      let targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 9)) % 10;
+      const targetCommunity = (sourceCommunity + 1 + Math.floor(random() * 9)) % 10;
       const targetStart = targetCommunity * 100;
       const target = targetStart + Math.floor(random() * 100);
 
@@ -372,6 +384,7 @@ export function largeCitationNetwork(): Graph<PaperNode, CitationEdge> {
         id: `E${i}-${target}-inter`,
         source: `P${i}`,
         target: `P${target}`,
+        type: 'citation',
         year: 2015 + Math.floor(i / 100),
       };
 

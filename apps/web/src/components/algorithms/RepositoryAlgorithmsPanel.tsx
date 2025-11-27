@@ -22,7 +22,6 @@ import {
   Text,
   ThemeIcon,
   Title,
-  Tooltip,
   Alert,
   rem,
 } from '@mantine/core';
@@ -57,7 +56,6 @@ const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
 export function RepositoryAlgorithmsPanel() {
   const {
     nodes,
-    edges,
     hasData,
     statistics,
     communities,
@@ -458,5 +456,3 @@ export function RepositoryAlgorithmsPanel() {
     </Stack>
   );
 }
-
-export default RepositoryAlgorithmsPanel;

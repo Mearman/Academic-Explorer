@@ -5,6 +5,7 @@
  * @module components/algorithms/GraphAlgorithmsPanel
  */
 
+import type { GraphNode, GraphEdge } from '@academic-explorer/types';
 import {
   Accordion,
   Badge,
@@ -14,7 +15,6 @@ import {
   Group,
   NumberInput,
   Progress,
-  SegmentedControl,
   Select,
   Stack,
   Text,
@@ -36,7 +36,6 @@ import {
   IconChartDonut,
   IconHierarchy,
 } from '@tabler/icons-react';
-import type { GraphNode, GraphEdge, EntityType } from '@academic-explorer/types';
 import React, { useState, useMemo } from 'react';
 
 import {
@@ -488,5 +487,3 @@ export function GraphAlgorithmsPanel({
     </Stack>
   );
 }
-
-export default GraphAlgorithmsPanel;
