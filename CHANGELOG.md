@@ -1,3 +1,16 @@
+## <small>21.1.2 (2025-11-27)</small>
+
+* fix(ci): use PR author check for Dependabot lockfile workflow ([807629c](https://github.com/Mearman/Academic-Explorer/commit/807629c))
+* ci(ci): remove outdated-check job ([27b09d3](https://github.com/Mearman/Academic-Explorer/commit/27b09d3))
+* ci(config): expand Dependabot for monorepo and fix actionlint scope ([5d19be3](https://github.com/Mearman/Academic-Explorer/commit/5d19be3))
+* ci(deps): add workflow to auto-fix Dependabot lockfiles ([99fc0fd](https://github.com/Mearman/Academic-Explorer/commit/99fc0fd))
+* ci(deps): bump actions/checkout from 5 to 6 (#111) ([b4600f4](https://github.com/Mearman/Academic-Explorer/commit/b4600f4)), closes [#111](https://github.com/Mearman/Academic-Explorer/issues/111)
+* ci(deps): bump actions/download-artifact from 4 to 6 (#109) ([371775a](https://github.com/Mearman/Academic-Explorer/commit/371775a)), closes [#109](https://github.com/Mearman/Academic-Explorer/issues/109)
+* ci(deps): bump actions/github-script from 7 to 8 (#112) ([6776e29](https://github.com/Mearman/Academic-Explorer/commit/6776e29)), closes [#112](https://github.com/Mearman/Academic-Explorer/issues/112)
+* ci(deps): bump actions/upload-artifact from 4 to 5 (#110) ([79336d6](https://github.com/Mearman/Academic-Explorer/commit/79336d6)), closes [#110](https://github.com/Mearman/Academic-Explorer/issues/110)
+* chore(deps-dev): bump the testing group with 5 updates (#135) ([15a84be](https://github.com/Mearman/Academic-Explorer/commit/15a84be)), closes [#135](https://github.com/Mearman/Academic-Explorer/issues/135)
+* chore(release): 21.1.1 [skip ci] ([a514e76](https://github.com/Mearman/Academic-Explorer/commit/a514e76))
+
 ## <small>21.1.1 (2025-11-27)</small>
 
 * refactor(web): relocate test files from routes/ to src/test/ ([433cef8](https://github.com/Mearman/Academic-Explorer/commit/433cef8))
