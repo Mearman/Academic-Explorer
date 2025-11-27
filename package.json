@@ -47,6 +47,8 @@
     "release:publish": "nx release publish",
     "release:version": "nx release version",
     "speckit": "uvx --from git+https://github.com/github/spec-kit.git specify",
+    "sync:targets": "tsx tools/generators/sync-targets/cli.ts",
+    "sync:targets:dry": "tsx tools/generators/sync-targets/cli.ts --dry-run",
     "syncpack": "syncpack",
     "syncpack:fix": "syncpack fix-mismatches",
     "syncpack:lint": "syncpack lint",

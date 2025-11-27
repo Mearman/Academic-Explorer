@@ -46,6 +46,7 @@
       "@academic-explorer/utils": ["packages/utils/src/index.ts"],
       "@academic-explorer/ui": ["packages/ui/src/index.ts"],
       "@academic-explorer/types": ["packages/types/src/index.ts"],
+      "@academic-explorer/generators": ["tools/generators/index.ts"],
       // Path alias for apps/web internal imports
       "@/*": ["apps/web/src/*"]
     }
