@@ -12,7 +12,7 @@
         "configFile": "packages/types/vite.config.ts",
         "outputPath": "packages/types/dist"
       },
-      "dependsOn": ["barrelsby"]
+      "dependsOn": ["barrelsby", "typecheck"]
     }
   }
 }

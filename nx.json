@@ -310,6 +310,7 @@
       "cache": true,
       "dependsOn": [
         "barrelsby",
+        "typecheck",
         "^build"
       ],
       "inputs": [
