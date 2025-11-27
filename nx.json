@@ -437,7 +437,7 @@
       ]
     },
     "test:unit": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
         "project": "unit",
@@ -456,7 +456,7 @@
       ]
     },
     "test:component": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
         "project": "component",
@@ -478,7 +478,7 @@
       ]
     },
     "test:integration": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
         "project": "integration",
