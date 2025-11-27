@@ -27,12 +27,14 @@ export default defineConfig({
     maxConcurrency: 1,
     maxWorkers: 1,
     // Named projects for targeted test execution
+    // Note: Each project must explicitly set globals since projects run independently
     projects: [
       {
         test: {
           name: 'unit',
           include: ['__tests__/**/*.test.ts', 'src/**/*.unit.test.ts'],
           environment: 'node',
+          globals: true,
         },
       },
       {
@@ -40,6 +42,7 @@ export default defineConfig({
           name: 'integration',
           include: ['src/**/*.integration.test.ts'],
           environment: 'node',
+          globals: true,
           testTimeout: 30000,
         },
       },
