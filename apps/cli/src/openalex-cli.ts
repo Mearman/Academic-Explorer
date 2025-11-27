@@ -17,11 +17,9 @@ import { Command } from "commander"
 import { z } from "zod"
 
 import { StaticCacheManager } from "./cache/static-cache-manager.js"
-import { detectEntityType } from "./entity-detection.js"
-import type { StaticEntityType } from "./entity-detection.js"
+import { detectEntityType, SUPPORTED_ENTITIES, type StaticEntityType } from "./entity-detection.js"
 import {
 	OpenAlexCLI,
-	SUPPORTED_ENTITIES,
 	type QueryOptions,
 	type CacheOptions,
 } from "./openalex-cli-class.js"

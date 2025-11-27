@@ -19,7 +19,7 @@ import {
 } from "@academic-explorer/utils/static-data/cache-utilities"
 import { z } from "zod"
 
-import type { StaticEntityType } from "./entity-detection.js"
+import { SUPPORTED_ENTITIES, type StaticEntityType } from "./entity-detection.js"
 
 // Simple hash function for content hashing
 function generateContentHash(content: string): string {
@@ -159,16 +159,6 @@ interface CacheOptions {
 	cacheOnly: boolean
 	// filenameFormat removed - now using URL encoding only
 }
-
-// Configuration
-const SUPPORTED_ENTITIES: readonly StaticEntityType[] = [
-	"authors",
-	"works",
-	"institutions",
-	"topics",
-	"publishers",
-	"funders",
-] as const
 
 // Constants for repeated strings
 const LOG_CONTEXT_GENERAL = "general"
@@ -1979,5 +1969,4 @@ export class OpenAlexCLI {
 }
 
 // Export types for testing
-export { SUPPORTED_ENTITIES }
 export type { CacheOptions, IndexEntry, QueryOptions, UnifiedIndex }

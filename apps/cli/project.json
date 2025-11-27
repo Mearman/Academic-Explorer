@@ -5,15 +5,16 @@
   "projectType": "application",
   "tags": ["app:cli"],
   "targets": {
+    "barrelsby": {},
     "typecheck": {
       "options": {
         "command": "tsc --noEmit -p tsconfig.typecheck.json"
       },
-      "dependsOn": ["^build"]
+      "dependsOn": ["barrelsby", "^build"]
     },
     "build": {
       "executor": "@nx/js:tsc",
-      "dependsOn": ["^build"],
+      "dependsOn": ["barrelsby", "^build"],
       "outputs": ["{options.outputPath}"],
       "inputs": [
         "production",

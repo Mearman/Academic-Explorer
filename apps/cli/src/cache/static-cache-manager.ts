@@ -10,7 +10,7 @@ import { fileURLToPath } from "url"
 import { logError, logger } from "@academic-explorer/utils/logger"
 import { z } from "zod"
 
-import type { StaticEntityType } from "../entity-detection.js"
+import { SUPPORTED_ENTITIES, type StaticEntityType } from "../entity-detection.js"
 
 // Environment detection
 type CacheMode = "development" | "production"
@@ -58,14 +58,6 @@ const EntityIndexEntrySchema = z.object({
 const UnifiedIndexSchema = z.record(z.string(), EntityIndexEntrySchema)
 
 const STATIC_DATA_PATH = "apps/web/public/data/openalex"
-const SUPPORTED_ENTITIES: readonly StaticEntityType[] = [
-	"authors",
-	"works",
-	"institutions",
-	"topics",
-	"publishers",
-	"funders",
-] as const
 
 // Constants for repeated strings
 const LOG_CONTEXT = "static-cache"
