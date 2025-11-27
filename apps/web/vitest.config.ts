@@ -86,12 +86,14 @@ export default defineConfig(
 			},
 
 			// Named projects for targeted test execution
+			// Note: Each project must inherit setupFiles since projects run independently
 			projects: [
 				{
 					test: {
 						name: "unit",
 						include: ["src/**/*.unit.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 					},
 				},
 				{
@@ -99,6 +101,7 @@ export default defineConfig(
 						name: "component",
 						include: ["src/**/*.component.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 					},
 				},
 				{
@@ -106,6 +109,7 @@ export default defineConfig(
 						name: "integration",
 						include: ["src/**/*.integration.test.{ts,tsx}"],
 						environment: "jsdom",
+						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 						testTimeout: 30000,
 					},
 				},

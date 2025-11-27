@@ -7,42 +7,8 @@ import { renderHook, act } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
-// Mock Dexie to prevent IndexedDB operations in tests
-vi.mock("dexie", () => {
-  const mockTable = {
-    put: vi.fn().mockResolvedValue(undefined),
-    toArray: vi.fn().mockResolvedValue([]),
-    get: vi.fn().mockResolvedValue(null),
-    clear: vi.fn().mockResolvedValue(undefined),
-  };
-
-  const DexieMock = vi.fn().mockImplementation(function (
-    this: Record<string, unknown>,
-  ) {
-    this.version = vi.fn().mockImplementation(() => {
-      return {
-        stores: vi.fn().mockImplementation((schema: Record<string, unknown>) => {
-          // Set up the table properties based on the schema
-          Object.keys(schema).forEach((tableName) => {
-            this[tableName] = mockTable;
-          });
-          return this;
-        }),
-      };
-    });
-    return this;
-  });
-
-  return {
-    default: DexieMock,
-    Dexie: DexieMock,
-    type: {
-      Table: vi.fn(),
-    },
-  };
-});
-
-// Mocks for deleted section-registry and group-registry removed (no longer needed)
+// Note: Dexie mock removed - fake-indexeddb is now loaded via setupFiles
+// which provides a real IndexedDB implementation for Dexie to use
 
 import { useLayoutStore, useLayoutActions, LayoutProvider } from "./layout-store";
 
