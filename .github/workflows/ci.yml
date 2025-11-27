@@ -153,7 +153,7 @@ jobs:
         run: pnpm nx run-many -t build typecheck lint test:unit test:component test:integration
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-artifacts
           path: |
@@ -163,7 +163,7 @@ jobs:
           retention-days: 1
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: coverage-all
@@ -258,7 +258,7 @@ jobs:
         run: pnpm nx test:e2e web
 
       - name: Upload E2E artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: playwright-report
@@ -321,7 +321,7 @@ jobs:
 
       - name: Upload final coverage reports
         if: steps.coverage-check.outputs.has-coverage == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: final-coverage-reports
           path: coverage/
@@ -492,7 +492,7 @@ jobs:
           pnpm nx test:e2e web
 
       - name: Upload post-deployment E2E artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: post-deploy-e2e-report
