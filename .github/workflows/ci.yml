@@ -307,10 +307,23 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Download coverage artifacts
+        id: download-coverage
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: coverage-all
           path: coverage/
+
+      - name: Check coverage availability
+        id: coverage-check
+        run: |
+          if [ -d "coverage" ] && [ "$(ls -A coverage 2>/dev/null)" ]; then
+            echo "has-coverage=true" >> "${GITHUB_OUTPUT}"
+            echo "Coverage artifacts found"
+          else
+            echo "has-coverage=false" >> "${GITHUB_OUTPUT}"
+            echo "No coverage artifacts found - skipping coverage report"
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -326,9 +339,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate workspace coverage report
+        if: steps.coverage-check.outputs.has-coverage == 'true'
         run: pnpm coverage:report
 
       - name: Upload coverage to Codecov
+        if: steps.coverage-check.outputs.has-coverage == 'true'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage/workspace-coverage.json
@@ -336,11 +351,21 @@ jobs:
           name: codecov-umbrella
 
       - name: Upload final coverage reports
+        if: steps.coverage-check.outputs.has-coverage == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: final-coverage-reports
           path: coverage/
           retention-days: 30
+
+      - name: Coverage skipped summary
+        if: steps.coverage-check.outputs.has-coverage != 'true'
+        run: |
+          {
+            echo "## Coverage Report Skipped"
+            echo "No coverage artifacts were uploaded from the validate job."
+            echo "To generate coverage, run tests with the \`--coverage\` flag."
+          } >> "${GITHUB_STEP_SUMMARY}"
 
   # Performance and accessibility tests
   performance:
@@ -713,6 +738,7 @@ jobs:
       - name: Download coverage reports
         if: needs.coverage.result == 'success'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: final-coverage-reports
           path: coverage/
