@@ -1,10 +1,13 @@
 import "@testing-library/jest-dom/vitest"
-import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { render, screen, cleanup } from "@testing-library/react"
+import { afterEach, describe, it, expect } from "vitest"
 
 import { SectionKit } from "./SectionKit"
 
 describe("SectionKit", () => {
+  afterEach(() => {
+    cleanup();
+  });
   it("renders children", () => {
     render(<SectionKit>Test content</SectionKit>);
     expect(screen.getByText("Test content")).toBeInTheDocument();

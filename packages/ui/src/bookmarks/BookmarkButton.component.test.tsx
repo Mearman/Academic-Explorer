@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest"
 import { MantineProvider } from "@mantine/core"
-import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { render, screen, fireEvent, cleanup } from "@testing-library/react"
+import { afterEach, describe, it, expect, vi } from "vitest"
 
 import { BookmarkButton } from "./BookmarkButton"
 
@@ -11,6 +11,9 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe("BookmarkButton", () => {
+	afterEach(() => {
+		cleanup();
+	});
 	it("should render with bookmark icon when not bookmarked", () => {
 		const onToggle = vi.fn()
 		render(

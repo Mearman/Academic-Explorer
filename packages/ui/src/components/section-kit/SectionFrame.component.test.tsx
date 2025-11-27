@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom/vitest"
 import { MantineProvider } from "@mantine/core"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, cleanup } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { describe, it, expect, vi } from "vitest"
+import { afterEach, describe, it, expect, vi } from "vitest"
 
 import { SectionFrame } from "./SectionFrame";
 
@@ -12,6 +12,9 @@ const TestWrapper = ({ children }: { children: ReactNode }) => (
 );
 
 describe("SectionFrame", () => {
+  afterEach(() => {
+    cleanup();
+  });
   it("renders children", () => {
     render(
       <TestWrapper>
