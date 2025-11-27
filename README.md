@@ -149,6 +149,7 @@ flowchart LR
 
     %% Task dependencies
     algorithms_typecheck --> algorithms_test
+    cli_typecheck --> cli_build
     client_build --> cli_build
     types_build --> cli_build
     utils_build --> cli_build
@@ -164,12 +165,15 @@ flowchart LR
     utils_build --> client_test
     types_build --> client_typecheck
     utils_build --> client_typecheck
+    web_build --> tools_typecheck
+    types_typecheck --> types_build
     types_build --> ui_test
     utils_build --> ui_test
     types_build --> ui_typecheck
     utils_build --> ui_typecheck
     types_build --> utils_test
     types_build --> utils_typecheck
+    web_typecheck --> web_build
     types_build --> web_build
     client_build --> web_build
     ui_build --> web_build
