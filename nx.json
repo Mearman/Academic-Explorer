@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "$schema": "./nx.schema.json",
   "sync": {
     "applyChanges": false,
     "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"],
@@ -182,26 +182,6 @@
         "production",
         "^production",
         "^outputs",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
-      "cache": true
-    },
-    "build:ui": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "tsc --emitDeclarationOnly",
-          "vite build"
-        ],
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "^production",
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
