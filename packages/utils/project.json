@@ -11,8 +11,7 @@
       "options": {
         "configFile": "packages/utils/vite.config.ts",
         "outputPath": "packages/utils/dist"
-      },
-      "dependsOn": ["types:build"]
+      }
     }
   }
 }

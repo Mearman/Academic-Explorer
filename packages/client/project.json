@@ -11,8 +11,7 @@
       "options": {
         "configFile": "packages/client/vite.config.ts",
         "outputPath": "packages/client/dist"
-      },
-      "dependsOn": ["^build"]
+      }
     },
     "dev": {
       "executor": "@nx/rollup:rollup",

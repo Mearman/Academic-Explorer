@@ -6,17 +6,11 @@
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
+      "outputs": ["{projectRoot}/dist"],
       "options": {
         "configFile": "packages/ui/vite.config.ts",
         "outputPath": "packages/ui/dist"
-      },
-      "dependsOn": [
-        "types:build",
-        "utils:build"
-      ]
+      }
     }
   },
   "tags": [

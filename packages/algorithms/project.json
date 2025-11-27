@@ -11,8 +11,7 @@
       "options": {
         "configFile": "packages/algorithms/vite.config.ts",
         "outputPath": "packages/algorithms/dist"
-      },
-      "dependsOn": ["^build"]
+      }
     },
     "test": {
       "executor": "@nx/vitest:test",
