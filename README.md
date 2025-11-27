@@ -72,8 +72,6 @@ apps/
   cli/          # Command-line tool for OpenAlex data management
 packages/
   client/       # OpenAlex API client (rate limiting + caching + interceptors)
-  graph/        # Graph data structures + entity management
-  simulation/   # D3 force simulation engine (Web Worker execution)
   ui/           # Mantine-based UI components (atoms/molecules/organisms)
   utils/        # Storage providers + logger + type guards
   types/        # Shared TypeScript types + Zod schemas (canonical source)
@@ -218,15 +216,6 @@ Memory cache → localStorage → IndexedDB → Static JSON → OpenAlex API
 - Surgical API requests (fetch only missing fields)
 - Cache analytics: `pnpm cli cache:stats`
 
-### Force Simulation System
-
-Location: `packages/simulation/`
-
-- Web Worker execution (non-blocking calculations)
-- Deterministic layouts (fixed seeds for reproducibility)
-- Custom forces for academic entity relationships
-- Animated streaming position updates
-
 ### Entity-Centric Routing
 
 Location: `apps/web/src/routes/`
@@ -254,8 +243,6 @@ Location: `apps/web/src/routes/`
 "@academic-explorer/types": ["packages/types/src/index.ts"]     // Canonical source for EntityType
 "@academic-explorer/client": ["packages/client/src/index.ts"]
 "@academic-explorer/utils": ["packages/utils/src/index.ts"]
-"@academic-explorer/graph": ["packages/graph/src/index.ts"]
-"@academic-explorer/simulation": ["packages/simulation/src/index.ts"]
 "@academic-explorer/algorithms": ["packages/algorithms/src/index.ts"]
 "@academic-explorer/ui": ["packages/ui/src/index.ts"]
 "@/*": ["apps/web/src/*"]
