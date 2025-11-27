@@ -489,6 +489,21 @@
         "{workspaceRoot}/coverage/{projectRoot}/integration"
       ]
     },
+    "validate": {
+      "executor": "nx:noop",
+      "cache": true,
+      "dependsOn": [
+        "typecheck",
+        "lint",
+        "test",
+        "build"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "outputs": []
+    },
     "clean": {
       "cache": false,
       "inputs": [],

@@ -35,6 +35,7 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
-    }
+    },
+    "validate": {}
   }
 }
