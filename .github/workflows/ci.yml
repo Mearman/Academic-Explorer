@@ -207,34 +207,6 @@ jobs:
       - name: Run security audit
         run: pnpm audit --audit-level moderate
 
-  # Outdated dependencies check - informational only, does not block workflow
-  outdated-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [changes]
-    if: always() && needs.changes.outputs.should-test == 'true'
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js with pnpm cache
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check outdated dependencies
-        run: pnpm deps:outdated
-
   # E2E tests - Full application tests (run after validate)
   e2e:
     runs-on: ubuntu-latest
@@ -729,7 +701,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [validate, security-audit, outdated-check, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [validate, security-audit, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -749,7 +721,6 @@ jobs:
             echo "|-----|--------|---------|"
             echo "| ✅ Validate | ${{ needs.validate.result }} | Build + typecheck + lint + all tests |"
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
-            echo "| 📦 Outdated Check | ${{ needs.outdated-check.result }} | Outdated dependencies (non-blocking) |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
             echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
