@@ -1,32 +1,12 @@
 {
-  "extends": "../../tsconfig.library.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
     "lib": ["ES2022", "DOM"],
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": false,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "strict": false,
-    "noImplicitAny": false,
-    "paths": {
-      "@academic-explorer/types": ["../types/src/index.ts"]
-    }
+    "types": ["node", "vitest"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
-  "references": [
-    { "path": "../types" }
-  ]
+  "include": ["src/**/*", "*.config.ts", "*.config.mts"],
+  "exclude": ["dist", "node_modules"]
 }

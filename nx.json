@@ -117,6 +117,13 @@
       }
     },
     {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": false,
+        "build": false
+      }
+    },
+    {
       "plugin": "@nx/js",
       "options": {
         "buildTargetName": "build",
@@ -135,7 +142,8 @@
         "buildTargetName": "build",
         "previewTargetName": "preview",
         "serveTargetName": "serve",
-        "testTargetName": "test"
+        "testTargetName": "test",
+        "typecheckTargetName": "_vite-typecheck"
       }
     },
     {

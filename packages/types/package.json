@@ -21,19 +21,17 @@
   "devDependencies": {
     "eslint": "9.39.1",
     "typescript": "5.9.2",
-    "vite": "7.2.4",
-    "vite-plugin-dts": "4.5.4",
     "vitest": "4.0.10"
   },
   "author": "Joe Mearman",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
     },
     "./entities": {
-      "types": "./dist/entities/index.d.ts",
-      "import": "./dist/entities/index.js"
+      "types": "./dist/src/entities/index.d.ts",
+      "import": "./dist/src/entities/index.js"
     }
   },
   "files": [

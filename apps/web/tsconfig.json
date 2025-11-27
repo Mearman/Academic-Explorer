@@ -1,23 +1,25 @@
 {
-  "extends": "../../tsconfig.app.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
     "composite": false,
     "declaration": false,
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "vitest"],
     "paths": {
       "@/*": ["src/*"],
       "@academic-explorer/types": ["../../packages/types/src/index.ts"],
       "@academic-explorer/types/*": ["../../packages/types/src/*"],
       "@academic-explorer/client": ["../../packages/client/src/index.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/src/*"],
       "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
       "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
       "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/algorithms": ["../../packages/algorithms/src/index.ts"]
+      "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
+      "@academic-explorer/algorithms": ["../../packages/algorithms/src/index.ts"],
+      "@academic-explorer/algorithms/*": ["../../packages/algorithms/src/*"]
     }
   },
   "include": [

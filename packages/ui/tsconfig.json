@@ -1,42 +1,13 @@
 {
-  "extends": "../../tsconfig.library.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "baseUrl": ".",
-    "paths": {
-      "@/ui/section-kit": ["./src/components/section-kit"],
-      "@academic-explorer/types": ["../types/src/index.ts"],
-      "@academic-explorer/utils": ["../utils/src/index.ts"],
-      "@academic-explorer/client": ["../client/src/index.ts"]
-    },
-    "types": ["node"],
-    "declaration": true,
-    "declarationMap": true,
-    "composite": true,
-    "module": "ESNext",
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
     "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["node", "vitest"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../utils"
-    },
-    {
-      "path": "../types"
-    }
-  ]
+  "include": ["src/**/*", "*.config.ts", "*.config.mts"],
+  "exclude": ["dist", "node_modules"]
 }

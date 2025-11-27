@@ -4,15 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "tsc -b",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "devDependencies": {
-    "vite-plugin-dts": "4.5.4"
-  },
+  "devDependencies": {},
   "author": "Academic Explorer",
   "exports": {
     ".": {

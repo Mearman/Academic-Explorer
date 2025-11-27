@@ -90,6 +90,10 @@ tools/          # Development tools
 ```mermaid
 flowchart LR
 
+    subgraph academic_explorer["academic-explorer"]
+        academic_explorer_build[["build"]]
+    end
+
     subgraph algorithms["algorithms"]
         algorithms_build[["build"]]
         algorithms_lint{{"lint"}}

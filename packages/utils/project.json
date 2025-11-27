@@ -3,36 +3,16 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
+  "tags": ["type:library", "scope:shared", "type:util"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
+      "executor": "@nx/vite:build",
+      "outputs": ["{projectRoot}/dist"],
       "options": {
-        "main": "packages/utils/src/index.ts",
-        "outputPath": "packages/utils/dist",
-        "tsConfig": "packages/utils/tsconfig.json",
-        "assets": []
+        "configFile": "packages/utils/vite.config.ts",
+        "outputPath": "packages/utils/dist"
       },
-      "dependsOn": [
-        "types:build"
-      ]
-    },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "command": "tsc --noEmit -p tsconfig.json",
-        "cwd": "packages/utils"
-      },
-      "dependsOn": ["barrelsby", "^build"],
-      "cache": true
+      "dependsOn": ["types:build"]
     }
-  },
-  "tags": [
-    "type:library",
-    "scope:shared",
-    "type:util"
-  ]
+  }
 }

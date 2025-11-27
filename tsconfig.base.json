@@ -42,10 +42,15 @@
     // Workspace path mappings for intra-repo dependencies
     "paths": {
       "@academic-explorer/algorithms": ["packages/algorithms/src/index.ts"],
+      "@academic-explorer/algorithms/*": ["packages/algorithms/src/*"],
       "@academic-explorer/client": ["packages/client/src/index.ts"],
+      "@academic-explorer/client/*": ["packages/client/src/*"],
       "@academic-explorer/utils": ["packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["packages/utils/src/*"],
       "@academic-explorer/ui": ["packages/ui/src/index.ts"],
+      "@academic-explorer/ui/*": ["packages/ui/src/*"],
       "@academic-explorer/types": ["packages/types/src/index.ts"],
+      "@academic-explorer/types/*": ["packages/types/src/*"],
       "@academic-explorer/generators": ["tools/generators/index.ts"],
       // Path alias for apps/web internal imports
       "@/*": ["apps/web/src/*"]

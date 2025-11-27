@@ -17,16 +17,6 @@
         "types:build",
         "utils:build"
       ]
-    },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "command": "tsc --noEmit -p tsconfig.typecheck.json",
-        "cwd": "packages/ui"
-      },
-      "dependsOn": ["barrelsby", "^build"],
-      "cache": true
     }
   },
   "tags": [

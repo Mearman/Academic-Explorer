@@ -9,25 +9,13 @@
   "files": [],
   "exclude": ["tools/generators/**/*"],
   "references": [
-    {
-      "path": "./apps/cli"
-    },
-    {
-      "path": "./packages/client"
-    },
-    {
-    },
-    {
-      "path": "./packages/types"
-    },
-    {
-      "path": "./packages/ui"
-    },
-    {
-      "path": "./packages/utils"
-    },
-    {
-      "path": "./tools/generators"
-    }
+    { "path": "./apps/cli" },
+    { "path": "./apps/web" },
+    { "path": "./packages/algorithms" },
+    { "path": "./packages/client" },
+    { "path": "./packages/types" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/utils" },
+    { "path": "./tools" }
   ]
 }
