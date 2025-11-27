@@ -9,7 +9,7 @@
     "enabled": false,
     "autoExit": true
   },
-  "useDaemonProcess": false,
+  "useDaemonProcess": true,
   "daemon": {
     "options": {
       "shutdownTimeoutMs": 10000,
