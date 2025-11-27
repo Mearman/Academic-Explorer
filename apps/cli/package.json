@@ -34,10 +34,10 @@
   },
   "author": "Joe Mearman",
   "bin": {
-    "openalex-cli": "./dist/src/openalex-cli.js"
+    "openalex-cli": "./src/openalex-cli.ts"
   },
   "files": [
-    "dist",
+    "src",
     "README.md"
   ],
   "keywords": [

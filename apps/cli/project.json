@@ -4,24 +4,5 @@
   "sourceRoot": "apps/cli/src",
   "projectType": "application",
   "tags": ["type:app", "scope:cli"],
-  "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "dependsOn": ["barrelsby", "typecheck", "^build"],
-      "outputs": ["{options.outputPath}"],
-      "inputs": [
-        "production",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "options": {
-        "outputPath": "apps/cli/dist",
-        "main": "apps/cli/src/openalex-cli.ts",
-        "tsConfig": "apps/cli/tsconfig.json",
-        "assets": [],
-        "updateBuildableProjectDepsInPackageJson": false
-      }
-    }
-  }
+  "targets": {}
 }
