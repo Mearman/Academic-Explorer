@@ -2,8 +2,8 @@ import { EntityDetectionService } from "@academic-explorer/utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the route for testing
-vi.mock("./$", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./$")>();
+vi.mock("@/routes/openalex-url/$", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/routes/openalex-url/$")>();
   return {
     ...actual,
     Route: {
@@ -38,7 +38,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-import { Route as OpenAlexUrlRoute } from "./$";
+import { Route as OpenAlexUrlRoute } from "@/routes/openalex-url/$";
 
 // Extract the component from the route
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;

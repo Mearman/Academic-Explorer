@@ -32,7 +32,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-import { Route as WorkRouteExport } from "./$_.lazy";
+import { Route as WorkRouteExport } from "@/routes/works/$_.lazy";
 
 // Extract the component from the lazy route
 const WorkRoute = WorkRouteExport.options.component!;

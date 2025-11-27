@@ -73,7 +73,7 @@ vi.mock('@/hooks/use-entity-relationships-from-data', () => ({
   })),
 }));
 
-import KeywordRoute from './$keywordId.lazy';
+import KeywordRoute from '@/routes/keywords/$keywordId.lazy';
 
 // Synthetic mock data for keyword
 const mockKeyword = {

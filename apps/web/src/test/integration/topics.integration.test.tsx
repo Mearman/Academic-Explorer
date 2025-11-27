@@ -32,7 +32,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-import TopicRoute from "./$topicId.lazy";
+import TopicRoute from "@/routes/topics/$topicId.lazy";
 
 // Synthetic mock data for topic
 const mockTopicData = {

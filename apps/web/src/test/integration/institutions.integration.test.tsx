@@ -32,8 +32,8 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
- 
-import InstitutionRoute from "./$_.lazy";
+
+import InstitutionRoute from "@/routes/institutions/$_.lazy";
 
 // Synthetic mock data for institution
 const mockInstitutionData = {

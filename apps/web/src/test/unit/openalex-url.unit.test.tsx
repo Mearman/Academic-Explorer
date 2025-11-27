@@ -2,7 +2,7 @@ import { EntityDetectionService } from "@academic-explorer/utils";
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
-import { Route as OpenAlexUrlRoute } from "./$";
+import { Route as OpenAlexUrlRoute } from "@/routes/openalex-url/$";
 
 
 // Extract the component from the route
