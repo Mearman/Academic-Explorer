@@ -84,6 +84,103 @@ scripts/        # Build and utility scripts
 tools/          # Development tools
 ```
 
+### Task Dependency Graph
+
+<!-- nx-task-graph-start -->
+```mermaid
+flowchart TB
+
+    subgraph algorithms["algorithms"]
+        algorithms_build[["build"]]
+        algorithms_lint{{"lint"}}
+        algorithms_test(["test"])
+        algorithms_typecheck{{"typecheck"}}
+    end
+
+    subgraph cli["cli"]
+        cli_build[["build"]]
+        cli_lint{{"lint"}}
+        cli_test(["test"])
+        cli_typecheck{{"typecheck"}}
+    end
+
+    subgraph client["client"]
+        client_build[["build"]]
+        client_lint{{"lint"}}
+        client_test(["test"])
+        client_typecheck{{"typecheck"}}
+    end
+
+    subgraph tools["tools"]
+        tools_lint{{"lint"}}
+        tools_typecheck{{"typecheck"}}
+    end
+
+    subgraph types["types"]
+        types_build[["build"]]
+        types_lint{{"lint"}}
+        types_typecheck{{"typecheck"}}
+    end
+
+    subgraph ui["ui"]
+        ui_build[["build"]]
+        ui_lint{{"lint"}}
+        ui_test(["test"])
+        ui_typecheck{{"typecheck"}}
+    end
+
+    subgraph utils["utils"]
+        utils_build[["build"]]
+        utils_lint{{"lint"}}
+        utils_test(["test"])
+        utils_typecheck{{"typecheck"}}
+    end
+
+    subgraph web["web"]
+        web_build[["build"]]
+        web_lint{{"lint"}}
+        web_test(["test"])
+        web_typecheck{{"typecheck"}}
+    end
+
+    %% Task dependencies
+    algorithms_typecheck --> algorithms_test
+    client_build --> cli_build
+    types_build --> cli_build
+    utils_build --> cli_build
+    client_build --> cli_test
+    types_build --> cli_test
+    utils_build --> cli_test
+    client_build --> cli_typecheck
+    types_build --> cli_typecheck
+    utils_build --> cli_typecheck
+    types_build --> client_build
+    utils_build --> client_build
+    types_build --> client_test
+    utils_build --> client_test
+    types_build --> client_typecheck
+    utils_build --> client_typecheck
+    types_build --> ui_test
+    utils_build --> ui_test
+    types_build --> ui_typecheck
+    utils_build --> ui_typecheck
+    types_build --> utils_test
+    types_build --> utils_typecheck
+    types_build --> web_build
+    client_build --> web_build
+    ui_build --> web_build
+    utils_build --> web_build
+    types_build --> web_test
+    client_build --> web_test
+    ui_build --> web_test
+    utils_build --> web_test
+    types_build --> web_typecheck
+    client_build --> web_typecheck
+    ui_build --> web_typecheck
+    utils_build --> web_typecheck
+```
+<!-- nx-task-graph-end -->
+
 ## Architecture
 
 ### Storage Abstraction Layer

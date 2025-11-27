@@ -4,21 +4,29 @@
  * Each project is a subgraph with each task being a node.
  *
  * Usage:
- *   pnpm tsx scripts/generate-nx-mermaid.ts [--output <file>] [--targets <target1,target2>]
+ *   pnpm tsx scripts/generate-nx-mermaid.ts [options]
  *
  * Options:
  *   --output, -o   Output file path (default: stdout)
  *   --targets, -t  Comma-separated list of targets to include (default: all)
  *   --direction    Graph direction: TB, BT, LR, RL (default: TB)
+ *   --update, -u   Update a section in a markdown file (e.g., README.md)
+ *   --section, -s  Section name to update (default: "nx-task-graph")
  *
  * Examples:
  *   pnpm tsx scripts/generate-nx-mermaid.ts
  *   pnpm tsx scripts/generate-nx-mermaid.ts -o docs/task-graph.mmd
  *   pnpm tsx scripts/generate-nx-mermaid.ts -t build,test,lint
+ *   pnpm tsx scripts/generate-nx-mermaid.ts -u README.md -s nx-task-graph
+ *
+ * Section markers in markdown:
+ *   <!-- nx-task-graph-start -->
+ *   ... (content will be replaced)
+ *   <!-- nx-task-graph-end -->
  */
 
 import { execSync } from "node:child_process"
-import { writeFileSync } from "node:fs"
+import { readFileSync, writeFileSync } from "node:fs"
 import { parseArgs } from "node:util"
 
 interface TargetConfiguration {
@@ -205,12 +213,58 @@ function generateMermaid(
 	return lines.join("\n")
 }
 
+function updateMarkdownSection(
+	filePath: string,
+	sectionName: string,
+	content: string
+): boolean {
+	const startMarker = `<!-- ${sectionName}-start -->`
+	const endMarker = `<!-- ${sectionName}-end -->`
+
+	let fileContent: string
+	try {
+		fileContent = readFileSync(filePath, "utf-8")
+	} catch {
+		console.error(`Error: Could not read file ${filePath}`)
+		return false
+	}
+
+	const startIndex = fileContent.indexOf(startMarker)
+	const endIndex = fileContent.indexOf(endMarker)
+
+	if (startIndex === -1 || endIndex === -1) {
+		console.error(`Error: Section markers not found in ${filePath}`)
+		console.error(`Expected markers:`)
+		console.error(`  ${startMarker}`)
+		console.error(`  ${endMarker}`)
+		return false
+	}
+
+	if (startIndex >= endIndex) {
+		console.error(`Error: Start marker must come before end marker`)
+		return false
+	}
+
+	const mermaidBlock = `\`\`\`mermaid\n${content}\n\`\`\``
+	const newContent =
+		fileContent.slice(0, startIndex + startMarker.length) +
+		"\n" +
+		mermaidBlock +
+		"\n" +
+		fileContent.slice(endIndex)
+
+	writeFileSync(filePath, newContent)
+	return true
+}
+
 async function main() {
 	const { values } = parseArgs({
 		options: {
 			output: { type: "string", short: "o" },
 			targets: { type: "string", short: "t" },
 			direction: { type: "string", short: "d", default: "TB" },
+			update: { type: "string", short: "u" },
+			section: { type: "string", short: "s", default: "nx-task-graph" },
 			help: { type: "boolean", short: "h" },
 		},
 	})
@@ -223,7 +277,14 @@ Options:
   -o, --output <file>     Output file path (default: stdout)
   -t, --targets <list>    Comma-separated targets to include (default: all)
   -d, --direction <dir>   Graph direction: TB, BT, LR, RL (default: TB)
+  -u, --update <file>     Update section in markdown file (e.g., README.md)
+  -s, --section <name>    Section name for markers (default: nx-task-graph)
   -h, --help              Show this help message
+
+Section markers in markdown:
+  <!-- nx-task-graph-start -->
+  ... (content will be replaced)
+  <!-- nx-task-graph-end -->
 `)
 		process.exit(0)
 	}
@@ -240,7 +301,15 @@ Options:
 
 	const mermaid = generateMermaid(projectGraph, targetFilter, direction)
 
-	if (values.output) {
+	if (values.update) {
+		const sectionName = values.section ?? "nx-task-graph"
+		const success = updateMarkdownSection(values.update, sectionName, mermaid)
+		if (success) {
+			console.error(`Updated section "${sectionName}" in ${values.update}`)
+		} else {
+			process.exit(1)
+		}
+	} else if (values.output) {
 		writeFileSync(values.output, mermaid)
 		console.error(`Written to ${values.output}`)
 	} else {
