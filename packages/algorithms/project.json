@@ -6,6 +6,7 @@
   "tags": ["type:package", "scope:algorithms"],
   "targets": {
     "barrelsby": {},
+    "typecheck": {},
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{projectRoot}/dist"],
@@ -31,7 +32,6 @@
         "watch": true
       }
     },
-    "typecheck": {},
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],

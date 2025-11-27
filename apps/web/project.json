@@ -25,7 +25,11 @@
         "config": "apps/web/playwright.config.ts"
       }
     },
-    "typecheck": {}
+    "typecheck": {
+      "options": {
+        "command": "tsc --noEmit -p tsconfig.json"
+      }
+    }
   },
   "tags": ["type:app", "scope:web", "layer:app"]
 }
