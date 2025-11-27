@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build": "nx run utils:build",
-    "clean": "rm -rf dist",
-    "dev": "tsc -b --watch",
+    "clean": "nx run utils:clean",
+    "dev": "nx run utils:dev",
     "lint": "nx run utils:lint",
     "test": "nx run utils:test",
     "test:integration": "nx run utils:test:integration",

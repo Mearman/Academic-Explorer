@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "nx run web:build",
-    "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
+    "clean": "nx run web:clean",
     "dev": "nx run web:dev",
     "e2e": "nx run web:e2e",
     "lint": "nx run web:lint",

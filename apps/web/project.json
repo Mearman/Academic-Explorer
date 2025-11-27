@@ -4,6 +4,13 @@
   "sourceRoot": "apps/web/src",
   "projectType": "application",
   "targets": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
+        "cwd": "{projectRoot}"
+      }
+    },
     "barrelsby": {
       "executor": "nx:run-commands",
       "options": {

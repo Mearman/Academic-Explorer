@@ -13,6 +13,20 @@
         "outputPath": "packages/client/dist"
       }
     },
+    "build:types": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --emitDeclarationOnly",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "{projectRoot}"
+      }
+    },
     "dev": {
       "executor": "@nx/rollup:rollup",
       "options": {
@@ -33,6 +47,13 @@
       },
       "cache": false
     },
+    "test:coverage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --coverage",
+        "cwd": "{projectRoot}"
+      }
+    },
     "test:watch": {
       "executor": "nx:run-commands",
       "options": {
@@ -40,6 +61,17 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
+    },
+    "prepublishOnly": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run client:clean",
+          "nx run client:build",
+          "nx run client:test"
+        ],
+        "parallel": false
+      }
     }
   }
 }

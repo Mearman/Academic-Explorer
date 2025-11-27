@@ -11,8 +11,8 @@
   "scripts": {
     "build": "nx run ui:build",
     "build-storybook": "nx run ui:build-storybook",
-    "clean": "rm -rf dist",
-    "dev": "tsc -b --watch",
+    "clean": "nx run ui:clean",
+    "dev": "nx run ui:dev",
     "lint": "nx run ui:lint",
     "storybook": "nx run ui:storybook",
     "test": "nx run ui:test",

@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "nx run algorithms:build",
+    "clean": "nx run algorithms:clean",
     "lint": "nx run algorithms:lint",
     "test": "nx run algorithms:test",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "nx run algorithms:test:coverage",
     "test:integration": "nx run algorithms:test:integration",
     "test:unit": "nx run algorithms:test:unit",
     "test:watch": "nx run algorithms:test:watch",
