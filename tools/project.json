@@ -3,6 +3,7 @@
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/scripts",
   "projectType": "library",
+  "tags": ["type:tooling", "scope:internal"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",

@@ -3,9 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/cli/src",
   "projectType": "application",
-  "tags": ["app:cli"],
+  "tags": ["type:app", "scope:cli"],
   "targets": {
-    "barrelsby": {},
     "typecheck": {
       "options": {
         "command": "tsc --noEmit -p tsconfig.typecheck.json"

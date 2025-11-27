@@ -3,10 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/algorithms/src",
   "projectType": "library",
-  "tags": ["type:package", "scope:algorithms"],
+  "tags": ["type:library", "scope:algorithms"],
   "targets": {
-    "barrelsby": {},
-    "typecheck": {},
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{projectRoot}/dist"],

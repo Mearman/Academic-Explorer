@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/generators",
   "projectType": "library",
+  "tags": ["type:tooling", "scope:generators"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",
