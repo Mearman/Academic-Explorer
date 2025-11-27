@@ -13,11 +13,7 @@
     "typescript": "5.9.2"
   },
   "author": "Joe Mearman",
-  "generators": {
-    "library": "./library/generator.json",
-    "component": "./component/generator.json",
-    "entity-view": "./entity-view/generator.json"
-  },
+  "generators": "./generators.json",
   "keywords": [
     "academic-explorer",
     "generators",
@@ -26,5 +22,5 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "./index.ts"
+  "main": "./dist/index.js"
 }
