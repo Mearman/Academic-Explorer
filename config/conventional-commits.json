@@ -69,6 +69,7 @@
     "shared-utils": "Shared utilities package",
     "deps": "Dependencies",
     "dependencies": "Dependencies",
+    "ci": "CI/CD workflows",
     "config": "Configuration",
     "scripts": "Scripts",
     "tools": "Development tools",
