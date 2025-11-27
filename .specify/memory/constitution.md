@@ -1,21 +1,23 @@
 <!--
 Sync Impact Report:
-Version: 2.7.0 → 2.8.0 (MINOR: Added Principle XIV - Working Files Hygiene)
-Added Sections:
-  - Principle XIV (Working Files Hygiene): Temporary debug files, fix chain documents,
-    and other working artifacts MUST be cleaned up and NEVER committed to the repository.
+Version: 2.8.0 → 2.9.0 (MINOR: Strengthened Principle IX to eliminate "pre-existing" excuse)
 Modified Principles:
-  - Constitution Check section: Added Principle XIV verification requirement
-  - Quality Gates section: Added Working Files Hygiene verification requirement
-  - Development Workflow section: Added working files cleanup discipline
-Removed Sections: None
+  - Principle IX: Renamed "Deployment Readiness" → "Repository Integrity" with absolute
+    accountability. Removed "Temporary Exception Handling" loophole. Added explicit prohibition
+    against using "pre-existing" as an excuse. Expanded scope to include audit, warnings.
+  - Quality Gates section: Updated to reference "Repository Integrity" and expanded coverage
+  - Development Workflow section: Added repository integrity verification
+Added Sections:
+  - "Pre-existing is not an excuse" subsection in Principle IX
+Removed Sections:
+  - "Temporary Exception Handling" subsection (was providing loophole to defer fixes)
 Templates Requiring Updates:
-  - ✅ plan-template.md: Constitution Check section uses numbered list that accommodates new principle
-  - ✅ spec-template.md: Constitution Alignment section uses bullet list that accommodates new principle
-  - ✅ tasks-template.md: Constitution compliance verification checklist can expand for new principle
+  - ✅ plan-template.md: Constitution Check section uses numbered list that accommodates changes
+  - ✅ spec-template.md: Constitution Alignment section uses bullet list that accommodates changes
+  - ✅ tasks-template.md: Constitution compliance verification checklist updated language
 Follow-up TODOs: None
-Note: .gitignore now ignores ALL *.md, *.png, *.jpg, *.jpeg files - force-add required for intentional commits
 Previous Amendments:
+  - v2.8.0: Added Principle XIV - Working Files Hygiene
   - v2.7.0: Added Principle XIII - Build Output Isolation
   - v2.6.0: Added Principle XII - Spec Index Maintenance
   - v2.5.0: Added Principle XI - Complete Implementation
@@ -310,7 +312,7 @@ when the project transitions to production use, this principle MUST be revisited
 removed or replaced with stricter compatibility requirements.
 
 **Deployment Readiness Exception**: While this principle allows breaking changes during
-development, it does NOT exempt work from Principle IX (Deployment Readiness). All code
+development, it does NOT exempt work from Principle IX (Repository Integrity). All code
 MUST be deployment-ready even during development—pre-existing issues MUST be resolved
 before work is considered complete.
 
@@ -365,72 +367,77 @@ This principle is especially critical for this PhD research project where:
 - Research reproducibility requires stable, regression-free code
 - Academic demonstrations must work reliably without surprises
 
-### IX. Deployment Readiness (NON-NEGOTIABLE)
+### IX. Repository Integrity (NON-NEGOTIABLE)
 
-**Work is NOT complete if there are ANY outstanding issues in the repository, including
-pre-existing issues**. Deployment cannot run if ANY package has typecheck errors, test
-failures, lint violations, or build failures. Before marking work as complete, ALL blocking
-issues across the entire monorepo MUST be resolved.
+**NEVER leave the repository in a bad state**. When you touch the repository, you own its
+state. ALL issues—tests, linting, build, audit, errors, warnings—MUST be resolved before
+your work is complete. There are NO exceptions and NO excuses.
 
-Deployment readiness requirements:
+**"Pre-existing" is NOT an excuse**:
+- If you encounter failing tests, fix them—regardless of who wrote them or when
+- If you encounter lint errors, fix them—regardless of which files they're in
+- If you encounter build errors, fix them—regardless of which package is affected
+- If you encounter TypeScript errors, fix them—regardless of their origin
+- If you encounter audit vulnerabilities, fix them—regardless of when they were introduced
+- If you encounter warnings, fix them—regardless of whether they block the build
+- **The phrase "pre-existing issue" is BANNED**—it implies someone else's problem, but when
+  you're working in the repo, ALL problems are YOUR problems
+- **Deferring issues is PROHIBITED**—do not create GitHub issues to "track" problems you
+  should fix now
+- **"Out of scope" is NOT valid**—if you broke it or found it broken, fixing it IS in scope
+
+Repository integrity requirements:
 - **ALL packages** MUST pass `pnpm typecheck` with zero errors
 - **ALL packages** MUST pass `pnpm test` with zero failures
-- **ALL packages** MUST pass `pnpm lint` with zero violations
+- **ALL packages** MUST pass `pnpm lint` with zero violations (errors AND warnings)
 - **ALL packages** MUST pass `pnpm build` successfully
-- Pre-existing issues MUST be fixed or explicitly deferred with documented reason
-- Commits using `--no-verify` to bypass pre-commit hooks are ONLY acceptable as temporary
-  measures and MUST be followed by immediate fix commits
+- **ALL packages** MUST pass `pnpm audit` with zero high/critical vulnerabilities
+- Pre-commit hooks MUST pass without `--no-verify` bypass
+- CI pipeline MUST be green before considering work complete
 
 Zero-tolerance blocking issues:
 - TypeScript compilation errors in ANY package
 - Test failures in ANY test suite (unit, component, integration, E2E)
-- ESLint errors (warnings are acceptable if documented)
+- ESLint errors OR warnings in ANY package
 - Build failures in ANY package
-- Pre-commit hook failures (unless explicitly bypassed with documented justification)
+- High or critical npm audit vulnerabilities
+- Pre-commit hook failures
 
-Completion criteria for features/specs:
-- Feature implementation complete AND tests passing
-- ALL pre-existing issues blocking deployment are resolved
-- Full quality pipeline passes: `pnpm validate` succeeds across entire monorepo
-- CI/CD pipeline can deploy without errors or manual intervention
-- Branch is merge-ready with no known deployment blockers
+**Accountability model**:
+- When you start working, run `pnpm validate` first
+- If it fails, fix ALL failures before doing anything else
+- When you finish working, run `pnpm validate` again
+- If it fails, you are NOT done—keep working until it passes
+- Your work session is complete ONLY when the repo is in a better state than you found it
+
+**Why this matters**:
+- A broken repo blocks ALL future work, not just yours
+- "I'll fix it later" becomes "nobody fixes it ever"
+- Accumulating issues creates compounding debt that becomes unfixable
+- Research credibility requires a working, professional codebase
+- Every session should leave the repo healthier, never sicker
 
 **Rationale**: The project uses GitHub Pages for deployment with automated CI/CD. If ANY
-package in the monorepo has errors, the entire deployment fails. This creates a critical
-dependency: new features cannot be deployed if pre-existing issues block the build pipeline.
+package in the monorepo has errors, the entire deployment fails. More importantly, a
+culture of "not my problem" for pre-existing issues leads to rapid codebase decay.
 
-Research productivity is destroyed when:
-1. **Completed features can't be deployed** due to unrelated pre-existing errors
-2. **Demos fail** because deployment was blocked by issues in other packages
-3. **Time is wasted** tracking down "which issue broke deployment" across packages
-4. **False completion** occurs when features "work" but can't reach production
-5. **Technical debt accumulates** because "someone else's errors" are tolerated
+Taking absolute ownership of repository state ensures:
+- Every session leaves the codebase deployable
+- Issues are fixed when discovered, not deferred indefinitely
+- No "broken window" accumulation of quality problems
+- Research demonstrations work reliably
+- The main branch always represents production-quality code
 
-This principle ensures:
-- Every feature can be deployed immediately upon completion
-- No feature creates or leaves deployment blockers for future work
-- The main branch always remains in a deployable state
-- Pre-existing issues are surfaced and resolved, not ignored
-- Research demonstrations can be confidently scheduled knowing deployment works
+**Relationship to Development-Stage Pragmatism (Principle VII)**: While breaking changes
+are acceptable during development, they must still result in a fully working repository.
+Breaking changes are acceptable; broken repositories are not.
 
-**Relationship to Development-Stage Pragmatism (Principle VII)**: While Principle VII allows
-breaking changes during development, it does NOT allow leaving the codebase in an
-undeployable state. Breaking changes are acceptable; broken builds are not.
+**Relationship to Complete Implementation (Principle XI)**: Repository integrity requires
+implementing the FULL version of features. Incomplete implementations that "technically
+pass" quality gates but leave the repo in a degraded state violate this principle.
 
-**Relationship to Complete Implementation (Principle XI)**: Deployment readiness requires
-implementing the FULL version of features, not simplified fallbacks that might pass quality
-gates but don't deliver complete functionality.
-
-**Temporary Exception Handling**: If pre-existing issues are discovered that are genuinely
-outside the scope of current work AND would require significant effort to fix:
-1. Create a GitHub issue documenting the problem
-2. Add the issue to a deployment blockers tracking document
-3. Explicitly defer the fix with timeline and ownership
-4. Ensure current work does NOT make the issue worse
-5. Return to fix deployment blockers before starting new features
-
-This exception should be used sparingly—the default expectation is to fix all blockers
-before marking work complete.
+**Relationship to Continuous Execution (Principle X)**: Continuous execution continues
+until repository integrity is achieved. You cannot stop with a broken repo.
 
 ### X. Continuous Execution
 
@@ -481,7 +488,7 @@ Stopping conditions (ONLY stop if):
 - ALL planned phases/tasks are complete
 - A blocking error prevents further progress (build failure, test failure)
 - User explicitly requests to stop or pause
-- Deployment readiness gates fail and require manual intervention
+- Repository integrity gates fail and require manual intervention
 
 **Rationale**: The project involves large-scale feature implementations with 80+ atomic tasks
 spanning multiple phases (Setup → User Stories → Integration → Deployment). Pausing between
@@ -501,9 +508,9 @@ making one giant commit at the end. Commits MUST still be atomic and incremental
 the continuous execution. The difference is that execution continues without pausing,
 while commits happen frequently to persist progress.
 
-**Relationship to Deployment Readiness (Principle IX)**: Continuous execution continues
-until deployment readiness is achieved. If pre-existing issues block deployment, they
-MUST be resolved as part of the continuous execution flow, not deferred to a separate session.
+**Relationship to Repository Integrity (Principle IX)**: Continuous execution continues
+until repository integrity is achieved. If issues are discovered, they MUST be resolved
+as part of the continuous execution flow, not deferred to a separate session.
 
 **Relationship to Complete Implementation (Principle XI)**: Continuous execution continues
 until the FULL implementation is complete. If a "simple" version is initially attempted,
@@ -569,9 +576,9 @@ This principle ensures:
 are acceptable during development, they must still implement the FULL new version, not a
 simplified alternative.
 
-**Relationship to Deployment Readiness (Principle IX)**: Deployment requires COMPLETE
-implementations. Simplified fallbacks that "technically work" but lack full functionality
-do not satisfy deployment readiness.
+**Relationship to Repository Integrity (Principle IX)**: Repository integrity requires
+COMPLETE implementations. Simplified fallbacks that "technically work" but lack full
+functionality do not satisfy repository integrity.
 
 **Relationship to Continuous Execution (Principle X)**: If a simplified fallback is attempted
 and recognized, continuous execution MUST continue to implement the full version without
@@ -751,9 +758,9 @@ Working files hygiene ensures:
 **Relationship to Atomic Commits (Principle VI)**: Proper cleanup before staging ensures
 atomic commits contain only relevant changes, not accidentally included working files.
 
-**Relationship to Deployment Readiness (Principle IX)**: Working files can block deployment
+**Relationship to Repository Integrity (Principle IX)**: Working files can block deployment
 if they trigger lint warnings or contain sensitive debug information. Cleanup is part of
-deployment readiness.
+repository integrity.
 
 **Detection and enforcement**:
 ```bash
@@ -776,6 +783,15 @@ git status --porcelain | grep -E '\.(png|jpg|md)$'
 3. `pnpm build` - Production build verification across ALL packages
 4. `pnpm lint` - ESLint checking across ALL packages
 
+**Repository integrity verification**: Before AND after every work session:
+```bash
+# Run at START of session - fix any failures before doing new work
+pnpm validate
+
+# Run at END of session - do not stop until this passes
+pnpm validate
+```
+
 **Build output verification**: Before committing, verify no compiled files in source directories:
 ```bash
 # Should return nothing - any output indicates build output pollution
@@ -795,12 +811,12 @@ rm -f apps/web/debug-*.png apps/web/*-FIX-*.md apps/web/COMPLETE-*.md apps/web/C
 only changed projects. The dependency graph prevents building downstream projects when
 upstream projects have type errors.
 
-**Deployment readiness verification**: Before considering ANY work complete:
-1. Run `pnpm validate` and ensure it passes completely
-2. Check for any pre-existing issues in other packages
-3. If issues found, either fix them or explicitly defer with documentation
-4. Verify CI/CD would succeed if triggered right now
-5. Only then mark work as complete
+**Repository integrity checkpoint**: Before considering ANY work complete:
+1. Run `pnpm validate` and ensure it passes completely (zero errors, zero warnings)
+2. Run `pnpm audit` and ensure no high/critical vulnerabilities
+3. Verify CI/CD would succeed if triggered right now
+4. Only then mark work as complete
+5. **If ANY check fails, you are NOT done—keep working**
 
 **Spec file discipline**: After completing each phase of implementation:
 1. Update task statuses in `tasks.md` (mark completed tasks)
@@ -855,7 +871,7 @@ two places, extract it to `packages/utils` or create a shared package.
 **Constitution compliance**: Every PR MUST verify alignment with all fourteen core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
-development-stage pragmatism, test-first bug fixes, deployment readiness, continuous
+development-stage pragmatism, test-first bug fixes, repository integrity, continuous
 execution, complete implementation, spec index maintenance, build output isolation, and
 working files hygiene.
 
@@ -882,12 +898,13 @@ MUST be documented in commit messages and changelogs.
 - NO commits may use `git add .` or `git add -A` for staging
 - Spec file changes MUST be committed after each phase completion
 
-**Deployment readiness gates**:
-- All commits MUST leave the repository in a deployable state
-- Pre-existing deployment blockers MUST be resolved or explicitly deferred
-- `pnpm validate` MUST pass completely before marking work as complete
+**Repository integrity gates**:
+- All commits MUST leave the repository in a fully working state
+- `pnpm validate` MUST pass completely (zero errors, zero warnings)
+- `pnpm audit` MUST show no high/critical vulnerabilities
 - CI/CD pipeline MUST be able to deploy without manual intervention
-- Any use of `--no-verify` MUST be followed by immediate fix commits
+- **NO use of `--no-verify`**—if hooks fail, fix the issues, don't bypass them
+- **NO deferring issues**—fix everything you find, regardless of origin
 
 **Complete implementation verification**:
 - Feature implementations MUST match specifications completely
@@ -930,4 +947,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.8.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-26
+**Version**: 2.9.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-27

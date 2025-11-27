@@ -41,7 +41,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase
 7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
-9. **Deployment Readiness**: All packages must pass typecheck/test/lint/build before work is complete
+9. **Repository Integrity**: ALL issues (tests, lint, build, audit, errors, warnings) MUST be resolved—"pre-existing" is not an excuse
 10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
 11. **Complete Implementation**: Implement full version as specified; no simplified fallbacks without user approval
 12. **Spec Index Maintenance**: specs/README.md updated when spec status changes; committed alongside spec changes

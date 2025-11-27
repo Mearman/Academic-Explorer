@@ -170,7 +170,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Atomic conventional commits created after each task (Atomic Conventional Commits)
   - [ ] Breaking changes documented; no backwards compatibility obligations (Development-Stage Pragmatism)
   - [ ] Bug regression tests written before fixes (Test-First Bug Fixes)
-  - [ ] All pre-existing issues resolved; entire monorepo deployable (Deployment Readiness)
+  - [ ] ALL issues resolved (tests, lint, build, audit, errors, warnings)—"pre-existing" is not an excuse (Repository Integrity)
   - [ ] Full feature implemented as specified; no simplified fallbacks (Complete Implementation)
   - [ ] specs/README.md updated with spec status (Spec Index Maintenance)
   - [ ] TypeScript builds output to dist/, not alongside source files (Build Output Isolation)
