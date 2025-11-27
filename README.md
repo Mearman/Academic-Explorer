@@ -100,7 +100,6 @@ flowchart LR
     end
 
     subgraph cli["cli"]
-        cli_build[["build"]]
         cli_lint{{"lint"}}
         cli_test(["test"])
         cli_typecheck{{"typecheck"}}
@@ -148,10 +147,6 @@ flowchart LR
     %% Task dependencies
     algorithms_typecheck --> algorithms_build
     algorithms_typecheck --> algorithms_test
-    cli_typecheck --> cli_build
-    client_build --> cli_build
-    types_build --> cli_build
-    utils_build --> cli_build
     client_build --> cli_test
     types_build --> cli_test
     utils_build --> cli_test
