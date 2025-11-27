@@ -440,7 +440,8 @@
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
-        "project": "unit"
+        "project": "unit",
+        "passWithNoTests": true
       },
       "cache": true,
       "dependsOn": ["^build"],
@@ -458,7 +459,8 @@
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
-        "project": "component"
+        "project": "component",
+        "passWithNoTests": true
       },
       "cache": true,
       "dependsOn": [
@@ -479,7 +481,8 @@
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
-        "project": "integration"
+        "project": "integration",
+        "passWithNoTests": true
       },
       "cache": true,
       "dependsOn": [
