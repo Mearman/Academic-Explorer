@@ -4,8 +4,6 @@
   "sourceRoot": "packages/types/entities/src",
   "projectType": "library",
   "targets": {
-    "barrelsby": {},
-    "typecheck": {},
     "build": {
       "executor": "nx:run-commands",
       "outputs": [

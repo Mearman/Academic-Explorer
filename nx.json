@@ -28,8 +28,91 @@
       "plugin": "./tools/plugins/infer-targets.ts",
       "options": {
         "rules": [
-          { "target": "barrelsby", "when": { "pathExists": "src" } },
-          { "target": "typecheck", "when": { "pathExists": "tsconfig.json" } }
+          {
+            "target": "barrelsby",
+            "when": {
+              "and": [
+                { "pathExists": "src" },
+                { "not": { "hasTag": "type:tooling" } }
+              ]
+            }
+          },
+          {
+            "target": "typecheck",
+            "when": { "pathExists": "tsconfig.json" }
+          },
+          {
+            "target": "test",
+            "when": {
+              "and": [
+                { "pathExists": "vitest.config.ts" },
+                { "not": { "hasTag": "type:root" } }
+              ]
+            }
+          },
+          {
+            "target": "test:unit",
+            "when": {
+              "and": [
+                { "pathExists": "vitest.config.ts" },
+                { "or": [
+                  { "hasTag": "type:library" },
+                  { "hasTag": "type:app" }
+                ]}
+              ]
+            }
+          },
+          {
+            "target": "test:integration",
+            "when": {
+              "and": [
+                { "pathExists": "vitest.config.ts" },
+                { "or": [
+                  { "hasTag": "type:library" },
+                  { "hasTag": "type:app" }
+                ]}
+              ]
+            }
+          },
+          {
+            "target": "test:component",
+            "when": {
+              "and": [
+                { "pathExists": "vitest.config.ts" },
+                { "or": [
+                  { "hasTag": "scope:ui" },
+                  { "hasTag": "scope:web" }
+                ]}
+              ]
+            }
+          },
+          {
+            "target": "e2e",
+            "when": {
+              "and": [
+                { "hasTag": "type:app" },
+                { "pathExists": "e2e" }
+              ]
+            }
+          },
+          {
+            "target": "storybook",
+            "when": {
+              "and": [
+                { "hasTag": "scope:ui" },
+                { "pathExists": ".storybook" }
+              ]
+            }
+          },
+          {
+            "target": "build-storybook",
+            "when": {
+              "and": [
+                { "hasTag": "scope:ui" },
+                { "pathExists": ".storybook" }
+              ]
+            }
+          }
         ]
       }
     },

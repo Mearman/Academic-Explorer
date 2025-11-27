@@ -4,7 +4,6 @@
   "sourceRoot": "packages/ui/src",
   "projectType": "library",
   "targets": {
-    "barrelsby": {},
     "build": {
       "executor": "@nx/vite:build",
       "outputs": [

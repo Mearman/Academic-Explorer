@@ -4,7 +4,6 @@
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
   "targets": {
-    "barrelsby": {},
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": [
