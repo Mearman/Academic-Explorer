@@ -161,14 +161,19 @@ vi.mock("fs/promises", async (importOriginal) => {
 global.fetch = vi.fn()
 
 // Mock logger - must match the import path used below
-vi.mock("@academic-explorer/utils/logger", () => ({
-	logger: {
-		debug: vi.fn(),
-		warn: vi.fn(),
-		error: vi.fn(),
-	},
-	logError: vi.fn(),
-}))
+// Use importOriginal to preserve all exports while only mocking the logger functions
+vi.mock("@academic-explorer/utils/logger", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@academic-explorer/utils/logger")>()
+	return {
+		...actual,
+		logger: {
+			debug: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn(),
+		},
+		logError: vi.fn(),
+	}
+})
 
 // Import after mocks are set up
 import { readFile, access, writeFile, mkdir } from "fs/promises"
