@@ -10,6 +10,7 @@ export interface SyncTargetsGeneratorSchema {
 interface ProjectJson {
 	name?: string
 	targets?: Record<string, unknown>
+	tags?: string[]
 	[key: string]: unknown
 }
 
@@ -22,7 +23,29 @@ interface PathNotExistsCondition {
 	pathNotExists: string
 }
 
-type RuleCondition = PathExistsCondition | PathNotExistsCondition
+interface HasTagCondition {
+	hasTag: string
+}
+
+interface NotHasTagCondition {
+	notHasTag: string
+}
+
+interface HasAnyTagCondition {
+	hasAnyTag: string[]
+}
+
+interface HasAllTagsCondition {
+	hasAllTags: string[]
+}
+
+type RuleCondition =
+	| PathExistsCondition
+	| PathNotExistsCondition
+	| HasTagCondition
+	| NotHasTagCondition
+	| HasAnyTagCondition
+	| HasAllTagsCondition
 
 interface TargetRule {
 	target: string
@@ -32,6 +55,12 @@ interface TargetRule {
 
 interface InferTargetsPluginOptions {
 	rules?: TargetRule[]
+}
+
+interface ProjectContext {
+	tree: Tree
+	projectRoot: string
+	tags: string[]
 }
 
 // Default rules if none found in nx.json
@@ -48,31 +77,39 @@ const defaultRules: TargetRule[] = [
 	},
 ]
 
-function checkCondition(
-	condition: RuleCondition,
-	tree: Tree,
-	projectRoot: string
-): boolean {
+function checkCondition(condition: RuleCondition, ctx: ProjectContext): boolean {
 	if ("pathExists" in condition) {
-		const fullPath = `${projectRoot}/${condition.pathExists}`
-		return tree.exists(fullPath)
+		const fullPath = `${ctx.projectRoot}/${condition.pathExists}`
+		return ctx.tree.exists(fullPath)
 	}
 
 	if ("pathNotExists" in condition) {
-		const fullPath = `${projectRoot}/${condition.pathNotExists}`
-		return !tree.exists(fullPath)
+		const fullPath = `${ctx.projectRoot}/${condition.pathNotExists}`
+		return !ctx.tree.exists(fullPath)
+	}
+
+	if ("hasTag" in condition) {
+		return ctx.tags.includes(condition.hasTag)
+	}
+
+	if ("notHasTag" in condition) {
+		return !ctx.tags.includes(condition.notHasTag)
+	}
+
+	if ("hasAnyTag" in condition) {
+		return condition.hasAnyTag.some((tag) => ctx.tags.includes(tag))
+	}
+
+	if ("hasAllTags" in condition) {
+		return condition.hasAllTags.every((tag) => ctx.tags.includes(tag))
 	}
 
 	return false
 }
 
-function checkAllConditions(
-	conditions: RuleCondition | RuleCondition[],
-	tree: Tree,
-	projectRoot: string
-): boolean {
+function checkAllConditions(conditions: RuleCondition | RuleCondition[], ctx: ProjectContext): boolean {
 	const conditionArray = Array.isArray(conditions) ? conditions : [conditions]
-	return conditionArray.every((c) => checkCondition(c, tree, projectRoot))
+	return conditionArray.every((c) => checkCondition(c, ctx))
 }
 
 /**
@@ -144,6 +181,13 @@ export default async function syncTargetsGenerator(
 			projectJson.targets = {}
 		}
 
+		// Build project context for condition checking
+		const ctx: ProjectContext = {
+			tree,
+			projectRoot: projectConfig.root,
+			tags: projectJson.tags ?? [],
+		}
+
 		// Check each rule
 		for (const rule of rules) {
 			const hasTarget = rule.target in projectJson.targets
@@ -154,7 +198,7 @@ export default async function syncTargetsGenerator(
 			}
 
 			// Check if conditions are met
-			if (checkAllConditions(rule.when, tree, projectConfig.root)) {
+			if (checkAllConditions(rule.when, ctx)) {
 				missingTargets.push(rule.target)
 			}
 		}
