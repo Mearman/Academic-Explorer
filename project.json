@@ -48,6 +48,25 @@
       },
       "inputs": ["default", "^production"],
       "outputs": ["{workspaceRoot}/dependency-report.json"]
+    },
+    "docs:task-graph": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx scripts/generate-nx-mermaid.ts -u README.md -t build,test,typecheck,lint -d LR",
+        "cwd": "{workspaceRoot}"
+      },
+      "inputs": [
+        "{workspaceRoot}/README.md",
+        "{workspaceRoot}/nx.json",
+        "{workspaceRoot}/project.json",
+        "{workspaceRoot}/apps/*/project.json",
+        "{workspaceRoot}/packages/*/project.json",
+        "{workspaceRoot}/scripts/generate-nx-mermaid.ts"
+      ],
+      "outputs": [
+        "{workspaceRoot}/README.md"
+      ],
+      "cache": true
     }
   },
   "tags": ["scope:workspace", "type:root"]
