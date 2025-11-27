@@ -1,11 +1,11 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema",
-	"$id": "https://academic-explorer.dev/schemas/nx.schema.json",
+	"$id": "https://raw.githubusercontent.com/Mearman/Academic-Explorer/refs/heads/main/nx.schema.json",
 	"title": "Academic Explorer Nx Configuration",
 	"description": "Extends Nx configuration with JSON Logic support for target inference",
 	"allOf": [
 		{
-			"$ref": "./node_modules/nx/schemas/nx-schema.json"
+			"$ref": "https://raw.githubusercontent.com/nrwl/nx/master/packages/nx/schemas/nx-schema.json"
 		}
 	],
 	"definitions": {
