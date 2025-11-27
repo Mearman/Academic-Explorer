@@ -27,9 +27,13 @@ export default defineConfig({
     maxConcurrency: 1,
     maxWorkers: 1,
     // Named projects for targeted test execution
-    // Note: Each project must explicitly set globals since projects run independently
+    // Note: Each project must explicitly set root, resolve, and globals since projects run independently
     projects: [
       {
+        root: __dirname,
+        resolve: {
+          conditions: ["source", "import", "module", "default"],
+        },
         test: {
           name: 'unit',
           include: ['__tests__/**/*.test.ts', 'src/**/*.unit.test.ts'],
@@ -38,6 +42,10 @@ export default defineConfig({
         },
       },
       {
+        root: __dirname,
+        resolve: {
+          conditions: ["source", "import", "module", "default"],
+        },
         test: {
           name: 'integration',
           include: ['src/**/*.integration.test.ts'],
