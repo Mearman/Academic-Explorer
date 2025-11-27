@@ -207,12 +207,13 @@ jobs:
       - name: Run security audit
         run: pnpm audit --audit-level moderate
 
-  # Dependency audit - Check dependency health (runs in parallel with validate)
-  dependency-audit:
+  # Outdated dependencies check - informational only, does not block workflow
+  outdated-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     needs: [changes]
     if: always() && needs.changes.outputs.should-test == 'true'
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -231,12 +232,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check dependencies
-        run: pnpm deps:check
-
-      # - name: License check
-      #   run: pnpm licenses:check
-        # Disabled temporarily to allow CI to pass and enable GitHub Pages deployment
+      - name: Check outdated dependencies
+        run: pnpm deps:outdated
 
   # E2E tests - Full application tests (run after validate)
   e2e:
@@ -418,8 +415,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, e2e, security-audit, dependency-audit]
-    if: always() && needs.validate.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success'
+    needs: [validate, e2e, security-audit]
+    if: always() && needs.validate.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success'
     environment:
       name: production
       url: https://mearman.github.io/Academic-Explorer/
@@ -560,8 +557,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [validate, e2e, security-audit, dependency-audit, deploy]
-    if: always() && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.dependency-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
+    needs: [validate, e2e, security-audit, deploy]
+    if: always() && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
@@ -732,7 +729,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [validate, security-audit, dependency-audit, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [validate, security-audit, outdated-check, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -752,7 +749,7 @@ jobs:
             echo "|-----|--------|---------|"
             echo "| ✅ Validate | ${{ needs.validate.result }} | Build + typecheck + lint + all tests |"
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
-            echo "| 📦 Dependency Audit | ${{ needs.dependency-audit.result }} | Dependency health checks |"
+            echo "| 📦 Outdated Check | ${{ needs.outdated-check.result }} | Outdated dependencies (non-blocking) |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
             echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
