@@ -501,7 +501,7 @@ jobs:
 
       - name: Create issue on failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.create({
@@ -640,7 +640,7 @@ jobs:
 
       - name: Create rollback issue
         if: steps.previous-deployment.outputs.deployment_id != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.create({
