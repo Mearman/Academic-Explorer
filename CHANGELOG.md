@@ -1,3 +1,8 @@
+## <small>21.1.1 (2025-11-27)</small>
+
+* refactor(web): relocate test files from routes/ to src/test/ ([433cef8](https://github.com/Mearman/Academic-Explorer/commit/433cef8))
+* chore(release): 21.1.0 [skip ci] ([137a0ed](https://github.com/Mearman/Academic-Explorer/commit/137a0ed))
+
 ## 21.1.0 (2025-11-27)
 
 * fix(config): enforce correct exports condition order via syncpack ([37a35bc](https://github.com/Mearman/Academic-Explorer/commit/37a35bc))
