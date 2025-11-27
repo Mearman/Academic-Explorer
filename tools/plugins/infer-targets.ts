@@ -2,7 +2,13 @@
  * Infer Targets Plugin
  *
  * Automatically infers targets for projects based on declarative rules in nx.json.
- * Targets are added at runtime - no need to define them in project.json.
+ * Uses JSON Logic (jsonlogic.com) compliant syntax for conditions.
+ *
+ * Data context available via `var`:
+ * - tags: string[] - Project tags
+ * - targets: string[] - Existing target names
+ * - root: string - Project root path
+ * - name: string - Project name
  *
  * Configuration in nx.json:
  * {
@@ -12,34 +18,37 @@
  *       "options": {
  *         "rules": [
  *           { "target": "barrelsby", "when": { "pathExists": "src" } },
- *           { "target": "typecheck", "when": { "pathExists": "tsconfig.json" } },
- *           { "target": "storybook", "when": { "hasTag": "type:ui" } },
- *           { "target": "lint", "when": { "not": { "hasTag": "no-lint" } } },
- *           { "target": "e2e", "when": { "or": [{ "hasTag": "type:app" }, { "hasTag": "scope:e2e" }] } }
+ *           { "target": "typecheck", "when": { "in": ["type:lib", { "var": "tags" }] } },
+ *           { "target": "e2e", "when": { "some": [{ "var": "tags" }, { "in": [{ "var": "" }, ["type:app", "type:e2e"]] }] } }
  *         ]
  *       }
  *     }
  *   ]
  * }
  *
- * Primitive conditions:
- * - pathExists: string - File/directory exists in project
- * - hasTarget: string - Project has the specified target
- * - hasTag: string - Project has the specified tag
- * - hasAnyTag: string[] - Project has any of the tags
- * - hasAllTags: string[] - Project has all of the tags
+ * JSON Logic operators (jsonlogic.com compliant):
+ * - var: Access data (e.g., { "var": "tags" }, { "var": "targets" })
+ * - and: All conditions truthy
+ * - or: Any condition truthy
+ * - !: Negation (alias: not)
+ * - !!: Double negation (truthy coercion)
+ * - if: Conditional [condition, then, else, ...]
+ * - ==, ===, !=, !==: Equality operators
+ * - <, >, <=, >=: Comparison operators (supports 3-arg between)
+ * - in: Array membership or substring check
+ * - some: Any array element passes condition
+ * - all: All array elements pass condition
+ * - none: No array elements pass condition
  *
- * Logical operators (JSON Logic-inspired, recursive):
- * - not: Condition - Negates a condition
- * - and: Condition[] - All conditions must be true
- * - or: Condition[] - At least one condition must be true
- * - xor: Condition[] - Exactly one condition must be true (A ⊕ B)
+ * Extensions:
+ * - xor: Exactly one condition true (A ⊕ B)
+ * - pathExists: File/directory exists in project
  *
- * Examples:
- * - { "not": { "pathExists": ".eslintrc.js" } }
- * - { "and": [{ "pathExists": "src" }, { "hasTag": "type:lib" }] }
- * - { "or": [{ "hasTag": "type:app" }, { "hasTag": "type:e2e" }] }
- * - { "xor": [{ "hasTag": "scope:web" }, { "hasTag": "scope:cli" }] }
+ * Convenience shortcuts (sugar for common patterns):
+ * - hasTag: string → { "in": [tag, { "var": "tags" }] }
+ * - hasTarget: string → { "in": [target, { "var": "targets" }] }
+ * - hasAnyTag: string[] → { "some": [tags, { "in": [{ "var": "" }, { "var": "tags" }] }] }
+ * - hasAllTags: string[] → { "all": [tags, { "in": [{ "var": "" }, { "var": "tags" }] }] }
  */
 
 import {
@@ -53,69 +62,31 @@ import { existsSync } from "fs"
 import { dirname, join } from "path"
 
 // ============================================================================
-// Condition Types - JSON Logic-inspired syntax
+// JSON Logic Types
 // ============================================================================
 
-// Primitive conditions (base building blocks)
-interface PathExistsCondition {
-	pathExists: string
-}
-
-interface HasTargetCondition {
-	hasTarget: string
-}
-
-interface HasTagCondition {
-	hasTag: string
-}
-
-interface HasAnyTagCondition {
-	hasAnyTag: string[]
-}
-
-interface HasAllTagsCondition {
-	hasAllTags: string[]
-}
-
-type PrimitiveCondition =
-	| PathExistsCondition
-	| HasTargetCondition
-	| HasTagCondition
-	| HasAnyTagCondition
-	| HasAllTagsCondition
-
-// Logical operators (recursive)
-interface NotCondition {
-	not: RuleCondition
-}
-
-interface AndCondition {
-	and: RuleCondition[]
-}
-
-interface OrCondition {
-	or: RuleCondition[]
-}
-
-// XOR: exactly one condition is true
-// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
-interface XorCondition {
-	xor: RuleCondition[]
-}
-
-type LogicalCondition = NotCondition | AndCondition | OrCondition | XorCondition
-
-// Combined type
-type RuleCondition = PrimitiveCondition | LogicalCondition
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type JsonLogicValue = any
+type JsonLogicRule = JsonLogicValue | { [operator: string]: JsonLogicValue }
 
 interface TargetRule {
 	target: string
-	when: RuleCondition | RuleCondition[]
+	when: JsonLogicRule | JsonLogicRule[]
 	value?: Record<string, unknown>
 }
 
 export interface InferTargetsPluginOptions {
 	rules?: TargetRule[]
+}
+
+// Data context for JSON Logic evaluation
+interface DataContext {
+	tags: string[]
+	targets: string[]
+	root: string
+	name: string
+	// For iteration context (e.g., inside some/all/none)
+	"": JsonLogicValue
 }
 
 // Default rules if none specified
@@ -132,63 +103,293 @@ const defaultRules: TargetRule[] = [
 	},
 ]
 
-interface ProjectContext {
-	projectRoot: string
-	workspaceRoot: string
-	existingTargets: Record<string, unknown>
-	tags: string[]
+// ============================================================================
+// JSON Logic Evaluator
+// ============================================================================
+
+function getVar(data: DataContext, path: JsonLogicValue): JsonLogicValue {
+	if (path === "" || path === null || path === undefined) {
+		return data[""]
+	}
+	if (typeof path === "number") {
+		// Array index access
+		const arr = data[""]
+		return Array.isArray(arr) ? arr[path] : undefined
+	}
+	if (typeof path !== "string") {
+		return undefined
+	}
+
+	// Dot notation path traversal
+	const parts = path.split(".")
+	let current: JsonLogicValue = data
+	for (const part of parts) {
+		if (current === null || current === undefined) {
+			return undefined
+		}
+		current = current[part]
+	}
+	return current
 }
 
-function checkCondition(condition: RuleCondition, ctx: ProjectContext): boolean {
-	// Logical operators (recursive)
-	if ("not" in condition) {
-		return !checkCondition(condition.not, ctx)
+function evaluate(
+	rule: JsonLogicRule,
+	data: DataContext,
+	fsContext: { workspaceRoot: string; projectRoot: string }
+): JsonLogicValue {
+	// Primitives pass through
+	if (rule === null || rule === undefined) {
+		return rule
+	}
+	if (typeof rule !== "object") {
+		return rule
+	}
+	if (Array.isArray(rule)) {
+		return rule.map((r) => evaluate(r, data, fsContext))
 	}
 
-	if ("and" in condition) {
-		return condition.and.every((c) => checkCondition(c, ctx))
+	// Get the operator (first key)
+	const operators = Object.keys(rule)
+	if (operators.length !== 1) {
+		// Not a valid operation, return as-is
+		return rule
 	}
 
-	if ("or" in condition) {
-		return condition.or.some((c) => checkCondition(c, ctx))
-	}
+	const op = operators[0]
+	const args = rule[op]
 
-	if ("xor" in condition) {
-		// XOR: exactly one condition is true
-		// A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
-		const results = condition.xor.map((c) => checkCondition(c, ctx))
-		const trueCount = results.filter(Boolean).length
-		return trueCount === 1
-	}
+	// Helper to evaluate args
+	const evalArg = (arg: JsonLogicValue): JsonLogicValue => evaluate(arg, data, fsContext)
+	const evalArgs = (): JsonLogicValue[] =>
+		Array.isArray(args) ? args.map(evalArg) : [evalArg(args)]
 
-	// Primitive conditions
-	if ("pathExists" in condition) {
-		const fullPath = join(ctx.workspaceRoot, ctx.projectRoot, condition.pathExists)
-		return existsSync(fullPath)
-	}
+	switch (op) {
+		// ========== Data Access ==========
+		case "var": {
+			const path = evalArg(args)
+			return getVar(data, path)
+		}
 
-	if ("hasTarget" in condition) {
-		return condition.hasTarget in ctx.existingTargets
-	}
+		// ========== Logical Operators ==========
+		case "and": {
+			const conditions = Array.isArray(args) ? args : [args]
+			let result: JsonLogicValue = true
+			for (const cond of conditions) {
+				result = evalArg(cond)
+				if (!result) return result
+			}
+			return result
+		}
 
-	if ("hasTag" in condition) {
-		return ctx.tags.includes(condition.hasTag)
-	}
+		case "or": {
+			const conditions = Array.isArray(args) ? args : [args]
+			let result: JsonLogicValue = false
+			for (const cond of conditions) {
+				result = evalArg(cond)
+				if (result) return result
+			}
+			return result
+		}
 
-	if ("hasAnyTag" in condition) {
-		return condition.hasAnyTag.some((tag) => ctx.tags.includes(tag))
-	}
+		case "!":
+		case "not": {
+			const val = Array.isArray(args) ? evalArg(args[0]) : evalArg(args)
+			return !val
+		}
 
-	if ("hasAllTags" in condition) {
-		return condition.hasAllTags.every((tag) => ctx.tags.includes(tag))
-	}
+		case "!!": {
+			const val = Array.isArray(args) ? evalArg(args[0]) : evalArg(args)
+			return !!val
+		}
 
-	return false
+		case "if": {
+			const conditions = Array.isArray(args) ? args : [args]
+			for (let i = 0; i < conditions.length - 1; i += 2) {
+				if (evalArg(conditions[i])) {
+					return evalArg(conditions[i + 1])
+				}
+			}
+			// Else clause (odd number of args)
+			if (conditions.length % 2 === 1) {
+				return evalArg(conditions[conditions.length - 1])
+			}
+			return null
+		}
+
+		// ========== Comparison Operators ==========
+		case "==": {
+			const [a, b] = evalArgs()
+			// eslint-disable-next-line eqeqeq
+			return a == b
+		}
+
+		case "===": {
+			const [a, b] = evalArgs()
+			return a === b
+		}
+
+		case "!=": {
+			const [a, b] = evalArgs()
+			// eslint-disable-next-line eqeqeq
+			return a != b
+		}
+
+		case "!==": {
+			const [a, b] = evalArgs()
+			return a !== b
+		}
+
+		case "<": {
+			const vals = evalArgs()
+			if (vals.length === 2) {
+				return vals[0] < vals[1]
+			}
+			// Between: a < b < c
+			if (vals.length === 3) {
+				return vals[0] < vals[1] && vals[1] < vals[2]
+			}
+			return false
+		}
+
+		case "<=": {
+			const vals = evalArgs()
+			if (vals.length === 2) {
+				return vals[0] <= vals[1]
+			}
+			if (vals.length === 3) {
+				return vals[0] <= vals[1] && vals[1] <= vals[2]
+			}
+			return false
+		}
+
+		case ">": {
+			const vals = evalArgs()
+			if (vals.length === 2) {
+				return vals[0] > vals[1]
+			}
+			if (vals.length === 3) {
+				return vals[0] > vals[1] && vals[1] > vals[2]
+			}
+			return false
+		}
+
+		case ">=": {
+			const vals = evalArgs()
+			if (vals.length === 2) {
+				return vals[0] >= vals[1]
+			}
+			if (vals.length === 3) {
+				return vals[0] >= vals[1] && vals[1] >= vals[2]
+			}
+			return false
+		}
+
+		// ========== Array/String Operators ==========
+		case "in": {
+			const [needle, haystack] = evalArgs()
+			if (Array.isArray(haystack)) {
+				return haystack.includes(needle)
+			}
+			if (typeof haystack === "string") {
+				return haystack.includes(String(needle))
+			}
+			return false
+		}
+
+		case "some": {
+			const [arr, condition] = Array.isArray(args) ? args : [args, true]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return false
+			return evalArr.some((item) => {
+				const itemData = { ...data, "": item }
+				return !!evaluate(condition, itemData, fsContext)
+			})
+		}
+
+		case "all": {
+			const [arr, condition] = Array.isArray(args) ? args : [args, true]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return false
+			if (evalArr.length === 0) return false // JSON Logic: all([]) = false
+			return evalArr.every((item) => {
+				const itemData = { ...data, "": item }
+				return !!evaluate(condition, itemData, fsContext)
+			})
+		}
+
+		case "none": {
+			const [arr, condition] = Array.isArray(args) ? args : [args, true]
+			const evalArr = evalArg(arr)
+			if (!Array.isArray(evalArr)) return true
+			return !evalArr.some((item) => {
+				const itemData = { ...data, "": item }
+				return !!evaluate(condition, itemData, fsContext)
+			})
+		}
+
+		// ========== Extensions ==========
+		case "xor": {
+			// Exactly one condition is true: A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)
+			const conditions = Array.isArray(args) ? args : [args]
+			const results = conditions.map((c) => !!evalArg(c))
+			const trueCount = results.filter(Boolean).length
+			return trueCount === 1
+		}
+
+		case "pathExists": {
+			const path = evalArg(args)
+			const fullPath = join(fsContext.workspaceRoot, fsContext.projectRoot, String(path))
+			return existsSync(fullPath)
+		}
+
+		// ========== Convenience Shortcuts ==========
+		case "hasTag": {
+			const tag = evalArg(args)
+			return data.tags.includes(String(tag))
+		}
+
+		case "hasTarget": {
+			const target = evalArg(args)
+			return data.targets.includes(String(target))
+		}
+
+		case "hasAnyTag": {
+			const tags = evalArg(args)
+			if (!Array.isArray(tags)) return false
+			return tags.some((tag) => data.tags.includes(String(tag)))
+		}
+
+		case "hasAllTags": {
+			const tags = evalArg(args)
+			if (!Array.isArray(tags)) return false
+			return tags.every((tag) => data.tags.includes(String(tag)))
+		}
+
+		default:
+			// Unknown operator - return as-is
+			return rule
+	}
 }
 
-function checkAllConditions(conditions: RuleCondition | RuleCondition[], ctx: ProjectContext): boolean {
+// ============================================================================
+// Plugin Implementation
+// ============================================================================
+
+function checkCondition(
+	rule: JsonLogicRule,
+	data: DataContext,
+	fsContext: { workspaceRoot: string; projectRoot: string }
+): boolean {
+	return !!evaluate(rule, data, fsContext)
+}
+
+function checkAllConditions(
+	conditions: JsonLogicRule | JsonLogicRule[],
+	data: DataContext,
+	fsContext: { workspaceRoot: string; projectRoot: string }
+): boolean {
 	const conditionArray = Array.isArray(conditions) ? conditions : [conditions]
-	return conditionArray.every((c) => checkCondition(c, ctx))
+	return conditionArray.every((c) => checkCondition(c, data, fsContext))
 }
 
 function createNodesInternal(
@@ -210,6 +411,7 @@ function createNodesInternal(
 	const projectJsonPath = join(context.workspaceRoot, configFilePath)
 	let existingTargets: Record<string, unknown> = {}
 	let tags: string[] = []
+	let projectName = projectRoot.split("/").pop() ?? projectRoot
 
 	try {
 		const projectJson = JSON.parse(
@@ -217,16 +419,23 @@ function createNodesInternal(
 		) as ProjectConfiguration
 		existingTargets = projectJson.targets ?? {}
 		tags = projectJson.tags ?? []
+		projectName = projectJson.name ?? projectName
 	} catch {
 		// No project.json or invalid - continue with empty targets/tags
 	}
 
-	// Build project context for condition checking
-	const ctx: ProjectContext = {
-		projectRoot,
-		workspaceRoot: context.workspaceRoot,
-		existingTargets,
+	// Build data context for JSON Logic evaluation
+	const data: DataContext = {
 		tags,
+		targets: Object.keys(existingTargets),
+		root: projectRoot,
+		name: projectName,
+		"": undefined,
+	}
+
+	const fsContext = {
+		workspaceRoot: context.workspaceRoot,
+		projectRoot,
 	}
 
 	// Evaluate rules and build targets
@@ -239,7 +448,7 @@ function createNodesInternal(
 		}
 
 		// Check if conditions are met
-		if (checkAllConditions(rule.when, ctx)) {
+		if (checkAllConditions(rule.when, data, fsContext)) {
 			inferredTargets[rule.target] = rule.value ?? {}
 		}
 	}
