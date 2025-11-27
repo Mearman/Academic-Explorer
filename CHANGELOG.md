@@ -1,3 +1,23 @@
+## 21.1.0 (2025-11-27)
+
+* fix(config): enforce correct exports condition order via syncpack ([37a35bc](https://github.com/Mearman/Academic-Explorer/commit/37a35bc))
+* fix(config): migrate test targets to @nx/vitest:test executor ([ae1e749](https://github.com/Mearman/Academic-Explorer/commit/ae1e749))
+* fix(deps): regenerate lockfile for knip version specifier ([d2da0af](https://github.com/Mearman/Academic-Explorer/commit/d2da0af))
+* fix(deps): remove unused eslint-plugin-yaml to fix js-yaml vulnerability ([33277d8](https://github.com/Mearman/Academic-Explorer/commit/33277d8))
+* fix(ui-components): add setupFiles to vitest projects config ([6e51c05](https://github.com/Mearman/Academic-Explorer/commit/6e51c05))
+* chore(config): add ci scope for commit messages ([0bc68aa](https://github.com/Mearman/Academic-Explorer/commit/0bc68aa))
+* chore(deps): regenerate lockfile and update documentation ([c5e5509](https://github.com/Mearman/Academic-Explorer/commit/c5e5509))
+* chore(release): 21.0.2 [skip ci] ([a060411](https://github.com/Mearman/Academic-Explorer/commit/a060411))
+* chore(web): add explicit tsconfig project references ([be7a2b9](https://github.com/Mearman/Academic-Explorer/commit/be7a2b9))
+* refactor(config): replace broken deps:check with separate audit/outdated jobs ([9b2a4e0](https://github.com/Mearman/Academic-Explorer/commit/9b2a4e0))
+* feat(deps): add knip for unused dependency detection ([9a199f3](https://github.com/Mearman/Academic-Explorer/commit/9a199f3))
+* feat(web): add algorithms routes and visualization panels ([57a0e66](https://github.com/Mearman/Academic-Explorer/commit/57a0e66))
+* build(config): enforce fixed versions for pnpm overrides in syncpack ([0edb9bf](https://github.com/Mearman/Academic-Explorer/commit/0edb9bf))
+* build(config): upgrade Nx to v22.1.3 and fix continuous target caching ([2a29cc5](https://github.com/Mearman/Academic-Explorer/commit/2a29cc5))
+* build(deps): upgrade Nx packages and clean up dependencies ([ae2273f](https://github.com/Mearman/Academic-Explorer/commit/ae2273f))
+* build(ui-components): upgrade Storybook to v10.1.0 with ESM support ([3d4e14e](https://github.com/Mearman/Academic-Explorer/commit/3d4e14e))
+* test(ui-components): rename tests to component naming convention ([a671677](https://github.com/Mearman/Academic-Explorer/commit/a671677))
+
 ## <small>21.0.2 (2025-11-27)</small>
 
 * fix(config): handle missing coverage artifacts gracefully ([e55fdc7](https://github.com/Mearman/Academic-Explorer/commit/e55fdc7))
