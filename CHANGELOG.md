@@ -1,3 +1,19 @@
+## <small>21.0.1 (2025-11-27)</small>
+
+* fix(cli): use importOriginal in logger mock to preserve all exports ([8a65e9e](https://github.com/Mearman/Academic-Explorer/commit/8a65e9e))
+* fix(config): add passWithNoTests to nx.json targets for empty test suites ([b1df947](https://github.com/Mearman/Academic-Explorer/commit/b1df947))
+* fix(config): add source exports to workspace packages for vitest resolution ([9d3e5f3](https://github.com/Mearman/Academic-Explorer/commit/9d3e5f3))
+* fix(graph): add globals to algorithms vitest inline projects ([7aa435d](https://github.com/Mearman/Academic-Explorer/commit/7aa435d))
+* fix(graph): add root and resolve to algorithms vitest inline projects ([eb4c7c4](https://github.com/Mearman/Academic-Explorer/commit/eb4c7c4))
+* fix(graph): add root to algorithms vitest config for nx compatibility ([9e6e68f](https://github.com/Mearman/Academic-Explorer/commit/9e6e68f))
+* fix(graph): increase biconnected complexity test margin for CI ([988ada4](https://github.com/Mearman/Academic-Explorer/commit/988ada4))
+* fix(graph): increase Leiden performance test thresholds for CI ([f7d72bd](https://github.com/Mearman/Academic-Explorer/commit/f7d72bd))
+* fix(graph): use nxViteTsPaths plugin and baseVitestConfig ([b43766d](https://github.com/Mearman/Academic-Explorer/commit/b43766d))
+* fix(web): add plugins/resolve/globals to vitest inline projects ([5f15847](https://github.com/Mearman/Academic-Explorer/commit/5f15847))
+* fix(web): add setupFiles to vitest projects for fake-indexeddb ([552ebd3](https://github.com/Mearman/Academic-Explorer/commit/552ebd3))
+* refactor(config): use vitest projects with --project flag instead of separate configs ([4182538](https://github.com/Mearman/Academic-Explorer/commit/4182538))
+* chore(release): 21.0.0 [skip ci] ([19422cf](https://github.com/Mearman/Academic-Explorer/commit/19422cf))
+
 ## 21.0.0 (2025-11-27)
 
 * fix(algorithms): correct undirected graph metrics calculations ([4f88067](https://github.com/Mearman/Academic-Explorer/commit/4f88067))
