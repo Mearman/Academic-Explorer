@@ -175,14 +175,17 @@ flowchart LR
     types_build --> utils_typecheck
     web_typecheck --> web_build
     types_build --> web_build
+    algorithms_build --> web_build
     client_build --> web_build
     ui_build --> web_build
     utils_build --> web_build
     types_build --> web_test
+    algorithms_build --> web_test
     client_build --> web_test
     ui_build --> web_test
     utils_build --> web_test
     types_build --> web_typecheck
+    algorithms_build --> web_typecheck
     client_build --> web_typecheck
     ui_build --> web_typecheck
     utils_build --> web_typecheck
