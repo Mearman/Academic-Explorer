@@ -13,13 +13,6 @@
         "outputPath": "packages/client/dist"
       }
     },
-    "build:types": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --emitDeclarationOnly",
-        "cwd": "{projectRoot}"
-      }
-    },
     "clean": {
       "executor": "nx:run-commands",
       "options": {

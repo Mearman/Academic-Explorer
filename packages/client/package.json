@@ -10,7 +10,6 @@
   },
   "scripts": {
     "build": "nx run client:build",
-    "build:types": "nx run client:build:types",
     "clean": "nx run client:clean",
     "dev": "nx run client:dev",
     "lint": "nx run client:lint",
