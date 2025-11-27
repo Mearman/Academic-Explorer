@@ -136,6 +136,12 @@ function generateMermaid(
 							toPattern: `^${depTarget}`,
 							project: projectName,
 						})
+					} else if (dep.includes(":")) {
+						// Already fully-qualified task name (e.g., "types:build")
+						pendingEdges.push({
+							from: `${projectName}:${targetName}`,
+							to: dep,
+						})
 					} else {
 						// Dependency on another target in same project
 						pendingEdges.push({
