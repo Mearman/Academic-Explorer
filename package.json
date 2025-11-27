@@ -99,7 +99,7 @@
     "@vitest/coverage-v8": "4.0.14",
     "@vitest/ui": "4.0.14",
     "barrelsby": "2.8.1",
-    "chokidar": "4.0.3",
+    "chokidar": "5.0.0",
     "eslint": "9.39.1",
     "eslint-config-xo": "0.49.0",
     "eslint-config-xo-typescript": "9.0.0",
