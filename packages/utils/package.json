@@ -9,11 +9,15 @@
     "directory": "packages/utils"
   },
   "scripts": {
-    "build": "tsc -b",
+    "build": "nx run utils:build",
     "clean": "rm -rf dist",
     "dev": "tsc -b --watch",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "nx run utils:lint",
+    "test": "nx run utils:test",
+    "test:integration": "nx run utils:test:integration",
+    "test:unit": "nx run utils:test:unit",
+    "test:watch": "nx run utils:test:watch",
+    "typecheck": "nx run utils:typecheck"
   },
   "dependencies": {
     "@academic-explorer/types": "workspace:*",

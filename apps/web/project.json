@@ -24,6 +24,30 @@
       "options": {
         "config": "apps/web/playwright.config.ts"
       }
+    },
+    "e2e:headed": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "options": {
+        "config": "apps/web/playwright.config.ts",
+        "headed": true
+      }
+    },
+    "e2e:ui": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "options": {
+        "config": "apps/web/playwright.config.ts",
+        "ui": true
+      }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

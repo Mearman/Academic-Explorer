@@ -9,18 +9,20 @@
     "directory": "apps/web"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "nx run web:build",
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
-    "dev": "vite",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:component": "vitest",
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:ui": "playwright test --ui",
-    "test:unit": "vitest --coverage",
-    "test:watch": "vitest --watch",
-    "typecheck": "tsc --noEmit"
+    "dev": "nx run web:dev",
+    "e2e": "nx run web:e2e",
+    "lint": "nx run web:lint",
+    "preview": "nx run web:preview",
+    "test": "nx run web:test",
+    "test:component": "nx run web:test:component",
+    "test:e2e": "nx run web:e2e",
+    "test:e2e:headed": "nx run web:e2e:headed",
+    "test:e2e:ui": "nx run web:e2e:ui",
+    "test:unit": "nx run web:test:unit",
+    "test:watch": "nx run web:test:watch",
+    "typecheck": "nx run web:typecheck"
   },
   "dependencies": {
     "@academic-explorer/client": "workspace:*",

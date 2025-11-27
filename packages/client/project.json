@@ -32,6 +32,14 @@
         ]
       },
       "cache": false
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     }
   }
 }

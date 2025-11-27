@@ -9,11 +9,14 @@
     "directory": "apps/cli"
   },
   "scripts": {
-    "build": "tsc -b",
     "clean": "rm -rf dist",
     "dev": "tsx src/openalex-cli.ts",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "nx run cli:lint",
+    "test": "nx run cli:test",
+    "test:integration": "nx run cli:test:integration",
+    "test:unit": "nx run cli:test:unit",
+    "test:watch": "nx run cli:test:watch",
+    "typecheck": "nx run cli:typecheck"
   },
   "dependencies": {
     "@academic-explorer/client": "workspace:*",

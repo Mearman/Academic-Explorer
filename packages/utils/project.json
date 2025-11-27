@@ -12,6 +12,14 @@
         "configFile": "packages/utils/vite.config.ts",
         "outputPath": "packages/utils/dist"
       }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     }
   }
 }

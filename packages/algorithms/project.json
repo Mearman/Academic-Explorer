@@ -21,6 +21,14 @@
         "reportsDirectory": "{projectRoot}/coverage"
       },
       "dependsOn": ["typecheck"]
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     }
   }
 }

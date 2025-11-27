@@ -9,13 +9,18 @@
     "directory": "packages/ui"
   },
   "scripts": {
-    "build": "vite build",
-    "build-storybook": "storybook build",
+    "build": "nx run ui:build",
+    "build-storybook": "nx run ui:build-storybook",
     "clean": "rm -rf dist",
     "dev": "tsc -b --watch",
-    "storybook": "storybook dev -p 6006",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "nx run ui:lint",
+    "storybook": "nx run ui:storybook",
+    "test": "nx run ui:test",
+    "test:component": "nx run ui:test:component",
+    "test:integration": "nx run ui:test:integration",
+    "test:unit": "nx run ui:test:unit",
+    "test:watch": "nx run ui:test:watch",
+    "typecheck": "nx run ui:typecheck"
   },
   "dependencies": {
     "@academic-explorer/types": "workspace:*",

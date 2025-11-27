@@ -9,11 +9,11 @@
     "directory": "packages/types"
   },
   "scripts": {
-    "build": "tsc -b",
+    "build": "nx run types:build",
     "clean": "rm -rf dist",
     "dev": "tsc -b --watch",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "nx run types:lint",
+    "typecheck": "nx run types:typecheck"
   },
   "dependencies": {
     "zod": "4.1.13"

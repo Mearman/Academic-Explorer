@@ -11,6 +11,14 @@
         "configFile": "packages/ui/vite.config.ts",
         "outputPath": "packages/ui/dist"
       }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     }
   },
   "tags": [

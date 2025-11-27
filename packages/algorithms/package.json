@@ -4,11 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -b",
-    "test": "vitest run",
+    "build": "nx run algorithms:build",
+    "lint": "nx run algorithms:lint",
+    "test": "nx run algorithms:test",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:integration": "nx run algorithms:test:integration",
+    "test:unit": "nx run algorithms:test:unit",
+    "test:watch": "nx run algorithms:test:watch",
+    "typecheck": "nx run algorithms:typecheck"
   },
   "devDependencies": {},
   "author": "Academic Explorer",

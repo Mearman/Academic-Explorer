@@ -9,14 +9,18 @@
     "directory": "packages/client"
   },
   "scripts": {
-    "build": "tsc -b",
+    "build": "nx run client:build",
     "build:types": "tsc --emitDeclarationOnly",
     "clean": "rm -rf dist",
     "dev": "tsc -b --watch",
+    "lint": "nx run client:lint",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test",
-    "test": "vitest run",
+    "test": "nx run client:test",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:integration": "nx run client:test:integration",
+    "test:unit": "nx run client:test:unit",
+    "test:watch": "nx run client:test:watch",
+    "typecheck": "nx run client:typecheck"
   },
   "dependencies": {
     "@academic-explorer/types": "workspace:*",
