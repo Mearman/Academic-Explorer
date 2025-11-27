@@ -4,6 +4,27 @@
   "sourceRoot": ".",
   "projectType": "application",
   "targets": {
+    "syncpack": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "syncpack"
+      },
+      "cache": false
+    },
+    "syncpack:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "syncpack fix-mismatches"
+      },
+      "inputs": [
+        "{workspaceRoot}/**/package.json",
+        "{workspaceRoot}/syncpack.config.ts"
+      ],
+      "outputs": [
+        "{workspaceRoot}/**/package.json"
+      ],
+      "cache": false
+    },
     "syncpack:lint": {
       "executor": "nx:run-commands",
       "options": {
@@ -13,6 +34,18 @@
         "{workspaceRoot}/**/package.json",
         "{workspaceRoot}/syncpack.config.ts",
         "{workspaceRoot}/pnpm-lock.yaml"
+      ],
+      "outputs": [],
+      "cache": true
+    },
+    "syncpack:list": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "syncpack list-mismatches"
+      },
+      "inputs": [
+        "{workspaceRoot}/**/package.json",
+        "{workspaceRoot}/syncpack.config.ts"
       ],
       "outputs": [],
       "cache": true
