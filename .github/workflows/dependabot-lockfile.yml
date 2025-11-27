@@ -11,7 +11,8 @@ permissions:
 
 jobs:
   lockfile:
-    if: github.actor == 'dependabot[bot]'
+    # Check if PR was created by Dependabot (works even when humans reopen the PR)
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     env:
       # Use environment variables for any github context to avoid injection risks
