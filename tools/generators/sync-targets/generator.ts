@@ -464,8 +464,7 @@ function getRulesFromNxJson(tree: Tree): TargetRule[] {
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function syncTargetsGenerator(
-	tree: Tree,
-	_options?: SyncTargetsGeneratorSchema
+	tree: Tree
 ): Promise<SyncGeneratorResult> {
 	const projects = getProjects(tree)
 	const rules = getRulesFromNxJson(tree)
@@ -484,7 +483,11 @@ export default async function syncTargetsGenerator(
 			continue
 		}
 
-		const projectJson = JSON.parse(tree.read(projectJsonPath, "utf-8")!) as ProjectJson
+		const content = tree.read(projectJsonPath, "utf-8")
+		if (!content) {
+			continue
+		}
+		const projectJson = JSON.parse(content) as ProjectJson
 		const missingTargets: string[] = []
 
 		// Initialize targets if not present
