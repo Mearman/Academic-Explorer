@@ -8,13 +8,17 @@
  */
 
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { test, expect } from '@playwright/test';
 
 // Load sample URLs (30 URLs covering all entity types)
-// Note: process.cwd() is repo root when running via Nx Playwright executor
-const urlsPath = join(process.cwd(), 'openalex-urls-sample.json');
+// Use import.meta.url for reliable path resolution across all environments
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Path from test file to repo root: src/test/e2e -> apps/web -> repo root
+const urlsPath = join(__dirname, '../../../../../openalex-urls-sample.json');
 const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
 // Use Playwright's baseURL from config (no hardcoded fallback to avoid CI/local port mismatch)
