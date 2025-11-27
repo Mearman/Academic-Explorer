@@ -1,6 +1,23 @@
 import type { RcFile } from 'syncpack';
 
 const config: RcFile = {
+  // Sort exports condition keys (source before import/require for bundler support)
+  sortExports: [
+    'types',
+    'source',
+    'node-addons',
+    'node',
+    'browser',
+    'module',
+    'import',
+    'require',
+    'svelte',
+    'development',
+    'production',
+    'script',
+    'default',
+  ],
+
   // Sort package.json properties
   sortFirst: [
     'name',

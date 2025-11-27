@@ -27,13 +27,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/index.ts"
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
     },
     "./entities": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/entities/index.ts"
+      "source": "./src/entities/index.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [

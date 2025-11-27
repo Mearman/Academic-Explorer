@@ -46,23 +46,23 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/index.ts"
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
     },
     "./client": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/client.ts"
+      "source": "./src/client.ts",
+      "import": "./dist/index.js"
     },
     "./cached-client": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/cached-client.ts"
+      "source": "./src/cached-client.ts",
+      "import": "./dist/index.js"
     },
     "./internal/static-data-provider": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "source": "./src/internal/static-data-provider.ts"
+      "source": "./src/internal/static-data-provider.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
