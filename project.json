@@ -61,14 +61,44 @@
       "outputs": [],
       "cache": true
     },
-    "deps:check": {
+    "deps:knip": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx tools/scripts/check-dependencies.ts",
-        "cwd": "{workspaceRoot}"
+        "command": "knip"
       },
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/dependency-report.json"]
+      "inputs": [
+        "{workspaceRoot}/knip.config.ts",
+        "{workspaceRoot}/**/package.json",
+        "{workspaceRoot}/apps/*/src/**/*",
+        "{workspaceRoot}/packages/*/src/**/*"
+      ],
+      "outputs": [],
+      "cache": true
+    },
+    "deps:knip:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "knip --fix"
+      },
+      "inputs": [
+        "{workspaceRoot}/knip.config.ts",
+        "{workspaceRoot}/**/package.json"
+      ],
+      "outputs": [
+        "{workspaceRoot}/**/package.json"
+      ],
+      "cache": false
+    },
+    "deps:outdated": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm outdated"
+      },
+      "inputs": [
+        "{workspaceRoot}/pnpm-lock.yaml"
+      ],
+      "outputs": [],
+      "cache": false
     },
     "docs:task-graph": {
       "executor": "nx:run-commands",
