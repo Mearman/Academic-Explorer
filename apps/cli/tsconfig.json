@@ -1,33 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "noEmit": false,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
     "strict": false,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "assumeChangesOnlyAffectDirectDependencies": true,
-    "composite": true,
-    "baseUrl": "."
+    "types": ["node", "vitest"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "references": [
-    { "path": "../../packages/client" },
-    { "path": "../../packages/types" },
-    { "path": "../../packages/utils" }
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }
