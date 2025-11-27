@@ -55,8 +55,7 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
-    },
-    "validate": {}
+    }
   },
   "tags": ["type:app", "scope:web", "layer:app"]
 }

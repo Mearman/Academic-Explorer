@@ -34,8 +34,7 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
-    },
-    "validate": {}
+    }
   },
   "tags": [
     "type:library",

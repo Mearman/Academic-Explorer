@@ -112,6 +112,10 @@
                 { "pathExists": ".storybook" }
               ]
             }
+          },
+          {
+            "target": "validate",
+            "when": { "pathExists": "tsconfig.json" }
           }
         ]
       }
