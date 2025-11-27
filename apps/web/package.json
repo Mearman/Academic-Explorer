@@ -24,6 +24,7 @@
     "typecheck": "nx run web:typecheck"
   },
   "dependencies": {
+    "@academic-explorer/algorithms": "workspace:*",
     "@academic-explorer/client": "workspace:*",
     "@academic-explorer/types": "workspace:*",
     "@academic-explorer/ui": "workspace:*",

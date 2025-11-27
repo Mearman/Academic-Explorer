@@ -21,6 +21,7 @@ export * from "./ResearchDashboard";
 export * from "./UrlFixer";
 export * from "./ViewModeToggle";
 export * from "./types";
+export * from "./algorithms/index";
 export * from "./cache/index";
 export * from "./catalogue/index";
 export * from "./entity-detail/index";
