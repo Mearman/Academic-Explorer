@@ -2,7 +2,8 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "sync": {
     "applyChanges": false,
-    "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"]
+    "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"],
+    "globalGenerators": ["@academic-explorer/generators:sync-targets"]
   },
   "tui": {
     "enabled": false,
@@ -23,6 +24,15 @@
     "libsDir": "packages"
   },
   "plugins": [
+    {
+      "plugin": "./tools/plugins/infer-targets.ts",
+      "options": {
+        "rules": [
+          { "target": "barrelsby", "when": { "pathExists": "src" } },
+          { "target": "typecheck", "when": { "pathExists": "tsconfig.json" } }
+        ]
+      }
+    },
     {
       "plugin": "@nx/js",
       "options": {
@@ -200,6 +210,13 @@
     }
   },
   "targetDefaults": {
+    "sync-targets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx tools/generators/sync-targets/cli.ts"
+      },
+      "cache": false
+    },
     "barrelsby": {
       "executor": "nx:run-commands",
       "options": {
