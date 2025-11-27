@@ -151,7 +151,6 @@
       "glob": ">=10.5.0",
       "vitest": "^4.0.10",
       "body-parser": ">=2.2.1",
-      "@types/node": "24.10.0",
       "playwright-core": "1.56.1"
     }
   }
