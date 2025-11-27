@@ -45,20 +45,24 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
-      "import": "./dist/src/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./src/index.ts"
     },
     "./client": {
-      "types": "./dist/src/client.d.ts",
-      "import": "./dist/src/client.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./src/client.ts"
     },
     "./cached-client": {
-      "types": "./dist/src/cached-client.d.ts",
-      "import": "./dist/src/cached-client.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./src/cached-client.ts"
     },
     "./internal/static-data-provider": {
-      "types": "./dist/src/internal/static-data-provider.d.ts",
-      "import": "./dist/src/internal/static-data-provider.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./src/internal/static-data-provider.ts"
     }
   },
   "files": [

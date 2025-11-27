@@ -10,6 +10,11 @@ export default defineConfig(
 		cacheDir: "../../node_modules/.vite/packages/ui",
 		plugins: [nxViteTsPaths()],
 
+		resolve: {
+			// Use source condition to resolve workspace packages to source files
+			conditions: ["source", "import", "module", "default"],
+		},
+
 	// Configure Node.js module resolution to handle ES module issues
 		define: {
 			// Ensure global exports are available for ES modules
@@ -19,6 +24,16 @@ export default defineConfig(
 		// Externalize problematic packages to avoid bundling issues
 		ssr: {
 			noExternal: ['lru-cache', '@asamuzakjp/css-color', '@asamuzakjp/dom-selector'],
+		},
+
+		server: {
+			deps: {
+				// Inline workspace packages to resolve from source files
+				inline: [
+					"@academic-explorer/types",
+					"@academic-explorer/utils",
+				],
+			},
 		},
 
 		optimizeDeps: {
@@ -37,6 +52,10 @@ export default defineConfig(
 			watch: false,
 			environment: "jsdom",
 			setupFiles: ["./src/test/setup.ts"],
+			// Force vitest to bundle workspace packages through vite's resolver
+			deps: {
+				inline: [/@academic-explorer\/.*/],
+			},
 			typecheck: {
 				tsconfig: "./tsconfig.json",
 			},

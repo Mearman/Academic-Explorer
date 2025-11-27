@@ -59,19 +59,23 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js"
+      "require": "./dist/index.cjs.js",
+      "source": "./src/index.ts"
     },
     "./components/ViewToggle": {
       "types": "./dist/components/ViewToggle.d.ts",
-      "import": "./dist/components/ViewToggle.js"
+      "import": "./dist/components/ViewToggle.js",
+      "source": "./src/components/ViewToggle.tsx"
     },
     "./components/entity-views": {
       "types": "./dist/components/entity-views/index.d.ts",
-      "import": "./dist/components/entity-views/index.js"
+      "import": "./dist/components/entity-views/index.js",
+      "source": "./src/components/entity-views/index.ts"
     },
     "./components/entity-views/matchers/index": {
       "types": "./dist/components/entity-views/matchers/index.d.ts",
-      "import": "./dist/components/entity-views/matchers/index.js"
+      "import": "./dist/components/entity-views/matchers/index.js",
+      "source": "./src/components/entity-views/matchers/index.ts"
     }
   },
   "files": [

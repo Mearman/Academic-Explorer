@@ -8,22 +8,20 @@ import { defineConfig, mergeConfig } from "vitest/config";
 
 import { baseVitestConfig } from "../../vitest.config.base";
 
-
-
 export default defineConfig(
 	mergeConfig(baseVitestConfig, {
 		root: __dirname,
 		cacheDir: "../../node_modules/.vite/apps/web",
 		plugins: [
 			nxViteTsPaths(),
-			// Note: TanStack Router Plugin is NOT needed for tests
-			// The route tree is already generated at build time
-			// Including it causes path resolution issues during Nx project graph generation
 			react(),
 			vanillaExtractPlugin(),
 		],
 
 		resolve: {
+			// Use source condition to resolve workspace packages to source files
+			// This works with the "source" export condition in workspace package.json files
+			conditions: ["source", "import", "module", "default"],
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
 			},
@@ -31,24 +29,34 @@ export default defineConfig(
 
 		// Fix for lru-cache ES module compatibility issue
 		define: {
-			// Ensure global exports are available for ES modules
 			global: 'globalThis',
 		},
 
 		optimizeDeps: {
-			include: [
-				// Pre-bundle lru-cache to avoid ES module issues
-				'lru-cache',
-			],
-			// Force optimization even for dependencies
+			include: ['lru-cache'],
 			force: true,
+		},
+
+		server: {
+			deps: {
+				inline: [
+					"@academic-explorer/types",
+					"@academic-explorer/utils",
+					"@academic-explorer/client",
+					"@academic-explorer/ui",
+				],
+			},
 		},
 
 		test: {
 			watch: false,
-			// Override for React/DOM environment
 			environment: "jsdom",
 			setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+
+			// Force vitest to bundle workspace packages through vite's resolver
+			deps: {
+				inline: [/@academic-explorer\/.*/],
+			},
 
 			// Exclude E2E tests from Vitest - they use Playwright
 			exclude: [

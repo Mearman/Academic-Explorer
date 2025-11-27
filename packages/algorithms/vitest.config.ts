@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  resolve: {
+    // Use source condition to resolve workspace packages to source files
+    conditions: ["source", "import", "module", "default"],
+  },
   test: {
     globals: true,
     environment: 'node',

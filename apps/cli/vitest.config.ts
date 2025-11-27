@@ -6,8 +6,25 @@ import { baseVitestConfig } from "../../vitest.config.base"
 
 export default defineConfig(mergeConfig(baseVitestConfig, {
 	plugins: [nxViteTsPaths()],
+	resolve: {
+		// Use source condition to resolve workspace packages to source files
+		conditions: ["source", "import", "module", "default"],
+	},
+	server: {
+		deps: {
+			inline: [
+				"@academic-explorer/types",
+				"@academic-explorer/utils",
+				"@academic-explorer/client",
+			],
+		},
+	},
 	test: {
 		watch: false,
+		// Force vitest to bundle workspace packages through vite's resolver
+		deps: {
+			inline: [/@academic-explorer\/.*/],
+		},
 		// Named projects for targeted test execution
 		projects: [
 			{

@@ -13,11 +13,16 @@ export default defineConfig(
     cacheDir: "../../node_modules/.vite/packages/client",
     plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(["*.md"])],
     resolve: {
-      alias: {
-        // Explicit workspace package resolution for vitest
-        "@academic-explorer/types/entities": path.resolve(__dirname, "../../packages/types/src/entities/index.ts"),
-        "@academic-explorer/types": path.resolve(__dirname, "../../packages/types/src/index.ts"),
-        "@academic-explorer/utils": path.resolve(__dirname, "../../packages/utils/src/index.ts"),
+      // Use source condition to resolve workspace packages to source files
+      conditions: ["source", "import", "module", "default"],
+    },
+    server: {
+      deps: {
+        // Inline workspace packages to resolve from source files
+        inline: [
+          "@academic-explorer/types",
+          "@academic-explorer/utils",
+        ],
       },
     },
     // Uncomment this if you are using workers.
@@ -27,6 +32,10 @@ export default defineConfig(
     test: {
       watch: false,
       environment: "node",
+      // Force vitest to bundle workspace packages through vite's resolver
+      deps: {
+        inline: [/@academic-explorer\/.*/],
+      },
       coverage: {
         reportsDirectory: "../../coverage/packages/client",
       },
