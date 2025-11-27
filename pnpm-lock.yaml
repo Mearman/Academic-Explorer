@@ -218,7 +218,7 @@ importers:
         specifier: 27.1.0
         version: 27.1.0
       knip:
-        specifier: ^5.70.2
+        specifier: 5.70.2
         version: 5.70.2(@types/node@24.10.0)(typescript@5.9.2)
       koa:
         specifier: 3.1.1
