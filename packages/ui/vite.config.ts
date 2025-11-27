@@ -2,10 +2,18 @@ import { fileURLToPath, URL } from "node:url";
 import { resolve } from "path";
 
 import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
 
 // UI library Vite configuration
-// Includes esbuild config for React 19 JSX transformation
+// Uses vite-plugin-dts for TypeScript declarations (no separate tsc step needed)
 const uiConfig = defineConfig({
+  plugins: [
+    dts({
+      include: ["src/**/*"],
+      outDir: "dist",
+      rollupTypes: true,
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(
