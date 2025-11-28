@@ -20,7 +20,7 @@ const uiConfig = defineConfig({
         fileURLToPath(new URL(".", import.meta.url)),
         "src/index.ts",
       ),
-      name: "AcademicExplorerUI",
+      name: "BibGraphUI",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },

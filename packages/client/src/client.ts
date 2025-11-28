@@ -633,7 +633,7 @@ export class OpenAlexBaseClient {
         );
 
         const diskCacheEnabled =
-          globalThis.process?.env?.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !==
+          globalThis.process?.env?.BIBGRAPH_DISK_CACHE_ENABLED !==
           "false";
 
         if (

@@ -89,7 +89,7 @@ export interface ComparisonResults {
 	falsePositives: WorkReference[]
 	falseNegatives: WorkReference[]
 	additionalPapersFound: WorkReference[]
-	academicExplorerResults: WorkReference[]
+	bibGraphResults: WorkReference[]
 	timestamp: string
 }
 
@@ -203,15 +203,15 @@ export function createSTARDatasetFromParseResult({
  * Compare BibGraph results with ground truth
  * Stub implementation - applications should provide their own
  */
-export function compareAcademicExplorerResults(
-	academicExplorerResults: WorkReference[],
+export function compareBibGraphResults(
+	bibGraphResults: WorkReference[],
 	dataset: STARDataset,
 	config: typeof DEFAULT_MATCHING_CONFIG,
 	onProgress?: (progress: ComparisonProgress) => void
 ): ComparisonResults {
 	logger.warn(
 		DATA_EVALUATION_LOG_CONTEXT,
-		"compareAcademicExplorerResults: Using stub implementation"
+		"compareBibGraphResults: Using stub implementation"
 	)
 
 	if (onProgress) {
@@ -240,7 +240,7 @@ export function compareAcademicExplorerResults(
 		falsePositives: [],
 		falseNegatives: [],
 		additionalPapersFound: [],
-		academicExplorerResults,
+		bibGraphResults,
 		timestamp: new Date().toISOString(),
 	}
 }

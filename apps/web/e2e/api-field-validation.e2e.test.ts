@@ -9,7 +9,7 @@
  * - Missing required fields
  *
  * This test would have caught the authorships_count bug that caused
- * https://mearman.github.io/Academic-Explorer/#/works/W2009047091 to fail.
+ * https://mearman.github.io/BibGraph/#/works/W2009047091 to fail.
  *
  * @automated-manual - Promoted from manual test suite
  */

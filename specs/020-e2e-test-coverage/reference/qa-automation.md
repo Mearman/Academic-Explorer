@@ -399,41 +399,41 @@ cat > /Users/joe/Documents/Research/PhD/Academic\ Explorer/docs/QA_DEPLOYMENT_CH
 
 ## Quick Deployed Site Check (5-10 minutes)
 
-> Use these checks when deploying to https://mearman.github.io/Academic-Explorer
+> Use these checks when deploying to https://mearman.github.io/BibGraph
 
 - [ ] Homepage loads without JavaScript errors
-  - URL: https://mearman.github.io/Academic-Explorer/
+  - URL: https://mearman.github.io/BibGraph/
   - Expected: "BibGraph" title, no blank page
 
 - [ ] Concepts list page (was causing "Unsupported entity type" errors)
-  - URL: https://mearman.github.io/Academic-Explorer/#/concepts
+  - URL: https://mearman.github.io/BibGraph/#/concepts
   - Expected: List of concepts, no error messages
 
 - [ ] Concepts detail page
-  - URL: https://mearman.github.io/Academic-Explorer/#/concepts/C71924100
+  - URL: https://mearman.github.io/BibGraph/#/concepts/C71924100
   - Expected: Concept details load correctly
 
 - [ ] Author page (user-reported URL)
-  - URL: https://mearman.github.io/Academic-Explorer/#/authors/A5017898742
+  - URL: https://mearman.github.io/BibGraph/#/authors/A5017898742
   - Expected: Author details display
 
 - [ ] Topics list page
-  - URL: https://mearman.github.io/Academic-Explorer/#/topics
+  - URL: https://mearman.github.io/BibGraph/#/topics
   - Expected: Topics list, no "Unsupported entity type" error
 
 - [ ] Graph exploration page
-  - URL: https://mearman.github.io/Academic-Explorer/explore/graph
+  - URL: https://mearman.github.io/BibGraph/explore/graph
   - Expected: Graph renders, sidebar toggles work
 
 ## Sample URLs Verification (10-15 minutes)
 
 > Spot-check key entity types
 
-- [ ] Work: https://mearman.github.io/Academic-Explorer/#/works/W2741809807
-- [ ] Author: https://mearman.github.io/Academic-Explorer/#/authors/A5017898742
-- [ ] Source: https://mearman.github.io/Academic-Explorer/#/sources/S137773608
-- [ ] Institution: https://mearman.github.io/Academic-Explorer/#/institutions/I27837315
-- [ ] Topic: https://mearman.github.io/Academic-Explorer/#/topics/T10159
+- [ ] Work: https://mearman.github.io/BibGraph/#/works/W2741809807
+- [ ] Author: https://mearman.github.io/BibGraph/#/authors/A5017898742
+- [ ] Source: https://mearman.github.io/BibGraph/#/sources/S137773608
+- [ ] Institution: https://mearman.github.io/BibGraph/#/institutions/I27837315
+- [ ] Topic: https://mearman.github.io/BibGraph/#/topics/T10159
 
 For each URL:
 - [ ] Page loads (no blank screen > 5 sec)

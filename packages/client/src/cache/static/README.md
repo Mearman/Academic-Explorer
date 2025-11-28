@@ -21,7 +21,7 @@ import { createGitHubPagesReader } from '@bibgraph/client';
 
 // Create reader with default configuration
 const reader = createGitHubPagesReader({
-  baseUrl: 'https://your-username.github.io/academic-explorer-data'
+  baseUrl: 'https://your-username.github.io/bibgraph-data'
 });
 
 // Fetch static data
@@ -39,7 +39,7 @@ if (data) {
 import { GitHubPagesReader } from '@bibgraph/client';
 
 const reader = new GitHubPagesReader({
-  baseUrl: 'https://your-username.github.io/academic-explorer-data',
+  baseUrl: 'https://your-username.github.io/bibgraph-data',
   timeout: 15000,           // 15 second timeout
   maxRetries: 5,            // 5 retry attempts
   initialRetryDelay: 2000,  // 2 second initial delay

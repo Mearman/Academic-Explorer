@@ -2,9 +2,9 @@
 
 Nx-managed pnpm monorepo for exploring academic literature via the [OpenAlex API](https://docs.openalex.org/). TypeScript React SPA + CLI tool with multi-tier caching, force-directed graphs, and storage abstraction.
 
-**[Live Application](https://mearman.github.io/Academic-Explorer/)** | **[Repository](https://github.com/Mearman/Academic-Explorer)**
+**[Live Application](https://mearman.github.io/BibGraph/)** | **[Repository](https://github.com/Mearman/BibGraph)**
 
-[![CI Pipeline](https://github.com/Mearman/Academic-Explorer/actions/workflows/ci.yml/badge.svg)](https://github.com/Mearman/Academic-Explorer/actions/workflows/ci.yml)
+[![CI Pipeline](https://github.com/Mearman/BibGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/Mearman/BibGraph/actions/workflows/ci.yml)
 
 ## Quick Start
 
@@ -88,15 +88,15 @@ tools/          # Development tools
 ```mermaid
 flowchart LR
 
-    subgraph academic_explorer["academic-explorer"]
-        academic_explorer_build[["build"]]
-    end
-
     subgraph algorithms["algorithms"]
         algorithms_build[["build"]]
         algorithms_lint{{"lint"}}
         algorithms_test(["test"])
         algorithms_typecheck{{"typecheck"}}
+    end
+
+    subgraph bibgraph["bibgraph"]
+        bibgraph_build[["build"]]
     end
 
     subgraph cli["cli"]

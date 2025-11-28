@@ -20,7 +20,7 @@ describe("AutocompleteApi Integration Tests", () => {
   beforeAll(() => {
     server.listen({ onUnhandledRequest: "warn" });
     client = new CachedOpenAlexClient({
-      userEmail: "test@academic-explorer.com",
+      userEmail: "test@bibgraph.dev",
     });
   });
 

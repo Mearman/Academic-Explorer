@@ -13,7 +13,7 @@ const VALID_TEST_TYPES = ["unit", "component", "integration", "e2e"] as const
 type MessageIds = "invalidTestFileName" | "missingTestType"
 
 const createRule = ESLintUtils.RuleCreator(
-	(name) => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+	(name) => `https://github.com/Mearman/BibGraph/blob/main/eslint-rules/${name}.ts`
 )
 
 export const testFileNamingRule = createRule<[], MessageIds>({

@@ -3,7 +3,7 @@
  */
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'https://mearman.github.io/Academic-Explorer';
+const BASE_URL = 'https://mearman.github.io/BibGraph';
 
 // Sample URLs from each entity type
 const testUrls = [

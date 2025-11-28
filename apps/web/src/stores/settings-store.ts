@@ -20,7 +20,7 @@ class SettingsDB extends Dexie {
   settings!: Table<SettingsRecord>;
 
   constructor() {
-    super("academic-explorer-settings");
+    super("bibgraph-settings");
 
     this.version(1).stores({
       settings: "++id, key, updatedAt",

@@ -34,7 +34,7 @@ export default defineConfig(
       environment: "node",
       // Force vitest to bundle workspace packages through vite's resolver
       deps: {
-        inline: [/@academic-explorer\/.*/],
+        inline: [/@bibgraph\/.*/],
       },
       coverage: {
         reportsDirectory: "../../coverage/packages/client",

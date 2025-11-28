@@ -531,7 +531,7 @@ export class GitHubPagesReader {
  * Default GitHub Pages reader configuration
  */
 export const defaultGitHubPagesConfig: GitHubPagesReaderConfig = {
-  baseUrl: "https://your-username.github.io/academic-explorer-data",
+  baseUrl: "https://mearman.github.io/BibGraph/data",
   timeout: 10000,
   maxRetries: 3,
   initialRetryDelay: 1000,

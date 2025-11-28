@@ -7,7 +7,7 @@ import { ESLintUtils } from "@typescript-eslint/utils"
 type MessageIds = "avoidLoggerInfo"
 
 const createRule = ESLintUtils.RuleCreator(
-	(name) => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+	(name) => `https://github.com/Mearman/BibGraph/blob/main/eslint-rules/${name}.ts`
 )
 
 export const noLoggerInfoRule = createRule<[], MessageIds>({

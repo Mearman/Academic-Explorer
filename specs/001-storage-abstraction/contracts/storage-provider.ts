@@ -6,7 +6,7 @@
  * while maintaining consistent behavior for all catalogue operations.
  *
  * @package @bibgraph/utils
- * @see {@link https://github.com/joe/Academic-Explorer/specs/001-storage-abstraction/spec.md}
+ * @see {@link https://github.com/joe/BibGraph/specs/001-storage-abstraction/spec.md}
  */
 
 import type {

@@ -254,7 +254,7 @@ class AcademicAnalytics {
    * Get or create session ID for analytics
    */
   private static getSessionId(): string {
-    const SESSION_KEY = 'academic_explorer_analytics_session';
+    const SESSION_KEY = 'bibgraph_analytics_session';
 
     let sessionId = sessionStorage.getItem(SESSION_KEY);
     if (!sessionId) {
@@ -320,7 +320,7 @@ class AcademicAnalytics {
       if (!posthog) return;
 
       posthog.reset();
-      sessionStorage.removeItem('academic_explorer_analytics_session');
+      sessionStorage.removeItem('bibgraph_analytics_session');
     } catch (error) {
       console.warn('Failed to reset user identification:', error);
     }

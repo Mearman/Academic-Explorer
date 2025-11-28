@@ -271,16 +271,16 @@ function isDevelopmentMode(): boolean {
 		const expectedRepoName = "BibGraph"
 
 		// Check if current working directory contains repo structure indicators
-		if (currentPath.includes(expectedRepoName) || currentPath.includes("academic-explorer")) {
+		if (currentPath.includes(expectedRepoName) || currentPath.includes("bibgraph")) {
 			return true
 		}
 
-		// Check if we can find package.json with academic-explorer workspace name
+		// Check if we can find package.json with bibgraph workspace name
 		const packageJsonPath = resolve(projectRoot, "package.json")
 		try {
 			if (existsSync(packageJsonPath)) {
 				const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"))
-				if (packageJson.name === "academic-explorer") {
+				if (packageJson.name === "bibgraph") {
 					return true
 				}
 			}

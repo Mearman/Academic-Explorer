@@ -39,7 +39,7 @@ class RepositoryDB extends Dexie {
   edges!: Table<RepositoryEdgeRecord>;
 
   constructor() {
-    super("academic-explorer-repository");
+    super("bibgraph-repository");
 
     this.version(1).stores({
       config: "++id, key, updatedAt",

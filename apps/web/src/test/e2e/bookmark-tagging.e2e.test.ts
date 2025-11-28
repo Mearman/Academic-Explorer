@@ -19,7 +19,7 @@ async function clearBookmarks(page: Page): Promise<void> {
 	await page.goto("/");
 	await page.evaluate(() => {
 		return new Promise<void>((resolve) => {
-			const request = indexedDB.deleteDatabase("academic-explorer-db");
+			const request = indexedDB.deleteDatabase("bibgraph-db");
 			request.onsuccess = () => resolve();
 			request.onerror = () => resolve();
 		});

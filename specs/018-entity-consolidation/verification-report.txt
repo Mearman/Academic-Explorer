@@ -7,7 +7,7 @@ Result: 0 duplicates found
 Status: ✅ PASS
 
 ## Import Path Check
-Command: grep -rE "import.*\{[^}]*\bEntityType\b[^}]*\}.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@academic-explorer/types" | grep -v "packages/types/src" | wc -l
+Command: grep -rE "import.*\{[^}]*\bEntityType\b[^}]*\}.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@bibgraph/types" | grep -v "packages/types/src" | wc -l
 Result: 0 non-canonical imports found
 Status: ✅ PASS
 
@@ -41,7 +41,7 @@ Status: ✅ PASS
 
 **Success Criteria**:
 ✅ SC-001: Zero duplicate EntityType definitions
-✅ SC-002: All EntityType imports use @academic-explorer/types
+✅ SC-002: All EntityType imports use @bibgraph/types
 ✅ SC-003: TypeScript compilation passes (all 8 packages)
 ✅ SC-004: All tests pass
 ✅ SC-005: Build succeeds for all 8 projects

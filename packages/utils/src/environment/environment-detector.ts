@@ -175,7 +175,7 @@ export class EnvironmentDetector {
 			}
 
 			// GitHub Pages or custom domain = production
-			if (hostname === "academic-explorer.joenash.uk" || hostname?.endsWith(".github.io")) {
+			if (hostname === "bibgraph.joenash.uk" || hostname?.endsWith(".github.io")) {
 				return EnvironmentMode.PRODUCTION
 			}
 		}
@@ -242,7 +242,7 @@ export class EnvironmentDetector {
 		if (!this.isBrowser()) return false
 
 		const hostname = window.location?.hostname
-		return hostname === "academic-explorer.joenash.uk" || hostname?.endsWith(".github.io") || false
+		return hostname === "bibgraph.joenash.uk" || hostname?.endsWith(".github.io") || false
 	}
 
 	/**

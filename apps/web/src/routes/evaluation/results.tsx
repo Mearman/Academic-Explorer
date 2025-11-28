@@ -5,7 +5,7 @@
 
 
 import {
-  compareAcademicExplorerResults,
+  compareBibGraphResults,
   DEFAULT_MATCHING_CONFIG,
   searchBasedOnSTARDataset,
   calculateSearchCoverage,
@@ -144,7 +144,7 @@ function ComparisonResults() {
   }, []);
 
   // Real BibGraph search function using OpenAlex API
-  const performAcademicExplorerSearch = (
+  const performBibGraphSearch = (
     dataset: STARDataset,
   ): WorkReference[] => {
     try {
@@ -197,10 +197,10 @@ function ComparisonResults() {
       const startTime = performance.now();
 
       // Step 1: Perform BibGraph search
-      const academicExplorerResults = performAcademicExplorerSearch(dataset);
+      const academicExplorerResults = performBibGraphSearch(dataset);
 
       // Step 2: Run comparison with progress tracking
-      const comparisonResults = compareAcademicExplorerResults(
+      const comparisonResults = compareBibGraphResults(
         academicExplorerResults,
         dataset,
         DEFAULT_MATCHING_CONFIG,
@@ -349,7 +349,7 @@ function ComparisonResults() {
         truePositives: comp.truePositives.length,
         falsePositives: comp.falsePositives.length,
         falseNegatives: comp.falseNegatives.length,
-        totalFound: comp.academicExplorerResults.length,
+        totalFound: comp.bibGraphResults.length,
         totalGroundTruth: comp.dataset.includedPapers.length,
         additionalPapersFound: comp.additionalPapersFound.length,
       };

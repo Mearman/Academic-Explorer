@@ -129,12 +129,12 @@ export async function fetchFromAPI(url: string): Promise<unknown> {
   }
 
   const headers: Record<string, string> = {
-    "User-Agent": "Academic-Explorer/1.0 (https://github.com/Mearman/Academic-Explorer)",
+    "User-Agent": "BibGraph/1.0 (https://github.com/Mearman/BibGraph)",
   };
 
   // Add email for polite pool if available
   if (gitEmail) {
-    headers["User-Agent"] = `Academic-Explorer/1.0 (https://github.com/Mearman/Academic-Explorer; mailto:${gitEmail})`;
+    headers["User-Agent"] = `BibGraph/1.0 (https://github.com/Mearman/BibGraph; mailto:${gitEmail})`;
   }
 
   const response = await fetch(url, { headers });

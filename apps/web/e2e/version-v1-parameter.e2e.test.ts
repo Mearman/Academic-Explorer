@@ -366,7 +366,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('about:blank');
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
-        const request = indexedDB.deleteDatabase('academic-explorer-settings');
+        const request = indexedDB.deleteDatabase('bibgraph-settings');
         request.onsuccess = () => resolve();
         request.onerror = () => resolve();
       });

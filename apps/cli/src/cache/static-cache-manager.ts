@@ -84,7 +84,7 @@ export class StaticCacheManager {
 			mode,
 			basePath: config?.basePath ?? join(this.projectRoot, STATIC_DATA_PATH),
 			githubPagesUrl:
-				config?.githubPagesUrl ?? "https://your-username.github.io/academic-explorer/data/openalex",
+				config?.githubPagesUrl ?? "https://mearman.github.io/BibGraph/data/openalex",
 			...config,
 		}
 

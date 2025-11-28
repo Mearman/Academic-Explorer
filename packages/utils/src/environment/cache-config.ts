@@ -80,7 +80,7 @@ export interface CacheConfig {
  * Cache configuration factory
  */
 export class CacheConfigFactory {
-	private static readonly GITHUB_PAGES_DOMAIN = "academic-explorer.joenash.uk"
+	private static readonly GITHUB_PAGES_DOMAIN = "bibgraph.joenash.uk"
 	private static readonly GITHUB_IO_DOMAIN = "mearman.github.io"
 	private static readonly LOCAL_DATA_PATH = "/data"
 	private static readonly OPENALEX_SUBPATH = "/openalex"
@@ -109,7 +109,7 @@ export class CacheConfigFactory {
 			const baseUrl =
 				context.hostname === this.GITHUB_PAGES_DOMAIN
 					? `https://${this.GITHUB_PAGES_DOMAIN}${this.LOCAL_DATA_PATH}`
-					: `https://${this.GITHUB_IO_DOMAIN}/Academic-Explorer${this.LOCAL_DATA_PATH}`
+					: `https://${this.GITHUB_IO_DOMAIN}/BibGraph${this.LOCAL_DATA_PATH}`
 
 			return {
 				baseUrl,

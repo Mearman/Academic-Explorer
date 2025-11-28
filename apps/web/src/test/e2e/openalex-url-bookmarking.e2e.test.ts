@@ -213,7 +213,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
     test("should handle GitHub Pages deployment URLs", async ({ page }) => {
       // Test with the specific URL format from requirements
       // Note: GitHub Pages URL reference for documentation:
-      // https://mearman.github.io/Academic-Explorer/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc
+      // https://mearman.github.io/BibGraph/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc
 
       // For local testing, we'll simulate the hash-based routing
       const localTestUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;

@@ -1,7 +1,7 @@
 import { ESLintUtils } from "@typescript-eslint/utils"
 
 const createRule = ESLintUtils.RuleCreator(
-	(name) => `https://github.com/academic-explorer/eslint-rules/${name}`
+	(name) => `https://github.com/Mearman/BibGraph/tree/main/eslint-rules/${name}`
 )
 
 export const rule = createRule({

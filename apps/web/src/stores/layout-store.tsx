@@ -21,7 +21,7 @@ class LayoutDB extends Dexie {
   layout!: Table<LayoutRecord>;
 
   constructor() {
-    super("academic-explorer-layout");
+    super("bibgraph-layout");
 
     this.version(1).stores({
       layout: "++id, key, updatedAt",

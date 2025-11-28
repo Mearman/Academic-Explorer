@@ -43,7 +43,7 @@ export function createLibConfig(options: {
           // Node built-ins
           /^node:/,
           // All workspace packages
-          /^@academic-explorer\//,
+          /^@bibgraph\//,
           // Common externals
           ...external,
         ],

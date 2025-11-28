@@ -34,7 +34,7 @@ export interface CacheBrowserConfig {
 
 // Default configuration (removed localStorage options)
 const DEFAULT_CONFIG: CacheBrowserConfig = {
-	dbName: "academic-explorer",
+	dbName: "bibgraph",
 	version: 1,
 	includeIndexedDB: true,
 	includeRepositoryStore: true,

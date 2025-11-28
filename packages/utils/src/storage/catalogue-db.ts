@@ -45,7 +45,7 @@ export const catalogueEventEmitter = new CatalogueEventEmitter();
 
 // Constants
 const LOG_CATEGORY = "catalogue";
-const DB_NAME = "academic-explorer-catalogue";
+const DB_NAME = "bibgraph-catalogue";
 const DB_VERSION = 1;
 
 // Special list identifiers

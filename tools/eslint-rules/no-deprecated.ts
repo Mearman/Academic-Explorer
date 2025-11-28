@@ -3,7 +3,7 @@ import type { TSESTree } from "@typescript-eslint/utils";
 import * as ts from "typescript";
 
 const createRule = ESLintUtils.RuleCreator(
-  (name) => `https://github.com/Mearman/Academic-Explorer/blob/main/tools/eslint-rules/${name}.md`
+  (name) => `https://github.com/Mearman/BibGraph/blob/main/tools/eslint-rules/${name}.md`
 );
 
 export const noDeprecated = createRule({

@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/academic-explorer/academic-explorer.git",
+    "url": "https://github.com/Mearman/BibGraph.git",
     "directory": "packages/client"
   },
   "scripts": {
@@ -39,7 +39,7 @@
     "vitest-axe": "0.1.0"
   },
   "author": "BibGraph",
-  "bugs": "https://github.com/academic-explorer/academic-explorer/issues",
+  "bugs": "https://github.com/Mearman/BibGraph/issues",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -72,7 +72,7 @@
     "LICENSE",
     "package.json"
   ],
-  "homepage": "https://github.com/academic-explorer/academic-explorer/tree/main/packages/client#readme",
+  "homepage": "https://github.com/Mearman/BibGraph/tree/main/packages/client#readme",
   "keywords": [
     "academic",
     "api-client",

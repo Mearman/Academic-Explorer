@@ -58,7 +58,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
 
     // Set user agent for consistency
-    userAgent: "Academic-Explorer-E2E-Tests/1.0 Playwright",
+    userAgent: "BibGraph-E2E-Tests/1.0 Playwright",
 
     // Timeout settings
     actionTimeout: 10000,

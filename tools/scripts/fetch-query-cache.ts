@@ -6,7 +6,7 @@
 import { join } from "path"
 // NOTE: This script uses stub functions for query caching
 // Actual implementation would require query-cache-builder.ts (not yet implemented)
-// import { fetchAndCacheQueries } from "../../apps/academic-explorer/src/lib/utils/query-cache-builder.ts";
+// import { fetchAndCacheQueries } from "../../apps/web/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/web/src/lib/utils/static-data-index-generator.ts";
 const fetchAndCacheQueries = (
 	queries: Array<{ url: string; entityType: string }>,

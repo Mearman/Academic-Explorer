@@ -8,7 +8,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const BASE_URL = "https://mearman.github.io/Academic-Explorer/#";
+const BASE_URL = "https://mearman.github.io/BibGraph/#";
 const TIMEOUT_MS = 10000;
 const MAX_CONCURRENT = 5; // Limit concurrent requests to avoid rate limiting
 

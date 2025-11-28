@@ -2,6 +2,6 @@ import { createLibConfig } from "../../vite.config.lib";
 
 export default createLibConfig({
   root: __dirname,
-  name: "AcademicExplorerUtils",
+  name: "BibGraphUtils",
   external: ["dexie", "zustand", "immer"],
 });

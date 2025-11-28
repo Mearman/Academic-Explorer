@@ -1,6 +1,6 @@
 {
   "branches": ["main"],
-  "repositoryUrl": "https://github.com/Mearman/Academic-Explorer",
+  "repositoryUrl": "https://github.com/Mearman/BibGraph",
   "tagFormat": "v${version}",
   "plugins": [
     [

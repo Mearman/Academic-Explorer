@@ -12,7 +12,7 @@ export const RATE_LIMIT_CONFIG = {
 
     // Polite headers for higher rate limits
     headers: {
-      "User-Agent": "Academic-Explorer/1.0 (mailto:your-email@example.com)",
+      "User-Agent": "BibGraph/1.0 (mailto:your-email@example.com)",
     },
   },
 

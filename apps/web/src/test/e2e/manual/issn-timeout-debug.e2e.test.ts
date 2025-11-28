@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const DEPLOYED_URL = 'https://mearman.github.io/Academic-Explorer';
+const DEPLOYED_URL = 'https://mearman.github.io/BibGraph';
 
 /**
  * ISSN Timeout Debug Test

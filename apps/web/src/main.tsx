@@ -212,7 +212,7 @@ const isProduction = typeof window !== 'undefined' && (
 if (isProduction) {
   cachedOpenAlex.updateConfig({
     staticCacheGitHubPagesUrl:
-      "https://mearman.github.io/Academic-Explorer/data/openalex/",
+      "https://mearman.github.io/BibGraph/data/openalex/",
   });
   logger.debug("main", "Configured production static cache URL");
 }

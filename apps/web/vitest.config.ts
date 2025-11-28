@@ -55,7 +55,7 @@ export default defineConfig(
 
 			// Force vitest to bundle workspace packages through vite's resolver
 			deps: {
-				inline: [/@academic-explorer\/.*/],
+				inline: [/@bibgraph\/.*/],
 			},
 
 			// Exclude E2E tests from Vitest - they use Playwright
@@ -102,7 +102,7 @@ export default defineConfig(
 						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 						deps: {
-							inline: [/@academic-explorer\/.*/],
+							inline: [/@bibgraph\/.*/],
 						},
 					},
 				},
@@ -120,7 +120,7 @@ export default defineConfig(
 						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 						deps: {
-							inline: [/@academic-explorer\/.*/],
+							inline: [/@bibgraph\/.*/],
 						},
 					},
 				},
@@ -138,7 +138,7 @@ export default defineConfig(
 						globals: true,
 						setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 						deps: {
-							inline: [/@academic-explorer\/.*/],
+							inline: [/@bibgraph\/.*/],
 						},
 						testTimeout: 30000,
 					},

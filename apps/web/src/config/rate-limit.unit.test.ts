@@ -19,7 +19,7 @@ describe("rate-limit configuration", () => {
         window: 1000,
         windowType: "sliding",
         headers: {
-          "User-Agent": "Academic-Explorer/1.0 (mailto:your-email@example.com)",
+          "User-Agent": "BibGraph/1.0 (mailto:your-email@example.com)",
         },
       });
     });

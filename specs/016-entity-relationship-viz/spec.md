@@ -162,7 +162,7 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 
 **Progress**: 80/80 tasks (100%) complete ✅
 **Status**: ✅ All phases complete
-**PR**: #96 ([016-entity-relationship-viz branch](https://github.com/Mearman/Academic-Explorer/pull/96))
+**PR**: #96 ([016-entity-relationship-viz branch](https://github.com/Mearman/BibGraph/pull/96))
 
 ### Completed Phases
 

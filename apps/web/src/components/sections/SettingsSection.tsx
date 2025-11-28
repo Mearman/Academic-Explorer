@@ -358,7 +358,7 @@ export const SettingsSection: React.FC = () => {
   const clearLocalStorageData = () => {
     const localStorageKeys = Object.keys(localStorage);
     for (const key of localStorageKeys) {
-      if (key.startsWith("academic-explorer-") || key.startsWith("mantine-")) {
+      if (key.startsWith("bibgraph-") || key.startsWith("mantine-")) {
         try {
           localStorage.removeItem(key);
           logger.debug(

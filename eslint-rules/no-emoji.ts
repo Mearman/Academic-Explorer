@@ -90,7 +90,7 @@ const COMMON_ICON_SUGGESTIONS: Record<string, string> = {
 type MessageIds = "noEmoji" | "noEmojiGeneric"
 
 const createRule = ESLintUtils.RuleCreator(
-	(name) => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+	(name) => `https://github.com/Mearman/BibGraph/blob/main/eslint-rules/${name}.ts`
 )
 
 export const noEmojiRule = createRule<[], MessageIds>({

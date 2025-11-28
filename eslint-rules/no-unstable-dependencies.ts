@@ -90,7 +90,7 @@ function checkDependencyArray(context: any, dependencyArray: any): void {
 }
 
 const createRule = ESLintUtils.RuleCreator(
-	(name) => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+	(name) => `https://github.com/Mearman/BibGraph/blob/main/eslint-rules/${name}.ts`
 )
 
 export const noUnstableDependenciesRule = createRule<[], MessageIds>({

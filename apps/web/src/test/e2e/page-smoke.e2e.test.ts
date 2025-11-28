@@ -70,11 +70,12 @@ async function expectPageLoads(
 
   // Verify no error state displayed
   const errorHeading = await page.locator('h1:has-text("Error")').count();
-  const error404 = await page.locator('text="404"').count();
+  const error404Count = await page.locator('text="404"').count();
 
   // Allow 404 only for explicitly invalid routes
   if (!path.includes("invalid") && !path.includes("999999")) {
     expect(errorHeading, `Page ${path} should not show Error heading`).toBe(0);
+    expect(error404Count, `Page ${path} should not show 404`).toBe(0);
   }
 }
 
@@ -83,7 +84,7 @@ test.describe("Page Smoke Tests - Utility Pages", () => {
 
   test("/ - Homepage loads successfully", async ({ page }) => {
     await expectPageLoads(page, "/", {
-      expectContent: "Academic Explorer",
+      expectContent: "BibGraph",
     });
   });
 

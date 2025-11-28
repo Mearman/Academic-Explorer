@@ -54,7 +54,7 @@ export default defineConfig(
 			setupFiles: ["./src/test/setup.ts"],
 			// Force vitest to bundle workspace packages through vite's resolver
 			deps: {
-				inline: [/@academic-explorer\/.*/],
+				inline: [/@bibgraph\/.*/],
 			},
 			typecheck: {
 				tsconfig: "./tsconfig.json",

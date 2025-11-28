@@ -40,7 +40,7 @@ export function getBuildInfo(): BuildInfo {
 		commitTimestamp: new Date().toISOString(),
 		branchName: "unknown",
 		version: "0.0.0-dev",
-		repositoryUrl: "https://github.com/Mearman/Academic-Explorer",
+		repositoryUrl: "https://github.com/Mearman/BibGraph",
 	}
 }
 

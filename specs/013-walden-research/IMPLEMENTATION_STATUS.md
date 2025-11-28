@@ -178,7 +178,7 @@ All success criteria from spec.md achieved:
 ## 🚀 Deployment Status
 
 **Merged to main**: ✅ Yes (Nov 16, 2025)
-**Deployed to production**: ✅ https://mearman.github.io/Academic-Explorer/
+**Deployed to production**: ✅ https://mearman.github.io/BibGraph/
 **Feature active**: ✅ All three user stories live
 
 ## 📚 Documentation
