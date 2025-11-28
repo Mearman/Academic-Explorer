@@ -48,12 +48,21 @@ import {
 } from '@/hooks/use-graph-algorithms';
 import { findShortestPath, type PathResult, type ClusteringAlgorithm } from '@/services/graph-algorithms';
 
+export interface CommunityResult {
+  id: number;
+  nodeIds: string[];
+  size: number;
+  density: number;
+}
+
 interface GraphAlgorithmsPanelProps {
   nodes: GraphNode[];
   edges: GraphEdge[];
   onHighlightNodes?: (nodeIds: string[]) => void;
   onHighlightPath?: (path: string[]) => void;
   onSelectCommunity?: (communityId: number, nodeIds: string[]) => void;
+  /** Callback when community detection completes with all communities */
+  onCommunitiesDetected?: (communities: CommunityResult[], communityColors: Map<number, string>) => void;
 }
 
 /**
@@ -74,6 +83,7 @@ export function GraphAlgorithmsPanel({
   onHighlightNodes,
   onHighlightPath,
   onSelectCommunity,
+  onCommunitiesDetected,
 }: GraphAlgorithmsPanelProps) {
   // Statistics hook
   const statistics = useGraphStatistics(nodes, edges, true);
@@ -172,6 +182,13 @@ export function GraphAlgorithmsPanel({
     });
     return colorMap;
   }, [sortedCommunities]);
+
+  // Notify parent when communities are detected
+  React.useEffect(() => {
+    if (onCommunitiesDetected && sortedCommunities.length > 0) {
+      onCommunitiesDetected(sortedCommunities, communityColors);
+    }
+  }, [sortedCommunities, communityColors, onCommunitiesDetected]);
 
   if (nodes.length === 0) {
     return (
