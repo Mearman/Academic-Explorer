@@ -1,3 +1,9 @@
+## 22.2.0 (2025-11-28)
+
+* feat(web): sync node clicks with shortest path source/target selection ([b7c65ee](https://github.com/Mearman/BibGraph/commit/b7c65ee))
+* fix(web): inject build info at compile time for version display ([0435ae3](https://github.com/Mearman/BibGraph/commit/0435ae3))
+* chore(release): 22.1.0 [skip ci] ([53afb4b](https://github.com/Mearman/BibGraph/commit/53afb4b))
+
 ## 22.1.0 (2025-11-28)
 
 * refactor(web): replace base±variance inputs with RangeSliders ([56b617f](https://github.com/Mearman/BibGraph/commit/56b617f))
