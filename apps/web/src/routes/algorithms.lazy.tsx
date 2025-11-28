@@ -901,6 +901,7 @@ function AlgorithmsPage() {
                             { value: logNodesToLinear(5000), label: '5k' },
                             { value: logNodesToLinear(10000), label: '10k' },
                           ]}
+                          label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
                           style={{ flex: 1 }}
                         />
