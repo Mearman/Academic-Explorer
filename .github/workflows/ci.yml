@@ -28,6 +28,8 @@ env:
   NODE_OPTIONS: "--max-old-space-size=8192"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
+  # Allow Nx cache artifacts from different CI runners (required for shared GitHub Actions cache)
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: false
   # Skip Husky hooks in CI to prevent build loops
   HUSKY: 0
   CI: true
