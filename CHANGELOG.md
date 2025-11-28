@@ -1,3 +1,11 @@
+## 22.4.0 (2025-11-28)
+
+* feat(web): add individual lock buttons to all graph configuration sliders ([21e4f5c](https://github.com/Mearman/BibGraph/commit/21e4f5c))
+* feat(web): replace node count sliders with total nodes + percentage distribution ([a00385c](https://github.com/Mearman/BibGraph/commit/a00385c))
+* feat(web): use logarithmic scale for total nodes slider (5-10,000) ([0b24fbe](https://github.com/Mearman/BibGraph/commit/0b24fbe))
+* fix(web): prevent simulation restart on node selection ([3a1c342](https://github.com/Mearman/BibGraph/commit/3a1c342))
+* chore(release): 22.3.0 [skip ci] ([ceff893](https://github.com/Mearman/BibGraph/commit/ceff893))
+
 ## 22.3.0 (2025-11-28)
 
 * feat(web): auto-regenerate graph when configuration changes ([a5e9584](https://github.com/Mearman/BibGraph/commit/a5e9584))
