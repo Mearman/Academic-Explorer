@@ -1,3 +1,15 @@
+## <small>21.2.1 (2025-11-28)</small>
+
+* chore(deps-dev): bump @axe-core/playwright from 4.10.2 to 4.11.0 (#141) ([915c6a0](https://github.com/Mearman/Academic-Explorer/commit/915c6a0)), closes [#141](https://github.com/Mearman/Academic-Explorer/issues/141)
+* chore(deps-dev): bump @types/node from 24.10.0 to 24.10.1 (#137) ([373d0e5](https://github.com/Mearman/Academic-Explorer/commit/373d0e5)), closes [#137](https://github.com/Mearman/Academic-Explorer/issues/137)
+* chore(deps-dev): bump chokidar from 4.0.3 to 5.0.0 (#139) ([793e7c1](https://github.com/Mearman/Academic-Explorer/commit/793e7c1)), closes [#139](https://github.com/Mearman/Academic-Explorer/issues/139)
+* chore(deps-dev): bump fake-indexeddb from 6.2.4 to 6.2.5 (#143) ([fdc1523](https://github.com/Mearman/Academic-Explorer/commit/fdc1523)), closes [#143](https://github.com/Mearman/Academic-Explorer/issues/143)
+* chore(deps-dev): bump immer from 10.1.3 to 11.0.0 (#140) ([5802669](https://github.com/Mearman/Academic-Explorer/commit/5802669)), closes [#140](https://github.com/Mearman/Academic-Explorer/issues/140)
+* chore(deps): bump @react-three/drei from 10.7.6 to 10.7.7 (#142) ([a98a7d8](https://github.com/Mearman/Academic-Explorer/commit/a98a7d8)), closes [#142](https://github.com/Mearman/Academic-Explorer/issues/142)
+* chore(release): 21.2.0 [skip ci] ([6823803](https://github.com/Mearman/Academic-Explorer/commit/6823803))
+* chore(web)(deps-dev): bump @vanilla-extract/css from 1.17.4 to 1.17.5 in /apps/web (#147) ([53f689e](https://github.com/Mearman/Academic-Explorer/commit/53f689e)), closes [#147](https://github.com/Mearman/Academic-Explorer/issues/147)
+* ci(deps): bump actions/checkout from 4 to 6 (#145) ([e9e4e74](https://github.com/Mearman/Academic-Explorer/commit/e9e4e74)), closes [#145](https://github.com/Mearman/Academic-Explorer/issues/145)
+
 ## 21.2.0 (2025-11-28)
 
 * feat(ci): add syncpack to Dependabot lockfile workflow ([3a3c602](https://github.com/Mearman/Academic-Explorer/commit/3a3c602))
