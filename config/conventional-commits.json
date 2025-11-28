@@ -57,25 +57,19 @@
     }
   },
   "scopes": {
-    "root": "Root monorepo changes",
-    "monorepo": "Monorepo-wide changes",
-    "web": "Web application",
-    "cli": "CLI application",
-    "academic-explorer": "Academic Explorer app",
-    "openalex-client": "OpenAlex API client package",
-    "graph": "Graph utilities package",
-    "ui-components": "UI components package",
-    "simulation": "Simulation package",
-    "shared-utils": "Shared utilities package",
+    "web": "Web application (apps/web)",
+    "cli": "CLI application (apps/cli)",
+    "algorithms": "Graph algorithms package (packages/algorithms)",
+    "client": "OpenAlex API client package (packages/client)",
+    "types": "Shared TypeScript types package (packages/types)",
+    "ui": "UI components package (packages/ui)",
+    "utils": "Shared utilities package (packages/utils)",
     "deps": "Dependencies",
-    "dependencies": "Dependencies",
     "ci": "CI/CD workflows",
-    "config": "Configuration",
-    "scripts": "Scripts",
+    "config": "Configuration files",
+    "scripts": "Build and utility scripts",
     "tools": "Development tools",
     "release": "Release configuration",
-    "readme": "README files",
-    "docs": "Documentation",
-    "examples": "Examples"
+    "docs": "Documentation"
   }
 }
