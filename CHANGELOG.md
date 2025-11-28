@@ -1,3 +1,13 @@
+## 22.7.0 (2025-11-28)
+
+* refactor(web): calculate entity weights dynamically from raw OpenAlex counts ([99c1dcf](https://github.com/Mearman/BibGraph/commit/99c1dcf))
+* refactor(web): generate distribution sliders dynamically for all 12 entity types ([3c4b66a](https://github.com/Mearman/BibGraph/commit/3c4b66a))
+* fix(web): lock distribution percentages by default in algorithms page ([d38047c](https://github.com/Mearman/BibGraph/commit/d38047c))
+* feat(web): expand sample graph generator to all 12 entity types ([ec3da20](https://github.com/Mearman/BibGraph/commit/ec3da20))
+* feat(web): use canonical edge-styles for relationship type coloring ([b18d782](https://github.com/Mearman/BibGraph/commit/b18d782))
+* feat(web): use OpenAlex API-derived weights for entity distribution ([5d67234](https://github.com/Mearman/BibGraph/commit/5d67234))
+* chore(release): 22.6.0 [skip ci] ([c6bc884](https://github.com/Mearman/BibGraph/commit/c6bc884))
+
 ## 22.6.0 (2025-11-28)
 
 * fix(web): remove unused arrowWidth variable in graph visualization ([a1e89ed](https://github.com/Mearman/BibGraph/commit/a1e89ed))
