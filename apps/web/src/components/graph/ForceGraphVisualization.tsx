@@ -323,7 +323,6 @@ export function ForceGraphVisualization({
     if (style.directed) {
       const targetNodeSize = 6; // Default node size
       const arrowLength = 8 / globalScale;
-      const arrowWidth = 5 / globalScale;
 
       // Calculate angle from source to target
       const dx = target.x - source.x;
