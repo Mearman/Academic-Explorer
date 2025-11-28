@@ -17,6 +17,7 @@ import {
   Progress,
   Select,
   Stack,
+  Switch,
   Text,
   Title,
   Tooltip,
@@ -129,6 +130,7 @@ export function GraphAlgorithmsPanel({
   const [internalPathSource, setInternalPathSource] = useState<string | null>(null);
   const [internalPathTarget, setInternalPathTarget] = useState<string | null>(null);
   const [pathResult, setPathResult] = useState<PathResult | null>(null);
+  const [pathDirected, setPathDirected] = useState<boolean>(true);
 
   // Use controlled values if provided, otherwise use internal state
   const isControlled = controlledPathSource !== undefined || controlledPathTarget !== undefined;
@@ -166,7 +168,7 @@ export function GraphAlgorithmsPanel({
   // Handle path finding
   const handleFindPath = () => {
     if (pathSource && pathTarget) {
-      const result = findShortestPath(nodes, edges, pathSource, pathTarget, true);
+      const result = findShortestPath(nodes, edges, pathSource, pathTarget, pathDirected);
       setPathResult(result);
       if (result.found && onHighlightPath) {
         onHighlightPath(result.path);
@@ -414,6 +416,15 @@ export function GraphAlgorithmsPanel({
                 onChange={setPathTarget}
                 searchable
                 clearable
+              />
+              <Switch
+                label="Respect edge direction"
+                description={pathDirected
+                  ? "Only traverse edges from source → target"
+                  : "Traverse edges in both directions"
+                }
+                checked={pathDirected}
+                onChange={(e) => setPathDirected(e.currentTarget.checked)}
               />
               <Button
                 onClick={handleFindPath}
