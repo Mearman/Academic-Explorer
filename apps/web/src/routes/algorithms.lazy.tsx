@@ -158,7 +158,53 @@ function randomInRange(range: [number, number], random: () => number): number {
 }
 
 /**
+ * Entity type distribution for sample graphs
+ * Proportions reflect typical academic graph composition
+ */
+const ENTITY_DISTRIBUTION: Record<EntityType, { weight: number; prefix: string; labelFn: (i: number) => string }> = {
+  works: { weight: 25, prefix: 'W', labelFn: (i) => `Paper ${i + 1}` },
+  authors: { weight: 20, prefix: 'A', labelFn: (i) => `Author ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) : ''}` },
+  institutions: { weight: 10, prefix: 'I', labelFn: (i) => `University ${i + 1}` },
+  sources: { weight: 8, prefix: 'S', labelFn: (i) => `Journal ${i + 1}` },
+  publishers: { weight: 5, prefix: 'P', labelFn: (i) => `Publisher ${i + 1}` },
+  funders: { weight: 5, prefix: 'F', labelFn: (i) => `Funder ${i + 1}` },
+  topics: { weight: 10, prefix: 'T', labelFn: (i) => `Topic ${i + 1}` },
+  concepts: { weight: 5, prefix: 'C', labelFn: (i) => `Concept ${i + 1}` },
+  keywords: { weight: 5, prefix: 'K', labelFn: (i) => `Keyword ${i + 1}` },
+  domains: { weight: 2, prefix: 'D', labelFn: (i) => `Domain ${i + 1}` },
+  fields: { weight: 3, prefix: 'FI', labelFn: (i) => `Field ${i + 1}` },
+  subfields: { weight: 2, prefix: 'SF', labelFn: (i) => `Subfield ${i + 1}` },
+};
+
+/**
+ * Relationship type definitions with source/target entity types
+ */
+const RELATIONSHIP_DEFINITIONS: Array<{
+  type: RelationType;
+  sourceTypes: EntityType[];
+  targetTypes: EntityType[];
+  probability: number; // Probability of creating this edge type (0-1)
+}> = [
+  { type: RelationType.AUTHORSHIP, sourceTypes: ['works'], targetTypes: ['authors'], probability: 0.8 },
+  { type: RelationType.AFFILIATION, sourceTypes: ['authors'], targetTypes: ['institutions'], probability: 0.7 },
+  { type: RelationType.PUBLICATION, sourceTypes: ['works'], targetTypes: ['sources'], probability: 0.6 },
+  { type: RelationType.REFERENCE, sourceTypes: ['works'], targetTypes: ['works'], probability: 0.5 },
+  { type: RelationType.TOPIC, sourceTypes: ['works'], targetTypes: ['topics'], probability: 0.6 },
+  { type: RelationType.HOST_ORGANIZATION, sourceTypes: ['sources'], targetTypes: ['publishers'], probability: 0.7 },
+  { type: RelationType.LINEAGE, sourceTypes: ['institutions'], targetTypes: ['institutions'], probability: 0.3 },
+  { type: RelationType.FUNDED_BY, sourceTypes: ['works'], targetTypes: ['funders'], probability: 0.4 },
+  { type: RelationType.AUTHOR_RESEARCHES, sourceTypes: ['authors'], targetTypes: ['topics'], probability: 0.5 },
+  { type: RelationType.TOPIC_PART_OF_FIELD, sourceTypes: ['topics'], targetTypes: ['fields'], probability: 0.8 },
+  { type: RelationType.TOPIC_PART_OF_SUBFIELD, sourceTypes: ['topics'], targetTypes: ['subfields'], probability: 0.6 },
+  { type: RelationType.FIELD_PART_OF_DOMAIN, sourceTypes: ['fields'], targetTypes: ['domains'], probability: 0.9 },
+  { type: RelationType.WORK_HAS_KEYWORD, sourceTypes: ['works'], targetTypes: ['keywords'], probability: 0.5 },
+  { type: RelationType.CONCEPT, sourceTypes: ['works'], targetTypes: ['concepts'], probability: 0.4 },
+  { type: RelationType.TOPIC_SIBLING, sourceTypes: ['topics'], targetTypes: ['topics'], probability: 0.3 },
+];
+
+/**
  * Generate sample academic graph data for demonstration
+ * Includes all 12 entity types and all relationship types
  */
 function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { nodes: GraphNode[]; edges: GraphEdge[] } {
   const {
@@ -177,42 +223,57 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   // Get total node count from range
   const totalNodes = randomInRange(totalNodeCountRange, random);
 
-  // Calculate actual counts from percentages (ensure at least 1 of each if percentage > 0)
-  const rawWorkCount = Math.round((totalNodes * workPercentage) / 100);
-  const rawAuthorCount = Math.round((totalNodes * authorPercentage) / 100);
-  const rawInstitutionCount = Math.round((totalNodes * institutionPercentage) / 100);
+  // Calculate node counts per entity type, ensuring at least 1 of each type for small graphs
+  const nodesByType = new Map<EntityType, string[]>();
+  const allEntityTypes = Object.keys(ENTITY_DISTRIBUTION) as EntityType[];
 
-  // Ensure minimum of 1 for non-zero percentages, 0 for zero percentages
-  const actualWorkCount = workPercentage > 0 ? Math.max(1, rawWorkCount) : 0;
-  const actualAuthorCount = authorPercentage > 0 ? Math.max(1, rawAuthorCount) : 0;
-  const actualInstitutionCount = institutionPercentage > 0 ? Math.max(1, rawInstitutionCount) : 0;
+  // Override weights with user percentages for the 3 main types
+  const adjustedWeights = { ...ENTITY_DISTRIBUTION };
+  if (workPercentage > 0 || authorPercentage > 0 || institutionPercentage > 0) {
+    // User has customized percentages - use them for the main 3 types
+    const remaining = 100 - workPercentage - authorPercentage - institutionPercentage;
+    const otherTypeCount = allEntityTypes.length - 3;
+    const otherWeight = remaining / otherTypeCount;
+
+    allEntityTypes.forEach((type) => {
+      if (type === 'works') adjustedWeights[type] = { ...adjustedWeights[type], weight: workPercentage };
+      else if (type === 'authors') adjustedWeights[type] = { ...adjustedWeights[type], weight: authorPercentage };
+      else if (type === 'institutions') adjustedWeights[type] = { ...adjustedWeights[type], weight: institutionPercentage };
+      else adjustedWeights[type] = { ...adjustedWeights[type], weight: otherWeight };
+    });
+  }
+
+  const adjustedTotalWeight = Object.values(adjustedWeights).reduce((sum, e) => sum + e.weight, 0);
+
+  allEntityTypes.forEach((type) => {
+    const weight = adjustedWeights[type].weight;
+    const count = Math.max(1, Math.round((totalNodes * weight) / adjustedTotalWeight));
+    const prefix = ENTITY_DISTRIBUTION[type].prefix;
+    const ids = Array.from({ length: count }, (_, i) => `${prefix}${i + 1}`);
+    nodesByType.set(type, ids);
+  });
 
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
-  const edgeCounts = new Map<string, number>(); // Track edges per node
-  const nodeEdgeTargets = new Map<string, number>(); // Per-node edge target (randomly assigned from range)
+  const edgeCounts = new Map<string, number>();
+  const nodeEdgeTargets = new Map<string, number>();
 
-  // Helper to get current edge count
   const getEdgeCount = (nodeId: string) => edgeCounts.get(nodeId) || 0;
   const incrementEdgeCount = (nodeId: string) => edgeCounts.set(nodeId, getEdgeCount(nodeId) + 1);
   const getNodeEdgeTarget = (nodeId: string) => nodeEdgeTargets.get(nodeId) || edgesPerNodeRange[1];
   const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < getNodeEdgeTarget(nodeId);
 
-  // Helper to initialize per-node edge target from range
   const initNodeEdgeTarget = (nodeId: string) => {
     const target = randomInRange(edgesPerNodeRange, random);
     nodeEdgeTargets.set(nodeId, target);
   };
 
-  // Create node IDs using actual counts (with variance applied)
-  const workIds = Array.from({ length: actualWorkCount }, (_, i) => `W${i + 1}`);
-  const authorIds = Array.from({ length: actualAuthorCount }, (_, i) => `A${i + 1}`);
-  const institutionIds = Array.from({ length: actualInstitutionCount }, (_, i) => `I${i + 1}`);
-
   // Distribute nodes across components
-  const workComponents = distributeToComponents(workIds, componentCount);
-  const authorComponents = distributeToComponents(authorIds, componentCount);
-  const institutionComponents = distributeToComponents(institutionIds, componentCount);
+  const nodesByTypeAndComponent = new Map<EntityType, string[][]>();
+  allEntityTypes.forEach((type) => {
+    const ids = nodesByType.get(type) || [];
+    nodesByTypeAndComponent.set(type, distributeToComponents(ids, componentCount));
+  });
 
   // Calculate component positioning for visual separation
   const componentOffsets = Array.from({ length: componentCount }, (_, i) => {
@@ -222,56 +283,29 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   });
 
   // Add all nodes with component-based positioning
-  workIds.forEach((id, index) => {
-    const componentIndex = index % componentCount;
-    const offset = componentOffsets[componentIndex];
-    nodes.push({
-      id,
-      entityType: 'works' as EntityType,
-      label: `Paper ${index + 1}`,
-      entityId: id,
-      x: offset.x + (random() * 200 - 100),
-      y: offset.y + (random() * 150 - 75),
-      externalIds: [],
-    });
-    edgeCounts.set(id, 0);
-    initNodeEdgeTarget(id);
-  });
+  allEntityTypes.forEach((type) => {
+    const ids = nodesByType.get(type) || [];
+    const { labelFn } = ENTITY_DISTRIBUTION[type];
 
-  authorIds.forEach((id, index) => {
-    const componentIndex = index % componentCount;
-    const offset = componentOffsets[componentIndex];
-    nodes.push({
-      id,
-      entityType: 'authors' as EntityType,
-      label: `Author ${String.fromCharCode(65 + (index % 26))}${index >= 26 ? Math.floor(index / 26) : ''}`,
-      entityId: id,
-      x: offset.x + (random() * 200 - 100),
-      y: offset.y + (random() * 150 - 75),
-      externalIds: [],
+    ids.forEach((id, index) => {
+      const componentIndex = index % componentCount;
+      const offset = componentOffsets[componentIndex];
+      nodes.push({
+        id,
+        entityType: type,
+        label: labelFn(index),
+        entityId: id,
+        x: offset.x + (random() * 200 - 100),
+        y: offset.y + (random() * 150 - 75),
+        externalIds: [],
+      });
+      edgeCounts.set(id, 0);
+      initNodeEdgeTarget(id);
     });
-    edgeCounts.set(id, 0);
-    initNodeEdgeTarget(id);
-  });
-
-  institutionIds.forEach((id, index) => {
-    const componentIndex = index % componentCount;
-    const offset = componentOffsets[componentIndex];
-    nodes.push({
-      id,
-      entityType: 'institutions' as EntityType,
-      label: `University ${index + 1}`,
-      entityId: id,
-      x: offset.x + (random() * 200 - 100),
-      y: offset.y + (random() * 150 - 75),
-      externalIds: [],
-    });
-    edgeCounts.set(id, 0);
-    initNodeEdgeTarget(id);
   });
 
   let edgeId = 1;
-  const existingEdges = new Set<string>(); // Prevent duplicate edges
+  const existingEdges = new Set<string>();
 
   const tryAddEdge = (source: string, target: string, type: RelationType): boolean => {
     const edgeKey = `${source}-${target}`;
@@ -287,56 +321,45 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     return true;
   };
 
-  // Create edges within each component
+  // Create edges for each relationship type within each component
   for (let c = 0; c < componentCount; c++) {
-    const compWorks = workComponents[c];
-    const compAuthors = authorComponents[c];
-    const compInstitutions = institutionComponents[c];
+    RELATIONSHIP_DEFINITIONS.forEach(({ type, sourceTypes, targetTypes, probability }) => {
+      sourceTypes.forEach((sourceType) => {
+        const sourceNodes = nodesByTypeAndComponent.get(sourceType)?.[c] || [];
 
-    // Create authorship edges (works -> authors)
-    compWorks.forEach((workId) => {
-      const numAuthors = Math.min(
-        randomInRange(edgesPerNodeRange, random),
-        compAuthors.length
-      );
-      const shuffledAuthors = [...compAuthors].sort(() => random() - 0.5);
-      for (let i = 0; i < numAuthors && i < shuffledAuthors.length; i++) {
-        tryAddEdge(workId, shuffledAuthors[i], RelationType.AUTHORSHIP);
-      }
-    });
+        targetTypes.forEach((targetType) => {
+          const targetNodes = nodesByTypeAndComponent.get(targetType)?.[c] || [];
+          if (targetNodes.length === 0) return;
 
-    // Create affiliation edges (authors -> institutions)
-    compAuthors.forEach((authorId) => {
-      if (compInstitutions.length === 0) return;
-      const numAffiliations = Math.min(
-        Math.floor(random() * 2) + 1,
-        compInstitutions.length
-      );
-      const shuffledInsts = [...compInstitutions].sort(() => random() - 0.5);
-      for (let i = 0; i < numAffiliations && i < shuffledInsts.length; i++) {
-        tryAddEdge(authorId, shuffledInsts[i], RelationType.AFFILIATION);
-      }
-    });
+          sourceNodes.forEach((sourceId) => {
+            // Skip based on probability
+            if (random() > probability) return;
 
-    // Create citation edges (works -> works)
-    compWorks.forEach((workId) => {
-      const numCitations = Math.floor(random() * Math.max(1, edgesPerNodeRange[1] - 1));
-      const otherWorks = compWorks.filter(w => w !== workId);
-      const shuffled = [...otherWorks].sort(() => random() - 0.5);
-      for (let i = 0; i < numCitations && i < shuffled.length; i++) {
-        tryAddEdge(workId, shuffled[i], RelationType.REFERENCE);
-      }
+            // Determine number of edges to create
+            const numEdges = Math.min(
+              randomInRange([1, Math.max(1, edgesPerNodeRange[1])], random),
+              targetNodes.length
+            );
+
+            // Shuffle targets and try to add edges
+            const shuffledTargets = [...targetNodes].sort(() => random() - 0.5);
+            for (let i = 0; i < numEdges && i < shuffledTargets.length; i++) {
+              tryAddEdge(sourceId, shuffledTargets[i], type);
+            }
+          });
+        });
+      });
     });
   }
 
   // Second pass: ensure minimum edges (best effort within component)
   const minEdgesTarget = edgesPerNodeRange[0];
   for (let c = 0; c < componentCount; c++) {
-    const compNodes = [
-      ...workComponents[c],
-      ...authorComponents[c],
-      ...institutionComponents[c],
-    ];
+    const compNodes: string[] = [];
+    allEntityTypes.forEach((type) => {
+      const typeNodes = nodesByTypeAndComponent.get(type)?.[c] || [];
+      compNodes.push(...typeNodes);
+    });
 
     compNodes.forEach((nodeId) => {
       let attempts = 0;
@@ -344,7 +367,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
         const otherNodes = compNodes.filter(n => n !== nodeId && canAddEdge(n));
         if (otherNodes.length === 0) break;
         const target = otherNodes[Math.floor(random() * otherNodes.length)];
-        tryAddEdge(nodeId, target, RelationType.REFERENCE);
+        tryAddEdge(nodeId, target, RelationType.RELATED_TO);
         attempts++;
       }
     });
