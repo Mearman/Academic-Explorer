@@ -5,6 +5,7 @@
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
 import {
+  ActionIcon,
   Container,
   Title,
   Text,
@@ -459,6 +460,9 @@ function AlgorithmsPage() {
   const [totalNodesLocked, setTotalNodesLocked] = useState(true);
   const [percentagesLocked, setPercentagesLocked] = useState(true);
 
+  // Individual entity type locks - controls which types participate in redistribution
+  const [lockedEntityTypes, setLockedEntityTypes] = useState<Set<EntityType>>(new Set());
+
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
@@ -497,23 +501,40 @@ function AlgorithmsPage() {
     setGraphConfig((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  // Toggle individual entity type lock
+  const toggleEntityLock = useCallback((entityType: EntityType) => {
+    setLockedEntityTypes(prev => {
+      const next = new Set(prev);
+      if (next.has(entityType)) {
+        next.delete(entityType);
+      } else {
+        next.add(entityType);
+      }
+      return next;
+    });
+  }, []);
+
   // Update a percentage slider while proportionally adjusting others to maintain 100% total
+  // Only unlocked types participate in redistribution
   const updatePercentage = useCallback((
     changedType: EntityType,
     newValue: number
   ) => {
     setGraphConfig((prev) => {
-      const otherTypes = ENTITY_TYPES_ORDERED.filter(t => t !== changedType);
+      // Only redistribute among UNLOCKED types (excluding the changed type)
+      const otherTypes = ENTITY_TYPES_ORDERED.filter(
+        t => t !== changedType && !lockedEntityTypes.has(t)
+      );
 
       const oldValue = prev.entityPercentages[changedType];
       const delta = newValue - oldValue;
 
-      // Calculate sum of other percentages
+      // Calculate sum of other (unlocked) percentages
       const otherSum = otherTypes.reduce((sum, t) => sum + prev.entityPercentages[t], 0);
 
-      // If no room to adjust others, constrain the change
+      // If no unlocked types to adjust, constrain the change
       if (otherSum === 0 && delta > 0) {
-        return prev; // Can't increase if others are all 0
+        return prev; // Can't increase if unlocked others are all 0
       }
 
       // Clamp new value to valid range
@@ -536,9 +557,9 @@ function AlgorithmsPage() {
             remaining -= adjustment;
           }
         });
-      } else if (actualDelta !== 0 && otherSum === 0) {
-        // Edge case: others are 0, can only decrease this one
-        // Split the freed percentage evenly among others
+      } else if (actualDelta !== 0 && otherSum === 0 && otherTypes.length > 0) {
+        // Edge case: unlocked others are 0, can only decrease this one
+        // Split the freed percentage evenly among unlocked others
         const splitAmount = Math.floor(-actualDelta / otherTypes.length);
         const extraAmount = -actualDelta - splitAmount * otherTypes.length;
         otherTypes.forEach((type, index) => {
@@ -548,7 +569,7 @@ function AlgorithmsPage() {
 
       return { ...prev, entityPercentages: newPercentages };
     });
-  }, []);
+  }, [lockedEntityTypes]);
 
   // Randomize unlocked slider values
   const handleRandomize = useCallback(() => {
@@ -1015,17 +1036,31 @@ function AlgorithmsPage() {
                         variant={percentagesLocked ? "light" : "subtle"}
                         size="compact-xs"
                         onClick={() => setPercentagesLocked(!percentagesLocked)}
-                        title={percentagesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
+                        title={percentagesLocked ? "Distributions locked from randomization" : "Distributions included in randomization"}
                         px="xs"
                       >
                         {percentagesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
                       </Button>
                     </Group>
-                    <Text size="xs" c="dimmed">Percentages auto-adjust to total 100%</Text>
+                    <Text size="xs" c="dimmed">
+                      {percentagesLocked
+                        ? "Randomize won't affect distributions. Lock individual types to exclude from redistribution."
+                        : "Randomize will affect unlocked distributions. Lock individual types to exclude from redistribution."}
+                    </Text>
                     <Stack gap="xs">
                       {ENTITY_TYPES_ORDERED.map((entityType) => (
                         <Box key={entityType}>
                           <Group gap="xs" align="center">
+                            <ActionIcon
+                              variant={lockedEntityTypes.has(entityType) ? "light" : "subtle"}
+                              size="xs"
+                              onClick={() => toggleEntityLock(entityType)}
+                              title={lockedEntityTypes.has(entityType)
+                                ? "Locked - excluded from redistribution"
+                                : "Unlocked - included in redistribution"}
+                            >
+                              {lockedEntityTypes.has(entityType) ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                            </ActionIcon>
                             <Text size="xs" c="dimmed" w={80}>{ENTITY_DISPLAY_NAMES[entityType]}</Text>
                             <Slider
                               value={graphConfig.entityPercentages[entityType]}
