@@ -18,6 +18,7 @@ import {
   Card,
   SimpleGrid,
   Paper,
+  Switch,
 } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import {
@@ -40,6 +41,7 @@ import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { logger } from "@/lib/logger";
+import { settingsActions } from "@/stores/settings-store";
 
 
 interface CatalogueManagerProps {
@@ -67,11 +69,17 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
   const [showExportModal, setShowExportModal] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSystemCatalogues, setShowSystemCatalogues] = useState(false);
   const [listStats, setListStats] = useState<{
     totalEntities: number;
     entityCounts: Record<string, number>;
   } | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Load showSystemCatalogues setting on mount
+  useEffect(() => {
+    void settingsActions.getShowSystemCatalogues().then(setShowSystemCatalogues);
+  }, []);
 
   // T064: Auto-open import modal when share data is present in URL
   useEffect(() => {
@@ -109,17 +117,23 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
     ["mod+Shift+I", () => setShowImportModal(true)],
   ]);
 
-  // Filter lists based on search (exclude special system lists)
+  // Handle toggle for showing system catalogues
+  const handleShowSystemCataloguesChange = (checked: boolean) => {
+    setShowSystemCatalogues(checked);
+    void settingsActions.setShowSystemCatalogues(checked);
+  };
+
+  // Filter lists based on search (conditionally exclude special system lists)
   const specialListIdValues: string[] = Object.values(SPECIAL_LIST_IDS);
   const filteredLists = searchQuery
     ? lists.filter(list =>
-        list.id && !specialListIdValues.includes(list.id) && (
+        list.id && (showSystemCatalogues || !specialListIdValues.includes(list.id)) && (
           list.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           list.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           list.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
         )
       )
-    : lists.filter(list => list.id && !specialListIdValues.includes(list.id));
+    : lists.filter(list => list.id && (showSystemCatalogues || !specialListIdValues.includes(list.id)));
 
   // Handle sharing
   const handleShare = async () => {
@@ -210,22 +224,31 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
           </Group>
         </Group>
 
-        {/* Search */}
-        <Group>
-          <IconSearch size={16} />
-          <Text fw={500}>Search:</Text>
-          <TextInput
-            ref={searchInputRef}
-            placeholder="Search lists by title, description, or tags..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Search catalogue lists"
-            aria-describedby="search-help"
-            flex={1}
+        {/* Search and filters */}
+        <Group justify="space-between">
+          <Group flex={1}>
+            <IconSearch size={16} />
+            <Text fw={500}>Search:</Text>
+            <TextInput
+              ref={searchInputRef}
+              placeholder="Search lists by title, description, or tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search catalogue lists"
+              aria-describedby="search-help"
+              flex={1}
+            />
+            <Text id="search-help" size="xs" c="dimmed" component="span">
+              Press Ctrl+K to focus
+            </Text>
+          </Group>
+          <Switch
+            label="Show system catalogues"
+            checked={showSystemCatalogues}
+            onChange={(e) => handleShowSystemCataloguesChange(e.currentTarget.checked)}
+            aria-label="Toggle visibility of system catalogues like bookmarks and history"
+            data-testid="show-system-catalogues-toggle"
           />
-          <Text id="search-help" size="xs" c="dimmed" component="span">
-            Press Ctrl+K to focus
-          </Text>
         </Group>
 
         {/* Main Content */}
