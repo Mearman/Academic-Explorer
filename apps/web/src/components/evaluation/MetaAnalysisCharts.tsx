@@ -51,7 +51,7 @@ export function PerformanceComparisonChart({
         falsePositives: result.falsePositives.length,
         falseNegatives: result.falseNegatives.length,
         additionalPapers: result.additionalPapersFound.length,
-        totalFound: result.academicExplorerResults.length,
+        totalFound: result.bibGraphResults.length,
         totalGroundTruth: result.dataset.includedPapers.length,
       }),
     );
@@ -876,9 +876,9 @@ export function DatasetStatisticsOverview({
       originalPapers: result.dataset.originalPaperCount,
       includedPapers: result.dataset.includedPapers.length,
       excludedPapers: result.dataset.excludedPapers.length,
-      academicExplorerFound: result.academicExplorerResults.length,
+      academicExplorerFound: result.bibGraphResults.length,
       coverage:
-        result.academicExplorerResults.length /
+        result.bibGraphResults.length /
         result.dataset.originalPaperCount,
       precision: result.precision,
       recall: result.recall,
