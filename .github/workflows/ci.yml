@@ -28,11 +28,14 @@ env:
   NODE_OPTIONS: "--max-old-space-size=8192"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
-  # Allow Nx cache artifacts from different CI runners (required for shared GitHub Actions cache)
-  NX_REJECT_UNKNOWN_LOCAL_CACHE: false
   # Skip Husky hooks in CI to prevent build loops
   HUSKY: 0
   CI: true
+  # Option B: Disable database cache if Option A (caching full .nx dir) doesn't work
+  # Uncomment these three lines to fall back to legacy file-based caching:
+  # NX_DISABLE_DB: true
+  # NX_DB_CACHE: false
+  # NX_REJECT_UNKNOWN_LOCAL_CACHE: false
 
 jobs:
   # Detect which files changed to enable conditional job execution
@@ -106,10 +109,11 @@ jobs:
       - name: Setup Nx cache
         uses: actions/cache@v4
         with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          # Cache full .nx dir (includes workspace-data DB) for cross-run cache sharing
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-
+            ${{ runner.os }}-nx-v3-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -171,10 +175,11 @@ jobs:
       - name: Setup Nx cache
         uses: actions/cache@v4
         with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          # Cache full .nx dir (includes workspace-data DB) for cross-run cache sharing
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-
+            ${{ runner.os }}-nx-v3-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
