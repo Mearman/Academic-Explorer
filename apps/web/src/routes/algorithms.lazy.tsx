@@ -21,6 +21,7 @@ import {
   Switch,
   NumberInput,
   Slider,
+  RangeSlider,
   Divider,
 } from '@mantine/core';
 import {
@@ -38,47 +39,30 @@ import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/Fo
 
 /**
  * Configuration for sample graph generation
+ * All ranges are [min, max] tuples
  */
 interface SampleGraphConfig {
   /** Random seed for reproducible graphs (null = use Math.random) */
   seed: number | null;
   /** Number of disconnected graph components */
   componentCount: number;
-  /** Minimum edges per node (best effort - may be lower for isolated nodes) */
-  minEdgesPerNode: number;
-  /** Variance for min edges (per-node min = minEdgesPerNode ± minEdgesVariance) */
-  minEdgesVariance: number;
-  /** Maximum edges per node */
-  maxEdgesPerNode: number;
-  /** Variance for max edges (per-node max = maxEdgesPerNode ± maxEdgesVariance) */
-  maxEdgesVariance: number;
-  /** Base number of work nodes */
-  workCount: number;
-  /** Variance for work count (actual = workCount ± workVariance) */
-  workVariance: number;
-  /** Base number of author nodes */
-  authorCount: number;
-  /** Variance for author count */
-  authorVariance: number;
-  /** Base number of institution nodes */
-  institutionCount: number;
-  /** Variance for institution count */
-  institutionVariance: number;
+  /** Range for edges per node [min, max] - each node gets a random value in range */
+  edgesPerNodeRange: [number, number];
+  /** Range for number of work nodes [min, max] */
+  workCountRange: [number, number];
+  /** Range for number of author nodes [min, max] */
+  authorCountRange: [number, number];
+  /** Range for number of institution nodes [min, max] */
+  institutionCountRange: [number, number];
 }
 
 const DEFAULT_CONFIG: SampleGraphConfig = {
   seed: 42,
   componentCount: 1,
-  minEdgesPerNode: 1,
-  minEdgesVariance: 0,
-  maxEdgesPerNode: 4,
-  maxEdgesVariance: 0,
-  workCount: 20,
-  workVariance: 0,
-  authorCount: 8,
-  authorVariance: 0,
-  institutionCount: 4,
-  institutionVariance: 0,
+  edgesPerNodeRange: [1, 4],
+  workCountRange: [15, 25],
+  authorCountRange: [6, 10],
+  institutionCountRange: [2, 6],
 };
 
 /**
@@ -108,12 +92,12 @@ function distributeToComponents<T>(items: T[], componentCount: number): T[][] {
 }
 
 /**
- * Apply variance to a base count, ensuring result is >= min
+ * Get a random integer within a range [min, max] inclusive
  */
-function applyVariance(base: number, variance: number, random: () => number, min = 0): number {
-  if (variance === 0) return base;
-  const delta = Math.floor(random() * (variance * 2 + 1)) - variance;
-  return Math.max(min, base + delta);
+function randomInRange(range: [number, number], random: () => number): number {
+  const [min, max] = range;
+  if (min === max) return min;
+  return Math.floor(random() * (max - min + 1)) + min;
 }
 
 /**
@@ -123,46 +107,35 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   const {
     seed,
     componentCount,
-    minEdgesPerNode,
-    minEdgesVariance,
-    maxEdgesPerNode,
-    maxEdgesVariance,
-    workCount,
-    workVariance,
-    authorCount,
-    authorVariance,
-    institutionCount,
-    institutionVariance,
+    edgesPerNodeRange,
+    workCountRange,
+    authorCountRange,
+    institutionCountRange,
   } = config;
 
   // Use seeded random if seed is provided, otherwise use Math.random
   const random = seed !== null ? createSeededRandom(seed) : Math.random;
 
-  // Apply variance to node counts
-  const actualWorkCount = applyVariance(workCount, workVariance, random, 1);
-  const actualAuthorCount = applyVariance(authorCount, authorVariance, random, 1);
-  const actualInstitutionCount = applyVariance(institutionCount, institutionVariance, random, 0);
+  // Get actual node counts from ranges
+  const actualWorkCount = randomInRange(workCountRange, random);
+  const actualAuthorCount = randomInRange(authorCountRange, random);
+  const actualInstitutionCount = randomInRange(institutionCountRange, random);
 
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
   const edgeCounts = new Map<string, number>(); // Track edges per node
-  const nodeMinEdges = new Map<string, number>(); // Per-node min edge target
-  const nodeMaxEdges = new Map<string, number>(); // Per-node max edge limit
+  const nodeEdgeTargets = new Map<string, number>(); // Per-node edge target (randomly assigned from range)
 
   // Helper to get current edge count
   const getEdgeCount = (nodeId: string) => edgeCounts.get(nodeId) || 0;
   const incrementEdgeCount = (nodeId: string) => edgeCounts.set(nodeId, getEdgeCount(nodeId) + 1);
-  const getNodeMaxEdges = (nodeId: string) => nodeMaxEdges.get(nodeId) || maxEdgesPerNode;
-  const getNodeMinEdges = (nodeId: string) => nodeMinEdges.get(nodeId) || minEdgesPerNode;
-  const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < getNodeMaxEdges(nodeId);
+  const getNodeEdgeTarget = (nodeId: string) => nodeEdgeTargets.get(nodeId) || edgesPerNodeRange[1];
+  const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < getNodeEdgeTarget(nodeId);
 
-  // Helper to initialize per-node edge constraints with variance
-  const initNodeEdgeConstraints = (nodeId: string) => {
-    const nodeMin = applyVariance(minEdgesPerNode, minEdgesVariance, random, 0);
-    const nodeMax = applyVariance(maxEdgesPerNode, maxEdgesVariance, random, 1);
-    // Ensure max >= min
-    nodeMinEdges.set(nodeId, nodeMin);
-    nodeMaxEdges.set(nodeId, Math.max(nodeMin, nodeMax));
+  // Helper to initialize per-node edge target from range
+  const initNodeEdgeTarget = (nodeId: string) => {
+    const target = randomInRange(edgesPerNodeRange, random);
+    nodeEdgeTargets.set(nodeId, target);
   };
 
   // Create node IDs using actual counts (with variance applied)
@@ -196,7 +169,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
-    initNodeEdgeConstraints(id);
+    initNodeEdgeTarget(id);
   });
 
   authorIds.forEach((id, index) => {
@@ -212,7 +185,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
-    initNodeEdgeConstraints(id);
+    initNodeEdgeTarget(id);
   });
 
   institutionIds.forEach((id, index) => {
@@ -228,7 +201,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
-    initNodeEdgeConstraints(id);
+    initNodeEdgeTarget(id);
   });
 
   let edgeId = 1;
@@ -257,7 +230,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     // Create authorship edges (works -> authors)
     compWorks.forEach((workId) => {
       const numAuthors = Math.min(
-        Math.floor(random() * (maxEdgesPerNode - minEdgesPerNode + 1)) + minEdgesPerNode,
+        randomInRange(edgesPerNodeRange, random),
         compAuthors.length
       );
       const shuffledAuthors = [...compAuthors].sort(() => random() - 0.5);
@@ -281,7 +254,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
 
     // Create citation edges (works -> works)
     compWorks.forEach((workId) => {
-      const numCitations = Math.floor(random() * Math.max(1, maxEdgesPerNode - 1));
+      const numCitations = Math.floor(random() * Math.max(1, edgesPerNodeRange[1] - 1));
       const otherWorks = compWorks.filter(w => w !== workId);
       const shuffled = [...otherWorks].sort(() => random() - 0.5);
       for (let i = 0; i < numCitations && i < shuffled.length; i++) {
@@ -291,6 +264,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   }
 
   // Second pass: ensure minimum edges (best effort within component)
+  const minEdgesTarget = edgesPerNodeRange[0];
   for (let c = 0; c < componentCount; c++) {
     const compNodes = [
       ...workComponents[c],
@@ -300,8 +274,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
 
     compNodes.forEach((nodeId) => {
       let attempts = 0;
-      const nodeMinTarget = getNodeMinEdges(nodeId);
-      while (getEdgeCount(nodeId) < nodeMinTarget && attempts < 20) {
+      while (getEdgeCount(nodeId) < minEdgesTarget && attempts < 20) {
         const otherNodes = compNodes.filter(n => n !== nodeId && canAddEdge(n));
         if (otherNodes.length === 0) break;
         const target = otherNodes[Math.floor(random() * otherNodes.length)];
@@ -339,26 +312,12 @@ function AlgorithmsPage() {
   // Enable/disable force simulation
   const [enableSimulation, setEnableSimulation] = useState(true);
 
-  // Config update helper that also regenerates the graph
+  // Config update helper
   const updateConfig = useCallback(<K extends keyof SampleGraphConfig>(
     key: K,
     value: SampleGraphConfig[K]
   ) => {
-    setGraphConfig((prev) => {
-      const newConfig = { ...prev, [key]: value };
-      // Enforce min <= max constraint
-      if (key === 'minEdgesPerNode' && typeof value === 'number') {
-        if (value > prev.maxEdgesPerNode) {
-          newConfig.maxEdgesPerNode = value;
-        }
-      }
-      if (key === 'maxEdgesPerNode' && typeof value === 'number') {
-        if (value < prev.minEdgesPerNode) {
-          newConfig.minEdgesPerNode = value;
-        }
-      }
-      return newConfig;
-    });
+    setGraphConfig((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   // Regenerate sample data with current config
@@ -601,111 +560,89 @@ function AlgorithmsPage() {
 
                     <Divider />
 
-                    {/* Edge Constraints with Variance */}
-                    <Text size="xs" fw={500}>Edges per Node (base ± variance)</Text>
-                    <Stack gap="xs">
-                      <Group grow align="flex-end">
-                        <NumberInput
-                          label="Min Edges"
-                          value={graphConfig.minEdgesPerNode}
-                          onChange={(val) => updateConfig('minEdgesPerNode', typeof val === 'number' ? val : 1)}
-                          min={0}
-                          max={10}
-                          size="xs"
-                        />
-                        <NumberInput
-                          label="±"
-                          value={graphConfig.minEdgesVariance}
-                          onChange={(val) => updateConfig('minEdgesVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
-                          min={0}
-                          max={5}
-                          size="xs"
-                          styles={{ label: { textAlign: 'center' } }}
-                        />
-                      </Group>
-                      <Group grow align="flex-end">
-                        <NumberInput
-                          label="Max Edges"
-                          value={graphConfig.maxEdgesPerNode}
-                          onChange={(val) => updateConfig('maxEdgesPerNode', typeof val === 'number' ? val : 4)}
-                          min={1}
-                          max={20}
-                          size="xs"
-                        />
-                        <NumberInput
-                          label="±"
-                          value={graphConfig.maxEdgesVariance}
-                          onChange={(val) => updateConfig('maxEdgesVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
-                          min={0}
-                          max={10}
-                          size="xs"
-                          styles={{ label: { textAlign: 'center' } }}
-                        />
-                      </Group>
-                    </Stack>
+                    {/* Edges per Node */}
+                    <Box>
+                      <Text size="xs" fw={500} mb={4}>
+                        Edges per Node: {graphConfig.edgesPerNodeRange[0]} - {graphConfig.edgesPerNodeRange[1]}
+                      </Text>
+                      <RangeSlider
+                        value={graphConfig.edgesPerNodeRange}
+                        onChange={(val) => updateConfig('edgesPerNodeRange', val)}
+                        min={0}
+                        max={10}
+                        step={1}
+                        minRange={0}
+                        marks={[
+                          { value: 0, label: '0' },
+                          { value: 5, label: '5' },
+                          { value: 10, label: '10' },
+                        ]}
+                        size="sm"
+                      />
+                    </Box>
 
                     <Divider />
 
-                    {/* Node Counts with Variance */}
-                    <Text size="xs" fw={500}>Node Counts (base ± variance)</Text>
-                    <Stack gap="xs">
-                      <Group grow align="flex-end">
-                        <NumberInput
-                          label="Works"
-                          value={graphConfig.workCount}
-                          onChange={(val) => updateConfig('workCount', typeof val === 'number' ? Math.max(1, val) : 20)}
-                          min={1}
-                          max={100}
-                          size="xs"
-                        />
-                        <NumberInput
-                          label="±"
-                          value={graphConfig.workVariance}
-                          onChange={(val) => updateConfig('workVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
-                          min={0}
-                          max={50}
-                          size="xs"
-                          styles={{ label: { textAlign: 'center' } }}
-                        />
-                      </Group>
-                      <Group grow align="flex-end">
-                        <NumberInput
-                          label="Authors"
-                          value={graphConfig.authorCount}
-                          onChange={(val) => updateConfig('authorCount', typeof val === 'number' ? Math.max(1, val) : 8)}
+                    {/* Node Counts */}
+                    <Text size="xs" fw={500}>Node Counts (min - max)</Text>
+                    <Stack gap="md">
+                      <Box>
+                        <Text size="xs" c="dimmed" mb={4}>
+                          Works: {graphConfig.workCountRange[0]} - {graphConfig.workCountRange[1]}
+                        </Text>
+                        <RangeSlider
+                          value={graphConfig.workCountRange}
+                          onChange={(val) => updateConfig('workCountRange', val)}
                           min={1}
                           max={50}
-                          size="xs"
+                          step={1}
+                          minRange={0}
+                          marks={[
+                            { value: 1, label: '1' },
+                            { value: 25, label: '25' },
+                            { value: 50, label: '50' },
+                          ]}
+                          size="sm"
                         />
-                        <NumberInput
-                          label="±"
-                          value={graphConfig.authorVariance}
-                          onChange={(val) => updateConfig('authorVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                      </Box>
+                      <Box>
+                        <Text size="xs" c="dimmed" mb={4}>
+                          Authors: {graphConfig.authorCountRange[0]} - {graphConfig.authorCountRange[1]}
+                        </Text>
+                        <RangeSlider
+                          value={graphConfig.authorCountRange}
+                          onChange={(val) => updateConfig('authorCountRange', val)}
+                          min={1}
+                          max={30}
+                          step={1}
+                          minRange={0}
+                          marks={[
+                            { value: 1, label: '1' },
+                            { value: 15, label: '15' },
+                            { value: 30, label: '30' },
+                          ]}
+                          size="sm"
+                        />
+                      </Box>
+                      <Box>
+                        <Text size="xs" c="dimmed" mb={4}>
+                          Institutions: {graphConfig.institutionCountRange[0]} - {graphConfig.institutionCountRange[1]}
+                        </Text>
+                        <RangeSlider
+                          value={graphConfig.institutionCountRange}
+                          onChange={(val) => updateConfig('institutionCountRange', val)}
                           min={0}
-                          max={25}
-                          size="xs"
-                          styles={{ label: { textAlign: 'center' } }}
+                          max={15}
+                          step={1}
+                          minRange={0}
+                          marks={[
+                            { value: 0, label: '0' },
+                            { value: 7, label: '7' },
+                            { value: 15, label: '15' },
+                          ]}
+                          size="sm"
                         />
-                      </Group>
-                      <Group grow align="flex-end">
-                        <NumberInput
-                          label="Institutions"
-                          value={graphConfig.institutionCount}
-                          onChange={(val) => updateConfig('institutionCount', typeof val === 'number' ? Math.max(0, val) : 4)}
-                          min={0}
-                          max={20}
-                          size="xs"
-                        />
-                        <NumberInput
-                          label="±"
-                          value={graphConfig.institutionVariance}
-                          onChange={(val) => updateConfig('institutionVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
-                          min={0}
-                          max={10}
-                          size="xs"
-                          styles={{ label: { textAlign: 'center' } }}
-                        />
-                      </Group>
+                      </Box>
                     </Stack>
                   </Stack>
                 </Card>
