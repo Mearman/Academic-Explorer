@@ -32,7 +32,7 @@ import {
   IconLockOpen,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import { GraphAlgorithmsPanel, type CommunityResult } from '@/components/algorithms/GraphAlgorithmsPanel';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
@@ -315,6 +315,17 @@ function AlgorithmsPage() {
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
   const [pathTarget, setPathTarget] = useState<string | null>(null);
+
+  // Auto-regenerate graph when configuration changes
+  useEffect(() => {
+    setGraphData(generateSampleGraph(graphConfig));
+    setHighlightedNodes(new Set());
+    setHighlightedPath([]);
+    setCommunityAssignments(new Map());
+    setCommunityColors(new Map());
+    setPathSource(null);
+    setPathTarget(null);
+  }, [graphConfig]);
 
   // Config update helper
   const updateConfig = useCallback(<K extends keyof SampleGraphConfig>(
