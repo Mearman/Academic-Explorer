@@ -1,3 +1,9 @@
+## 22.5.0 (2025-11-28)
+
+* refactor(web): extract node count bias into configurable function ([8003199](https://github.com/Mearman/BibGraph/commit/8003199))
+* feat(web): bias randomized node count towards lower values ([7fa572f](https://github.com/Mearman/BibGraph/commit/7fa572f))
+* chore(release): 22.4.0 [skip ci] ([0953b86](https://github.com/Mearman/BibGraph/commit/0953b86))
+
 ## 22.4.0 (2025-11-28)
 
 * feat(web): add individual lock buttons to all graph configuration sliders ([21e4f5c](https://github.com/Mearman/BibGraph/commit/21e4f5c))
