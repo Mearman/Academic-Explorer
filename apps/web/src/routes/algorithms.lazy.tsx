@@ -89,6 +89,39 @@ function logNodesToLinear(nodes: number): number {
   return ((logValue - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 100;
 }
 
+type BiasMode = 'position' | 'value';
+
+/**
+ * Generate a random node count range with bias towards lower values.
+ *
+ * @param bias - Power to apply (higher = more bias towards low values). 1 = no bias.
+ * @param mode - Where to apply the bias:
+ *   - 'position': Bias operates on slider position (0-100) before log transformation.
+ *                 This clusters values towards the left of the slider.
+ *                 With bias=2: 50% of values ≤ ~35 nodes, 71% ≤ ~158 nodes
+ *   - 'value': Bias operates on the final node count (5-10000) directly.
+ *              This scales proportionally with actual node count.
+ *              With bias=2: 50% of values ≤ ~2500 nodes, 71% ≤ ~5000 nodes
+ */
+function randomLogNodeRange(bias: number, mode: BiasMode): [number, number] {
+  if (mode === 'position') {
+    // Bias on slider position - clusters at left of slider (very low node counts)
+    const a = Math.pow(Math.random(), bias) * 100;
+    const b = Math.pow(Math.random(), bias) * 100;
+    const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
+    return [linearToLogNodes(minPos), linearToLogNodes(maxPos)];
+  } else {
+    // Bias on node count value - scales with actual node count
+    const minNodes = 5;
+    const maxNodes = 10000;
+    const biasedA = Math.pow(Math.random(), bias);
+    const biasedB = Math.pow(Math.random(), bias);
+    const nodeA = Math.round(minNodes + biasedA * (maxNodes - minNodes));
+    const nodeB = Math.round(minNodes + biasedB * (maxNodes - minNodes));
+    return nodeA <= nodeB ? [nodeA, nodeB] : [nodeB, nodeA];
+  }
+}
+
 /**
  * Simple seeded pseudo-random number generator (Mulberry32)
  * Returns values in [0, 1) like Math.random()
@@ -452,22 +485,16 @@ function AlgorithmsPage() {
 
     const [workPct, authorPct, instPct] = randomPercentages();
 
-    // Generate random log-scale node count range, biased towards lower values
-    const randomLogNodeRange = (): [number, number] => {
-      // Apply power function to bias towards lower values (power > 1 = more low values)
-      const bias = 2;
-      const a = Math.pow(Math.random(), bias) * 100;
-      const b = Math.pow(Math.random(), bias) * 100;
-      const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
-      return [linearToLogNodes(minPos), linearToLogNodes(maxPos)];
-    };
+    // Node count bias settings
+    const nodeBias = 2;
+    const nodeBiasMode: BiasMode = 'position'; // 'position' or 'value'
 
     setGraphConfig((prev) => ({
       ...prev,
       seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
       componentCount: componentsLocked ? prev.componentCount : Math.floor(Math.random() * 6) + 1,
       edgesPerNodeRange: edgesLocked ? prev.edgesPerNodeRange : randomRange(0, 10),
-      totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomLogNodeRange(),
+      totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomLogNodeRange(nodeBias, nodeBiasMode),
       workPercentage: percentagesLocked ? prev.workPercentage : workPct,
       authorPercentage: percentagesLocked ? prev.authorPercentage : authorPct,
       institutionPercentage: percentagesLocked ? prev.institutionPercentage : instPct,
