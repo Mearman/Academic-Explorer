@@ -24,8 +24,6 @@ import {
   IconGraph,
   IconRefresh,
   IconInfoCircle,
-  IconEye,
-  IconFilter,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo } from 'react';
@@ -146,20 +144,6 @@ function generateSampleGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
 /**
  * Algorithms demonstration page
  */
-// Community colors for visualization
-const COMMUNITY_COLORS = [
-  '#3b82f6', // blue
-  '#22c55e', // green
-  '#f59e0b', // amber
-  '#ef4444', // red
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#84cc16', // lime
-  '#f97316', // orange
-  '#6366f1', // indigo
-];
-
 function AlgorithmsPage() {
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph());

@@ -437,5 +437,3 @@ function getDefaultLinkStyle(
     dashed: false,
   };
 }
-
-export default ForceGraphVisualization;
