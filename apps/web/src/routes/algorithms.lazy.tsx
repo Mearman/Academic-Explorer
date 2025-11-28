@@ -159,21 +159,37 @@ function randomInRange(range: [number, number], random: () => number): number {
 
 /**
  * Entity type distribution for sample graphs
- * Proportions reflect typical academic graph composition
+ *
+ * Weights derived from OpenAlex API entity counts (2025-11-28):
+ *   works:        271,584,856 (70.00%)  → weight 16
+ *   authors:      115,794,830 (29.85%)  → weight 15
+ *   sources:          276,184 (0.07%)   → weight 10
+ *   institutions:     115,781 (0.03%)   → weight 10
+ *   concepts:          65,026 (0.02%)   → weight 9
+ *   keywords:          65,004 (0.02%)   → weight 9
+ *   funders:           32,437 (0.01%)   → weight 8
+ *   publishers:        10,420 (<0.01%)  → weight 8
+ *   topics:             4,516 (<0.01%)  → weight 7
+ *   subfields:            252 (<0.01%)  → weight 4
+ *   fields:                26 (<0.01%)  → weight 3
+ *   domains:                4 (<0.01%)  → weight 1
+ *
+ * Log-scaled to compress the extreme range while preserving relative ordering
+ * and ensuring all entity types appear in sample graphs.
  */
 const ENTITY_DISTRIBUTION: Record<EntityType, { weight: number; prefix: string; labelFn: (i: number) => string }> = {
-  works: { weight: 25, prefix: 'W', labelFn: (i) => `Paper ${i + 1}` },
-  authors: { weight: 20, prefix: 'A', labelFn: (i) => `Author ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) : ''}` },
+  works: { weight: 16, prefix: 'W', labelFn: (i) => `Paper ${i + 1}` },
+  authors: { weight: 15, prefix: 'A', labelFn: (i) => `Author ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) : ''}` },
+  sources: { weight: 10, prefix: 'S', labelFn: (i) => `Journal ${i + 1}` },
   institutions: { weight: 10, prefix: 'I', labelFn: (i) => `University ${i + 1}` },
-  sources: { weight: 8, prefix: 'S', labelFn: (i) => `Journal ${i + 1}` },
-  publishers: { weight: 5, prefix: 'P', labelFn: (i) => `Publisher ${i + 1}` },
-  funders: { weight: 5, prefix: 'F', labelFn: (i) => `Funder ${i + 1}` },
-  topics: { weight: 10, prefix: 'T', labelFn: (i) => `Topic ${i + 1}` },
-  concepts: { weight: 5, prefix: 'C', labelFn: (i) => `Concept ${i + 1}` },
-  keywords: { weight: 5, prefix: 'K', labelFn: (i) => `Keyword ${i + 1}` },
-  domains: { weight: 2, prefix: 'D', labelFn: (i) => `Domain ${i + 1}` },
+  concepts: { weight: 9, prefix: 'C', labelFn: (i) => `Concept ${i + 1}` },
+  keywords: { weight: 9, prefix: 'K', labelFn: (i) => `Keyword ${i + 1}` },
+  funders: { weight: 8, prefix: 'F', labelFn: (i) => `Funder ${i + 1}` },
+  publishers: { weight: 8, prefix: 'P', labelFn: (i) => `Publisher ${i + 1}` },
+  topics: { weight: 7, prefix: 'T', labelFn: (i) => `Topic ${i + 1}` },
+  subfields: { weight: 4, prefix: 'SF', labelFn: (i) => `Subfield ${i + 1}` },
   fields: { weight: 3, prefix: 'FI', labelFn: (i) => `Field ${i + 1}` },
-  subfields: { weight: 2, prefix: 'SF', labelFn: (i) => `Subfield ${i + 1}` },
+  domains: { weight: 1, prefix: 'D', labelFn: (i) => `Domain ${i + 1}` },
 };
 
 /**
