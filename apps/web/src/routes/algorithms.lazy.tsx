@@ -280,7 +280,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     if (!canAddEdge(source) || !canAddEdge(target)) return false;
     if (source === target) return false;
 
-    edges.push({ id: `E${edgeId++}`, source, target, type });
+    edges.push({ id: `E${edgeId++}`, source, target, type, direction: 'outbound' });
     existingEdges.add(edgeKey);
     incrementEdgeCount(source);
     incrementEdgeCount(target);

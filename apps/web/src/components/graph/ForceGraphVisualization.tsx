@@ -68,6 +68,7 @@ export interface LinkStyle {
   opacity?: number;
   curvature?: number;
   dashed?: boolean;
+  directed?: boolean;
 }
 
 export interface ForceGraphVisualizationProps {
@@ -303,6 +304,7 @@ export function ForceGraphVisualization({
 
     ctx.globalAlpha = isHighlighted ? (style.opacity ?? 0.6) : 0.1;
     ctx.strokeStyle = style.color ?? '#999';
+    ctx.fillStyle = style.color ?? '#999';
     ctx.lineWidth = (style.width ?? 1) / globalScale;
 
     if (style.dashed) {
@@ -311,10 +313,43 @@ export function ForceGraphVisualization({
       ctx.setLineDash([]);
     }
 
+    // Draw the line
     ctx.beginPath();
     ctx.moveTo(source.x, source.y);
     ctx.lineTo(target.x, target.y);
     ctx.stroke();
+
+    // Draw arrowhead for directed edges
+    if (style.directed) {
+      const targetNodeSize = 6; // Default node size
+      const arrowLength = 8 / globalScale;
+      const arrowWidth = 5 / globalScale;
+
+      // Calculate angle from source to target
+      const dx = target.x - source.x;
+      const dy = target.y - source.y;
+      const angle = Math.atan2(dy, dx);
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Position arrow at target node edge (offset by node radius)
+      const arrowTipX = source.x + (dist - targetNodeSize) * Math.cos(angle);
+      const arrowTipY = source.y + (dist - targetNodeSize) * Math.sin(angle);
+
+      // Draw arrowhead
+      ctx.setLineDash([]); // Arrowhead should not be dashed
+      ctx.beginPath();
+      ctx.moveTo(arrowTipX, arrowTipY);
+      ctx.lineTo(
+        arrowTipX - arrowLength * Math.cos(angle - Math.PI / 6),
+        arrowTipY - arrowLength * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.lineTo(
+        arrowTipX - arrowLength * Math.cos(angle + Math.PI / 6),
+        arrowTipY - arrowLength * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.closePath();
+      ctx.fill();
+    }
 
     ctx.globalAlpha = 1;
     ctx.setLineDash([]);
@@ -434,10 +469,13 @@ function getDefaultLinkStyle(
   isHighlighted: boolean,
   isPathHighlightMode: boolean
 ): LinkStyle {
+  const isDirected = link.originalEdge.direction !== undefined;
+
   return {
     color: isHighlighted && isPathHighlightMode ? '#3b82f6' : '#999',
     width: isHighlighted && isPathHighlightMode ? 3 : 1,
     opacity: 0.6,
     dashed: false,
+    directed: isDirected,
   };
 }
