@@ -404,7 +404,7 @@ function AlgorithmsPage() {
   const [componentsLocked, setComponentsLocked] = useState(false);
   const [edgesLocked, setEdgesLocked] = useState(false);
   const [totalNodesLocked, setTotalNodesLocked] = useState(true);
-  const [percentagesLocked, setPercentagesLocked] = useState(false);
+  const [percentagesLocked, setPercentagesLocked] = useState(true);
 
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
