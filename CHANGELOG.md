@@ -1,3 +1,8 @@
+## 22.8.0 (2025-11-28)
+
+* feat(web): add individual locks to node type distribution sliders ([8cecfde](https://github.com/Mearman/BibGraph/commit/8cecfde))
+* chore(release): 22.7.0 [skip ci] ([bff2f0b](https://github.com/Mearman/BibGraph/commit/bff2f0b))
+
 ## 22.7.0 (2025-11-28)
 
 * refactor(web): calculate entity weights dynamically from raw OpenAlex counts ([99c1dcf](https://github.com/Mearman/BibGraph/commit/99c1dcf))
