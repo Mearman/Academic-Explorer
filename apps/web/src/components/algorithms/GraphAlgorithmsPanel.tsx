@@ -63,6 +63,14 @@ interface GraphAlgorithmsPanelProps {
   onSelectCommunity?: (communityId: number, nodeIds: string[]) => void;
   /** Callback when community detection completes with all communities */
   onCommunitiesDetected?: (communities: CommunityResult[], communityColors: Map<number, string>) => void;
+  /** Controlled path source node (for syncing with external selection) */
+  pathSource?: string | null;
+  /** Controlled path target node (for syncing with external selection) */
+  pathTarget?: string | null;
+  /** Callback when path source changes */
+  onPathSourceChange?: (nodeId: string | null) => void;
+  /** Callback when path target changes */
+  onPathTargetChange?: (nodeId: string | null) => void;
 }
 
 /**
@@ -84,6 +92,10 @@ export function GraphAlgorithmsPanel({
   onHighlightPath,
   onSelectCommunity,
   onCommunitiesDetected,
+  pathSource: controlledPathSource,
+  pathTarget: controlledPathTarget,
+  onPathSourceChange,
+  onPathTargetChange,
 }: GraphAlgorithmsPanelProps) {
   // Statistics hook
   const statistics = useGraphStatistics(nodes, edges, true);
@@ -113,10 +125,33 @@ export function GraphAlgorithmsPanel({
   const [kCoreValue, setKCoreValue] = useState<number>(2);
   const kCore = useKCore(nodes, edges, kCoreValue);
 
-  // Path finding state
-  const [pathSource, setPathSource] = useState<string | null>(null);
-  const [pathTarget, setPathTarget] = useState<string | null>(null);
+  // Path finding state - supports both controlled and uncontrolled modes
+  const [internalPathSource, setInternalPathSource] = useState<string | null>(null);
+  const [internalPathTarget, setInternalPathTarget] = useState<string | null>(null);
   const [pathResult, setPathResult] = useState<PathResult | null>(null);
+
+  // Use controlled values if provided, otherwise use internal state
+  const isControlled = controlledPathSource !== undefined || controlledPathTarget !== undefined;
+  const pathSource = isControlled ? (controlledPathSource ?? null) : internalPathSource;
+  const pathTarget = isControlled ? (controlledPathTarget ?? null) : internalPathTarget;
+
+  const setPathSource = (value: string | null) => {
+    if (onPathSourceChange) {
+      onPathSourceChange(value);
+    }
+    if (!isControlled) {
+      setInternalPathSource(value);
+    }
+  };
+
+  const setPathTarget = (value: string | null) => {
+    if (onPathTargetChange) {
+      onPathTargetChange(value);
+    }
+    if (!isControlled) {
+      setInternalPathTarget(value);
+    }
+  };
 
   // Create node options for select dropdowns
   const nodeOptions = useMemo(

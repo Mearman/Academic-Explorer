@@ -312,6 +312,10 @@ function AlgorithmsPage() {
   // Enable/disable force simulation
   const [enableSimulation, setEnableSimulation] = useState(true);
 
+  // Shortest path node selections (synced with panel and node clicks)
+  const [pathSource, setPathSource] = useState<string | null>(null);
+  const [pathTarget, setPathTarget] = useState<string | null>(null);
+
   // Config update helper
   const updateConfig = useCallback(<K extends keyof SampleGraphConfig>(
     key: K,
@@ -336,6 +340,8 @@ function AlgorithmsPage() {
     setHighlightedPath([]);
     setCommunityAssignments(new Map());
     setCommunityColors(new Map());
+    setPathSource(null);
+    setPathTarget(null);
   }, [graphConfig, seedLocked]);
 
   // Handle node highlighting from algorithm results
@@ -357,23 +363,50 @@ function AlgorithmsPage() {
   }, []);
 
   // Handle node click in the visualization
+  // Clicking nodes sets them as source/target for shortest path
   const handleNodeClick = useCallback((node: GraphNode) => {
-    // Toggle node highlight
-    setHighlightedNodes((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(node.id)) {
+    // Update path source/target selection
+    if (pathSource === node.id) {
+      // Clicking source again clears it
+      setPathSource(null);
+      setHighlightedNodes((prev) => {
+        const newSet = new Set(prev);
         newSet.delete(node.id);
-      } else {
-        newSet.add(node.id);
-      }
-      return newSet;
-    });
-  }, []);
+        return newSet;
+      });
+    } else if (pathTarget === node.id) {
+      // Clicking target again clears it
+      setPathTarget(null);
+      setHighlightedNodes((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(node.id);
+        return newSet;
+      });
+    } else if (pathSource === null) {
+      // No source set - this becomes the source
+      setPathSource(node.id);
+      setHighlightedNodes(new Set([node.id]));
+      setHighlightedPath([]);
+    } else if (pathTarget === null) {
+      // Source set but no target - this becomes the target
+      setPathTarget(node.id);
+      setHighlightedNodes(new Set([pathSource, node.id]));
+      setHighlightedPath([]);
+    } else {
+      // Both set - start over with this as new source
+      setPathSource(node.id);
+      setPathTarget(null);
+      setHighlightedNodes(new Set([node.id]));
+      setHighlightedPath([]);
+    }
+  }, [pathSource, pathTarget]);
 
   // Clear all highlights when clicking background
   const handleBackgroundClick = useCallback(() => {
     setHighlightedNodes(new Set());
     setHighlightedPath([]);
+    setPathSource(null);
+    setPathTarget(null);
   }, []);
 
   // Handle community detection results - update node coloring
@@ -684,6 +717,10 @@ function AlgorithmsPage() {
                   onHighlightPath={handleHighlightPath}
                   onSelectCommunity={handleSelectCommunity}
                   onCommunitiesDetected={handleCommunitiesDetected}
+                  pathSource={pathSource}
+                  pathTarget={pathTarget}
+                  onPathSourceChange={setPathSource}
+                  onPathTargetChange={setPathTarget}
                 />
               </Paper>
             </Grid.Col>
