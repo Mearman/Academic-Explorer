@@ -158,39 +158,87 @@ function randomInRange(range: [number, number], random: () => number): number {
 }
 
 /**
- * Entity type distribution for sample graphs
- *
- * Weights derived from OpenAlex API entity counts (2025-11-28):
- *   works:        271,584,856 (70.00%)  → weight 16
- *   authors:      115,794,830 (29.85%)  → weight 15
- *   sources:          276,184 (0.07%)   → weight 10
- *   institutions:     115,781 (0.03%)   → weight 10
- *   concepts:          65,026 (0.02%)   → weight 9
- *   keywords:          65,004 (0.02%)   → weight 9
- *   funders:           32,437 (0.01%)   → weight 8
- *   publishers:        10,420 (<0.01%)  → weight 8
- *   topics:             4,516 (<0.01%)  → weight 7
- *   subfields:            252 (<0.01%)  → weight 4
- *   fields:                26 (<0.01%)  → weight 3
- *   domains:                4 (<0.01%)  → weight 1
- *
- * Log-scaled to compress the extreme range while preserving relative ordering
+ * Raw entity counts from OpenAlex API (2025-11-28)
+ * Source: https://api.openalex.org/{entity}?select=id&per_page=1 → meta.count
+ */
+const OPENALEX_ENTITY_COUNTS: Record<EntityType, number> = {
+  works: 271_584_856,
+  authors: 115_794_830,
+  sources: 276_184,
+  institutions: 115_781,
+  concepts: 65_026,
+  keywords: 65_004,
+  funders: 32_437,
+  publishers: 10_420,
+  topics: 4_516,
+  subfields: 252,
+  fields: 26,
+  domains: 4,
+};
+
+/**
+ * Entity metadata for sample graph generation
+ */
+const ENTITY_METADATA: Record<EntityType, { prefix: string; labelFn: (i: number) => string }> = {
+  works: { prefix: 'W', labelFn: (i) => `Paper ${i + 1}` },
+  authors: { prefix: 'A', labelFn: (i) => `Author ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) : ''}` },
+  sources: { prefix: 'S', labelFn: (i) => `Journal ${i + 1}` },
+  institutions: { prefix: 'I', labelFn: (i) => `University ${i + 1}` },
+  concepts: { prefix: 'C', labelFn: (i) => `Concept ${i + 1}` },
+  keywords: { prefix: 'K', labelFn: (i) => `Keyword ${i + 1}` },
+  funders: { prefix: 'F', labelFn: (i) => `Funder ${i + 1}` },
+  publishers: { prefix: 'P', labelFn: (i) => `Publisher ${i + 1}` },
+  topics: { prefix: 'T', labelFn: (i) => `Topic ${i + 1}` },
+  subfields: { prefix: 'SF', labelFn: (i) => `Subfield ${i + 1}` },
+  fields: { prefix: 'FI', labelFn: (i) => `Field ${i + 1}` },
+  domains: { prefix: 'D', labelFn: (i) => `Domain ${i + 1}` },
+};
+
+/**
+ * Calculate log-scaled weights from raw counts
+ * Compresses extreme range (works:domains = 68M:1) while preserving relative ordering
  * and ensuring all entity types appear in sample graphs.
  */
-const ENTITY_DISTRIBUTION: Record<EntityType, { weight: number; prefix: string; labelFn: (i: number) => string }> = {
-  works: { weight: 16, prefix: 'W', labelFn: (i) => `Paper ${i + 1}` },
-  authors: { weight: 15, prefix: 'A', labelFn: (i) => `Author ${String.fromCharCode(65 + (i % 26))}${i >= 26 ? Math.floor(i / 26) : ''}` },
-  sources: { weight: 10, prefix: 'S', labelFn: (i) => `Journal ${i + 1}` },
-  institutions: { weight: 10, prefix: 'I', labelFn: (i) => `University ${i + 1}` },
-  concepts: { weight: 9, prefix: 'C', labelFn: (i) => `Concept ${i + 1}` },
-  keywords: { weight: 9, prefix: 'K', labelFn: (i) => `Keyword ${i + 1}` },
-  funders: { weight: 8, prefix: 'F', labelFn: (i) => `Funder ${i + 1}` },
-  publishers: { weight: 8, prefix: 'P', labelFn: (i) => `Publisher ${i + 1}` },
-  topics: { weight: 7, prefix: 'T', labelFn: (i) => `Topic ${i + 1}` },
-  subfields: { weight: 4, prefix: 'SF', labelFn: (i) => `Subfield ${i + 1}` },
-  fields: { weight: 3, prefix: 'FI', labelFn: (i) => `Field ${i + 1}` },
-  domains: { weight: 1, prefix: 'D', labelFn: (i) => `Domain ${i + 1}` },
-};
+function calculateLogScaledWeights(counts: Record<EntityType, number>): Record<EntityType, number> {
+  const minCount = Math.min(...Object.values(counts));
+  const minLog = Math.log10(minCount);
+
+  // Calculate raw log-scaled weights
+  const rawWeights: Record<string, number> = {};
+  for (const [entity, count] of Object.entries(counts)) {
+    // Scale factor of 6 with 0.5 offset gives good distribution
+    rawWeights[entity] = Math.max(0.5, (Math.log10(count) - minLog + 0.5) * 6);
+  }
+
+  // Normalize to sum to 100
+  const totalWeight = Object.values(rawWeights).reduce((sum, w) => sum + w, 0);
+  const normalized: Record<string, number> = {};
+  for (const [entity, weight] of Object.entries(rawWeights)) {
+    normalized[entity] = Math.round((weight / totalWeight) * 100);
+  }
+
+  // Adjust largest to ensure exact sum of 100
+  const sum = Object.values(normalized).reduce((s, w) => s + w, 0);
+  if (sum !== 100) {
+    normalized.works += 100 - sum;
+  }
+
+  return normalized as Record<EntityType, number>;
+}
+
+// Pre-calculate weights at module load
+const ENTITY_WEIGHTS = calculateLogScaledWeights(OPENALEX_ENTITY_COUNTS);
+
+/**
+ * Combined entity distribution for sample graphs
+ */
+const ENTITY_DISTRIBUTION: Record<EntityType, { weight: number; prefix: string; labelFn: (i: number) => string }> =
+  Object.fromEntries(
+    (Object.keys(ENTITY_METADATA) as EntityType[]).map((type) => [
+      type,
+      { weight: ENTITY_WEIGHTS[type], ...ENTITY_METADATA[type] },
+    ])
+  ) as Record<EntityType, { weight: number; prefix: string; labelFn: (i: number) => string }>;
 
 /**
  * Relationship type definitions with source/target entity types
