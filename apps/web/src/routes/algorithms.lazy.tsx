@@ -50,22 +50,30 @@ interface SampleGraphConfig {
   edgesPerNodeRange: [number, number];
   /** Range for total node count [min, max] */
   totalNodeCountRange: [number, number];
-  /** Percentage of nodes that are works (0-100) */
-  workPercentage: number;
-  /** Percentage of nodes that are authors (0-100) */
-  authorPercentage: number;
-  /** Percentage of nodes that are institutions (0-100) */
-  institutionPercentage: number;
+  /** Percentage distribution for each entity type (should sum to 100) */
+  entityPercentages: Record<EntityType, number>;
 }
 
-const DEFAULT_CONFIG: SampleGraphConfig = {
-  seed: 42,
-  componentCount: 1,
-  edgesPerNodeRange: [1, 4],
-  totalNodeCountRange: [50, 1000],
-  workPercentage: 50,
-  authorPercentage: 35,
-  institutionPercentage: 15,
+/** All entity types in display order (by weight descending) */
+const ENTITY_TYPES_ORDERED: EntityType[] = [
+  'works', 'authors', 'sources', 'institutions', 'concepts', 'keywords',
+  'funders', 'publishers', 'topics', 'subfields', 'fields', 'domains',
+];
+
+/** Display names for entity types */
+const ENTITY_DISPLAY_NAMES: Record<EntityType, string> = {
+  works: 'Works',
+  authors: 'Authors',
+  sources: 'Sources',
+  institutions: 'Institutions',
+  concepts: 'Concepts',
+  keywords: 'Keywords',
+  funders: 'Funders',
+  publishers: 'Publishers',
+  topics: 'Topics',
+  subfields: 'Subfields',
+  fields: 'Fields',
+  domains: 'Domains',
 };
 
 // Log scale constants for total nodes slider (5 to 10000)
@@ -229,6 +237,15 @@ function calculateLogScaledWeights(counts: Record<EntityType, number>): Record<E
 // Pre-calculate weights at module load
 const ENTITY_WEIGHTS = calculateLogScaledWeights(OPENALEX_ENTITY_COUNTS);
 
+/** Default configuration using OpenAlex-derived entity weights */
+const DEFAULT_CONFIG: SampleGraphConfig = {
+  seed: 42,
+  componentCount: 3,
+  edgesPerNodeRange: [1, 4],
+  totalNodeCountRange: [50, 200],
+  entityPercentages: { ...ENTITY_WEIGHTS },
+};
+
 /**
  * Combined entity distribution for sample graphs
  */
@@ -276,9 +293,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     componentCount,
     edgesPerNodeRange,
     totalNodeCountRange,
-    workPercentage,
-    authorPercentage,
-    institutionPercentage,
+    entityPercentages,
   } = config;
 
   // Use seeded random if seed is provided, otherwise use Math.random
@@ -291,21 +306,11 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   const nodesByType = new Map<EntityType, string[]>();
   const allEntityTypes = Object.keys(ENTITY_DISTRIBUTION) as EntityType[];
 
-  // Override weights with user percentages for the 3 main types
+  // Use entity percentages directly from config
   const adjustedWeights = { ...ENTITY_DISTRIBUTION };
-  if (workPercentage > 0 || authorPercentage > 0 || institutionPercentage > 0) {
-    // User has customized percentages - use them for the main 3 types
-    const remaining = 100 - workPercentage - authorPercentage - institutionPercentage;
-    const otherTypeCount = allEntityTypes.length - 3;
-    const otherWeight = remaining / otherTypeCount;
-
-    allEntityTypes.forEach((type) => {
-      if (type === 'works') adjustedWeights[type] = { ...adjustedWeights[type], weight: workPercentage };
-      else if (type === 'authors') adjustedWeights[type] = { ...adjustedWeights[type], weight: authorPercentage };
-      else if (type === 'institutions') adjustedWeights[type] = { ...adjustedWeights[type], weight: institutionPercentage };
-      else adjustedWeights[type] = { ...adjustedWeights[type], weight: otherWeight };
-    });
-  }
+  allEntityTypes.forEach((type) => {
+    adjustedWeights[type] = { ...adjustedWeights[type], weight: entityPercentages[type] };
+  });
 
   const adjustedTotalWeight = Object.values(adjustedWeights).reduce((sum, e) => sum + e.weight, 0);
 
@@ -494,20 +499,17 @@ function AlgorithmsPage() {
 
   // Update a percentage slider while proportionally adjusting others to maintain 100% total
   const updatePercentage = useCallback((
-    changedKey: 'workPercentage' | 'authorPercentage' | 'institutionPercentage',
+    changedType: EntityType,
     newValue: number
   ) => {
     setGraphConfig((prev) => {
-      const keys: Array<'workPercentage' | 'authorPercentage' | 'institutionPercentage'> = [
-        'workPercentage', 'authorPercentage', 'institutionPercentage'
-      ];
-      const otherKeys = keys.filter(k => k !== changedKey);
+      const otherTypes = ENTITY_TYPES_ORDERED.filter(t => t !== changedType);
 
-      const oldValue = prev[changedKey];
+      const oldValue = prev.entityPercentages[changedType];
       const delta = newValue - oldValue;
 
       // Calculate sum of other percentages
-      const otherSum = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+      const otherSum = otherTypes.reduce((sum, t) => sum + prev.entityPercentages[t], 0);
 
       // If no room to adjust others, constrain the change
       if (otherSum === 0 && delta > 0) {
@@ -518,33 +520,33 @@ function AlgorithmsPage() {
       const clampedValue = Math.max(0, Math.min(100, newValue));
       const actualDelta = clampedValue - oldValue;
 
-      // Distribute the negative delta proportionally among others
-      const newConfig = { ...prev, [changedKey]: clampedValue };
+      // Build new percentages object
+      const newPercentages = { ...prev.entityPercentages, [changedType]: clampedValue };
 
       if (actualDelta !== 0 && otherSum > 0) {
         let remaining = -actualDelta;
-        otherKeys.forEach((key, index) => {
-          if (index === otherKeys.length - 1) {
+        otherTypes.forEach((type, index) => {
+          if (index === otherTypes.length - 1) {
             // Last one takes whatever's remaining to ensure exact 100%
-            newConfig[key] = Math.max(0, Math.min(100, prev[key] + remaining));
+            newPercentages[type] = Math.max(0, Math.min(100, prev.entityPercentages[type] + remaining));
           } else {
-            const proportion = prev[key] / otherSum;
+            const proportion = prev.entityPercentages[type] / otherSum;
             const adjustment = Math.round(-actualDelta * proportion);
-            newConfig[key] = Math.max(0, Math.min(100, prev[key] + adjustment));
+            newPercentages[type] = Math.max(0, Math.min(100, prev.entityPercentages[type] + adjustment));
             remaining -= adjustment;
           }
         });
       } else if (actualDelta !== 0 && otherSum === 0) {
         // Edge case: others are 0, can only decrease this one
         // Split the freed percentage evenly among others
-        const splitAmount = Math.floor(-actualDelta / otherKeys.length);
-        const extraAmount = -actualDelta - splitAmount * otherKeys.length;
-        otherKeys.forEach((key, index) => {
-          newConfig[key] = splitAmount + (index === 0 ? extraAmount : 0);
+        const splitAmount = Math.floor(-actualDelta / otherTypes.length);
+        const extraAmount = -actualDelta - splitAmount * otherTypes.length;
+        otherTypes.forEach((type, index) => {
+          newPercentages[type] = splitAmount + (index === 0 ? extraAmount : 0);
         });
       }
 
-      return newConfig;
+      return { ...prev, entityPercentages: newPercentages };
     });
   }, []);
 
@@ -557,20 +559,18 @@ function AlgorithmsPage() {
       return a <= b ? [a, b] : [b, a];
     };
 
-    // Generate random percentages that sum to 100
-    const randomPercentages = (): [number, number, number] => {
-      // Generate 2 random cut points, sort them, then derive 3 segments
-      const cut1 = Math.floor(Math.random() * 101); // 0-100
-      const cut2 = Math.floor(Math.random() * 101);
-      const sorted = [0, cut1, cut2, 100].sort((a, b) => a - b);
-      return [
-        sorted[1] - sorted[0], // works
-        sorted[2] - sorted[1], // authors
-        sorted[3] - sorted[2], // institutions
-      ];
+    // Generate random percentages for all 12 entity types that sum to 100
+    const randomEntityPercentages = (): Record<EntityType, number> => {
+      const n = ENTITY_TYPES_ORDERED.length;
+      // Generate n-1 cut points, sort them, then derive n segments
+      const cuts = Array.from({ length: n - 1 }, () => Math.floor(Math.random() * 101));
+      const sorted = [0, ...cuts, 100].sort((a, b) => a - b);
+      const percentages: Partial<Record<EntityType, number>> = {};
+      ENTITY_TYPES_ORDERED.forEach((type, i) => {
+        percentages[type] = sorted[i + 1] - sorted[i];
+      });
+      return percentages as Record<EntityType, number>;
     };
-
-    const [workPct, authorPct, instPct] = randomPercentages();
 
     // Node count bias settings
     const nodeBias = 2;
@@ -582,9 +582,7 @@ function AlgorithmsPage() {
       componentCount: componentsLocked ? prev.componentCount : Math.floor(Math.random() * 6) + 1,
       edgesPerNodeRange: edgesLocked ? prev.edgesPerNodeRange : randomRange(0, 10),
       totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomLogNodeRange(nodeBias, nodeBiasMode),
-      workPercentage: percentagesLocked ? prev.workPercentage : workPct,
-      authorPercentage: percentagesLocked ? prev.authorPercentage : authorPct,
-      institutionPercentage: percentagesLocked ? prev.institutionPercentage : instPct,
+      entityPercentages: percentagesLocked ? prev.entityPercentages : randomEntityPercentages(),
     }));
   }, [seedLocked, componentsLocked, edgesLocked, totalNodesLocked, percentagesLocked]);
 
@@ -1024,94 +1022,33 @@ function AlgorithmsPage() {
                       </Button>
                     </Group>
                     <Text size="xs" c="dimmed">Percentages auto-adjust to total 100%</Text>
-                    <Stack gap="md">
-                      <Box>
-                        <Text size="xs" c="dimmed" mb={4}>Works</Text>
-                        <Group gap="xs" align="center">
-                          <Slider
-                            value={graphConfig.workPercentage}
-                            onChange={(val) => updatePercentage('workPercentage', val)}
-                            min={0}
-                            max={100}
-                            step={1}
-                            marks={[
-                              { value: 0, label: '0%' },
-                              { value: 50, label: '50%' },
-                              { value: 100, label: '100%' },
-                            ]}
-                            size="sm"
-                            style={{ flex: 1 }}
-                          />
-                          <NumberInput
-                            value={graphConfig.workPercentage}
-                            onChange={(val) => updatePercentage('workPercentage', typeof val === 'number' ? val : 0)}
-                            min={0}
-                            max={100}
-                            size="xs"
-                            w={60}
-                            hideControls
-                            suffix="%"
-                          />
-                        </Group>
-                      </Box>
-                      <Box>
-                        <Text size="xs" c="dimmed" mb={4}>Authors</Text>
-                        <Group gap="xs" align="center">
-                          <Slider
-                            value={graphConfig.authorPercentage}
-                            onChange={(val) => updatePercentage('authorPercentage', val)}
-                            min={0}
-                            max={100}
-                            step={1}
-                            marks={[
-                              { value: 0, label: '0%' },
-                              { value: 50, label: '50%' },
-                              { value: 100, label: '100%' },
-                            ]}
-                            size="sm"
-                            style={{ flex: 1 }}
-                          />
-                          <NumberInput
-                            value={graphConfig.authorPercentage}
-                            onChange={(val) => updatePercentage('authorPercentage', typeof val === 'number' ? val : 0)}
-                            min={0}
-                            max={100}
-                            size="xs"
-                            w={60}
-                            hideControls
-                            suffix="%"
-                          />
-                        </Group>
-                      </Box>
-                      <Box>
-                        <Text size="xs" c="dimmed" mb={4}>Institutions</Text>
-                        <Group gap="xs" align="center">
-                          <Slider
-                            value={graphConfig.institutionPercentage}
-                            onChange={(val) => updatePercentage('institutionPercentage', val)}
-                            min={0}
-                            max={100}
-                            step={1}
-                            marks={[
-                              { value: 0, label: '0%' },
-                              { value: 50, label: '50%' },
-                              { value: 100, label: '100%' },
-                            ]}
-                            size="sm"
-                            style={{ flex: 1 }}
-                          />
-                          <NumberInput
-                            value={graphConfig.institutionPercentage}
-                            onChange={(val) => updatePercentage('institutionPercentage', typeof val === 'number' ? val : 0)}
-                            min={0}
-                            max={100}
-                            size="xs"
-                            w={60}
-                            hideControls
-                            suffix="%"
-                          />
-                        </Group>
-                      </Box>
+                    <Stack gap="xs">
+                      {ENTITY_TYPES_ORDERED.map((entityType) => (
+                        <Box key={entityType}>
+                          <Group gap="xs" align="center">
+                            <Text size="xs" c="dimmed" w={80}>{ENTITY_DISPLAY_NAMES[entityType]}</Text>
+                            <Slider
+                              value={graphConfig.entityPercentages[entityType]}
+                              onChange={(val) => updatePercentage(entityType, val)}
+                              min={0}
+                              max={100}
+                              step={1}
+                              size="xs"
+                              style={{ flex: 1 }}
+                            />
+                            <NumberInput
+                              value={graphConfig.entityPercentages[entityType]}
+                              onChange={(val) => updatePercentage(entityType, typeof val === 'number' ? val : 0)}
+                              min={0}
+                              max={100}
+                              size="xs"
+                              w={50}
+                              hideControls
+                              suffix="%"
+                            />
+                          </Group>
+                        </Box>
+                      ))}
                     </Stack>
                   </Stack>
                 </Card>
