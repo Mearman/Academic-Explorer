@@ -1,4 +1,5 @@
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,6 +15,45 @@ import { openalexCachePlugin } from "../../config/vite-plugins/openalex-cache";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const appRoot = resolve(__dirname, "..");
+const monorepoRoot = resolve(__dirname, "../..");
+
+/**
+ * Get build information from git and package.json
+ * Injected at build time via Vite's define option
+ */
+function getBuildInfo() {
+  const safeGitExec = (args: string[], fallback: string): string => {
+    try {
+      return execFileSync('git', args, { encoding: 'utf-8', cwd: monorepoRoot }).trim();
+    } catch {
+      return fallback;
+    }
+  };
+
+  // Read version from root package.json
+  let version = '0.0.0-dev';
+  try {
+    const pkgJson = JSON.parse(readFileSync(resolve(monorepoRoot, 'package.json'), 'utf-8'));
+    version = pkgJson.version || version;
+  } catch {
+    // Fall back to default version
+  }
+
+  const commitHash = safeGitExec(['rev-parse', 'HEAD'], 'unknown');
+  const shortCommitHash = safeGitExec(['rev-parse', '--short', 'HEAD'], 'unknown');
+  const branchName = safeGitExec(['rev-parse', '--abbrev-ref', 'HEAD'], 'unknown');
+  const commitTimestamp = safeGitExec(['log', '-1', '--format=%cI'], new Date().toISOString());
+
+  return {
+    buildTimestamp: new Date().toISOString(),
+    commitHash,
+    shortCommitHash,
+    commitTimestamp,
+    branchName,
+    version,
+    repositoryUrl: 'https://github.com/Mearman/BibGraph',
+  };
+}
 
 /**
  * GitHub Pages plugin - creates .nojekyll file for proper asset serving
@@ -163,6 +203,7 @@ function createWebConfig(): UserConfig {
     // Define global replacements
     define: {
       global: 'globalThis',
+      __BUILD_INFO__: JSON.stringify(getBuildInfo()),
     },
 
     // Preview server configuration
