@@ -19,6 +19,9 @@ import {
   Alert,
   SegmentedControl,
   Switch,
+  NumberInput,
+  Slider,
+  Divider,
 } from '@mantine/core';
 import {
   IconGraph,
@@ -32,110 +35,220 @@ import { GraphAlgorithmsPanel, type CommunityResult } from '@/components/algorit
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
 
 /**
+ * Configuration for sample graph generation
+ */
+interface SampleGraphConfig {
+  /** Random seed for reproducible graphs (null = use Math.random) */
+  seed: number | null;
+  /** Number of disconnected graph components */
+  componentCount: number;
+  /** Minimum edges per node (best effort - may be lower for isolated nodes) */
+  minEdgesPerNode: number;
+  /** Maximum edges per node */
+  maxEdgesPerNode: number;
+  /** Total number of work nodes */
+  workCount: number;
+  /** Total number of author nodes */
+  authorCount: number;
+  /** Total number of institution nodes */
+  institutionCount: number;
+}
+
+const DEFAULT_CONFIG: SampleGraphConfig = {
+  seed: 42,
+  componentCount: 1,
+  minEdgesPerNode: 1,
+  maxEdgesPerNode: 4,
+  workCount: 20,
+  authorCount: 8,
+  institutionCount: 4,
+};
+
+/**
+ * Simple seeded pseudo-random number generator (Mulberry32)
+ * Returns values in [0, 1) like Math.random()
+ */
+function createSeededRandom(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Distribute items into N buckets as evenly as possible
+ */
+function distributeToComponents<T>(items: T[], componentCount: number): T[][] {
+  const components: T[][] = Array.from({ length: componentCount }, () => []);
+  items.forEach((item, index) => {
+    components[index % componentCount].push(item);
+  });
+  return components;
+}
+
+/**
  * Generate sample academic graph data for demonstration
  */
-function generateSampleGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
+function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  const { seed, componentCount, minEdgesPerNode, maxEdgesPerNode, workCount, authorCount, institutionCount } = config;
+
+  // Use seeded random if seed is provided, otherwise use Math.random
+  const random = seed !== null ? createSeededRandom(seed) : Math.random;
+
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
+  const edgeCounts = new Map<string, number>(); // Track edges per node
 
-  // Create sample works (papers)
-  const workIds = Array.from({ length: 20 }, (_, i) => `W${i + 1}`);
-  const authorIds = Array.from({ length: 8 }, (_, i) => `A${i + 1}`);
-  const institutionIds = Array.from({ length: 4 }, (_, i) => `I${i + 1}`);
+  // Helper to get current edge count
+  const getEdgeCount = (nodeId: string) => edgeCounts.get(nodeId) || 0;
+  const incrementEdgeCount = (nodeId: string) => edgeCounts.set(nodeId, getEdgeCount(nodeId) + 1);
+  const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < maxEdgesPerNode;
 
-  // Add work nodes
+  // Create node IDs
+  const workIds = Array.from({ length: workCount }, (_, i) => `W${i + 1}`);
+  const authorIds = Array.from({ length: authorCount }, (_, i) => `A${i + 1}`);
+  const institutionIds = Array.from({ length: institutionCount }, (_, i) => `I${i + 1}`);
+
+  // Distribute nodes across components
+  const workComponents = distributeToComponents(workIds, componentCount);
+  const authorComponents = distributeToComponents(authorIds, componentCount);
+  const institutionComponents = distributeToComponents(institutionIds, componentCount);
+
+  // Calculate component positioning for visual separation
+  const componentOffsets = Array.from({ length: componentCount }, (_, i) => {
+    const angle = (2 * Math.PI * i) / componentCount;
+    const radius = componentCount > 1 ? 300 : 0;
+    return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
+  });
+
+  // Add all nodes with component-based positioning
   workIds.forEach((id, index) => {
+    const componentIndex = index % componentCount;
+    const offset = componentOffsets[componentIndex];
     nodes.push({
       id,
       entityType: 'works' as EntityType,
-      label: `Research Paper ${index + 1}`,
+      label: `Paper ${index + 1}`,
       entityId: id,
-      x: Math.random() * 800 - 400,
-      y: Math.random() * 600 - 300,
+      x: offset.x + (random() * 200 - 100),
+      y: offset.y + (random() * 150 - 75),
       externalIds: [],
     });
+    edgeCounts.set(id, 0);
   });
 
-  // Add author nodes
   authorIds.forEach((id, index) => {
+    const componentIndex = index % componentCount;
+    const offset = componentOffsets[componentIndex];
     nodes.push({
       id,
       entityType: 'authors' as EntityType,
-      label: `Author ${String.fromCharCode(65 + index)}`,
+      label: `Author ${String.fromCharCode(65 + (index % 26))}${index >= 26 ? Math.floor(index / 26) : ''}`,
       entityId: id,
-      x: Math.random() * 800 - 400,
-      y: Math.random() * 600 - 300,
+      x: offset.x + (random() * 200 - 100),
+      y: offset.y + (random() * 150 - 75),
       externalIds: [],
     });
+    edgeCounts.set(id, 0);
   });
 
-  // Add institution nodes
   institutionIds.forEach((id, index) => {
+    const componentIndex = index % componentCount;
+    const offset = componentOffsets[componentIndex];
     nodes.push({
       id,
       entityType: 'institutions' as EntityType,
       label: `University ${index + 1}`,
       entityId: id,
-      x: Math.random() * 800 - 400,
-      y: Math.random() * 600 - 300,
+      x: offset.x + (random() * 200 - 100),
+      y: offset.y + (random() * 150 - 75),
       externalIds: [],
     });
+    edgeCounts.set(id, 0);
   });
 
-  // Create authorship edges (works -> authors)
-  // Each paper has 1-3 authors
   let edgeId = 1;
-  workIds.forEach((workId) => {
-    const numAuthors = Math.floor(Math.random() * 3) + 1;
-    const selectedAuthors = new Set<string>();
-    while (selectedAuthors.size < numAuthors) {
-      selectedAuthors.add(authorIds[Math.floor(Math.random() * authorIds.length)]);
-    }
-    selectedAuthors.forEach((authorId) => {
-      edges.push({
-        id: `E${edgeId++}`,
-        source: workId,
-        target: authorId,
-        type: RelationType.AUTHORSHIP,
-      });
-    });
-  });
+  const existingEdges = new Set<string>(); // Prevent duplicate edges
 
-  // Create affiliation edges (authors -> institutions)
-  // Each author affiliated with 1-2 institutions
-  authorIds.forEach((authorId) => {
-    const numAffiliations = Math.floor(Math.random() * 2) + 1;
-    const selectedInstitutions = new Set<string>();
-    while (selectedInstitutions.size < numAffiliations) {
-      selectedInstitutions.add(institutionIds[Math.floor(Math.random() * institutionIds.length)]);
-    }
-    selectedInstitutions.forEach((instId) => {
-      edges.push({
-        id: `E${edgeId++}`,
-        source: authorId,
-        target: instId,
-        type: RelationType.AFFILIATION,
-      });
-    });
-  });
+  const tryAddEdge = (source: string, target: string, type: RelationType): boolean => {
+    const edgeKey = `${source}-${target}`;
+    const reverseKey = `${target}-${source}`;
+    if (existingEdges.has(edgeKey) || existingEdges.has(reverseKey)) return false;
+    if (!canAddEdge(source) || !canAddEdge(target)) return false;
+    if (source === target) return false;
 
-  // Create citation edges (works -> works)
-  // Create a somewhat realistic citation network
-  workIds.forEach((workId, index) => {
-    // Earlier papers cite later papers (simulating time ordering)
-    const numCitations = Math.floor(Math.random() * 4);
-    for (let i = 0; i < numCitations; i++) {
-      const targetIndex = Math.floor(Math.random() * workIds.length);
-      if (targetIndex !== index) {
-        edges.push({
-          id: `E${edgeId++}`,
-          source: workId,
-          target: workIds[targetIndex],
-          type: RelationType.REFERENCE,
-        });
+    edges.push({ id: `E${edgeId++}`, source, target, type });
+    existingEdges.add(edgeKey);
+    incrementEdgeCount(source);
+    incrementEdgeCount(target);
+    return true;
+  };
+
+  // Create edges within each component
+  for (let c = 0; c < componentCount; c++) {
+    const compWorks = workComponents[c];
+    const compAuthors = authorComponents[c];
+    const compInstitutions = institutionComponents[c];
+
+    // Create authorship edges (works -> authors)
+    compWorks.forEach((workId) => {
+      const numAuthors = Math.min(
+        Math.floor(random() * (maxEdgesPerNode - minEdgesPerNode + 1)) + minEdgesPerNode,
+        compAuthors.length
+      );
+      const shuffledAuthors = [...compAuthors].sort(() => random() - 0.5);
+      for (let i = 0; i < numAuthors && i < shuffledAuthors.length; i++) {
+        tryAddEdge(workId, shuffledAuthors[i], RelationType.AUTHORSHIP);
       }
-    }
-  });
+    });
+
+    // Create affiliation edges (authors -> institutions)
+    compAuthors.forEach((authorId) => {
+      if (compInstitutions.length === 0) return;
+      const numAffiliations = Math.min(
+        Math.floor(random() * 2) + 1,
+        compInstitutions.length
+      );
+      const shuffledInsts = [...compInstitutions].sort(() => random() - 0.5);
+      for (let i = 0; i < numAffiliations && i < shuffledInsts.length; i++) {
+        tryAddEdge(authorId, shuffledInsts[i], RelationType.AFFILIATION);
+      }
+    });
+
+    // Create citation edges (works -> works)
+    compWorks.forEach((workId) => {
+      const numCitations = Math.floor(random() * Math.max(1, maxEdgesPerNode - 1));
+      const otherWorks = compWorks.filter(w => w !== workId);
+      const shuffled = [...otherWorks].sort(() => random() - 0.5);
+      for (let i = 0; i < numCitations && i < shuffled.length; i++) {
+        tryAddEdge(workId, shuffled[i], RelationType.REFERENCE);
+      }
+    });
+  }
+
+  // Second pass: ensure minimum edges (best effort within component)
+  for (let c = 0; c < componentCount; c++) {
+    const compNodes = [
+      ...workComponents[c],
+      ...authorComponents[c],
+      ...institutionComponents[c],
+    ];
+
+    compNodes.forEach((nodeId) => {
+      let attempts = 0;
+      while (getEdgeCount(nodeId) < minEdgesPerNode && attempts < 20) {
+        const otherNodes = compNodes.filter(n => n !== nodeId && canAddEdge(n));
+        if (otherNodes.length === 0) break;
+        const target = otherNodes[Math.floor(random() * otherNodes.length)];
+        tryAddEdge(nodeId, target, RelationType.REFERENCE);
+        attempts++;
+      }
+    });
+  }
 
   return { nodes, edges };
 }
@@ -144,8 +257,11 @@ function generateSampleGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
  * Algorithms demonstration page
  */
 function AlgorithmsPage() {
+  // Sample graph configuration
+  const [graphConfig, setGraphConfig] = useState<SampleGraphConfig>(DEFAULT_CONFIG);
+
   // Sample graph state
-  const [graphData, setGraphData] = useState(() => generateSampleGraph());
+  const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
   const [highlightedPath, setHighlightedPath] = useState<string[]>([]);
 
@@ -159,14 +275,36 @@ function AlgorithmsPage() {
   // Enable/disable force simulation
   const [enableSimulation, setEnableSimulation] = useState(true);
 
-  // Regenerate sample data
+  // Config update helper that also regenerates the graph
+  const updateConfig = useCallback(<K extends keyof SampleGraphConfig>(
+    key: K,
+    value: SampleGraphConfig[K]
+  ) => {
+    setGraphConfig((prev) => {
+      const newConfig = { ...prev, [key]: value };
+      // Enforce min <= max constraint
+      if (key === 'minEdgesPerNode' && typeof value === 'number') {
+        if (value > prev.maxEdgesPerNode) {
+          newConfig.maxEdgesPerNode = value;
+        }
+      }
+      if (key === 'maxEdgesPerNode' && typeof value === 'number') {
+        if (value < prev.minEdgesPerNode) {
+          newConfig.minEdgesPerNode = value;
+        }
+      }
+      return newConfig;
+    });
+  }, []);
+
+  // Regenerate sample data with current config
   const handleRegenerateGraph = useCallback(() => {
-    setGraphData(generateSampleGraph());
+    setGraphData(generateSampleGraph(graphConfig));
     setHighlightedNodes(new Set());
     setHighlightedPath([]);
     setCommunityAssignments(new Map());
     setCommunityColors(new Map());
-  }, []);
+  }, [graphConfig]);
 
   // Handle node highlighting from algorithm results
   const handleHighlightNodes = useCallback((nodeIds: string[]) => {
@@ -330,15 +468,116 @@ function AlgorithmsPage() {
 
           {/* Main Content Grid */}
           <Grid>
-            {/* Left: Graph Data Summary */}
+            {/* Left: Graph Data Summary + Configuration */}
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Stack gap="md">
+                {/* Configuration Card */}
+                <Card withBorder p="md">
+                  <Title order={5} mb="sm">Graph Configuration</Title>
+
+                  <Stack gap="sm">
+                    {/* Seed */}
+                    <Group gap="xs" align="flex-end">
+                      <NumberInput
+                        label="Seed"
+                        description="Random seed for reproducibility"
+                        value={graphConfig.seed ?? ''}
+                        onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
+                        placeholder="Random"
+                        allowNegative={false}
+                        style={{ flex: 1 }}
+                        size="xs"
+                      />
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        onClick={() => updateConfig('seed', Math.floor(Math.random() * 10000))}
+                      >
+                        Randomize
+                      </Button>
+                    </Group>
+
+                    <Divider />
+
+                    {/* Components */}
+                    <Box>
+                      <Text size="xs" fw={500} mb={4}>Components: {graphConfig.componentCount}</Text>
+                      <Slider
+                        value={graphConfig.componentCount}
+                        onChange={(val) => updateConfig('componentCount', val)}
+                        min={1}
+                        max={6}
+                        step={1}
+                        marks={[
+                          { value: 1, label: '1' },
+                          { value: 3, label: '3' },
+                          { value: 6, label: '6' },
+                        ]}
+                        size="sm"
+                      />
+                    </Box>
+
+                    <Divider />
+
+                    {/* Edge Constraints */}
+                    <Group grow>
+                      <NumberInput
+                        label="Min Edges"
+                        value={graphConfig.minEdgesPerNode}
+                        onChange={(val) => updateConfig('minEdgesPerNode', typeof val === 'number' ? val : 1)}
+                        min={0}
+                        max={10}
+                        size="xs"
+                      />
+                      <NumberInput
+                        label="Max Edges"
+                        value={graphConfig.maxEdgesPerNode}
+                        onChange={(val) => updateConfig('maxEdgesPerNode', typeof val === 'number' ? val : 4)}
+                        min={1}
+                        max={20}
+                        size="xs"
+                      />
+                    </Group>
+
+                    <Divider />
+
+                    {/* Node Counts */}
+                    <Text size="xs" fw={500}>Node Counts</Text>
+                    <Group grow>
+                      <NumberInput
+                        label="Works"
+                        value={graphConfig.workCount}
+                        onChange={(val) => updateConfig('workCount', typeof val === 'number' ? Math.max(1, val) : 20)}
+                        min={1}
+                        max={100}
+                        size="xs"
+                      />
+                      <NumberInput
+                        label="Authors"
+                        value={graphConfig.authorCount}
+                        onChange={(val) => updateConfig('authorCount', typeof val === 'number' ? Math.max(1, val) : 8)}
+                        min={1}
+                        max={50}
+                        size="xs"
+                      />
+                      <NumberInput
+                        label="Institutions"
+                        value={graphConfig.institutionCount}
+                        onChange={(val) => updateConfig('institutionCount', typeof val === 'number' ? Math.max(0, val) : 4)}
+                        min={0}
+                        max={20}
+                        size="xs"
+                      />
+                    </Group>
+                  </Stack>
+                </Card>
+
                 {/* Graph Summary Card */}
                 <Card withBorder p="md">
-                  <Title order={5} mb="sm">Sample Graph Data</Title>
+                  <Title order={5} mb="sm">Current Graph Stats</Title>
 
                   <Stack gap="xs">
-                    <Text size="sm" fw={500}>Nodes by Type</Text>
+                    <Text size="sm" fw={500}>Nodes by Type ({graphData.nodes.length} total)</Text>
                     <Group gap="xs" wrap="wrap">
                       {Object.entries(nodeTypeCounts).map(([type, count]) => (
                         <Badge key={type} variant="light" size="sm">
@@ -347,7 +586,7 @@ function AlgorithmsPage() {
                       ))}
                     </Group>
 
-                    <Text size="sm" fw={500} mt="sm">Edges by Type</Text>
+                    <Text size="sm" fw={500} mt="sm">Edges by Type ({graphData.edges.length} total)</Text>
                     <Group gap="xs" wrap="wrap">
                       {Object.entries(edgeTypeCounts).map(([type, count]) => (
                         <Badge key={type} variant="outline" size="sm">
