@@ -46,8 +46,12 @@ interface SampleGraphConfig {
   componentCount: number;
   /** Minimum edges per node (best effort - may be lower for isolated nodes) */
   minEdgesPerNode: number;
+  /** Variance for min edges (per-node min = minEdgesPerNode ± minEdgesVariance) */
+  minEdgesVariance: number;
   /** Maximum edges per node */
   maxEdgesPerNode: number;
+  /** Variance for max edges (per-node max = maxEdgesPerNode ± maxEdgesVariance) */
+  maxEdgesVariance: number;
   /** Base number of work nodes */
   workCount: number;
   /** Variance for work count (actual = workCount ± workVariance) */
@@ -66,7 +70,9 @@ const DEFAULT_CONFIG: SampleGraphConfig = {
   seed: 42,
   componentCount: 1,
   minEdgesPerNode: 1,
+  minEdgesVariance: 0,
   maxEdgesPerNode: 4,
+  maxEdgesVariance: 0,
   workCount: 20,
   workVariance: 0,
   authorCount: 8,
@@ -118,7 +124,9 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     seed,
     componentCount,
     minEdgesPerNode,
+    minEdgesVariance,
     maxEdgesPerNode,
+    maxEdgesVariance,
     workCount,
     workVariance,
     authorCount,
@@ -138,11 +146,24 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
   const edgeCounts = new Map<string, number>(); // Track edges per node
+  const nodeMinEdges = new Map<string, number>(); // Per-node min edge target
+  const nodeMaxEdges = new Map<string, number>(); // Per-node max edge limit
 
   // Helper to get current edge count
   const getEdgeCount = (nodeId: string) => edgeCounts.get(nodeId) || 0;
   const incrementEdgeCount = (nodeId: string) => edgeCounts.set(nodeId, getEdgeCount(nodeId) + 1);
-  const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < maxEdgesPerNode;
+  const getNodeMaxEdges = (nodeId: string) => nodeMaxEdges.get(nodeId) || maxEdgesPerNode;
+  const getNodeMinEdges = (nodeId: string) => nodeMinEdges.get(nodeId) || minEdgesPerNode;
+  const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < getNodeMaxEdges(nodeId);
+
+  // Helper to initialize per-node edge constraints with variance
+  const initNodeEdgeConstraints = (nodeId: string) => {
+    const nodeMin = applyVariance(minEdgesPerNode, minEdgesVariance, random, 0);
+    const nodeMax = applyVariance(maxEdgesPerNode, maxEdgesVariance, random, 1);
+    // Ensure max >= min
+    nodeMinEdges.set(nodeId, nodeMin);
+    nodeMaxEdges.set(nodeId, Math.max(nodeMin, nodeMax));
+  };
 
   // Create node IDs using actual counts (with variance applied)
   const workIds = Array.from({ length: actualWorkCount }, (_, i) => `W${i + 1}`);
@@ -175,6 +196,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
+    initNodeEdgeConstraints(id);
   });
 
   authorIds.forEach((id, index) => {
@@ -190,6 +212,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
+    initNodeEdgeConstraints(id);
   });
 
   institutionIds.forEach((id, index) => {
@@ -205,6 +228,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
       externalIds: [],
     });
     edgeCounts.set(id, 0);
+    initNodeEdgeConstraints(id);
   });
 
   let edgeId = 1;
@@ -276,7 +300,8 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
 
     compNodes.forEach((nodeId) => {
       let attempts = 0;
-      while (getEdgeCount(nodeId) < minEdgesPerNode && attempts < 20) {
+      const nodeMinTarget = getNodeMinEdges(nodeId);
+      while (getEdgeCount(nodeId) < nodeMinTarget && attempts < 20) {
         const otherNodes = compNodes.filter(n => n !== nodeId && canAddEdge(n));
         if (otherNodes.length === 0) break;
         const target = otherNodes[Math.floor(random() * otherNodes.length)];
@@ -576,25 +601,48 @@ function AlgorithmsPage() {
 
                     <Divider />
 
-                    {/* Edge Constraints */}
-                    <Group grow>
-                      <NumberInput
-                        label="Min Edges"
-                        value={graphConfig.minEdgesPerNode}
-                        onChange={(val) => updateConfig('minEdgesPerNode', typeof val === 'number' ? val : 1)}
-                        min={0}
-                        max={10}
-                        size="xs"
-                      />
-                      <NumberInput
-                        label="Max Edges"
-                        value={graphConfig.maxEdgesPerNode}
-                        onChange={(val) => updateConfig('maxEdgesPerNode', typeof val === 'number' ? val : 4)}
-                        min={1}
-                        max={20}
-                        size="xs"
-                      />
-                    </Group>
+                    {/* Edge Constraints with Variance */}
+                    <Text size="xs" fw={500}>Edges per Node (base ± variance)</Text>
+                    <Stack gap="xs">
+                      <Group grow align="flex-end">
+                        <NumberInput
+                          label="Min Edges"
+                          value={graphConfig.minEdgesPerNode}
+                          onChange={(val) => updateConfig('minEdgesPerNode', typeof val === 'number' ? val : 1)}
+                          min={0}
+                          max={10}
+                          size="xs"
+                        />
+                        <NumberInput
+                          label="±"
+                          value={graphConfig.minEdgesVariance}
+                          onChange={(val) => updateConfig('minEdgesVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                          min={0}
+                          max={5}
+                          size="xs"
+                          styles={{ label: { textAlign: 'center' } }}
+                        />
+                      </Group>
+                      <Group grow align="flex-end">
+                        <NumberInput
+                          label="Max Edges"
+                          value={graphConfig.maxEdgesPerNode}
+                          onChange={(val) => updateConfig('maxEdgesPerNode', typeof val === 'number' ? val : 4)}
+                          min={1}
+                          max={20}
+                          size="xs"
+                        />
+                        <NumberInput
+                          label="±"
+                          value={graphConfig.maxEdgesVariance}
+                          onChange={(val) => updateConfig('maxEdgesVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                          min={0}
+                          max={10}
+                          size="xs"
+                          styles={{ label: { textAlign: 'center' } }}
+                        />
+                      </Group>
+                    </Stack>
 
                     <Divider />
 
