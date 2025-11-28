@@ -39,12 +39,15 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
       - name: Align versions with syncpack
         run: |
           pnpm syncpack fix-mismatches
           pnpm syncpack format
 
-      - name: Update lockfile
+      - name: Regenerate lockfile
         run: pnpm install --no-frozen-lockfile
 
       - name: Check for changes
