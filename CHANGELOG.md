@@ -1,3 +1,28 @@
+## 22.0.0 (2025-11-28)
+
+* fix(ci): allow shared cache artifacts across CI runners ([606a086](https://github.com/Mearman/BibGraph/commit/606a086))
+* fix(ci): update Nx cache for v22 database cache compatibility ([3b896d8](https://github.com/Mearman/BibGraph/commit/3b896d8))
+* fix(web): make favicon respond to system color scheme ([9efaf28](https://github.com/Mearman/BibGraph/commit/9efaf28))
+* fix(web): remove nested MainLayout causing duplicate main elements ([e6ddb6b](https://github.com/Mearman/BibGraph/commit/e6ddb6b))
+* fix(web): rename academicExplorerResults to bibGraphResults ([2252e3b](https://github.com/Mearman/BibGraph/commit/2252e3b))
+* refactor(config): complete BibGraph rebrand across codebase ([9f56f93](https://github.com/Mearman/BibGraph/commit/9f56f93))
+* refactor(config): rebrand from Academic Explorer to BibGraph ([c0aefe7](https://github.com/Mearman/BibGraph/commit/c0aefe7))
+* test(web): add page smoke tests for all routes ([21e773f](https://github.com/Mearman/BibGraph/commit/21e773f))
+* feat(web): add BibGraph favicon replacing default Vite icon ([5ebb3eb](https://github.com/Mearman/BibGraph/commit/5ebb3eb))
+* feat(web): add force-directed graph visualization component ([0544e41](https://github.com/Mearman/BibGraph/commit/0544e41))
+* feat(web): add showSystemCatalogues setting to settings store ([5c8165b](https://github.com/Mearman/BibGraph/commit/5c8165b))
+* feat(web): add toggle to show system catalogues in catalogue list ([bfbdc06](https://github.com/Mearman/BibGraph/commit/bfbdc06))
+* feat(web): display version badge in header with release link ([564ec3f](https://github.com/Mearman/BibGraph/commit/564ec3f))
+* feat(web): expose community detection results from algorithms panel ([d7b62ea](https://github.com/Mearman/BibGraph/commit/d7b62ea))
+* feat(web): integrate force graph visualization in algorithms page ([71e6460](https://github.com/Mearman/BibGraph/commit/71e6460))
+* chore(release): 21.3.0 [skip ci] ([e8f1367](https://github.com/Mearman/BibGraph/commit/e8f1367))
+
+
+### BREAKING CHANGE
+
+* IndexedDB database names changed - existing user data
+will not migrate automatically
+
 ## 21.3.0 (2025-11-28)
 
 * fix(ci): bump Nx cache version to v4 to clear stale artifacts ([f39c657](https://github.com/Mearman/Academic-Explorer/commit/f39c657))
