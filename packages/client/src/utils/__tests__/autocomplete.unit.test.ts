@@ -3,7 +3,7 @@
  * Tests the autocomplete functionality without making real API calls
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 import type { OpenAlexBaseClient } from "../../client";

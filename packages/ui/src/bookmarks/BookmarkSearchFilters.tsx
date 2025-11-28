@@ -10,7 +10,7 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { ActionIcon, Group, Select, Stack, TextInput, Tooltip } from "@mantine/core";
 import { IconFilter, IconSearch, IconX } from "@tabler/icons-react";
 import { useState } from "react";

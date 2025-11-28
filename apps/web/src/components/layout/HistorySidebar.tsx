@@ -2,8 +2,8 @@
  * History sidebar component for managing navigation history in the right sidebar
  */
 
-import { logError, logger } from "@academic-explorer/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
+import { logError, logger } from "@bibgraph/utils/logger";
+import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
   TextInput,
   Card,

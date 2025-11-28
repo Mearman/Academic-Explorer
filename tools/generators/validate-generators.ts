@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 /**
- * Validation script for Academic Explorer generators
+ * Validation script for BibGraph generators
  * This script validates that all generator files and configurations are properly set up
  */
 
@@ -92,7 +92,7 @@ function validateGenerator(
 }
 
 function main() {
-  console.log("🚀 Validating Academic Explorer Generators")
+  console.log("🚀 Validating BibGraph Generators")
   console.log("==========================================")
 
   const generatorsPath = join(__dirname)
@@ -134,13 +134,13 @@ function main() {
         overallResult.errors.push("No generators configuration found in nx.json")
       } else {
         const academicGenerators = Object.keys(generators).filter(key =>
-          key.startsWith("@academic-explorer/generators:")
+          key.startsWith("@bibgraph/generators:")
         )
 
         if (academicGenerators.length === 0) {
-          overallResult.warnings.push("No Academic Explorer generators found in nx.json configuration")
+          overallResult.warnings.push("No BibGraph generators found in nx.json configuration")
         } else {
-          console.log(`✅ Found ${academicGenerators.length} Academic Explorer generators in nx.json`)
+          console.log(`✅ Found ${academicGenerators.length} BibGraph generators in nx.json`)
         }
       }
     } catch (error) {
@@ -176,13 +176,13 @@ function main() {
   if (overallResult.success) {
     console.log("🎉 All generators are properly configured!")
     console.log("\n📝 Available generators:")
-    console.log("  • @academic-explorer/generators:library")
-    console.log("  • @academic-explorer/generators:component")
-    console.log("  • @academic-explorer/generators:entity-view")
+    console.log("  • @bibgraph/generators:library")
+    console.log("  • @bibgraph/generators:component")
+    console.log("  • @bibgraph/generators:entity-view")
     console.log("\n💡 Usage examples:")
-    console.log("  nx g @academic-explorer/generators:library my-lib --type=utility")
-    console.log("  nx g @academic-explorer/generators:component MyComponent --withHooks")
-    console.log("  nx g @academic-explorer/generators:entity-view author --withMocks")
+    console.log("  nx g @bibgraph/generators:library my-lib --type=utility")
+    console.log("  nx g @bibgraph/generators:component MyComponent --withHooks")
+    console.log("  nx g @bibgraph/generators:entity-view author --withMocks")
   } else {
     console.log("❌ Validation failed with the following issues:")
     if (overallResult.errors.length > 0) {

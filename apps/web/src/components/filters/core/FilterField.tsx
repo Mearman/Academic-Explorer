@@ -3,7 +3,7 @@
  * Provides the foundation for all filter field types with consistent UI and behavior
  */
 
-import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@academic-explorer/utils/ui";
+import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@bibgraph/utils/ui";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
 import React, { useCallback, useMemo } from "react";

@@ -305,7 +305,7 @@ export type EntityType =
 
 All mock entities MUST comply with:
 1. **OpenAlex API Schema**: Match official docs at docs.openalex.org
-2. **TypeScript Types**: Match `@academic-explorer/types` package (if defined)
+2. **TypeScript Types**: Match `@bibgraph/types` package (if defined)
 3. **Catalogue Metadata**: Match interfaces in `apps/web/src/types/catalogue.ts`
 
 **Validation Strategy**:

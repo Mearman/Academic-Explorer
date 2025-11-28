@@ -11,7 +11,7 @@ import type {
   Work,
   Author,
   AutocompleteResult,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import type { AutocompleteOptions } from "../utils/autocomplete";

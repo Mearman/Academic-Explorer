@@ -19,8 +19,8 @@ export const buildConfig = (isProduction: boolean = false) => ({
         manualChunks: {
           // Core React packages
           vendor: ["react", "react-dom"],
-          // Academic Explorer packages
-          academic: ["@academic-explorer/client"],
+          // BibGraph packages
+          academic: ["@bibgraph/client"],
         },
       },
     },

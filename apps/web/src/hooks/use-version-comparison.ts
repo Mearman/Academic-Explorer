@@ -3,8 +3,8 @@
  * Temporarily available during November 2025 transition period
  */
 
-import { cachedOpenAlex } from "@academic-explorer/client";
-import type { Work } from "@academic-explorer/types";
+import { cachedOpenAlex } from "@bibgraph/client";
+import type { Work } from "@bibgraph/types";
 import { useQuery } from "@tanstack/react-query";
 
 import { settingsStoreInstance } from "@/stores/settings-store";

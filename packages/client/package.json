@@ -1,5 +1,5 @@
 {
-  "name": "@academic-explorer/client",
+  "name": "@bibgraph/client",
   "description": "TypeScript client for the OpenAlex API with extensive entity support and utilities",
   "version": "0.0.0",
   "type": "module",
@@ -22,8 +22,8 @@
     "typecheck": "nx run client:typecheck"
   },
   "dependencies": {
-    "@academic-explorer/types": "workspace:*",
-    "@academic-explorer/utils": "workspace:*"
+    "@bibgraph/types": "workspace:*",
+    "@bibgraph/utils": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.9.1",
@@ -38,7 +38,7 @@
     "vitest": "4.0.14",
     "vitest-axe": "0.1.0"
   },
-  "author": "Academic Explorer",
+  "author": "BibGraph",
   "bugs": "https://github.com/academic-explorer/academic-explorer/issues",
   "engines": {
     "node": ">=18.0.0"

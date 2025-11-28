@@ -18,8 +18,8 @@ import type {
   OpenAlexResponse,
   Work,
   OpenAlexId,
-} from "@academic-explorer/types/entities";
-import { logger } from "@academic-explorer/utils";
+} from "@bibgraph/types/entities";
+import { logger } from "@bibgraph/utils";
 
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

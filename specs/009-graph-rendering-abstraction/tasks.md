@@ -18,7 +18,7 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 ## Path Conventions
 
 - **Monorepo structure**: `packages/graph-renderer/`
-- Package imports: `@academic-explorer/graph-renderer` (never relative cross-package imports)
+- Package imports: `@bibgraph/graph-renderer` (never relative cross-package imports)
 - Tests: `packages/graph-renderer/__tests__/` with `foo.[type].test.ts` naming
 - Test types: `unit`, `integration`, `component`, `e2e`
 
@@ -28,14 +28,14 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 
 **Purpose**: Create package structure and configure build/test infrastructure
 
-- [x] T001 Create package directory `packages/graph-renderer/` with package.json (name: `@academic-explorer/graph-renderer`, version: 0.1.0)
+- [x] T001 Create package directory `packages/graph-renderer/` with package.json (name: `@bibgraph/graph-renderer`, version: 0.1.0)
 - [x] T002 [P] Configure Nx project config in `packages/graph-renderer/project.json` with build and test targets
 - [x] T003 [P] Create TypeScript config in `packages/graph-renderer/tsconfig.json` extending workspace base config with strict mode
 - [x] T004 [P] Configure Vite for library mode in `packages/graph-renderer/vite.config.ts` with ES module output
 - [x] T005 [P] Configure Vitest in `packages/graph-renderer/vitest.config.ts` with serial execution and 5-min timeout
 - [x] T006 [P] Create source directory structure: `src/core/`, `src/simulation/`, `src/forces/`, `src/renderers/`, `src/utils/`
 - [x] T007 [P] Create test directory structure: `__tests__/core/`, `__tests__/simulation/`, `__tests__/forces/`, `__tests__/renderers/`, `__tests__/e2e/`
-- [x] T008 [P] Add package alias `@academic-explorer/graph-renderer` to workspace `tsconfig.base.json` paths
+- [x] T008 [P] Add package alias `@bibgraph/graph-renderer` to workspace `tsconfig.base.json` paths
 - [x] T009 Create package exports in `packages/graph-renderer/src/index.ts` with barrel exports for core, simulation, forces, renderers
 
 **Checkpoint**: Package structure ready - foundational work can begin
@@ -359,7 +359,7 @@ description: "Task list for Graph Rendering Abstraction feature implementation"
 - [x] T150 Constitution compliance verification:
   - [x] No `any` types in implementation (Type Safety) - run TypeScript strict check
   - [x] All tests written before implementation (Test-First) - verify git history
-  - [x] Package uses `@academic-explorer/graph-renderer` alias imports (Monorepo Architecture)
+  - [x] Package uses `@bibgraph/graph-renderer` alias imports (Monorepo Architecture)
   - [x] No storage operations (Storage Abstraction N/A)
   - [x] Performance requirements met: 60fps @ 500 nodes, 3s stabilization @ 100 nodes (Performance & Memory)
   - [x] Atomic conventional commits created after each task group (Atomic Conventional Commits)
@@ -474,7 +474,7 @@ With multiple developers:
 - Commit after each task or logical group using conventional commit format: `feat(graph-renderer): description`
 - Stop at any checkpoint to validate story independently
 - Package MUST remain domain-agnostic (FR-017) - no academic terminology
-- All imports from other packages MUST use `@academic-explorer/*` aliases, NEVER relative paths
+- All imports from other packages MUST use `@bibgraph/*` aliases, NEVER relative paths
 - Tests run serially (no parallel) due to memory constraints
 - Performance targets: 60fps @ 500 nodes (SC-003), 3s stabilization @ 100 nodes (SC-004)
 - Deterministic layouts required for research reproducibility (use fixed PRNG seeds)

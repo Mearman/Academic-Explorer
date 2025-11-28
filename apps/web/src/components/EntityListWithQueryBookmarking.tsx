@@ -3,7 +3,7 @@
  * Wraps the existing EntityList to add query bookmarking controls
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { Group, Stack, Title, Text } from "@mantine/core";
 
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";

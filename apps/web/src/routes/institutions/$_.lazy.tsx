@@ -1,5 +1,5 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { type InstitutionEntity, type InstitutionField } from "@academic-explorer/types/entities";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { type InstitutionEntity, type InstitutionField } from "@bibgraph/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";

@@ -23,7 +23,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle("Test Entity");
     });
 
-    expect(document.title).toBe("Test Entity - Academic Explorer");
+    expect(document.title).toBe("Test Entity - BibGraph");
   });
 
   it("should set document title with custom base title", () => {
@@ -39,7 +39,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle(null);
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should reset to base title when title is empty string", () => {
@@ -47,7 +47,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle("");
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should reset to base title when title is undefined", () => {
@@ -55,7 +55,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle(undefined);
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should trim whitespace from title", () => {
@@ -63,7 +63,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle("  Test Entity  ");
     });
 
-    expect(document.title).toBe("Test Entity - Academic Explorer");
+    expect(document.title).toBe("Test Entity - BibGraph");
   });
 
   it("should restore original title on unmount when restoreOnUnmount is true", () => {
@@ -71,7 +71,7 @@ describe("useDocumentTitle", () => {
       useDocumentTitle("Test Entity", { restoreOnUnmount: true });
     });
 
-    expect(document.title).toBe("Test Entity - Academic Explorer");
+    expect(document.title).toBe("Test Entity - BibGraph");
 
     unmount();
 
@@ -83,11 +83,11 @@ describe("useDocumentTitle", () => {
       useDocumentTitle("Test Entity", { restoreOnUnmount: false });
     });
 
-    expect(document.title).toBe("Test Entity - Academic Explorer");
+    expect(document.title).toBe("Test Entity - BibGraph");
 
     unmount();
 
-    expect(document.title).toBe("Test Entity - Academic Explorer");
+    expect(document.title).toBe("Test Entity - BibGraph");
   });
 
   it("should update title when title parameter changes", () => {
@@ -98,11 +98,11 @@ describe("useDocumentTitle", () => {
       { initialProps: { title: "First Title" } },
     );
 
-    expect(document.title).toBe("First Title - Academic Explorer");
+    expect(document.title).toBe("First Title - BibGraph");
 
     rerender({ title: "Second Title" });
 
-    expect(document.title).toBe("Second Title - Academic Explorer");
+    expect(document.title).toBe("Second Title - BibGraph");
   });
 });
 
@@ -124,7 +124,7 @@ describe("useEntityDocumentTitle", () => {
       useEntityDocumentTitle(entity);
     });
 
-    expect(document.title).toBe("Dr. Jane Smith - Academic Explorer");
+    expect(document.title).toBe("Dr. Jane Smith - BibGraph");
   });
 
   it("should handle null entity", () => {
@@ -132,7 +132,7 @@ describe("useEntityDocumentTitle", () => {
       useEntityDocumentTitle(null);
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should handle undefined entity", () => {
@@ -140,7 +140,7 @@ describe("useEntityDocumentTitle", () => {
       useEntityDocumentTitle(undefined);
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should handle entity without display_name", () => {
@@ -150,7 +150,7 @@ describe("useEntityDocumentTitle", () => {
       useEntityDocumentTitle(entity);
     });
 
-    expect(document.title).toBe("Academic Explorer");
+    expect(document.title).toBe("BibGraph");
   });
 
   it("should pass through options to useDocumentTitle", () => {

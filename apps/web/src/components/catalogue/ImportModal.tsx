@@ -2,7 +2,7 @@
  * Modal component for importing catalogue lists from files and compressed data
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import {
   TextInput,
   Button,

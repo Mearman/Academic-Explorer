@@ -1,4 +1,4 @@
-import type { Bookmark, EntityType } from "@academic-explorer/types";
+import type { Bookmark, EntityType } from "@bibgraph/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip, Button } from "@mantine/core";
 import { IconTrash, IconEdit, IconCheck, IconX } from "@tabler/icons-react";
 import { useState } from "react";

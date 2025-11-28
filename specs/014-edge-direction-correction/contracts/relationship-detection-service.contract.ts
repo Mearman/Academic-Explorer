@@ -8,8 +8,8 @@
  * Location: apps/web/src/services/relationship-detection-service.ts
  */
 
-import type { RelationType, GraphEdge, EdgeDirection } from '@academic-explorer/graph';
-import type { Work, Author, Source, Institution, Publisher, Funder, Topic } from '@academic-explorer/types';
+import type { RelationType, GraphEdge, EdgeDirection } from '@bibgraph/graph';
+import type { Work, Author, Source, Institution, Publisher, Funder, Topic } from '@bibgraph/types';
 
 /**
  * OpenAlex entity type union

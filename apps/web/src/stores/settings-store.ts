@@ -4,7 +4,7 @@
  * Manages user settings with IndexedDB persistence
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
 
 // Database schema

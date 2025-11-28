@@ -8,15 +8,15 @@ import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 
-import { cachedOpenAlex, CachedOpenAlexClient } from "@academic-explorer/client/cached-client"
-import { staticDataProvider } from "@academic-explorer/client/internal/static-data-provider"
-import { logError, logger } from "@academic-explorer/utils/logger"
+import { cachedOpenAlex, CachedOpenAlexClient } from "@bibgraph/client/cached-client"
+import { staticDataProvider } from "@bibgraph/client/internal/static-data-provider"
+import { logError, logger } from "@bibgraph/utils/logger"
 import {
 	getStaticDataCachePath,
 	readIndexAsUnified,
 	type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
 	type UnifiedIndex,
-} from "@academic-explorer/utils/static-data/cache-utilities"
+} from "@bibgraph/utils/static-data/cache-utilities"
 import { z } from "zod"
 
 import { SUPPORTED_ENTITIES, type StaticEntityType } from "./entity-detection.js"
@@ -265,10 +265,10 @@ function isDevelopmentMode(): boolean {
 		if (nodeEnv === "production") return false
 	}
 
-	// Check if we're running from within the Academic Explorer repo structure
+	// Check if we're running from within the BibGraph repo structure
 	try {
 		const currentPath = process.cwd()
-		const expectedRepoName = "Academic Explorer"
+		const expectedRepoName = "BibGraph"
 
 		// Check if current working directory contains repo structure indicators
 		if (currentPath.includes(expectedRepoName) || currentPath.includes("academic-explorer")) {

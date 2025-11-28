@@ -40,7 +40,7 @@
     "importPath": {
       "type": "string",
       "description": "Custom import path for the package",
-      "pattern": "^@academic-explorer/[a-z][a-z0-9-]*$"
+      "pattern": "^@bibgraph/[a-z][a-z0-9-]*$"
     },
     "skipFormat": {
       "type": "boolean",

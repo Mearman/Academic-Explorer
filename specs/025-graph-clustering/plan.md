@@ -51,7 +51,7 @@ All algorithms operate on in-memory `Graph<N, E>` data structures with zero exte
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. ✅ **Type Safety**: No `any` types planned; use `unknown` with type guards for graph validation
 2. ✅ **Test-First Development**: 27 acceptance scenarios with measurable metrics (modularity, edge cuts, performance); tests written before implementation

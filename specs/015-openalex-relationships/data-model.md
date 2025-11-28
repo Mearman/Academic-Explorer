@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document defines the data structures, relationships, and validation rules for implementing complete OpenAlex relationship support in Academic Explorer. The model ensures type-safe, bidirectionally consistent graph edges that accurately represent academic network connections.
+This document defines the data structures, relationships, and validation rules for implementing complete OpenAlex relationship support in BibGraph. The model ensures type-safe, bidirectionally consistent graph edges that accurately represent academic network connections.
 
 ## Core Data Structures
 
@@ -59,7 +59,7 @@ type EdgeDirection = 'outbound' | 'inbound'
 
 ### RelationType Enum
 
-Complete enumeration of all relationship types supported in Academic Explorer.
+Complete enumeration of all relationship types supported in BibGraph.
 
 ```typescript
 enum RelationType {

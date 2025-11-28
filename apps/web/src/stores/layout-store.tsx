@@ -3,8 +3,8 @@
  * React Context-based implementation replacing Zustand
  */
 
-import type { ProviderType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+import type { ProviderType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
 import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
 

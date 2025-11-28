@@ -1,7 +1,7 @@
 # Alternative Name Suggestions (Non-Compound Words)
 
 **Date**: 2025-11-12
-**Purpose**: Creative alternatives to compound word names for Academic Explorer rebrand
+**Purpose**: Creative alternatives to compound word names for BibGraph rebrand
 
 ## Overview
 

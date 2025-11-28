@@ -1,7 +1,7 @@
 import {
   buildFilterString,
   cachedOpenAlex as openAlex,
-} from "@academic-explorer/client";
+} from "@bibgraph/client";
 import type {
   Author,
   Concept,
@@ -14,9 +14,9 @@ import type {
   Source,
   Topic,
   Work,
-} from "@academic-explorer/types";
-import { DataState, useAsyncOperation } from "@academic-explorer/ui";
-import { logger } from "@academic-explorer/utils";
+} from "@bibgraph/types";
+import { DataState, useAsyncOperation } from "@bibgraph/ui";
+import { logger } from "@bibgraph/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
@@ -67,7 +67,7 @@ export interface EntityListProps {
   onViewModeChange?: (viewMode: TableViewMode) => void;
 }
 
-// Entity transformation functions are now provided by @academic-explorer/utils
+// Entity transformation functions are now provided by @bibgraph/utils
 
 export function EntityList({
   viewMode = "table",

@@ -7,13 +7,13 @@ import type {
   ExpansionSettings,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ExpansionQueryBuilder } from "./expansion-query-builder";
 
 // Mock logger to prevent console output during tests
-vi.mock("@academic-explorer/utils/logger", () => ({
+vi.mock("@bibgraph/utils/logger", () => ({
   logger: {
     debug: vi.fn(),
     warn: vi.fn(),

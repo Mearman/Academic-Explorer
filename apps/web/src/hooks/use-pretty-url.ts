@@ -1,4 +1,4 @@
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { useEffect } from "react";
 
 /**

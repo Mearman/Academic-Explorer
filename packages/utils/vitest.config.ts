@@ -14,7 +14,7 @@ export default defineConfig(mergeConfig(baseVitestConfig, {
 		watch: false,
 		// Force vitest to bundle workspace packages through vite's resolver
 		deps: {
-			inline: [/@academic-explorer\/.*/],
+			inline: [/@bibgraph\/.*/],
 		},
 		// Named projects for targeted test execution
 		projects: [

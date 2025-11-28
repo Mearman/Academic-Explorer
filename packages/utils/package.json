@@ -1,6 +1,6 @@
 {
-  "name": "@academic-explorer/utils",
-  "description": "Shared utilities and helpers for Academic Explorer",
+  "name": "@bibgraph/utils",
+  "description": "Shared utilities and helpers for BibGraph",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -20,7 +20,7 @@
     "typecheck": "nx run utils:typecheck"
   },
   "dependencies": {
-    "@academic-explorer/types": "workspace:*",
+    "@bibgraph/types": "workspace:*",
     "@types/pako": "2.0.4",
     "@types/qrcode": "1.5.6",
     "dexie": "4.2.1",

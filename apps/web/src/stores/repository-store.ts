@@ -4,12 +4,12 @@
  * Provides separate space for search results and filtered content before adding to main graph
  */
 
-import { RelationType } from "@academic-explorer/types";
+import { RelationType } from "@bibgraph/types";
 import type {
   GraphNode,
   GraphEdge,
- EntityType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+ EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
 
 // Database schema

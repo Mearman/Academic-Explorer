@@ -243,7 +243,7 @@ tsconfig.json(38,5): error TS6310: Referenced project '/path/to/apps/web' may no
 
 **Symptom**:
 ```
-error TS2688: Cannot find type definition file for '@academic-explorer/web'.
+error TS2688: Cannot find type definition file for '@bibgraph/web'.
 ```
 
 **Cause**: apps/web/dist/ doesn't contain .d.ts files

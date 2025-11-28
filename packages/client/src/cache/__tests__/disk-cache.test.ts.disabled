@@ -37,13 +37,13 @@ vi.mock("node:path", () => import("path"));
 vi.mock("node:crypto", () => import("crypto"));
 
 // Mock logger
-vi.mock("@academic-explorer/utils/logger", () => ({
+vi.mock("@bibgraph/utils/logger", () => ({
   logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
   logError: vi.fn(),
 }));
 
 // Mock cache utilities
-vi.mock("@academic-explorer/utils/static-data/cache-utilities", () => ({
+vi.mock("@bibgraph/utils/static-data/cache-utilities", () => ({
   generateContentHash: vi.fn(() => "mock-hash"),
   getCacheFilePath: vi.fn(
     (url: string) => `/mock/cache/${url.replace(/[^a-zA-Z0-9]/g, "_")}.json`,

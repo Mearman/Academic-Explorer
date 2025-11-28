@@ -95,7 +95,7 @@ export function ConditionalRenderingExample() {
 
 	// Import the detection utility if you need to check for improvements
 	// before rendering surrounding UI
-	// import { hasMetadataImprovements } from '@academic-explorer/utils';
+	// import { hasMetadataImprovements } from '@bibgraph/utils';
 
 	// Note: The component already handles null rendering internally,
 	// so explicit conditional rendering is usually not needed

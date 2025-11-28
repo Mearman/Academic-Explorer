@@ -3,8 +3,8 @@
  * Refactored to use catalogue-based history system via useUserInteractions hook
  */
 
-import { logError, logger } from "@academic-explorer/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
+import { logError, logger } from "@bibgraph/utils/logger";
+import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
   TextInput,
   Button,

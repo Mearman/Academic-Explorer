@@ -1,7 +1,7 @@
 /**
  * Base SPA Page Object
  *
- * Extends BasePageObject with SPA-specific functionality for Academic Explorer.
+ * Extends BasePageObject with SPA-specific functionality for BibGraph.
  * Handles TanStack Router navigation, React hydration, and app initialization.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → [Entity]Page
@@ -22,7 +22,7 @@ export interface SPAPageObjectOptions extends BasePageObjectOptions {
 export class BaseSPAPageObject extends BasePageObject {
 	private readonly waitForAppReady: boolean;
 
-	// Common selectors for Academic Explorer SPA
+	// Common selectors for BibGraph SPA
 	protected readonly selectors = {
 		// App shell
 		appRoot: "#root",

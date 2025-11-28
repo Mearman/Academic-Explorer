@@ -12,7 +12,7 @@
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 import { Command } from "commander"
 import { z } from "zod"
 

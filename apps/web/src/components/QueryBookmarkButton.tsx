@@ -1,9 +1,9 @@
 /**
- * Query bookmark button component for Academic Explorer
+ * Query bookmark button component for BibGraph
  * Provides bookmarking functionality for complex queries with pagination awareness
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { ActionIcon, Tooltip, Text } from "@mantine/core";
 import {
   IconBookmark,

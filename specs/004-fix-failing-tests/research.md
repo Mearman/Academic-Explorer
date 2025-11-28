@@ -344,4 +344,4 @@ None - all technical decisions resolved.
 - [pako compression library](https://github.com/nodeca/pako)
 - [Mantine 8.3.x docs](https://mantine.dev/)
 - [TypeScript discriminated unions](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions)
-- [Academic Explorer Constitution](../../.specify/memory/constitution.md)
+- [BibGraph Constitution](../../.specify/memory/constitution.md)

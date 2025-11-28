@@ -1,4 +1,4 @@
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { forwardRef } from "react";
 

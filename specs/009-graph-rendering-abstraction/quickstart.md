@@ -22,7 +22,7 @@ This guide walks through creating your first force-directed graph visualization 
 
 ```bash
 # Install from npm (when published)
-npm install @academic-explorer/graph-renderer
+npm install @bibgraph/graph-renderer
 
 # Or use from monorepo (development)
 # Already available via workspace dependency
@@ -39,7 +39,7 @@ Let's create a simple social network visualization with three types of nodes (pe
 ### Step 1: Define Node and Edge Types
 
 ```typescript
-import type { Node, Edge } from '@academic-explorer/graph-renderer';
+import type { Node, Edge } from '@bibgraph/graph-renderer';
 
 // Define custom node data types
 interface PersonData {
@@ -84,7 +84,7 @@ type SocialEdge = Edge<SocialEdgeData>;
 ### Step 2: Create Graph and Add Nodes
 
 ```typescript
-import { Graph } from '@academic-explorer/graph-renderer';
+import { Graph } from '@bibgraph/graph-renderer';
 
 // Create typed graph
 const graph = new Graph<SocialNode, SocialEdge>();
@@ -214,7 +214,7 @@ import {
   createRepulsionForce,
   createAttractionForce,
   createCenteringForce
-} from '@academic-explorer/graph-renderer';
+} from '@bibgraph/graph-renderer';
 
 // Create simulation with graph data
 const simulation = new Simulation<SocialNode, SocialEdge>(
@@ -260,7 +260,7 @@ simulation.addForce(
 ### Step 5: Attach Canvas Renderer
 
 ```typescript
-import { CanvasRenderer } from '@academic-explorer/graph-renderer';
+import { CanvasRenderer } from '@bibgraph/graph-renderer';
 
 // Get canvas element
 const canvas = document.getElementById('graph-canvas') as HTMLCanvasElement;
@@ -383,7 +383,7 @@ renderer.on('drag', (event) => {
 Let's add a custom force that makes popular nodes (high friend count) repel more strongly:
 
 ```typescript
-import type { ForceFunction } from '@academic-explorer/graph-renderer';
+import type { ForceFunction } from '@bibgraph/graph-renderer';
 
 // Custom force: popularity-based repulsion
 function createPopularityForce(strength: number): ForceFunction<SocialNode, SocialEdge> {
@@ -440,7 +440,7 @@ Environmental forces affect all nodes uniformly, creating global layout patterns
 Creates rotational movement around a center point:
 
 ```typescript
-import { createCircularForce } from '@academic-explorer/graph-renderer';
+import { createCircularForce } from '@bibgraph/graph-renderer';
 
 // Create clockwise rotation around canvas center
 const vortexForce = createCircularForce({
@@ -461,7 +461,7 @@ simulation.addForce(vortexForce);
 Creates uniform directional force on all nodes:
 
 ```typescript
-import { createLinearForce } from '@academic-explorer/graph-renderer';
+import { createLinearForce } from '@bibgraph/graph-renderer';
 
 // Downward gravity effect
 const gravityForce = createLinearForce({
@@ -546,7 +546,7 @@ addCommonFriendEdges(graph);
 One of the key features is renderer independence. Here's how to swap from Canvas to SVG:
 
 ```typescript
-import { SVGRenderer } from '@academic-explorer/graph-renderer';
+import { SVGRenderer } from '@bibgraph/graph-renderer';
 
 // Cleanup old renderer
 renderer.destroy();
@@ -578,7 +578,7 @@ The simulation continues running with identical physicsonly the visualization c
 Monitor frame rate and adapt if performance degrades:
 
 ```typescript
-import { PerformanceMonitor } from '@academic-explorer/graph-renderer';
+import { PerformanceMonitor } from '@bibgraph/graph-renderer';
 
 const monitor = new PerformanceMonitor();
 
@@ -604,7 +604,7 @@ simulation.on('tick', () => {
 For tests or reproducible visualizations, use a fixed seed:
 
 ```typescript
-import { SeededRandom } from '@academic-explorer/graph-renderer';
+import { SeededRandom } from '@bibgraph/graph-renderer';
 
 // Initialize with fixed seed
 const rng = new SeededRandom(0x12345678);

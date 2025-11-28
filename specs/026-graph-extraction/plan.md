@@ -19,13 +19,13 @@ Implement graph extraction operations for academic citation networks including: 
 **Project Type**: Monorepo package (packages/algorithms/src/extraction/)
 **Performance Goals**: <500ms for radius-3 ego network on 1000-node graphs; <2s triangle detection on 1000-node/5000-edge graphs; <3s k-truss extraction for k=3 on 1000-node graphs
 **Constraints**: Serial test execution (OOM prevention); deterministic results required for research reproducibility; memory-efficient algorithms for 10k-node graphs
-**Scale/Scope**: Academic Explorer scale (1k-10k nodes, 5k-50k edges typical citation networks); 5 user stories = ~15-20 new functions + tests
+**Scale/Scope**: BibGraph scale (1k-10k nodes, 5k-50k edges typical citation networks); 5 user stories = ~15-20 new functions + tests
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ **COMPLIANT** - All functions return `Result<Graph<N, E>, ExtractionError>` or `Result<T, ExtractionError>`. No `any` types. Generic type parameters `<N extends Node, E extends Edge>` enforce compile-time safety. Attribute filters use type guards for runtime validation.
 
@@ -144,7 +144,7 @@ N/A - No constitution violations. All checks passed.
 10. **Continuous Execution**: ✅ Ready to proceed - Phase 0 and Phase 1 complete, no blockers for `/speckit.tasks` then `/speckit.implement`.
 
 **No New Complexity**: Design did not introduce:
-- New packages (reused `@academic-explorer/algorithms`)
+- New packages (reused `@bibgraph/algorithms`)
 - New storage providers (no persistence)
 - New worker threads (synchronous operations acceptable)
 - Architectural deviations (follows existing patterns)

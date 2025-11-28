@@ -8,18 +8,18 @@
  * @module bookmark-service
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import type {
   AddBookmarkParams,
   CatalogueStorageProvider,
   CatalogueEntity,
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 import {
   parseURL,
   detectEntityTypeFromURL,
   extractEntityId,
   logger,
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 
 const LOG_CATEGORY = "bookmark-service";
 
@@ -157,7 +157,7 @@ export class BookmarkService {
    * Extract bookmark metadata from URL
    *
    * Parses the URL to detect entity type, extract entity ID, and clean the URL.
-   * Uses utility functions from @academic-explorer/utils for detection.
+   * Uses utility functions from @bibgraph/utils for detection.
    *
    * @param url - URL to parse
    * @param title - Title for context (used in logging)
@@ -614,8 +614,8 @@ export class BookmarkService {
  *
  * @example
  * ```typescript
- * import { DexieStorageProvider } from '@academic-explorer/utils/storage/dexie-storage-provider';
- * import { logger } from '@academic-explorer/utils/logger';
+ * import { DexieStorageProvider } from '@bibgraph/utils/storage/dexie-storage-provider';
+ * import { logger } from '@bibgraph/utils/logger';
  *
  * const storageProvider = new DexieStorageProvider(logger);
  * await storageProvider.initializeSpecialLists();

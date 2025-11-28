@@ -162,8 +162,8 @@ global.fetch = vi.fn()
 
 // Mock logger - must match the import path used below
 // Use importOriginal to preserve all exports while only mocking the logger functions
-vi.mock("@academic-explorer/utils/logger", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@academic-explorer/utils/logger")>()
+vi.mock("@bibgraph/utils/logger", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@bibgraph/utils/logger")>()
 	return {
 		...actual,
 		logger: {
@@ -178,7 +178,7 @@ vi.mock("@academic-explorer/utils/logger", async (importOriginal) => {
 // Import after mocks are set up
 import { readFile, access, writeFile, mkdir } from "fs/promises"
 
-import { logger, logError } from "@academic-explorer/utils/logger"
+import { logger, logError } from "@bibgraph/utils/logger"
 
 import type { StaticEntityType } from "./entity-detection.js"
 import { OpenAlexCLI } from "./openalex-cli-class.js"

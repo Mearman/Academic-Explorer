@@ -1,5 +1,5 @@
 /**
- * Generic logger implementation for Academic Explorer packages
+ * Generic logger implementation for BibGraph packages
  * This is a generic logger that doesn't depend on any domain-specific types
  */
 

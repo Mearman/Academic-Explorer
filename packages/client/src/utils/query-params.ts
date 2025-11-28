@@ -2,7 +2,7 @@
  * Query parameter utilities
  */
 
-import type { QueryParams } from "@academic-explorer/types";
+import type { QueryParams } from "@bibgraph/types";
 
 /**
  * Convert typed query parameters to base QueryParams

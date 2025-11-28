@@ -3,7 +3,7 @@
  * Allows swapping between production (IndexedDB) and testing (in-memory) storage
  */
 
-import type { CatalogueStorageProvider } from '@academic-explorer/utils';
+import type { CatalogueStorageProvider } from '@bibgraph/utils';
 import { createContext, useContext, type ReactNode } from 'react';
 
 /**

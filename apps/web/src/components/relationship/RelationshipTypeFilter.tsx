@@ -6,7 +6,7 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 3)
  */
 
-import { RelationType } from '@academic-explorer/types';
+import { RelationType } from '@bibgraph/types';
 import { Stack, Checkbox, Group, Button, Paper, Title } from '@mantine/core';
 import React from 'react';
 

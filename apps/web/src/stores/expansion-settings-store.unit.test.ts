@@ -11,13 +11,13 @@
  * The React hooks API (useExpansionSettingsActions) should be used for full functionality.
  */
 
-import { RelationType } from "@academic-explorer/types";
+import { RelationType } from "@bibgraph/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { expansionSettingsActions } from "./expansion-settings-store";
 
 // Mock logger to prevent console output during tests
-vi.mock("@academic-explorer/utils/logger", () => ({
+vi.mock("@bibgraph/utils/logger", () => ({
   logger: {
     debug: vi.fn(),
     info: vi.fn(),

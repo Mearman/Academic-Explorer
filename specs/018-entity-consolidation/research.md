@@ -6,7 +6,7 @@
 
 ## Investigation Summary
 
-This research phase identified all duplicate `EntityType` definitions across the Academic Explorer monorepo, analyzed differences, and determined the consolidation strategy.
+This research phase identified all duplicate `EntityType` definitions across the BibGraph monorepo, analyzed differences, and determined the consolidation strategy.
 
 ## Duplicate EntityType Definitions Found
 
@@ -98,7 +98,7 @@ export type EntityType =
 
 **Status**: CANONICAL - Complete set of all 12 OpenAlex entity types
 **Created**: spec-017 (Entity Taxonomy Centralization)
-**Usage**: Exported from `@academic-explorer/types`, used in EntityTypeMap
+**Usage**: Exported from `@bibgraph/types`, used in EntityTypeMap
 **Import pattern**: Primary export point for monorepo
 
 ## Key Findings
@@ -116,7 +116,7 @@ export type EntityType =
 
 ### Consolidation Strategy
 
-**Decision**: Eliminate all duplicate definitions and import from `@academic-explorer/types`
+**Decision**: Eliminate all duplicate definitions and import from `@bibgraph/types`
 
 **Rationale**:
 1. Single source of truth prevents drift
@@ -137,7 +137,7 @@ export type EntityType =
 
 ### TypeScript tsconfig Requirements
 
-**Project References**: Verified all packages already have proper tsconfig references to `@academic-explorer/types`:
+**Project References**: Verified all packages already have proper tsconfig references to `@bibgraph/types`:
 
 ```json
 {
@@ -151,7 +151,7 @@ export type EntityType =
 ```json
 {
   "paths": {
-    "@academic-explorer/types": ["packages/types/src/index.ts"]
+    "@bibgraph/types": ["packages/types/src/index.ts"]
   }
 }
 ```
@@ -171,7 +171,7 @@ export type EntityType =
 
 **Canonical Pattern** (to be applied):
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Deprecated Pattern** (to be removed):
@@ -190,7 +190,7 @@ export type EntityType = "works" | "authors" | ...
 
 **Example**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 // Dexie schema still uses string literals (no runtime import)
 this.entities.schema = "id, listId, entityId, entityType"
@@ -212,7 +212,7 @@ interface CatalogueEntity {
 
 **New Type**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 export type CacheStorageType = EntityType | "autocomplete"
 ```
@@ -237,10 +237,10 @@ export type CacheStorageType = EntityType | "autocomplete"
 ### Dependency Graph
 
 ```
-@academic-explorer/types (canonical source)
+@bibgraph/types (canonical source)
   ↑
-  ├── @academic-explorer/graph (uses EntityType in nodes/edges)
-  ├── @academic-explorer/utils (uses EntityType in storage/cache)
+  ├── @bibgraph/graph (uses EntityType in nodes/edges)
+  ├── @bibgraph/utils (uses EntityType in storage/cache)
   │    ↑
   │    └── apps/web (uses utils for catalogue/cache)
   └── apps/cli (uses EntityType in commands)

@@ -1,7 +1,7 @@
 /**
  * Fields Detail Page Object
  *
- * Represents the Field entity detail page in Academic Explorer.
+ * Represents the Field entity detail page in BibGraph.
  * Fields are mid-level academic classifications between Domains and Subfields.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → FieldsDetailPage

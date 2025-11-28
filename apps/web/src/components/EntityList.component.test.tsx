@@ -3,13 +3,13 @@
  * @vitest-environment jsdom
  */
 
-import { cachedOpenAlex } from "@academic-explorer/client";
+import { cachedOpenAlex } from "@bibgraph/client";
 import type {
   Funder,
   OpenAlexResponse,
   Publisher,
   Source,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 import { MantineProvider } from "@mantine/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -18,7 +18,7 @@ import "@testing-library/jest-dom";
 import { EntityList, type EntityListColumnConfig } from "./EntityList";
 
 // Mock the cached OpenAlex client
-vi.mock("@academic-explorer/client", () => ({
+vi.mock("@bibgraph/client", () => ({
   cachedOpenAlex: {
     client: {
       funders: {

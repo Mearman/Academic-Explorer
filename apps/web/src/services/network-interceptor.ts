@@ -3,7 +3,7 @@
  * Globally monitors all HTTP requests and updates network activity store
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 
 import { networkActivityStore } from "../stores/network-activity-store";
 import type { NetworkRequest } from "../stores/network-activity-store";

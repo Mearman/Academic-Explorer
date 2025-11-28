@@ -1,4 +1,4 @@
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
 import { IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";

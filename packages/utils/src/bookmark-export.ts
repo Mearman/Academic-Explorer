@@ -8,7 +8,7 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
-import type { Bookmark } from "@academic-explorer/types";
+import type { Bookmark } from "@bibgraph/types";
 
 export type ExportFormat = "json" | "csv" | "markdown" | "html";
 

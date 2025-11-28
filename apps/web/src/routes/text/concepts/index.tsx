@@ -1,5 +1,5 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { logger } from "@academic-explorer/utils";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { logger } from "@bibgraph/utils";
 import {
   Alert,
   Anchor,

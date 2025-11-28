@@ -1,5 +1,5 @@
-import type { EntityType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils";
+import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
   closestCenter,

@@ -26,7 +26,7 @@ export default defineConfig({
     emptyOutDir: true,
     target: "esnext",
     rollupOptions: {
-      external: [/^node:/, /^@academic-explorer\//],
+      external: [/^node:/, /^@bibgraph\//],
       output: {
         preserveModules: true,
         preserveModulesRoot: "src",

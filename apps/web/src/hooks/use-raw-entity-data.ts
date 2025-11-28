@@ -3,9 +3,9 @@
  * Uses the proper cache system with Memory → IndexedDB → localStorage → API hierarchy
  */
 
-import { cachedOpenAlex } from "@academic-explorer/client";
-import type { OpenAlexEntity, QueryParams } from "@academic-explorer/types";
-import { EntityDetectionService , logger } from "@academic-explorer/utils";
+import { cachedOpenAlex } from "@bibgraph/client";
+import type { OpenAlexEntity, QueryParams } from "@bibgraph/types";
+import { EntityDetectionService , logger } from "@bibgraph/utils";
 import { useQuery } from "@tanstack/react-query";
 
 import type { CacheKeyType } from "../config/cache";

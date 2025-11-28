@@ -12,7 +12,7 @@
 
 ### User Story 1 - First-Time Visitor Landing Experience (Priority: P1)
 
-A first-time visitor arrives at the Academic Explorer homepage and needs to immediately understand what the application offers and how to begin exploring academic literature.
+A first-time visitor arrives at the BibGraph homepage and needs to immediately understand what the application offers and how to begin exploring academic literature.
 
 **Why this priority**: The landing page is the first impression for all users. A well-designed, properly laid-out landing page directly impacts user engagement and comprehension of the application's purpose.
 
@@ -20,7 +20,7 @@ A first-time visitor arrives at the Academic Explorer homepage and needs to imme
 
 **Acceptance Scenarios**:
 
-1. **Given** a user visits the homepage, **When** the page loads, **Then** the title "Academic Explorer" is prominently displayed at the top
+1. **Given** a user visits the homepage, **When** the page loads, **Then** the title "BibGraph" is prominently displayed at the top
 2. **Given** a user views the landing page, **When** they read the description, **Then** the text "Explore academic literature through interactive knowledge graphs. Search for papers, authors, journals, and institutions to see their connections." is clearly visible and readable
 3. **Given** a user lands on the homepage, **When** they view the layout, **Then** all content (title, description, search form, examples, features) is vertically centered and properly spaced
 4. **Given** a user on any screen size, **When** they view the homepage, **Then** the content adapts responsively without horizontal scrolling

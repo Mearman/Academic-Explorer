@@ -23,7 +23,7 @@ Fix multiple nested scrollbars appearing in the main layout by correcting CSS ov
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; using typed React style objects and Mantine props
 2. **Test-First Development**: ✅ E2E tests for scroll behavior will be written first and verified to FAIL before CSS fixes

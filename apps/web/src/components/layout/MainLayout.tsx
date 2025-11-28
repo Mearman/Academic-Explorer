@@ -3,7 +3,7 @@
  * Carefully re-enabled components to prevent React 19 infinite loops
  */
 
-import { getBuildInfo, getReleaseUrl } from "@academic-explorer/utils";
+import { getBuildInfo, getReleaseUrl } from "@bibgraph/utils";
 import {
   AppShell,
   Button,
@@ -187,7 +187,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <>
                 <Link to="/" style={{ textDecoration: 'none' }}>
                   <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
-                    Academic Explorer
+                    BibGraph
                   </Text>
                 </Link>
                 <Anchor
@@ -653,7 +653,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         {children ?? (
           <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
-            <Title order={2}>Academic Explorer</Title>
+            <Title order={2}>BibGraph</Title>
             <Text>Sidebars restored - Navigate to view content</Text>
           </Stack>
         )}

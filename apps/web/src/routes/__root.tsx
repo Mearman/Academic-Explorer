@@ -1,4 +1,4 @@
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";

@@ -5,9 +5,9 @@
  * @module use-entity-relationship-queries
  */
 
-import { getWorks, getAuthors, getSources, getInstitutions } from '@academic-explorer/client';
-import { RelationType, getInboundQueries, getOutboundQueries } from '@academic-explorer/types';
-import type { EntityType , RelationshipQueryConfig } from '@academic-explorer/types';
+import { getWorks, getAuthors, getSources, getInstitutions } from '@bibgraph/client';
+import { RelationType, getInboundQueries, getOutboundQueries } from '@bibgraph/types';
+import type { EntityType , RelationshipQueryConfig } from '@bibgraph/types';
 import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import React from 'react';
 

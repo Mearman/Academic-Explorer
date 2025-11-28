@@ -27,7 +27,7 @@ function HomePage() {
   const { colors } = themeColors;
 
   // Set home page title
-  useDocumentTitle(null); // This will use the default base title "Academic Explorer"
+  useDocumentTitle(null); // This will use the default base title "BibGraph"
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +76,7 @@ function HomePage() {
         <Group gap="md">
           <IconGraph size={40} color={colors.primary} />
           <Title order={1} ta="center">
-            Academic Explorer
+            BibGraph
           </Title>
         </Group>
 

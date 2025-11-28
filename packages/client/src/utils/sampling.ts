@@ -9,7 +9,7 @@ import type {
   QueryParams,
   SampleParams,
   OpenAlexResponse,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { logger, logError } from "../internal/logger";

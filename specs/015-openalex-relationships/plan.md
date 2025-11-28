@@ -12,7 +12,7 @@ Fix critical AUTHORSHIP edge direction bug (currently reversed: Author → Work 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x with strict mode enabled
-**Primary Dependencies**: `@academic-explorer/client` (OpenAlex API), `@academic-explorer/types` (Zod schemas), D3 force simulation (graph package)
+**Primary Dependencies**: `@bibgraph/client` (OpenAlex API), `@bibgraph/types` (Zod schemas), D3 force simulation (graph package)
 **Storage**: IndexedDB via storage provider interface (DexieStorageProvider for production, InMemoryStorageProvider for tests)
 **Testing**: Vitest with serial execution (maxConcurrency: 1), fake-indexeddb for storage tests, MSW for API mocking
 **Target Platform**: Web (React 19 SPA), Node.js CLI tool (apps/cli)
@@ -25,7 +25,7 @@ Fix critical AUTHORSHIP edge direction bug (currently reversed: Author → Work 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - All relationship data uses strict TypeScript types; no `any` types; type guards for OpenAlex data validation (see `contracts/validation.contract.md`)
 2. **Test-First Development**: ✅ PASS - Red-Green-Refactor approach with direction-specific assertions; tests written before implementation (see `research.md` Section 5)

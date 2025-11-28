@@ -3,13 +3,13 @@
  * Provides reactive bookmark state and CRUD operations
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import {
   catalogueEventEmitter,
   logger,
   type CatalogueEntity,
   type AddBookmarkParams
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { useStorageProvider } from "@/contexts/storage-provider-context";

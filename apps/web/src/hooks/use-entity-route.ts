@@ -1,9 +1,9 @@
 /**
  * Real implementation of useEntityRoute hook for entity route pages
- * This replaces the stub in @academic-explorer/utils with actual data fetching
+ * This replaces the stub in @bibgraph/utils with actual data fetching
  */
 
-import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@academic-explorer/utils";
+import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@bibgraph/utils";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState, useCallback } from "react";
 

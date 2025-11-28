@@ -3,7 +3,7 @@
  * Monitors user interactions, component lifecycle, performance metrics, and system state
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
 

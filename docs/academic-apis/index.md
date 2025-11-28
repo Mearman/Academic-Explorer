@@ -296,7 +296,7 @@ Web of Science: https://developer.clarivate.com/apis/web-of-science
 
 ---
 
-*This index is maintained as part of the Academic Explorer project. For the most current information, always check individual API documentation pages.*
+*This index is maintained as part of the BibGraph project. For the most current information, always check individual API documentation pages.*
 
 **Version:** 1.0
 **License:** Educational and research use

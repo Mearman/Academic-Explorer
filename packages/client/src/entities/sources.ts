@@ -76,7 +76,7 @@ import type {
   OpenAlexResponse,
   Work,
   AutocompleteResult,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";

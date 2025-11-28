@@ -5,7 +5,7 @@
  * In E2E tests: Check filesystem cache first, then fall back to API or mocks
  */
 
-import type { Work, Author, Institution, Authorship } from "@academic-explorer/types";
+import type { Work, Author, Institution, Authorship } from "@bibgraph/types";
 import { http, HttpResponse, passthrough } from "msw";
 
 const API_BASE = "https://api.openalex.org";

@@ -3,7 +3,7 @@
  * Uses JavaScript Maps for fast, isolated test execution
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';

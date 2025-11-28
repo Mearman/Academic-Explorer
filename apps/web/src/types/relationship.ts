@@ -5,8 +5,8 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import type { EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
+import { RelationType } from '@bibgraph/types';
 
 /**
  * Direction filter options

@@ -1,4 +1,4 @@
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { CatalogueErrorBoundary } from "@/components/catalogue/CatalogueErrorBoundary";

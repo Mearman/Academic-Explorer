@@ -14,7 +14,7 @@
  * See: specs/020-e2e-test-coverage/data-model.md for full documentation
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 /**
  * Test Case

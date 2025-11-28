@@ -487,7 +487,7 @@ git clean -fdX apps/web/src/
 
 **Symptom**:
 ```
-error TS2688: Cannot find type definition file for '@academic-explorer/web'.
+error TS2688: Cannot find type definition file for '@bibgraph/web'.
 ```
 
 **Cause**: apps/web/dist/ doesn't have .d.ts files

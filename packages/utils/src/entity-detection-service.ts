@@ -8,7 +8,7 @@
  * and identifier format specifications.
  */
 
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 import { logger } from "./logger.js"
 

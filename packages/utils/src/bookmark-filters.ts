@@ -8,7 +8,7 @@
  * - User Story 3: Organize and Search Bookmarks
  */
 
-import type { Bookmark, EntityType } from "@academic-explorer/types";
+import type { Bookmark, EntityType } from "@bibgraph/types";
 
 /**
  * Filter bookmarks by search query across multiple fields

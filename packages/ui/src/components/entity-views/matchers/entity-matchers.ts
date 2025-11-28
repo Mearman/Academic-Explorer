@@ -1,5 +1,5 @@
 // Matcher utilities for entity views
-import type { OpenAlexEntity } from "@academic-explorer/types";
+import type { OpenAlexEntity } from "@bibgraph/types";
 import type { ComponentType } from "react";
 
 export interface EntityMatcher {

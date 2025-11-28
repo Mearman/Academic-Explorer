@@ -64,7 +64,7 @@ export abstract class ComponentBase extends BaseGenerator<ComponentGeneratorOpti
       projectRoot,
       projectDirectory: componentDirectory,
       parsedTags: ['type:component', 'scope:web'],
-      importPath: `@academic-explorer/web/components/${componentDirectory}`,
+      importPath: `@bibgraph/web/components/${componentDirectory}`,
       className,
       fileName: componentName,
       targetProject: project,

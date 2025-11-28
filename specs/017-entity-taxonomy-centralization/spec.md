@@ -145,7 +145,7 @@ No type coercion (`as Record<EntityType, T>`) - use explicit mappings instead.
 
 ## Success Criteria
 
-- [ ] All imports use `@academic-explorer/types/entities`
+- [ ] All imports use `@bibgraph/types/entities`
 - [ ] Zero type coercion assertions (`as Record<EntityType, T>`)
 - [ ] Single EntityType definition (in types package)
 - [ ] `pnpm typecheck` passes

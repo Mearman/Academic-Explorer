@@ -7,8 +7,8 @@ import type {
   ExpansionSettings,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+} from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 
 export interface OpenAlexQueryParams {
   filter?: string;

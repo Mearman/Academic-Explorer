@@ -36,7 +36,7 @@ All checklist items pass. Specification is ready for `/speckit.plan` phase.
 **Key Strengths**:
 - Clear prioritization: P1 (ego networks, filtering) foundational, P2 (paths, motifs) research-specific, P3 (k-truss) complementary
 - Comprehensive edge case coverage (8 edge cases identified)
-- Performance targets aligned with Academic Explorer scale (1k-10k nodes)
+- Performance targets aligned with BibGraph scale (1k-10k nodes)
 - Constitution-compliant architecture (packages/algorithms/src/extraction/)
 - Builds on existing infrastructure (Graph, BFS, DFS, Result types)
 

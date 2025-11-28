@@ -11,7 +11,7 @@
 import {
   isNonEmptyString,
   isString,
-} from "@academic-explorer/utils/validation";
+} from "@bibgraph/utils/validation";
 
 /**
  * Supported external identifier types

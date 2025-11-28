@@ -39,7 +39,7 @@ rm /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 **Verification**:
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 git status | grep "debug-homepage"  # Should show deleted
 ```
 
@@ -76,7 +76,7 @@ cp /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 2. Verify it runs in CI:
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx e2e web -- --testNamePattern="homepage" --verbose
 ```
 
@@ -103,7 +103,7 @@ cp /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 2. Test locally:
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx e2e web -- --testNamePattern="API Field"
 ```
 
@@ -130,7 +130,7 @@ cp /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 2. Verify (may need increased timeout):
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx e2e web -- --testNamePattern="URL" --timeout=60000
 ```
 
@@ -157,7 +157,7 @@ cp /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 2. Test:
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx e2e web -- --testNamePattern="external.*id"
 ```
 
@@ -184,7 +184,7 @@ cp /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 
 2. Test:
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx e2e web -- --testNamePattern="author"
 ```
 
@@ -403,7 +403,7 @@ cat > /Users/joe/Documents/Research/PhD/Academic\ Explorer/docs/QA_DEPLOYMENT_CH
 
 - [ ] Homepage loads without JavaScript errors
   - URL: https://mearman.github.io/Academic-Explorer/
-  - Expected: "Academic Explorer" title, no blank page
+  - Expected: "BibGraph" title, no blank page
 
 - [ ] Concepts list page (was causing "Unsupported entity type" errors)
   - URL: https://mearman.github.io/Academic-Explorer/#/concepts
@@ -491,7 +491,7 @@ These tests require manual verification and visual inspection. They capture scre
 
 **How to Run**:
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 pnpm dev  # Start dev server on http://localhost:5173
 
 # In another terminal, run test
@@ -583,7 +583,7 @@ mv /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2e/ma
 ### Action 7.1: Run Automated Tests in CI
 
 ```bash
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 
 # Test just the moved tests
 pnpm nx e2e web -- --testNamePattern="homepage|field-validation|external-id|author|list|data-completeness|openalex-url|issn-fix"
@@ -610,7 +610,7 @@ ls -la /Users/joe/Documents/Research/PhD/Academic\ Explorer/apps/web/src/test/e2
 
 ### Action 8.1: Update CLAUDE.md
 
-Add to `/Users/joe/Documents/Research/PhD/Academic Explorer/CLAUDE.md`:
+Add to `/Users/joe/Documents/Research/PhD/BibGraph/CLAUDE.md`:
 
 ```markdown
 ## Test Automation Triage (Completed)
@@ -672,14 +672,14 @@ pnpm test:e2e:deploy      # Pre-deployment checklist
 
 ### Action 8.2: Add QA Section to Main README
 
-In `/Users/joe/Documents/Research/PhD/Academic Explorer/README.md`, add:
+In `/Users/joe/Documents/Research/PhD/BibGraph/README.md`, add:
 
 ```markdown
 ## Quality Assurance
 
 ### Test Strategy
 
-Academic Explorer uses a **risk-based automation framework** to balance testing effectiveness with maintenance burden.
+BibGraph uses a **risk-based automation framework** to balance testing effectiveness with maintenance burden.
 
 - **Automated E2E Tests** (10 tests, 5 min): Core user journeys, critical bugs
 - **Manual Checklists** (4 tests): Environment-specific verification
@@ -761,7 +761,7 @@ If issues arise during implementation:
 
 ## Executive Summary
 
-This document provides an objective, evidence-based framework for deciding whether a manual test should be automated, kept manual, or refactored. The decision framework balances ROI considerations, maintenance burden, and testing effectiveness for the Academic Explorer project.
+This document provides an objective, evidence-based framework for deciding whether a manual test should be automated, kept manual, or refactored. The decision framework balances ROI considerations, maintenance burden, and testing effectiveness for the BibGraph project.
 
 **Current Status**: 16 manual E2E tests requiring triage and classification.
 
@@ -1067,7 +1067,7 @@ Estimate monthly hours per test:
 
 ---
 
-## 5. Academic Explorer Manual Test Triage
+## 5. BibGraph Manual Test Triage
 
 ### 5.1 Test-by-Test Analysis
 
@@ -1376,7 +1376,7 @@ Estimate monthly hours per test:
 - Over-engineering for low-ROI tests (screenshot verification as code)
 - False sense of quality (automated doesn't mean correct)
 
-**Why Not Chosen**: Academic Explorer has visual/exploratory components (graph visualization, layout) that are poor automation candidates. TDD approach would waste time on brittle visual tests.
+**Why Not Chosen**: BibGraph has visual/exploratory components (graph visualization, layout) that are poor automation candidates. TDD approach would waste time on brittle visual tests.
 
 ---
 
@@ -1395,7 +1395,7 @@ Estimate monthly hours per test:
 - Doesn't scale with team growth
 - Incentivizes testing low-hanging fruit, not high-value tests
 
-**Why Not Chosen**: ROI-based approach directly addresses value, not just cost. Academic Explorer needs targeted automation on critical paths.
+**Why Not Chosen**: ROI-based approach directly addresses value, not just cost. BibGraph needs targeted automation on critical paths.
 
 ---
 
@@ -1413,7 +1413,7 @@ Estimate monthly hours per test:
 - Misses integration/E2E testing value (unit tests hit code but miss interactions)
 - Maintenance burden unbounded (chasing coverage leads to flaky tests)
 
-**Why Not Chosen**: Academic Explorer already has good unit test coverage. E2E gaps are in integration testing, not code coverage. Coverage-first approach would drive wrong type of tests.
+**Why Not Chosen**: BibGraph already has good unit test coverage. E2E gaps are in integration testing, not code coverage. Coverage-first approach would drive wrong type of tests.
 
 ---
 
@@ -1582,7 +1582,7 @@ Use this checklist every quarter to keep the framework current:
 **Document Version**: 1.0
 **Last Updated**: 2025-11-23
 **Framework Type**: Risk-Based ROI Analysis
-**Scope**: Academic Explorer E2E Tests (Manual Directory)
+**Scope**: BibGraph E2E Tests (Manual Directory)
 **Applicable To**: All new E2E tests and quarterly reviews
 
 ---
@@ -1884,7 +1884,7 @@ Every 3 months, revisit your automated tests:
 
 ## Document Index
 
-This directory contains a complete decision-making framework for automating vs maintaining manual E2E tests in Academic Explorer.
+This directory contains a complete decision-making framework for automating vs maintaining manual E2E tests in BibGraph.
 
 ### 📋 Core Documents
 
@@ -1893,7 +1893,7 @@ This directory contains a complete decision-making framework for automating vs m
    - ROI scoring formula and thresholds
    - Test categorization system (6 categories)
    - Detailed scoring rubric (Impact, Frequency, Speed, Maintenance)
-   - Academic Explorer manual test triage (test-by-test analysis)
+   - BibGraph manual test triage (test-by-test analysis)
    - 8 alternatives considered with pros/cons
    - Success metrics and quarterly review process
    - **When to Use**: Deep understanding of framework, creating new tests, quarterly reviews
@@ -1978,7 +1978,7 @@ Score < 10:  KEEP MANUAL permanently
 | E | Environment-specific | ⚠️ MANUAL | Deployed site checks, staging verification |
 | F | Exploratory/visual | ⚠️ MANUAL | Screenshot capture, graph interaction |
 
-### Academic Explorer Triage Results
+### BibGraph Triage Results
 
 **Started with**: 16 manual E2E tests
 **Ending state**:
@@ -2183,7 +2183,7 @@ For questions about:
 
 **Owner**: Quality Assurance Team
 
-**Applicable To**: Academic Explorer E2E test automation decisions
+**Applicable To**: BibGraph E2E test automation decisions
 
 ---
 
@@ -2222,7 +2222,7 @@ Decision:
   ROI < 10: KEEP MANUAL or DELETE
 ```
 
-## Results for Academic Explorer
+## Results for BibGraph
 
 | Metric | Value |
 |--------|-------|
@@ -2409,7 +2409,7 @@ Track these quarterly:
 
 ## Document Files
 
-All documents in `/Users/joe/Documents/Research/PhD/Academic Explorer/docs/`:
+All documents in `/Users/joe/Documents/Research/PhD/BibGraph/docs/`:
 
 ```
 QA_AUTOMATION_DECISION_FRAMEWORK.md      (11 sections, comprehensive)

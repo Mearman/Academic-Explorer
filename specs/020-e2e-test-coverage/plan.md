@@ -7,7 +7,7 @@
 
 ## Summary
 
-Identify and remediate gaps in E2E test coverage for the Academic Explorer web application. The feature will add missing tests for untested routes (Domains, Fields, Subfields, Browse, Search, Explore, utility pages), implement comprehensive workflow tests (search, graph interaction), add error scenario coverage (404, 500, network failures), and automate high-value manual tests. All discovered test failures will be resolved, and the test suite will achieve consistent pass rates with zero flaky tests over 10 consecutive CI runs.
+Identify and remediate gaps in E2E test coverage for the BibGraph web application. The feature will add missing tests for untested routes (Domains, Fields, Subfields, Browse, Search, Explore, utility pages), implement comprehensive workflow tests (search, graph interaction), add error scenario coverage (404, 500, network failures), and automate high-value manual tests. All discovered test failures will be resolved, and the test suite will achieve consistent pass rates with zero flaky tests over 10 consecutive CI runs.
 
 ## Technical Context
 
@@ -25,7 +25,7 @@ Identify and remediate gaps in E2E test coverage for the Academic Explorer web a
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ All test code will use TypeScript with strict types; Playwright's TypeScript API provides strong typing; page objects and helpers will use explicit types, no `any`
 2. **Test-First Development**: ✅ New tests will be written first and verified to fail before fixes/implementations; follows Red-Green-Refactor for bug fixes discovered during audit

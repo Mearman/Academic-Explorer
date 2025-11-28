@@ -24,14 +24,14 @@ This document is preserved for historical context only. For current architecture
 
 ---
 
-**Implementation Note**: Core functionality implemented pragmatically for Academic Explorer's needs. Force simulation successfully decoupled in `packages/simulation/`, graph data structures in `packages/graph/`. 817 tests passing.
+**Implementation Note**: Core functionality implemented pragmatically for BibGraph's needs. Force simulation successfully decoupled in `packages/simulation/`, graph data structures in `packages/graph/`. 817 tests passing.
 
 **Refactoring Note (2025-11-24)**: The original `packages/graph/` and `packages/simulation/` packages were removed and functionality refactored into a cleaner architecture:
 - Graph data structures and algorithms → `packages/algorithms/` (see `packages/algorithms/src/graph/`)
 - Entity detection and event bus → `packages/utils/`
 - Type definitions → `packages/types/`
 
-This refactoring improved separation of concerns by moving domain-agnostic graph algorithms to a dedicated algorithms package, removing coupling between graph visualization and the Academic Explorer domain model. The core principles from this spec (rendering abstraction, force simulation decoupling, multi-type nodes/edges) informed the refactored architecture.
+This refactoring improved separation of concerns by moving domain-agnostic graph algorithms to a dedicated algorithms package, removing coupling between graph visualization and the BibGraph domain model. The core principles from this spec (rendering abstraction, force simulation decoupling, multi-type nodes/edges) informed the refactored architecture.
 
 ## User Scenarios & Testing *(mandatory)*
 

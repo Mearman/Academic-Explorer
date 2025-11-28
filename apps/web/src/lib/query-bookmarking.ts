@@ -1,9 +1,9 @@
 /**
- * Query bookmarking utilities for Academic Explorer
+ * Query bookmarking utilities for BibGraph
  * Handles bookmarking of complex API queries while excluding pagination parameters
  */
 
-import { createApiUrlRequest } from "@academic-explorer/utils/storage/user-interactions-db";
+import { createApiUrlRequest } from "@bibgraph/utils/storage/user-interactions-db";
 
 import { type OpenAlexSearchParams } from "./route-schemas";
 

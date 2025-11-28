@@ -17,7 +17,7 @@ import type {
   Source,
   Topic,
   Work,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "./client";
 import { AuthorsApi } from "./entities/authors";

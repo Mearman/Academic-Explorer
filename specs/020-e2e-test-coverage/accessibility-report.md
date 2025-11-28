@@ -6,7 +6,7 @@
 
 ## Summary
 
-This report documents the accessibility testing strategy and implementation for the Academic Explorer web application as part of the E2E test coverage enhancement (spec-020).
+This report documents the accessibility testing strategy and implementation for the BibGraph web application as part of the E2E test coverage enhancement (spec-020).
 
 ## Accessibility Testing Coverage
 

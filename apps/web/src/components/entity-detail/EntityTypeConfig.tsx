@@ -3,7 +3,7 @@
  * Uses the Vanilla Extract theme colors defined in theme.css.ts
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 export interface EntityTypeConfig {
   name: string;

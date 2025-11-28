@@ -1,6 +1,6 @@
-import { createFilterBuilder } from "@academic-explorer/client";
-import type { Work } from "@academic-explorer/types/entities";
-import { convertToRelativeUrl } from "@academic-explorer/ui";
+import { createFilterBuilder } from "@bibgraph/client";
+import type { Work } from "@bibgraph/types/entities";
+import { convertToRelativeUrl } from "@bibgraph/ui";
 import { Anchor } from "@mantine/core";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";

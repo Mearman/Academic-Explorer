@@ -277,13 +277,13 @@ importers:
 
   apps/cli:
     dependencies:
-      '@academic-explorer/client':
+      '@bibgraph/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@academic-explorer/types':
+      '@bibgraph/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@academic-explorer/utils':
+      '@bibgraph/utils':
         specifier: workspace:*
         version: link:../../packages/utils
       commander:
@@ -320,19 +320,19 @@ importers:
 
   apps/web:
     dependencies:
-      '@academic-explorer/algorithms':
+      '@bibgraph/algorithms':
         specifier: workspace:*
         version: link:../../packages/algorithms
-      '@academic-explorer/client':
+      '@bibgraph/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@academic-explorer/types':
+      '@bibgraph/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@academic-explorer/ui':
+      '@bibgraph/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@academic-explorer/utils':
+      '@bibgraph/utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@dnd-kit/core':
@@ -500,10 +500,10 @@ importers:
 
   packages/client:
     dependencies:
-      '@academic-explorer/types':
+      '@bibgraph/types':
         specifier: workspace:*
         version: link:../types
-      '@academic-explorer/utils':
+      '@bibgraph/utils':
         specifier: workspace:*
         version: link:../utils
     devDependencies:
@@ -559,7 +559,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@academic-explorer/types':
+      '@bibgraph/types':
         specifier: workspace:*
         version: link:../types
       '@tabler/icons-react':
@@ -632,7 +632,7 @@ importers:
 
   packages/utils:
     dependencies:
-      '@academic-explorer/types':
+      '@bibgraph/types':
         specifier: workspace:*
         version: link:../types
       '@mantine/core':

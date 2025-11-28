@@ -3,7 +3,7 @@
  * Advanced charts and visualizations for thesis-ready presentation
  */
 
-import type { ComparisonResults } from "@academic-explorer/utils";
+import type { ComparisonResults } from "@bibgraph/utils";
 import { useMemo } from "react";
 
 // Common color constants
@@ -1160,7 +1160,7 @@ export function DatasetStatisticsOverview({
           fontStyle: "italic",
         }}
       >
-        AE Found = Academic Explorer Found, Coverage = (AE Found / Original) ×
+        AE Found = BibGraph Found, Coverage = (AE Found / Original) ×
         100%
       </div>
     </div>

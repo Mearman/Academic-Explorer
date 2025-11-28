@@ -1,7 +1,7 @@
 /**
  * Explore Page Object
  *
- * Represents the Explore page with graph visualization in Academic Explorer.
+ * Represents the Explore page with graph visualization in BibGraph.
  * Handles D3 force simulation graph interactions, zoom controls, and node interactions.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → ExplorePage

@@ -1,5 +1,5 @@
 /**
- * Query parser for Academic Explorer search functionality
+ * Query parser for BibGraph search functionality
  * Handles quotes, wildcards (*), and field prefixes (title:, author:)
  */
 

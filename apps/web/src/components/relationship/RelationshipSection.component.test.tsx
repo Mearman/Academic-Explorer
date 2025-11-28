@@ -3,7 +3,7 @@
  * @vitest-environment jsdom
  */
 
-import { RelationType } from '@academic-explorer/types';
+import { RelationType } from '@bibgraph/types';
 import { MantineProvider } from '@mantine/core';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';

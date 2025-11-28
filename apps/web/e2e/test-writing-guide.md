@@ -1,6 +1,6 @@
 # E2E Test Writing Guide
 
-This guide covers best practices for writing E2E tests in the Academic Explorer application.
+This guide covers best practices for writing E2E tests in the BibGraph application.
 
 ## Page Object Pattern
 

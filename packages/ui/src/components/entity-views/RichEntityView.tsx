@@ -1,4 +1,4 @@
-import type { OpenAlexEntity } from "@academic-explorer/types";
+import type { OpenAlexEntity } from "@bibgraph/types";
 import { ReactNode } from "react";
 
 export interface RichEntityViewProps {

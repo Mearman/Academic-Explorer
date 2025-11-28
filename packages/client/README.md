@@ -1,4 +1,4 @@
-# @academic-explorer/client
+# @bibgraph/client
 
 TypeScript client for the OpenAlex API with entity support and utilities.
 
@@ -14,7 +14,7 @@ TypeScript client for the OpenAlex API with entity support and utilities.
 ## Usage
 
 ```typescript
-import { cachedOpenAlex, createWorksQuery } from '@academic-explorer/client';
+import { cachedOpenAlex, createWorksQuery } from '@bibgraph/client';
 
 const works = await cachedOpenAlex.works(createWorksQuery({
   filter: { author: 'A123456789' },
@@ -27,7 +27,7 @@ const works = await cachedOpenAlex.works(createWorksQuery({
 Topics and Concepts APIs support Wikidata IDs in multiple formats:
 
 ```typescript
-import { TopicsApi, ConceptsApi } from '@academic-explorer/client';
+import { TopicsApi, ConceptsApi } from '@bibgraph/client';
 
 const topicsApi = new TopicsApi(client);
 const conceptsApi = new ConceptsApi(client);
@@ -67,7 +67,7 @@ The client provides fast autocomplete functionality for typeahead/search suggest
 Use `autocompleteGeneral()` for the fastest results across all entity types (single API call):
 
 ```typescript
-import { AutocompleteApi, OpenAlexBaseClient } from '@academic-explorer/client';
+import { AutocompleteApi, OpenAlexBaseClient } from '@bibgraph/client';
 
 const client = new OpenAlexBaseClient();
 const autocomplete = new AutocompleteApi(client);

@@ -9,7 +9,7 @@
 
 ### User Story 1 - Production Error Debugging with Readable Stack Traces (Priority: P1)
 
-When a production error occurs in Academic Explorer, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references. This enables rapid identification and resolution of production issues.
+When a production error occurs in BibGraph, developers need to see the original source code context (file names, line numbers, function names) rather than minified/bundled code references. This enables rapid identification and resolution of production issues.
 
 **Why this priority**: Without readable stack traces, debugging production errors is extremely difficult and time-consuming. This is the core value proposition of source map upload and blocks all other error tracking improvements.
 
@@ -18,7 +18,7 @@ When a production error occurs in Academic Explorer, developers need to see the 
 **Acceptance Scenarios**:
 
 1. **Given** a React component throws an error in production, **When** the error is captured by PostHog, **Then** the stack trace displays original TypeScript file paths (e.g., `apps/web/src/components/Graph.tsx:42`) instead of bundle references (e.g., `main-abc123.js:1:2345`)
-2. **Given** an error occurs in a package (e.g., `@academic-explorer/graph`), **When** the error appears in PostHog, **Then** the stack trace shows the original package source file and line number
+2. **Given** an error occurs in a package (e.g., `@bibgraph/graph`), **When** the error appears in PostHog, **Then** the stack trace shows the original package source file and line number
 3. **Given** multiple errors occur across different components, **When** viewing errors in PostHog, **Then** all stack traces are unminified with accurate source locations
 
 ---

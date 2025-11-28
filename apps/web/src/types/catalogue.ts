@@ -8,12 +8,12 @@
  * Created: 2025-11-11
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 // ==================
 // Entity Types
 // ==================
-// EntityType is imported from @academic-explorer/types (uses plural forms: works, authors, etc.)
+// EntityType is imported from @bibgraph/types (uses plural forms: works, authors, etc.)
 
 // ==================
 // Catalogue List

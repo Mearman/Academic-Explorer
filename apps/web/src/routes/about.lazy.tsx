@@ -42,7 +42,7 @@ function AboutPage() {
       <Stack gap="xl">
         <div>
           <Title order={1} className={pageTitle} ta="center">
-            About Academic Explorer
+            About BibGraph
           </Title>
           <Text className={pageDescription}>
             A PhD research project focused on academic literature exploration

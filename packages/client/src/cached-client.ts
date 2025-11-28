@@ -2,9 +2,9 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import type { QueryParams , OpenAlexEntity } from "@academic-explorer/types";
-import { isOpenAlexEntity } from "@academic-explorer/types/entities";
-import { logger } from "@academic-explorer/utils";
+import type { QueryParams , OpenAlexEntity } from "@bibgraph/types";
+import { isOpenAlexEntity } from "@bibgraph/types/entities";
+import { logger } from "@bibgraph/utils";
 import { z } from "zod";
 
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
@@ -546,4 +546,4 @@ export async function getCachePerformanceMetrics(): Promise<{
   };
 }
 
-// Note: staticDataProvider can be imported via @academic-explorer/client/internal/static-data-provider
+// Note: staticDataProvider can be imported via @bibgraph/client/internal/static-data-provider

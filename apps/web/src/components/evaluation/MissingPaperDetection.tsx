@@ -7,8 +7,8 @@ import type {
   MissingPaperDetectionResults,
   MissingPaperDetectionConfig,
   DetectionProgress,
- STARDataset, WorkReference } from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils/logger";
+ STARDataset, WorkReference } from "@bibgraph/utils";
+import { logger } from "@bibgraph/utils/logger";
 import {
   Button,
   Group,
@@ -82,7 +82,7 @@ export function MissingPaperDetection({
 
     try {
       // Dynamic import to avoid loading the heavy detection module until needed
-      const { detectMissingPapers } = await import("@academic-explorer/utils");
+      const { detectMissingPapers } = await import("@bibgraph/utils");
 
       const results = detectMissingPapers({
         dataset,

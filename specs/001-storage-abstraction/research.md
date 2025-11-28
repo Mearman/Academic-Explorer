@@ -298,7 +298,7 @@ export function useStorageProvider(): StorageProvider {
 **Implementation**:
 ```typescript
 // Playwright test file
-import { InMemoryStorageProvider } from '@academic-explorer/utils';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 let testStorage: InMemoryStorageProvider;
 

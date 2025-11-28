@@ -11,8 +11,8 @@ import type {
   OpenAlexResponse,
   QueryParams,
   AutocompleteResult,
-} from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils";
+} from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

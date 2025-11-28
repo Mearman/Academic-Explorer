@@ -1,6 +1,6 @@
 # Test Utilities
 
-This directory contains shared test utilities for consistent and reliable testing across the Academic Explorer web application.
+This directory contains shared test utilities for consistent and reliable testing across the BibGraph web application.
 
 ## Overview
 

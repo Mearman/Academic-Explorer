@@ -264,7 +264,7 @@ type ExtractionError =
 
 ## 9. Performance Optimization Strategies
 
-### Decision: Optimize for Academic Explorer scale (1k-10k nodes)
+### Decision: Optimize for BibGraph scale (1k-10k nodes)
 
 **Target Performance** (from spec):
 - Ego network (radius-3, 1000 nodes): <500ms
@@ -334,7 +334,7 @@ __tests__/extraction/
 | K-Truss | Iterative edge removal by support | Standard algorithm, cohesive clusters |
 | Subgraphs | Copy-based induced subgraph | Functional, immutable, safe |
 | Errors | Result<T, ExtractionError> pattern | Consistent with codebase |
-| Performance | Optimize for 1k-10k nodes | Matches Academic Explorer scale |
+| Performance | Optimize for 1k-10k nodes | Matches BibGraph scale |
 | Testing | Test-first, unit + integration + perf | Constitution requirement |
 
 **No Blockers**: All decisions made. Ready to proceed to Phase 1 (Data Model & Contracts).

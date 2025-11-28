@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
 /**
- * Enhanced Playwright assertion helper for Academic Explorer E2E tests.
+ * Enhanced Playwright assertion helper for BibGraph E2E tests.
  * Provides domain-specific assertions with consistent timeout handling.
  */
 export class AssertionHelper {

@@ -458,7 +458,7 @@ function getRulesFromNxJson(tree: Tree): TargetRule[] {
  *
  * Usage:
  * - nx sync (runs automatically as global sync generator)
- * - nx generate @academic-explorer/generators:sync-targets
+ * - nx generate @bibgraph/generators:sync-targets
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function syncTargetsGenerator(

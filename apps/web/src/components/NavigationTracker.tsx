@@ -2,7 +2,7 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { EntityDetectionService } from "@academic-explorer/utils";
+import { EntityDetectionService } from "@bibgraph/utils";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useMemo } from "react";
 

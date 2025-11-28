@@ -3,7 +3,7 @@
 **Input**: Design documents from `/specs/020-e2e-test-coverage/`
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/, quickstart.md
 
-**Feature**: Identify and remediate gaps in E2E test coverage for the Academic Explorer web application. Add missing tests for untested routes, implement workflow tests, add error scenario coverage, and automate high-value manual tests. All discovered test failures will be resolved, and the test suite will achieve consistent pass rates with zero flaky tests over 10 consecutive CI runs.
+**Feature**: Identify and remediate gaps in E2E test coverage for the BibGraph web application. Add missing tests for untested routes, implement workflow tests, add error scenario coverage, and automate high-value manual tests. All discovered test failures will be resolved, and the test suite will achieve consistent pass rates with zero flaky tests over 10 consecutive CI runs.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story. Each user story represents an independently testable increment that delivers measurable value.
 

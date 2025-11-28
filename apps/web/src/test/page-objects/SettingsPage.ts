@@ -1,7 +1,7 @@
 /**
  * Settings Page Object
  *
- * Page object for the Settings utility page in Academic Explorer.
+ * Page object for the Settings utility page in BibGraph.
  * Handles theme toggling, xpac works inclusion, and settings management.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → SettingsPage

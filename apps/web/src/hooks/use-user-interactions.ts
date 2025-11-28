@@ -3,14 +3,14 @@
  * Refactored to use catalogue service for bookmarks and history
  */
 
-import type { EntityType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 import {
   catalogueService,
   catalogueEventEmitter,
   type CatalogueEntity,
   SPECIAL_LIST_IDS,
-} from "@academic-explorer/utils/storage/catalogue-db";
+} from "@bibgraph/utils/storage/catalogue-db";
 import { useLocation } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 

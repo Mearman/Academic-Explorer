@@ -1,5 +1,5 @@
-import type { EntityType } from "@academic-explorer/types";
-import { ENTITY_METADATA } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
+import { ENTITY_METADATA } from "@bibgraph/types";
 import { Badge } from "@mantine/core";
 
 export interface EntityTypeBadgeProps {

@@ -2,7 +2,7 @@
  * Modal component for adding entities to catalogue lists
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import {
   Select,
   Button,

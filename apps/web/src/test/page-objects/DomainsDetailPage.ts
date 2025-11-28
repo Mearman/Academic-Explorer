@@ -1,7 +1,7 @@
 /**
  * Domains Detail Page Object
  *
- * Page object for Domain entity detail pages in Academic Explorer.
+ * Page object for Domain entity detail pages in BibGraph.
  * Handles domain-specific fields, related fields/subfields, and domain metadata.
  *
  * @see spec-020 Phase 1: T010 - Domain entity E2E tests

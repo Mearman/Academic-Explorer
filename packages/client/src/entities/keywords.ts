@@ -8,11 +8,11 @@ import type {
   KeywordsFilters,
   OpenAlexResponse,
   QueryParams,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 import {
   extractPropertyValue,
   trustObjectShape,
-} from "@academic-explorer/types/entities";
+} from "@bibgraph/types/entities";
 
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

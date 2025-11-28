@@ -35,7 +35,7 @@ test.describe("@utility About Page", () => {
 
 		// Check for main heading
 		const heading = page.getByRole("heading", {
-			name: /About Academic Explorer/i,
+			name: /About BibGraph/i,
 		});
 		await expect(heading).toBeVisible();
 
@@ -48,7 +48,7 @@ test.describe("@utility About Page", () => {
 	}) => {
 		// Check application title
 		const title = page.getByRole("heading", {
-			name: /About Academic Explorer/i,
+			name: /About BibGraph/i,
 		});
 		await expect(title).toBeVisible();
 
@@ -172,7 +172,7 @@ test.describe("@utility About Page", () => {
 
 		// Verify About page loaded
 		const heading = page.getByRole("heading", {
-			name: /About Academic Explorer/i,
+			name: /About BibGraph/i,
 		});
 		await expect(heading).toBeVisible();
 

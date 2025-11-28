@@ -69,7 +69,7 @@ vi.mock("@dnd-kit/utilities", () => ({
 }));
 
 // Mock logger
-vi.mock("@academic-explorer/utils", () => ({
+vi.mock("@bibgraph/utils", () => ({
   logger: {
     debug: vi.fn(),
     warn: vi.fn(),

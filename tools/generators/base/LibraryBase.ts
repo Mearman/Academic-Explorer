@@ -204,7 +204,7 @@ describe('${this.normalizedOptions.className}', () => {
   protected createReadme(): void {
     const content = `# ${this.normalizedOptions.className}
 
-${this.libraryType.charAt(0).toUpperCase() + this.libraryType.slice(1)} library for Academic Explorer.
+${this.libraryType.charAt(0).toUpperCase() + this.libraryType.slice(1)} library for BibGraph.
 
 ## Installation
 

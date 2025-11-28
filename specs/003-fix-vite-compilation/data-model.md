@@ -141,7 +141,7 @@ interface CompilationArtifact {
 A monorepo package with its own tsconfig and dependencies.
 
 **Attributes**:
-- `name`: string - Package name (e.g., "@academic-explorer/web")
+- `name`: string - Package name (e.g., "@bibgraph/web")
 - `path`: string - Absolute path to package directory
 - `tsconfigs`: TypeScriptConfig[] - Config files in this package
 - `dependencies`: Package[] - Other packages this depends on

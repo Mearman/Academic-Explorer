@@ -8,12 +8,12 @@ import type {
   WorksFilters,
   AuthorsFilters,
   EntityType,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 import type {
   FilterOperator,
   FilterFieldConfig,
   FilterFieldOption,
-} from "@academic-explorer/utils/ui";
+} from "@bibgraph/utils/ui";
 
 // Re-export core types for convenience
 export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };

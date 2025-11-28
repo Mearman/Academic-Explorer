@@ -3,7 +3,7 @@
  * Handles lists, bibliographies, and entity management
  */
 
-import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
+import { SPECIAL_LIST_IDS } from "@bibgraph/utils/storage/catalogue-db";
 import {
   Container,
   Group,

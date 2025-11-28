@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import type { ProviderType } from "@academic-explorer/types";
+import type { ProviderType } from "@bibgraph/types";
 import { renderHook, act } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";

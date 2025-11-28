@@ -1,5 +1,5 @@
 /**
- * Graph edge styling functions for Academic Explorer
+ * Graph edge styling functions for BibGraph
  * Provides multi-modal visual distinction for outbound vs inbound relationships
  *
  * User Story 2: Visual distinction between outbound edges (data stored on source entity)
@@ -9,8 +9,8 @@
  * to meet WCAG 2.1 Level AA standards
  */
 
-import type { GraphEdge, EdgeDirection } from "@academic-explorer/types";
-import { RelationType } from "@academic-explorer/types";
+import type { GraphEdge, EdgeDirection } from "@bibgraph/types";
+import { RelationType } from "@bibgraph/types";
 
 /**
  * Style properties for graph edges

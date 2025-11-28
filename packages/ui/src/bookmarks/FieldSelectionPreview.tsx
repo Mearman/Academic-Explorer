@@ -14,7 +14,7 @@ import {
 	generateDetailedFieldSummary,
 	generateFieldListPreview,
 	generateSmartFieldSummary,
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 import { Badge, Group, Text, Tooltip, Stack } from "@mantine/core";
 import { IconListDetails } from "@tabler/icons-react";
 

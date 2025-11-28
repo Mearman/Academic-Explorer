@@ -67,7 +67,7 @@
 - [x] T006 [P1] [US1] Add EntityType import to packages/graph/src/types/core.ts
   - **File**: `packages/graph/src/types/core.ts`
   - **Location**: After existing imports (around line 6)
-  - **Code**: `import type { EntityType } from "@academic-explorer/types"`
+  - **Code**: `import type { EntityType } from "@bibgraph/types"`
   - **Validation**: Import statement added
   - **Completed**: 2025-11-21 (commit 5546ed53)
 
@@ -75,7 +75,7 @@
   - **File**: `packages/graph/src/index.ts`
   - **Action**: Delete line: `export type { EntityType } from "./types/core"`
   - **Rationale**: Constitution Principle III prohibits re-exports between internal packages
-  - **Note**: Consumers must import directly from @academic-explorer/types
+  - **Note**: Consumers must import directly from @bibgraph/types
   - **Validation**: Re-export removed, no EntityType export remains in graph package
   - **Completed**: 2025-11-21 (commit 5546ed53)
 
@@ -97,14 +97,14 @@
   - **Body**:
     ```
     Remove duplicate EntityType definition in packages/graph/src/types/core.ts.
-    Import from canonical source @academic-explorer/types instead.
+    Import from canonical source @bibgraph/types instead.
 
     Remove EntityType re-export from index.ts per Constitution Principle III
     (no re-exports between internal packages) and Principle VII (no backward
     compatibility during development).
 
-    BREAKING CHANGE: Consumers importing EntityType from @academic-explorer/graph
-    must update imports to @academic-explorer/types
+    BREAKING CHANGE: Consumers importing EntityType from @bibgraph/graph
+    must update imports to @bibgraph/types
     ```
   - **Validation**: Commit created successfully
   - **Completed**: 2025-11-21 (commit 5546ed53)
@@ -126,7 +126,7 @@
 - [x] T012 [P1] [US1] Add EntityType import to packages/utils/src/storage/catalogue-db.ts
   - **File**: `packages/utils/src/storage/catalogue-db.ts`
   - **Location**: After existing imports (around line 8)
-  - **Code**: `import type { EntityType } from "@academic-explorer/types"`
+  - **Code**: `import type { EntityType } from "@bibgraph/types"`
   - **Validation**: Import statement added
 
 - [x] T013 [P1] [US1] Verify catalogue-db type checking passes
@@ -148,7 +148,7 @@
   - **Find**: Lines 6-16 (EntityType union including "autocomplete")
   - **Replace**:
     ```typescript
-    import type { EntityType } from "@academic-explorer/types"
+    import type { EntityType } from "@bibgraph/types"
 
     /**
      * Cache storage types include entity types + special "autocomplete" cache
@@ -198,7 +198,7 @@
 
     Utils package does not re-export EntityType per Constitution Principle III
     (no re-exports between internal packages). Consumers must import directly
-    from @academic-explorer/types.
+    from @bibgraph/types.
 
     BREAKING CHANGE: CachedEntityMetadata.type changed from EntityType to
     CacheStorageType (internal change, affects cache browser only)
@@ -219,10 +219,10 @@
   - **Validation**: Files identified for update
 
 - [x] T022 [P1] [US2] Replace all EntityType import paths in apps/web/src
-  - **Find**: `import type { EntityType } from "@academic-explorer/graph"`
-  - **Replace**: `import type { EntityType } from "@academic-explorer/types"`
-  - **Find**: `import type { EntityType } from "@academic-explorer/utils"`
-  - **Replace**: `import type { EntityType } from "@academic-explorer/types"`
+  - **Find**: `import type { EntityType } from "@bibgraph/graph"`
+  - **Replace**: `import type { EntityType } from "@bibgraph/types"`
+  - **Find**: `import type { EntityType } from "@bibgraph/utils"`
+  - **Replace**: `import type { EntityType } from "@bibgraph/types"`
   - **Files**: Estimated ~10 files in components/, routes/, services/
   - **Manual Review**: Verify no unintended replacements
   - **Validation**: All imports updated
@@ -247,11 +247,11 @@
   - **Message**: `refactor(web): import EntityType from types package`
   - **Body**:
     ```
-    Update all EntityType imports to use canonical source @academic-explorer/types.
+    Update all EntityType imports to use canonical source @bibgraph/types.
 
     Replaced imports from:
-    - @academic-explorer/graph
-    - @academic-explorer/utils
+    - @bibgraph/graph
+    - @bibgraph/utils
 
     BREAKING CHANGE: None (type-only imports, no runtime impact)
     ```
@@ -272,8 +272,8 @@
   - **Validation**: Files identified for update
 
 - [x] T028 [P1] [US1] Replace all EntityType import paths in apps/cli/src
-  - **Find**: `import type { EntityType } from "@academic-explorer/graph"`
-  - **Replace**: `import type { EntityType } from "@academic-explorer/types"`
+  - **Find**: `import type { EntityType } from "@bibgraph/graph"`
+  - **Replace**: `import type { EntityType } from "@bibgraph/types"`
   - **Files**: Estimated ~3 files in src/commands/
   - **Validation**: All imports updated
 
@@ -292,7 +292,7 @@
   - **Message**: `refactor(cli): import EntityType from types package`
   - **Body**:
     ```
-    Update EntityType imports to use canonical source @academic-explorer/types.
+    Update EntityType imports to use canonical source @bibgraph/types.
 
     BREAKING CHANGE: None (type-only imports)
     ```
@@ -313,7 +313,7 @@
   - **Validation**: Only canonical definition exists
 
 - [x] T033 [P1] [US2] Verify all EntityType imports use types package (SC-002)
-  - **Command**: `grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@academic-explorer/types" | grep -v "node_modules"`
+  - **Command**: `grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@bibgraph/types" | grep -v "node_modules"`
   - **Expected**: Zero matches (all imports from types package)
   - **Success Criteria**: SC-002
   - **Validation**: Single source of truth enforced
@@ -360,16 +360,16 @@
 
     **Status**: ✅ Complete (2025-11-21)
 
-    All duplicate `EntityType` definitions have been consolidated into `@academic-explorer/types`.
+    All duplicate `EntityType` definitions have been consolidated into `@bibgraph/types`.
 
     **Import Pattern**:
     ```typescript
-    import type { EntityType } from "@academic-explorer/types"
+    import type { EntityType } from "@bibgraph/types"
     ```
 
     **Deprecated Imports** (removed):
-    - ~~`import type { EntityType } from "@academic-explorer/graph"`~~
-    - ~~`import type { EntityType } from "@academic-explorer/utils"`~~
+    - ~~`import type { EntityType } from "@bibgraph/graph"`~~
+    - ~~`import type { EntityType } from "@bibgraph/utils"`~~
 
     **Special Types**:
     - `CacheStorageType = EntityType | "autocomplete"` (cache browser only)
@@ -386,7 +386,7 @@
     grep -r "export type EntityType =" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "packages/types/src/entities/entities.ts" | wc -l >> verification-report.txt
     echo "" >> verification-report.txt
     echo "## Import Path Check" >> verification-report.txt
-    grep -r "import.*EntityType.*from.*@academic-explorer/types" packages/ apps/ --include="*.ts" --include="*.tsx" | wc -l >> verification-report.txt
+    grep -r "import.*EntityType.*from.*@bibgraph/types" packages/ apps/ --include="*.ts" --include="*.tsx" | wc -l >> verification-report.txt
     echo "" >> verification-report.txt
     echo "## Type Check Results" >> verification-report.txt
     pnpm typecheck 2>&1 | tail -5 >> verification-report.txt

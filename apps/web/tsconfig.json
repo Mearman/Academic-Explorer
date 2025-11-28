@@ -10,16 +10,16 @@
     "types": ["node", "vitest"],
     "paths": {
       "@/*": ["src/*"],
-      "@academic-explorer/types": ["../../packages/types/src/index.ts"],
-      "@academic-explorer/types/*": ["../../packages/types/src/*"],
-      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/src/*"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
-      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
-      "@academic-explorer/algorithms": ["../../packages/algorithms/src/index.ts"],
-      "@academic-explorer/algorithms/*": ["../../packages/algorithms/src/*"]
+      "@bibgraph/types": ["../../packages/types/src/index.ts"],
+      "@bibgraph/types/*": ["../../packages/types/src/*"],
+      "@bibgraph/client": ["../../packages/client/src/index.ts"],
+      "@bibgraph/client/*": ["../../packages/client/src/*"],
+      "@bibgraph/utils": ["../../packages/utils/src/index.ts"],
+      "@bibgraph/utils/*": ["../../packages/utils/src/*"],
+      "@bibgraph/ui": ["../../packages/ui/src/index.ts"],
+      "@bibgraph/ui/*": ["../../packages/ui/src/*"],
+      "@bibgraph/algorithms": ["../../packages/algorithms/src/index.ts"],
+      "@bibgraph/algorithms/*": ["../../packages/algorithms/src/*"]
     }
   },
   "include": [

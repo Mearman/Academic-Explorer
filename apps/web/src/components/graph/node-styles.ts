@@ -1,12 +1,12 @@
 /**
- * Graph node styling functions for Academic Explorer
+ * Graph node styling functions for BibGraph
  * Provides conditional styling for xpac works and works with unverified authors
  *
  * User Story 2: Visual distinction for xpac works (datasets, software, specimens)
  * and works with unverified authors (name-string only, no Author ID)
  */
 
-import type { GraphNode } from "@academic-explorer/types";
+import type { GraphNode } from "@bibgraph/types";
 
 /**
  * Style properties for graph nodes

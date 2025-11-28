@@ -1,4 +1,4 @@
-# Academic Explorer
+# BibGraph
 
 Nx-managed pnpm monorepo for exploring academic literature via the [OpenAlex API](https://docs.openalex.org/). TypeScript React SPA + CLI tool with multi-tier caching, force-directed graphs, and storage abstraction.
 
@@ -204,7 +204,7 @@ Location: `packages/utils/src/storage/`
 - **Always initialize**: Call `await provider.initializeSpecialLists()` before operations
 
 ```typescript
-import { DexieStorageProvider } from '@academic-explorer/utils/storage/dexie-storage-provider';
+import { DexieStorageProvider } from '@bibgraph/utils/storage/dexie-storage-provider';
 
 const provider = new DexieStorageProvider(logger);
 await provider.initializeSpecialLists();
@@ -245,11 +245,11 @@ Location: `apps/web/src/routes/`
 **Path Aliases** (tsconfig.base.json):
 
 ```typescript
-"@academic-explorer/types": ["packages/types/src/index.ts"]     // Canonical source for EntityType
-"@academic-explorer/client": ["packages/client/src/index.ts"]
-"@academic-explorer/utils": ["packages/utils/src/index.ts"]
-"@academic-explorer/algorithms": ["packages/algorithms/src/index.ts"]
-"@academic-explorer/ui": ["packages/ui/src/index.ts"]
+"@bibgraph/types": ["packages/types/src/index.ts"]     // Canonical source for EntityType
+"@bibgraph/client": ["packages/client/src/index.ts"]
+"@bibgraph/utils": ["packages/utils/src/index.ts"]
+"@bibgraph/algorithms": ["packages/algorithms/src/index.ts"]
+"@bibgraph/ui": ["packages/ui/src/index.ts"]
 "@/*": ["apps/web/src/*"]
 ```
 
@@ -303,28 +303,28 @@ For the complete set of non-negotiable development principles, see the [Project 
 3. **Deterministic graphs** - Use fixed seeds for force simulation reproducibility
 4. **Test memory** - Run tests serially (parallel causes OOM)
 5. **URL handling** - Root route handles protocol fixing, don't duplicate logic
-6. **EntityType imports** - Always import from `@academic-explorer/types` (canonical source)
+6. **EntityType imports** - Always import from `@bibgraph/types` (canonical source)
 
 ### Common Patterns
 
 **Type Guards** (`packages/utils/src/type-guards.ts`):
 
 ```typescript
-import { isEntityType, isOpenAlexId } from '@academic-explorer/utils';
+import { isEntityType, isOpenAlexId } from '@bibgraph/utils';
 if (isEntityType(value)) { /* safely use value as EntityType */ }
 ```
 
 **Logger Usage** (`packages/utils/src/logger.ts`):
 
 ```typescript
-import { logger } from '@academic-explorer/utils';
+import { logger } from '@bibgraph/utils';
 logger.debug('category', 'message', { metadata }, 'context');
 ```
 
 **EntityType Usage**:
 
 ```typescript
-import type { EntityType } from "@academic-explorer/types" // Canonical source
+import type { EntityType } from "@bibgraph/types" // Canonical source
 
 // Type Hierarchy:
 // - EntityType: 12 OpenAlex entity types
@@ -402,7 +402,7 @@ import {
 **Storage Provider Testing Pattern**:
 
 ```typescript
-import { InMemoryStorageProvider } from '@academic-explorer/utils/storage/in-memory-storage-provider';
+import { InMemoryStorageProvider } from '@bibgraph/utils/storage/in-memory-storage-provider';
 
 const provider = new InMemoryStorageProvider();
 await provider.initializeSpecialLists(); // Always initialize first

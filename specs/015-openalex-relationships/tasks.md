@@ -15,7 +15,7 @@
 
 ## Path Conventions
 
-Academic Explorer monorepo structure:
+BibGraph monorepo structure:
 - **packages/graph/src/** - Graph package implementation
 - **packages/graph/tests/** - Graph package tests
 - **packages/types/src/** - Shared TypeScript types
@@ -432,7 +432,7 @@ Task(description="US1 Regression test", prompt="Write regression test in package
 
 **Parallel Opportunities**: 46 tasks can run in parallel
 **MVP Scope**: User Story 1 only (13 tasks including Setup + Foundational)
-**File Path**: `/Users/joe/Documents/Research/PhD/Academic Explorer/specs/015-openalex-relationships/tasks.md`
+**File Path**: `/Users/joe/Documents/Research/PhD/BibGraph/specs/015-openalex-relationships/tasks.md`
 
 **Primary Implementation File**: `packages/graph/src/providers/openalex-provider.ts`
 **Test Files**: `packages/graph/tests/providers/*.test.ts` (authorship, citations, funding, topics, institutions, publishers)

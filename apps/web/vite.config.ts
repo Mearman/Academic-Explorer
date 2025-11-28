@@ -154,8 +154,8 @@ function createWebConfig(): UserConfig {
         '@mantine/hooks',
       ],
       exclude: [
-        '@academic-explorer/client',
-        '@academic-explorer/utils',
+        '@bibgraph/client',
+        '@bibgraph/utils',
       ],
       force: true,
     },

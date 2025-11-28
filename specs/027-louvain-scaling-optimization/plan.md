@@ -40,7 +40,7 @@ Optimize Louvain community detection algorithm through three phases: (1) Paramet
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ CSR implementation uses typed arrays (Uint32Array, Float64Array) with strict type guards; no `any` types in optimization code; configuration objects validated with `unknown` + type guards
 2. **Test-First Development**: ✅ Each phase requires performance benchmarks passing before merging; regression tests for edge cases (empty graphs, disconnected components); TDD cycle for cache invalidation

@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document consolidates research findings from 5 research tasks investigating best practices for organizing, implementing, and measuring E2E test coverage in the Academic Explorer web application.
+This document consolidates research findings from 5 research tasks investigating best practices for organizing, implementing, and measuring E2E test coverage in the BibGraph web application.
 
 ## Research Task 1: Playwright Test Organization
 
@@ -16,7 +16,7 @@ This document consolidates research findings from 5 research tasks investigating
 
 ### Rationale
 
-Feature-based organization (vs. route-based or test-type-based) aligns with Academic Explorer's architecture where features cross-cut multiple routes:
+Feature-based organization (vs. route-based or test-type-based) aligns with BibGraph's architecture where features cross-cut multiple routes:
 - Walden v2 xpac features affect all 7 entity types (works, authors, sources, etc.)
 - Relationship visualization spans multiple entity detail pages
 - Edge filtering applies across graph components regardless of entity type
@@ -97,7 +97,7 @@ pnpm exec playwright test --grep "@a11y"
 
 ### Rationale
 
-Academic Explorer has strong shared behavior across entity types:
+BibGraph has strong shared behavior across entity types:
 - All 12 entity types share similar detail page structure (title, info, relationships)
 - All use TanStack Router v7 with hash routing (`/#/works/W123`)
 - Common UI patterns (Mantine components, relationship sections, filters)
@@ -234,7 +234,7 @@ Fixing these root causes eliminates flakiness at the source rather than masking 
 2. **AI-Powered Test Healing** (Applitools, LLM-driven locators)
    - **Pros**: Auto-fixes broken selectors, visual regression detection
    - **Cons**: Expensive ($$$), overkill for deterministic selectors
-   - **Rejected**: Academic Explorer selectors are stable (data-testid based)
+   - **Rejected**: BibGraph selectors are stable (data-testid based)
 
 3. **Parallel Execution with Isolated Contexts**
    - **Pros**: Faster CI (4 workers × tests)

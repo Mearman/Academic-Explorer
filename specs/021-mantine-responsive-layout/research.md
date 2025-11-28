@@ -6,7 +6,7 @@
 
 ## Overview
 
-This research document captures decisions, rationale, and alternatives considered for implementing responsive layout configuration using Mantine 7.x in Academic Explorer.
+This research document captures decisions, rationale, and alternatives considered for implementing responsive layout configuration using Mantine 7.x in BibGraph.
 
 ## Decision 1: Mobile-First Breakpoint System
 

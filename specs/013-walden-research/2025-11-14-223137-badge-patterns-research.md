@@ -185,7 +185,7 @@ const WorksDisplay = ({ work }: { work: OpenAlexEntity }) => {
 ### Best Practices for Informational Badges
 
 ```typescript
-// Existing pattern in Academic Explorer: EntityTypeBadge
+// Existing pattern in BibGraph: EntityTypeBadge
 <Badge
   color="violet"        // Entity-specific color
   size="sm"             // Compact size for non-intrusive display
@@ -412,7 +412,7 @@ interface SettingsState {
 
 **Rationale**:
 1. **Information Clarity**: Users see exactly what improved at a glance
-2. **Existing Pattern**: Academic Explorer already uses badge groups (see `BookmarkListItem.tsx` tags, `EntityCard.tsx` metadata)
+2. **Existing Pattern**: BibGraph already uses badge groups (see `BookmarkListItem.tsx` tags, `EntityCard.tsx` metadata)
 3. **Scanability**: Users can quickly identify relevant improvements
 4. **Accessibility**: Screen readers announce each badge separately
 
@@ -481,7 +481,7 @@ interface SettingsState {
 
 **Cons**:
 - Text-heavy, harder to scan
-- Inconsistent with Academic Explorer's badge-based design system
+- Inconsistent with BibGraph's badge-based design system
 - Breaks visual hierarchy (badges are standard pattern)
 - Harder to style consistently
 
@@ -654,7 +654,7 @@ function hasAnyImprovements(improvements: MetadataImprovements): boolean {
 **File**: `apps/web/src/utils/metadata-improvements.ts` (NEW)
 
 ```typescript
-import type { Work } from "@academic-explorer/types";
+import type { Work } from "@bibgraph/types";
 
 export interface MetadataImprovements {
   moreReferences: number | null;
@@ -853,7 +853,7 @@ function hasAnyImprovements(improvements: MetadataImprovements): boolean {
 ```typescript
 // Add import
 import { detectMetadataImprovements } from "@/utils/metadata-improvements";
-import { MetadataImprovementBadge } from "@academic-explorer/ui";
+import { MetadataImprovementBadge } from "@bibgraph/ui";
 
 export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   entity,

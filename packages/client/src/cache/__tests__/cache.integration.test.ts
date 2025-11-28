@@ -146,7 +146,7 @@ vi.mock("../../internal/static-data-utils", () => ({
   cleanOpenAlexId: vi.fn().mockImplementation((id: string) => id),
 }));
 
-vi.mock("@academic-explorer/utils", () => ({
+vi.mock("@bibgraph/utils", () => ({
   logger: {
     debug: vi.fn(),
     info: vi.fn(),

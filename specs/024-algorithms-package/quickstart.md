@@ -13,8 +13,8 @@ This guide provides practical examples of using the algorithms package for commo
 ## Installation
 
 ```bash
-# In Academic Explorer monorepo
-pnpm install @academic-explorer/algorithms
+# In BibGraph monorepo
+pnpm install @bibgraph/algorithms
 ```
 
 ---
@@ -32,7 +32,7 @@ import {
   Err,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 // Define custom node types for academic entities
 type WorkNode = {
@@ -152,7 +152,7 @@ import {
   dijkstra,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 // Define node and edge types
 type WorkNode = {
@@ -243,7 +243,7 @@ import {
   topologicalSort,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 type WorkNode = {
   id: string;
@@ -325,7 +325,7 @@ import {
   connectedComponents,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 type AuthorNode = {
   id: string;
@@ -408,7 +408,7 @@ import {
   type GraphError,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 type WorkNode = {
   id: string;
@@ -507,7 +507,7 @@ import {
   bfs,
   type Node,
   type Edge,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 
 // Define multiple node types
 type WorkNode = {

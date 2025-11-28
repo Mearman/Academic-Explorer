@@ -6,14 +6,14 @@
 
 ## Overview
 
-This guide provides a quickstart for implementing responsive layout configuration in Academic Explorer using Mantine 7.x's mobile-first responsive system.
+This guide provides a quickstart for implementing responsive layout configuration in BibGraph using Mantine 7.x's mobile-first responsive system.
 
 ## Prerequisites
 
 - Familiarity with React 19 and TypeScript
 - Understanding of Mantine component library
 - Basic knowledge of CSS breakpoints and responsive design
-- Academic Explorer development environment set up
+- BibGraph development environment set up
 
 ## Key Concepts (5 minutes)
 

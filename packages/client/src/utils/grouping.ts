@@ -3,8 +3,8 @@
  * Provides advanced grouping and aggregation functionality
  */
 
-import type { EntityType, QueryParams, GroupParams } from "@academic-explorer/types";
-import { extractPropertyValue } from "@academic-explorer/types/entities";
+import type { EntityType, QueryParams, GroupParams } from "@bibgraph/types";
+import { extractPropertyValue } from "@bibgraph/types/entities";
 
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";

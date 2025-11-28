@@ -8,7 +8,7 @@ import type {
 	Publisher,
 	Funder,
 	EntityType,
-} from "@academic-explorer/types"
+} from "@bibgraph/types"
 
 /**
  * OpenAlex ID patterns for different entity types

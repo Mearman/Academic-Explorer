@@ -5,7 +5,7 @@
 ## Dev Setup
 
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 pnpm install
 pnpm typecheck
 pnpm test

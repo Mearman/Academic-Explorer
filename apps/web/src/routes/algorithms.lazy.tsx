@@ -2,8 +2,8 @@
  * Algorithms Page - Graph algorithms demonstration and analysis
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import { RelationType } from '@bibgraph/types';
 import {
   Container,
   Title,

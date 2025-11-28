@@ -1,7 +1,7 @@
 # Playwright Test Suite Organization Research - Deliverables Summary
 
 **Research Date**: November 23, 2025
-**Context**: Academic Explorer - 642 E2E tests, split across 2 directories, serial execution (8GB memory constraint)
+**Context**: BibGraph - 642 E2E tests, split across 2 directories, serial execution (8GB memory constraint)
 **Status**: Complete - 4 comprehensive documents delivered
 
 ---
@@ -187,7 +187,7 @@ Research validates this approach through:
 
 ## Files Created
 
-All files located in: `/Users/joe/Documents/Research/PhD/Academic Explorer/`
+All files located in: `/Users/joe/Documents/Research/PhD/BibGraph/`
 
 1. ✅ **PLAYWRIGHT_DECISION_SUMMARY.md** (Decision guide)
 2. ✅ **PLAYWRIGHT_ORGANIZATION_RESEARCH.md** (Technical research)

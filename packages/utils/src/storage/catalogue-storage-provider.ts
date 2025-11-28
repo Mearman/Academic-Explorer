@@ -5,11 +5,11 @@
  * Implementations can use different backends (IndexedDB, in-memory, remote API, etc.)
  * while maintaining consistent behavior for all catalogue operations.
  *
- * @package @academic-explorer/utils
+ * @package @bibgraph/utils
  * @see {@link https://github.com/joe/Academic-Explorer/specs/001-storage-abstraction/spec.md}
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
 

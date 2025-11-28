@@ -1,5 +1,5 @@
 {
-  "name": "@academic-explorer/algorithms",
+  "name": "@bibgraph/algorithms",
   "description": "Zero-dependency TypeScript graph algorithms: DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, and strongly connected components. Generic types support heterogeneous graphs with O(V+E) performance.",
   "version": "0.1.0",
   "type": "module",
@@ -15,7 +15,7 @@
     "typecheck": "nx run algorithms:typecheck"
   },
   "devDependencies": {},
-  "author": "Academic Explorer",
+  "author": "BibGraph",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

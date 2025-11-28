@@ -52,7 +52,7 @@ const config: RcFile = {
     {
       label: 'Local workspace packages',
       packages: ['**'],
-      dependencies: ['@academic-explorer/*'],
+      dependencies: ['@bibgraph/*'],
       dependencyTypes: ['prod', 'dev'],
       pinVersion: 'workspace:*',
     },

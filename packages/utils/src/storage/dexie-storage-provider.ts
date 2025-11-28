@@ -3,7 +3,7 @@
  * Wraps existing CatalogueService to implement the storage provider interface
  */
 
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
 

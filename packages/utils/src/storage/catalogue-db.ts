@@ -3,7 +3,7 @@
  * Extends user interactions with specialized list management
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import Dexie from "dexie";
 
 import type { GenericLogger } from "../logger.js";

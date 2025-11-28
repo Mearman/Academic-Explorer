@@ -6,7 +6,7 @@
  * requirement that `select` parameter commas must NOT be URL-encoded.
  */
 
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 import { inferEntityTypeFromOpenAlexId } from "./entity-type-inference"
 

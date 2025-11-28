@@ -1,6 +1,6 @@
 {
-  "name": "@academic-explorer/ui",
-  "description": "Reusable UI components for Academic Explorer built with Mantine and XYFlow",
+  "name": "@bibgraph/ui",
+  "description": "Reusable UI components for BibGraph built with Mantine and XYFlow",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -23,7 +23,7 @@
     "typecheck": "nx run ui:typecheck"
   },
   "dependencies": {
-    "@academic-explorer/types": "workspace:*",
+    "@bibgraph/types": "workspace:*",
     "@tabler/icons-react": "3.35.0",
     "@tanstack/react-table": "8.21.3",
     "react": "19.2.0",

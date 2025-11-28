@@ -1,5 +1,5 @@
 /**
- * Relationship type definitions for Academic Explorer
+ * Relationship type definitions for BibGraph
  * Moved from graph package to avoid circular dependencies
  */
 

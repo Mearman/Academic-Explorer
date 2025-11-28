@@ -6,7 +6,7 @@
 
 ## Overview
 
-This guide provides instructions for running, developing, and debugging E2E tests in the Academic Explorer web application. The test suite uses Playwright Test with TypeScript and follows serial execution to prevent OOM errors.
+This guide provides instructions for running, developing, and debugging E2E tests in the BibGraph web application. The test suite uses Playwright Test with TypeScript and follows serial execution to prevent OOM errors.
 
 ---
 
@@ -586,7 +586,7 @@ export default defineConfig({
 ## Resources
 
 - **Playwright Documentation**: https://playwright.dev/docs/intro
-- **Academic Explorer Spec**: `specs/020-e2e-test-coverage/spec.md`
+- **BibGraph Spec**: `specs/020-e2e-test-coverage/spec.md`
 - **Page Objects**: `apps/web/src/test/page-objects/`
 - **Test Helpers**: `apps/web/src/test/helpers/`
 - **Research Findings**: `specs/020-e2e-test-coverage/research.md`

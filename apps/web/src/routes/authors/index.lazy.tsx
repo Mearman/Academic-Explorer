@@ -1,4 +1,4 @@
-import type { Author } from "@academic-explorer/types/entities";
+import type { Author } from "@bibgraph/types/entities";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 

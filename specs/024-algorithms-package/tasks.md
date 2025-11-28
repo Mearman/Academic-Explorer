@@ -18,12 +18,12 @@
 **Purpose**: Package initialization and basic structure
 
 - [X] T001 Create package directory structure at `packages/algorithms/` with src/, __tests__/ subdirectories
-- [X] T002 Create package.json with name "@academic-explorer/algorithms", zero dependencies, TypeScript 5.x
+- [X] T002 Create package.json with name "@bibgraph/algorithms", zero dependencies, TypeScript 5.x
 - [X] T003 [P] Create tsconfig.json with strict mode enabled (strict: true, strictNullChecks: true, noImplicitAny: false)
 - [X] T004 [P] Create vite.config.ts for build configuration (ES modules, library mode)
 - [X] T005 [P] Create project.json for Nx integration with build/test/lint targets
 - [X] T006 [P] Create README.md with package overview and quick start guide
-- [X] T007 Add @academic-explorer/algorithms path alias to tsconfig.base.json in workspace root
+- [X] T007 Add @bibgraph/algorithms path alias to tsconfig.base.json in workspace root
 - [X] T008 Create .gitignore for dist/, coverage/, .nx/ directories
 
 **Checkpoint**: Package structure initialized
@@ -425,4 +425,4 @@ Each task contributes to specific success criteria from spec.md:
 - Commit after each task or logical group (e.g., all tests for a story)
 - Use conventional commit scopes: `feat(algorithms)`, `test(algorithms)`, `docs(algorithms)`
 - Stop at any checkpoint to validate story independently
-- Zero internal dependencies enforced - package must not import from other `@academic-explorer/*` packages
+- Zero internal dependencies enforced - package must not import from other `@bibgraph/*` packages

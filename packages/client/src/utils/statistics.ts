@@ -3,7 +3,7 @@
  * Provides database-wide statistics and analytical insights
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";

@@ -15,11 +15,11 @@
 
 ### User Story 1 - Single Source of Truth for Entity Definitions (Priority: P1)
 
-As a developer working on the Academic Explorer codebase, I need all OpenAlex entity type definitions to exist in one canonical location so that changes to entity metadata propagate consistently across all packages without requiring updates in multiple places.
+As a developer working on the BibGraph codebase, I need all OpenAlex entity type definitions to exist in one canonical location so that changes to entity metadata propagate consistently across all packages without requiring updates in multiple places.
 
 **Why this priority**: This is P1 because duplicated entity definitions create maintenance burden, risk of inconsistency, and potential bugs when definitions drift apart. Having already centralized entity metadata in spec-017, we need to eliminate remaining duplicates and ensure all packages reference the single source.
 
-**Independent Test**: Can be fully tested by searching the entire codebase for entity type definitions (EntityType, entity type lists, ID prefixes) and verifying that all definitions reference `@academic-explorer/types` and no duplicates exist.
+**Independent Test**: Can be fully tested by searching the entire codebase for entity type definitions (EntityType, entity type lists, ID prefixes) and verifying that all definitions reference `@bibgraph/types` and no duplicates exist.
 
 **Acceptance Scenarios**:
 
@@ -77,10 +77,10 @@ As a developer implementing entity-related features, I need TypeScript to enforc
 ### Functional Requirements
 
 - **FR-001**: System MUST have exactly one canonical `EntityType` definition in `packages/types/src/entities/entities.ts`
-- **FR-002**: All packages MUST import `EntityType` from `@academic-explorer/types` instead of defining it locally
+- **FR-002**: All packages MUST import `EntityType` from `@bibgraph/types` instead of defining it locally
 - **FR-003**: System MUST provide helper functions (`isEntityType`, `toEntityType`, `detectEntityType`) in the types package for entity type validation and conversion
 - **FR-004**: All entity metadata (colors, icons, display names, ID prefixes, route paths) MUST be sourced from `ENTITY_METADATA` in the types package
-- **FR-005**: Package tsconfig files MUST include `@academic-explorer/types` in their project references to enable proper TypeScript module resolution
+- **FR-005**: Package tsconfig files MUST include `@bibgraph/types` in their project references to enable proper TypeScript module resolution
 - **FR-006**: System MUST eliminate all duplicate `EntityType` definitions in `packages/graph/src/types/core.ts`, `packages/utils/src/storage/catalogue-db.ts`, and `packages/utils/src/cache-browser/types.ts`
 - **FR-007**: System MUST maintain backward compatibility for existing imports by re-exporting types from the graph package (with deprecation warnings)
 - **FR-008**: System MUST validate that all hardcoded entity type strings in test fixtures, MSW handlers, and database schemas match the canonical EntityType union

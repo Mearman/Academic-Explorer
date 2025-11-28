@@ -1,8 +1,8 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { ENTITY_METADATA, toEntityType } from "@academic-explorer/types";
-import type { AutocompleteResult } from "@academic-explorer/types/entities";
-import { convertToRelativeUrl } from "@academic-explorer/ui";
-import { formatLargeNumber, logger } from "@academic-explorer/utils";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { ENTITY_METADATA, toEntityType } from "@bibgraph/types";
+import type { AutocompleteResult } from "@bibgraph/types/entities";
+import { convertToRelativeUrl } from "@bibgraph/ui";
+import { formatLargeNumber, logger } from "@bibgraph/utils";
 import {
   Alert,
   Anchor,

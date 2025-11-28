@@ -24,7 +24,7 @@ CatalogueStorageProvider (Interface)
 ### Key Files and Locations
 
 #### 1. Interface Definition
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/packages/utils/src/storage/catalogue-storage-provider.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/packages/utils/src/storage/catalogue-storage-provider.ts`
 **Lines**: 1-618
 **Status**: ✅ Complete
 
@@ -36,7 +36,7 @@ Defines the full contract with 30+ methods including:
 - Special lists: `initializeSpecialLists`, `addBookmark`, `addToHistory`, `getBookmarks`, `getHistory`
 
 #### 2. Production Implementation (DexieStorageProvider)
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/packages/utils/src/storage/dexie-storage-provider.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/packages/utils/src/storage/dexie-storage-provider.ts`
 **Lines**: 1-170
 **Status**: ✅ Complete
 
@@ -72,7 +72,7 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 - ✅ Special lists (lines 116-168)
 
 #### 3. CatalogueService (Actual Dexie Operations)
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/packages/utils/src/storage/catalogue-db.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/packages/utils/src/storage/catalogue-db.ts`
 **Lines**: 155-863
 **Status**: ✅ Complete
 
@@ -116,7 +116,7 @@ class CatalogueDB extends Dexie {
 ```
 
 #### 4. Testing Implementation (InMemoryStorageProvider)
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/packages/utils/src/storage/in-memory-storage-provider.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/packages/utils/src/storage/in-memory-storage-provider.ts`
 **Lines**: 1-541
 **Status**: ✅ Complete
 
@@ -146,7 +146,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 - Error handling matching Dexie behavior
 
 #### 5. Application Integration
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/main.tsx`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/apps/web/src/main.tsx`
 **Lines**: 256-261
 **Status**: ✅ Properly initialized
 
@@ -174,7 +174,7 @@ storageProvider.initializeSpecialLists().catch((error) => {
 ```
 
 #### 6. Hook Integration
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/useCatalogue.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/apps/web/src/hooks/useCatalogue.ts`
 **Lines**: 87-506
 **Status**: ✅ Properly wired
 
@@ -339,7 +339,7 @@ if (list.type === "bibliography" && params.entityType !== "works") {
 
 ## Export Configuration
 
-**File**: `/Users/joe/Documents/Research/PhD/Academic Explorer/packages/utils/src/storage/index.ts`
+**File**: `/Users/joe/Documents/Research/PhD/BibGraph/packages/utils/src/storage/index.ts`
 
 All storage provider exports are properly configured:
 
@@ -400,7 +400,7 @@ The storage provider is **NOT** the root cause. Possible issues:
 ### Recommended Next Steps
 
 1. **Remove duplicate database schema**:
-   - Delete `/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/lib/db/catalogue-db.ts`
+   - Delete `/Users/joe/Documents/Research/PhD/BibGraph/apps/web/src/lib/db/catalogue-db.ts`
    - It's dead code that was created in Phase 2 but never used
 
 2. **Investigate test setup**:
@@ -409,7 +409,7 @@ The storage provider is **NOT** the root cause. Possible issues:
    - Check if `initializeSpecialLists()` is called in test setup
 
 3. **Check type imports**:
-   - Verify components import types from `@academic-explorer/utils` not local files
+   - Verify components import types from `@bibgraph/utils` not local files
    - Phase 2 may have created conflicting type definitions
 
 4. **Run targeted debugging**:

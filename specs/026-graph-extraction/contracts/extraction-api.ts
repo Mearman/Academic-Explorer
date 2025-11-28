@@ -2,7 +2,7 @@
  * Graph Extraction API Contract
  *
  * Feature: 026-graph-extraction
- * Package: @academic-explorer/algorithms
+ * Package: @bibgraph/algorithms
  * Module: packages/algorithms/src/extraction/
  *
  * This file defines the TypeScript function signatures for all graph extraction

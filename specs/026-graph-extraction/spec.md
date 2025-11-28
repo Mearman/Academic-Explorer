@@ -163,7 +163,7 @@ As a researcher, I want to extract k-truss subgraphs so that I can find tightly 
 - **Test-First**: Each user story has 3 acceptance scenarios that will be implemented as failing tests before code
 - **Monorepo Architecture**: Feature lives in `packages/algorithms/src/extraction/`; uses existing Graph, BFS, DFS from same package; does NOT re-export from other packages
 - **Storage Abstraction**: No persistence layer; operates on in-memory Graph data structures only
-- **Performance & Memory**: Success criteria include performance targets (<500ms for radius-3 ego networks); algorithms optimized for Academic Explorer scale (1k-10k nodes)
+- **Performance & Memory**: Success criteria include performance targets (<500ms for radius-3 ego networks); algorithms optimized for BibGraph scale (1k-10k nodes)
 - **Atomic Conventional Commits**: Each user story will be committed separately with `feat(algorithms): add [feature]` messages
 - **Development-Stage Pragmatism**: Breaking changes acceptable; will add new functions without backwards compatibility concerns
 - **Test-First Bug Fixes**: Any bugs discovered during implementation will have regression tests added before fixes

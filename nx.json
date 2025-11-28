@@ -3,7 +3,7 @@
   "sync": {
     "applyChanges": false,
     "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"],
-    "globalGenerators": ["@academic-explorer/generators:sync-targets"]
+    "globalGenerators": ["@bibgraph/generators:sync-targets"]
   },
   "tui": {
     "enabled": false,
@@ -715,13 +715,13 @@
         "unitTestRunner": "vitest",
         "linter": "eslint"
       },
-      "@academic-explorer/generators:library": {
+      "@bibgraph/generators:library": {
         "type": "utility",
         "unitTestRunner": "vitest",
         "bundler": "tsc",
         "description": "A new library package"
       },
-      "@academic-explorer/generators:component": {
+      "@bibgraph/generators:component": {
         "skipTests": false,
         "skipStorybook": false,
         "export": true,
@@ -729,7 +729,7 @@
         "withHooks": false,
         "withTypes": false
       },
-      "@academic-explorer/generators:entity-view": {
+      "@bibgraph/generators:entity-view": {
         "project": "web",
         "withMocks": true,
         "withIntegration": true,

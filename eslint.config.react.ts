@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import baseConfig from './eslint.config.base.ts';
 
 /**
- * React-specific ESLint configuration for Academic Explorer monorepo
+ * React-specific ESLint configuration for BibGraph monorepo
  *
  * Extends base configuration with:
  * - React plugin and rules

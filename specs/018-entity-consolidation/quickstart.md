@@ -2,11 +2,11 @@
 
 **Feature**: 018-entity-consolidation
 **Estimated Time**: 75 minutes
-**Prerequisites**: Familiarity with TypeScript, Nx workspace, Academic Explorer codebase
+**Prerequisites**: Familiarity with TypeScript, Nx workspace, BibGraph codebase
 
 ## Overview
 
-This guide provides step-by-step instructions to consolidate all duplicate `EntityType` definitions into the canonical source in `@academic-explorer/types`.
+This guide provides step-by-step instructions to consolidate all duplicate `EntityType` definitions into the canonical source in `@bibgraph/types`.
 
 ## Pre-Migration Checklist
 
@@ -61,7 +61,7 @@ export type EntityType =
 
 **Add**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 ### Step 1.3: Update Package Index
@@ -75,7 +75,7 @@ export type { EntityType } from "./types/core"
 
 **Replace with**:
 ```typescript
-export type { EntityType } from "@academic-explorer/types"
+export type { EntityType } from "@bibgraph/types"
 ```
 
 ### Step 1.4: Verify Graph Package
@@ -100,7 +100,7 @@ git add packages/graph/src/types/core.ts packages/graph/src/index.ts
 git commit -m "refactor(graph): import EntityType from types package
 
 Remove duplicate EntityType definition in packages/graph/src/types/core.ts.
-Import from canonical source @academic-explorer/types instead.
+Import from canonical source @bibgraph/types instead.
 
 Maintains backward compatibility via re-export in index.ts.
 
@@ -134,7 +134,7 @@ export type EntityType =
 
 **Add** (after imports, around line 8):
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 ### Step 2.2: Migrate Cache Browser Types
@@ -158,7 +158,7 @@ export type EntityType =
 
 **Replace with**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 /**
  * Cache storage types include entity types + special "autocomplete" cache
@@ -235,30 +235,30 @@ grep -r "import.*EntityType.*from" apps/web/src --include="*.ts" --include="*.ts
 
 **Expected output examples**:
 ```
-apps/web/src/components/entity/EntityCard.tsx:import type { EntityType } from "@academic-explorer/graph"
-apps/web/src/routes/works/$_.lazy.tsx:import type { EntityType } from "@academic-explorer/utils"
+apps/web/src/components/entity/EntityCard.tsx:import type { EntityType } from "@bibgraph/graph"
+apps/web/src/routes/works/$_.lazy.tsx:import type { EntityType } from "@bibgraph/utils"
 ```
 
 ### Step 3.2: Replace Import Paths
 
 **Find**:
 ```typescript
-import type { EntityType } from "@academic-explorer/graph"
+import type { EntityType } from "@bibgraph/graph"
 ```
 
 **Replace with**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Find**:
 ```typescript
-import type { EntityType } from "@academic-explorer/utils"
+import type { EntityType } from "@bibgraph/utils"
 ```
 
 **Replace with**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Automation Option** (use with caution):
@@ -267,8 +267,8 @@ import type { EntityType } from "@academic-explorer/types"
 git stash
 
 # Replace imports
-find apps/web/src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' 's|from "@academic-explorer/graph"|from "@academic-explorer/types"|g' {} +
-find apps/web/src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' 's|from "@academic-explorer/utils"|from "@academic-explorer/types"|g' {} +
+find apps/web/src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' 's|from "@bibgraph/graph"|from "@bibgraph/types"|g' {} +
+find apps/web/src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' 's|from "@bibgraph/utils"|from "@bibgraph/types"|g' {} +
 
 # Only keep changes to EntityType imports (manual review required)
 git diff apps/web/src
@@ -295,11 +295,11 @@ pnpm nx build web
 git add apps/web/src
 git commit -m "refactor(web): import EntityType from types package
 
-Update all EntityType imports to use canonical source @academic-explorer/types.
+Update all EntityType imports to use canonical source @bibgraph/types.
 
 Replaced imports from:
-- @academic-explorer/graph
-- @academic-explorer/utils
+- @bibgraph/graph
+- @bibgraph/utils
 
 BREAKING CHANGE: None (type-only imports, no runtime impact)"
 ```
@@ -320,12 +320,12 @@ grep -r "import.*EntityType.*from" apps/cli/src --include="*.ts"
 
 **Find**:
 ```typescript
-import type { EntityType } from "@academic-explorer/graph"
+import type { EntityType } from "@bibgraph/graph"
 ```
 
 **Replace with**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 ### Step 4.3: Verify CLI
@@ -349,7 +349,7 @@ pnpm nx test cli
 git add apps/cli/src
 git commit -m "refactor(cli): import EntityType from types package
 
-Update EntityType imports to use canonical source @academic-explorer/types.
+Update EntityType imports to use canonical source @bibgraph/types.
 
 BREAKING CHANGE: None (type-only imports)"
 ```
@@ -369,10 +369,10 @@ grep -r "export type EntityType =" packages/ apps/ --include="*.ts" --include="*
 ### Step 5.2: Verify All Imports Use Types Package
 
 ```bash
-grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@academic-explorer/types" | grep -v "node_modules"
+grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@bibgraph/types" | grep -v "node_modules"
 ```
 
-**Expected**: Zero matches (all EntityType imports from @academic-explorer/types)
+**Expected**: Zero matches (all EntityType imports from @bibgraph/types)
 
 ### Step 5.3: Full Monorepo Type Check
 
@@ -423,7 +423,7 @@ echo "## Duplicate Definitions Check" >> verification-report.txt
 grep -r "export type EntityType =" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "packages/types/src/entities/entities.ts" | wc -l >> verification-report.txt
 echo "" >> verification-report.txt
 echo "## Import Path Check" >> verification-report.txt
-grep -r "import.*EntityType.*from.*@academic-explorer/types" packages/ apps/ --include="*.ts" --include="*.tsx" | wc -l >> verification-report.txt
+grep -r "import.*EntityType.*from.*@bibgraph/types" packages/ apps/ --include="*.ts" --include="*.tsx" | wc -l >> verification-report.txt
 echo "" >> verification-report.txt
 echo "## Type Check Results" >> verification-report.txt
 pnpm typecheck 2>&1 | tail -5 >> verification-report.txt
@@ -446,16 +446,16 @@ Add migration notes to `CLAUDE.md`:
 
 **Status**: ✅ Complete (2025-11-21)
 
-All duplicate `EntityType` definitions have been consolidated into `@academic-explorer/types`.
+All duplicate `EntityType` definitions have been consolidated into `@bibgraph/types`.
 
 **Import Pattern**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Deprecated Imports** (removed):
-- ~~`import type { EntityType } from "@academic-explorer/graph"`~~
-- ~~`import type { EntityType } from "@academic-explorer/utils"`~~
+- ~~`import type { EntityType } from "@bibgraph/graph"`~~
+- ~~`import type { EntityType } from "@bibgraph/utils"`~~
 
 **Special Types**:
 - `CacheStorageType = EntityType | "autocomplete"` (cache browser only)
@@ -477,7 +477,7 @@ Refs: spec-018"
 
 ## Troubleshooting
 
-### Issue: TypeScript Error "Cannot find module '@academic-explorer/types'"
+### Issue: TypeScript Error "Cannot find module '@bibgraph/types'"
 
 **Cause**: Nx project references not configured or stale cache
 
@@ -493,13 +493,13 @@ pnpm nx build types
 pnpm typecheck
 ```
 
-### Issue: Tests Fail with "EntityType is not exported from '@academic-explorer/graph'"
+### Issue: Tests Fail with "EntityType is not exported from '@bibgraph/graph'"
 
 **Cause**: Re-export in graph/index.ts not updated
 
 **Solution**: Verify `packages/graph/src/index.ts` exports from types package:
 ```typescript
-export type { EntityType } from "@academic-explorer/types"
+export type { EntityType } from "@bibgraph/types"
 ```
 
 ### Issue: Cache Browser Tests Fail with Type Errors

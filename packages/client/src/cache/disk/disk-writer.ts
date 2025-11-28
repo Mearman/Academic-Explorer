@@ -4,8 +4,8 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "@academic-explorer/types";
-import { logError, logger } from "@academic-explorer/utils";
+import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "@bibgraph/types";
+import { logError, logger } from "@bibgraph/utils";
 import {
   DirectoryIndex,
   FileEntry,
@@ -13,7 +13,7 @@ import {
   isDirectoryIndex,
   sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
-} from "@academic-explorer/utils/static-data/cache-utilities";
+} from "@bibgraph/utils/static-data/cache-utilities";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import("node:fs/promises") | undefined;

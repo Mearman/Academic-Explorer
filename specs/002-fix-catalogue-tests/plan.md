@@ -40,7 +40,7 @@ Fix 27 failing E2E tests across three catalogue test suites (entity management, 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; use `unknown` with type guards. All catalogue types already defined in `packages/utils/src/storage/catalogue-storage-provider.ts`.
 
@@ -52,7 +52,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
    - Tests: `apps/web/src/test/e2e/catalogue-*.e2e.test.ts`
    - Storage interface: `packages/utils/src/storage/` (already complete)
 
-4. **Storage Abstraction**: ✅ All storage operations use `useStorageProvider()` hook and `CatalogueStorageProvider` interface. No direct Dexie/IndexedDB coupling. E2E tests use `InMemoryStorageProvider` from `@academic-explorer/utils`.
+4. **Storage Abstraction**: ✅ All storage operations use `useStorageProvider()` hook and `CatalogueStorageProvider` interface. No direct Dexie/IndexedDB coupling. E2E tests use `InMemoryStorageProvider` from `@bibgraph/utils`.
 
 5. **Performance & Memory**: ✅ E2E tests run serially (already configured). Success criteria include timing constraints (<5s for entity ops, <10s for export, <2s for share URL). No Web Workers needed for this feature.
 
@@ -108,7 +108,7 @@ packages/utils/
     └── dexie-storage-provider.ts         # Production provider (complete from feature 001)
 ```
 
-**Structure Decision**: Monorepo web application structure. UI components in `apps/web/src/components/catalogue/`, storage abstraction in `packages/utils/src/storage/`. This follows existing Academic Explorer architecture with clear separation between UI (apps/web) and shared utilities (packages/utils).
+**Structure Decision**: Monorepo web application structure. UI components in `apps/web/src/components/catalogue/`, storage abstraction in `packages/utils/src/storage/`. This follows existing BibGraph architecture with clear separation between UI (apps/web) and shared utilities (packages/utils).
 
 ## Complexity Tracking
 

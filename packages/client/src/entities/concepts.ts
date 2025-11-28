@@ -12,8 +12,8 @@ import type {
   QueryParams,
   ConceptsQueryParams,
   ConceptSearchOptions,
-} from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils";
+} from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 
 import type { OpenAlexBaseClient } from "../client";
 import { AutocompleteApi } from "../utils/autocomplete";

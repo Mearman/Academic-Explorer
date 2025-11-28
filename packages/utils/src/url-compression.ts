@@ -3,7 +3,7 @@
  * Enables sharing catalogue lists via compressed URL parameters
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { deflate, inflate } from "pako";
 
 import type { GenericLogger } from "./logger";

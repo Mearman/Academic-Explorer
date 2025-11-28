@@ -1,6 +1,6 @@
 # GitHub Spec Kit Setup
 
-This directory contains the GitHub Spec Kit configuration for spec-driven development in the Academic Explorer project.
+This directory contains the GitHub Spec Kit configuration for spec-driven development in the BibGraph project.
 
 ## What is Spec Kit?
 
@@ -137,7 +137,7 @@ Feature branches follow the pattern: `N-short-name`
 - N: Sequential feature number
 - short-name: 2-4 word description (e.g., "user-auth", "analytics-dashboard")
 
-## Integration with Academic Explorer
+## Integration with BibGraph
 
 Spec Kit is configured to work with:
 - Nx monorepo structure
@@ -151,7 +151,7 @@ Spec Kit is configured to work with:
 
 - [Spec Kit GitHub Repository](https://github.com/github/spec-kit)
 - [Spec-Driven Development Guide](https://github.com/github/spec-kit/blob/main/spec-driven.md)
-- [Academic Explorer Constitution](./.specify/memory/constitution.md)
+- [BibGraph Constitution](./.specify/memory/constitution.md)
 
 ## Version
 

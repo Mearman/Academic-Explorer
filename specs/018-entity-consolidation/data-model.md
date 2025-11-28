@@ -34,7 +34,7 @@ export type EntityType =
 - **Total members**: 12 string literal types
 - **Immutability**: Union type is frozen (no runtime modification)
 - **Validation**: Type guards provided via `isEntityType()` function
-- **Export path**: `@academic-explorer/types`
+- **Export path**: `@bibgraph/types`
 
 ### Entity Metadata Structure
 
@@ -65,13 +65,13 @@ const ENTITY_METADATA: Record<EntityType, EntityMetadataEntry>
 ### Type Import Graph
 
 ```
-@academic-explorer/types (source of truth)
+@bibgraph/types (source of truth)
   ↓ type imports
-  ├── @academic-explorer/graph
+  ├── @bibgraph/graph
   │   └── GraphNode.entityType: EntityType
   │   └── GraphEdge relationships
   │
-  ├── @academic-explorer/utils
+  ├── @bibgraph/utils
   │   ├── CatalogueEntity.entityType: EntityType
   │   └── CachedEntityMetadata.type: CacheStorageType (EntityType | "autocomplete")
   │
@@ -88,12 +88,12 @@ const ENTITY_METADATA: Record<EntityType, EntityMetadataEntry>
 
 **Type-Only Import** (zero runtime cost):
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Value Import** (for ENTITY_METADATA):
 ```typescript
-import { ENTITY_METADATA, isEntityType } from "@academic-explorer/types"
+import { ENTITY_METADATA, isEntityType } from "@bibgraph/types"
 ```
 
 ## Migration Contracts
@@ -112,18 +112,18 @@ export type { EntityType } from "./types/core"
 **After**:
 ```typescript
 // packages/graph/src/types/core.ts
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 // Remove local definition
 
 // packages/graph/src/index.ts
 // REMOVED: Re-export prohibited per Constitution Principle III
-// export type { EntityType } from "@academic-explorer/types"
+// export type { EntityType } from "@bibgraph/types"
 ```
 
 **Validation**:
 - GraphNode interface type-checks with imported EntityType
 - Breaking change: EntityType re-export removed (Constitution Principle III)
-- Consumers must update imports to @academic-explorer/types
+- Consumers must update imports to @bibgraph/types
 - Zero test changes required (internal usage only)
 
 ### Contract 2: Utils Package - Catalogue DB
@@ -147,7 +147,7 @@ export type EntityType =
 **After**:
 ```typescript
 // packages/utils/src/storage/catalogue-db.ts
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 // Remove local definition
 ```
 
@@ -183,7 +183,7 @@ export type EntityType =
 **After**:
 ```typescript
 // packages/utils/src/cache-browser/types.ts
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 // New type for cache-specific storage types
 export type CacheStorageType = EntityType | "autocomplete"
@@ -285,7 +285,7 @@ function getEntity<T extends EntityType>(type: T): EntityTypeMap[T] {
 
 3. **Final State**: Single source of truth
    - Only packages/types defines EntityType
-   - All other packages import from `@academic-explorer/types`
+   - All other packages import from `@bibgraph/types`
    - Zero duplicate definitions (verified by grep)
 
 ## Validation Rules
@@ -298,7 +298,7 @@ function getEntity<T extends EntityType>(type: T): EntityTypeMap[T] {
    - Exhaustiveness checking in switch statements
 
 2. **Import Resolution**:
-   - All `@academic-explorer/types` imports resolve via tsconfig paths
+   - All `@bibgraph/types` imports resolve via tsconfig paths
    - Nx project references enable cross-package type checking
 
 3. **Type Compatibility**:
@@ -351,20 +351,20 @@ function getEntity<T extends EntityType>(type: T): EntityTypeMap[T] {
 **Prohibited Pattern**:
 ```typescript
 // ❌ WRONG: packages/graph/src/index.ts
-export type { EntityType } from "@academic-explorer/types"
+export type { EntityType } from "@bibgraph/types"
 ```
 
 **Required Pattern**:
 ```typescript
 // ✅ CORRECT: Consumers import directly
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Rationale**: Constitution Principle III prohibits re-exports between internal packages
 
 ### No Backward Compatibility (Principle VII)
 
-**Impact**: Consumers importing EntityType from @academic-explorer/graph or @academic-explorer/utils must update imports to @academic-explorer/types
+**Impact**: Consumers importing EntityType from @bibgraph/graph or @bibgraph/utils must update imports to @bibgraph/types
 
 **Justification**: Application is unreleased in development. Backward compatibility adds complexity without value per Constitution Principle VII.
 

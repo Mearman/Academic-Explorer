@@ -5,7 +5,7 @@
  * @module components/algorithms/GraphAlgorithmsPanel
  */
 
-import type { GraphNode, GraphEdge } from '@academic-explorer/types';
+import type { GraphNode, GraphEdge } from '@bibgraph/types';
 import {
   Accordion,
   Badge,

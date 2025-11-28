@@ -3,9 +3,9 @@
  * Supports sorting, filtering, and entity operations
  */
 
-import type { EntityType } from "@academic-explorer/types";
-import { ENTITY_METADATA } from "@academic-explorer/types";
-import { type CatalogueEntity } from "@academic-explorer/utils"
+import type { EntityType } from "@bibgraph/types";
+import { ENTITY_METADATA } from "@bibgraph/types";
+import { type CatalogueEntity } from "@bibgraph/utils"
 import {
   DndContext,
   closestCenter,

@@ -359,7 +359,7 @@ await provider.removeBookmark(recordId)
 ### URL Parsing Examples
 
 ```typescript
-import { parseURL, reconstructURL } from '@academic-explorer/utils'
+import { parseURL, reconstructURL } from '@bibgraph/utils'
 
 // Parse current page URL
 const parsed = parseURL(window.location.href)
@@ -380,7 +380,7 @@ const url = reconstructURL('/works/W123', {}, ['id', 'title'])
 ### Entity Type Detection
 
 ```typescript
-import { detectEntityTypeFromURL, isEntityPage } from '@academic-explorer/utils'
+import { detectEntityTypeFromURL, isEntityPage } from '@bibgraph/utils'
 
 detectEntityTypeFromURL('/works/W123') // 'works'
 detectEntityTypeFromURL('/authors/A456') // 'authors'

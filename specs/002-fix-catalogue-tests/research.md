@@ -475,5 +475,5 @@ None. All technical decisions resolved through research. Ready to proceed to Pha
 - [TanStack Router](https://tanstack.com/router/latest)
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
 - [TypeScript Type Guards](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
-- Academic Explorer Constitution (.specify/memory/constitution.md)
+- BibGraph Constitution (.specify/memory/constitution.md)
 - Feature Specification (specs/002-fix-catalogue-tests/spec.md)

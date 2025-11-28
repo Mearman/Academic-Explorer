@@ -20,12 +20,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
-      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/src/*"],
-      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["../../packages/ui/src/*"]
+      "@bibgraph/utils": ["../../packages/utils/src/index.ts"],
+      "@bibgraph/utils/*": ["../../packages/utils/src/*"],
+      "@bibgraph/client": ["../../packages/client/src/index.ts"],
+      "@bibgraph/client/*": ["../../packages/client/src/*"],
+      "@bibgraph/ui": ["../../packages/ui/src/index.ts"],
+      "@bibgraph/ui/*": ["../../packages/ui/src/*"]
     },
 
     /* Linting - More lenient for config files */

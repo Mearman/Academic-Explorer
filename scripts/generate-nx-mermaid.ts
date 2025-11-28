@@ -90,7 +90,7 @@ function generateMermaid(
 
 	// Generate subgraphs for each project
 	const projectEntries = Object.entries(nodes)
-		.filter(([name]) => !name.startsWith("@")) // Skip scoped packages like @academic-explorer/generators
+		.filter(([name]) => !name.startsWith("@")) // Skip scoped packages like @bibgraph/generators
 		.sort((a, b) => a[0].localeCompare(b[0]))
 
 	for (const [projectName, node] of projectEntries) {

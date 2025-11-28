@@ -26,7 +26,7 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# Academic Explorer Constitution
+# BibGraph Constitution
 
 ## Core Principles
 
@@ -83,16 +83,16 @@ Structure requirements:
 - Each package MUST have clear, single responsibility
 
 Package import requirements:
-- **MUST use package aliases** for cross-package imports (e.g., `@academic-explorer/client`)
+- **MUST use package aliases** for cross-package imports (e.g., `@bibgraph/client`)
 - **NEVER use relative imports** to reference other packages (e.g., `../../packages/client`)
 - Relative imports are ONLY allowed within the same package
 - Package aliases defined in `tsconfig.base.json` paths:
-  - `@academic-explorer/client` → `packages/client/src/index.ts`
-  - `@academic-explorer/utils` → `packages/utils/src/index.ts`
-  - `@academic-explorer/graph` → `packages/graph/src/index.ts`
-  - `@academic-explorer/simulation` → `packages/simulation/src/index.ts`
-  - `@academic-explorer/types` → `packages/types/src/index.ts`
-  - `@academic-explorer/ui` → `packages/ui/src/index.ts`
+  - `@bibgraph/client` → `packages/client/src/index.ts`
+  - `@bibgraph/utils` → `packages/utils/src/index.ts`
+  - `@bibgraph/graph` → `packages/graph/src/index.ts`
+  - `@bibgraph/simulation` → `packages/simulation/src/index.ts`
+  - `@bibgraph/types` → `packages/types/src/index.ts`
+  - `@bibgraph/ui` → `packages/ui/src/index.ts`
   - `@/*` → `apps/web/src/*` (web app internal imports only)
 
 **Relative import prohibition** (STRENGTHENED):
@@ -116,13 +116,13 @@ Package import requirements:
 - **Correct patterns**:
   ```typescript
   // ✅ CORRECT: apps/web/src/components/Graph.tsx
-  import type { GraphNode } from "@academic-explorer/graph"
+  import type { GraphNode } from "@bibgraph/graph"
 
   // ✅ CORRECT: packages/graph/src/services/analyzer.ts
-  import { logger } from "@academic-explorer/utils"
+  import { logger } from "@bibgraph/utils"
 
   // ✅ CORRECT: packages/utils/src/storage/dexie-provider.ts
-  import type { EntityType } from "@academic-explorer/types"
+  import type { EntityType } from "@bibgraph/types"
 
   // ✅ CORRECT: Within same package - packages/graph/src/services/analyzer.ts
   import { GraphNode } from "../types/core"
@@ -139,27 +139,27 @@ Package import requirements:
   grep -r "from ['\"]\.\.\/\.\.\/[^.]" packages/
   ```
 - ESLint rules should be configured to detect and reject these patterns (if possible)
-- All imports between packages MUST use the `@academic-explorer/*` aliases
+- All imports between packages MUST use the `@bibgraph/*` aliases
 
 **No re-export requirement**:
 - **Internal packages MUST NOT re-export exports from other internal packages**
 - Each package MUST define its own types, interfaces, and functions
 - If a type/function is needed by multiple packages, it MUST be defined in the most
-  foundational package (typically `@academic-explorer/types` or `@academic-explorer/utils`)
+  foundational package (typically `@bibgraph/types` or `@bibgraph/utils`)
 - Consumers MUST import directly from the canonical source, not through intermediary packages
 - Re-exports create hidden dependencies and make refactoring difficult
 - **Example violation**:
   ```typescript
   // ❌ WRONG: packages/graph/src/index.ts
-  export type { EntityType } from "@academic-explorer/types"
+  export type { EntityType } from "@bibgraph/types"
 
   // ❌ WRONG: consumers importing from graph
-  import type { EntityType } from "@academic-explorer/graph"
+  import type { EntityType } from "@bibgraph/graph"
   ```
 - **Correct pattern**:
   ```typescript
   // ✅ CORRECT: consumers import directly from canonical source
-  import type { EntityType } from "@academic-explorer/types"
+  import type { EntityType } from "@bibgraph/types"
   ```
 - **Backward compatibility exception**: Re-exports are NOT acceptable even for backward
   compatibility. If types move between packages, consumers MUST update their imports.
@@ -778,8 +778,8 @@ multiple places, it MUST be extracted to a single source of truth.
 
 **Code DRY requirements**:
 - If the same logic appears in 2+ files, extract it to a shared utility
-- Utility functions belong in `@academic-explorer/utils` or the most foundational applicable package
-- Type definitions MUST have a single canonical location (`@academic-explorer/types`)
+- Utility functions belong in `@bibgraph/utils` or the most foundational applicable package
+- Type definitions MUST have a single canonical location (`@bibgraph/types`)
 - Magic numbers and strings MUST be defined as named constants
 - Repeated patterns MUST be extracted to reusable abstractions
 - Copy-paste code is a code smell that MUST be addressed immediately
@@ -818,7 +818,7 @@ const entityTypes = ['works', 'authors', 'sources', 'institutions'];
 const validTypes = ['works', 'authors', 'sources', 'institutions'];
 
 // ✅ CORRECT: Single source of truth
-// In @academic-explorer/types:
+// In @bibgraph/types:
 export const ENTITY_TYPES = ['works', 'authors', 'sources', 'institutions'] as const;
 // Both files import from canonical source
 ```
@@ -1089,7 +1089,7 @@ This constitution supersedes all other development practices. Amendments require
 All PRs and code reviews MUST verify compliance with this constitution. Features that
 violate principles without documented justification MUST be rejected.
 
-For runtime development guidance specific to Academic Explorer workflows, see `CLAUDE.md`
+For runtime development guidance specific to BibGraph workflows, see `CLAUDE.md`
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 

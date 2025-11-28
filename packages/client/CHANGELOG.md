@@ -1,6 +1,6 @@
 # Changelog
 
-This file tracks changes to the `@academic-explorer/client` package using independent versioning.
+This file tracks changes to the `@bibgraph/client` package using independent versioning.
 
 ## 1.28.0 (2025-09-30)
 
@@ -333,7 +333,7 @@ This file tracks changes to the `@academic-explorer/client` package using indepe
 
 ## 1.0.0 (2025-09-24)
 
-Initial release of `@academic-explorer/client` (formerly `@academic-explorer/openalex-client`) as part of monorepo restructuring.
+Initial release of `@bibgraph/client` (formerly `@bibgraph/openalex-client`) as part of monorepo restructuring.
 
 ### Features
 

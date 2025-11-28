@@ -14,7 +14,7 @@ This document defines the migration contracts for each package affected by the e
 
 ## Package Contracts
 
-### Contract 1: @academic-explorer/graph
+### Contract 1: @bibgraph/graph
 
 **Status**: Type-only refactoring (zero runtime impact)
 
@@ -39,13 +39,13 @@ export type EntityType =
 **Target State**:
 ```typescript
 // packages/graph/src/types/core.ts (AFTER)
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 // Remove local definition
 
 // packages/graph/src/index.ts (AFTER)
 // REMOVED: Re-export prohibited per Constitution Principle III
-// export type { EntityType } from "@academic-explorer/types"
+// export type { EntityType } from "@bibgraph/types"
 ```
 
 **Affected Interfaces**:
@@ -65,11 +65,11 @@ import type { EntityType } from "@academic-explorer/types"
 - No EntityType re-export remains in graph package
 
 **Breaking Change**:
-- Consumers importing EntityType from @academic-explorer/graph must update to @academic-explorer/types
+- Consumers importing EntityType from @bibgraph/graph must update to @bibgraph/types
 
 ---
 
-### Contract 2: @academic-explorer/utils (Catalogue DB)
+### Contract 2: @bibgraph/utils (Catalogue DB)
 
 **Status**: Type import replacement + subset → superset migration
 
@@ -92,7 +92,7 @@ export type EntityType =
 **Target State**:
 ```typescript
 // packages/utils/src/storage/catalogue-db.ts (AFTER)
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 // Remove local definition
 ```
@@ -121,7 +121,7 @@ import type { EntityType } from "@academic-explorer/types"
 
 ---
 
-### Contract 3: @academic-explorer/utils (Cache Browser)
+### Contract 3: @bibgraph/utils (Cache Browser)
 
 **Status**: Type split (EntityType + CacheStorageType) + import
 
@@ -144,7 +144,7 @@ export type EntityType =
 **Target State**:
 ```typescript
 // packages/utils/src/cache-browser/types.ts (AFTER)
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 /**
  * Cache storage types include entity types + special "autocomplete" cache
@@ -202,14 +202,14 @@ export interface CachedEntityMetadata {
 **Current State**:
 ```typescript
 // Various components import from graph or utils
-import type { EntityType } from "@academic-explorer/graph"
-import type { EntityType } from "@academic-explorer/utils"
+import type { EntityType } from "@bibgraph/graph"
+import type { EntityType } from "@bibgraph/utils"
 ```
 
 **Target State**:
 ```typescript
 // All components import from types package
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Affected Files** (estimated ~10 files):
@@ -220,7 +220,7 @@ import type { EntityType } from "@academic-explorer/types"
 
 **Migration Steps**:
 1. Search for all EntityType imports: `grep -r "import.*EntityType" apps/web/src`
-2. Replace import paths with `@academic-explorer/types`
+2. Replace import paths with `@bibgraph/types`
 3. Verify TypeScript compilation: `pnpm nx typecheck web`
 4. Verify tests pass: `pnpm nx test web`
 
@@ -238,12 +238,12 @@ import type { EntityType } from "@academic-explorer/types"
 **Current State**:
 ```typescript
 // CLI commands may import EntityType
-import type { EntityType } from "@academic-explorer/graph"
+import type { EntityType } from "@bibgraph/graph"
 ```
 
 **Target State**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Affected Files** (estimated ~3 files):
@@ -251,7 +251,7 @@ import type { EntityType } from "@academic-explorer/types"
 
 **Migration Steps**:
 1. Search for all EntityType imports: `grep -r "import.*EntityType" apps/cli/src`
-2. Replace import paths with `@academic-explorer/types`
+2. Replace import paths with `@bibgraph/types`
 3. Verify TypeScript compilation: `pnpm nx typecheck cli`
 4. Verify CLI builds: `pnpm nx build cli`
 
@@ -286,7 +286,7 @@ grep -r "export type EntityType =" packages/ apps/ --include="*.ts" --include="*
 
 **Command**:
 ```bash
-grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@academic-explorer/types"
+grep -r "import.*EntityType.*from" packages/ apps/ --include="*.ts" --include="*.tsx" | grep -v "@bibgraph/types"
 ```
 
 **Expected Result**: Zero matches (all EntityType imports should be from types package)

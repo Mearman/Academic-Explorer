@@ -49,7 +49,7 @@ This document consolidates all technical research and decisions made during Phas
 
 **References**:
 - `packages/utils/src/storage/catalogue-storage-provider.ts` - Storage interface definition
-- Academic Explorer CLAUDE.md - Documentation of special system lists
+- BibGraph CLAUDE.md - Documentation of special system lists
 
 ---
 

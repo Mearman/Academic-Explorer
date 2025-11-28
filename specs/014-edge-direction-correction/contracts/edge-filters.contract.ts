@@ -7,7 +7,7 @@
  * Location: apps/web/src/components/sections/EdgeFiltersSection.tsx
  */
 
-import type { RelationType, EdgeDirection, GraphEdge } from '@academic-explorer/graph';
+import type { RelationType, EdgeDirection, GraphEdge } from '@bibgraph/graph';
 
 /**
  * Edge direction filter state

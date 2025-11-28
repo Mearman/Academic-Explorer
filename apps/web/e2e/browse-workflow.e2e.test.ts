@@ -334,7 +334,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(page.locator('[data-testid="browse-grid"]')).toBeVisible();
 
 		// Verify minimum number of entity types are displayed
-		await browsePage.expectMinimumEntityTypes(10); // Academic Explorer has 12 entity types
+		await browsePage.expectMinimumEntityTypes(10); // BibGraph has 12 entity types
 	});
 });
 
