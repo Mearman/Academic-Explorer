@@ -335,6 +335,27 @@ function AlgorithmsPage() {
     setGraphConfig((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  // Randomize all slider values (seed only if unlocked)
+  const handleRandomize = useCallback(() => {
+    // Helper to generate a random range [min, max] within bounds
+    const randomRange = (minBound: number, maxBound: number): [number, number] => {
+      const a = Math.floor(Math.random() * (maxBound - minBound + 1)) + minBound;
+      const b = Math.floor(Math.random() * (maxBound - minBound + 1)) + minBound;
+      return a <= b ? [a, b] : [b, a];
+    };
+
+    setGraphConfig((prev) => ({
+      ...prev,
+      // Only randomize seed if unlocked
+      seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
+      componentCount: Math.floor(Math.random() * 6) + 1, // 1-6
+      edgesPerNodeRange: randomRange(0, 10),
+      workCountRange: randomRange(1, 50),
+      authorCountRange: randomRange(1, 30),
+      institutionCountRange: randomRange(0, 15),
+    }));
+  }, [seedLocked]);
+
   // Regenerate sample data with current config
   const handleRegenerateGraph = useCallback(() => {
     let configToUse = graphConfig;
@@ -556,7 +577,7 @@ function AlgorithmsPage() {
                     <Group gap="xs" align="flex-end">
                       <NumberInput
                         label="Seed"
-                        description={seedLocked ? "Locked - same graph each time" : "Unlocked - new seed on regenerate"}
+                        description={seedLocked ? "Locked - preserved on randomize" : "Unlocked - included in randomize"}
                         value={graphConfig.seed ?? ''}
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
@@ -576,7 +597,8 @@ function AlgorithmsPage() {
                       <Button
                         variant="subtle"
                         size="xs"
-                        onClick={() => updateConfig('seed', Math.floor(Math.random() * 10000))}
+                        onClick={handleRandomize}
+                        title={seedLocked ? "Randomize all values (seed locked)" : "Randomize all values including seed"}
                       >
                         Randomize
                       </Button>
