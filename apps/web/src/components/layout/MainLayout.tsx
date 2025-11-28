@@ -3,6 +3,7 @@
  * Carefully re-enabled components to prevent React 19 infinite loops
  */
 
+import { getBuildInfo, getReleaseUrl } from "@academic-explorer/utils";
 import {
   AppShell,
   Button,
@@ -15,6 +16,8 @@ import {
   Box,
   rem,
   Menu,
+  Anchor,
+  Badge,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -40,7 +43,12 @@ import { HistorySidebar } from "./HistorySidebar";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 
-
+// Static build info - computed once at module load
+const buildInfo = getBuildInfo();
+const releaseUrl = getReleaseUrl({
+  repositoryUrl: buildInfo.repositoryUrl,
+  version: buildInfo.version,
+});
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -173,14 +181,30 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Header */}
       <AppShell.Header>
         <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'md' }}>
-          {/* Left side - Title (hidden on mobile when search expanded) */}
-          <Group style={{ flex: mobileSearchExpanded ? 0 : 1 }}>
+          {/* Left side - Title and version (hidden on mobile when search expanded) */}
+          <Group style={{ flex: mobileSearchExpanded ? 0 : 1 }} gap="xs">
             {!mobileSearchExpanded && (
-              <Link to="/" style={{ textDecoration: 'none' }}>
-                <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
-                  Academic Explorer
-                </Text>
-              </Link>
+              <>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                  <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
+                    Academic Explorer
+                  </Text>
+                </Link>
+                <Anchor
+                  href={releaseUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Badge
+                    variant="light"
+                    size="sm"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    v{buildInfo.version}
+                  </Badge>
+                </Anchor>
+              </>
             )}
           </Group>
 
