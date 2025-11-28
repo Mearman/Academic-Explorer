@@ -1,3 +1,12 @@
+## 22.1.0 (2025-11-28)
+
+* refactor(web): replace base±variance inputs with RangeSliders ([56b617f](https://github.com/Mearman/BibGraph/commit/56b617f))
+* feat(web): add configurable sample graph generation on algorithms page ([3476701](https://github.com/Mearman/BibGraph/commit/3476701))
+* feat(web): add seed lock toggle for reproducible graph generation ([f458411](https://github.com/Mearman/BibGraph/commit/f458411))
+* feat(web): add variance controls for edges per node constraints ([ed6a452](https://github.com/Mearman/BibGraph/commit/ed6a452))
+* feat(web): add variance controls to sample graph node counts ([0810c00](https://github.com/Mearman/BibGraph/commit/0810c00))
+* chore(release): 22.0.0 [skip ci] ([b523098](https://github.com/Mearman/BibGraph/commit/b523098))
+
 ## 22.0.0 (2025-11-28)
 
 * fix(ci): allow shared cache artifacts across CI runners ([606a086](https://github.com/Mearman/BibGraph/commit/606a086))
