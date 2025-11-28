@@ -39,23 +39,28 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      - name: Align versions with syncpack
+        run: |
+          pnpm syncpack fix-mismatches
+          pnpm syncpack format
+
       - name: Update lockfile
         run: pnpm install --no-frozen-lockfile
 
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet pnpm-lock.yaml; then
+          if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit and push lockfile
+      - name: Commit and push changes
         if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml
-          git commit -m "chore(deps): update pnpm-lock.yaml"
+          git add -A
+          git commit -m "chore(deps): align versions and update lockfile"
           git push origin "$PR_HEAD_REF"
