@@ -306,8 +306,12 @@ function AlgorithmsPage() {
   // Sample graph configuration
   const [graphConfig, setGraphConfig] = useState<SampleGraphConfig>(DEFAULT_CONFIG);
 
-  // Seed lock preference - when unlocked, regeneration picks a new random seed
+  // Lock preferences - when locked, randomize preserves the value
   const [seedLocked, setSeedLocked] = useState(true);
+  const [componentsLocked, setComponentsLocked] = useState(false);
+  const [edgesLocked, setEdgesLocked] = useState(false);
+  const [totalNodesLocked, setTotalNodesLocked] = useState(false);
+  const [percentagesLocked, setPercentagesLocked] = useState(false);
 
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
@@ -403,7 +407,7 @@ function AlgorithmsPage() {
     });
   }, []);
 
-  // Randomize all slider values (seed only if unlocked)
+  // Randomize unlocked slider values
   const handleRandomize = useCallback(() => {
     // Helper to generate a random range [min, max] within bounds
     const randomRange = (minBound: number, maxBound: number): [number, number] => {
@@ -429,16 +433,15 @@ function AlgorithmsPage() {
 
     setGraphConfig((prev) => ({
       ...prev,
-      // Only randomize seed if unlocked
       seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
-      componentCount: Math.floor(Math.random() * 6) + 1, // 1-6
-      edgesPerNodeRange: randomRange(0, 10),
-      totalNodeCountRange: randomRange(10, 100),
-      workPercentage: workPct,
-      authorPercentage: authorPct,
-      institutionPercentage: instPct,
+      componentCount: componentsLocked ? prev.componentCount : Math.floor(Math.random() * 6) + 1,
+      edgesPerNodeRange: edgesLocked ? prev.edgesPerNodeRange : randomRange(0, 10),
+      totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomRange(10, 100),
+      workPercentage: percentagesLocked ? prev.workPercentage : workPct,
+      authorPercentage: percentagesLocked ? prev.authorPercentage : authorPct,
+      institutionPercentage: percentagesLocked ? prev.institutionPercentage : instPct,
     }));
-  }, [seedLocked]);
+  }, [seedLocked, componentsLocked, edgesLocked, totalNodesLocked, percentagesLocked]);
 
   // Regenerate sample data with current config
   const handleRegenerateGraph = useCallback(() => {
@@ -692,7 +695,18 @@ function AlgorithmsPage() {
 
                     {/* Components */}
                     <Box>
-                      <Text size="xs" fw={500} mb={4}>Components: {graphConfig.componentCount}</Text>
+                      <Group justify="space-between" mb={4}>
+                        <Text size="xs" fw={500}>Components: {graphConfig.componentCount}</Text>
+                        <Button
+                          variant={componentsLocked ? "light" : "subtle"}
+                          size="compact-xs"
+                          onClick={() => setComponentsLocked(!componentsLocked)}
+                          title={componentsLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
+                          px="xs"
+                        >
+                          {componentsLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                        </Button>
+                      </Group>
                       <Slider
                         value={graphConfig.componentCount}
                         onChange={(val) => updateConfig('componentCount', val)}
@@ -712,9 +726,20 @@ function AlgorithmsPage() {
 
                     {/* Edges per Node */}
                     <Box>
-                      <Text size="xs" fw={500} mb={4}>
-                        Edges per Node: {graphConfig.edgesPerNodeRange[0]} - {graphConfig.edgesPerNodeRange[1]}
-                      </Text>
+                      <Group justify="space-between" mb={4}>
+                        <Text size="xs" fw={500}>
+                          Edges per Node: {graphConfig.edgesPerNodeRange[0]} - {graphConfig.edgesPerNodeRange[1]}
+                        </Text>
+                        <Button
+                          variant={edgesLocked ? "light" : "subtle"}
+                          size="compact-xs"
+                          onClick={() => setEdgesLocked(!edgesLocked)}
+                          title={edgesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
+                          px="xs"
+                        >
+                          {edgesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                        </Button>
+                      </Group>
                       <RangeSlider
                         value={graphConfig.edgesPerNodeRange}
                         onChange={(val) => updateConfig('edgesPerNodeRange', val)}
@@ -735,9 +760,20 @@ function AlgorithmsPage() {
 
                     {/* Total Nodes */}
                     <Box>
-                      <Text size="xs" fw={500} mb={4}>
-                        Total Nodes: {graphConfig.totalNodeCountRange[0]} - {graphConfig.totalNodeCountRange[1]}
-                      </Text>
+                      <Group justify="space-between" mb={4}>
+                        <Text size="xs" fw={500}>
+                          Total Nodes: {graphConfig.totalNodeCountRange[0]} - {graphConfig.totalNodeCountRange[1]}
+                        </Text>
+                        <Button
+                          variant={totalNodesLocked ? "light" : "subtle"}
+                          size="compact-xs"
+                          onClick={() => setTotalNodesLocked(!totalNodesLocked)}
+                          title={totalNodesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
+                          px="xs"
+                        >
+                          {totalNodesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                        </Button>
+                      </Group>
                       <RangeSlider
                         value={graphConfig.totalNodeCountRange}
                         onChange={(val) => updateConfig('totalNodeCountRange', val)}
@@ -757,7 +793,18 @@ function AlgorithmsPage() {
                     <Divider />
 
                     {/* Node Type Distribution */}
-                    <Text size="xs" fw={500}>Node Type Distribution</Text>
+                    <Group justify="space-between">
+                      <Text size="xs" fw={500}>Node Type Distribution</Text>
+                      <Button
+                        variant={percentagesLocked ? "light" : "subtle"}
+                        size="compact-xs"
+                        onClick={() => setPercentagesLocked(!percentagesLocked)}
+                        title={percentagesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
+                        px="xs"
+                      >
+                        {percentagesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                      </Button>
+                    </Group>
                     <Text size="xs" c="dimmed">Percentages auto-adjust to total 100%</Text>
                     <Stack gap="md">
                       <Box>
