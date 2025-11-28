@@ -27,6 +27,8 @@ import {
   IconGraph,
   IconRefresh,
   IconInfoCircle,
+  IconLock,
+  IconLockOpen,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo } from 'react';
@@ -294,6 +296,9 @@ function AlgorithmsPage() {
   // Sample graph configuration
   const [graphConfig, setGraphConfig] = useState<SampleGraphConfig>(DEFAULT_CONFIG);
 
+  // Seed lock preference - when unlocked, regeneration picks a new random seed
+  const [seedLocked, setSeedLocked] = useState(true);
+
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
@@ -333,12 +338,21 @@ function AlgorithmsPage() {
 
   // Regenerate sample data with current config
   const handleRegenerateGraph = useCallback(() => {
-    setGraphData(generateSampleGraph(graphConfig));
+    let configToUse = graphConfig;
+
+    // When seed is unlocked, generate a new random seed on each regeneration
+    if (!seedLocked) {
+      const newSeed = Math.floor(Math.random() * 10000);
+      configToUse = { ...graphConfig, seed: newSeed };
+      setGraphConfig(configToUse);
+    }
+
+    setGraphData(generateSampleGraph(configToUse));
     setHighlightedNodes(new Set());
     setHighlightedPath([]);
     setCommunityAssignments(new Map());
     setCommunityColors(new Map());
-  }, [graphConfig]);
+  }, [graphConfig, seedLocked]);
 
   // Handle node highlighting from algorithm results
   const handleHighlightNodes = useCallback((nodeIds: string[]) => {
@@ -514,7 +528,7 @@ function AlgorithmsPage() {
                     <Group gap="xs" align="flex-end">
                       <NumberInput
                         label="Seed"
-                        description="Random seed for reproducibility"
+                        description={seedLocked ? "Locked - same graph each time" : "Unlocked - new seed on regenerate"}
                         value={graphConfig.seed ?? ''}
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
@@ -522,6 +536,15 @@ function AlgorithmsPage() {
                         style={{ flex: 1 }}
                         size="xs"
                       />
+                      <Button
+                        variant={seedLocked ? "light" : "subtle"}
+                        size="xs"
+                        onClick={() => setSeedLocked(!seedLocked)}
+                        title={seedLocked ? "Seed locked - click to unlock" : "Seed unlocked - click to lock"}
+                        px="xs"
+                      >
+                        {seedLocked ? <IconLock size={14} /> : <IconLockOpen size={14} />}
+                      </Button>
                       <Button
                         variant="subtle"
                         size="xs"
