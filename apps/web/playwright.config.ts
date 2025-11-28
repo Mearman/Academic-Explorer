@@ -18,6 +18,7 @@ export default defineConfig({
     ? ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"]
     : [
         "**/sample-urls-ci.e2e.test.ts",
+        "**/page-smoke.e2e.test.ts",
       ],
   testIgnore: process.env.E2E_FULL_SUITE ? ["**/manual/**"] : ["**/manual/**", "**/*-full.e2e.test.ts"],
 
