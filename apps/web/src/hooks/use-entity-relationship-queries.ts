@@ -5,7 +5,7 @@
  * @module use-entity-relationship-queries
  */
 
-import { getWorks, getAuthors, getSources, getInstitutions } from '@bibgraph/client';
+import { getWorks, getAuthors, getSources, getInstitutions, getTopicById } from '@bibgraph/client';
 import { RelationType, getInboundQueries, getOutboundQueries } from '@bibgraph/types';
 import type { EntityType , RelationshipQueryConfig } from '@bibgraph/types';
 import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
@@ -287,7 +287,12 @@ async function executeRelationshipQuery(
         entityData = response.results[0] as Record<string, unknown>;
         break;
       }
-      // TODO: Add topics, publishers, funders when needed
+      case 'topics': {
+        const topic = await getTopicById(entityId);
+        entityData = topic as Record<string, unknown>;
+        break;
+      }
+      // TODO: Add publishers, funders when needed
       default:
         throw new Error(`Unsupported entity type for embedded extraction: ${entityType}`);
     }
@@ -462,6 +467,9 @@ async function prefetchEntity(
             page: 1,
           });
           return response.results[0];
+        }
+        case 'topics': {
+          return await getTopicById(entityId);
         }
         default:
           throw new Error(`Unsupported entity type for prefetch: ${targetEntityType}`);
