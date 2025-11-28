@@ -175,14 +175,18 @@ export function ForceGraphVisualization({
     return edgeSet;
   }, [highlightedPath]);
 
+  // Only use highlightedNodeIds for filtering if in filter mode
+  // This prevents graphData from recalculating on every highlight change in "highlight" mode
+  const filterNodeIds = displayMode === 'filter' ? highlightedNodeIds : undefined;
+
   // Transform nodes for force graph
   const graphData = useMemo(() => {
     // Always use deterministic seeding for reproducible layouts
     const random = seededRandom(seed ?? DEFAULT_SEED);
 
     // Filter nodes if in filter mode
-    const filteredNodes = displayMode === 'filter' && highlightedNodeIds.size > 0
-      ? nodes.filter(n => highlightedNodeIds.has(n.id))
+    const filteredNodes = filterNodeIds && filterNodeIds.size > 0
+      ? nodes.filter(n => filterNodeIds.has(n.id))
       : nodes;
 
     const nodeIdSet = new Set(filteredNodes.map(n => n.id));
@@ -212,7 +216,7 @@ export function ForceGraphVisualization({
     }));
 
     return { nodes: forceNodes, links: forceLinks };
-  }, [nodes, edges, displayMode, highlightedNodeIds, seed]);
+  }, [nodes, edges, filterNodeIds, seed]);
 
   // Determine if a node is highlighted
   const isNodeHighlighted = useCallback((nodeId: string): boolean => {
