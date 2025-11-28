@@ -46,6 +46,8 @@ interface SettingsState {
   includeXpac: boolean;
   /** Data format version */
   dataVersion: '1' | '2' | undefined;
+  /** Show system catalogues (bookmarks, history) in catalogue list */
+  showSystemCatalogues: boolean;
 }
 
 // Default values
@@ -54,6 +56,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   apiKey: undefined,
   includeXpac: true,
   dataVersion: undefined,
+  showSystemCatalogues: false,
 };
 
 // Email validation regex
@@ -65,6 +68,7 @@ const SETTINGS_KEYS = {
   API_KEY: "apiKey",
   INCLUDE_XPAC: "includeXpac",
   DATA_VERSION: "dataVersion",
+  SHOW_SYSTEM_CATALOGUES: "showSystemCatalogues",
 } as const;
 
 /**
@@ -99,6 +103,9 @@ class SettingsStore {
         }
         if (record.key === SETTINGS_KEYS.DATA_VERSION) {
           settings.dataVersion = record.value === "undefined" ? undefined : (record.value as '1' | '2');
+        }
+        if (record.key === SETTINGS_KEYS.SHOW_SYSTEM_CATALOGUES) {
+          settings.showSystemCatalogues = record.value === "true";
         }
       }
 
@@ -199,6 +206,27 @@ class SettingsStore {
   }
 
   /**
+   * Update show system catalogues setting
+   */
+  async setShowSystemCatalogues(value: boolean): Promise<void> {
+    try {
+      await this.db.settings.put({
+        key: SETTINGS_KEYS.SHOW_SYSTEM_CATALOGUES,
+        value: String(value),
+        updatedAt: new Date(),
+      });
+
+      this.logger.debug("settings", "Updated show system catalogues", { value });
+    } catch (error) {
+      this.logger?.error("settings", "Failed to update show system catalogues", {
+        value,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
    * Reset all settings to defaults
    */
   async resetSettings(): Promise<void> {
@@ -242,6 +270,14 @@ class SettingsStore {
   async hasValidEmail(): Promise<boolean> {
     const email = await this.getPolitePoolEmail();
     return this.isValidEmail(email);
+  }
+
+  /**
+   * Get show system catalogues setting
+   */
+  async getShowSystemCatalogues(): Promise<boolean> {
+    const settings = await this.getSettings();
+    return settings.showSystemCatalogues;
   }
 
   /**
@@ -332,6 +368,8 @@ export const settingsActions = {
   getPolitePoolEmail: () => dexieStore.getPolitePoolEmail(),
   getApiKey: () => dexieStore.getApiKey(),
   hasValidEmail: () => dexieStore.hasValidEmail(),
+  setShowSystemCatalogues: (value: boolean) => dexieStore.setShowSystemCatalogues(value),
+  getShowSystemCatalogues: () => dexieStore.getShowSystemCatalogues(),
 };
 
 // Zustand-style compatibility - simple selector pattern
