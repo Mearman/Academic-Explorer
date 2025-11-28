@@ -1,3 +1,8 @@
+## 21.2.0 (2025-11-28)
+
+* feat(ci): add syncpack to Dependabot lockfile workflow ([3a3c602](https://github.com/Mearman/Academic-Explorer/commit/3a3c602))
+* chore(release): 21.1.2 [skip ci] ([4f13ede](https://github.com/Mearman/Academic-Explorer/commit/4f13ede))
+
 ## <small>21.1.2 (2025-11-27)</small>
 
 * fix(ci): use PR author check for Dependabot lockfile workflow ([807629c](https://github.com/Mearman/Academic-Explorer/commit/807629c))
