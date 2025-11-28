@@ -17,6 +17,8 @@ import {
   Paper,
   Box,
   Alert,
+  SegmentedControl,
+  Switch,
 } from '@mantine/core';
 import {
   IconGraph,
@@ -26,7 +28,8 @@ import {
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import { GraphAlgorithmsPanel } from '@/components/algorithms/GraphAlgorithmsPanel';
+import { GraphAlgorithmsPanel, type CommunityResult } from '@/components/algorithms/GraphAlgorithmsPanel';
+import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 /**
@@ -147,11 +150,23 @@ function AlgorithmsPage() {
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
   const [highlightedPath, setHighlightedPath] = useState<string[]>([]);
 
+  // Display mode: highlight dims non-selected nodes, filter hides them
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('highlight');
+
+  // Community assignments from algorithm results
+  const [communityAssignments, setCommunityAssignments] = useState<Map<string, number>>(new Map());
+  const [communityColors, setCommunityColors] = useState<Map<number, string>>(new Map());
+
+  // Enable/disable force simulation
+  const [enableSimulation, setEnableSimulation] = useState(true);
+
   // Regenerate sample data
   const handleRegenerateGraph = useCallback(() => {
     setGraphData(generateSampleGraph());
     setHighlightedNodes(new Set());
     setHighlightedPath([]);
+    setCommunityAssignments(new Map());
+    setCommunityColors(new Map());
   }, []);
 
   // Handle node highlighting from algorithm results
@@ -164,6 +179,45 @@ function AlgorithmsPage() {
   const handleHighlightPath = useCallback((path: string[]) => {
     setHighlightedPath(path);
     setHighlightedNodes(new Set(path));
+  }, []);
+
+  // Handle community selection - updates both highlighting and community coloring
+  const handleSelectCommunity = useCallback((communityId: number, nodeIds: string[]) => {
+    setHighlightedNodes(new Set(nodeIds));
+    setHighlightedPath([]);
+  }, []);
+
+  // Handle node click in the visualization
+  const handleNodeClick = useCallback((node: GraphNode) => {
+    // Toggle node highlight
+    setHighlightedNodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(node.id)) {
+        newSet.delete(node.id);
+      } else {
+        newSet.add(node.id);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Clear all highlights when clicking background
+  const handleBackgroundClick = useCallback(() => {
+    setHighlightedNodes(new Set());
+    setHighlightedPath([]);
+  }, []);
+
+  // Handle community detection results - update node coloring
+  const handleCommunitiesDetected = useCallback((communities: CommunityResult[], colors: Map<number, string>) => {
+    // Build node -> community assignment map
+    const assignments = new Map<string, number>();
+    communities.forEach((community) => {
+      community.nodeIds.forEach((nodeId) => {
+        assignments.set(nodeId, community.id);
+      });
+    });
+    setCommunityAssignments(assignments);
+    setCommunityColors(colors);
   }, []);
 
   // Calculate node type counts
@@ -217,6 +271,65 @@ function AlgorithmsPage() {
             The algorithms can analyze community structure, find paths, and detect graph properties.
           </Alert>
 
+          {/* Graph Visualization */}
+          <Card withBorder p="md">
+            <Group justify="space-between" mb="md">
+              <Title order={5}>Graph Visualization</Title>
+              <Group gap="md">
+                <Switch
+                  label="Simulation"
+                  checked={enableSimulation}
+                  onChange={(e) => setEnableSimulation(e.currentTarget.checked)}
+                  size="sm"
+                />
+                <SegmentedControl
+                  size="xs"
+                  value={displayMode}
+                  onChange={(value) => setDisplayMode(value as DisplayMode)}
+                  data={[
+                    { label: 'Highlight', value: 'highlight' },
+                    { label: 'Filter', value: 'filter' },
+                  ]}
+                />
+              </Group>
+            </Group>
+            <ForceGraphVisualization
+              nodes={graphData.nodes}
+              edges={graphData.edges}
+              height={450}
+              displayMode={displayMode}
+              highlightedNodeIds={highlightedNodes}
+              highlightedPath={highlightedPath}
+              communityAssignments={communityAssignments}
+              communityColors={communityColors}
+              enableSimulation={enableSimulation}
+              onNodeClick={handleNodeClick}
+              onBackgroundClick={handleBackgroundClick}
+            />
+            {highlightedNodes.size > 0 && (
+              <Group mt="sm" gap="xs">
+                <Text size="sm" c="dimmed">
+                  {highlightedNodes.size} nodes selected
+                </Text>
+                {highlightedPath.length > 0 && (
+                  <Text size="sm" c="blue">
+                    Path: {highlightedPath.join(' → ')}
+                  </Text>
+                )}
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  onClick={() => {
+                    setHighlightedNodes(new Set());
+                    setHighlightedPath([]);
+                  }}
+                >
+                  Clear
+                </Button>
+              </Group>
+            )}
+          </Card>
+
           {/* Main Content Grid */}
           <Grid>
             {/* Left: Graph Data Summary */}
@@ -246,32 +359,6 @@ function AlgorithmsPage() {
                     </Group>
                   </Stack>
                 </Card>
-
-                {/* Highlighted Nodes Card */}
-                {highlightedNodes.size > 0 && (
-                  <Card withBorder p="md">
-                    <Title order={5} mb="sm">Highlighted Nodes</Title>
-                    <Text size="sm" c="dimmed" mb="xs">
-                      {highlightedNodes.size} nodes selected
-                    </Text>
-                    {highlightedPath.length > 0 && (
-                      <Text size="xs" c="blue">
-                        Path: {highlightedPath.join(' → ')}
-                      </Text>
-                    )}
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      mt="sm"
-                      onClick={() => {
-                        setHighlightedNodes(new Set());
-                        setHighlightedPath([]);
-                      }}
-                    >
-                      Clear Selection
-                    </Button>
-                  </Card>
-                )}
               </Stack>
             </Grid.Col>
 
@@ -283,6 +370,8 @@ function AlgorithmsPage() {
                   edges={graphData.edges}
                   onHighlightNodes={handleHighlightNodes}
                   onHighlightPath={handleHighlightPath}
+                  onSelectCommunity={handleSelectCommunity}
+                  onCommunitiesDetected={handleCommunitiesDetected}
                 />
               </Paper>
             </Grid.Col>
