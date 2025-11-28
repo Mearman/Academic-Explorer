@@ -62,7 +62,7 @@ const DEFAULT_CONFIG: SampleGraphConfig = {
   seed: 42,
   componentCount: 1,
   edgesPerNodeRange: [1, 4],
-  totalNodeCountRange: [50, 200],
+  totalNodeCountRange: [50, 1000],
   workPercentage: 50,
   authorPercentage: 35,
   institutionPercentage: 15,
@@ -364,7 +364,7 @@ function AlgorithmsPage() {
   const [seedLocked, setSeedLocked] = useState(true);
   const [componentsLocked, setComponentsLocked] = useState(false);
   const [edgesLocked, setEdgesLocked] = useState(false);
-  const [totalNodesLocked, setTotalNodesLocked] = useState(false);
+  const [totalNodesLocked, setTotalNodesLocked] = useState(true);
   const [percentagesLocked, setPercentagesLocked] = useState(false);
 
   // Sample graph state
