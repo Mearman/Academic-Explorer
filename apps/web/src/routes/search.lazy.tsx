@@ -157,9 +157,9 @@ const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
     header: "Name",
     cell: ({ row }) => {
       const result = row.original;
-      const entityUrl = convertToRelativeUrl(
-        `https://openalex.org/${result.id}`,
-      );
+      // result.id is already a full URL like "https://openalex.org/T10044"
+      // Don't prepend another domain prefix
+      const entityUrl = convertToRelativeUrl(result.id);
 
       return (
         <div>

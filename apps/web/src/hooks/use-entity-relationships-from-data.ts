@@ -16,6 +16,16 @@ import type {
 } from '@/types/relationship';
 import { RELATIONSHIP_TYPE_LABELS, DEFAULT_PAGE_SIZE } from '@/types/relationship';
 
+/**
+ * Safely extract a string ID from an entity property
+ * Prevents [object Object] appearing in URLs if API returns unexpected data
+ */
+function safeStringId(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value == null) return '';
+  return String(value);
+}
+
 export interface UseEntityRelationshipsFromDataResult {
   /** Incoming relationship sections (other entities → this entity) */
   incoming: RelationshipSection[];
@@ -188,12 +198,12 @@ function extractAuthorRelationships(
         const institution = aff.institution;
         return createRelationshipItem(
           authorId,
-          institution?.id || '',
+          safeStringId(institution?.id),
           'authors' as EntityType,
           'institutions' as EntityType,
           RelationType.AFFILIATION,
           'outbound',
-          institution?.display_name || '',
+          safeStringId(institution?.display_name),
         );
       });
 
@@ -219,8 +229,8 @@ function extractAuthorRelationships(
     const topicItems: RelationshipItem[] = topics
       .filter(topic => topic.id && topic.display_name)
       .map(topic => {
-        const topicId = topic.id || '';
-        const topicName = topic.display_name || '';
+        const topicId = safeStringId(topic.id);
+        const topicName = safeStringId(topic.display_name);
         return createRelationshipItem(
           authorId,
           topicId,
@@ -270,12 +280,12 @@ function extractWorkRelationships(
         const author = auth.author;
         return createRelationshipItem(
           workId,
-          author?.id || '',
+          safeStringId(author?.id),
           'works' as EntityType,
           'authors' as EntityType,
           RelationType.AUTHORSHIP,
           'outbound',
-          author?.display_name || '',
+          safeStringId(author?.display_name),
         );
       });
 
@@ -352,8 +362,8 @@ function extractWorkRelationships(
     const topicItems: RelationshipItem[] = workTopics
       .filter(topic => topic.id && topic.display_name)
       .map(topic => {
-        const topicId = topic.id || '';
-        const topicName = topic.display_name || '';
+        const topicId = safeStringId(topic.id);
+        const topicName = safeStringId(topic.display_name);
         return createRelationshipItem(
           workId,
           topicId,
@@ -435,8 +445,8 @@ function extractWorkRelationships(
     const keywordItems: RelationshipItem[] = keywords
       .filter(keyword => keyword.id && keyword.display_name)
       .map(keyword => {
-        const keywordId = keyword.id || '';
-        const keywordName = keyword.display_name || '';
+        const keywordId = safeStringId(keyword.id);
+        const keywordName = safeStringId(keyword.display_name);
         return createRelationshipItem(
           workId,
           keywordId,
@@ -471,8 +481,8 @@ function extractWorkRelationships(
     const conceptItems: RelationshipItem[] = concepts
       .filter(concept => concept.id && concept.display_name)
       .map(concept => {
-        const conceptId = concept.id || '';
-        const conceptName = concept.display_name || '';
+        const conceptId = safeStringId(concept.id);
+        const conceptName = safeStringId(concept.display_name);
         return createRelationshipItem(
           workId,
           conceptId,
@@ -543,8 +553,8 @@ function extractInstitutionRelationships(
     const topicItems: RelationshipItem[] = topics
       .filter(topic => topic.id && topic.display_name)
       .map(topic => {
-        const topicId = topic.id || '';
-        const topicName = topic.display_name || '';
+        const topicId = safeStringId(topic.id);
+        const topicName = safeStringId(topic.display_name);
         return createRelationshipItem(
           institutionId,
           topicId,
@@ -577,8 +587,8 @@ function extractInstitutionRelationships(
     const repoItems: RelationshipItem[] = repositories
       .filter(repo => repo.id && repo.display_name)
       .map(repo => {
-        const repoId = repo.id || '';
-        const repoName = repo.display_name || '';
+        const repoId = safeStringId(repo.id);
+        const repoName = safeStringId(repo.display_name);
         return createRelationshipItem(
           institutionId,
           repoId,
@@ -611,7 +621,7 @@ function extractInstitutionRelationships(
     const roleItems: RelationshipItem[] = roles
       .filter(role => role.role && role.id)
       .map(role => {
-        const targetId = role.id || '';
+        const targetId = safeStringId(role.id);
         const roleName = role.role || '';
         // Infer target entity type from role
         let targetType: EntityType = 'works';
@@ -683,8 +693,8 @@ function extractSourceRelationships(
     const topicItems: RelationshipItem[] = topics
       .filter(topic => topic.id && topic.display_name)
       .map(topic => {
-        const topicId = topic.id || '';
-        const topicName = topic.display_name || '';
+        const topicId = safeStringId(topic.id);
+        const topicName = safeStringId(topic.display_name);
         return createRelationshipItem(
           sourceId,
           topicId,

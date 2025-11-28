@@ -89,7 +89,9 @@ function AutocompleteGeneralRoute() {
   };
 
   const getEntityRoute = (result: AutocompleteResult): string => {
-    const cleanId = result.id.replace("https://openalex.org/", "");
+    // Ensure result.id is a string to prevent [object Object] in URLs
+    const id = typeof result.id === 'string' ? result.id : String(result.id);
+    const cleanId = id.replace("https://openalex.org/", "");
     const entityType = result.entity_type || "";
 
     // Map entity_type to route path

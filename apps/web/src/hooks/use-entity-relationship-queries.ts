@@ -378,8 +378,12 @@ function createRelationshipItem(
   config: RelationshipQueryConfig,
   direction: 'inbound' | 'outbound'
 ): RelationshipItem {
-  const entityId = entity.id as string;
-  const displayName = entity.display_name as string;
+  // Safely extract ID and display_name, ensuring they are strings
+  // This prevents [object Object] appearing in IDs if API returns unexpected data
+  const rawId = entity.id;
+  const entityId = typeof rawId === 'string' ? rawId : (rawId != null ? String(rawId) : '');
+  const rawDisplayName = entity.display_name;
+  const displayName = typeof rawDisplayName === 'string' ? rawDisplayName : (rawDisplayName != null ? String(rawDisplayName) : '');
 
   // Determine source and target based on direction
   // For inbound: target is the current entity (not in this context), source is the API result
