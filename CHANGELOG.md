@@ -1,3 +1,7 @@
+## <small>22.8.2 (2025-11-28)</small>
+
+* fix(web): add topics support for embedded relationship extraction ([21c098b](https://github.com/Mearman/BibGraph/commit/21c098b))
+
 ## 22.8.0 (2025-11-28)
 
 * feat(web): add individual locks to node type distribution sliders ([8cecfde](https://github.com/Mearman/BibGraph/commit/8cecfde))
