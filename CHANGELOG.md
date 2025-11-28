@@ -1,3 +1,13 @@
+## 22.6.0 (2025-11-28)
+
+* fix(web): remove unused arrowWidth variable in graph visualization ([a1e89ed](https://github.com/Mearman/BibGraph/commit/a1e89ed))
+* fix(web): show node counts in total nodes slider tooltip ([831ab7b](https://github.com/Mearman/BibGraph/commit/831ab7b))
+* feat(web): add arrowhead rendering for directed edges in graph visualization ([3b86827](https://github.com/Mearman/BibGraph/commit/3b86827))
+* feat(web): add directed/undirected toggle for shortest path algorithm ([e6ebd75](https://github.com/Mearman/BibGraph/commit/e6ebd75))
+* feat(web): add numeric inputs to all graph configuration sliders ([0262e84](https://github.com/Mearman/BibGraph/commit/0262e84))
+* feat(web): set default max node count to 1000 and lock by default ([e3bd9e7](https://github.com/Mearman/BibGraph/commit/e3bd9e7))
+* chore(release): 22.5.0 [skip ci] ([346150c](https://github.com/Mearman/BibGraph/commit/346150c))
+
 ## 22.5.0 (2025-11-28)
 
 * refactor(web): extract node count bias into configurable function ([8003199](https://github.com/Mearman/BibGraph/commit/8003199))
