@@ -105,9 +105,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v4-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v3-
+            ${{ runner.os }}-nx-cache-v4-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -170,9 +170,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: ${{ runner.os }}-nx-cache-v3-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          key: ${{ runner.os }}-nx-cache-v4-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-cache-v3-
+            ${{ runner.os }}-nx-cache-v4-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
