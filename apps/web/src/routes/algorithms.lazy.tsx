@@ -39,7 +39,7 @@ import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/Fo
 
 /**
  * Configuration for sample graph generation
- * All ranges are [min, max] tuples
+ * Node counts are derived from totalNodeCountRange and percentage distribution
  */
 interface SampleGraphConfig {
   /** Random seed for reproducible graphs (null = use Math.random) */
@@ -48,21 +48,24 @@ interface SampleGraphConfig {
   componentCount: number;
   /** Range for edges per node [min, max] - each node gets a random value in range */
   edgesPerNodeRange: [number, number];
-  /** Range for number of work nodes [min, max] */
-  workCountRange: [number, number];
-  /** Range for number of author nodes [min, max] */
-  authorCountRange: [number, number];
-  /** Range for number of institution nodes [min, max] */
-  institutionCountRange: [number, number];
+  /** Range for total node count [min, max] */
+  totalNodeCountRange: [number, number];
+  /** Percentage of nodes that are works (0-100) */
+  workPercentage: number;
+  /** Percentage of nodes that are authors (0-100) */
+  authorPercentage: number;
+  /** Percentage of nodes that are institutions (0-100) */
+  institutionPercentage: number;
 }
 
 const DEFAULT_CONFIG: SampleGraphConfig = {
   seed: 42,
   componentCount: 1,
   edgesPerNodeRange: [1, 4],
-  workCountRange: [15, 25],
-  authorCountRange: [6, 10],
-  institutionCountRange: [2, 6],
+  totalNodeCountRange: [25, 40],
+  workPercentage: 50,
+  authorPercentage: 35,
+  institutionPercentage: 15,
 };
 
 /**
@@ -108,18 +111,27 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
     seed,
     componentCount,
     edgesPerNodeRange,
-    workCountRange,
-    authorCountRange,
-    institutionCountRange,
+    totalNodeCountRange,
+    workPercentage,
+    authorPercentage,
+    institutionPercentage,
   } = config;
 
   // Use seeded random if seed is provided, otherwise use Math.random
   const random = seed !== null ? createSeededRandom(seed) : Math.random;
 
-  // Get actual node counts from ranges
-  const actualWorkCount = randomInRange(workCountRange, random);
-  const actualAuthorCount = randomInRange(authorCountRange, random);
-  const actualInstitutionCount = randomInRange(institutionCountRange, random);
+  // Get total node count from range
+  const totalNodes = randomInRange(totalNodeCountRange, random);
+
+  // Calculate actual counts from percentages (ensure at least 1 of each if percentage > 0)
+  const rawWorkCount = Math.round((totalNodes * workPercentage) / 100);
+  const rawAuthorCount = Math.round((totalNodes * authorPercentage) / 100);
+  const rawInstitutionCount = Math.round((totalNodes * institutionPercentage) / 100);
+
+  // Ensure minimum of 1 for non-zero percentages, 0 for zero percentages
+  const actualWorkCount = workPercentage > 0 ? Math.max(1, rawWorkCount) : 0;
+  const actualAuthorCount = authorPercentage > 0 ? Math.max(1, rawAuthorCount) : 0;
+  const actualInstitutionCount = institutionPercentage > 0 ? Math.max(1, rawInstitutionCount) : 0;
 
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
@@ -335,6 +347,62 @@ function AlgorithmsPage() {
     setGraphConfig((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  // Update a percentage slider while proportionally adjusting others to maintain 100% total
+  const updatePercentage = useCallback((
+    changedKey: 'workPercentage' | 'authorPercentage' | 'institutionPercentage',
+    newValue: number
+  ) => {
+    setGraphConfig((prev) => {
+      const keys: Array<'workPercentage' | 'authorPercentage' | 'institutionPercentage'> = [
+        'workPercentage', 'authorPercentage', 'institutionPercentage'
+      ];
+      const otherKeys = keys.filter(k => k !== changedKey);
+
+      const oldValue = prev[changedKey];
+      const delta = newValue - oldValue;
+
+      // Calculate sum of other percentages
+      const otherSum = otherKeys.reduce((sum, k) => sum + prev[k], 0);
+
+      // If no room to adjust others, constrain the change
+      if (otherSum === 0 && delta > 0) {
+        return prev; // Can't increase if others are all 0
+      }
+
+      // Clamp new value to valid range
+      const clampedValue = Math.max(0, Math.min(100, newValue));
+      const actualDelta = clampedValue - oldValue;
+
+      // Distribute the negative delta proportionally among others
+      const newConfig = { ...prev, [changedKey]: clampedValue };
+
+      if (actualDelta !== 0 && otherSum > 0) {
+        let remaining = -actualDelta;
+        otherKeys.forEach((key, index) => {
+          if (index === otherKeys.length - 1) {
+            // Last one takes whatever's remaining to ensure exact 100%
+            newConfig[key] = Math.max(0, Math.min(100, prev[key] + remaining));
+          } else {
+            const proportion = prev[key] / otherSum;
+            const adjustment = Math.round(-actualDelta * proportion);
+            newConfig[key] = Math.max(0, Math.min(100, prev[key] + adjustment));
+            remaining -= adjustment;
+          }
+        });
+      } else if (actualDelta !== 0 && otherSum === 0) {
+        // Edge case: others are 0, can only decrease this one
+        // Split the freed percentage evenly among others
+        const splitAmount = Math.floor(-actualDelta / otherKeys.length);
+        const extraAmount = -actualDelta - splitAmount * otherKeys.length;
+        otherKeys.forEach((key, index) => {
+          newConfig[key] = splitAmount + (index === 0 ? extraAmount : 0);
+        });
+      }
+
+      return newConfig;
+    });
+  }, []);
+
   // Randomize all slider values (seed only if unlocked)
   const handleRandomize = useCallback(() => {
     // Helper to generate a random range [min, max] within bounds
@@ -344,15 +412,31 @@ function AlgorithmsPage() {
       return a <= b ? [a, b] : [b, a];
     };
 
+    // Generate random percentages that sum to 100
+    const randomPercentages = (): [number, number, number] => {
+      // Generate 2 random cut points, sort them, then derive 3 segments
+      const cut1 = Math.floor(Math.random() * 101); // 0-100
+      const cut2 = Math.floor(Math.random() * 101);
+      const sorted = [0, cut1, cut2, 100].sort((a, b) => a - b);
+      return [
+        sorted[1] - sorted[0], // works
+        sorted[2] - sorted[1], // authors
+        sorted[3] - sorted[2], // institutions
+      ];
+    };
+
+    const [workPct, authorPct, instPct] = randomPercentages();
+
     setGraphConfig((prev) => ({
       ...prev,
       // Only randomize seed if unlocked
       seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
       componentCount: Math.floor(Math.random() * 6) + 1, // 1-6
       edgesPerNodeRange: randomRange(0, 10),
-      workCountRange: randomRange(1, 50),
-      authorCountRange: randomRange(1, 30),
-      institutionCountRange: randomRange(0, 15),
+      totalNodeCountRange: randomRange(10, 100),
+      workPercentage: workPct,
+      authorPercentage: authorPct,
+      institutionPercentage: instPct,
     }));
   }, [seedLocked]);
 
@@ -649,62 +733,83 @@ function AlgorithmsPage() {
 
                     <Divider />
 
-                    {/* Node Counts */}
-                    <Text size="xs" fw={500}>Node Counts (min - max)</Text>
+                    {/* Total Nodes */}
+                    <Box>
+                      <Text size="xs" fw={500} mb={4}>
+                        Total Nodes: {graphConfig.totalNodeCountRange[0]} - {graphConfig.totalNodeCountRange[1]}
+                      </Text>
+                      <RangeSlider
+                        value={graphConfig.totalNodeCountRange}
+                        onChange={(val) => updateConfig('totalNodeCountRange', val)}
+                        min={5}
+                        max={150}
+                        step={1}
+                        minRange={1}
+                        marks={[
+                          { value: 5, label: '5' },
+                          { value: 75, label: '75' },
+                          { value: 150, label: '150' },
+                        ]}
+                        size="sm"
+                      />
+                    </Box>
+
+                    <Divider />
+
+                    {/* Node Type Distribution */}
+                    <Text size="xs" fw={500}>Node Type Distribution</Text>
+                    <Text size="xs" c="dimmed">Percentages auto-adjust to total 100%</Text>
                     <Stack gap="md">
                       <Box>
                         <Text size="xs" c="dimmed" mb={4}>
-                          Works: {graphConfig.workCountRange[0]} - {graphConfig.workCountRange[1]}
+                          Works: {graphConfig.workPercentage}%
                         </Text>
-                        <RangeSlider
-                          value={graphConfig.workCountRange}
-                          onChange={(val) => updateConfig('workCountRange', val)}
-                          min={1}
-                          max={50}
-                          step={1}
-                          minRange={0}
-                          marks={[
-                            { value: 1, label: '1' },
-                            { value: 25, label: '25' },
-                            { value: 50, label: '50' },
-                          ]}
-                          size="sm"
-                        />
-                      </Box>
-                      <Box>
-                        <Text size="xs" c="dimmed" mb={4}>
-                          Authors: {graphConfig.authorCountRange[0]} - {graphConfig.authorCountRange[1]}
-                        </Text>
-                        <RangeSlider
-                          value={graphConfig.authorCountRange}
-                          onChange={(val) => updateConfig('authorCountRange', val)}
-                          min={1}
-                          max={30}
-                          step={1}
-                          minRange={0}
-                          marks={[
-                            { value: 1, label: '1' },
-                            { value: 15, label: '15' },
-                            { value: 30, label: '30' },
-                          ]}
-                          size="sm"
-                        />
-                      </Box>
-                      <Box>
-                        <Text size="xs" c="dimmed" mb={4}>
-                          Institutions: {graphConfig.institutionCountRange[0]} - {graphConfig.institutionCountRange[1]}
-                        </Text>
-                        <RangeSlider
-                          value={graphConfig.institutionCountRange}
-                          onChange={(val) => updateConfig('institutionCountRange', val)}
+                        <Slider
+                          value={graphConfig.workPercentage}
+                          onChange={(val) => updatePercentage('workPercentage', val)}
                           min={0}
-                          max={15}
+                          max={100}
                           step={1}
-                          minRange={0}
                           marks={[
-                            { value: 0, label: '0' },
-                            { value: 7, label: '7' },
-                            { value: 15, label: '15' },
+                            { value: 0, label: '0%' },
+                            { value: 50, label: '50%' },
+                            { value: 100, label: '100%' },
+                          ]}
+                          size="sm"
+                        />
+                      </Box>
+                      <Box>
+                        <Text size="xs" c="dimmed" mb={4}>
+                          Authors: {graphConfig.authorPercentage}%
+                        </Text>
+                        <Slider
+                          value={graphConfig.authorPercentage}
+                          onChange={(val) => updatePercentage('authorPercentage', val)}
+                          min={0}
+                          max={100}
+                          step={1}
+                          marks={[
+                            { value: 0, label: '0%' },
+                            { value: 50, label: '50%' },
+                            { value: 100, label: '100%' },
+                          ]}
+                          size="sm"
+                        />
+                      </Box>
+                      <Box>
+                        <Text size="xs" c="dimmed" mb={4}>
+                          Institutions: {graphConfig.institutionPercentage}%
+                        </Text>
+                        <Slider
+                          value={graphConfig.institutionPercentage}
+                          onChange={(val) => updatePercentage('institutionPercentage', val)}
+                          min={0}
+                          max={100}
+                          step={1}
+                          marks={[
+                            { value: 0, label: '0%' },
+                            { value: 50, label: '50%' },
+                            { value: 100, label: '100%' },
                           ]}
                           size="sm"
                         />
