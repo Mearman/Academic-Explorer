@@ -1,3 +1,13 @@
+## 21.3.0 (2025-11-28)
+
+* fix(ci): bump Nx cache version to v4 to clear stale artifacts ([f39c657](https://github.com/Mearman/Academic-Explorer/commit/f39c657))
+* fix(ci): install dependencies before running syncpack in dependabot workflow ([e282e04](https://github.com/Mearman/Academic-Explorer/commit/e282e04))
+* fix(ci): use workflow file hash for self-invalidating Nx cache key ([208999b](https://github.com/Mearman/Academic-Explorer/commit/208999b))
+* fix(config): update commitlint scopes to match current package structure ([eb3a5a6](https://github.com/Mearman/Academic-Explorer/commit/eb3a5a6))
+* fix(web): use relative base path for dual-domain deployment ([2f5345a](https://github.com/Mearman/Academic-Explorer/commit/2f5345a))
+* feat(ci): add syncpack auto-fix on main branch ([f5a6ade](https://github.com/Mearman/Academic-Explorer/commit/f5a6ade))
+* chore(release): 21.2.1 [skip ci] ([a6ff715](https://github.com/Mearman/Academic-Explorer/commit/a6ff715))
+
 ## <small>21.2.1 (2025-11-28)</small>
 
 * chore(deps-dev): bump @axe-core/playwright from 4.10.2 to 4.11.0 (#141) ([915c6a0](https://github.com/Mearman/Academic-Explorer/commit/915c6a0)), closes [#141](https://github.com/Mearman/Academic-Explorer/issues/141)
