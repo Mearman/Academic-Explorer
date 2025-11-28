@@ -30,7 +30,6 @@ import React, { useState, useCallback, useMemo } from 'react';
 
 import { GraphAlgorithmsPanel, type CommunityResult } from '@/components/algorithms/GraphAlgorithmsPanel';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
-import { MainLayout } from '@/components/layout/MainLayout';
 
 /**
  * Generate sample academic graph data for demonstration
@@ -239,8 +238,7 @@ function AlgorithmsPage() {
   }, [graphData.edges]);
 
   return (
-    <MainLayout>
-      <Container size="xl" py="md">
+    <Container size="xl" py="md">
         <Stack gap="lg">
           {/* Page Header */}
           <Group justify="space-between" align="flex-start">
@@ -377,8 +375,7 @@ function AlgorithmsPage() {
             </Grid.Col>
           </Grid>
         </Stack>
-      </Container>
-    </MainLayout>
+    </Container>
   );
 }
 
