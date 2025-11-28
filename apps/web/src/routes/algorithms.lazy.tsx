@@ -46,12 +46,18 @@ interface SampleGraphConfig {
   minEdgesPerNode: number;
   /** Maximum edges per node */
   maxEdgesPerNode: number;
-  /** Total number of work nodes */
+  /** Base number of work nodes */
   workCount: number;
-  /** Total number of author nodes */
+  /** Variance for work count (actual = workCount ± workVariance) */
+  workVariance: number;
+  /** Base number of author nodes */
   authorCount: number;
-  /** Total number of institution nodes */
+  /** Variance for author count */
+  authorVariance: number;
+  /** Base number of institution nodes */
   institutionCount: number;
+  /** Variance for institution count */
+  institutionVariance: number;
 }
 
 const DEFAULT_CONFIG: SampleGraphConfig = {
@@ -60,8 +66,11 @@ const DEFAULT_CONFIG: SampleGraphConfig = {
   minEdgesPerNode: 1,
   maxEdgesPerNode: 4,
   workCount: 20,
+  workVariance: 0,
   authorCount: 8,
+  authorVariance: 0,
   institutionCount: 4,
+  institutionVariance: 0,
 };
 
 /**
@@ -91,13 +100,38 @@ function distributeToComponents<T>(items: T[], componentCount: number): T[][] {
 }
 
 /**
+ * Apply variance to a base count, ensuring result is >= min
+ */
+function applyVariance(base: number, variance: number, random: () => number, min = 0): number {
+  if (variance === 0) return base;
+  const delta = Math.floor(random() * (variance * 2 + 1)) - variance;
+  return Math.max(min, base + delta);
+}
+
+/**
  * Generate sample academic graph data for demonstration
  */
 function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { nodes: GraphNode[]; edges: GraphEdge[] } {
-  const { seed, componentCount, minEdgesPerNode, maxEdgesPerNode, workCount, authorCount, institutionCount } = config;
+  const {
+    seed,
+    componentCount,
+    minEdgesPerNode,
+    maxEdgesPerNode,
+    workCount,
+    workVariance,
+    authorCount,
+    authorVariance,
+    institutionCount,
+    institutionVariance,
+  } = config;
 
   // Use seeded random if seed is provided, otherwise use Math.random
   const random = seed !== null ? createSeededRandom(seed) : Math.random;
+
+  // Apply variance to node counts
+  const actualWorkCount = applyVariance(workCount, workVariance, random, 1);
+  const actualAuthorCount = applyVariance(authorCount, authorVariance, random, 1);
+  const actualInstitutionCount = applyVariance(institutionCount, institutionVariance, random, 0);
 
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
@@ -108,10 +142,10 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   const incrementEdgeCount = (nodeId: string) => edgeCounts.set(nodeId, getEdgeCount(nodeId) + 1);
   const canAddEdge = (nodeId: string) => getEdgeCount(nodeId) < maxEdgesPerNode;
 
-  // Create node IDs
-  const workIds = Array.from({ length: workCount }, (_, i) => `W${i + 1}`);
-  const authorIds = Array.from({ length: authorCount }, (_, i) => `A${i + 1}`);
-  const institutionIds = Array.from({ length: institutionCount }, (_, i) => `I${i + 1}`);
+  // Create node IDs using actual counts (with variance applied)
+  const workIds = Array.from({ length: actualWorkCount }, (_, i) => `W${i + 1}`);
+  const authorIds = Array.from({ length: actualAuthorCount }, (_, i) => `A${i + 1}`);
+  const institutionIds = Array.from({ length: actualInstitutionCount }, (_, i) => `I${i + 1}`);
 
   // Distribute nodes across components
   const workComponents = distributeToComponents(workIds, componentCount);
@@ -541,34 +575,67 @@ function AlgorithmsPage() {
 
                     <Divider />
 
-                    {/* Node Counts */}
-                    <Text size="xs" fw={500}>Node Counts</Text>
-                    <Group grow>
-                      <NumberInput
-                        label="Works"
-                        value={graphConfig.workCount}
-                        onChange={(val) => updateConfig('workCount', typeof val === 'number' ? Math.max(1, val) : 20)}
-                        min={1}
-                        max={100}
-                        size="xs"
-                      />
-                      <NumberInput
-                        label="Authors"
-                        value={graphConfig.authorCount}
-                        onChange={(val) => updateConfig('authorCount', typeof val === 'number' ? Math.max(1, val) : 8)}
-                        min={1}
-                        max={50}
-                        size="xs"
-                      />
-                      <NumberInput
-                        label="Institutions"
-                        value={graphConfig.institutionCount}
-                        onChange={(val) => updateConfig('institutionCount', typeof val === 'number' ? Math.max(0, val) : 4)}
-                        min={0}
-                        max={20}
-                        size="xs"
-                      />
-                    </Group>
+                    {/* Node Counts with Variance */}
+                    <Text size="xs" fw={500}>Node Counts (base ± variance)</Text>
+                    <Stack gap="xs">
+                      <Group grow align="flex-end">
+                        <NumberInput
+                          label="Works"
+                          value={graphConfig.workCount}
+                          onChange={(val) => updateConfig('workCount', typeof val === 'number' ? Math.max(1, val) : 20)}
+                          min={1}
+                          max={100}
+                          size="xs"
+                        />
+                        <NumberInput
+                          label="±"
+                          value={graphConfig.workVariance}
+                          onChange={(val) => updateConfig('workVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                          min={0}
+                          max={50}
+                          size="xs"
+                          styles={{ label: { textAlign: 'center' } }}
+                        />
+                      </Group>
+                      <Group grow align="flex-end">
+                        <NumberInput
+                          label="Authors"
+                          value={graphConfig.authorCount}
+                          onChange={(val) => updateConfig('authorCount', typeof val === 'number' ? Math.max(1, val) : 8)}
+                          min={1}
+                          max={50}
+                          size="xs"
+                        />
+                        <NumberInput
+                          label="±"
+                          value={graphConfig.authorVariance}
+                          onChange={(val) => updateConfig('authorVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                          min={0}
+                          max={25}
+                          size="xs"
+                          styles={{ label: { textAlign: 'center' } }}
+                        />
+                      </Group>
+                      <Group grow align="flex-end">
+                        <NumberInput
+                          label="Institutions"
+                          value={graphConfig.institutionCount}
+                          onChange={(val) => updateConfig('institutionCount', typeof val === 'number' ? Math.max(0, val) : 4)}
+                          min={0}
+                          max={20}
+                          size="xs"
+                        />
+                        <NumberInput
+                          label="±"
+                          value={graphConfig.institutionVariance}
+                          onChange={(val) => updateConfig('institutionVariance', typeof val === 'number' ? Math.max(0, val) : 0)}
+                          min={0}
+                          max={10}
+                          size="xs"
+                          styles={{ label: { textAlign: 'center' } }}
+                        />
+                      </Group>
+                    </Stack>
                   </Stack>
                 </Card>
 
