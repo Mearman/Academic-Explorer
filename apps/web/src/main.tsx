@@ -202,15 +202,19 @@ setupGlobalErrorHandling(logger);
 initializeNetworkMonitoring();
 initWebVitals();
 
-// Configure static cache URL for GitHub Pages deployment
-// Detect GitHub Pages deployment by checking if the base path includes the repo name
-const isGitHubPages = import.meta.env.BASE_URL.includes("/Academic-Explorer/");
-if (isGitHubPages) {
+// Configure static cache URL for deployed environments
+// Works for both GitHub Pages (mearman.github.io) and custom domain (bibgraph.com)
+const isProduction = typeof window !== 'undefined' && (
+  window.location.hostname === 'mearman.github.io' ||
+  window.location.hostname === 'bibgraph.com' ||
+  window.location.hostname.endsWith('.github.io')
+);
+if (isProduction) {
   cachedOpenAlex.updateConfig({
     staticCacheGitHubPagesUrl:
       "https://mearman.github.io/Academic-Explorer/data/openalex/",
   });
-  logger.debug("main", "Configured GitHub Pages static cache URL");
+  logger.debug("main", "Configured production static cache URL");
 }
 
 // Create QueryClient for TanStack Query

@@ -36,11 +36,10 @@ function githubPagesPlugin(): PluginOption {
 
 // Type-safe configuration creation
 function createWebConfig(): UserConfig {
-  const isGitHubPages = process.env.GITHUB_PAGES === 'true';
-
   return {
-    // Base path for GitHub Pages deployment
-    base: isGitHubPages ? '/Academic-Explorer/' : '/',
+    // Use relative base path for dual-domain deployment (GitHub Pages + custom domain)
+    // With hash routing, relative paths resolve correctly from any document location
+    base: './',
 
     // Pass GITHUB_PAGES to client code via import.meta.env
     envPrefix: ['VITE_', 'GITHUB_PAGES'],
