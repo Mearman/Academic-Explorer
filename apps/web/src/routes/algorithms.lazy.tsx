@@ -754,7 +754,7 @@ function AlgorithmsPage() {
                     {/* Components */}
                     <Box>
                       <Group justify="space-between" mb={4}>
-                        <Text size="xs" fw={500}>Components: {graphConfig.componentCount}</Text>
+                        <Text size="xs" fw={500}>Components</Text>
                         <Button
                           variant={componentsLocked ? "light" : "subtle"}
                           size="compact-xs"
@@ -765,19 +765,31 @@ function AlgorithmsPage() {
                           {componentsLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
                         </Button>
                       </Group>
-                      <Slider
-                        value={graphConfig.componentCount}
-                        onChange={(val) => updateConfig('componentCount', val)}
-                        min={1}
-                        max={6}
-                        step={1}
-                        marks={[
-                          { value: 1, label: '1' },
-                          { value: 3, label: '3' },
-                          { value: 6, label: '6' },
-                        ]}
-                        size="sm"
-                      />
+                      <Group gap="xs" align="center">
+                        <Slider
+                          value={graphConfig.componentCount}
+                          onChange={(val) => updateConfig('componentCount', val)}
+                          min={1}
+                          max={6}
+                          step={1}
+                          marks={[
+                            { value: 1, label: '1' },
+                            { value: 3, label: '3' },
+                            { value: 6, label: '6' },
+                          ]}
+                          size="sm"
+                          style={{ flex: 1 }}
+                        />
+                        <NumberInput
+                          value={graphConfig.componentCount}
+                          onChange={(val) => updateConfig('componentCount', typeof val === 'number' ? Math.max(1, Math.min(6, val)) : 1)}
+                          min={1}
+                          max={6}
+                          size="xs"
+                          w={60}
+                          hideControls
+                        />
+                      </Group>
                     </Box>
 
                     <Divider />
@@ -785,9 +797,7 @@ function AlgorithmsPage() {
                     {/* Edges per Node */}
                     <Box>
                       <Group justify="space-between" mb={4}>
-                        <Text size="xs" fw={500}>
-                          Edges per Node: {graphConfig.edgesPerNodeRange[0]} - {graphConfig.edgesPerNodeRange[1]}
-                        </Text>
+                        <Text size="xs" fw={500}>Edges per Node</Text>
                         <Button
                           variant={edgesLocked ? "light" : "subtle"}
                           size="compact-xs"
@@ -798,20 +808,47 @@ function AlgorithmsPage() {
                           {edgesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
                         </Button>
                       </Group>
-                      <RangeSlider
-                        value={graphConfig.edgesPerNodeRange}
-                        onChange={(val) => updateConfig('edgesPerNodeRange', val)}
-                        min={0}
-                        max={10}
-                        step={1}
-                        minRange={0}
-                        marks={[
-                          { value: 0, label: '0' },
-                          { value: 5, label: '5' },
-                          { value: 10, label: '10' },
-                        ]}
-                        size="sm"
-                      />
+                      <Group gap="xs" align="center">
+                        <NumberInput
+                          value={graphConfig.edgesPerNodeRange[0]}
+                          onChange={(val) => {
+                            const newMin = typeof val === 'number' ? Math.max(0, Math.min(10, val)) : 0;
+                            updateConfig('edgesPerNodeRange', [newMin, Math.max(newMin, graphConfig.edgesPerNodeRange[1])]);
+                          }}
+                          min={0}
+                          max={10}
+                          size="xs"
+                          w={50}
+                          hideControls
+                        />
+                        <RangeSlider
+                          value={graphConfig.edgesPerNodeRange}
+                          onChange={(val) => updateConfig('edgesPerNodeRange', val)}
+                          min={0}
+                          max={10}
+                          step={1}
+                          minRange={0}
+                          marks={[
+                            { value: 0, label: '0' },
+                            { value: 5, label: '5' },
+                            { value: 10, label: '10' },
+                          ]}
+                          size="sm"
+                          style={{ flex: 1 }}
+                        />
+                        <NumberInput
+                          value={graphConfig.edgesPerNodeRange[1]}
+                          onChange={(val) => {
+                            const newMax = typeof val === 'number' ? Math.max(0, Math.min(10, val)) : 10;
+                            updateConfig('edgesPerNodeRange', [Math.min(graphConfig.edgesPerNodeRange[0], newMax), newMax]);
+                          }}
+                          min={0}
+                          max={10}
+                          size="xs"
+                          w={50}
+                          hideControls
+                        />
+                      </Group>
                     </Box>
 
                     <Divider />
@@ -819,9 +856,7 @@ function AlgorithmsPage() {
                     {/* Total Nodes (Log Scale) */}
                     <Box>
                       <Group justify="space-between" mb={4}>
-                        <Text size="xs" fw={500}>
-                          Total Nodes: {graphConfig.totalNodeCountRange[0].toLocaleString()} - {graphConfig.totalNodeCountRange[1].toLocaleString()}
-                        </Text>
+                        <Text size="xs" fw={500}>Total Nodes</Text>
                         <Button
                           variant={totalNodesLocked ? "light" : "subtle"}
                           size="compact-xs"
@@ -832,28 +867,57 @@ function AlgorithmsPage() {
                           {totalNodesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
                         </Button>
                       </Group>
-                      <RangeSlider
-                        value={[
-                          logNodesToLinear(graphConfig.totalNodeCountRange[0]),
-                          logNodesToLinear(graphConfig.totalNodeCountRange[1])
-                        ]}
-                        onChange={(val) => updateConfig('totalNodeCountRange', [
-                          linearToLogNodes(val[0]),
-                          linearToLogNodes(val[1])
-                        ])}
-                        min={0}
-                        max={100}
-                        step={0.5}
-                        minRange={0}
-                        marks={[
-                          { value: logNodesToLinear(5), label: '5' },
-                          { value: logNodesToLinear(50), label: '50' },
-                          { value: logNodesToLinear(500), label: '500' },
-                          { value: logNodesToLinear(5000), label: '5k' },
-                          { value: logNodesToLinear(10000), label: '10k' },
-                        ]}
-                        size="sm"
-                      />
+                      <Group gap="xs" align="center">
+                        <NumberInput
+                          value={graphConfig.totalNodeCountRange[0]}
+                          onChange={(val) => {
+                            const newMin = typeof val === 'number' ? Math.max(5, Math.min(10000, val)) : 5;
+                            updateConfig('totalNodeCountRange', [newMin, Math.max(newMin, graphConfig.totalNodeCountRange[1])]);
+                          }}
+                          min={5}
+                          max={10000}
+                          size="xs"
+                          w={70}
+                          hideControls
+                          thousandSeparator
+                        />
+                        <RangeSlider
+                          value={[
+                            logNodesToLinear(graphConfig.totalNodeCountRange[0]),
+                            logNodesToLinear(graphConfig.totalNodeCountRange[1])
+                          ]}
+                          onChange={(val) => updateConfig('totalNodeCountRange', [
+                            linearToLogNodes(val[0]),
+                            linearToLogNodes(val[1])
+                          ])}
+                          min={0}
+                          max={100}
+                          step={0.5}
+                          minRange={0}
+                          marks={[
+                            { value: logNodesToLinear(5), label: '5' },
+                            { value: logNodesToLinear(50), label: '50' },
+                            { value: logNodesToLinear(500), label: '500' },
+                            { value: logNodesToLinear(5000), label: '5k' },
+                            { value: logNodesToLinear(10000), label: '10k' },
+                          ]}
+                          size="sm"
+                          style={{ flex: 1 }}
+                        />
+                        <NumberInput
+                          value={graphConfig.totalNodeCountRange[1]}
+                          onChange={(val) => {
+                            const newMax = typeof val === 'number' ? Math.max(5, Math.min(10000, val)) : 10000;
+                            updateConfig('totalNodeCountRange', [Math.min(graphConfig.totalNodeCountRange[0], newMax), newMax]);
+                          }}
+                          min={5}
+                          max={10000}
+                          size="xs"
+                          w={70}
+                          hideControls
+                          thousandSeparator
+                        />
+                      </Group>
                     </Box>
 
                     <Divider />
@@ -874,58 +938,91 @@ function AlgorithmsPage() {
                     <Text size="xs" c="dimmed">Percentages auto-adjust to total 100%</Text>
                     <Stack gap="md">
                       <Box>
-                        <Text size="xs" c="dimmed" mb={4}>
-                          Works: {graphConfig.workPercentage}%
-                        </Text>
-                        <Slider
-                          value={graphConfig.workPercentage}
-                          onChange={(val) => updatePercentage('workPercentage', val)}
-                          min={0}
-                          max={100}
-                          step={1}
-                          marks={[
-                            { value: 0, label: '0%' },
-                            { value: 50, label: '50%' },
-                            { value: 100, label: '100%' },
-                          ]}
-                          size="sm"
-                        />
+                        <Text size="xs" c="dimmed" mb={4}>Works</Text>
+                        <Group gap="xs" align="center">
+                          <Slider
+                            value={graphConfig.workPercentage}
+                            onChange={(val) => updatePercentage('workPercentage', val)}
+                            min={0}
+                            max={100}
+                            step={1}
+                            marks={[
+                              { value: 0, label: '0%' },
+                              { value: 50, label: '50%' },
+                              { value: 100, label: '100%' },
+                            ]}
+                            size="sm"
+                            style={{ flex: 1 }}
+                          />
+                          <NumberInput
+                            value={graphConfig.workPercentage}
+                            onChange={(val) => updatePercentage('workPercentage', typeof val === 'number' ? val : 0)}
+                            min={0}
+                            max={100}
+                            size="xs"
+                            w={60}
+                            hideControls
+                            suffix="%"
+                          />
+                        </Group>
                       </Box>
                       <Box>
-                        <Text size="xs" c="dimmed" mb={4}>
-                          Authors: {graphConfig.authorPercentage}%
-                        </Text>
-                        <Slider
-                          value={graphConfig.authorPercentage}
-                          onChange={(val) => updatePercentage('authorPercentage', val)}
-                          min={0}
-                          max={100}
-                          step={1}
-                          marks={[
-                            { value: 0, label: '0%' },
-                            { value: 50, label: '50%' },
-                            { value: 100, label: '100%' },
-                          ]}
-                          size="sm"
-                        />
+                        <Text size="xs" c="dimmed" mb={4}>Authors</Text>
+                        <Group gap="xs" align="center">
+                          <Slider
+                            value={graphConfig.authorPercentage}
+                            onChange={(val) => updatePercentage('authorPercentage', val)}
+                            min={0}
+                            max={100}
+                            step={1}
+                            marks={[
+                              { value: 0, label: '0%' },
+                              { value: 50, label: '50%' },
+                              { value: 100, label: '100%' },
+                            ]}
+                            size="sm"
+                            style={{ flex: 1 }}
+                          />
+                          <NumberInput
+                            value={graphConfig.authorPercentage}
+                            onChange={(val) => updatePercentage('authorPercentage', typeof val === 'number' ? val : 0)}
+                            min={0}
+                            max={100}
+                            size="xs"
+                            w={60}
+                            hideControls
+                            suffix="%"
+                          />
+                        </Group>
                       </Box>
                       <Box>
-                        <Text size="xs" c="dimmed" mb={4}>
-                          Institutions: {graphConfig.institutionPercentage}%
-                        </Text>
-                        <Slider
-                          value={graphConfig.institutionPercentage}
-                          onChange={(val) => updatePercentage('institutionPercentage', val)}
-                          min={0}
-                          max={100}
-                          step={1}
-                          marks={[
-                            { value: 0, label: '0%' },
-                            { value: 50, label: '50%' },
-                            { value: 100, label: '100%' },
-                          ]}
-                          size="sm"
-                        />
+                        <Text size="xs" c="dimmed" mb={4}>Institutions</Text>
+                        <Group gap="xs" align="center">
+                          <Slider
+                            value={graphConfig.institutionPercentage}
+                            onChange={(val) => updatePercentage('institutionPercentage', val)}
+                            min={0}
+                            max={100}
+                            step={1}
+                            marks={[
+                              { value: 0, label: '0%' },
+                              { value: 50, label: '50%' },
+                              { value: 100, label: '100%' },
+                            ]}
+                            size="sm"
+                            style={{ flex: 1 }}
+                          />
+                          <NumberInput
+                            value={graphConfig.institutionPercentage}
+                            onChange={(val) => updatePercentage('institutionPercentage', typeof val === 'number' ? val : 0)}
+                            min={0}
+                            max={100}
+                            size="xs"
+                            w={60}
+                            hideControls
+                            suffix="%"
+                          />
+                        </Group>
                       </Box>
                     </Stack>
                   </Stack>
