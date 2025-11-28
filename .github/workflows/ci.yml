@@ -78,13 +78,17 @@ jobs:
               - '.github/workflows/**'
               - '.github/actions/**'
 
-  # Syncpack - validates dependency versions are consistent
+  # Syncpack - validates and auto-fixes dependency versions
   syncpack:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -108,8 +112,35 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check dependency versions
+      - name: Check dependency versions (PRs)
+        if: github.event_name == 'pull_request'
         run: pnpm nx syncpack:lint academic-explorer
+
+      - name: Fix dependency versions (main branch)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          pnpm syncpack fix-mismatches
+          pnpm syncpack format
+
+      - name: Check for changes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update lockfile and commit fixes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.changes.outputs.changed == 'true'
+        run: |
+          pnpm install --no-frozen-lockfile
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(deps): auto-fix syncpack mismatches [skip ci]"
+          git push
 
   # Main validation job - build, typecheck, lint, and all tests in one job
   # Consolidating reduces setup overhead and lets Nx fully optimize the task graph
