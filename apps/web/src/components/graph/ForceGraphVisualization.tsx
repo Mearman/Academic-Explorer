@@ -11,6 +11,8 @@ import { Box, LoadingOverlay } from '@mantine/core';
 import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject } from 'react-force-graph-2d';
 
+import { getEdgeStyle } from './edge-styles';
+
 // Entity type colors for consistent styling
 const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
   works: '#3b82f6',       // blue
@@ -461,20 +463,34 @@ function getDefaultNodeStyle(
 }
 
 /**
- * Default link styling based on highlighting
+ * Default link styling based on edge type, direction, and highlighting
+ * Uses edge-styles.ts for consistent relationship type colors
  */
 function getDefaultLinkStyle(
   link: ForceGraphLink,
   isHighlighted: boolean,
   isPathHighlightMode: boolean
 ): LinkStyle {
-  const isDirected = link.originalEdge.direction !== undefined;
+  const edge = link.originalEdge;
+  const edgeStyle = getEdgeStyle(edge);
+  const isDirected = edge.direction !== undefined;
+
+  // Path highlight mode overrides edge type colors
+  if (isHighlighted && isPathHighlightMode) {
+    return {
+      color: '#3b82f6', // Blue for path highlighting
+      width: 3,
+      opacity: 0.8,
+      dashed: false,
+      directed: isDirected,
+    };
+  }
 
   return {
-    color: isHighlighted && isPathHighlightMode ? '#3b82f6' : '#999',
-    width: isHighlighted && isPathHighlightMode ? 3 : 1,
-    opacity: 0.6,
-    dashed: false,
+    color: edgeStyle.stroke ?? '#999',
+    width: edgeStyle.strokeWidth ?? 2,
+    opacity: edgeStyle.strokeOpacity ?? 0.6,
+    dashed: edgeStyle.strokeDasharray !== undefined,
     directed: isDirected,
   };
 }
