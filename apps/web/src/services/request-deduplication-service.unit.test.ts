@@ -3,7 +3,7 @@
  * Tests request deduplication, caching, and error handling
  */
 
-import type { OpenAlexEntity } from "@academic-explorer/types";
+import type { OpenAlexEntity } from "@bibgraph/types";
 import { QueryClient } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -14,7 +14,7 @@ import {
 
 
 // Mock logger to prevent console output during tests
-vi.mock("@academic-explorer/utils/logger", () => ({
+vi.mock("@bibgraph/utils/logger", () => ({
   logger: {
     info: vi.fn(),
     warn: vi.fn(),

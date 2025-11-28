@@ -6,7 +6,7 @@
 import {
   apiResponseSchema,
   staticDataSchema,
-} from "@academic-explorer/types/entities";
+} from "@bibgraph/types/entities";
 
 /**
  * Validates external API response data using Zod schema

@@ -1,4 +1,4 @@
-import { debouncedSearch, normalizeSearchQuery, isValidSearchQuery } from "@academic-explorer/utils";
+import { debouncedSearch, normalizeSearchQuery, isValidSearchQuery } from "@bibgraph/utils";
 import { Group, TextInput, Button, Stack, Paper, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState, useCallback } from "react";

@@ -1,7 +1,7 @@
 /**
- * Academic Explorer Generators
+ * BibGraph Generators
  *
- * Custom Nx generators for the Academic Explorer monorepo.
+ * Custom Nx generators for the BibGraph monorepo.
  *
  * Available generators:
  * - library: Create new packages with proper structure

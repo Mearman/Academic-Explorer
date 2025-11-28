@@ -20,8 +20,8 @@ export default defineConfig(
       deps: {
         // Inline workspace packages to resolve from source files
         inline: [
-          "@academic-explorer/types",
-          "@academic-explorer/utils",
+          "@bibgraph/types",
+          "@bibgraph/utils",
         ],
       },
     },

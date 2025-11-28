@@ -1,6 +1,6 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { DexieStorageProvider } from "@academic-explorer/utils";
-import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { DexieStorageProvider } from "@bibgraph/utils";
+import { setupGlobalErrorHandling, logger } from "@bibgraph/utils/logger";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
@@ -267,7 +267,7 @@ storageProvider.initializeSpecialLists().catch((error) => {
 (async () => {
   try {
     const { settingsStoreInstance } = await import("@/stores/settings-store");
-    const { updateOpenAlexEmail, updateOpenAlexApiKey } = await import("@academic-explorer/client");
+    const { updateOpenAlexEmail, updateOpenAlexApiKey } = await import("@bibgraph/client");
 
     const settings = await settingsStoreInstance.getSettings();
 

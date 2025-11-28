@@ -8,7 +8,7 @@ import type {
   Source,
   Topic,
   Work,
-} from "@academic-explorer/types"
+} from "@bibgraph/types"
 
 export interface EntityGridItem {
   id: string

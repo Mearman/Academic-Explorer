@@ -40,7 +40,7 @@ apps/web/public/data/openalex/
 ### Basic Usage
 
 ```typescript
-import { writeToDiskCache } from '@academic-explorer/client/cache/disk';
+import { writeToDiskCache } from '@bibgraph/client/cache/disk';
 
 // Write intercepted API response to disk
 await writeToDiskCache({
@@ -61,7 +61,7 @@ await writeToDiskCache({
 ### Advanced Configuration
 
 ```typescript
-import { DiskCacheWriter } from '@academic-explorer/client/cache/disk';
+import { DiskCacheWriter } from '@bibgraph/client/cache/disk';
 
 const writer = new DiskCacheWriter({
   basePath: '/custom/cache/path',

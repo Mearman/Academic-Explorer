@@ -12,7 +12,7 @@
  */
 
 import type { Page } from '@playwright/test';
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 /**
  * Navigation helper

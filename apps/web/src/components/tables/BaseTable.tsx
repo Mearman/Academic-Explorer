@@ -1,4 +1,4 @@
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@bibgraph/utils";
 import {
   Table,
   Pagination,

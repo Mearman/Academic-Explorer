@@ -1500,7 +1500,7 @@ test.describe('Page Objects - Working Examples', () => {
 ## Step 5: Run the Tests
 
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 
 # Install dependencies (if needed)
 pnpm install
@@ -1585,12 +1585,12 @@ After implementing, verify:
 
 ## Common Issues and Solutions
 
-### Issue: "Cannot find module '@academic-explorer/types'"
+### Issue: "Cannot find module '@bibgraph/types'"
 
 **Solution**: Check import path matches your monorepo structure
 ```typescript
 // ✅ Correct for Nx monorepo
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 
 // Check tsconfig paths configuration
 ```
@@ -1730,7 +1730,7 @@ test.describe('Works Detail Page', () => {
 ### 6. Run Tests
 
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 pnpm test:e2e works-detail.e2e.test.ts
 ```
 
@@ -2527,7 +2527,7 @@ Good luck! The effort in setup will pay dividends when you write your 50th test.
 
 ## File Locations
 
-All files are in: `/Users/joe/Documents/Research/PhD/Academic Explorer/docs/`
+All files are in: `/Users/joe/Documents/Research/PhD/BibGraph/docs/`
 
 ```
 docs/
@@ -2600,7 +2600,7 @@ Implementation is successful when:
 
 ## License & Attribution
 
-All content created by Claude Code (QA Specialist) for Academic Explorer project.
+All content created by Claude Code (QA Specialist) for BibGraph project.
 Designed for TanStack Router v7 + Playwright test automation.
 
 ---
@@ -2618,13 +2618,13 @@ Designed for TanStack Router v7 + Playwright test automation.
 # Page Object Model Patterns for TanStack Router v7 + Playwright
 
 **Author**: Claude Code (QA Specialist)
-**Context**: Academic Explorer monorepo - 12 entity types with hash-based SPA routing
+**Context**: BibGraph monorepo - 12 entity types with hash-based SPA routing
 **Date**: 2025-11-23
 **Goal**: Provide maintainable E2E testing pattern for 50+ new entity page tests
 
 ## Executive Summary
 
-For your Academic Explorer setup, I recommend a **Hierarchical Page Object Pattern** with role-based inheritance. This approach:
+For your BibGraph setup, I recommend a **Hierarchical Page Object Pattern** with role-based inheritance. This approach:
 
 - Avoids the brittleness of raw `page.goto()` tests
 - Exploits shared entity page structure (12 entity types → 7 detailed implementations)
@@ -3088,7 +3088,7 @@ export abstract class BaseSPAPageObject extends BasePageObject {
  */
 
 import { expect } from '@playwright/test';
-import type { EntityType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
 import { BaseSPAPageObject, type PageObjectConfig } from './BaseSPAPageObject';
 
 export interface EntityPageConfig extends PageObjectConfig {
@@ -4507,7 +4507,7 @@ await page.navigateToRelatedEntity('incoming', 0);     // Navigate to related
 ## Testing: Run Your Examples
 
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 
 # Run infrastructure sanity tests (Week 1)
 pnpm test:e2e __tests__/base-entity.e2e.test.ts
@@ -4575,7 +4575,7 @@ await this.page.waitForTimeout(1000);
 {
   "compilerOptions": {
     "paths": {
-      "@academic-explorer/*": ["../../packages/*/src"]
+      "@bibgraph/*": ["../../packages/*/src"]
     }
   }
 }
@@ -4721,7 +4721,7 @@ Ready? Start with README_PAGE_OBJECT_PATTERNS.md 👉
 
 ## What's Included in This Research
 
-This folder contains four comprehensive documents analyzing and implementing page object patterns for your Academic Explorer test suite:
+This folder contains four comprehensive documents analyzing and implementing page object patterns for your BibGraph test suite:
 
 ### 1. **PAGE_OBJECT_PATTERNS.md** (Main Specification)
    - **Length**: 3,500+ lines
@@ -4815,7 +4815,7 @@ This folder contains four comprehensive documents analyzing and implementing pag
 
 ### The Decision: Hierarchical Page Objects
 
-For your Academic Explorer context (12 entity types, 50+ tests, TanStack Router v7):
+For your BibGraph context (12 entity types, 50+ tests, TanStack Router v7):
 
 ```
 ✅ RECOMMENDED: Hierarchical Page Object Pattern
@@ -5228,7 +5228,7 @@ After implementing the pattern, you should see:
 
 ## Final Recommendation
 
-**For your Academic Explorer context**, implementing the Hierarchical Page Object Pattern is the right choice because:
+**For your BibGraph context**, implementing the Hierarchical Page Object Pattern is the right choice because:
 
 1. ✅ **You have 12 entity types** - Inheritance saves massive code duplication
 2. ✅ **You're planning 50+ tests** - Pattern breaks even at test #10

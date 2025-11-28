@@ -62,8 +62,8 @@ export default defineConfig({
         "immer",
 
         // Internal workspace dependencies
-        "@academic-explorer/types",
-        "@academic-explorer/utils",
+        "@bibgraph/types",
+        "@bibgraph/utils",
       ],
       output: {
         globals: {
@@ -90,7 +90,7 @@ export default defineConfig({
   optimizeDeps: {
     include: [],
     // Handle Node.js externalization properly
-    exclude: ['@academic-explorer/client', '@academic-explorer/utils'],
+    exclude: ['@bibgraph/client', '@bibgraph/utils'],
   },
 
   // Define global replacements for browser compatibility

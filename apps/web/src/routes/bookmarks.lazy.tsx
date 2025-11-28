@@ -1,7 +1,7 @@
-import type { EntityType, Bookmark } from "@academic-explorer/types";
-import { BookmarkList, BookmarkSearchFilters } from "@academic-explorer/ui";
-import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@academic-explorer/utils";
-import type { ExportFormat, ExportOptions, CatalogueEntity } from "@academic-explorer/utils";
+import type { EntityType, Bookmark } from "@bibgraph/types";
+import { BookmarkList, BookmarkSearchFilters } from "@bibgraph/ui";
+import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@bibgraph/utils";
+import type { ExportFormat, ExportOptions, CatalogueEntity } from "@bibgraph/utils";
 import {
 	Container,
 	Title,

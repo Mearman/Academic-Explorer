@@ -3,7 +3,7 @@
  * Integrates with existing bookmark system and entity detail components
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import {
   ActionIcon,
   Menu,

@@ -1,4 +1,4 @@
-import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@bibgraph/utils/ui/filter-base";
 import { Switch } from "@mantine/core";
 
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";

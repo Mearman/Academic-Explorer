@@ -68,7 +68,7 @@ Reduce runtime from 15.4s to ~11s for 1000-node graphs through parameter tuning.
 
 ```bash
 # Run existing tests (all 9 must pass)
-cd "/Users/joe/Documents/Research/PhD/Academic Explorer"
+cd "/Users/joe/Documents/Research/PhD/BibGraph"
 pnpm nx test algorithms --testPathPattern=louvain.test.ts
 
 # Run performance benchmark

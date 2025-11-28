@@ -10,7 +10,7 @@ import type {
   OpenAlexResponse,
   AutocompleteResult,
   GroupedResponse,
-} from "@academic-explorer/types/entities";
+} from "@bibgraph/types/entities";
 
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

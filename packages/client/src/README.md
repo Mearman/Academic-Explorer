@@ -16,7 +16,7 @@ A comprehensive TypeScript client for the [OpenAlex API](https://docs.openalex.o
 ## Quick Start
 
 ```typescript
-import { OpenAlexClient, createOpenAlexClient } from '@academic-explorer/openalex-client';
+import { OpenAlexClient, createOpenAlexClient } from '@bibgraph/openalex-client';
 
 // Create client with configuration
 const client = createOpenAlexClient({
@@ -24,7 +24,7 @@ const client = createOpenAlexClient({
 });
 
 // Or use the default instance
-import { openAlex } from '@academic-explorer/openalex-client';
+import { openAlex } from '@bibgraph/openalex-client';
 ```
 
 ## Basic Usage
@@ -105,7 +105,7 @@ const usInstitutions = await client.institutions.getInstitutionsByCountry('US');
 Build complex queries with the fluent query builder:
 
 ```typescript
-import { createWorksQuery } from '@academic-explorer/openalex-client';
+import { createWorksQuery } from '@bibgraph/openalex-client';
 
 const query = createWorksQuery()
   .addFilter('publication_year', 2023)
@@ -251,7 +251,7 @@ console.log('Reset time: ' + stats.rateLimit.dailyResetTime);
 The client provides detailed error information:
 
 ```typescript
-import { OpenAlexApiError, OpenAlexRateLimitError } from '@academic-explorer/openalex-client';
+import { OpenAlexApiError, OpenAlexRateLimitError } from '@bibgraph/openalex-client';
 
 try {
   const work = await client.works.getWork('invalid-id');
@@ -278,7 +278,7 @@ import type {
   WorksFilters,
   QueryParams,
   OpenAlexResponse
-} from '@academic-explorer/openalex-client';
+} from '@bibgraph/openalex-client';
 
 // Type-safe filtering
 const filters: WorksFilters = {

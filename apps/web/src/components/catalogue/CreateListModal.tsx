@@ -2,7 +2,7 @@
  * Modal component for creating new catalogue lists
  */
 
-import type { ListType } from "@academic-explorer/utils";
+import type { ListType } from "@bibgraph/utils";
 import {
   TextInput,
   Textarea,

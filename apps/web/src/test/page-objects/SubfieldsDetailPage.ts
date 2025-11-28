@@ -1,7 +1,7 @@
 /**
  * Subfields Detail Page Object
  *
- * Page object for Subfield entity detail pages in Academic Explorer.
+ * Page object for Subfield entity detail pages in BibGraph.
  * Represents the middle-lower level of OpenAlex taxonomy hierarchy (Domain → Field → Subfield → Topic).
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → SubfieldsDetailPage

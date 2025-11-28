@@ -9,7 +9,7 @@
 
 ### User Story 1 - Cross-Validate Research Data from Multiple Sources (Priority: P1)
 
-Researchers need to verify and enrich academic data by cross-referencing multiple scholarly databases. Currently, Academic Explorer only queries OpenAlex, limiting data completeness and verification options.
+Researchers need to verify and enrich academic data by cross-referencing multiple scholarly databases. Currently, BibGraph only queries OpenAlex, limiting data completeness and verification options.
 
 **Why this priority**: Core value proposition - enables data validation and fills gaps in OpenAlex coverage. Essential for research credibility and data completeness.
 
@@ -146,7 +146,7 @@ Researchers want a single search interface that queries multiple providers simul
 1. **Provider API Stability**: Assumes Crossref, Semantic Scholar, and arXiv APIs remain stable and free during implementation and deployment
 2. **OpenAlex Primary**: OpenAlex remains the primary provider; other providers supplement and validate OpenAlex data
 3. **Entity Model Compatibility**: Current entity types (Work, Author, Institution, etc.) can accommodate metadata from new providers without schema breaking changes
-4. **Rate Limit Compliance**: Academic Explorer's usage patterns fit within free tier rate limits for all providers (development/individual researcher scale)
+4. **Rate Limit Compliance**: BibGraph's usage patterns fit within free tier rate limits for all providers (development/individual researcher scale)
 5. **Identifier Availability**: Most works will have at least one cross-provider identifier (DOI, arXiv ID) for linking
 6. **Caching Effectiveness**: Existing multi-tier caching strategy (Memory → localStorage → IndexedDB → Static JSON → API) applies to new providers
 7. **User Preference**: Users want more data sources and are willing to see provider-specific differences (not expecting perfect normalization)

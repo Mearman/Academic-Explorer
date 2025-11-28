@@ -1,4 +1,4 @@
-import { EntityDetectionService } from "@academic-explorer/utils";
+import { EntityDetectionService } from "@bibgraph/utils";
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
@@ -9,8 +9,8 @@ import { Route as OpenAlexUrlRoute } from "@/routes/openalex-url/$";
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
 
 // Mock EntityDetectionService
-vi.mock("@academic-explorer/utils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@academic-explorer/utils")>();
+vi.mock("@bibgraph/utils", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@bibgraph/utils")>();
   return {
     ...actual,
     EntityDetectionService: {

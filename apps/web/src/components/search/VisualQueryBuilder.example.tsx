@@ -3,8 +3,8 @@
  * This demonstrates how to integrate the visual query builder into your application
  */
 
-import type { EntityType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils";
+import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
 import React, { useState } from "react";
 

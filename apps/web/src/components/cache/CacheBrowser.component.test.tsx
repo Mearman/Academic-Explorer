@@ -9,7 +9,7 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { CacheBrowser } from "./CacheBrowser";
 
 // Mock the cache browser service
-vi.mock("@academic-explorer/utils", () => ({
+vi.mock("@bibgraph/utils", () => ({
   cacheBrowserService: {
     browse: vi.fn().mockResolvedValue({
       entities: [],

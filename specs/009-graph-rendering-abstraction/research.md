@@ -1,7 +1,7 @@
 # Force-Directed Graph Layout: Technical Research Findings
 
 **Date**: 2025-11-12
-**Context**: Implementation decisions for Academic Explorer's force-directed graph rendering system
+**Context**: Implementation decisions for BibGraph's force-directed graph rendering system
 **Scope**: 500-1000 nodes at 60fps with deterministic layouts
 
 ## Executive Summary

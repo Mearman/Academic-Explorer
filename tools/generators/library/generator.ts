@@ -27,7 +27,7 @@ class UtilityLibrary extends LibraryBase {
     ]
 
     const importPath =
-      this.options.importPath || `@academic-explorer/${projectDirectory}`
+      this.options.importPath || `@bibgraph/${projectDirectory}`
 
     const className = this.names.className
     const fileName = this.names.fileName
@@ -84,7 +84,7 @@ class FeatureLibrary extends LibraryBase {
     ]
 
     const importPath =
-      this.options.importPath || `@academic-explorer/${projectDirectory}`
+      this.options.importPath || `@bibgraph/${projectDirectory}`
 
     const className = this.names.className
     const fileName = this.names.fileName
@@ -141,7 +141,7 @@ class DataLibrary extends LibraryBase {
     ]
 
     const importPath =
-      this.options.importPath || `@academic-explorer/${projectDirectory}`
+      this.options.importPath || `@bibgraph/${projectDirectory}`
 
     const className = this.names.className
     const fileName = this.names.fileName
@@ -223,7 +223,7 @@ class UILibrary extends LibraryBase {
     ]
 
     const importPath =
-      this.options.importPath || `@academic-explorer/${projectDirectory}`
+      this.options.importPath || `@bibgraph/${projectDirectory}`
 
     const className = this.names.className
     const fileName = this.names.fileName

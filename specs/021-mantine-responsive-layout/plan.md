@@ -7,7 +7,7 @@
 
 ## Summary
 
-Fix responsive layout issues in Academic Explorer by correctly configuring Mantine 7.x responsive system. Primary requirements: (1) Mobile-first header navigation with collapsible menu, (2) Responsive sidebar widths and collapse behavior across breakpoints, (3) Content layout auto-adaptation with responsive padding/spacing. Technical approach uses Mantine's mobile-first breakpoint system (base/sm/md/lg/xl), responsive prop objects for AppShell configuration, and strategic use of hiddenFrom/visibleFrom for conditional rendering.
+Fix responsive layout issues in BibGraph by correctly configuring Mantine 7.x responsive system. Primary requirements: (1) Mobile-first header navigation with collapsible menu, (2) Responsive sidebar widths and collapse behavior across breakpoints, (3) Content layout auto-adaptation with responsive padding/spacing. Technical approach uses Mantine's mobile-first breakpoint system (base/sm/md/lg/xl), responsive prop objects for AppShell configuration, and strategic use of hiddenFrom/visibleFrom for conditional rendering.
 
 ## Technical Context
 
@@ -25,13 +25,13 @@ Fix responsive layout issues in Academic Explorer by correctly configuring Manti
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 ### Initial Check (Pre-Phase 0)
 
 1. **Type Safety**: ✅ PASS - All responsive props use typed Mantine breakpoint objects (`MantineBreakpoint`), no `any` types planned
 2. **Test-First Development**: ✅ PASS - Component tests (responsive behavior), E2E tests (viewport resizing), accessibility tests will be written before implementation
-3. **Monorepo Architecture**: ✅ PASS - Modifies existing `apps/web/src/components/layout/MainLayout.tsx`, no new packages required, uses `@academic-explorer/*` imports
+3. **Monorepo Architecture**: ✅ PASS - Modifies existing `apps/web/src/components/layout/MainLayout.tsx`, no new packages required, uses `@bibgraph/*` imports
 4. **Storage Abstraction**: ✅ PASS - Uses existing Dexie storage provider for sidebar preferences (no new storage operations)
 5. **Performance & Memory**: ✅ PASS - Performance requirements documented (<100ms adaptation), tests run serially, no Web Workers needed (UI-only changes)
 6. **Atomic Conventional Commits**: ✅ PASS - Each responsive change (header/sidebar/content) committed separately with `fix(web):` prefix

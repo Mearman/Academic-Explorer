@@ -3,7 +3,7 @@
  * Extends the existing user interactions system with pagination-aware query bookmarking
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { useLocation, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 

@@ -8,7 +8,7 @@
  * for various graph visualization libraries (react-force-graph, XYFlow, D3, etc.)
  */
 
-import type { GraphNode } from "@academic-explorer/types";
+import type { GraphNode } from "@bibgraph/types";
 
 import {
   getConditionalNodeStyle,

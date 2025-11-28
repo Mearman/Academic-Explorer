@@ -7,7 +7,7 @@
 
 ## Summary
 
-Consolidate all duplicate `EntityType` definitions across the Academic Explorer monorepo into a single canonical source in `@academic-explorer/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Remove all re-exports between internal packages per Constitution Principle III. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Establish TypeScript type safety across all 8 packages with direct imports only.
+Consolidate all duplicate `EntityType` definitions across the BibGraph monorepo into a single canonical source in `@bibgraph/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Remove all re-exports between internal packages per Constitution Principle III. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Establish TypeScript type safety across all 8 packages with direct imports only.
 
 ## Technical Context
 
@@ -25,7 +25,7 @@ Consolidate all duplicate `EntityType` definitions across the Academic Explorer 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: No `any` types planned; use `unknown` with type guards
 2. **Test-First Development**: Tests written and failing before implementation begins
@@ -85,13 +85,13 @@ packages/
 apps/
 ├── web/
 │   └── src/
-│       ├── components/                  # Update imports to use @academic-explorer/types
-│       ├── routes/                      # Update imports to use @academic-explorer/types
-│       └── services/                    # Update imports to use @academic-explorer/types
+│       ├── components/                  # Update imports to use @bibgraph/types
+│       ├── routes/                      # Update imports to use @bibgraph/types
+│       └── services/                    # Update imports to use @bibgraph/types
 │
 └── cli/
     └── src/
-        └── commands/                    # Update imports to use @academic-explorer/types
+        └── commands/                    # Update imports to use @bibgraph/types
 ```
 
 **Structure Decision**: Monorepo architecture with Nx workspace. The `packages/types` package already contains the canonical entity definitions created in spec-017. This refactoring will eliminate duplicate definitions in `packages/graph`, `packages/utils`, and update all consuming packages to import from the single source. No new packages or apps required - purely consolidation of existing type definitions.
@@ -104,7 +104,7 @@ apps/
 
 2. ✅ **Test-First Development**: All 738 existing tests must pass. No new features = no new tests required. TypeScript compiler serves as primary validation.
 
-3. ✅ **Monorepo Architecture**: Refactoring operates entirely within existing Nx workspace structure. No new packages/apps created. Leverages existing `@academic-explorer/*` path aliases.
+3. ✅ **Monorepo Architecture**: Refactoring operates entirely within existing Nx workspace structure. No new packages/apps created. Leverages existing `@bibgraph/*` path aliases.
 
 4. ✅ **Storage Abstraction**: No storage operations modified. Type imports only. Catalogue DB schema references centralized types without implementation changes.
 
@@ -112,7 +112,7 @@ apps/
 
 6. ✅ **Atomic Conventional Commits**: Will create incremental commits per package (e.g., `refactor(graph): remove duplicate EntityType`, `refactor(utils): import EntityType from types package`). Spec commits after each phase.
 
-7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principle VII (no backward compatibility during development). Re-exports prohibited per Constitution Principle III. Consumers must update imports directly to @academic-explorer/types.
+7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principle VII (no backward compatibility during development). Re-exports prohibited per Constitution Principle III. Consumers must update imports directly to @bibgraph/types.
 
 8. ✅ **Test-First Bug Fixes**: N/A (refactoring task, not bug fix). If type mismatches discovered, will add regression tests before fixes.
 
@@ -143,7 +143,7 @@ N/A - No constitution violations. This refactoring reduces complexity by elimina
    - Cache browser "autocomplete" is a storage type, not an entity type
    - Graph package has exact match but duplicates unnecessarily
 
-3. **Consolidation Strategy**: Eliminate all duplicates, import from `@academic-explorer/types`
+3. **Consolidation Strategy**: Eliminate all duplicates, import from `@bibgraph/types`
    - Create `CacheStorageType = EntityType | "autocomplete"` for cache browser
    - No domain-specific subsets needed (YAGNI-compliant)
    - No re-exports per Constitution Principle III (no re-exports between internal packages)
@@ -164,7 +164,7 @@ N/A - No constitution violations. This refactoring reduces complexity by elimina
 **Entity Type Union**:
 - 12 string literal types (works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields)
 - Located in `packages/types/src/entities/entities.ts:223-235`
-- Export path: `@academic-explorer/types`
+- Export path: `@bibgraph/types`
 
 **Entity Metadata**:
 - `EntityMetadataEntry` interface (8 properties: displayName, plural, description, color, icon, idPrefix, routePath, singularForm)
@@ -182,16 +182,16 @@ N/A - No constitution violations. This refactoring reduces complexity by elimina
 
 **Type-Only Imports**:
 ```typescript
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **No Re-Exports** (Constitution Principle III):
 ```typescript
 // ❌ WRONG: graph/utils packages MUST NOT re-export from types package
-// export type { EntityType } from "@academic-explorer/types"
+// export type { EntityType } from "@bibgraph/types"
 
 // ✅ CORRECT: Consumers import directly from canonical source
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 ```
 
 **Cache Storage Type**:
@@ -224,7 +224,7 @@ export type CacheStorageType = EntityType | "autocomplete"
 
 2. ✅ **Test-First Development**: No new features = no new tests required. All 738 existing tests must pass. TypeScript compiler serves as primary validation mechanism.
 
-3. ✅ **Monorepo Architecture**: Design operates entirely within existing Nx structure. No new packages/apps. Leverages existing tsconfig project references and path aliases (`@academic-explorer/*`).
+3. ✅ **Monorepo Architecture**: Design operates entirely within existing Nx structure. No new packages/apps. Leverages existing tsconfig project references and path aliases (`@bibgraph/*`).
 
 4. ✅ **Storage Abstraction**: No storage operations modified. Catalogue DB and cache browser use type imports only. Dexie schemas reference types without runtime imports.
 
@@ -232,7 +232,7 @@ export type CacheStorageType = EntityType | "autocomplete"
 
 6. ✅ **Atomic Conventional Commits**: Migration plan defines 4 commits (one per package: graph, utils, web, cli). Each commit is atomic and independently verifiable. Format: `refactor(package): import EntityType from types package`.
 
-7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principles III and VII. No re-exports between internal packages. Consumers must update imports to @academic-explorer/types directly. No deprecation warnings per constitution (breaking changes acceptable).
+7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principles III and VII. No re-exports between internal packages. Consumers must update imports to @bibgraph/types directly. No deprecation warnings per constitution (breaking changes acceptable).
 
 8. ✅ **Test-First Bug Fixes**: N/A (refactoring, not bug fix). If type mismatches discovered during migration, regression tests will be added before fixes.
 

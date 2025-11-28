@@ -3,9 +3,9 @@
  * Handles requests, rate limiting, error handling, and response parsing
  */
 
-import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-explorer/types";
-import { validateWithSchema } from "@academic-explorer/types/entities";
-import { logger } from "@academic-explorer/utils";
+import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@bibgraph/types";
+import { validateWithSchema } from "@bibgraph/types/entities";
+import { logger } from "@bibgraph/utils";
 import { z } from "zod";
 
 import { apiInterceptor, type InterceptedRequest } from "./interceptors/api-interceptor";

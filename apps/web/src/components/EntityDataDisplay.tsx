@@ -6,8 +6,8 @@
  * Renders ALL fields from the API response.
  */
 
-import { VersionComparisonIndicator } from "@academic-explorer/ui";
-import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
+import { VersionComparisonIndicator } from "@bibgraph/ui";
+import { isDataVersionSelectorVisible } from "@bibgraph/utils";
 import {
   Anchor,
   Badge,

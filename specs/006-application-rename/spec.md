@@ -41,11 +41,11 @@ After name selection, secure the digital presence by registering domain names an
 
 ### User Story 3 - Codebase Name Migration (Priority: P3)
 
-Update all codebase references from "Academic Explorer" to the selected new name, including package names, repository metadata, documentation, and UI text.
+Update all codebase references from "BibGraph" to the selected new name, including package names, repository metadata, documentation, and UI text.
 
 **Why this priority**: This is the technical implementation that follows the decision and domain registration. It can be planned and executed only after P1 and P2 are complete.
 
-**Independent Test**: Can be tested by performing a full-text search for "Academic Explorer" across the codebase and verifying all appropriate occurrences are replaced, while testing that the application still builds and runs correctly.
+**Independent Test**: Can be tested by performing a full-text search for "BibGraph" across the codebase and verifying all appropriate occurrences are replaced, while testing that the application still builds and runs correctly.
 
 **Acceptance Scenarios**:
 
@@ -76,7 +76,7 @@ Update external references including GitHub repository name, deployment URLs, pu
 ### Edge Cases
 
 - What happens when users have existing local storage or IndexedDB data under the old application name? (Migration strategy needed)
-- How does the system handle external citations or academic references to "Academic Explorer" in published papers? (Documentation note and redirect strategy)
+- How does the system handle external citations or academic references to "BibGraph" in published papers? (Documentation note and redirect strategy)
 - What if the preferred domain becomes unavailable during the registration process? (Fallback to alternative extension or second-choice name)
 - How are in-flight pull requests and branches referencing old name handled? (Update guidelines in PR template)
 - What about existing social media presence or mentions under old name? (Announcement strategy and cross-posting plan)
@@ -88,7 +88,7 @@ Update external references including GitHub repository name, deployment URLs, pu
 - **FR-001**: System MUST provide a decision matrix comparing at least 4 name candidates with scores for uniqueness, relevance, memorability, and domain availability
 - **FR-002**: System MUST verify domain availability for selected name across at least .com, .io, .app, and .org extensions before final approval
 - **FR-003**: System MUST identify and document potential trademark conflicts via USPTO and EU trademark database searches
-- **FR-004**: System MUST identify all codebase references to "Academic Explorer" including package names, file content, documentation, and UI text
+- **FR-004**: System MUST identify all codebase references to "BibGraph" including package names, file content, documentation, and UI text
 - **FR-005**: System MUST update package.json name fields across all monorepo packages (apps/web, apps/cli, packages/*) to reflect new name
 - **FR-006**: System MUST update all documentation files (README.md, CLAUDE.md, package.json descriptions) with new name
 - **FR-007**: System MUST update UI text including HTML title tags, meta tags, navigation headers, and footer text
@@ -116,7 +116,7 @@ Update external references including GitHub repository name, deployment URLs, pu
 - **SC-004**: Zero broken imports or build failures occur after codebase name migration
 - **SC-005**: Full monorepo build (pnpm build) completes successfully in under 10 minutes after name changes
 - **SC-006**: All automated tests (pnpm test) pass with no failures after name changes
-- **SC-007**: Zero occurrences of "Academic Explorer" remain in codebase outside of git history and archived documentation
+- **SC-007**: Zero occurrences of "BibGraph" remain in codebase outside of git history and archived documentation
 - **SC-008**: GitHub repository redirect is configured and tested, with old URLs returning HTTP 301 status
 - **SC-009**: Deployed application at new GitHub Pages URL loads in under 3 seconds with new name visible in title and navigation
 - **SC-010**: Search engine meta tags and Open Graph data reflect new name within 48 hours of deployment
@@ -130,7 +130,7 @@ Update external references including GitHub repository name, deployment URLs, pu
 - Existing user data in browser storage (localStorage, IndexedDB) can be migrated using database key mapping if needed
 - Social media handles will follow the pattern @[ApplicationName] or [ApplicationName] without special characters
 - The selected name will use proper capitalization (e.g., "CitationMesh" not "citationmesh") for branding purposes
-- TypeScript import paths use @academic-explorer/* aliases which will need updating to @[new-name]/* format
+- TypeScript import paths use @bibgraph/* aliases which will need updating to @[new-name]/* format
 - The repository name change will not break existing clone URLs (GitHub provides automatic redirects)
 - The .io or .com domain extension is preferred; .app and .org are acceptable fallbacks
 

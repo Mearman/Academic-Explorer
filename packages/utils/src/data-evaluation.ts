@@ -200,7 +200,7 @@ export function createSTARDatasetFromParseResult({
 }
 
 /**
- * Compare Academic Explorer results with ground truth
+ * Compare BibGraph results with ground truth
  * Stub implementation - applications should provide their own
  */
 export function compareAcademicExplorerResults(

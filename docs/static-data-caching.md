@@ -1,6 +1,6 @@
 # Static Data Caching System
 
-The Academic Explorer implements a sophisticated multi-tier caching system designed to optimize OpenAlex API usage while providing fast, reliable access to academic data. This document covers the complete caching architecture, deployment strategies, and troubleshooting guidance.
+The BibGraph implements a sophisticated multi-tier caching system designed to optimize OpenAlex API usage while providing fast, reliable access to academic data. This document covers the complete caching architecture, deployment strategies, and troubleshooting guidance.
 
 ## Table of Contents
 
@@ -223,7 +223,7 @@ pnpm cli static:generate --entity-type works
 
 1. **Initial Setup:**
 ```bash
-cd "Academic Explorer"
+cd "BibGraph"
 pnpm install
 ```
 
@@ -501,13 +501,13 @@ simulation.randomSource(seededRandom);
 
 ## CLI Management Tools
 
-The Academic Explorer provides a comprehensive CLI for cache management and static data generation.
+The BibGraph provides a comprehensive CLI for cache management and static data generation.
 
 ### Installation and Basic Usage
 
 ```bash
 # Access CLI from project root
-cd "Academic Explorer"
+cd "BibGraph"
 pnpm cli --help
 ```
 
@@ -933,7 +933,7 @@ pnpm cli cache:import --input cache-backup.json
 
 ## Summary
 
-The Academic Explorer's static data caching system provides a robust, multi-tier approach to academic data management. By understanding the architecture, configuration options, and troubleshooting procedures outlined in this guide, developers can effectively optimize performance, manage deployments, and maintain reliable access to OpenAlex data.
+The BibGraph's static data caching system provides a robust, multi-tier approach to academic data management. By understanding the architecture, configuration options, and troubleshooting procedures outlined in this guide, developers can effectively optimize performance, manage deployments, and maintain reliable access to OpenAlex data.
 
 Key takeaways:
 - **Use the CLI tools** for cache management and monitoring

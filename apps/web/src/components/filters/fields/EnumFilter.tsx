@@ -1,9 +1,9 @@
-import type { FilterFieldOption as UtilsFilterFieldOption } from "@academic-explorer/utils/ui";
+import type { FilterFieldOption as UtilsFilterFieldOption } from "@bibgraph/utils/ui";
 import {
   BaseFilter,
   createEnumOptions,
   type BaseFilterRenderProps,
-} from "@academic-explorer/utils/ui/filter-base";
+} from "@bibgraph/utils/ui/filter-base";
 import { MultiSelect, Select } from "@mantine/core";
 
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";

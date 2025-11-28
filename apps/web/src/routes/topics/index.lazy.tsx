@@ -1,4 +1,4 @@
-import type { Topic } from "@academic-explorer/types";
+import type { Topic } from "@bibgraph/types";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 

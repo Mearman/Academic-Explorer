@@ -3,7 +3,7 @@
  * Provides consistent request representation for caching and visit tracking
  */
 
-import { isRecord } from "@academic-explorer/types";
+import { isRecord } from "@bibgraph/types";
 
 /**
  * Simple synchronous hash function that works in both browser and Node.js

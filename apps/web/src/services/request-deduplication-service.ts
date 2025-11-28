@@ -3,9 +3,9 @@
  * Ensures only one request per entity ID is made at a time
  */
 
-import type { OpenAlexEntity } from "@academic-explorer/types";
-import { isOpenAlexEntity } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+import type { OpenAlexEntity } from "@bibgraph/types";
+import { isOpenAlexEntity } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 
 import { trackDeduplication, trackCacheOperation } from "./network-interceptor";

@@ -1,6 +1,6 @@
 /**
  * Client-specific types only
- * All entity types should be imported directly from @academic-explorer/types where needed
+ * All entity types should be imported directly from @bibgraph/types where needed
  */
 
 // Core client types
@@ -9,7 +9,7 @@ export type {
   OpenAlexError,
   OpenAlexResponse,
   AutocompleteResult,
-} from "@academic-explorer/types/entities";
+} from "@bibgraph/types/entities";
 
 // Note: AutocompleteOptions is defined in utils/autocomplete.ts (canonical source)
 // Import from there directly to avoid barrel file re-export duplicates

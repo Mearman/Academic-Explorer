@@ -67,7 +67,7 @@ export interface BookmarkRecord {
 
 /**
  * Normalized OpenAlex request stored with visit
- * This matches the structure from @academic-explorer/client
+ * This matches the structure from @bibgraph/client
  */
 export interface StoredNormalizedRequest {
 	/** Cache key for lookups - now stores full API URL */
@@ -254,7 +254,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Record a page visit with normalized OpenAlex request
-	 * @param request - The normalized request from @academic-explorer/client
+	 * @param request - The normalized request from @bibgraph/client
 	 */
 	async recordPageVisit({
 		request,

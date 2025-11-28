@@ -31,7 +31,7 @@
 
 Researchers analyzing citation networks need to identify clusters of related research papers that form distinct communities or research areas. This helps understand how different research topics are organized and how they relate to each other.
 
-**Why this priority**: Core functionality for academic network analysis. Citation networks naturally form communities around research topics, making community detection the most valuable clustering algorithm for Academic Explorer's primary use case.
+**Why this priority**: Core functionality for academic network analysis. Citation networks naturally form communities around research topics, making community detection the most valuable clustering algorithm for BibGraph's primary use case.
 
 **Independent Test**: Can be fully tested by loading a citation network graph with known research clusters (e.g., papers from different AI subfields) and verifying that the algorithm correctly groups papers by their citation patterns. Delivers immediate value for visualizing research communities.
 

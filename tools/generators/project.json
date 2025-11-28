@@ -1,5 +1,5 @@
 {
-  "name": "@academic-explorer/generators",
+  "name": "@bibgraph/generators",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/generators",
   "projectType": "library",

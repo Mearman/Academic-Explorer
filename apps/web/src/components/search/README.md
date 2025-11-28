@@ -1,6 +1,6 @@
 # Visual Query Builder Component
 
-A drag-and-drop visual query builder for creating complex search queries in the Academic Explorer application.
+A drag-and-drop visual query builder for creating complex search queries in the BibGraph application.
 
 ## Overview
 

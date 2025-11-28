@@ -1,4 +1,4 @@
-import { EntityDetectionService } from "@academic-explorer/utils";
+import { EntityDetectionService } from "@bibgraph/utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the route for testing
@@ -18,8 +18,8 @@ vi.mock("@/routes/openalex-url/$", async (importOriginal) => {
 });
 
 // Mock EntityDetectionService
-vi.mock("@academic-explorer/utils", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@academic-explorer/utils")>();
+vi.mock("@bibgraph/utils", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@bibgraph/utils")>();
   return {
     ...actual,
     EntityDetectionService: {

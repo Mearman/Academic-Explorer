@@ -31,7 +31,7 @@ This plan document was created as a placeholder but never filled in with actual 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: No `any` types planned; use `unknown` with type guards
 2. **Test-First Development**: Tests written and failing before implementation begins

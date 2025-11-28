@@ -5,7 +5,7 @@
  * @module hooks/use-repository-algorithms
  */
 
-import type { GraphNode, GraphEdge } from '@academic-explorer/types';
+import type { GraphNode, GraphEdge } from '@bibgraph/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {

@@ -1,5 +1,5 @@
 /**
- * Cache configuration for Academic Explorer
+ * Cache configuration for BibGraph
  * Defines caching strategies optimized for different OpenAlex entity types
  */
 

@@ -1,5 +1,5 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { type Publisher, type PublisherField } from "@academic-explorer/types/entities";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { type Publisher, type PublisherField } from "@bibgraph/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";

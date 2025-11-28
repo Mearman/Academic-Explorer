@@ -1,5 +1,5 @@
-import { EntityDetectionService } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
+import { EntityDetectionService } from "@bibgraph/utils";
+import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
   useNavigate,

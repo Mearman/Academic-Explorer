@@ -40,10 +40,10 @@ export default defineConfig(
 		server: {
 			deps: {
 				inline: [
-					"@academic-explorer/types",
-					"@academic-explorer/utils",
-					"@academic-explorer/client",
-					"@academic-explorer/ui",
+					"@bibgraph/types",
+					"@bibgraph/utils",
+					"@bibgraph/client",
+					"@bibgraph/ui",
 				],
 			},
 		},

@@ -1,6 +1,6 @@
-# @academic-explorer/utils
+# @bibgraph/utils
 
-Shared utilities and helpers for Academic Explorer monorepo packages. Provides generic, reusable utilities without domain-specific dependencies.
+Shared utilities and helpers for BibGraph monorepo packages. Provides generic, reusable utilities without domain-specific dependencies.
 
 ## Main Exports
 
@@ -27,10 +27,10 @@ import {
   isRecord,
   formatDateToHuman,
   debouncedSearch,
-} from "@academic-explorer/utils";
-import { createMemoryCache } from "@academic-explorer/utils/cache";
-import { createStorageManager } from "@academic-explorer/utils/storage";
-import { createTrackedStore } from "@academic-explorer/utils/state";
+} from "@bibgraph/utils";
+import { createMemoryCache } from "@bibgraph/utils/cache";
+import { createStorageManager } from "@bibgraph/utils/storage";
+import { createTrackedStore } from "@bibgraph/utils/state";
 
 logger.debug("api", "Processing request", { data });
 const cache = createMemoryCache<string>(1000);

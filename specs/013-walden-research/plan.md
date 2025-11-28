@@ -12,7 +12,7 @@ Enable support for OpenAlex's Walden rewrite (Data Version 2) which provides imp
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x with strict mode enabled
-**Primary Dependencies**: @academic-explorer/client (OpenAlex API), @academic-explorer/ui (Mantine), React 19, TanStack Router v7
+**Primary Dependencies**: @bibgraph/client (OpenAlex API), @bibgraph/ui (Mantine), React 19, TanStack Router v7
 **Storage**: IndexedDB via Dexie (storage provider interface abstraction) for settings persistence
 **Testing**: Vitest (unit/integration/component), Playwright (E2E), MSW (API mocking), serial execution required
 **Target Platform**: Modern browsers (Chrome 90+, Firefox 88+, Safari 14+), hosted on GitHub Pages
@@ -25,7 +25,7 @@ Enable support for OpenAlex's Walden rewrite (Data Version 2) which provides imp
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 ### ✅ 1. Type Safety
 **Status**: PASS
@@ -52,7 +52,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 - `packages/utils/` - Settings storage extensions for xpac preference
 - `packages/ui/` - Toggle components and badge components
 - `apps/web/` - Settings UI integration, graph visualization styling
-- All cross-package imports use package aliases (e.g., `@academic-explorer/client`)
+- All cross-package imports use package aliases (e.g., `@bibgraph/client`)
 
 ### ✅ 4. Storage Abstraction
 **Status**: PASS
@@ -103,7 +103,7 @@ specs/013-walden-research/
 ### Source Code (repository root)
 
 ```text
-Academic Explorer/ (monorepo root)
+BibGraph/ (monorepo root)
 ├── apps/
 │   └── web/
 │       ├── src/
@@ -236,17 +236,17 @@ See [data-model.md](./data-model.md) for schema definitions.
 
 See `contracts/` directory for OpenAPI specifications.
 
-**New/Modified Endpoints**: N/A (external API only - no new Academic Explorer endpoints)
+**New/Modified Endpoints**: N/A (external API only - no new BibGraph endpoints)
 
 **OpenAlex API Integration**:
 - **Parameter**: `data-version` (query param)
   - Values: `1` | `2`
-  - Default: `2` (Academic Explorer sends v2 by default)
+  - Default: `2` (BibGraph sends v2 by default)
   - Availability: `1` supported through November 2025 only
 
 - **Parameter**: `include_xpac` (query param)
   - Values: `true` | not included
-  - Default: `true` (Academic Explorer sends by default)
+  - Default: `true` (BibGraph sends by default)
   - Behavior: When `true`, includes 190M non-traditional works
 
 ### Quickstart

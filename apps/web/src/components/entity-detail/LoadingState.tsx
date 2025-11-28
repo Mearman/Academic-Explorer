@@ -1,4 +1,4 @@
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
 import React from "react";
 

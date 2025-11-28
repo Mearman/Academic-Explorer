@@ -5,7 +5,7 @@
  * @module populate-graph
  */
 
-import type { GraphNode, GraphEdge } from '@academic-explorer/types';
+import type { GraphNode, GraphEdge } from '@bibgraph/types';
 import type { Page } from '@playwright/test';
 
 /**

@@ -27,7 +27,7 @@ class OpenAlexEntityView extends EntityViewBase {
       this.options.project === "web"
         ? "apps/web"
         : this.options.project?.startsWith("@")
-        ? `packages/${this.options.project.replace("@academic-explorer/", "")}`
+        ? `packages/${this.options.project.replace("@bibgraph/", "")}`
         : `packages/${this.options.project || "web"}`
 
     const routesDirectory = `${projectRoot}/src/routes/${entityPlural}`
@@ -55,7 +55,7 @@ class OpenAlexEntityView extends EntityViewBase {
     const { entityName, entityNameCapitalized } = this.normalizedOptions
 
     return `import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { cachedOpenAlex } from '@academic-explorer/client'
+import { cachedOpenAlex } from '@bibgraph/client'
 import { logger } from '@/lib/logger'
 
 /**
@@ -446,7 +446,7 @@ import { use${entityNameCapitalized}, use${entityNameCapitalized}Search } from '
 import { ${entityNameCapitalized}Schema } from '../types/${entityPlural}.types'
 
 // Mock the OpenAlex client
-jest.mock('@academic-explorer/client', () => ({
+jest.mock('@bibgraph/client', () => ({
   cachedOpenAlex: {
     ${entityName}s: jest.fn(),
   },
@@ -487,7 +487,7 @@ describe('${entityPlural} Hooks', () => {
         created_date: '2023-01-01',
       })
 
-      const { cachedOpenAlex } = require('@academic-explorer/client')
+      const { cachedOpenAlex } = require('@bibgraph/client')
       cachedOpenAlex.${entityName}s.mockResolvedValue({
         results: [mock${entityNameCapitalized}],
       })
@@ -507,7 +507,7 @@ describe('${entityPlural} Hooks', () => {
     })
 
     it('should handle not found error', async () => {
-      const { cachedOpenAlex } = require('@academic-explorer/client')
+      const { cachedOpenAlex } = require('@bibgraph/client')
       cachedOpenAlex.${entityName}s.mockResolvedValue({
         results: [],
       })
@@ -537,7 +537,7 @@ describe('${entityPlural} Hooks', () => {
         }),
       ]
 
-      const { cachedOpenAlex } = require('@academic-explorer/client')
+      const { cachedOpenAlex } = require('@bibgraph/client')
       cachedOpenAlex.${entityName}s.mockResolvedValue({
         results: mockResults,
         meta: {
@@ -567,7 +567,7 @@ describe('${entityPlural} Hooks', () => {
     })
 
     it('should handle pagination', async () => {
-      const { cachedOpenAlex } = require('@academic-explorer/client')
+      const { cachedOpenAlex } = require('@bibgraph/client')
       cachedOpenAlex.${entityName}s.mockResolvedValue({
         results: [],
         meta: { count: 0, page: 2, per_page: 25, pages: 1 },

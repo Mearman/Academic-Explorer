@@ -7,7 +7,7 @@
 
 ## Summary
 
-Identified and remediated gaps in E2E test coverage for the Academic Explorer web application. Added missing tests for untested routes, implemented workflow tests, added error scenario coverage, and automated high-value manual tests.
+Identified and remediated gaps in E2E test coverage for the BibGraph web application. Added missing tests for untested routes, implemented workflow tests, added error scenario coverage, and automated high-value manual tests.
 
 ## User Stories
 

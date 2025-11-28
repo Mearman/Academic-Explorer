@@ -1,6 +1,6 @@
 {
-  "name": "@academic-explorer/types",
-  "description": "Type definitions, schemas, and type guards for Academic Explorer",
+  "name": "@bibgraph/types",
+  "description": "Type definitions, schemas, and type guards for BibGraph",
   "version": "0.0.0",
   "type": "module",
   "repository": {

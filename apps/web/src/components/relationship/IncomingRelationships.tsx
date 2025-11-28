@@ -6,8 +6,8 @@
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1, User Story 3)
  */
 
-import type { EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import type { EntityType } from '@bibgraph/types';
+import { RelationType } from '@bibgraph/types';
 import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 

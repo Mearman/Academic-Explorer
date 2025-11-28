@@ -7,7 +7,7 @@ import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "fs/pro
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 
-import { logError, logger } from "@academic-explorer/utils/logger"
+import { logError, logger } from "@bibgraph/utils/logger"
 import { z } from "zod"
 
 import { SUPPORTED_ENTITIES, type StaticEntityType } from "../entity-detection.js"

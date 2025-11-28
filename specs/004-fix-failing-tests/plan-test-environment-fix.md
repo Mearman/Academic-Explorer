@@ -32,7 +32,7 @@ The catalogue feature implementation is complete (81/84 tasks, 96%), but 27 E2E 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution:
+Verify alignment with BibGraph Constitution:
 
 1. **Type Safety**: ✓ MSW handlers will be fully typed with TypeScript
 2. **Test-First Development**: ✓ Tests already exist and failing, fixing environment

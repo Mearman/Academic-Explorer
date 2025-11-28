@@ -5,12 +5,12 @@
 
 ## Summary
 
-Complete support for all 13 OpenAlex entity types in Academic Explorer by: (1) migrating keywords route from legacy EntityDataDisplay to modern EntityDetailLayout with relationship visualization, (2) implementing new licenses entity routes with EntityDetailLayout, (3) ensuring EntityType union, API client methods, type guards, and UI configurations support all entity types including the newly discovered taxonomy entities (domains, fields, subfields) and missing licenses type.
+Complete support for all 13 OpenAlex entity types in BibGraph by: (1) migrating keywords route from legacy EntityDataDisplay to modern EntityDetailLayout with relationship visualization, (2) implementing new licenses entity routes with EntityDetailLayout, (3) ensuring EntityType union, API client methods, type guards, and UI configurations support all entity types including the newly discovered taxonomy entities (domains, fields, subfields) and missing licenses type.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x with strict mode enabled
-**Primary Dependencies**: React 19, TanStack Router v7, Mantine UI, @academic-explorer/client (OpenAlex API), @academic-explorer/types (entity definitions)
+**Primary Dependencies**: React 19, TanStack Router v7, Mantine UI, @bibgraph/client (OpenAlex API), @bibgraph/types (entity definitions)
 **Storage**: IndexedDB via storage provider interface (DexieStorageProvider for production, InMemoryStorageProvider for tests) - no new storage operations required
 **Testing**: Vitest (serial execution, 5-min timeout), Playwright E2E tests, MSW for API mocking
 **Target Platform**: Modern browsers (Chrome, Firefox, Safari, Edge) supporting ES2022
@@ -23,7 +23,7 @@ Complete support for all 13 OpenAlex entity types in Academic Explorer by: (1) m
 
 *GATE: Must pass before Phase 0 research. Re-checked after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types; EntityType is strict union; all entities use Zod schemas; type guards use `unknown` with narrowing
 2. **Test-First Development**: ✅ Component tests for new routes, E2E tests for navigation, integration tests for API client methods - all written to FAIL before implementation

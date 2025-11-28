@@ -1,7 +1,7 @@
 # Quickstart: Graph Extraction Operations
 
 **Feature**: 026-graph-extraction
-**Package**: `@academic-explorer/algorithms`
+**Package**: `@bibgraph/algorithms`
 **Module**: `packages/algorithms/src/extraction/`
 
 ## Installation
@@ -20,8 +20,8 @@ pnpm build
 Explore the immediate citation neighborhood of a paper:
 
 ```typescript
-import { Graph } from '@academic-explorer/algorithms';
-import { extractEgoNetwork } from '@academic-explorer/algorithms';
+import { Graph } from '@bibgraph/algorithms';
+import { extractEgoNetwork } from '@bibgraph/algorithms';
 
 // Create citation graph
 const graph = new Graph<WorkNode, CitationEdge>(true); // directed
@@ -65,7 +65,7 @@ const result = extractEgoNetwork(graph, {
 Filter to recent, highly-cited papers:
 
 ```typescript
-import { filterSubgraph } from '@academic-explorer/algorithms';
+import { filterSubgraph } from '@bibgraph/algorithms';
 
 const result = filterSubgraph(graph, {
   nodeFilter: (node) => node.year >= 2020 && node.citationCount > 10,
@@ -96,7 +96,7 @@ const result = filterSubgraph(graph, {
 Trace how one paper influenced another:
 
 ```typescript
-import { findShortestPath } from '@academic-explorer/algorithms';
+import { findShortestPath } from '@bibgraph/algorithms';
 
 const result = findShortestPath(graph, 'W1', 'W10');
 
@@ -114,7 +114,7 @@ if (result.ok) {
 **Reachability analysis:**
 
 ```typescript
-import { extractReachabilitySubgraph } from '@academic-explorer/algorithms';
+import { extractReachabilitySubgraph } from '@bibgraph/algorithms';
 
 // Find all papers citing a seminal work (backward reachability)
 const result = extractReachabilitySubgraph(graph, 'W1', 'backward');
@@ -135,7 +135,7 @@ const result2 = extractReachabilitySubgraph(graph, 'W1', 'forward');
 Find papers with shared citations:
 
 ```typescript
-import { detectCoCitations, detectTriangles } from '@academic-explorer/algorithms';
+import { detectCoCitations, detectTriangles } from '@bibgraph/algorithms';
 
 // Co-citation analysis
 const coCitationResult = detectCoCitations(graph);
@@ -162,7 +162,7 @@ if (triangleResult.ok) {
 **Star patterns (highly cited papers):**
 
 ```typescript
-import { detectStarPatterns } from '@academic-explorer/algorithms';
+import { detectStarPatterns } from '@bibgraph/algorithms';
 
 // Find papers with 50+ citations
 const result = detectStarPatterns(graph, 50, 'IN_STAR');
@@ -181,7 +181,7 @@ if (result.ok) {
 Find tightly-coupled research communities:
 
 ```typescript
-import { extractKTruss } from '@academic-explorer/algorithms';
+import { extractKTruss } from '@bibgraph/algorithms';
 
 // Extract 4-truss (every edge in at least 2 triangles)
 const result = extractKTruss(graph, 4);
@@ -206,7 +206,7 @@ if (result.ok) {
 All extraction functions return `Result<T, ExtractionError>`:
 
 ```typescript
-import { extractEgoNetwork } from '@academic-explorer/algorithms';
+import { extractEgoNetwork } from '@bibgraph/algorithms';
 
 const result = extractEgoNetwork(graph, {
   seeds: 'INVALID_ID',
@@ -397,7 +397,7 @@ describe('extractEgoNetwork performance', () => {
 ### Custom Predicates with Type Guards
 
 ```typescript
-import type { WorkNode, AuthorNode } from '@academic-explorer/types';
+import type { WorkNode, AuthorNode } from '@bibgraph/types';
 
 // Type-safe node filter
 function isHighImpactWork(node: Node): node is WorkNode {
@@ -481,7 +481,7 @@ function analyzeResearchTopic(graph: Graph, seedPaper: string) {
 **Solutions**:
 - Ensure node/edge types extend `Node`/`Edge` interfaces
 - Use type guards for attribute filtering
-- Import types from `@academic-explorer/algorithms`
+- Import types from `@bibgraph/algorithms`
 - Check generic type parameters match graph types
 
 ---

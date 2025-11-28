@@ -52,7 +52,7 @@ Files created:
 return await storage.addEntityToList(params);
 ```
 
-The `storage` object comes from `useStorageProvider()` context, likely defined in `@academic-explorer/utils` package or a local storage provider implementation.
+The `storage` object comes from `useStorageProvider()` context, likely defined in `@bibgraph/utils` package or a local storage provider implementation.
 
 **Test Failure Pattern**:
 - Modal opens successfully
@@ -66,7 +66,7 @@ The `storage` object comes from `useStorageProvider()` context, likely defined i
 **What's missing**: Actual Dexie database operations in the storage provider
 
 **Expected Implementation Location**:
-- Likely `@academic-explorer/utils/storage-provider` or similar
+- Likely `@bibgraph/utils/storage-provider` or similar
 - Should implement `addEntityToList()`, `removeEntityFromList()`, etc.
 - Should use the Dexie schema from `apps/web/src/lib/db/catalogue-db.ts`
 
@@ -186,7 +186,7 @@ Once storage provider is fixed, remaining work is primarily UI enhancements (dra
 
 **Why Safe to Remove**:
 - Codebase search confirmed zero imports of `lib/db/catalogue-db`
-- All actual database code uses `@academic-explorer/utils/storage/catalogue-db` (the primary database location)
+- All actual database code uses `@bibgraph/utils/storage/catalogue-db` (the primary database location)
 - The removed file was a simplified Dexie schema stub that duplicated the more complete implementation in the utils package
 - Build verification: TypeScript compilation and Vite build both pass after removal
 

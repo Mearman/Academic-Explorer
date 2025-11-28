@@ -15,7 +15,7 @@ import {
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'
 
 /**
- * Abstract base class for all Academic Explorer generators
+ * Abstract base class for all BibGraph generators
  * Provides common functionality and standardized patterns
  */
 export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {

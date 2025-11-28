@@ -1,6 +1,6 @@
-# @academic-explorer/algorithms
+# @bibgraph/algorithms
 
-Generic graph traversal and analysis algorithms for Academic Explorer.
+Generic graph traversal and analysis algorithms for BibGraph.
 
 ## Overview
 
@@ -22,13 +22,13 @@ This package provides type-safe graph algorithms designed for academic entity re
 ## Installation
 
 ```bash
-pnpm install @academic-explorer/algorithms
+pnpm install @bibgraph/algorithms
 ```
 
 ## Quick Start
 
 ```typescript
-import { Graph, dfs, dijkstra, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, dfs, dijkstra, type Node, type Edge } from '@bibgraph/algorithms';
 
 // Define custom node types
 interface WorkNode extends Node {
@@ -67,7 +67,7 @@ if (traversalResult.ok) {
 ### Graph Class
 
 ```typescript
-import { Graph, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, type Node, type Edge } from '@bibgraph/algorithms';
 
 // Create directed or undirected graph
 const directedGraph = new Graph<Node, Edge>(true);
@@ -118,7 +118,7 @@ Explores graph by going as deep as possible before backtracking.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, dfs, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, dfs, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 
@@ -150,7 +150,7 @@ Explores graph level by level from the starting node.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, bfs, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, bfs, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false); // undirected
 
@@ -182,7 +182,7 @@ Finds shortest path between two nodes in a weighted graph.
 **Important**: Does not work with negative edge weights.
 
 ```typescript
-import { Graph, dijkstra, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, dijkstra, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 
@@ -225,7 +225,7 @@ Orders nodes in a DAG such that all edges point forward.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, topologicalSort, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, topologicalSort, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true); // must be directed
 
@@ -260,7 +260,7 @@ Detects cycles in directed or undirected graphs.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, detectCycle, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, detectCycle, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 
@@ -297,7 +297,7 @@ Finds all connected components (weakly connected for directed graphs).
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, connectedComponents, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, connectedComponents, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false); // undirected
 
@@ -338,7 +338,7 @@ Finds strongly connected components using Tarjan's algorithm.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, stronglyConnectedComponents, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, stronglyConnectedComponents, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true); // must be directed
 
@@ -384,7 +384,7 @@ Detects communities in networks using modularity optimization with highly optimi
 - **Memory**: <22MB for 1000-node graphs (target: <100MB)
 
 ```typescript
-import { Graph, detectCommunities, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, detectCommunities, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false); // undirected recommended
 
@@ -418,7 +418,7 @@ if (result.ok) {
 Fine-tune Louvain behavior with advanced options:
 
 ```typescript
-import { detectCommunities } from '@academic-explorer/algorithms';
+import { detectCommunities } from '@bibgraph/algorithms';
 
 const result = detectCommunities(graph, {
   // Resolution parameter (default: 1.0)
@@ -522,7 +522,7 @@ Partitions graphs into balanced subgraphs using spectral methods.
 **Space Complexity**: O(n²)
 
 ```typescript
-import { Graph, spectralPartition, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, spectralPartition, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -548,7 +548,7 @@ Creates hierarchical clusterings with dendrogram support.
 **Space Complexity**: O(n²)
 
 ```typescript
-import { Graph, hierarchicalClustering, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, hierarchicalClustering, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -579,7 +579,7 @@ Finds k-cores (maximal subgraphs with minimum degree k).
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, kCoreDecomposition, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, kCoreDecomposition, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -605,7 +605,7 @@ Community detection with connectivity guarantee (improves on Louvain).
 **Space Complexity**: O(V + E)
 
 ```typescript
-import { Graph, leiden, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, leiden, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -632,7 +632,7 @@ Fast linear-time clustering based on label propagation.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, labelPropagation, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, labelPropagation, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -656,7 +656,7 @@ Information-theoretic clustering based on minimum description length.
 **Space Complexity**: O(V + E)
 
 ```typescript
-import { Graph, infomap, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, infomap, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true); // directed recommended
 
@@ -682,7 +682,7 @@ Identifies core and periphery nodes using Borgatti-Everett model.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, corePeripheryDecomposition, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, corePeripheryDecomposition, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false);
 
@@ -712,7 +712,7 @@ Finds biconnected components and articulation points using Tarjan's algorithm.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, biconnectedComponents, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, biconnectedComponents, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false); // undirected
 
@@ -744,7 +744,7 @@ Extracts k-hop neighborhoods around seed nodes.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, extractEgoNetwork, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, extractEgoNetwork, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 
@@ -771,7 +771,7 @@ Filters graphs by node/edge attributes.
 **Space Complexity**: O(V' + E')
 
 ```typescript
-import { Graph, filterSubgraph, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, filterSubgraph, type Node, type Edge } from '@bibgraph/algorithms';
 
 interface WorkNode extends Node {
   year: number;
@@ -801,7 +801,7 @@ Find shortest paths and extract reachability subgraphs.
 **Space Complexity**: O(V)
 
 ```typescript
-import { Graph, findShortestPath, extractReachabilitySubgraph, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, findShortestPath, extractReachabilitySubgraph, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 // ... add nodes and edges ...
@@ -828,7 +828,7 @@ Detect triangles, stars, co-citations, and bibliographic coupling.
 **Space Complexity**: O(triangles/patterns found)
 
 ```typescript
-import { Graph, detectTriangles, detectCoCitations, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, detectTriangles, detectCoCitations, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(true);
 // ... add nodes and edges ...
@@ -856,7 +856,7 @@ Extract dense subgraphs where every edge is part of at least k-2 triangles.
 **Space Complexity**: O(V + E)
 
 ```typescript
-import { Graph, extractKTruss, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, extractKTruss, type Node, type Edge } from '@bibgraph/algorithms';
 
 const graph = new Graph<Node, Edge>(false); // undirected
 // ... add nodes and edges ...
@@ -898,7 +898,7 @@ The package includes 9 graph clustering and partitioning algorithms:
 ### Heterogeneous Graphs
 
 ```typescript
-import { Graph, dfs, type Node, type Edge } from '@academic-explorer/algorithms';
+import { Graph, dfs, type Node, type Edge } from '@bibgraph/algorithms';
 
 // Define multiple node types
 interface WorkNode extends Node {
@@ -941,7 +941,7 @@ if (result.ok) {
 ### Error Handling Patterns
 
 ```typescript
-import { dijkstra } from '@academic-explorer/algorithms';
+import { dijkstra } from '@bibgraph/algorithms';
 
 const result = dijkstra(graph, 'A', 'Z');
 

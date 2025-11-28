@@ -1,6 +1,6 @@
 {
-  "name": "@academic-explorer/generators",
-  "description": "Custom Nx generators for Academic Explorer monorepo",
+  "name": "@bibgraph/generators",
+  "description": "Custom Nx generators for BibGraph monorepo",
   "version": "0.0.0",
   "type": "module",
   "dependencies": {

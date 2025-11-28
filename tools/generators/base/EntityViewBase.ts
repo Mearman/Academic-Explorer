@@ -82,7 +82,7 @@ export abstract class EntityViewBase extends BaseGenerator<EntityViewGeneratorOp
       projectRoot,
       projectDirectory: componentDirectory,
       parsedTags: ['type:component', 'scope:entity-view', `entity:${entityName}`],
-      importPath: `@academic-explorer/web/components/${componentDirectory}`,
+      importPath: `@bibgraph/web/components/${componentDirectory}`,
       className: entityNameCapitalized,
       fileName: entityName,
       entityName,
@@ -111,7 +111,7 @@ export abstract class EntityViewBase extends BaseGenerator<EntityViewGeneratorOp
    */
   protected generateHeaderComponent(): string {
     return `import { Card, Group, Stack, Text, Badge } from '@mantine/core'
-import type { ${this.normalizedOptions.entityNameCapitalized} } from '@academic-explorer/client'
+import type { ${this.normalizedOptions.entityNameCapitalized} } from '@bibgraph/client'
 
 interface ${this.normalizedOptions.entityNameCapitalized}HeaderProps {
   entity: ${this.normalizedOptions.entityNameCapitalized}
@@ -159,7 +159,7 @@ export function ${this.normalizedOptions.entityNameCapitalized}Header({ entity, 
     return `import { Tabs, Tab, Card, Stack, Text } from '@mantine/core'
 import { IconChartBar, IconInfoCircle } from '@tabler/icons-react'
 import { ${this.normalizedOptions.entityNameCapitalized}Header } from './${this.normalizedOptions.fileName}-header'
-import type { ${this.normalizedOptions.entityNameCapitalized} } from '@academic-explorer/client'
+import type { ${this.normalizedOptions.entityNameCapitalized} } from '@bibgraph/client'
 
 interface ${this.normalizedOptions.entityNameCapitalized}ContentProps {
   entity: ${this.normalizedOptions.entityNameCapitalized}
@@ -289,7 +289,7 @@ export function ${this.normalizedOptions.entityNameCapitalized}Error({ error, on
     return `import { Card, Stack, Text, Group, Badge, Button } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
-import type { ${this.normalizedOptions.entityNameCapitalized} } from '@academic-explorer/client'
+import type { ${this.normalizedOptions.entityNameCapitalized} } from '@bibgraph/client'
 
 interface ${this.normalizedOptions.entityNameCapitalized}ListViewProps {
   entities: ${this.normalizedOptions.entityNameCapitalized}[]
@@ -359,8 +359,8 @@ export function ${this.normalizedOptions.entityNameCapitalized}ListView({ entiti
    */
   protected generateDataHook(): string {
     return `import { useState, useEffect } from 'react'
-import { useOpenAlexClient } from '@academic-explorer/client'
-import type { ${this.normalizedOptions.entityNameCapitalized} } from '@academic-explorer/client'
+import { useOpenAlexClient } from '@bibgraph/client'
+import type { ${this.normalizedOptions.entityNameCapitalized} } from '@bibgraph/client'
 
 interface Use${this.normalizedOptions.entityNameCapitalized}Options {
   id: string
@@ -425,7 +425,7 @@ export function use${this.normalizedOptions.entityNameCapitalized}({ id, enabled
    * Generate mock data
    */
   protected generateMockData(): string {
-    return `import type { ${this.normalizedOptions.entityNameCapitalized} } from '@academic-explorer/client'
+    return `import type { ${this.normalizedOptions.entityNameCapitalized} } from '@bibgraph/client'
 
 export const mock${this.normalizedOptions.entityNameCapitalized}: ${this.normalizedOptions.entityNameCapitalized} = {
   id: 'W1234567890',
@@ -481,7 +481,7 @@ export const mock${this.normalizedOptions.entityPluralCapitalized}: ${this.norma
    */
   protected generateIndexRoute(): string {
     return `import { createFileRoute } from '@tanstack/react-router'
-import { ${this.normalizedOptions.entityNameCapitalized}ListView } from '@academic-explorer/web/components/${this.normalizedOptions.componentDirectory}'
+import { ${this.normalizedOptions.entityNameCapitalized}ListView } from '@bibgraph/web/components/${this.normalizedOptions.componentDirectory}'
 
 export const Route = createFileRoute('/entity-views/${this.normalizedOptions.routeDirectory}/')({
   component: ${this.normalizedOptions.entityNameCapitalized}ListView,
@@ -494,7 +494,7 @@ export const Route = createFileRoute('/entity-views/${this.normalizedOptions.rou
    */
   protected generateDetailRoute(): string {
     return `import { createFileRoute } from '@tanstack/react-router'
-import { ${this.normalizedOptions.entityNameCapitalized}View } from '@academic-explorer/web/components/${this.normalizedOptions.componentDirectory}'
+import { ${this.normalizedOptions.entityNameCapitalized}View } from '@bibgraph/web/components/${this.normalizedOptions.componentDirectory}'
 
 export const Route = createFileRoute('/entity-views/${this.normalizedOptions.routeDirectory}/$entityId')({
   component: ${this.normalizedOptions.entityNameCapitalized}View,
@@ -507,7 +507,7 @@ export const Route = createFileRoute('/entity-views/${this.normalizedOptions.rou
    */
   protected generateLazyIndexRoute(): string {
     return `import { createLazyFileRoute } from '@tanstack/react-router'
-import { ${this.normalizedOptions.entityNameCapitalized}ListView } from '@academic-explorer/web/components/${this.normalizedOptions.componentDirectory}'
+import { ${this.normalizedOptions.entityNameCapitalized}ListView } from '@bibgraph/web/components/${this.normalizedOptions.componentDirectory}'
 
 export const Route = createLazyFileRoute('/entity-views/${this.normalizedOptions.routeDirectory}/')({
   component: () => import('./index').then(m => <m.Route />),
@@ -520,7 +520,7 @@ export const Route = createLazyFileRoute('/entity-views/${this.normalizedOptions
    */
   protected generateLazyDetailRoute(): string {
     return `import { createLazyFileRoute } from '@tanstack/react-router'
-import { ${this.normalizedOptions.entityNameCapitalized}View } from '@academic-explorer/web/components/${this.normalizedOptions.componentDirectory}'
+import { ${this.normalizedOptions.entityNameCapitalized}View } from '@bibgraph/web/components/${this.normalizedOptions.componentDirectory}'
 
 export const Route = createLazyFileRoute('/entity-views/${this.normalizedOptions.routeDirectory}/$entityId')({
   component: () => import('./$entityId').then(m => <m.Route />),
@@ -653,7 +653,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { ${this.normalizedOptions.entityNameCapitalized}View } from './${this.normalizedOptions.fileName}-view'
 import { mock${this.normalizedOptions.entityNameCapitalized} } from './${this.normalizedOptions.fileName}-mocks'
 
-vi.mock('@academic-explorer/client', () => ({
+vi.mock('@bibgraph/client', () => ({
   useOpenAlexClient: () => ({
     ${this.normalizedOptions.entityPlural}: {
       get: vi.fn().mockResolvedValue(mock${this.normalizedOptions.entityNameCapitalized}),

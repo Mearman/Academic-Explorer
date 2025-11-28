@@ -117,7 +117,7 @@
 ## Constitution Alignment *(recommended)*
 
 <!--
-  Verify this feature spec aligns with Academic Explorer Constitution principles.
+  Verify this feature spec aligns with BibGraph Constitution principles.
   See `.specify/memory/constitution.md` for full details.
 -->
 

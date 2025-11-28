@@ -22,7 +22,7 @@ import {
 	PUBLISHER_FIELDS,
 	FUNDER_FIELDS,
 	TOPIC_FIELDS,
-} from '@academic-explorer/types/entities';
+} from '@bibgraph/types/entities';
 import { test, expect } from '@playwright/test';
 
 const API_BASE = 'https://api.openalex.org';

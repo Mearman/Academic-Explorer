@@ -1,6 +1,6 @@
 # Feature Specifications Index
 
-This directory contains all feature specifications for Academic Explorer, organized using the SpecKit workflow. Each spec follows a structured process: specification → planning → task breakdown → implementation.
+This directory contains all feature specifications for BibGraph, organized using the SpecKit workflow. Each spec follows a structured process: specification → planning → task breakdown → implementation.
 
 ## Quick Navigation
 
@@ -160,7 +160,7 @@ Enhanced entity detail pages with relationship visualization capabilities. Type 
 ### spec-017: Entity Taxonomy Centralization
 **Status**: ✅ Complete | **Superseded**: 2025-11-21 by spec-018
 
-Centralized entity taxonomy definitions and ENTITY_METADATA to `@academic-explorer/types`. Core implementation in entity-metadata.ts. Remaining tasks completed as part of spec-018 (Entity Consolidation).
+Centralized entity taxonomy definitions and ENTITY_METADATA to `@bibgraph/types`. Core implementation in entity-metadata.ts. Remaining tasks completed as part of spec-018 (Entity Consolidation).
 
 [View Spec](./017-entity-taxonomy-centralization/)
 
@@ -169,7 +169,7 @@ Centralized entity taxonomy definitions and ENTITY_METADATA to `@academic-explor
 ### spec-018: Entity Consolidation
 **Status**: ✅ Complete | **Completed**: 2025-11-21
 
-EntityType consolidation to `@academic-explorer/types` as single source of truth. All 40 tasks complete. All imports updated to use canonical source.
+EntityType consolidation to `@bibgraph/types` as single source of truth. All 40 tasks complete. All imports updated to use canonical source.
 
 [View Spec](./018-entity-consolidation/)
 
@@ -300,7 +300,7 @@ specs/###-feature-name/
 
 ## Constitution Compliance
 
-All specifications must align with the [Academic Explorer Constitution](../.specify/memory/constitution.md), including:
+All specifications must align with the [BibGraph Constitution](../.specify/memory/constitution.md), including:
 
 - Type Safety (no `any` types)
 - Test-First Development (Red-Green-Refactor)

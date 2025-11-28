@@ -64,7 +64,7 @@ export type ActiveDataVersion = '2'; // Post-removal type
 
 #### Settings Store Extension (`apps/web/src/stores/settings-store.ts`)
 ```typescript
-import { isDataV1SelectorAvailable, type DataVersion } from '@academic-explorer/utils/feature-flags';
+import { isDataV1SelectorAvailable, type DataVersion } from '@bibgraph/utils/feature-flags';
 
 // Extend SettingsState interface
 interface SettingsState {
@@ -143,7 +143,7 @@ class SettingsStore {
 
 #### UI Component (`apps/web/src/components/sections/SettingsSection.tsx`)
 ```typescript
-import { isDataV1SelectorAvailable } from '@academic-explorer/utils/feature-flags';
+import { isDataV1SelectorAvailable } from '@bibgraph/utils/feature-flags';
 
 export const SettingsSection: React.FC = () => {
   const [dataVersion, setDataVersionState] = React.useState<DataVersion>('2');
@@ -319,7 +319,7 @@ describe('isDataV1SelectorAvailable', () => {
 ```typescript
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { settingsStore } from './settings-store';
-import { InMemoryStorageProvider } from '@academic-explorer/utils/storage/in-memory-storage-provider';
+import { InMemoryStorageProvider } from '@bibgraph/utils/storage/in-memory-storage-provider';
 
 describe('SettingsStore - Data Version Migration', () => {
   beforeEach(async () => {
@@ -476,7 +476,7 @@ test.describe('Data Version Selector - Temporal Behavior', () => {
 - No client-side date manipulation
 
 **Cons**:
-- Academic Explorer is SPA (no backend)
+- BibGraph is SPA (no backend)
 - Adds network request overhead
 - Cannot work offline
 
@@ -514,7 +514,7 @@ const version = await settingsStore.getDataVersion();
 
 #### Client Package (`packages/client/src/client.ts`)
 ```typescript
-import { settingsStore } from '@academic-explorer/utils/settings-store';
+import { settingsStore } from '@bibgraph/utils/settings-store';
 
 export const buildOpenAlexRequest = async (endpoint: string, params: Record<string, unknown>) => {
   // Get current data version from settings

@@ -2,11 +2,11 @@
  * Settings section for user preferences and data management
  */
 
-import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@academic-explorer/client";
-import { XpacToggle, DataVersionSelector } from "@academic-explorer/ui";
-import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
-import { clearAllCacheLayers , clearAppMetadata } from "@academic-explorer/utils/cache";
-import { logger } from "@academic-explorer/utils/logger";
+import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@bibgraph/client";
+import { XpacToggle, DataVersionSelector } from "@bibgraph/ui";
+import { isDataVersionSelectorVisible } from "@bibgraph/utils";
+import { clearAllCacheLayers , clearAppMetadata } from "@bibgraph/utils/cache";
+import { logger } from "@bibgraph/utils/logger";
 import {
   Button,
   Stack,

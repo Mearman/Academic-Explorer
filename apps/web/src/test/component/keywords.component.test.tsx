@@ -1,4 +1,4 @@
-import { cachedOpenAlex } from '@academic-explorer/client';
+import { cachedOpenAlex } from '@bibgraph/client';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useParams, useSearch } from '@tanstack/react-router';
@@ -6,8 +6,8 @@ import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock cachedOpenAlex client
-vi.mock('@academic-explorer/client', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@academic-explorer/client')>();
+vi.mock('@bibgraph/client', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@bibgraph/client')>();
   return {
     ...actual,
     cachedOpenAlex: {

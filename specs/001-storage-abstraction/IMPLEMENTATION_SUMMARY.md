@@ -162,7 +162,7 @@ await storageProvider.initializeSpecialLists();
 **Test Setup**:
 ```typescript
 // Component.test.tsx
-import { createTestStorageProvider } from '@academic-explorer/utils/tests/setup';
+import { createTestStorageProvider } from '@bibgraph/utils/tests/setup';
 
 let storage: InMemoryStorageProvider;
 

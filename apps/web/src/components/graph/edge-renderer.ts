@@ -8,7 +8,7 @@
  * for various graph visualization libraries (react-force-graph, XYFlow, D3, etc.)
  */
 
-import type { GraphEdge } from "@academic-explorer/types";
+import type { GraphEdge } from "@bibgraph/types";
 
 import {
   getEdgeStyle,

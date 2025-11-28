@@ -1,4 +1,4 @@
-import type {   EntityType } from "@academic-explorer/types"
+import type {   EntityType } from "@bibgraph/types"
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy } from "react";
 

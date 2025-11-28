@@ -33,7 +33,7 @@ Fix TypeScript/Vite configuration to prevent in-place compilation of .ts/.tsx fi
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ Fix maintains strict TypeScript checking; no `any` types added; declaration files continue to be generated for cross-package type checking
 

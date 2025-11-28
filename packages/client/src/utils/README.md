@@ -16,7 +16,7 @@ The Query Builder provides a fluent, type-safe interface for constructing OpenAl
 ## Quick Start
 
 ```typescript
-import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@academic-explorer/openalex-client';
+import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@bibgraph/openalex-client';
 
 // Create a query for open access machine learning papers from 2023
 const query = createWorksQuery()
@@ -128,7 +128,7 @@ const escaped = escapeFilterValue('machine "learning" & AI');
 Common sort field names:
 
 ```typescript
-import { SORT_FIELDS } from '@academic-explorer/openalex-client';
+import { SORT_FIELDS } from '@bibgraph/openalex-client';
 
 const sort = buildSortString({
   field: SORT_FIELDS.CITED_BY_COUNT,
@@ -141,7 +141,7 @@ const sort = buildSortString({
 Predefined field selection sets:
 
 ```typescript
-import { SELECT_PRESETS } from '@academic-explorer/openalex-client';
+import { SELECT_PRESETS } from '@bibgraph/openalex-client';
 
 // Use predefined field selections
 const basicFields = SELECT_PRESETS.BASIC; // ['id', 'display_name', 'cited_by_count']
@@ -222,7 +222,7 @@ The query builder integrates seamlessly with the OpenAlex client:
 
 ```typescript
 import { OpenAlexBaseClient } from '../client';
-import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@academic-explorer/openalex-client';
+import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@bibgraph/openalex-client';
 
 const client = new OpenAlexBaseClient();
 

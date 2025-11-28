@@ -54,8 +54,8 @@ const uiConfig = defineConfig({
         "immer",
 
         // Internal workspace dependencies (avoid circular dependencies)
-        "@academic-explorer/types",
-        "@academic-explorer/utils",
+        "@bibgraph/types",
+        "@bibgraph/utils",
       ],
       output: {
         globals: {

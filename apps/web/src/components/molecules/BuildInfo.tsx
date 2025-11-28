@@ -9,7 +9,7 @@ import {
   getCommitUrl,
   getReleaseUrl,
   getRelativeBuildTime,
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 import { Text, Group, Tooltip, Paper, Anchor } from "@mantine/core";
 import {
   IconBrandGithub,
@@ -113,7 +113,7 @@ export const BuildInfo: React.FC = () => {
           fw={500}
         >
           <IconBrandGithub size={14} />
-          Academic Explorer
+          BibGraph
         </Anchor>
       </Group>
     </Paper>

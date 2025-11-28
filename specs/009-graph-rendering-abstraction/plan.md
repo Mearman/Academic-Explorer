@@ -25,7 +25,7 @@ Create a domain-agnostic graph visualization component that decouples force simu
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; strict generic type parameters for `Node<TNodeData>`, `Edge<TEdgeData>`, `Force<TNode, TEdge>`; type guards for dynamic property access in force functions
 2. **Test-First Development**: ✅ Tests written and failing before implementation; unit tests for forces (deterministic outputs), integration tests for simulation convergence, visual regression tests for renderer outputs
@@ -128,7 +128,7 @@ packages/graph-renderer/
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| New package `packages/graph-renderer` | Domain-agnostic graph visualization is needed by both web app (Academic Explorer) and potential future CLI visualization tools. Existing `packages/graph` package is coupled to academic domain (works, authors, citations). | Extending existing `packages/graph` would violate FR-017 (no academic-specific concepts) and prevent reuse in non-academic contexts. Refactoring existing package would break Academic Explorer. |
+| New package `packages/graph-renderer` | Domain-agnostic graph visualization is needed by both web app (BibGraph) and potential future CLI visualization tools. Existing `packages/graph` package is coupled to academic domain (works, authors, citations). | Extending existing `packages/graph` would violate FR-017 (no academic-specific concepts) and prevent reuse in non-academic contexts. Refactoring existing package would break BibGraph. |
 | Web Worker support for simulation | Performance requirement SC-003 mandates 60fps for 500 nodes. Main thread rendering + force calculations cannot meet this target; simulation must offload to worker. | Attempting main-thread-only approach would fail performance gates and create unresponsive UI during layout calculations, violating research usability requirements. |
 | Spatial indexing (quadtree) | Naive O(n²) collision detection fails at 500 nodes (250k comparisons per tick). Quadtree reduces to O(n log n), enabling performance target. | Simple pairwise comparison was measured at ~200ms per tick for 500 nodes, far below 60fps requirement. Spatial indexing is necessary, not premature optimization. |
 | Generic type parameters `<TNodeData, TEdgeData>` | FR-020 requires type-safe interfaces; FR-017 forbids domain semantics. Generics enable consumers to attach arbitrary metadata while maintaining type safety. | Using `Record<string, unknown>` or `any` would violate Constitution Principle I (Type Safety). Fixed interfaces would violate FR-017 (no domain concepts). |
@@ -184,7 +184,7 @@ API contracts will be TypeScript interface definitions in `/contracts/`:
 ### Quickstart
 
 Developer journey from installation to first graph rendering:
-1. Install package: `npm install @academic-explorer/graph-renderer`
+1. Install package: `npm install @bibgraph/graph-renderer`
 2. Define node/edge types with custom metadata
 3. Create graph instance and populate with typed nodes/edges
 4. Configure simulation with default or custom forces

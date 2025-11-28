@@ -3,7 +3,7 @@
  * Replaces Zustand with built-in React patterns for tracking network requests
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import React, { createContext, useContext, useReducer, useCallback, useMemo, type ReactNode } from "react";
 
 export interface NetworkRequest {

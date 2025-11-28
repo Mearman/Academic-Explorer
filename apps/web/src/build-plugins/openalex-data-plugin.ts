@@ -17,11 +17,11 @@ import {
 } from "fs/promises";
 import { join } from "path";
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@bibgraph/utils";
 import {
   generateContentHash,
   type UnifiedIndexEntry,
-} from "@academic-explorer/utils/static-data/cache-utilities";
+} from "@bibgraph/utils/static-data/cache-utilities";
 import type { Plugin } from "vite";
 import { z } from "zod";
 

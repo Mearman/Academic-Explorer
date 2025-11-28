@@ -25,11 +25,11 @@ Fix 27 failing catalogue E2E tests across entity management, import/export, and 
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ PASS - Fixes will maintain strict TypeScript typing; no new `any` types; entity type discrimination uses type guards; all storage operations maintain type safety
 2. **Test-First Development**: ✅ PASS - Tests already exist and are failing; this is true test-driven repair (Red state verified, implementing Green); no test modifications allowed per spec
-3. **Monorepo Architecture**: ✅ PASS - All changes within apps/web catalogue components; uses existing shared packages (@academic-explorer/client, @academic-explorer/ui); no new packages required
+3. **Monorepo Architecture**: ✅ PASS - All changes within apps/web catalogue components; uses existing shared packages (@bibgraph/client, @bibgraph/ui); no new packages required
 4. **Storage Abstraction**: ✅ PASS - Catalogue uses Dexie through existing storage patterns; E2E tests use in-memory provider per constitution; fixes maintain abstraction boundaries
 5. **Performance & Memory**: ✅ PASS - E2E tests already running serially; performance targets in success criteria (<500ms add, <2s export, <5s import); bulk operations tested up to 100+ entities
 
@@ -127,7 +127,7 @@ Reviewing design artifacts (research.md, data-model.md, contracts/) against cons
 
 3. **Monorepo Architecture**: ✅ PASS
    - All fixes within `apps/web` (existing app)
-   - Uses existing shared packages (@academic-explorer/client, ui, utils)
+   - Uses existing shared packages (@bibgraph/client, ui, utils)
    - No new packages created
    - Project structure documented in plan
    - **Confirmed**: Proper Nx workspace structure maintained

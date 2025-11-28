@@ -6,7 +6,7 @@ This guide provides quick examples for using the 9 graph clustering, partitionin
 
 ## Installation
 
-No external dependencies required. Algorithms are part of the `@academic-explorer/algorithms` package.
+No external dependencies required. Algorithms are part of the `@bibgraph/algorithms` package.
 
 ```typescript
 import {
@@ -19,7 +19,7 @@ import {
   kCoreDecomposition,
   corePeripheryDecomposition,
   biconnectedComponents,
-} from '@academic-explorer/algorithms';
+} from '@bibgraph/algorithms';
 ```
 
 ## Quick Examples
@@ -29,8 +29,8 @@ import {
 **Use Case**: Identify research clusters in citation networks
 
 ```typescript
-import { Graph } from '@academic-explorer/algorithms';
-import { louvain } from '@academic-explorer/algorithms/clustering';
+import { Graph } from '@bibgraph/algorithms';
+import { louvain } from '@bibgraph/algorithms/clustering';
 
 // Create citation network
 const graph = new Graph<string, CitationEdge>();
@@ -65,7 +65,7 @@ if (result.isOk()) {
 **Use Case**: Divide large graphs for efficient visualization
 
 ```typescript
-import { spectralPartition } from '@academic-explorer/algorithms/partitioning';
+import { spectralPartition } from '@bibgraph/algorithms/partitioning';
 
 // Partition graph into 5 balanced subgraphs
 const result = spectralPartition(graph, {
@@ -93,7 +93,7 @@ if (result.isOk()) {
 **Use Case**: Visualize research topic hierarchies at multiple resolutions
 
 ```typescript
-import { hierarchicalClustering } from '@academic-explorer/algorithms/hierarchical';
+import { hierarchicalClustering } from '@bibgraph/algorithms/hierarchical';
 
 const result = hierarchicalClustering(graph, { linkage: 'average' });
 
@@ -119,7 +119,7 @@ if (result.isOk()) {
 **Use Case**: Identify highly cited paper cores
 
 ```typescript
-import { kCoreDecomposition } from '@academic-explorer/algorithms/decomposition';
+import { kCoreDecomposition } from '@bibgraph/algorithms/decomposition';
 
 const result = kCoreDecomposition(graph);
 
@@ -149,7 +149,7 @@ if (result.isOk()) {
 **Use Case**: Accurate community detection with connectivity guarantee
 
 ```typescript
-import { leiden } from '@academic-explorer/algorithms/clustering';
+import { leiden } from '@bibgraph/algorithms/clustering';
 
 const result = leiden(graph, { resolution: 1.0 });
 
@@ -172,7 +172,7 @@ if (result.isOk()) {
 **Use Case**: Quick clustering for large graphs (10,000+ nodes)
 
 ```typescript
-import { labelPropagation } from '@academic-explorer/algorithms/clustering';
+import { labelPropagation } from '@bibgraph/algorithms/clustering';
 
 const result = labelPropagation(graph, {
   maxIterations: 100,
@@ -197,7 +197,7 @@ if (result.isOk()) {
 **Use Case**: Cluster based on knowledge propagation patterns
 
 ```typescript
-import { infomap } from '@academic-explorer/algorithms/clustering';
+import { infomap } from '@bibgraph/algorithms/clustering';
 
 const result = infomap(graph, { numTrials: 10 });
 
@@ -229,7 +229,7 @@ if (result.isOk()) {
 **Use Case**: Distinguish seminal papers (core) from derivative work (periphery)
 
 ```typescript
-import { corePeripheryDecomposition } from '@academic-explorer/algorithms/decomposition';
+import { corePeripheryDecomposition } from '@bibgraph/algorithms/decomposition';
 
 const result = corePeripheryDecomposition(graph, { coreThreshold: 0.7 });
 
@@ -261,7 +261,7 @@ if (result.isOk()) {
 **Use Case**: Identify critical papers connecting research communities
 
 ```typescript
-import { biconnectedComponents } from '@academic-explorer/algorithms/decomposition';
+import { biconnectedComponents } from '@bibgraph/algorithms/decomposition';
 
 const result = biconnectedComponents(graph);
 

@@ -20,12 +20,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
-      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
-      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["../../packages/ui/src/*"]
+      "@bibgraph/utils": ["../../packages/utils/src/index.ts"],
+      "@bibgraph/utils/*": ["../../packages/utils/src/*"],
+      "@bibgraph/client": ["../../packages/client/dist/index.d.ts"],
+      "@bibgraph/client/*": ["../../packages/client/dist/*"],
+      "@bibgraph/ui": ["../../packages/ui/src/index.ts"],
+      "@bibgraph/ui/*": ["../../packages/ui/src/*"]
     },
 
     /* Linting - Less strict for test files */

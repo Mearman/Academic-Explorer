@@ -3,13 +3,13 @@
  * Allows setting page titles based on entity data or route content
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { useEffect, useRef } from "react";
 
 interface UseDocumentTitleOptions {
   /**
    * Base title to append after the main title
-   * @default "Academic Explorer"
+   * @default "BibGraph"
    */
   baseTitle?: string;
   /**
@@ -31,7 +31,7 @@ interface UseDocumentTitleOptions {
  * useDocumentTitle(entity?.display_name);
  *
  * // Set title with custom base
- * useDocumentTitle("Search Results", { baseTitle: "Academic Explorer" });
+ * useDocumentTitle("Search Results", { baseTitle: "BibGraph" });
  *
  * // Restore original title on unmount
  * useDocumentTitle("Temporary Title", { restoreOnUnmount: true });
@@ -41,7 +41,7 @@ export const useDocumentTitle = (
   title: string | null | undefined,
   options: UseDocumentTitleOptions = {},
 ) => {
-  const { baseTitle = "Academic Explorer", restoreOnUnmount = false } = options;
+  const { baseTitle = "BibGraph", restoreOnUnmount = false } = options;
 
   const originalTitle = useRef<string | null>(null);
 

@@ -3,7 +3,7 @@
  * Provides CRUD operations for lists and bibliographies
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@bibgraph/types";
 import {
   catalogueEventEmitter,
   type CatalogueList,
@@ -14,8 +14,8 @@ import {
   validateListData,
   type CompressedListData,
   decompressListData,
-} from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils/logger";
+} from "@bibgraph/utils";
+import { logger } from "@bibgraph/utils/logger";
 import QRCode from "qrcode";
 import { useCallback, useEffect, useState } from "react";
 

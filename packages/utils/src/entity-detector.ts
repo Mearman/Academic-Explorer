@@ -11,7 +11,7 @@
  *   extractEntityId,
  *   isEntityPage,
  *   parseEntityUrl,
- * } from '@academic-explorer/utils';
+ * } from '@bibgraph/utils';
  *
  * // Detect entity type from URL
  * const entityType = detectEntityTypeFromURL('/works/W1234567890');
@@ -33,7 +33,7 @@
  * @module entity-detector
  */
 
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 /**
  * Entity URL path patterns for different entity types

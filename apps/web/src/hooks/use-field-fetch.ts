@@ -3,9 +3,9 @@
  * Uses the OpenAlex `select` parameter to fetch only requested fields
  */
 
-import { cachedOpenAlex } from "@academic-explorer/client";
-import type { OpenAlexEntity } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils";
+import { cachedOpenAlex } from "@bibgraph/client";
+import type { OpenAlexEntity } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import { useState, useCallback } from "react";
 
 import type { CacheKeyType } from "../config/cache";

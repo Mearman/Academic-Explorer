@@ -1,6 +1,6 @@
 # Apps
 
-This directory contains the main applications for the Academic Explorer monorepo.
+This directory contains the main applications for the BibGraph monorepo.
 
 ## Applications
 
@@ -10,10 +10,10 @@ This directory contains the main applications for the Academic Explorer monorepo
 ## Package Dependencies
 
 Both apps depend on shared packages in `../packages/`:
-- `@academic-explorer/client` - OpenAlex API client
-- `@academic-explorer/utils` - Common utilities
-- `@academic-explorer/graph` - Graph data structures (web only)
-- `@academic-explorer/simulation` - Force simulation logic (web only)
+- `@bibgraph/client` - OpenAlex API client
+- `@bibgraph/utils` - Common utilities
+- `@bibgraph/graph` - Graph data structures (web only)
+- `@bibgraph/simulation` - Force simulation logic (web only)
 
 ## Development
 

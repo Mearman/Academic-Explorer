@@ -16,7 +16,7 @@
 ## Path Conventions
 
 - Monorepo structure: `apps/web/src/` for source code, `apps/web/src/test/e2e/manual/` for E2E tests
-- Paths follow Academic Explorer Nx workspace conventions
+- Paths follow BibGraph Nx workspace conventions
 
 ---
 

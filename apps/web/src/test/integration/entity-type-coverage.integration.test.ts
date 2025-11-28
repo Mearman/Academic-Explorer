@@ -11,8 +11,8 @@
  * @see specs/019-full-entity-support/spec.md (User Story 3)
  */
 
-import { cachedOpenAlex } from '@academic-explorer/client';
-import type { EntityType } from '@academic-explorer/types';
+import { cachedOpenAlex } from '@bibgraph/client';
+import type { EntityType } from '@bibgraph/types';
 import { describe, it, expect } from 'vitest';
 
 import { ENTITY_TYPE_CONFIGS } from '@/components/entity-detail/EntityTypeConfig';

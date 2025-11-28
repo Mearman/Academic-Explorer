@@ -38,7 +38,7 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock the data-helpers module
-vi.mock("@academic-explorer/utils", () => ({
+vi.mock("@bibgraph/utils", () => ({
   debouncedSearch: vi.fn((callback: () => void) => {
     callback();
   }),
@@ -166,7 +166,7 @@ describe("SearchInterface", () => {
   it("should handle debounced search for valid queries", async () => {
     // Import the mocked functions to access them
     const { debouncedSearch, isValidSearchQuery } = await import(
-      "@academic-explorer/utils"
+      "@bibgraph/utils"
     );
 
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
@@ -186,7 +186,7 @@ describe("SearchInterface", () => {
   it("should not trigger debounced search for invalid queries", async () => {
     // Import the mocked functions to access them
     const { debouncedSearch, isValidSearchQuery } = await import(
-      "@academic-explorer/utils"
+      "@bibgraph/utils"
     );
 
     // Mock isValidSearchQuery to return false for short queries
@@ -206,7 +206,7 @@ describe("SearchInterface", () => {
   it("should normalize search query on search", async () => {
     // Import the mocked functions to access them
     const { normalizeSearchQuery, isValidSearchQuery } = await import(
-      "@academic-explorer/utils"
+      "@bibgraph/utils"
     );
 
     vi.mocked(isValidSearchQuery).mockReturnValue(true);
@@ -230,7 +230,7 @@ describe("SearchInterface", () => {
 
   it("should handle empty query on search", async () => {
     // Import the mocked functions to access them
-    const { isValidSearchQuery } = await import("@academic-explorer/utils");
+    const { isValidSearchQuery } = await import("@bibgraph/utils");
 
     vi.mocked(isValidSearchQuery).mockReturnValue(false);
 

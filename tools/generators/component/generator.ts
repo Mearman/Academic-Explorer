@@ -23,7 +23,7 @@ class ReactComponent extends ComponentBase {
       this.options.project === "web"
         ? "apps/web"
         : this.options.project?.startsWith("@")
-        ? `packages/${this.options.project.replace("@academic-explorer/", "")}`
+        ? `packages/${this.options.project.replace("@bibgraph/", "")}`
         : `packages/${this.options.project || "web"}`
 
     const isUiPackage = this.options.project === "ui" || (this.options.project?.includes("ui") ?? false)

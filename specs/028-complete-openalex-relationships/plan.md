@@ -14,9 +14,9 @@ Implement detection and visualization for all remaining OpenAlex relationship ty
 **Language/Version**: TypeScript 5.x with strict mode enabled (`strict: true`, `strictNullChecks: true`, `noImplicitAny: false`)
 
 **Primary Dependencies**:
-- `@academic-explorer/client` (OpenAlex API client with caching)
-- `@academic-explorer/graph` (graph data structures, relationship types)
-- `@academic-explorer/types` (shared type definitions)
+- `@bibgraph/client` (OpenAlex API client with caching)
+- `@bibgraph/graph` (graph data structures, relationship types)
+- `@bibgraph/types` (shared type definitions)
 - React 19 (for visualization components)
 - Mantine UI (for relationship display components)
 
@@ -51,7 +51,7 @@ Implement detection and visualization for all remaining OpenAlex relationship ty
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned. All relationship data structures will use proper typed interfaces (GrantRelationship, KeywordRelationship, TopicWithMetadata, etc.). Unknown data from API will use `unknown` with type guards.
 

@@ -43,7 +43,7 @@ The 30-URL sample includes:
 
 ### CI Tests (Default)
 ```bash
-pnpm --filter @academic-explorer/web test:e2e
+pnpm --filter @bibgraph/web test:e2e
 ```
 
 ### Manual Tests (Local Only)

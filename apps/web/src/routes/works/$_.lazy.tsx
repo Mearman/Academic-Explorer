@@ -1,7 +1,7 @@
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { type Work, type WorkField } from "@academic-explorer/types/entities";
-import { EntityDetectionService } from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils/logger";
+import { cachedOpenAlex } from "@bibgraph/client";
+import { type Work, type WorkField } from "@bibgraph/types/entities";
+import { EntityDetectionService } from "@bibgraph/utils";
+import { logger } from "@bibgraph/utils/logger";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";

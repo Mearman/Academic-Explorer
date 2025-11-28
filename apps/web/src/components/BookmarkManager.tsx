@@ -2,8 +2,8 @@
  * Bookmark manager component for displaying and managing user bookmarks
  */
 
-import { logger } from "@academic-explorer/utils/logger";
-import { type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
+import { logger } from "@bibgraph/utils/logger";
+import { type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
   TextInput,
   Button,

@@ -1,7 +1,7 @@
 /**
  * Browse Page Object
  *
- * Represents the Browse page in Academic Explorer (entity type selection grid).
+ * Represents the Browse page in BibGraph (entity type selection grid).
  * This is a utility page, not an entity detail page.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BrowsePage

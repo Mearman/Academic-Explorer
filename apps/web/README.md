@@ -1,4 +1,4 @@
-# Academic Explorer Web
+# BibGraph Web
 
 React SPA for exploring academic literature through interactive knowledge graphs. Search papers, authors, journals, and institutions using the OpenAlex API and visualize their connections.
 

@@ -5,8 +5,8 @@
  * from structured filter objects with type safety and validation.
  */
 
-import type { EntityFilters, EntityType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+import type { EntityFilters, EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 
 /**
  * Filter validation results

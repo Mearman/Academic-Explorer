@@ -25,12 +25,12 @@ The storage abstraction layer allows you to swap between different storage backe
 
 ## Installation
 
-The storage abstraction layer is part of the `@academic-explorer/utils` package. No additional dependencies are required.
+The storage abstraction layer is part of the `@bibgraph/utils` package. No additional dependencies are required.
 
 ```typescript
 // Import types and providers
-import type { CatalogueStorageProvider } from '@academic-explorer/utils';
-import { IndexedDBStorageProvider, InMemoryStorageProvider } from '@academic-explorer/utils';
+import type { CatalogueStorageProvider } from '@bibgraph/utils';
+import { IndexedDBStorageProvider, InMemoryStorageProvider } from '@bibgraph/utils';
 ```
 
 ---
@@ -41,15 +41,15 @@ import { IndexedDBStorageProvider, InMemoryStorageProvider } from '@academic-exp
 
 **Production (IndexedDB)**:
 ```typescript
-import { IndexedDBStorageProvider } from '@academic-explorer/utils';
-import { logger } from '@academic-explorer/utils/logger';
+import { IndexedDBStorageProvider } from '@bibgraph/utils';
+import { logger } from '@bibgraph/utils/logger';
 
 const storageProvider = new IndexedDBStorageProvider(logger);
 ```
 
 **Testing (In-Memory)**:
 ```typescript
-import { InMemoryStorageProvider } from '@academic-explorer/utils';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 const storageProvider = new InMemoryStorageProvider();
 ```
@@ -99,9 +99,9 @@ export function CatalogueManager() {
 
 ```typescript
 // apps/web/src/main.tsx
-import { IndexedDBStorageProvider } from '@academic-explorer/utils';
+import { IndexedDBStorageProvider } from '@bibgraph/utils';
 import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
-import { logger } from '@academic-explorer/utils/logger';
+import { logger } from '@bibgraph/utils/logger';
 
 // Create production storage provider
 const storageProvider = new IndexedDBStorageProvider(logger);
@@ -152,7 +152,7 @@ export function useCatalogue() {
 // Component.test.tsx
 import { render, screen } from '@testing-library/react';
 import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
-import { InMemoryStorageProvider } from '@academic-explorer/utils';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 import { CatalogueManager } from './CatalogueManager';
 
 describe('CatalogueManager', () => {
@@ -196,7 +196,7 @@ describe('CatalogueManager', () => {
 
 ```typescript
 // Playwright global setup (playwright.global-setup.ts)
-import { InMemoryStorageProvider } from '@academic-explorer/utils';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 async function globalSetup(config: FullConfig) {
   // Playwright tests use real IndexedDB in the browser
@@ -454,7 +454,7 @@ export function MyComponent() {
 }
 
 // ❌ Bad: Import singleton directly
-import { catalogueService } from '@academic-explorer/utils';
+import { catalogueService } from '@bibgraph/utils';
 export function MyComponent() {
   // Can't swap for testing
 }
@@ -587,11 +587,11 @@ if (!exists) {
 **Solution**:
 ```typescript
 // ✅ Good: Import from package
-import type { CatalogueStorageProvider } from '@academic-explorer/utils';
-import { IndexedDBStorageProvider } from '@academic-explorer/utils';
+import type { CatalogueStorageProvider } from '@bibgraph/utils';
+import { IndexedDBStorageProvider } from '@bibgraph/utils';
 
 // ❌ Bad: Import from internal path
-import type { CatalogueStorageProvider } from '@academic-explorer/utils/storage/storage-provider';
+import type { CatalogueStorageProvider } from '@bibgraph/utils/storage/storage-provider';
 ```
 
 ---

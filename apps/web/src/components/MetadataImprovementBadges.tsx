@@ -14,7 +14,7 @@ import {
 	detectMetadataImprovements,
 	type WorkMetadata,
 	type MetadataImprovement,
-} from "@academic-explorer/utils";
+} from "@bibgraph/utils";
 import { Group, Badge } from "@mantine/core";
 
 export interface MetadataImprovementBadgesProps {

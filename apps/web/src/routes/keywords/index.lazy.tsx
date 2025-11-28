@@ -1,4 +1,4 @@
-import { createFilterBuilder } from "@academic-explorer/client";
+import { createFilterBuilder } from "@bibgraph/client";
 import { createLazyFileRoute , useSearch } from "@tanstack/react-router";
 
 import { EntityList } from "@/components/EntityList";

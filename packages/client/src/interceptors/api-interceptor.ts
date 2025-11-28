@@ -3,7 +3,7 @@
  * Captures API requests and responses in development mode for caching analysis
  */
 
-import type { EntityType, QueryParams } from "@academic-explorer/types";
+import type { EntityType, QueryParams } from "@bibgraph/types";
 
 import { logger } from "../internal/logger";
 

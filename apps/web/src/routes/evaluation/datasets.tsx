@@ -6,9 +6,9 @@
 import {
   parseSTARFile,
   createSTARDatasetFromParseResult,
-} from "@academic-explorer/utils";
-import type { STARDataset } from "@academic-explorer/utils";
-import { logError, logger } from "@academic-explorer/utils/logger";
+} from "@bibgraph/utils";
+import type { STARDataset } from "@bibgraph/utils";
+import { logError, logger } from "@bibgraph/utils/logger";
 import {
   Modal,
   FileInput,
@@ -28,7 +28,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 
 
-// Types are imported from @academic-explorer/utils
+// Types are imported from @bibgraph/utils
 
 function DatasetsManagement() {
   const [datasets, setDatasets] = useState<STARDataset[]>([]);

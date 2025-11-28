@@ -1,5 +1,5 @@
 /**
- * PostHog Analytics Provider for Academic Explorer
+ * PostHog Analytics Provider for BibGraph
  *
  * Integrates official @posthog/react provider with custom privacy-compliant configuration
  * Uses EU hosting, cookieless mode, and GDPR-compliant settings
@@ -18,7 +18,7 @@ import {
 /**
  * PostHog Provider Component
  *
- * Wraps the official @posthog/react PostHogProvider with Academic Explorer's
+ * Wraps the official @posthog/react PostHogProvider with BibGraph's
  * privacy-compliant configuration.
  *
  * Features:

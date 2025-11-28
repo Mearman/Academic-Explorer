@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Navigation helper for E2E tests in Academic Explorer SPA (TanStack Router).
+ * Navigation helper for E2E tests in BibGraph SPA (TanStack Router).
  * Provides deterministic navigation utilities with proper wait conditions.
  */
 export class NavigationHelper {

@@ -385,7 +385,7 @@ typecheck and build behavior.
 ### BREAKING CHANGE
 
 * New clustering-types module in
-@academic-explorer/algorithms
+@bibgraph/algorithms
 
 ## 19.2.0 (2025-11-25)
 
@@ -466,9 +466,9 @@ typecheck and build behavior.
 
 ### BREAKING CHANGE
 
-* @academic-explorer/graph package removed, use @academic-explorer/types and @academic-explorer/utils instead
-* EntityDetectionService and event utilities now in @academic-explorer/utils
-* Graph types now in @academic-explorer/types instead of @academic-explorer/graph
+* @bibgraph/graph package removed, use @bibgraph/types and @bibgraph/utils instead
+* EntityDetectionService and event utilities now in @bibgraph/utils
+* Graph types now in @bibgraph/types instead of @bibgraph/graph
 * Graph visualization removed. No 'Graph' mode
 or force-directed network interactions.
 * Simulation package features removed
@@ -804,11 +804,11 @@ Refs: constitution v2.4.0 (MINOR bump - new principle added)
 
 ### BREAKING CHANGE
 
-* All EntityType imports now use @academic-explorer/types
+* All EntityType imports now use @bibgraph/types
 
 Centralize EntityType definition to packages/types/src/entities/entities.ts
 as the single source of truth. All packages and apps now import EntityType
-from @academic-explorer/types instead of local duplicates.
+from @bibgraph/types instead of local duplicates.
 
 Changes:
 - Remove EntityType from graph/src/types/core.ts (imported from types pkg)
@@ -871,11 +871,11 @@ Follow-up TODOs:
 - Update command templates to check for blockers before auto-progressing
 
 Refs: constitution v2.3.0 Principle X
-* Consumers importing EntityType from @academic-explorer/graph
-must update imports to @academic-explorer/types
+* Consumers importing EntityType from @bibgraph/graph
+must update imports to @bibgraph/types
 * Entity metadata helper functions moved from graph package
-to types package. Import from @academic-explorer/types instead of
-@academic-explorer/graph/taxonomy/entity-taxa.
+to types package. Import from @bibgraph/types instead of
+@bibgraph/graph/taxonomy/entity-taxa.
 * EntityType union now includes domains, fields, subfields
 
 ## [15.0.2](https://github.com/Mearman/Academic-Explorer/compare/v15.0.1...v15.0.2) (2025-11-20)
@@ -1545,7 +1545,7 @@ The new entity-based history will start fresh from this update forward.
 
 ### BREAKING CHANGES
 
-* **client:** Entity types are now only exported from @academic-explorer/types package
+* **client:** Entity types are now only exported from @bibgraph/types package
 * **config:** Configuration files are no longer compiled to JavaScript
 * **root:** Removes knip unused code detection tool from project
 * **web:** useUserInteractions hook now uses catalogue service instead of separate database
@@ -1930,13 +1930,13 @@ instead of typed parameters ($workId, $authorId, $institutionId).
   All package versions have been corrected to reflect their true change history from monorepo creation. Each package (except web) started at 1.0.0 when extracted from the main app, while web inherited its pre-monorepo version of 8.1.0.
 
   **Corrected Package Versions:**
-  - `@academic-explorer/web`: 8.43.4 (from 8.1.0 baseline)
-  - `@academic-explorer/cli`: 1.3.0 (from 1.0.0 baseline)
-  - `@academic-explorer/client`: 1.28.0 (from 1.0.0 baseline)
-  - `@academic-explorer/graph`: 1.14.0 (from 1.0.0 baseline)
-  - `@academic-explorer/utils`: 2.1.3 (from 1.0.0 baseline, includes breaking change)
-  - `@academic-explorer/simulation`: 1.0.4 (from 1.0.0 baseline)
-  - `@academic-explorer/ui`: 1.3.0 (from 1.0.0 baseline)
+  - `@bibgraph/web`: 8.43.4 (from 8.1.0 baseline)
+  - `@bibgraph/cli`: 1.3.0 (from 1.0.0 baseline)
+  - `@bibgraph/client`: 1.28.0 (from 1.0.0 baseline)
+  - `@bibgraph/graph`: 1.14.0 (from 1.0.0 baseline)
+  - `@bibgraph/utils`: 2.1.3 (from 1.0.0 baseline, includes breaking change)
+  - `@bibgraph/simulation`: 1.0.4 (from 1.0.0 baseline)
+  - `@bibgraph/ui`: 1.3.0 (from 1.0.0 baseline)
 
   All package changelogs have been rewritten to accurately reflect their independent version history with proper semantic versioning based on conventional commits.
 

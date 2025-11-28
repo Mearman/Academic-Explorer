@@ -3,7 +3,7 @@
  * UI-agnostic interfaces for browsing cached entities
  */
 
-import type { EntityType } from "@academic-explorer/types"
+import type { EntityType } from "@bibgraph/types"
 
 /**
  * Cache storage types include entity types + special "autocomplete" cache

@@ -8,7 +8,7 @@
 /* eslint-disable custom/no-deprecated */
 // Commander.js methods flagged as deprecated are actually the correct modern API
 
-import { logger, logError } from "@academic-explorer/utils/logger"
+import { logger, logError } from "@bibgraph/utils/logger"
 import { Command } from "commander"
 
 import { detectEntityType, SUPPORTED_ENTITIES } from "./entity-detection.js"
@@ -50,7 +50,7 @@ program
 	.action(() => {
 		console.log("[SUCCESS] CLI is working!")
 		console.log("[PACKAGES] Using packages:")
-		console.log("  - @academic-explorer/shared-utils (logger)")
+		console.log("  - @bibgraph/shared-utils (logger)")
 		console.log("  - Entity detection utilities")
 		logger.debug("cli", "CLI test command executed successfully")
 	})

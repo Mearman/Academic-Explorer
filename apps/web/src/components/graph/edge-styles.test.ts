@@ -3,8 +3,8 @@
  * Tests all combinations of relationship types and directions (7 types × 2 directions = 14)
  */
 
-import type { GraphEdge } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/types';
+import type { GraphEdge } from '@bibgraph/types';
+import { RelationType } from '@bibgraph/types';
 import { describe, it, expect } from 'vitest';
 
 import {

@@ -30,8 +30,8 @@ import {
   type Node as AlgorithmNode,
   type Edge as AlgorithmEdge,
   type Community,
-} from '@academic-explorer/algorithms';
-import type { GraphNode, GraphEdge, EntityType } from '@academic-explorer/types';
+} from '@bibgraph/algorithms';
+import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 
 /**
  * Algorithm node type that satisfies the algorithms package requirements

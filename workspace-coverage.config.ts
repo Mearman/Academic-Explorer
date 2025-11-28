@@ -193,7 +193,7 @@ function generateHtmlReport(report: CoverageReport, outputPath: string): void {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Explorer - Workspace Coverage Report</title>
+    <title>BibGraph - Workspace Coverage Report</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -214,7 +214,7 @@ function generateHtmlReport(report: CoverageReport, outputPath: string): void {
 </head>
 <body>
     <div class="container">
-        <h1>📊 Academic Explorer - Workspace Coverage Report</h1>
+        <h1>📊 BibGraph - Workspace Coverage Report</h1>
 
         <div class="summary">
             <div class="metric">
@@ -282,7 +282,7 @@ function getStatusClass(percentage: number): string {
 }
 
 function generateMarkdownReport(report: CoverageReport, outputPath: string): void {
-  const markdown = `# 📊 Academic Explorer - Workspace Coverage Report
+  const markdown = `# 📊 BibGraph - Workspace Coverage Report
 
 Generated on ${new Date(report.timestamp).toLocaleString()}
 

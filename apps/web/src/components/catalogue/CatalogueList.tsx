@@ -2,8 +2,8 @@
  * Catalogue list component for displaying and managing lists
  */
 
-import type { EntityType } from "@academic-explorer/types";
-import { type CatalogueList } from "@academic-explorer/utils"
+import type { EntityType } from "@bibgraph/types";
+import { type CatalogueList } from "@bibgraph/utils"
 import {
   Card,
   Group,

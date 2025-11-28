@@ -12,7 +12,7 @@ Add incoming/outgoing relationship visualization to entity detail pages, enablin
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x with strict mode enabled
-**Primary Dependencies**: React 19, TanStack Router v7, Mantine UI, @academic-explorer/graph (relationship types), @academic-explorer/ui (shared components)
+**Primary Dependencies**: React 19, TanStack Router v7, Mantine UI, @bibgraph/graph (relationship types), @bibgraph/ui (shared components)
 **Storage**: IndexedDB via storage provider interface (DexieStorageProvider for production, InMemoryStorageProvider for tests) - No new storage operations required for this feature
 **Testing**: Vitest (serial execution with fake-indexeddb), Playwright for E2E tests
 **Target Platform**: Web (React SPA in apps/web)
@@ -25,11 +25,11 @@ Add incoming/outgoing relationship visualization to entity detail pages, enablin
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types planned; relationship direction uses union type `'outbound' | 'inbound'`; all component props strictly typed
 2. **Test-First Development**: ✅ Tests written and failing before implementation begins; acceptance scenarios define test cases
-3. **Monorepo Architecture**: ✅ Changes extend existing apps/web structure; may add shared components to packages/ui; uses @academic-explorer/* aliases
+3. **Monorepo Architecture**: ✅ Changes extend existing apps/web structure; may add shared components to packages/ui; uses @bibgraph/* aliases
 4. **Storage Abstraction**: ✅ No new storage operations required; reads relationship data from existing graph store via provider interface
 5. **Performance & Memory**: ✅ Tests run serially; pagination at 50 items limits memory; no Web Workers needed (filtering is synchronous)
 6. **Atomic Conventional Commits**: ✅ Incremental atomic commits planned per user story (P1→P2→P3→P4)

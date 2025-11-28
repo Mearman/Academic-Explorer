@@ -9,7 +9,7 @@
 
 # Changelog
 
-All notable changes to the `@academic-explorer/ui` package (formerly `@academic-explorer/ui-components`) will be documented in this file.
+All notable changes to the `@bibgraph/ui` package (formerly `@bibgraph/ui-components`) will be documented in this file.
 
 This package follows independent versioning from the monorepo.
 
@@ -88,4 +88,4 @@ This version marks the transition from monorepo fixed versioning (9.x.x) to inde
 
 ---
 
-**Note:** This package was renamed from `@academic-explorer/ui-components` to `@academic-explorer/ui` during monorepo restructuring. All historical commits reference the original `packages/ui-components/` path.
+**Note:** This package was renamed from `@bibgraph/ui-components` to `@bibgraph/ui` during monorepo restructuring. All historical commits reference the original `packages/ui-components/` path.

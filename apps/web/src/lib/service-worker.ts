@@ -2,7 +2,7 @@
  * Service Worker Registration for OpenAlex API Interception
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@bibgraph/utils";
 
 let swRegistration: ServiceWorkerRegistration | null = null;
 

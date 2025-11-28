@@ -1,7 +1,7 @@
 /**
  * Search Page Object
  *
- * Page object for the Search utility page in Academic Explorer.
+ * Page object for the Search utility page in BibGraph.
  * Handles search queries, entity type filtering, and result navigation.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → SearchPage

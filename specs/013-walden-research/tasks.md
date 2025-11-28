@@ -53,7 +53,7 @@ This is an Nx monorepo with packages at repository root:
 
 **Goal**: Automatically deliver Data Version 2 metadata improvements to all users without configuration
 
-**Independent Test**: Query works via Academic Explorer and verify responses include improved metadata (14% more references/locations, better language detection)
+**Independent Test**: Query works via BibGraph and verify responses include improved metadata (14% more references/locations, better language detection)
 
 ### Implementation for User Story 1
 

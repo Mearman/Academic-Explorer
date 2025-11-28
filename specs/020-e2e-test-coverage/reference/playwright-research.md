@@ -25,7 +25,7 @@ This document consolidates all Playwright research findings from Phase 0.
 
 ```typescript
 /**
- * Playwright configuration for Academic Explorer E2E tests
+ * Playwright configuration for BibGraph E2E tests
  * Uses Playwright's built-in test runner and web server management
  *
  * Test Organization: Feature-based structure under e2e/features/ with tag-based filtering
@@ -360,7 +360,7 @@ test.describe('@smoke @fast Homepage - Critical Paths', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify page loaded
-    await expect(page).toHaveTitle(/Academic Explorer/i);
+    await expect(page).toHaveTitle(/BibGraph/i);
 
     // Check for main navigation
     await expect(page.getByRole('navigation')).toBeVisible();
@@ -447,11 +447,11 @@ test.describe('@manual Manual: Debug ISSN Timeout', () => {
 **File**: `apps/web/e2e/README.md`
 
 ```markdown
-# Academic Explorer E2E Tests
+# BibGraph E2E Tests
 
 ## Overview
 
-This directory contains the end-to-end test suite for Academic Explorer, organized by feature domain.
+This directory contains the end-to-end test suite for BibGraph, organized by feature domain.
 
 **Statistics**:
 - Total tests: ~642
@@ -715,7 +715,7 @@ grep "testDir\|testMatch" playwright.config.ts
 
 ### Why Serial Execution?
 
-Academic Explorer runs tests sequentially (1 worker) due to:
+BibGraph runs tests sequentially (1 worker) due to:
 1. **Memory Constraint**: 8GB heap limit, no room for parallel workers
 2. **State Isolation**: IndexedDB and graph state require clean browser context
 3. **Flakiness Prevention**: Parallel execution causes 15-20% failures
@@ -763,7 +763,7 @@ All templates are ready to use with minimal customization.
 
 # Playwright Test Suite Organization - Decision Summary
 
-**Executive Brief for Academic Explorer (642 E2E Tests)**
+**Executive Brief for BibGraph (642 E2E Tests)**
 
 ---
 
@@ -1004,7 +1004,7 @@ Contains:
 
 # Playwright Test Suite Consolidation - Migration Checklist
 
-**Consolidated Reference for Academic Explorer Consolidation Project**
+**Consolidated Reference for BibGraph Consolidation Project**
 **Estimated Duration: 8-11 hours | Medium Effort**
 
 ---
@@ -1424,7 +1424,7 @@ Only after verification passes:
 
 - [ ] Create `apps/web/e2e/README.md`
   ```markdown
-  # Academic Explorer E2E Tests
+  # BibGraph E2E Tests
 
   ## Organization
   Tests are organized by feature domain under `features/`:
@@ -1614,7 +1614,7 @@ rm -rf apps/web/src/test/e2e/
 ## PLAYWRIGHT_ORGANIZATION_RESEARCH
 
 # Playwright Test Suite Organization Research
-## Large-Scale Test Suite Best Practices for Academic Explorer (642 Tests, 62 Files)
+## Large-Scale Test Suite Best Practices for BibGraph (642 Tests, 62 Files)
 
 **Date**: 2025-11-23
 **Context**: Nx monorepo with 642 E2E tests split across 2 directories (19 tests newer location, 43 tests older location)
@@ -1624,7 +1624,7 @@ rm -rf apps/web/src/test/e2e/
 
 ## Executive Summary
 
-Your Academic Explorer test suite exhibits **fragmented organization** with tests split across two locations and inconsistent naming conventions. Based on industry best practices research and your specific constraints, a **unified, feature-based directory structure** is recommended with the following characteristics:
+Your BibGraph test suite exhibits **fragmented organization** with tests split across two locations and inconsistent naming conventions. Based on industry best practices research and your specific constraints, a **unified, feature-based directory structure** is recommended with the following characteristics:
 
 - **Single testDir**: `/apps/web/e2e/` as the canonical location
 - **Organization by Feature Domain**: Not by route, route, or generic layers
@@ -1986,7 +1986,7 @@ workers: process.env.CI ? 2 : 4,  // ⚠️ Contradictory config
 
 *Industry averages from Playwright documentation and large test suites (Stripe, GitHub, Microsoft)
 
-### Why Serial is Optimal for Academic Explorer
+### Why Serial is Optimal for BibGraph
 
 1. **Memory is the bottleneck**: 8GB limit is fixed, cannot add workers without OOM
 2. **Test isolation is critical**: IndexedDB persistence + graph state requires clean environment
@@ -2265,7 +2265,7 @@ rm -rf apps/web/test/e2e/         # If exists
 Create `apps/web/e2e/README.md`:
 
 ```markdown
-# Academic Explorer E2E Tests
+# BibGraph E2E Tests
 
 ## Organization
 

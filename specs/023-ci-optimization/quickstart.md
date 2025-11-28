@@ -2,11 +2,11 @@
 
 **Feature**: 023-ci-optimization
 **Created**: 2025-11-22
-**Audience**: Developers working on Academic Explorer
+**Audience**: Developers working on BibGraph
 
 ## Overview
 
-The Academic Explorer CI/CD pipeline has been optimized to reduce execution time from 30-40 minutes to under 20 minutes. This guide explains how the optimized pipeline works and how to make the most of it.
+The BibGraph CI/CD pipeline has been optimized to reduce execution time from 30-40 minutes to under 20 minutes. This guide explains how the optimized pipeline works and how to make the most of it.
 
 ## What Changed
 

@@ -1,8 +1,8 @@
 import {
   cachedOpenAlex,
   type AutocompleteResult,
-} from "@academic-explorer/client";
-import { logger } from "@academic-explorer/utils";
+} from "@bibgraph/client";
+import { logger } from "@bibgraph/utils";
 import {
   Alert,
   Anchor,

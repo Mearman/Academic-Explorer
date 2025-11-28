@@ -1,5 +1,5 @@
 {
-  "name": "@academic-explorer/cli",
+  "name": "@bibgraph/cli",
   "description": "Command-line interface for OpenAlex data access",
   "version": "0.0.0",
   "type": "module",
@@ -19,9 +19,9 @@
     "typecheck": "nx run cli:typecheck"
   },
   "dependencies": {
-    "@academic-explorer/client": "workspace:*",
-    "@academic-explorer/types": "workspace:*",
-    "@academic-explorer/utils": "workspace:*",
+    "@bibgraph/client": "workspace:*",
+    "@bibgraph/types": "workspace:*",
+    "@bibgraph/utils": "workspace:*",
     "commander": "14.0.1",
     "zod": "4.1.13"
   },

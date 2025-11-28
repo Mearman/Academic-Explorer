@@ -1,4 +1,4 @@
-import type { Bookmark, EntityType } from "@academic-explorer/types";
+import type { Bookmark, EntityType } from "@bibgraph/types";
 import { Stack, Text, Group, Divider, Box, Center, Loader } from "@mantine/core";
 import { IconBookmarkOff } from "@tabler/icons-react";
 import { useMemo } from "react";

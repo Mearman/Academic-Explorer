@@ -20,7 +20,7 @@ This is a web application (existing monorepo):
 - **Test Files**: `apps/web/test/component/` and `apps/web/test/e2e/`
 - **Routes**: `apps/web/src/routes/`
 
-All paths relative to repository root: `/Users/joe/Documents/Research/PhD/Academic Explorer/`
+All paths relative to repository root: `/Users/joe/Documents/Research/PhD/BibGraph/`
 
 ## Phase 1: Setup (Shared Infrastructure)
 

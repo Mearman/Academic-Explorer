@@ -7,7 +7,7 @@
 
 ## Summary
 
-Create a new `packages/algorithms/` package providing generic graph traversal and analysis algorithms for Academic Explorer. The package implements 8 core algorithms (DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, SCC) with full type safety using discriminated unions for heterogeneous graphs and Result/Option types for error handling. Zero internal dependencies, strict TypeScript mode, 100% test coverage, performance targets <100ms for traversal and <200ms for pathfinding on graphs with 1000-2000 edges.
+Create a new `packages/algorithms/` package providing generic graph traversal and analysis algorithms for BibGraph. The package implements 8 core algorithms (DFS, BFS, Dijkstra, topological sort, cycle detection, connected components, SCC) with full type safety using discriminated unions for heterogeneous graphs and Result/Option types for error handling. Zero internal dependencies, strict TypeScript mode, 100% test coverage, performance targets <100ms for traversal and <200ms for pathfinding on graphs with 1000-2000 edges.
 
 ## Technical Context
 
@@ -25,11 +25,11 @@ Create a new `packages/algorithms/` package providing generic graph traversal an
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
 1. **Type Safety**: ✅ No `any` types; discriminated union types for nodes/edges with `type` discriminator fields; Result/Option types enforce exhaustive pattern matching; strict mode enabled
 2. **Test-First Development**: ✅ Tests written before implementation for all 8 algorithms; failing tests verify behavior; unit tests + performance tests + edge case tests
-3. **Monorepo Architecture**: ✅ New package at `packages/algorithms/`; uses Nx workspace structure; exports via `@academic-explorer/algorithms` alias; MUST NOT re-export from other internal packages (FR-014)
+3. **Monorepo Architecture**: ✅ New package at `packages/algorithms/`; uses Nx workspace structure; exports via `@bibgraph/algorithms` alias; MUST NOT re-export from other internal packages (FR-014)
 4. **Storage Abstraction**: ✅ N/A - package operates on in-memory data structures only; no persistence layer
 5. **Performance & Memory**: ✅ Performance targets in success criteria (<100ms, <200ms); memory limits defined (<100MB); tests run serially; efficient adjacency list data structures
 6. **Atomic Conventional Commits**: ✅ Commits use `feat(algorithms)`, `test(algorithms)`, `docs(algorithms)` scopes; atomic commits after each task; spec files committed after each phase
@@ -114,7 +114,7 @@ packages/algorithms/
 └── README.md                     # Package documentation
 
 # Nx workspace integration
-tsconfig.base.json                # Add @academic-explorer/algorithms alias
+tsconfig.base.json                # Add @bibgraph/algorithms alias
 .github/workflows/ci.yml          # Add algorithms to test matrices (if applicable)
 ```
 
@@ -309,7 +309,7 @@ export function stronglyConnectedComponents<N extends { id: string; type: string
 
 **Example 1: Basic Graph Traversal**
 ```typescript
-import { Graph, dfs } from '@academic-explorer/algorithms';
+import { Graph, dfs } from '@bibgraph/algorithms';
 
 // Create graph with typed nodes
 type WorkNode = { id: string; type: 'work'; title: string };
@@ -332,7 +332,7 @@ if (traversalResult.ok) {
 
 **Example 2: Shortest Path Finding**
 ```typescript
-import { Graph, dijkstra } from '@academic-explorer/algorithms';
+import { Graph, dijkstra } from '@bibgraph/algorithms';
 
 type Node = { id: string; type: 'generic' };
 type Edge = { id: string; source: string; target: string; type: 'generic'; weight: number };
@@ -354,7 +354,7 @@ if (pathResult.ok && pathResult.value.some) {
 
 **Example 3: Cycle Detection**
 ```typescript
-import { Graph, detectCycles } from '@academic-explorer/algorithms';
+import { Graph, detectCycles } from '@bibgraph/algorithms';
 
 const cycleResult = detectCycles(graph);
 if (cycleResult.ok) {
@@ -369,7 +369,7 @@ if (cycleResult.ok) {
 ### Agent Context Update
 
 Run `.specify/scripts/bash/update-agent-context.sh claude` to update CLAUDE.md with new technology:
-- Add `@academic-explorer/algorithms` to "Active Technologies" section
+- Add `@bibgraph/algorithms` to "Active Technologies" section
 - Document zero dependency constraint
 - Note discriminated union pattern for heterogeneous graphs
 - Document Result/Option error handling pattern

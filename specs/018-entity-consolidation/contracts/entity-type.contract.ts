@@ -2,7 +2,7 @@
  * Contract: Canonical EntityType Definition
  *
  * This contract defines the single source of truth for OpenAlex entity types.
- * All packages MUST import EntityType from @academic-explorer/types.
+ * All packages MUST import EntityType from @bibgraph/types.
  *
  * Location: packages/types/src/entities/entities.ts:223-235
  */
@@ -95,7 +95,7 @@ export type EntityTypeMap = {
   subfields: Subfield
 }
 
-// Re-export entity interfaces (imported from @academic-explorer/types)
+// Re-export entity interfaces (imported from @bibgraph/types)
 export type {
   Work,
   Author,
@@ -109,4 +109,4 @@ export type {
   Domain,
   Field,
   Subfield,
-} from "@academic-explorer/types"
+} from "@bibgraph/types"

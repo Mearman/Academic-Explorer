@@ -1,6 +1,6 @@
 {
-  "name": "@academic-explorer/web",
-  "description": "Academic Explorer Web App - React SPA for OpenAlex API exploration",
+  "name": "@bibgraph/web",
+  "description": "BibGraph Web App - React SPA for OpenAlex API exploration",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -24,11 +24,11 @@
     "typecheck": "nx run web:typecheck"
   },
   "dependencies": {
-    "@academic-explorer/algorithms": "workspace:*",
-    "@academic-explorer/client": "workspace:*",
-    "@academic-explorer/types": "workspace:*",
-    "@academic-explorer/ui": "workspace:*",
-    "@academic-explorer/utils": "workspace:*",
+    "@bibgraph/algorithms": "workspace:*",
+    "@bibgraph/client": "workspace:*",
+    "@bibgraph/types": "workspace:*",
+    "@bibgraph/ui": "workspace:*",
+    "@bibgraph/utils": "workspace:*",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",

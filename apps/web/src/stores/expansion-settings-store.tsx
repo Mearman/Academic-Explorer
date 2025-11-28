@@ -9,9 +9,9 @@ import type {
   ExpansionTarget,
   SortCriteria,
   FilterCriteria,
-} from "@academic-explorer/types";
-import { getDefaultSettingsForTarget , RelationType } from "@academic-explorer/types";
-import { logger } from "@academic-explorer/utils/logger";
+} from "@bibgraph/types";
+import { getDefaultSettingsForTarget , RelationType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils/logger";
 import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
 
 interface ExpansionSettingsState {

@@ -17,7 +17,7 @@ import type {
   TopicsFilters,
   PublishersFilters,
   FundersFilters,
-} from "@academic-explorer/types";
+} from "@bibgraph/types";
 
 // Import filter builder from canonical source
 import { buildFilterStringFromFilters } from "./filter-builder.js";

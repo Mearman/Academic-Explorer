@@ -1,4 +1,4 @@
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@bibgraph/utils/logger";
 import { Container, Alert, Text, Button, Stack, Group } from "@mantine/core";
 import { IconAlertTriangle, IconRefresh, IconHome } from "@tabler/icons-react";
 import { ErrorComponentProps } from "@tanstack/react-router";

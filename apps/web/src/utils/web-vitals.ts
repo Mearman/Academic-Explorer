@@ -3,7 +3,7 @@
  * Tracks Core Web Vitals and reports to app activity store
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@bibgraph/utils";
 import type { Metric } from "web-vitals";
 
 // PostHog type for window object

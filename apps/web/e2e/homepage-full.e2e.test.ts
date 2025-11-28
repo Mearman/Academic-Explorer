@@ -1,7 +1,7 @@
 /**
  * E2E tests for homepage functionality
  * Automated version of manual homepage tests
- * Tests the main Academic Explorer homepage with search, navigation, and basic interactions
+ * Tests the main BibGraph homepage with search, navigation, and basic interactions
  *
  * @automated-manual
  */
@@ -29,7 +29,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
     // Check that page loaded successfully - h1 title should be visible
     // Homepage is a Card component, not MainLayout with header
-    const title = page.locator('h1:has-text("Academic Explorer")');
+    const title = page.locator('h1:has-text("BibGraph")');
     await expect(title).toBeVisible({ timeout: 15000 });
 
     // Verify no errors occurred
@@ -41,7 +41,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     await waitForAppReady(page);
 
     // Check main title in the homepage card
-    const title = page.locator('h1:has-text("Academic Explorer")');
+    const title = page.locator('h1:has-text("BibGraph")');
     await expect(title).toBeVisible();
 
     // Check description text
@@ -212,7 +212,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await waitForAppReady(page);
 
       // Verify content is visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Check for horizontal scrollbar by comparing scrollWidth to clientWidth
@@ -242,7 +242,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await waitForAppReady(page);
 
       // Verify content is visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Verify card stays within reasonable bounds (should be centered with maxWidth)
@@ -269,7 +269,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await waitForAppReady(page);
 
       // Verify content is visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Verify card respects maxWidth (should be constrained, not full width)
@@ -296,7 +296,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await waitForAppReady(page);
 
       // Verify content is visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Verify card remains width-constrained with maxWidth
@@ -514,7 +514,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       });
 
       // Verify main content is still visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Verify search input is still visible and functional
@@ -553,7 +553,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       });
 
       // Verify main content is still visible
-      const title = page.locator('h1:has-text("Academic Explorer")');
+      const title = page.locator('h1:has-text("BibGraph")');
       await expect(title).toBeVisible({ timeout: 15000 });
 
       // Verify search button is still visible and clickable

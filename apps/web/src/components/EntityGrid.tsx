@@ -1,5 +1,5 @@
-import type { EntityType } from "@academic-explorer/types";
-import { EntityCard } from "@academic-explorer/ui";
+import type { EntityType } from "@bibgraph/types";
+import { EntityCard } from "@bibgraph/ui";
 import { SimpleGrid, Stack, Text } from "@mantine/core";
 
 export interface EntityGridItem {

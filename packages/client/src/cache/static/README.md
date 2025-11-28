@@ -17,7 +17,7 @@ This module provides functionality to fetch static data from GitHub Pages URLs i
 ### Basic Usage
 
 ```typescript
-import { createGitHubPagesReader } from '@academic-explorer/client';
+import { createGitHubPagesReader } from '@bibgraph/client';
 
 // Create reader with default configuration
 const reader = createGitHubPagesReader({
@@ -36,7 +36,7 @@ if (data) {
 ### Advanced Configuration
 
 ```typescript
-import { GitHubPagesReader } from '@academic-explorer/client';
+import { GitHubPagesReader } from '@bibgraph/client';
 
 const reader = new GitHubPagesReader({
   baseUrl: 'https://your-username.github.io/academic-explorer-data',
@@ -124,9 +124,9 @@ cache/static/
 | `maxCacheSize` | number | 100 | Maximum number of cached items |
 | `validateData` | boolean | true | Enable response data validation |
 
-## Integration with Academic Explorer
+## Integration with BibGraph
 
-This reader is designed to integrate with the Academic Explorer's static data generation pipeline:
+This reader is designed to integrate with the BibGraph's static data generation pipeline:
 
 1. **CLI generates static data** → GitHub Pages hosts it
 2. **Production app uses reader** → Fetches pre-generated data

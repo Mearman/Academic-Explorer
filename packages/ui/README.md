@@ -1,6 +1,6 @@
-# @academic-explorer/ui
+# @bibgraph/ui
 
-Reusable UI components for Academic Explorer built with Mantine and TanStack Table.
+Reusable UI components for BibGraph built with Mantine and TanStack Table.
 
 ## Main Exports
 
@@ -22,7 +22,7 @@ import {
   ErrorBoundary,
   SectionFrame,
   EntityCollectionList
-} from '@academic-explorer/ui';
+} from '@bibgraph/ui';
 
 // Data table with sorting and pagination
 <BaseTable data={items} columns={columnDefs} pageSize={20} />
