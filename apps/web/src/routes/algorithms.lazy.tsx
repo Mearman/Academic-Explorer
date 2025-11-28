@@ -452,11 +452,12 @@ function AlgorithmsPage() {
 
     const [workPct, authorPct, instPct] = randomPercentages();
 
-    // Generate random log-scale node count range
+    // Generate random log-scale node count range, biased towards lower values
     const randomLogNodeRange = (): [number, number] => {
-      // Random positions on the linear slider scale (0-100)
-      const a = Math.random() * 100;
-      const b = Math.random() * 100;
+      // Apply power function to bias towards lower values (power > 1 = more low values)
+      const bias = 2;
+      const a = Math.pow(Math.random(), bias) * 100;
+      const b = Math.pow(Math.random(), bias) * 100;
       const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
       return [linearToLogNodes(minPos), linearToLogNodes(maxPos)];
     };
