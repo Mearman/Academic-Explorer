@@ -62,11 +62,32 @@ const DEFAULT_CONFIG: SampleGraphConfig = {
   seed: 42,
   componentCount: 1,
   edgesPerNodeRange: [1, 4],
-  totalNodeCountRange: [25, 40],
+  totalNodeCountRange: [50, 200],
   workPercentage: 50,
   authorPercentage: 35,
   institutionPercentage: 15,
 };
+
+// Log scale constants for total nodes slider (5 to 10000)
+const LOG_MIN = Math.log10(5);
+const LOG_MAX = Math.log10(10000);
+
+/**
+ * Convert a linear slider position (0-100) to a log-scale node count
+ */
+function linearToLogNodes(linear: number): number {
+  const logValue = LOG_MIN + (linear / 100) * (LOG_MAX - LOG_MIN);
+  return Math.round(Math.pow(10, logValue));
+}
+
+/**
+ * Convert a log-scale node count to a linear slider position (0-100)
+ */
+function logNodesToLinear(nodes: number): number {
+  const clampedNodes = Math.max(5, Math.min(10000, nodes));
+  const logValue = Math.log10(clampedNodes);
+  return ((logValue - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 100;
+}
 
 /**
  * Simple seeded pseudo-random number generator (Mulberry32)
@@ -431,12 +452,21 @@ function AlgorithmsPage() {
 
     const [workPct, authorPct, instPct] = randomPercentages();
 
+    // Generate random log-scale node count range
+    const randomLogNodeRange = (): [number, number] => {
+      // Random positions on the linear slider scale (0-100)
+      const a = Math.random() * 100;
+      const b = Math.random() * 100;
+      const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
+      return [linearToLogNodes(minPos), linearToLogNodes(maxPos)];
+    };
+
     setGraphConfig((prev) => ({
       ...prev,
       seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
       componentCount: componentsLocked ? prev.componentCount : Math.floor(Math.random() * 6) + 1,
       edgesPerNodeRange: edgesLocked ? prev.edgesPerNodeRange : randomRange(0, 10),
-      totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomRange(10, 100),
+      totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomLogNodeRange(),
       workPercentage: percentagesLocked ? prev.workPercentage : workPct,
       authorPercentage: percentagesLocked ? prev.authorPercentage : authorPct,
       institutionPercentage: percentagesLocked ? prev.institutionPercentage : instPct,
@@ -758,11 +788,11 @@ function AlgorithmsPage() {
 
                     <Divider />
 
-                    {/* Total Nodes */}
+                    {/* Total Nodes (Log Scale) */}
                     <Box>
                       <Group justify="space-between" mb={4}>
                         <Text size="xs" fw={500}>
-                          Total Nodes: {graphConfig.totalNodeCountRange[0]} - {graphConfig.totalNodeCountRange[1]}
+                          Total Nodes: {graphConfig.totalNodeCountRange[0].toLocaleString()} - {graphConfig.totalNodeCountRange[1].toLocaleString()}
                         </Text>
                         <Button
                           variant={totalNodesLocked ? "light" : "subtle"}
@@ -775,16 +805,24 @@ function AlgorithmsPage() {
                         </Button>
                       </Group>
                       <RangeSlider
-                        value={graphConfig.totalNodeCountRange}
-                        onChange={(val) => updateConfig('totalNodeCountRange', val)}
-                        min={5}
-                        max={150}
-                        step={1}
-                        minRange={1}
+                        value={[
+                          logNodesToLinear(graphConfig.totalNodeCountRange[0]),
+                          logNodesToLinear(graphConfig.totalNodeCountRange[1])
+                        ]}
+                        onChange={(val) => updateConfig('totalNodeCountRange', [
+                          linearToLogNodes(val[0]),
+                          linearToLogNodes(val[1])
+                        ])}
+                        min={0}
+                        max={100}
+                        step={0.5}
+                        minRange={0}
                         marks={[
-                          { value: 5, label: '5' },
-                          { value: 75, label: '75' },
-                          { value: 150, label: '150' },
+                          { value: logNodesToLinear(5), label: '5' },
+                          { value: logNodesToLinear(50), label: '50' },
+                          { value: logNodesToLinear(500), label: '500' },
+                          { value: logNodesToLinear(5000), label: '5k' },
+                          { value: logNodesToLinear(10000), label: '10k' },
                         ]}
                         size="sm"
                       />
