@@ -1,3 +1,9 @@
+## 22.3.0 (2025-11-28)
+
+* feat(web): auto-regenerate graph when configuration changes ([a5e9584](https://github.com/Mearman/BibGraph/commit/a5e9584))
+* feat(web): randomize button now randomizes all slider values ([3b6086c](https://github.com/Mearman/BibGraph/commit/3b6086c))
+* chore(release): 22.2.0 [skip ci] ([8ac09e6](https://github.com/Mearman/BibGraph/commit/8ac09e6))
+
 ## 22.2.0 (2025-11-28)
 
 * feat(web): sync node clicks with shortest path source/target selection ([b7c65ee](https://github.com/Mearman/BibGraph/commit/b7c65ee))
