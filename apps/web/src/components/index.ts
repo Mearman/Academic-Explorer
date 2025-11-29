@@ -4,6 +4,7 @@
 
 export * from "./ApiCallTracker";
 export * from "./AutocompleteEntityFilter";
+export * from "./AutocompletePage";
 export * from "./BookmarkManager";
 export * from "./EnhancedSearchInterface";
 export * from "./EntityDataDisplay";

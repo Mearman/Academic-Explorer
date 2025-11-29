@@ -134,5 +134,3 @@ export function AutocompleteEntityFilter({
     />
   );
 }
-
-export { AUTOCOMPLETE_ENTITY_TYPES };
