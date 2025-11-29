@@ -1,0 +1,206 @@
+/**
+ * Route Discovery Helper
+ *
+ * Extracts all routes from TanStack Router's generated routeTree.gen.ts
+ * to enable automatic smoke testing of all application routes.
+ */
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import type { EntityType } from "@bibgraph/types";
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/**
+ * Routes categorized by their testing requirements
+ */
+export interface CategorizedRoutes {
+	/** Static pages with no parameters (e.g., /about, /settings) */
+	static: string[];
+	/** Entity index/browse pages (e.g., /works, /authors) */
+	entityIndex: string[];
+	/** Entity detail pages requiring an ID (e.g., /works/$, /authors/$) */
+	entityDetail: string[];
+	/** External ID resolution routes (e.g., /authors/orcid/$orcid) */
+	externalId: string[];
+	/** Autocomplete pages (e.g., /autocomplete/works) */
+	autocomplete: string[];
+	/** Routes to skip in smoke tests (proxies, catch-alls) */
+	skip: string[];
+}
+
+/**
+ * Patterns for routes that should be skipped in smoke tests
+ */
+const SKIP_PATTERNS = [
+	/^\/\$/, // Catch-all routes (/$, /$externalId)
+	/^\/https\//, // HTTPS proxy routes
+	/^\/openalex\.org\//, // OpenAlex.org proxy routes
+	/^\/openalex-url\//, // OpenAlex URL proxy routes
+	/^\/api-openalex-org\//, // API proxy routes
+];
+
+/**
+ * Entity types that have index pages
+ */
+const ENTITY_INDEX_PATHS = [
+	"/works",
+	"/authors",
+	"/sources",
+	"/institutions",
+	"/topics",
+	"/publishers",
+	"/funders",
+	"/concepts",
+	"/keywords",
+];
+
+/**
+ * External ID route patterns and their entity types
+ */
+const EXTERNAL_ID_ROUTES: Record<string, { entityType: EntityType; idType: string }> = {
+	"/authors/orcid/$orcid": { entityType: "authors", idType: "orcid" },
+	"/sources/issn/$issn": { entityType: "sources", idType: "issn" },
+	"/institutions/ror/$ror": { entityType: "institutions", idType: "ror" },
+	"/works/doi/$doi": { entityType: "works", idType: "doi" },
+};
+
+/**
+ * Extract all route paths from routeTree.gen.ts
+ *
+ * Parses the FileRoutesByFullPath interface to get all defined routes.
+ */
+export function getAllRoutes(): string[] {
+	const routeTreePath = path.resolve(__dirname, "../../routeTree.gen.ts");
+	const content = fs.readFileSync(routeTreePath, "utf-8");
+
+	// Extract routes from FileRoutesByFullPath interface
+	const interfaceMatch = content.match(
+		/export interface FileRoutesByFullPath \{([\s\S]*?)\n\}/
+	);
+	if (!interfaceMatch) {
+		throw new Error("Could not find FileRoutesByFullPath interface in routeTree.gen.ts");
+	}
+
+	const interfaceContent = interfaceMatch[1];
+	const routeMatches = interfaceContent.matchAll(/'([^']+)':/g);
+
+	const routes: string[] = [];
+	for (const match of routeMatches) {
+		routes.push(match[1]);
+	}
+
+	return routes.sort();
+}
+
+/**
+ * Categorize routes by their testing requirements
+ */
+export function categorizeRoutes(routes: string[]): CategorizedRoutes {
+	const result: CategorizedRoutes = {
+		static: [],
+		entityIndex: [],
+		entityDetail: [],
+		externalId: [],
+		autocomplete: [],
+		skip: [],
+	};
+
+	for (const route of routes) {
+		// Check if route should be skipped
+		if (SKIP_PATTERNS.some((pattern) => pattern.test(route))) {
+			result.skip.push(route);
+			continue;
+		}
+
+		// External ID routes
+		if (EXTERNAL_ID_ROUTES[route]) {
+			result.externalId.push(route);
+			continue;
+		}
+
+		// Autocomplete routes
+		if (route.startsWith("/autocomplete")) {
+			result.autocomplete.push(route);
+			continue;
+		}
+
+		// Entity index pages (exact match)
+		if (ENTITY_INDEX_PATHS.includes(route)) {
+			result.entityIndex.push(route);
+			continue;
+		}
+
+		// Entity detail pages (contain $ parameter)
+		if (route.includes("$")) {
+			result.entityDetail.push(route);
+			continue;
+		}
+
+		// Everything else is static
+		result.static.push(route);
+	}
+
+	return result;
+}
+
+/**
+ * Extract entity type from a route path
+ *
+ * @example extractEntityType('/works/$') -> 'works'
+ * @example extractEntityType('/authors/$') -> 'authors'
+ */
+export function extractEntityType(route: string): EntityType | null {
+	// Match /entityType/$ or /entityType/$paramName patterns
+	const match = route.match(/^\/([a-z]+)\/\$/);
+	if (match) {
+		return match[1] as EntityType;
+	}
+
+	// Match nested patterns like /concepts/$conceptId
+	const nestedMatch = route.match(/^\/([a-z]+)\/\$[a-zA-Z]+$/);
+	if (nestedMatch) {
+		return nestedMatch[1] as EntityType;
+	}
+
+	return null;
+}
+
+/**
+ * Get external ID info for a route
+ */
+export function getExternalIdInfo(
+	route: string
+): { entityType: EntityType; idType: string } | null {
+	return EXTERNAL_ID_ROUTES[route] || null;
+}
+
+/**
+ * Resolve a dynamic route with an actual entity ID
+ *
+ * @example resolveRoute('/works/$', 'W123') -> '/works/W123'
+ * @example resolveRoute('/topics/$topicId', 'T456') -> '/topics/T456'
+ */
+export function resolveRoute(route: string, id: string): string {
+	// Replace $_ or $ with the ID
+	if (route.endsWith("/$")) {
+		return route.slice(0, -1) + id;
+	}
+
+	// Replace $paramName patterns
+	return route.replace(/\$[a-zA-Z]+$/, id);
+}
+
+/**
+ * Resolve an external ID route with the appropriate identifier
+ *
+ * @example resolveExternalIdRoute('/authors/orcid/$orcid', '0000-0002-1234-5678')
+ *          -> '/authors/orcid/0000-0002-1234-5678'
+ */
+export function resolveExternalIdRoute(route: string, externalId: string): string {
+	return route.replace(/\$[a-z]+$/, externalId);
+}
