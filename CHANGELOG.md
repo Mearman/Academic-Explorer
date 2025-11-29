@@ -1,3 +1,23 @@
+## 22.9.0 (2025-11-29)
+
+* ci(deps): bump actions/setup-node from 4 to 6 (#146) ([270bb2b](https://github.com/Mearman/BibGraph/commit/270bb2b)), closes [#146](https://github.com/Mearman/BibGraph/issues/146)
+* chore(deps): auto-fix syncpack mismatches [skip ci] ([2c552d0](https://github.com/Mearman/BibGraph/commit/2c552d0))
+* chore(release): 22.8.2 [skip ci] ([55851a8](https://github.com/Mearman/BibGraph/commit/55851a8))
+* chore(web): enable Nx caching for E2E tests and remove duplicate targets ([3f1d01e](https://github.com/Mearman/BibGraph/commit/3f1d01e))
+* chore(web): simplify E2E config to run all tests by default ([73b3aa6](https://github.com/Mearman/BibGraph/commit/73b3aa6))
+* feat(client): add Dexie-based IndexedDB tier to entity cache system ([1cd265a](https://github.com/Mearman/BibGraph/commit/1cd265a))
+* feat(tools): add ESLint rule to enforce barrelsby headers in index files ([eb5abbd](https://github.com/Mearman/BibGraph/commit/eb5abbd))
+* feat(web): add inline PDF viewer for work entity pages ([93a969d](https://github.com/Mearman/BibGraph/commit/93a969d))
+* fix: add test:accessibility:dev task for consistent naming ([b3b670f](https://github.com/Mearman/BibGraph/commit/b3b670f))
+* fix(client): use barrelsby header in unpaywall index for proper regeneration ([40c9083](https://github.com/Mearman/BibGraph/commit/40c9083))
+* fix(web): correct E2E test data file paths to use existing fixtures ([f481921](https://github.com/Mearman/BibGraph/commit/f481921))
+* fix(web): repair unskipped component tests ([6355346](https://github.com/Mearman/BibGraph/commit/6355346))
+* refactor(ci): rename a11y/lighthouse tasks to test:accessibility/test:performance ([4330c9c](https://github.com/Mearman/BibGraph/commit/4330c9c))
+* refactor(ci): separate accessibility and performance CI jobs ([a2ac8c1](https://github.com/Mearman/BibGraph/commit/a2ac8c1))
+* test(web): add OpenAlex test URL data files for E2E tests ([698f167](https://github.com/Mearman/BibGraph/commit/698f167))
+* test(web): remove all dynamic E2E test skips ([190cbf4](https://github.com/Mearman/BibGraph/commit/190cbf4))
+* test(web): unskip all E2E and component tests ([60ebc48](https://github.com/Mearman/BibGraph/commit/60ebc48))
+
 ## <small>22.8.2 (2025-11-28)</small>
 
 * fix(web): add topics support for embedded relationship extraction ([21c098b](https://github.com/Mearman/BibGraph/commit/21c098b))
