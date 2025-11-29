@@ -65,6 +65,8 @@ import {
   useEgoNetwork,
   useTriangles,
   useStarPatterns,
+  useCoCitations,
+  useBibliographicCoupling,
   useKTruss,
   useClusterQuality,
   type CommunityDetectionOptions,
@@ -177,6 +179,12 @@ export function GraphAlgorithmsPanel({
   const [starMinDegree, setStarMinDegree] = useState<number>(3);
   const [starType, setStarType] = useState<'in' | 'out'>('out');
   const starPatterns = useStarPatterns(nodes, edges, { minDegree: starMinDegree, type: starType });
+
+  // Co-citation and bibliographic coupling
+  const [coCitationMinCount, setCoCitationMinCount] = useState<number>(2);
+  const coCitations = useCoCitations(nodes, edges, coCitationMinCount);
+  const [bibCouplingMinShared, setBibCouplingMinShared] = useState<number>(2);
+  const bibCoupling = useBibliographicCoupling(nodes, edges, bibCouplingMinShared);
 
   // K-Truss state and hook
   const [kTrussK, setKTrussK] = useState<number>(3);
@@ -1269,6 +1277,112 @@ export function GraphAlgorithmsPanel({
                         {starPatterns.patterns.length > 5 && (
                           <Text size="xs" c="dimmed">
                             +{starPatterns.patterns.length - 5} more hubs
+                          </Text>
+                        )}
+                      </List>
+                    </>
+                  )}
+                </Stack>
+              </Card>
+
+              {/* Co-Citations */}
+              <Card withBorder p="xs">
+                <Group justify="space-between" mb="xs">
+                  <Text size="sm" fw={500}>Co-Citations</Text>
+                  <Badge variant="light" color="cyan">{coCitations.pairs.length} pairs</Badge>
+                </Group>
+                <Stack gap="xs">
+                  <Text size="xs" c="dimmed">
+                    Papers frequently cited together by other papers (indicates related research).
+                  </Text>
+                  <NumberInput
+                    label="Minimum Co-citation Count"
+                    description="Minimum times two papers must be cited together"
+                    value={coCitationMinCount}
+                    onChange={(value) => setCoCitationMinCount(typeof value === 'number' ? value : 2)}
+                    min={1}
+                    max={20}
+                    step={1}
+                    size="xs"
+                  />
+                  {coCitations.pairs.length > 0 && (
+                    <>
+                      <Text size="xs" c="dimmed">
+                        Found {coCitations.pairs.length} co-citation pairs
+                      </Text>
+                      <List spacing="xs" size="sm">
+                        {coCitations.pairs.slice(0, 5).map((pair, idx) => (
+                          <List.Item
+                            key={`${pair.paper1Id}-${pair.paper2Id}`}
+                            icon={
+                              <ThemeIcon size={16} radius="xl" variant="light" color="cyan">
+                                <IconLink size={10} />
+                              </ThemeIcon>
+                            }
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => onHighlightNodes?.([pair.paper1Id, pair.paper2Id])}
+                          >
+                            <Text size="xs">
+                              {pair.paper1Id.slice(0, 8)}... & {pair.paper2Id.slice(0, 8)}... ({pair.count}x)
+                            </Text>
+                          </List.Item>
+                        ))}
+                        {coCitations.pairs.length > 5 && (
+                          <Text size="xs" c="dimmed">
+                            +{coCitations.pairs.length - 5} more pairs
+                          </Text>
+                        )}
+                      </List>
+                    </>
+                  )}
+                </Stack>
+              </Card>
+
+              {/* Bibliographic Coupling */}
+              <Card withBorder p="xs">
+                <Group justify="space-between" mb="xs">
+                  <Text size="sm" fw={500}>Bibliographic Coupling</Text>
+                  <Badge variant="light" color="grape">{bibCoupling.pairs.length} pairs</Badge>
+                </Group>
+                <Stack gap="xs">
+                  <Text size="xs" c="dimmed">
+                    Papers citing the same references (indicates similar research topics).
+                  </Text>
+                  <NumberInput
+                    label="Minimum Shared References"
+                    description="Minimum references two papers must share"
+                    value={bibCouplingMinShared}
+                    onChange={(value) => setBibCouplingMinShared(typeof value === 'number' ? value : 2)}
+                    min={1}
+                    max={20}
+                    step={1}
+                    size="xs"
+                  />
+                  {bibCoupling.pairs.length > 0 && (
+                    <>
+                      <Text size="xs" c="dimmed">
+                        Found {bibCoupling.pairs.length} coupled paper pairs
+                      </Text>
+                      <List spacing="xs" size="sm">
+                        {bibCoupling.pairs.slice(0, 5).map((pair, idx) => (
+                          <List.Item
+                            key={`${pair.paper1Id}-${pair.paper2Id}`}
+                            icon={
+                              <ThemeIcon size={16} radius="xl" variant="light" color="grape">
+                                <IconLink size={10} />
+                              </ThemeIcon>
+                            }
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => onHighlightNodes?.([pair.paper1Id, pair.paper2Id])}
+                          >
+                            <Text size="xs">
+                              {pair.paper1Id.slice(0, 8)}... & {pair.paper2Id.slice(0, 8)}... ({pair.sharedReferences} shared)
+                            </Text>
+                          </List.Item>
+                        ))}
+                        {bibCoupling.pairs.length > 5 && (
+                          <Text size="xs" c="dimmed">
+                            +{bibCoupling.pairs.length - 5} more pairs
                           </Text>
                         )}
                       </List>
