@@ -40,51 +40,6 @@ env:
   # NX_REJECT_UNKNOWN_LOCAL_CACHE: false
 
 jobs:
-  # Detect which files changed to enable conditional job execution
-  changes:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    outputs:
-      code: ${{ steps.filter.outputs.code }}
-      docs: ${{ steps.filter.outputs.docs }}
-      config: ${{ steps.filter.outputs.config }}
-      should-test: ${{ steps.check-event.outputs.should-test }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Check if tests should run
-        id: check-event
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]] || \
-             [[ "${{ github.ref }}" == "refs/heads/main" ]] || \
-             [[ "${{ github.event_name }}" == "schedule" ]] || \
-             [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "should-test=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "should-test=false" >> "${GITHUB_OUTPUT}"
-          fi
-
-      - name: Detect file changes
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            code:
-              - 'apps/**'
-              - 'packages/**'
-              - 'pnpm-lock.yaml'
-              - 'nx.json'
-              - 'tsconfig*.json'
-            docs:
-              - '**.md'
-              - 'specs/**'
-              - 'docs/**'
-            config:
-              - '.github/workflows/**'
-              - '.github/actions/**'
-
   # Syncpack - validates and auto-fixes dependency versions
   syncpack:
     runs-on: ubuntu-latest
@@ -155,8 +110,6 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    needs: [changes]
-    if: always() && needs.changes.outputs.should-test == 'true'
     outputs:
       should-deploy: ${{ steps.deploy.outputs.should-deploy }}
     steps:
@@ -224,8 +177,6 @@ jobs:
   security-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [changes]
-    if: always() && needs.changes.outputs.should-test == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -266,8 +217,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, changes, setup-e2e]
-    if: always() && needs.validate.result == 'success' && needs.changes.outputs.code == 'true'
+    needs: [validate, setup-e2e]
+    if: always() && needs.validate.result == 'success'
     strategy:
       fail-fast: false
       matrix:
@@ -330,8 +281,8 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, changes]
-    if: always() && needs.validate.result == 'success' && needs.changes.outputs.should-test == 'true'
+    needs: [validate]
+    if: always() && needs.validate.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -401,7 +352,7 @@ jobs:
   test-accessibility:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, changes]
+    needs: [validate]
     if: always() && needs.validate.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'a11y-check'))
     steps:
       - name: Checkout
@@ -445,7 +396,7 @@ jobs:
   test-performance:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, changes]
+    needs: [validate]
     if: always() && needs.validate.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'perf-check'))
     steps:
       - name: Checkout
