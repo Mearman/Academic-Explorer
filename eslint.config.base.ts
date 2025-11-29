@@ -134,6 +134,7 @@ export default tseslint.config([
             "custom/barrelsby-header": "error",
             "custom/no-deprecated": "error",
             "custom/no-duplicate-reexports": "error",
+            "custom/no-reexport-from-non-barrel": "error",
 
             // Import rules
             "import/no-relative-packages": "error",
