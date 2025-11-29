@@ -1,5 +1,5 @@
 import type { EntityType } from "@bibgraph/types";
-import { Badge, Card, Group, Stack, Text } from "@mantine/core";
+import { Anchor, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { forwardRef } from "react";
 
 export interface EntityCardProps {
@@ -29,15 +29,39 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
     },
     ref
   ) => {
-    const handleClick = () => {
+    // Generate the navigation path (entityType is already plural, e.g., "works", "authors")
+    const entityPath = `/${entityType}/${id}`;
+    // Use hash-based URL for proper anchor tag
+    const href = `#${entityPath}`;
+
+    const handleCardClick = (e: React.MouseEvent) => {
+      // Don't trigger card click if clicking on the anchor link
+      if ((e.target as HTMLElement).closest('a')) {
+        return;
+      }
+
       if (onClick) {
         onClick();
       } else if (onNavigate) {
-        // Generate path based on entity type
-        const entityPath = `/${entityType}s/${id}`;
         onNavigate(entityPath);
       }
     };
+
+    const handleLinkClick = (e: React.MouseEvent) => {
+      // Allow default link behavior for middle-click and ctrl/cmd+click
+      if (e.button === 1 || e.ctrlKey || e.metaKey) {
+        return;
+      }
+
+      // For normal left-clicks, use onNavigate if provided (for SPA navigation)
+      if (onNavigate) {
+        e.preventDefault();
+        onNavigate(entityPath);
+      }
+      // Otherwise, let the default anchor behavior work
+    };
+
+    const isClickable = onClick || onNavigate;
 
     return (
       <Card
@@ -46,14 +70,27 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
         padding="lg"
         radius="md"
         withBorder
-        style={{ cursor: onClick || onNavigate ? "pointer" : "default" }}
-        onClick={handleClick}
+        style={{ cursor: isClickable ? "pointer" : "default" }}
+        onClick={isClickable ? handleCardClick : undefined}
       >
         <Stack gap="xs">
           <Group justify="space-between" align="flex-start">
-            <Text fw={500} size="lg" lineClamp={2}>
-              {displayName}
-            </Text>
+            {isClickable ? (
+              <Anchor
+                href={href}
+                fw={500}
+                size="lg"
+                lineClamp={2}
+                onClick={handleLinkClick}
+                style={{ textDecoration: 'none' }}
+              >
+                {displayName}
+              </Anchor>
+            ) : (
+              <Text fw={500} size="lg" lineClamp={2}>
+                {displayName}
+              </Text>
+            )}
             <Badge color="blue" variant="light" size="sm">
               {entityType}
             </Badge>
