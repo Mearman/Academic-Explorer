@@ -11,8 +11,7 @@
  * Used by all 7 entity-specific autocomplete routes to eliminate duplication.
  */
 
-import type { AutocompleteResult } from "@bibgraph/client";
-import type { EntityType } from "@bibgraph/types";
+import type { AutocompleteResult, EntityType } from "@bibgraph/types";
 import { ENTITY_METADATA } from "@bibgraph/types";
 import {
   Alert,

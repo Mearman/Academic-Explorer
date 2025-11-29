@@ -15,8 +15,10 @@ import type {
 } from "@bibgraph/utils/ui";
 
 // Re-export core types for convenience
+export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };
 
 // Re-export filter base types
+export type { FilterOperator, FilterFieldConfig };
 
 export type LogicalOperator = "AND" | "OR" | "NOT";
 
