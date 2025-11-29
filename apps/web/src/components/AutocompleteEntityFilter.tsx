@@ -1,0 +1,132 @@
+/**
+ * Autocomplete entity type filter with built-in navigation
+ *
+ * A unified component that combines EntityTypeFilter with navigation logic.
+ * Used on both the general autocomplete page and entity-specific routes.
+ *
+ * On entity-specific routes (e.g., /autocomplete/works):
+ * - Shows the current entity type as selected
+ * - Clicking other types navigates to the appropriate route
+ *
+ * On the general autocomplete page:
+ * - Allows multi-select with checkboxes
+ * - Single type selection navigates to dedicated route
+ * - Multiple types stay on general page with types param
+ */
+
+import type { EntityType } from "@bibgraph/types";
+import { useCallback } from "react";
+
+import {
+  AUTOCOMPLETE_ENTITY_TYPES,
+  EntityTypeFilter,
+} from "@/components/EntityTypeFilter";
+
+export interface AutocompleteEntityFilterProps {
+  /** Current search query to preserve during navigation */
+  query: string;
+
+  /** Currently selected entity types */
+  selectedTypes: EntityType[];
+
+  /**
+   * Callback when selection changes (used on general page for state updates)
+   * On entity-specific routes, this is optional as navigation handles changes
+   */
+  onSelectionChange?: (types: EntityType[]) => void;
+
+  /** Show as inline badges instead of checkboxes (default: false) */
+  inline?: boolean;
+
+  /** Title for the filter section */
+  title?: string;
+
+  /** Whether to show Select All / Clear All buttons (default: true) */
+  showButtons?: boolean;
+}
+
+/**
+ * Entity types that have dedicated autocomplete routes
+ */
+const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
+  "works",
+  "authors",
+  "sources",
+  "institutions",
+  "concepts",
+  "publishers",
+  "funders",
+];
+
+/**
+ * Autocomplete entity filter with integrated navigation
+ */
+export function AutocompleteEntityFilter({
+  query,
+  selectedTypes,
+  onSelectionChange,
+  inline = false,
+  title = "Filter by Entity Type",
+  showButtons = true,
+}: AutocompleteEntityFilterProps) {
+  const handleChange = useCallback(
+    (types: EntityType[]) => {
+      // If no types or all types selected, go to general autocomplete
+      if (
+        types.length === 0 ||
+        types.length === AUTOCOMPLETE_ENTITY_TYPES.length
+      ) {
+        // If we have an onSelectionChange callback, call it for state updates
+        if (onSelectionChange) {
+          onSelectionChange(types);
+        }
+
+        // Navigate to general autocomplete
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete?${params.toString()}`
+          : "/autocomplete";
+        return;
+      }
+
+      // If single type selected and it has a dedicated route, navigate there
+      if (
+        types.length === 1 &&
+        ENTITY_AUTOCOMPLETE_ROUTES.includes(types[0])
+      ) {
+        const entityType = types[0];
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete/${entityType}?${params.toString()}`
+          : `/autocomplete/${entityType}`;
+        return;
+      }
+
+      // Multiple types selected - update state and stay on general page
+      if (onSelectionChange) {
+        onSelectionChange(types);
+      }
+
+      // Navigate to general autocomplete with types param
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      params.set("types", types.join(","));
+      window.location.hash = `/autocomplete?${params.toString()}`;
+    },
+    [query, onSelectionChange]
+  );
+
+  return (
+    <EntityTypeFilter
+      selectedTypes={selectedTypes}
+      onChange={handleChange}
+      title={title}
+      inline={inline}
+      showButtons={showButtons}
+    />
+  );
+}
+
+export { AUTOCOMPLETE_ENTITY_TYPES };

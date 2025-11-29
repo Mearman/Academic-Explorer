@@ -21,8 +21,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { EntityTypeFilter } from "@/components/EntityTypeFilter";
-import { useAutocompleteEntityNavigation } from "@/hooks/use-autocomplete-entity-navigation";
+import { AutocompleteEntityFilter } from "@/components/AutocompleteEntityFilter";
 
 const autocompleteAuthorsSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
@@ -91,8 +90,6 @@ function AutocompleteAuthorsRoute() {
     });
   };
 
-  const handleEntityTypeChange = useAutocompleteEntityNavigation(query);
-
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
@@ -112,9 +109,9 @@ function AutocompleteAuthorsRoute() {
           size="md"
         />
 
-        <EntityTypeFilter
+        <AutocompleteEntityFilter
+          query={query}
           selectedTypes={["authors"]}
-          onChange={handleEntityTypeChange}
           inline
         />
 

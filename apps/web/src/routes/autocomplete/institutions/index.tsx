@@ -21,8 +21,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { EntityTypeFilter } from "@/components/EntityTypeFilter";
-import { useAutocompleteEntityNavigation } from "@/hooks/use-autocomplete-entity-navigation";
+import { AutocompleteEntityFilter } from "@/components/AutocompleteEntityFilter";
 
 const autocompleteInstitutionsSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
@@ -92,8 +91,6 @@ function AutocompleteInstitutionsRoute() {
     window.history.replaceState(null, "", newHash);
   };
 
-  const handleEntityTypeChange = useAutocompleteEntityNavigation(query);
-
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
@@ -113,9 +110,9 @@ function AutocompleteInstitutionsRoute() {
           size="md"
         />
 
-        <EntityTypeFilter
+        <AutocompleteEntityFilter
+          query={query}
           selectedTypes={["institutions"]}
-          onChange={handleEntityTypeChange}
           inline
         />
 
