@@ -11,4 +11,5 @@ export * from "./data-pipeline/index";
 export * from "./entities/index";
 export * from "./interceptors/index";
 export * from "./types/index";
+export * from "./unpaywall/index";
 export * from "./utils/index";

@@ -31,6 +31,7 @@ export * from "./filters/index";
 export * from "./graph/index";
 export * from "./layout/index";
 export * from "./molecules/index";
+export * from "./pdf/index";
 export * from "./relationship/index";
 export * from "./routing/index";
 export * from "./search/index";

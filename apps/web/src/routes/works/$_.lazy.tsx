@@ -7,10 +7,12 @@ import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-rout
 import { useState, useEffect } from "react";
 
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
+import { PdfViewer } from "@/components/pdf";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { usePdfUrl } from "@/hooks/use-pdf-url";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { decodeEntityId } from "@/utils/url-decoding";
@@ -128,6 +130,11 @@ function WorkRoute() {
     'works'
   );
 
+  // Get PDF URL from OpenAlex or Unpaywall - MUST be called before early returns (Rules of Hooks)
+  const pdfResult = usePdfUrl(work as Work | null | undefined, {
+    skip: !work,
+  });
+
   const config = ENTITY_TYPE_CONFIGS.works;
 
   // Show processing state for external canonical IDs
@@ -222,6 +229,17 @@ function WorkRoute() {
       onViewModeChange={setViewMode}
       data={work as Record<string, unknown>}
     >
+      {/* PDF Viewer - show when PDF is available or loading */}
+      {(pdfResult.pdfUrl || pdfResult.isLoading || pdfResult.error) && (
+        <PdfViewer
+          pdfUrl={pdfResult.pdfUrl}
+          isLoading={pdfResult.isLoading}
+          title={work.display_name || work.title || "PDF Document"}
+          error={pdfResult.error}
+          source={pdfResult.source ?? undefined}
+          defaultCollapsed={false}
+        />
+      )}
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={normalizedWorkId} entityType="works" />
       <OutgoingRelationships entityId={normalizedWorkId} entityType="works" />

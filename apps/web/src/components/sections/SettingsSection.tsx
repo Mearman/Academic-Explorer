@@ -450,10 +450,10 @@ export const SettingsSection: React.FC = () => {
             OpenAlex Polite Pool
           </Text>
           <Tooltip
-            label="Providing an email enables faster response times from the OpenAlex API through their polite pool"
+            label="Your email enables faster OpenAlex API responses and is required for Unpaywall PDF lookups on work pages"
             position="right"
             multiline
-            w={200}
+            w={220}
           >
             <IconInfoCircle
               size={12}
@@ -529,9 +529,9 @@ export const SettingsSection: React.FC = () => {
         )}
 
         <Text size="xs" c="dimmed">
-          Your email is used only for OpenAlex API requests to enable faster
-          response times. It is not stored remotely or shared with third
-          parties.
+          Your email is used for OpenAlex API requests (faster response times)
+          and Unpaywall API (PDF lookup for open access papers). It is stored
+          locally and only sent to these services when making API requests.
         </Text>
       </Stack>
 
