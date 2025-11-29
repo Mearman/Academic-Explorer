@@ -1,5 +1,6 @@
 import type {
   Author,
+  AutocompleteResult,
   Concept,
   EntityType,
   Funder,
@@ -125,4 +126,40 @@ export function transformEntityToListItem<T extends Work | Author | InstitutionE
   entityType: EntityType,
 ): EntityListItem {
   return transformEntityToGridItem(entity, entityType)
+}
+
+/**
+ * Map from singular entity_type (autocomplete) to plural EntityType
+ */
+const singularToPluralEntityType: Record<string, EntityType> = {
+  work: "works",
+  author: "authors",
+  source: "sources",
+  institution: "institutions",
+  topic: "topics",
+  publisher: "publishers",
+  funder: "funders",
+  concept: "concepts",
+  keyword: "keywords",
+  domain: "domains",
+  field: "fields",
+  subfield: "subfields",
+}
+
+/**
+ * Transform AutocompleteResult to EntityGridItem for use in grid/list views
+ */
+export function transformAutocompleteResultToGridItem(
+  result: AutocompleteResult,
+): EntityGridItem {
+  const entityType = singularToPluralEntityType[result.entity_type] || (result.entity_type as EntityType)
+
+  return {
+    id: result.id.replace("https://openalex.org/", ""),
+    displayName: result.display_name,
+    entityType,
+    worksCount: result.works_count,
+    citedByCount: result.cited_by_count,
+    description: result.hint,
+  }
 }

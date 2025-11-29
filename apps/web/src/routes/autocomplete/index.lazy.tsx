@@ -18,15 +18,100 @@ import {
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useEffect, useMemo, useState } from "react";
 
+import { EntityGrid } from "@/components/EntityGrid";
+import { EntityListView } from "@/components/EntityListView";
+import { BaseTable } from "@/components/tables/BaseTable";
+import { ViewModeToggle, type TableViewMode } from "@/components/ViewModeToggle";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
 
 function AutocompleteGeneralRoute() {
   const urlSearch = useSearch({ from: "/autocomplete/" });
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
+  const [viewMode, setViewMode] = useState<TableViewMode>("list");
   const { getEntityColor } = useThemeColors();
+
+  // Define table columns for AutocompleteResult
+  const tableColumns = useMemo<ColumnDef<AutocompleteResult>[]>(() => [
+    {
+      id: "display_name",
+      accessorKey: "display_name",
+      header: "Name",
+      cell: (info) => {
+        const result = info.row.original;
+        const id = typeof result.id === 'string' ? result.id : String(result.id);
+        const cleanId = id.replace("https://openalex.org/", "");
+        const routeMap: Record<string, string> = {
+          work: "works",
+          author: "authors",
+          institution: "institutions",
+          source: "sources",
+          concept: "concepts",
+          topic: "topics",
+          funder: "funders",
+          publisher: "publishers",
+        };
+        const routePath = routeMap[result.entity_type] || result.entity_type;
+        return (
+          <Anchor href={`#/${routePath}/${cleanId}`} fw={500}>
+            {info.getValue() as string}
+          </Anchor>
+        );
+      },
+    },
+    {
+      id: "entity_type",
+      accessorKey: "entity_type",
+      header: "Type",
+      cell: (info) => {
+        const entityType = info.getValue() as string;
+        return (
+          <Badge size="sm" variant="light" color={getEntityColor(entityType)}>
+            {entityType}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "hint",
+      accessorKey: "hint",
+      header: "Description",
+      cell: (info) => {
+        const hint = info.getValue() as string | undefined;
+        return hint ? (
+          <Text size="sm" c="dimmed" lineClamp={1}>
+            {hint}
+          </Text>
+        ) : null;
+      },
+    },
+    {
+      id: "works_count",
+      accessorKey: "works_count",
+      header: "Works",
+      cell: (info) => {
+        const count = info.getValue() as number | undefined;
+        return count !== undefined && count !== null
+          ? count.toLocaleString()
+          : "-";
+      },
+    },
+    {
+      id: "cited_by_count",
+      accessorKey: "cited_by_count",
+      header: "Citations",
+      cell: (info) => {
+        const count = info.getValue() as number | undefined;
+        return count !== undefined && count !== null
+          ? count.toLocaleString()
+          : "-";
+      },
+    },
+  ], [getEntityColor]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -86,28 +171,6 @@ function AutocompleteGeneralRoute() {
       ? `#/autocomplete?${params.toString()}`
       : "#/autocomplete";
     window.history.replaceState(null, "", newHash);
-  };
-
-  const getEntityRoute = (result: AutocompleteResult): string => {
-    // Ensure result.id is a string to prevent [object Object] in URLs
-    const id = typeof result.id === 'string' ? result.id : String(result.id);
-    const cleanId = id.replace("https://openalex.org/", "");
-    const entityType = result.entity_type || "";
-
-    // Map entity_type to route path
-    const routeMap: Record<string, string> = {
-      work: "works",
-      author: "authors",
-      institution: "institutions",
-      source: "sources",
-      concept: "concepts",
-      topic: "topics",
-      funder: "funders",
-      publisher: "publishers",
-    };
-
-    const routePath = routeMap[entityType] || entityType;
-    return `#/${routePath}/${cleanId}`;
   };
 
   return (
@@ -197,56 +260,33 @@ function AutocompleteGeneralRoute() {
 
         {results.length > 0 && (
           <Stack gap="md">
-            <Text size="sm" c="dimmed">
-              Found {results.length} suggestion{results.length !== 1 ? "s" : ""}
-            </Text>
-            {results.map((result: AutocompleteResult) => (
-              <Card key={result.id} withBorder padding="md" shadow="sm">
-                <Stack gap="xs">
-                  <Group justify="space-between" wrap="nowrap">
-                    <Anchor href={getEntityRoute(result)} fw={500} size="md">
-                      {result.display_name}
-                    </Anchor>
-                    <Badge
-                      size="sm"
-                      variant="light"
-                      color={getEntityColor(result.entity_type)}
-                    >
-                      {result.entity_type || "Unknown"}
-                    </Badge>
-                  </Group>
+            <Group justify="space-between" align="center">
+              <Text size="sm" c="dimmed">
+                Found {results.length} suggestion{results.length !== 1 ? "s" : ""}
+              </Text>
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </Group>
 
-                  {result.hint && (
-                    <Text size="sm" c="dimmed" lineClamp={2}>
-                      {result.hint}
-                    </Text>
-                  )}
+            {viewMode === "table" && (
+              <BaseTable
+                data={results}
+                columns={tableColumns}
+                searchable={false}
+                pageSize={25}
+              />
+            )}
 
-                  <Group gap="md">
-                    {result.cited_by_count !== undefined &&
-                      result.cited_by_count !== null && (
-                        <Text size="xs" c="dimmed">
-                          Citations: {result.cited_by_count.toLocaleString()}
-                        </Text>
-                      )}
-                    {result.works_count !== undefined &&
-                      result.works_count !== null && (
-                        <Text size="xs" c="dimmed">
-                          Works: {result.works_count.toLocaleString()}
-                        </Text>
-                      )}
-                  </Group>
+            {viewMode === "list" && (
+              <EntityListView
+                items={results.map(transformAutocompleteResultToGridItem)}
+              />
+            )}
 
-                  <Text
-                    size="xs"
-                    c="dimmed"
-                    style={{ fontFamily: "monospace" }}
-                  >
-                    {result.id}
-                  </Text>
-                </Stack>
-              </Card>
-            ))}
+            {viewMode === "grid" && (
+              <EntityGrid
+                items={results.map(transformAutocompleteResultToGridItem)}
+              />
+            )}
           </Stack>
         )}
       </Stack>
