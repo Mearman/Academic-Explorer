@@ -25,7 +25,7 @@ export const [mantineThemeClass, mantineVars] = createTheme({
   },
 
   // Mantine font sizes (in px for compatibility)
-  fontSize: {
+  fontSizes: {
     xs: "12px",
     sm: "14px",
     base: "16px",
@@ -37,7 +37,7 @@ export const [mantineThemeClass, mantineVars] = createTheme({
   },
 
   // Border radius
-  borderRadius: {
+  radius: {
     xs: "0.125rem",   // 2px
     sm: "0.25rem",    // 4px
     md: "0.375rem",   // 6px
@@ -46,7 +46,7 @@ export const [mantineThemeClass, mantineVars] = createTheme({
   },
 
   // Line heights
-  lineHeight: {
+  lineHeights: {
     xs: "1",
     sm: "1.25",
     md: "1.5",
