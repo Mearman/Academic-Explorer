@@ -133,6 +133,7 @@ export default tseslint.config([
             "@typescript-eslint/no-non-null-assertion": "error",
             "custom/barrelsby-header": "error",
             "custom/no-deprecated": "error",
+            "custom/no-duplicate-reexports": "error",
 
             // Import rules
             "import/no-relative-packages": "error",
