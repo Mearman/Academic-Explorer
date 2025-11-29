@@ -20,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load all URLs from the JSON file
-const urlsPath = join(__dirname, '../data/openalex-test-urls.json');
+const urlsPath = join(__dirname, '../../data/openalex-test-urls.json');
 const urlsData: { urls: string[]; totalUrls: number } = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 const urls: string[] = urlsData.urls;
 

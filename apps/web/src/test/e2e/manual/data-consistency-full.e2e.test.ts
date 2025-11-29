@@ -16,7 +16,7 @@ import { join } from 'path';
 import { test, expect } from '@playwright/test';
 
 // Load all URLs from the JSON file
-const urlsPath = join(process.cwd(), '../../openalex-urls.json');
+const urlsPath = join(process.cwd(), '../../openalex-urls-sample.json');
 const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
