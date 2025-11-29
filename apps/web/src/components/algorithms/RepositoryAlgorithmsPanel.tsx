@@ -48,6 +48,9 @@ const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
   louvain: 'Fast community detection using modularity optimization. Best for large graphs.',
   leiden: 'Improved version of Louvain with better community quality. Slightly slower.',
   'label-propagation': 'Simple and fast. Uses label spreading to find communities.',
+  infomap: 'Information-theoretic approach. Finds communities by minimizing flow description length.',
+  spectral: 'Uses graph eigenvalues for balanced partitioning. Good for k-way partitions.',
+  hierarchical: 'Agglomerative clustering that builds a dendrogram. Supports different linkage methods.',
 };
 
 /**

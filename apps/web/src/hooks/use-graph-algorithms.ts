@@ -21,6 +21,11 @@ import {
   getEgoNetwork,
   filterByNodeType,
   getSubgraph,
+  performBFS,
+  performDFS,
+  getCycleInfo,
+  getCorePeriphery,
+  getBiconnectedComponents,
   type CommunityResult,
   type PathResult,
   type ComponentResult,
@@ -28,6 +33,10 @@ import {
   type KCoreResult,
   type EgoNetworkResult,
   type ClusteringAlgorithm,
+  type TraversalResult,
+  type CycleResult,
+  type CorePeripheryResult,
+  type BiconnectedResult,
 } from '@/services/graph-algorithms';
 
 /**
@@ -36,6 +45,8 @@ import {
 export interface CommunityDetectionOptions {
   algorithm?: ClusteringAlgorithm;
   resolution?: number;
+  numClusters?: number;
+  linkage?: 'single' | 'complete' | 'average';
 }
 
 /**
@@ -215,6 +226,90 @@ export function useSubgraph(
     }
     return getSubgraph(nodes, edges, nodeIds, directed);
   }, [nodes, edges, nodeIds, directed]);
+}
+
+/**
+ * Hook for BFS traversal
+ */
+export function useBFS(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  startId: string | null,
+  directed: boolean = true
+): TraversalResult | null {
+  return useMemo(() => {
+    if (!startId || nodes.length === 0) return null;
+    return performBFS(nodes, edges, startId, directed);
+  }, [nodes, edges, startId, directed]);
+}
+
+/**
+ * Hook for DFS traversal
+ */
+export function useDFS(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  startId: string | null,
+  directed: boolean = true
+): TraversalResult | null {
+  return useMemo(() => {
+    if (!startId || nodes.length === 0) return null;
+    return performDFS(nodes, edges, startId, directed);
+  }, [nodes, edges, startId, directed]);
+}
+
+/**
+ * Hook for cycle detection with details
+ */
+export function useCycleInfo(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  directed: boolean = true
+): CycleResult {
+  return useMemo(() => {
+    if (nodes.length === 0) return { hasCycle: false, cycle: [] };
+    return getCycleInfo(nodes, edges, directed);
+  }, [nodes, edges, directed]);
+}
+
+/**
+ * Hook for strongly connected components
+ */
+export function useStronglyConnectedComponents(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): ComponentResult {
+  return useMemo(() => {
+    if (nodes.length === 0) return { components: [], count: 0 };
+    return findStrongComponents(nodes, edges);
+  }, [nodes, edges]);
+}
+
+/**
+ * Hook for core-periphery decomposition
+ */
+export function useCorePeriphery(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  coreThreshold: number = 0.7
+): CorePeripheryResult | null {
+  return useMemo(() => {
+    if (nodes.length < 3) return null;
+    return getCorePeriphery(nodes, edges, coreThreshold);
+  }, [nodes, edges, coreThreshold]);
+}
+
+/**
+ * Hook for biconnected components
+ */
+export function useBiconnectedComponents(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): BiconnectedResult | null {
+  return useMemo(() => {
+    if (nodes.length < 2) return null;
+    return getBiconnectedComponents(nodes, edges);
+  }, [nodes, edges]);
 }
 
 /**

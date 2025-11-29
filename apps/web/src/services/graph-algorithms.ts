@@ -16,12 +16,22 @@ import {
   detectCommunities as louvainDetectCommunities,
   leiden,
   labelPropagation,
+  infomap,
+  // Hierarchical
+  hierarchicalClustering,
+  // Partitioning
+  spectralPartition,
+  // Traversal
+  bfs,
+  dfs,
   // Pathfinding
   dijkstra,
   // Metrics
   calculateModularity,
   // Decomposition
   kCoreDecomposition,
+  corePeripheryDecomposition,
+  biconnectedComponents,
   // Extraction
   extractEgoNetwork,
   filterGraph,
@@ -113,6 +123,70 @@ export interface EgoNetworkResult {
 }
 
 /**
+ * Traversal result from BFS/DFS
+ */
+export interface TraversalResult {
+  visitOrder: string[];
+  parents: Map<string, string | null>;
+  discovered?: Map<string, number>;
+  finished?: Map<string, number>;
+}
+
+/**
+ * Cycle detection result with details
+ */
+export interface CycleResult {
+  hasCycle: boolean;
+  cycle: string[];
+}
+
+/**
+ * Core-periphery decomposition result
+ */
+export interface CorePeripheryResult {
+  coreNodes: string[];
+  peripheryNodes: string[];
+  corenessScores: Map<string, number>;
+  fitQuality: number;
+}
+
+/**
+ * Biconnected components result
+ */
+export interface BiconnectedResult {
+  components: Array<{
+    id: number;
+    nodes: string[];
+    isBridge: boolean;
+  }>;
+  articulationPoints: string[];
+}
+
+/**
+ * Hierarchical clustering result
+ */
+export interface HierarchicalClusterResult {
+  clusters: CommunityResult[];
+  dendrogram: {
+    merges: Array<{ cluster1: number; cluster2: number; distance: number }>;
+    heights: number[];
+  };
+}
+
+/**
+ * Spectral partitioning result
+ */
+export interface SpectralPartitionResult {
+  partitions: Array<{
+    id: number;
+    nodeIds: string[];
+    size: number;
+    edgeCuts: number;
+    balance: number;
+  }>;
+}
+
+/**
  * Convert web app GraphNode to algorithm Node
  */
 function toAlgorithmNode(node: GraphNode): AcademicNode {
@@ -173,11 +247,13 @@ export function detectCommunities(
   nodes: GraphNode[],
   edges: GraphEdge[],
   options: {
-    algorithm?: 'louvain' | 'leiden' | 'label-propagation';
+    algorithm?: 'louvain' | 'leiden' | 'label-propagation' | 'infomap' | 'spectral' | 'hierarchical';
     resolution?: number;
+    numClusters?: number;
+    linkage?: 'single' | 'complete' | 'average';
   } = {}
 ): CommunityResult[] {
-  const { algorithm = 'louvain', resolution = 1.0 } = options;
+  const { algorithm = 'louvain', resolution = 1.0, numClusters = 5, linkage = 'average' } = options;
 
   // Use undirected graph for community detection
   const graph = createGraph(nodes, edges, false);
@@ -208,6 +284,45 @@ export function detectCommunities(
             nodeIds: Array.from(cluster.nodes).map((node) => node.id),
             size: cluster.nodes.size,
             density: 0, // Label propagation doesn't compute density
+          }));
+        }
+        return [];
+      }
+      case 'infomap': {
+        const result = infomap(graph);
+        if (result.ok) {
+          return result.value.modules.map((module, index) => ({
+            id: index,
+            nodeIds: Array.from(module.nodes).map((node) => node.id),
+            size: module.nodes.size,
+            density: 0,
+          }));
+        }
+        return [];
+      }
+      case 'spectral': {
+        const k = Math.min(numClusters, nodes.length);
+        if (k < 2) return [];
+        const result = spectralPartition(graph, k);
+        if (result.ok) {
+          return result.value.map((partition) => ({
+            id: partition.id,
+            nodeIds: Array.from(partition.nodes).map((node) => node.id),
+            size: partition.size,
+            density: 0,
+          }));
+        }
+        return [];
+      }
+      case 'hierarchical': {
+        const result = hierarchicalClustering(graph, { linkage });
+        if (result.ok) {
+          const clusters = result.value.dendrogram.getClusters(numClusters);
+          return clusters.map((cluster, index) => ({
+            id: index,
+            nodeIds: Array.from(cluster),
+            size: cluster.size,
+            density: 0,
           }));
         }
         return [];
@@ -584,18 +699,140 @@ export function getSubgraph(
 }
 
 /**
+ * Perform breadth-first search traversal
+ */
+export function performBFS(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  startId: string,
+  directed: boolean = true
+): TraversalResult | null {
+  const graph = createGraph(nodes, edges, directed);
+  const result = bfs(graph, startId);
+
+  if (!result.ok) {
+    return null;
+  }
+
+  return {
+    visitOrder: result.value.visitOrder.map((node) => node.id),
+    parents: result.value.parents,
+  };
+}
+
+/**
+ * Perform depth-first search traversal
+ */
+export function performDFS(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  startId: string,
+  directed: boolean = true
+): TraversalResult | null {
+  const graph = createGraph(nodes, edges, directed);
+  const result = dfs(graph, startId);
+
+  if (!result.ok) {
+    return null;
+  }
+
+  return {
+    visitOrder: result.value.visitOrder.map((node) => node.id),
+    parents: result.value.parents,
+    discovered: result.value.discovered,
+    finished: result.value.finished,
+  };
+}
+
+/**
+ * Detect cycles with detailed information
+ */
+export function getCycleInfo(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  directed: boolean = true
+): CycleResult {
+  const graph = createGraph(nodes, edges, directed);
+  const result = detectCycle(graph);
+
+  if (!result.ok || !result.value.some) {
+    return {
+      hasCycle: false,
+      cycle: [],
+    };
+  }
+
+  // The cycle info contains nodes in the cycle
+  const cycleInfo = result.value.value;
+  return {
+    hasCycle: true,
+    cycle: cycleInfo.nodes.map((node) => node.id),
+  };
+}
+
+/**
+ * Perform core-periphery decomposition
+ */
+export function getCorePeriphery(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  coreThreshold: number = 0.7
+): CorePeripheryResult | null {
+  const graph = createGraph(nodes, edges, false);
+  const result = corePeripheryDecomposition(graph, { coreThreshold });
+
+  if (!result.ok) {
+    return null;
+  }
+
+  return {
+    coreNodes: Array.from(result.value.structure.coreNodes),
+    peripheryNodes: Array.from(result.value.structure.peripheryNodes),
+    corenessScores: result.value.structure.corenessScores,
+    fitQuality: result.value.structure.fitQuality,
+  };
+}
+
+/**
+ * Find biconnected components (for undirected graphs)
+ */
+export function getBiconnectedComponents(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): BiconnectedResult | null {
+  // Create undirected graph by adding reverse edges
+  const graph = createGraph(nodes, edges, false);
+  const result = biconnectedComponents(graph);
+
+  if (!result.ok) {
+    return null;
+  }
+
+  return {
+    components: result.value.components.map((comp) => ({
+      id: comp.id,
+      nodes: Array.from(comp.nodes),
+      isBridge: comp.isBridge,
+    })),
+    articulationPoints: Array.from(result.value.articulationPoints),
+  };
+}
+
+/**
  * Get all algorithms available
  */
 export const AVAILABLE_ALGORITHMS = {
-  clustering: ['louvain', 'leiden', 'label-propagation'] as const,
+  clustering: ['louvain', 'leiden', 'label-propagation', 'infomap', 'spectral', 'hierarchical'] as const,
   analysis: ['connected-components', 'strongly-connected-components', 'cycle-detection', 'topological-sort'] as const,
+  traversal: ['bfs', 'dfs'] as const,
   pathfinding: ['dijkstra'] as const,
-  decomposition: ['k-core'] as const,
+  decomposition: ['k-core', 'core-periphery', 'biconnected'] as const,
   extraction: ['ego-network', 'filter', 'subgraph'] as const,
 } as const;
 
 export type ClusteringAlgorithm = typeof AVAILABLE_ALGORITHMS.clustering[number];
 export type AnalysisAlgorithm = typeof AVAILABLE_ALGORITHMS.analysis[number];
+export type TraversalAlgorithm = typeof AVAILABLE_ALGORITHMS.traversal[number];
 export type PathfindingAlgorithm = typeof AVAILABLE_ALGORITHMS.pathfinding[number];
 export type DecompositionAlgorithm = typeof AVAILABLE_ALGORITHMS.decomposition[number];
 export type ExtractionAlgorithm = typeof AVAILABLE_ALGORITHMS.extraction[number];

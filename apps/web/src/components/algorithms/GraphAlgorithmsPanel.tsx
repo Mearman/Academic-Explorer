@@ -36,6 +36,12 @@ import {
   IconAlertCircle,
   IconChartDonut,
   IconHierarchy,
+  IconArrowsShuffle,
+  IconArrowsSort,
+  IconCircle,
+  IconCircles,
+  IconFocusCentered,
+  IconLink,
 } from '@tabler/icons-react';
 import React, { useState, useMemo } from 'react';
 
@@ -45,6 +51,13 @@ import {
   useConnectedComponents,
   useCycleDetection,
   useKCore,
+  useBFS,
+  useDFS,
+  useCycleInfo,
+  useStronglyConnectedComponents,
+  useTopologicalSort,
+  useCorePeriphery,
+  useBiconnectedComponents,
   type CommunityDetectionOptions,
 } from '@/hooks/use-graph-algorithms';
 import { findShortestPath, type PathResult, type ClusteringAlgorithm } from '@/services/graph-algorithms';
@@ -77,10 +90,13 @@ interface GraphAlgorithmsPanelProps {
 /**
  * Algorithm descriptions for user guidance
  */
-const ALGORITHM_INFO = {
+const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
   louvain: 'Fast community detection using modularity optimization. Best for large graphs.',
   leiden: 'Improved version of Louvain with better community quality. Slightly slower.',
   'label-propagation': 'Simple and fast. Uses label spreading to find communities.',
+  infomap: 'Information-theoretic approach. Finds communities by minimizing flow description length.',
+  spectral: 'Uses graph eigenvalues for balanced partitioning. Good for k-way partitions.',
+  hierarchical: 'Agglomerative clustering that builds a dendrogram. Supports different linkage methods.',
 };
 
 /**
@@ -104,10 +120,12 @@ export function GraphAlgorithmsPanel({
   // Community detection state and hook
   const [communityAlgorithm, setCommunityAlgorithm] = useState<ClusteringAlgorithm>('louvain');
   const [resolution, setResolution] = useState<number>(1.0);
+  const [numClusters, setNumClusters] = useState<number>(5);
+  const [linkage, setLinkage] = useState<'single' | 'complete' | 'average'>('average');
 
   const communityOptions: CommunityDetectionOptions = useMemo(
-    () => ({ algorithm: communityAlgorithm, resolution }),
-    [communityAlgorithm, resolution]
+    () => ({ algorithm: communityAlgorithm, resolution, numClusters, linkage }),
+    [communityAlgorithm, resolution, numClusters, linkage]
   );
 
   const { communities, modularity, isComputing } = useCommunityDetection(
@@ -119,12 +137,32 @@ export function GraphAlgorithmsPanel({
   // Connected components hook
   const connectedComponents = useConnectedComponents(nodes, edges, { directed: false });
 
-  // Cycle detection hook
+  // Strongly connected components hook
+  const stronglyConnectedComponents = useStronglyConnectedComponents(nodes, edges);
+
+  // Cycle detection hooks
   const hasCycles = useCycleDetection(nodes, edges, true);
+  const cycleInfo = useCycleInfo(nodes, edges, true);
+
+  // Topological sort hook
+  const topologicalOrder = useTopologicalSort(nodes, edges);
 
   // K-core state and hook
   const [kCoreValue, setKCoreValue] = useState<number>(2);
   const kCore = useKCore(nodes, edges, kCoreValue);
+
+  // Core-periphery state and hook
+  const [coreThreshold, setCoreThreshold] = useState<number>(0.7);
+  const corePeriphery = useCorePeriphery(nodes, edges, coreThreshold);
+
+  // Biconnected components hook
+  const biconnectedComponents = useBiconnectedComponents(nodes, edges);
+
+  // Traversal state and hooks
+  const [traversalStartNode, setTraversalStartNode] = useState<string | null>(null);
+  const [traversalDirected, setTraversalDirected] = useState<boolean>(true);
+  const bfsResult = useBFS(nodes, edges, traversalStartNode, traversalDirected);
+  const dfsResult = useDFS(nodes, edges, traversalStartNode, traversalDirected);
 
   // Path finding state - supports both controlled and uncontrolled modes
   const [internalPathSource, setInternalPathSource] = useState<string | null>(null);
@@ -303,16 +341,19 @@ export function GraphAlgorithmsPanel({
                 label="Algorithm"
                 description={ALGORITHM_INFO[communityAlgorithm]}
                 data={[
-                  { value: 'louvain', label: 'Louvain' },
-                  { value: 'leiden', label: 'Leiden' },
-                  { value: 'label-propagation', label: 'Label Propagation' },
+                  { value: 'louvain', label: 'Louvain', group: 'Modularity-based' },
+                  { value: 'leiden', label: 'Leiden', group: 'Modularity-based' },
+                  { value: 'label-propagation', label: 'Label Propagation', group: 'Propagation-based' },
+                  { value: 'infomap', label: 'Infomap', group: 'Information-theoretic' },
+                  { value: 'spectral', label: 'Spectral Partitioning', group: 'Matrix-based' },
+                  { value: 'hierarchical', label: 'Hierarchical Clustering', group: 'Agglomerative' },
                 ]}
                 value={communityAlgorithm}
                 onChange={(value) => setCommunityAlgorithm(value as ClusteringAlgorithm)}
               />
 
-              {/* Resolution Parameter */}
-              {communityAlgorithm !== 'label-propagation' && (
+              {/* Resolution Parameter - for louvain, leiden */}
+              {(communityAlgorithm === 'louvain' || communityAlgorithm === 'leiden') && (
                 <NumberInput
                   label="Resolution"
                   description="Higher = more communities, Lower = fewer communities"
@@ -322,6 +363,34 @@ export function GraphAlgorithmsPanel({
                   max={3.0}
                   step={0.1}
                   decimalScale={2}
+                />
+              )}
+
+              {/* Number of clusters - for spectral and hierarchical */}
+              {(communityAlgorithm === 'spectral' || communityAlgorithm === 'hierarchical') && (
+                <NumberInput
+                  label="Number of Clusters"
+                  description="Target number of communities/partitions"
+                  value={numClusters}
+                  onChange={(value) => setNumClusters(typeof value === 'number' ? value : 5)}
+                  min={2}
+                  max={20}
+                  step={1}
+                />
+              )}
+
+              {/* Linkage method - for hierarchical */}
+              {communityAlgorithm === 'hierarchical' && (
+                <Select
+                  label="Linkage Method"
+                  description="How to measure distance between clusters"
+                  data={[
+                    { value: 'single', label: 'Single (minimum)' },
+                    { value: 'complete', label: 'Complete (maximum)' },
+                    { value: 'average', label: 'Average (UPGMA)' },
+                  ]}
+                  value={linkage}
+                  onChange={(value) => setLinkage(value as 'single' | 'complete' | 'average')}
                 />
               )}
 
@@ -541,6 +610,468 @@ export function GraphAlgorithmsPanel({
               ) : (
                 <Text size="sm" c="dimmed">
                   No {kCoreValue}-core exists (try a lower k value)
+                </Text>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Graph Traversal (BFS/DFS) */}
+        <Accordion.Item value="traversal">
+          <Accordion.Control icon={<IconArrowsShuffle size={18} />}>
+            Graph Traversal
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Select
+                label="Start Node"
+                placeholder="Select starting node for traversal"
+                data={nodeOptions}
+                value={traversalStartNode}
+                onChange={setTraversalStartNode}
+                searchable
+                clearable
+              />
+              <Switch
+                label="Directed traversal"
+                description={traversalDirected
+                  ? "Only follow edges in their direction"
+                  : "Traverse edges in both directions"
+                }
+                checked={traversalDirected}
+                onChange={(e) => setTraversalDirected(e.currentTarget.checked)}
+              />
+
+              {traversalStartNode && (
+                <Stack gap="xs">
+                  {/* BFS Results */}
+                  <Card withBorder p="xs">
+                    <Group justify="space-between" mb="xs">
+                      <Text size="sm" fw={500}>Breadth-First Search (BFS)</Text>
+                      {bfsResult && (
+                        <Badge size="sm" variant="light">
+                          {bfsResult.visitOrder.length} nodes
+                        </Badge>
+                      )}
+                    </Group>
+                    {bfsResult ? (
+                      <>
+                        <Text size="xs" c="dimmed" mb="xs">
+                          Visit order (level by level):
+                        </Text>
+                        <Group gap="xs" wrap="wrap">
+                          {bfsResult.visitOrder.slice(0, 10).map((nodeId, index) => (
+                            <Tooltip key={nodeId} label={nodeId}>
+                              <Badge
+                                size="xs"
+                                variant="outline"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => onHighlightNodes?.([nodeId])}
+                              >
+                                {index + 1}
+                              </Badge>
+                            </Tooltip>
+                          ))}
+                          {bfsResult.visitOrder.length > 10 && (
+                            <Text size="xs" c="dimmed">+{bfsResult.visitOrder.length - 10} more</Text>
+                          )}
+                        </Group>
+                        <Button
+                          variant="light"
+                          size="xs"
+                          mt="xs"
+                          onClick={() => onHighlightPath?.(bfsResult.visitOrder)}
+                        >
+                          Highlight BFS Order
+                        </Button>
+                      </>
+                    ) : (
+                      <Text size="xs" c="dimmed">Select a start node</Text>
+                    )}
+                  </Card>
+
+                  {/* DFS Results */}
+                  <Card withBorder p="xs">
+                    <Group justify="space-between" mb="xs">
+                      <Text size="sm" fw={500}>Depth-First Search (DFS)</Text>
+                      {dfsResult && (
+                        <Badge size="sm" variant="light">
+                          {dfsResult.visitOrder.length} nodes
+                        </Badge>
+                      )}
+                    </Group>
+                    {dfsResult ? (
+                      <>
+                        <Text size="xs" c="dimmed" mb="xs">
+                          Visit order (depth first):
+                        </Text>
+                        <Group gap="xs" wrap="wrap">
+                          {dfsResult.visitOrder.slice(0, 10).map((nodeId, index) => (
+                            <Tooltip key={nodeId} label={nodeId}>
+                              <Badge
+                                size="xs"
+                                variant="outline"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => onHighlightNodes?.([nodeId])}
+                              >
+                                {index + 1}
+                              </Badge>
+                            </Tooltip>
+                          ))}
+                          {dfsResult.visitOrder.length > 10 && (
+                            <Text size="xs" c="dimmed">+{dfsResult.visitOrder.length - 10} more</Text>
+                          )}
+                        </Group>
+                        <Button
+                          variant="light"
+                          size="xs"
+                          mt="xs"
+                          onClick={() => onHighlightPath?.(dfsResult.visitOrder)}
+                        >
+                          Highlight DFS Order
+                        </Button>
+                      </>
+                    ) : (
+                      <Text size="xs" c="dimmed">Select a start node</Text>
+                    )}
+                  </Card>
+                </Stack>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Strongly Connected Components */}
+        <Accordion.Item value="scc">
+          <Accordion.Control icon={<IconCircles size={18} />}>
+            Strongly Connected Components
+            <Badge ml="xs" size="sm" variant="light">
+              {stronglyConnectedComponents.count}
+            </Badge>
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                SCCs are maximal sets of nodes where every node can reach every other node
+                following edge directions.
+              </Text>
+              {stronglyConnectedComponents.components.length > 0 && (
+                <List spacing="xs" size="sm">
+                  {stronglyConnectedComponents.components
+                    .sort((a, b) => b.length - a.length)
+                    .slice(0, 8)
+                    .map((component, index) => (
+                    <List.Item
+                      key={index}
+                      icon={
+                        <ThemeIcon size={20} radius="xl" variant="light" color="violet">
+                          <IconCircleDot size={12} />
+                        </ThemeIcon>
+                      }
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => onHighlightNodes?.(component)}
+                    >
+                      <Group justify="space-between">
+                        <Text size="sm">SCC {index + 1}</Text>
+                        <Badge size="xs" variant="light">
+                          {component.length} nodes
+                        </Badge>
+                      </Group>
+                    </List.Item>
+                  ))}
+                  {stronglyConnectedComponents.components.length > 8 && (
+                    <Text size="xs" c="dimmed">
+                      +{stronglyConnectedComponents.components.length - 8} more SCCs
+                    </Text>
+                  )}
+                </List>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Topological Sort & Cycle Detection */}
+        <Accordion.Item value="topo-cycle">
+          <Accordion.Control icon={<IconArrowsSort size={18} />}>
+            Topological Sort / Cycles
+            <Badge
+              ml="xs"
+              size="sm"
+              variant="light"
+              color={cycleInfo.hasCycle ? 'red' : 'green'}
+            >
+              {cycleInfo.hasCycle ? 'Has Cycles' : 'Acyclic'}
+            </Badge>
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              {cycleInfo.hasCycle ? (
+                <>
+                  <Alert color="yellow" icon={<IconAlertCircle size={16} />}>
+                    Graph contains cycles - topological sort is not possible.
+                  </Alert>
+                  {cycleInfo.cycle.length > 0 && (
+                    <Card withBorder p="xs">
+                      <Text size="sm" fw={500} mb="xs">Detected Cycle:</Text>
+                      <Group gap="xs" wrap="wrap">
+                        {cycleInfo.cycle.map((nodeId, index) => (
+                          <Group key={nodeId} gap={4}>
+                            <Badge
+                              size="xs"
+                              variant="filled"
+                              color="red"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => onHighlightNodes?.([nodeId])}
+                            >
+                              {nodeId.slice(0, 8)}...
+                            </Badge>
+                            {index < cycleInfo.cycle.length - 1 && (
+                              <Text size="xs" c="dimmed">→</Text>
+                            )}
+                          </Group>
+                        ))}
+                      </Group>
+                      <Button
+                        variant="light"
+                        size="xs"
+                        mt="xs"
+                        color="red"
+                        onClick={() => onHighlightNodes?.(cycleInfo.cycle)}
+                      >
+                        Highlight Cycle
+                      </Button>
+                    </Card>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Alert color="green" icon={<IconCircleCheck size={16} />}>
+                    Graph is a DAG (Directed Acyclic Graph) - topological ordering exists.
+                  </Alert>
+                  {topologicalOrder && topologicalOrder.length > 0 && (
+                    <Card withBorder p="xs">
+                      <Text size="sm" fw={500} mb="xs">Topological Order:</Text>
+                      <Text size="xs" c="dimmed" mb="xs">
+                        Nodes ordered so all edges point from earlier to later nodes.
+                      </Text>
+                      <Group gap="xs" wrap="wrap">
+                        {topologicalOrder.slice(0, 10).map((nodeId, index) => (
+                          <Tooltip key={nodeId} label={nodeId}>
+                            <Badge
+                              size="xs"
+                              variant="outline"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => onHighlightNodes?.([nodeId])}
+                            >
+                              {index + 1}
+                            </Badge>
+                          </Tooltip>
+                        ))}
+                        {topologicalOrder.length > 10 && (
+                          <Text size="xs" c="dimmed">+{topologicalOrder.length - 10} more</Text>
+                        )}
+                      </Group>
+                      <Button
+                        variant="light"
+                        size="xs"
+                        mt="xs"
+                        onClick={() => onHighlightPath?.(topologicalOrder)}
+                      >
+                        Highlight Topological Order
+                      </Button>
+                    </Card>
+                  )}
+                </>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Core-Periphery Decomposition */}
+        <Accordion.Item value="core-periphery">
+          <Accordion.Control icon={<IconFocusCentered size={18} />}>
+            Core-Periphery
+            {corePeriphery && (
+              <Badge ml="xs" size="sm" variant="light">
+                {corePeriphery.coreNodes.length} core / {corePeriphery.peripheryNodes.length} periphery
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                Identifies densely connected core nodes and sparsely connected periphery nodes
+                (Borgatti-Everett model).
+              </Text>
+              <NumberInput
+                label="Core Threshold"
+                description="Coreness score above this = core member (0-1)"
+                value={coreThreshold}
+                onChange={(value) => setCoreThreshold(typeof value === 'number' ? value : 0.7)}
+                min={0.1}
+                max={0.95}
+                step={0.05}
+                decimalScale={2}
+              />
+
+              {corePeriphery ? (
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Core Nodes</Text>
+                    <Badge color="blue" variant="light">{corePeriphery.coreNodes.length}</Badge>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Periphery Nodes</Text>
+                    <Badge color="gray" variant="light">{corePeriphery.peripheryNodes.length}</Badge>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Fit Quality</Text>
+                    <Tooltip label="Correlation with ideal core-periphery structure (-1 to 1)">
+                      <Badge
+                        color={corePeriphery.fitQuality > 0.5 ? 'green' : corePeriphery.fitQuality > 0 ? 'yellow' : 'red'}
+                        variant="light"
+                      >
+                        {corePeriphery.fitQuality.toFixed(3)}
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+                  <Group gap="xs">
+                    <Button
+                      variant="light"
+                      size="xs"
+                      color="blue"
+                      onClick={() => onHighlightNodes?.(corePeriphery.coreNodes)}
+                    >
+                      Highlight Core
+                    </Button>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      color="gray"
+                      onClick={() => onHighlightNodes?.(corePeriphery.peripheryNodes)}
+                    >
+                      Highlight Periphery
+                    </Button>
+                  </Group>
+                </Stack>
+              ) : (
+                <Text size="sm" c="dimmed">
+                  Requires at least 3 nodes for core-periphery analysis.
+                </Text>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Biconnected Components */}
+        <Accordion.Item value="biconnected">
+          <Accordion.Control icon={<IconLink size={18} />}>
+            Biconnected Components
+            {biconnectedComponents && (
+              <Badge ml="xs" size="sm" variant="light">
+                {biconnectedComponents.components.length} components
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                Biconnected components remain connected after removing any single node.
+                Articulation points are critical nodes whose removal disconnects the graph.
+              </Text>
+
+              {biconnectedComponents ? (
+                <>
+                  {/* Articulation Points */}
+                  {biconnectedComponents.articulationPoints.length > 0 && (
+                    <Card withBorder p="xs">
+                      <Group justify="space-between" mb="xs">
+                        <Text size="sm" fw={500}>Articulation Points (Cut Vertices)</Text>
+                        <Badge color="orange" variant="light">
+                          {biconnectedComponents.articulationPoints.length}
+                        </Badge>
+                      </Group>
+                      <Text size="xs" c="dimmed" mb="xs">
+                        Removing these nodes would disconnect the graph:
+                      </Text>
+                      <Group gap="xs" wrap="wrap">
+                        {biconnectedComponents.articulationPoints.slice(0, 8).map((nodeId) => (
+                          <Badge
+                            key={nodeId}
+                            size="xs"
+                            color="orange"
+                            variant="filled"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => onHighlightNodes?.([nodeId])}
+                          >
+                            {nodeId.slice(0, 10)}...
+                          </Badge>
+                        ))}
+                        {biconnectedComponents.articulationPoints.length > 8 && (
+                          <Text size="xs" c="dimmed">
+                            +{biconnectedComponents.articulationPoints.length - 8} more
+                          </Text>
+                        )}
+                      </Group>
+                      <Button
+                        variant="light"
+                        size="xs"
+                        mt="xs"
+                        color="orange"
+                        onClick={() => onHighlightNodes?.(biconnectedComponents.articulationPoints)}
+                      >
+                        Highlight All Articulation Points
+                      </Button>
+                    </Card>
+                  )}
+
+                  {/* Biconnected Components List */}
+                  <Box>
+                    <Text size="sm" fw={500} mb="xs">Components</Text>
+                    <List spacing="xs" size="sm">
+                      {biconnectedComponents.components
+                        .sort((a, b) => b.nodes.length - a.nodes.length)
+                        .slice(0, 6)
+                        .map((component) => (
+                        <List.Item
+                          key={component.id}
+                          icon={
+                            <ThemeIcon
+                              size={20}
+                              radius="xl"
+                              variant="light"
+                              color={component.isBridge ? 'yellow' : 'teal'}
+                            >
+                              {component.isBridge ? <IconLink size={12} /> : <IconCircle size={12} />}
+                            </ThemeIcon>
+                          }
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => onHighlightNodes?.(component.nodes)}
+                        >
+                          <Group justify="space-between">
+                            <Group gap="xs">
+                              <Text size="sm">Component {component.id + 1}</Text>
+                              {component.isBridge && (
+                                <Badge size="xs" color="yellow" variant="outline">Bridge</Badge>
+                              )}
+                            </Group>
+                            <Badge size="xs" variant="light">
+                              {component.nodes.length} nodes
+                            </Badge>
+                          </Group>
+                        </List.Item>
+                      ))}
+                      {biconnectedComponents.components.length > 6 && (
+                        <Text size="xs" c="dimmed">
+                          +{biconnectedComponents.components.length - 6} more components
+                        </Text>
+                      )}
+                    </List>
+                  </Box>
+                </>
+              ) : (
+                <Text size="sm" c="dimmed">
+                  Requires at least 2 nodes for biconnected component analysis.
                 </Text>
               )}
             </Stack>
