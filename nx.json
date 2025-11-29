@@ -585,12 +585,26 @@
         "{projectRoot}/coverage"
       ]
     },
+    "test:accessibility": {
+      "cache": false,
+      "dependsOn": [
+        "a11y"
+      ],
+      "inputs": []
+    },
+    "test:performance": {
+      "cache": false,
+      "dependsOn": [
+        "lighthouse"
+      ],
+      "inputs": []
+    },
     "verify:a11y": {
       "cache": true,
       "dependsOn": [
         "lint",
         "test:a11y",
-        "a11y"
+        "test:accessibility"
       ],
       "inputs": [],
       "outputs": []
@@ -599,7 +613,7 @@
       "cache": true,
       "dependsOn": [
         "lint",
-        "lighthouse"
+        "test:performance"
       ],
       "inputs": [],
       "outputs": []

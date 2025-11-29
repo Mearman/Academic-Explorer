@@ -101,6 +101,16 @@
       },
       "dependsOn": ["build"],
       "cache": false
+    },
+    "test:accessibility": {
+      "executor": "nx:noop",
+      "dependsOn": ["a11y"],
+      "cache": false
+    },
+    "test:performance": {
+      "executor": "nx:noop",
+      "dependsOn": ["lighthouse"],
+      "cache": false
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

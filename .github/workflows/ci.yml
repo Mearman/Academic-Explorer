@@ -374,8 +374,8 @@ jobs:
             echo "To generate coverage, run tests with the \`--coverage\` flag."
           } >> "${GITHUB_STEP_SUMMARY}"
 
-  # Accessibility tests (pa11y)
-  accessibility:
+  # Accessibility tests (pa11y via Nx)
+  test-accessibility:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [validate, changes]
@@ -405,13 +405,8 @@ jobs:
       - name: Install pa11y-ci
         run: npm install -g pa11y-ci
 
-      - name: Start application
-        run: |
-          pnpm nx preview web &
-          sleep 10
-
       - name: Run accessibility tests
-        run: pa11y-ci --config apps/web/.pa11yci.json
+        run: pnpm nx test:accessibility web
         continue-on-error: true
 
       - name: Upload accessibility report
@@ -423,8 +418,8 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-  # Performance tests (Lighthouse)
-  performance:
+  # Performance tests (Lighthouse via Nx)
+  test-performance:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [validate, changes]
@@ -454,13 +449,8 @@ jobs:
       - name: Install Lighthouse CI
         run: npm install -g @lhci/cli@0.13.x
 
-      - name: Start application
-        run: |
-          pnpm nx preview web &
-          sleep 10
-
-      - name: Run Lighthouse CI
-        run: lhci autorun
+      - name: Run performance tests
+        run: pnpm nx test:performance web
         continue-on-error: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
@@ -792,7 +782,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [validate, security-audit, e2e, coverage, accessibility, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [validate, security-audit, e2e, coverage, test-accessibility, test-performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -814,8 +804,8 @@ jobs:
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
-            echo "| ♿ Accessibility | ${{ needs.accessibility.result }} | pa11y WCAG 2.1 AA |"
-            echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse CI |"
+            echo "| ♿ Accessibility | ${{ needs.test-accessibility.result }} | pa11y WCAG 2.1 AA |"
+            echo "| ⚡ Performance | ${{ needs.test-performance.result }} | Lighthouse CI |"
             echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.validate.outputs.should-deploy == 'true' && 'GitHub Pages (after all tests pass)' || 'Skipped' }} |"
             echo "| 🎯 Post-Deploy E2E | ${{ needs.post-deploy-e2e.result }} | ${{ needs.post-deploy-e2e.result == 'success' && 'Live site verification passed' || (needs.post-deploy-e2e.result == 'skipped' && 'Not run' || 'Live site verification failed') }} |"
             echo "| 🔄 Rollback | ${{ needs.rollback.result }} | ${{ needs.rollback.result == 'success' && 'Automatic rollback completed' || (needs.rollback.result == 'skipped' && 'Not needed' || 'Rollback failed') }} |"
