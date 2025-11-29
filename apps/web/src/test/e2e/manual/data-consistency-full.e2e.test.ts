@@ -11,12 +11,17 @@
  */
 
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { test, expect } from '@playwright/test';
 
-// Load all URLs from the JSON file
-const urlsPath = join(process.cwd(), '../../openalex-urls-sample.json');
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load all URLs from the JSON file (relative to test file location)
+const urlsPath = join(__dirname, '../../../../../../openalex-urls-sample.json');
 const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
