@@ -1,6 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
+import { MantineProvider } from "@mantine/core";
 import { type ColumnDef } from "@tanstack/react-table";
 import "@testing-library/jest-dom/vitest";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -30,36 +31,8 @@ global.ResizeObserver = class ResizeObserver {
   disconnect = vi.fn();
 };
 
-// Mock @tanstack/react-virtual
-vi.mock("@tanstack/react-virtual", () => ({
-  useVirtualizer: vi.fn(() => ({
-    getVirtualItems: vi.fn(() => []),
-    getTotalSize: vi.fn(() => 0),
-    scrollToIndex: vi.fn(),
-    scrollToOffset: vi.fn(),
-  })),
-}));
-
-// Mock @tanstack/react-table
-vi.mock("@tanstack/react-table", () => ({
-  useReactTable: vi.fn(() => ({
-    getHeaderGroups: vi.fn(() => []),
-    getRowModel: vi.fn(() => ({ rows: [] })),
-    getState: vi.fn(() => ({
-      pagination: { pageIndex: 0, pageSize: 10 },
-      sorting: [],
-      columnFilters: [],
-      globalFilter: "",
-    })),
-    getPageCount: vi.fn(() => 1),
-    setPageIndex: vi.fn(),
-  })),
-  getCoreRowModel: vi.fn(() => ({})),
-  getSortedRowModel: vi.fn(() => ({})),
-  getFilteredRowModel: vi.fn(() => ({})),
-  getPaginationRowModel: vi.fn(() => ({})),
-  flexRender: vi.fn(() => null),
-}));
+// Note: We don't mock @tanstack/react-table or @tanstack/react-virtual
+// The component needs real implementations to test actual behavior
 
 interface TestData {
   id: string;
@@ -91,7 +64,7 @@ const columns: ColumnDef<TestData>[] = [
 ];
 
 const TableWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div>{children}</div>
+  <MantineProvider>{children}</MantineProvider>
 );
 
 describe("BaseTable Virtualization", () => {
@@ -153,7 +126,7 @@ describe("BaseTable Virtualization", () => {
   it("should handle loading state correctly", async () => {
     const data = generateTestData(100);
 
-    render(
+    const { container } = render(
       <TableWrapper>
         <BaseTable
           data={data}
@@ -164,8 +137,10 @@ describe("BaseTable Virtualization", () => {
       </TableWrapper>,
     );
 
+    // Loading state renders TableSkeleton with Mantine Skeleton components
     await waitFor(() => {
-      expect(screen.getByText("Loading...")).toBeInTheDocument();
+      const skeletons = container.querySelectorAll('[class*="Skeleton"]');
+      expect(skeletons.length).toBeGreaterThan(0);
     });
   });
 

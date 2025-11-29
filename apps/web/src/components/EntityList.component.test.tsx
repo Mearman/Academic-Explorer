@@ -318,9 +318,14 @@ describe("EntityList", () => {
       </TestWrapper>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Error: API Error")).toBeInTheDocument();
-    });
+    // DataState displays error.message directly, not with "Error: " prefix
+    // useAsyncOperation has retry logic (2 retries * 1000ms delay), so increase timeout
+    await waitFor(
+      () => {
+        expect(screen.getByText("API Error")).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 
   it("uses default title when not provided", async () => {
