@@ -13,7 +13,7 @@ import { test, expect } from "@playwright/test";
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
 
-const BASE_URL = "http://localhost:5173";
+const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("@utility About Page", () => {
 	test.setTimeout(30000);

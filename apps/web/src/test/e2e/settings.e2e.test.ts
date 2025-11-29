@@ -19,7 +19,7 @@ import { waitForAppReady } from "@/test/helpers/app-ready";
 import { SettingsPage } from "@/test/page-objects/SettingsPage";
 
 test.describe("@utility Settings Page", () => {
-	const BASE_URL = "http://localhost:5173";
+	const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 	test.beforeEach(async ({ page, context }) => {
 		// Clear storage to ensure clean state

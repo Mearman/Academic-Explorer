@@ -7,7 +7,7 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("Catalogue Entity Management", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
       page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
@@ -20,7 +20,7 @@ test.describe("Catalogue Entity Management", () => {
     await createTestList(page, "Entity Test List");
 
     // Navigate to an author page
-    await page.goto("http://localhost:5173/#/authors/A5017898742");
+    await page.goto("/#/authors/A5017898742");
     await page.waitForLoadState("networkidle");
 
     // Look for "Add to Catalogue" button using data-testid
@@ -49,7 +49,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.getByRole('dialog', { name: 'Add to Catalogue' })).not.toBeVisible({ timeout: 3000 });
 
     // Return to catalogue and verify entity was added
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Click on the list card to select it
@@ -74,7 +74,7 @@ test.describe("Catalogue Entity Management", () => {
     //   - Sources: Entity may not exist (HTTP 404) or MSW mocking incomplete
 
     // Navigate to catalogue and verify
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Verify the list card shows at least 1 item
@@ -102,7 +102,7 @@ test.describe("Catalogue Entity Management", () => {
     await createListWithMultipleEntities(page, "Removal Test List");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Wait a bit for catalogue to fully load
@@ -161,7 +161,7 @@ test.describe("Catalogue Entity Management", () => {
     await createListWithMultipleEntities(page, "Reorder Test List");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Reorder Test List" }).first().click();
@@ -221,7 +221,7 @@ test.describe("Catalogue Entity Management", () => {
     await createListWithMultipleEntities(page, "Filter Test List");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Filter Test List" }).first().click();
@@ -261,7 +261,7 @@ test.describe("Catalogue Entity Management", () => {
     await createListWithMultipleEntities(page, "Notes Test List");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Notes Test List" }).first().click();
@@ -303,7 +303,7 @@ test.describe("Catalogue Entity Management", () => {
     await createTestList(page, "Empty List Test");
 
     // Navigate to catalogue and select the list
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Empty List Test" }).first().click();
@@ -332,7 +332,7 @@ test.describe("Catalogue Entity Management", () => {
     await createListWithMultipleEntities(page, "Bulk Operations Test");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Bulk Operations Test" }).first().click();
@@ -379,7 +379,7 @@ test.describe("Catalogue Entity Management", () => {
     await addEntityToCatalogue(page, "A5017898742", "authors", "Metadata Test List");
 
     // Navigate to catalogue
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Find and verify the list card
@@ -431,7 +431,7 @@ async function createTestList(page: Page, listName: string): Promise<void> {
 
 async function addEntityToCatalogue(page: Page, entityId: string, entityType: string, targetListName?: string): Promise<void> {
   // Navigate to entity page
-  await page.goto(`http://localhost:5173/#/${entityType}/${entityId}`);
+  await page.goto(`/#/${entityType}/${entityId}`);
   await page.waitForLoadState("networkidle");
 
   // Wait for page to fully load - entity pages can take time to render

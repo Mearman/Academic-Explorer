@@ -7,7 +7,7 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("Catalogue Sharing Functionality", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
       page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
@@ -48,7 +48,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     // Verify URL contains localhost and catalogue path
     const shareUrlInput = page.locator('input[value*="catalogue/shared/"]');
     const shareUrl = await shareUrlInput.inputValue();
-    expect(shareUrl).toContain("localhost:5173");
+    expect(shareUrl).toContain("localhost");
     expect(shareUrl).toContain("catalogue/shared/");
   });
 
@@ -230,7 +230,7 @@ async function createTestListWithEntities(page: Page, listName: string): Promise
   await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
 
   // Add some test entities by navigating to author pages first
-  await page.goto("http://localhost:5173/#/authors/A5017898742");
+  await page.goto("/#/authors/A5017898742");
   await page.waitForLoadState("networkidle");
 
   // Add the author to the catalogue
@@ -250,7 +250,7 @@ async function createTestListWithEntities(page: Page, listName: string): Promise
   }
 
   // Return to catalogue
-  await page.goto("http://localhost:5173/#/catalogue");
+  await page.goto("/#/catalogue");
   await page.waitForLoadState("networkidle");
 }
 

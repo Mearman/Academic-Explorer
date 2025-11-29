@@ -24,7 +24,7 @@ test.describe("@utility Cache Page", () => {
 
 	test.beforeEach(async ({ page }) => {
 		cachePage = new BaseSPAPageObject(page, {
-			baseUrl: "http://localhost:5173",
+			baseUrl: process.env.CI ? "http://localhost:4173" : "http://localhost:5173",
 			waitForAppReady: true,
 		});
 

@@ -21,7 +21,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Bookmark Entity Pages (T010)", () => {
-  const BASE_URL = "http://localhost:5173";
+  const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
   // Test entities from different types with known stable IDs
   const TEST_ENTITIES = [

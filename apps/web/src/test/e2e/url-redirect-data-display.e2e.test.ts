@@ -12,7 +12,7 @@ test.describe("URL Redirect and Data Display", () => {
   test("should redirect bioplastics URL and display all data", async ({ page }) => {
     // Navigate to the API redirect route (this is how the app handles full API URLs)
     const fullUrl = "/#/api-openalex-org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";
-    await page.goto(`http://localhost:5173${fullUrl}`);
+    await page.goto(`${fullUrl}`);
 
     // Wait for redirect to complete - use more flexible URL check
     await page.waitForURL(/\/#\/works/, { timeout: 10000 });
@@ -35,7 +35,7 @@ test.describe("URL Redirect and Data Display", () => {
 
   test("should display author A5017898742 with all data fields", async ({ page }) => {
     // Navigate directly to author page
-    await page.goto("http://localhost:5173/#/authors/A5017898742");
+    await page.goto("/#/authors/A5017898742");
 
     // Wait for author name to be displayed
     await page.waitForSelector('h1', { timeout: 15000 });
@@ -73,7 +73,7 @@ test.describe("URL Redirect and Data Display", () => {
     ];
 
     for (const urlTest of testUrls) {
-      await page.goto(`http://localhost:5173${urlTest.input}`);
+      await page.goto(`${urlTest.input}`);
       // Wait for redirect to complete
       await page.waitForURL(new RegExp(urlTest.expected.replace(/[?]/g, "\\?")), { timeout: 10000 });
       const currentUrl = page.url();

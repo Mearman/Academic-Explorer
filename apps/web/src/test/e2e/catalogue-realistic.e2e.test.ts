@@ -8,7 +8,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Catalogue Realistic Functionality Tests", () => {
   test("should have accessible catalogue components in the application", async ({ page }) => {
     // Navigate to home page first
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check if there's a catalogue button in navigation
@@ -43,7 +43,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should be able to access catalogue database services", async ({ page }) => {
     // Navigate to any page to load the application
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check if catalogue services are available in the window
@@ -65,7 +65,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should handle catalogue related imports and components", async ({ page }) => {
     // Navigate to home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check if catalogue components are loaded
@@ -82,7 +82,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should have working catalogue database infrastructure", async ({ page }) => {
     // Navigate to home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Try to access the catalogue database functionality through JavaScript
@@ -112,7 +112,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should support catalogue sharing and compression features", async ({ page }) => {
     // Navigate to home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check if compression libraries are loaded
@@ -134,7 +134,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
   test("should have proper Mantine UI components for catalogue", async ({ page }) => {
     // Note: Test may be flaky - timeouts during Mantine component verification
     // Navigate to home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check if Mantine components are available
@@ -157,7 +157,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should verify catalogue integration completeness", async ({ page }) => {
     // Navigate to home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Check overall catalogue feature integration

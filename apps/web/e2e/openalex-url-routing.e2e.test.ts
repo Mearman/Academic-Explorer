@@ -28,7 +28,7 @@ import {
 	waitForNoLoading,
 } from "@/test/helpers/app-ready";
 
-const BASE_URL = "http://localhost:5173";
+const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 	test.describe("API URL Conversion and Routing", () => {

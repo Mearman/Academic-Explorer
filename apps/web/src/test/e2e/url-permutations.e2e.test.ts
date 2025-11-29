@@ -26,7 +26,7 @@ const __dirname = dirname(__filename);
 const urlsPath = join(__dirname, '../data/openalex-test-urls.json');
 const testData: { urls: string[] } = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 const API_BASE = 'https://api.openalex.org';
 
 /**

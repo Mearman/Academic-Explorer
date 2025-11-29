@@ -15,7 +15,7 @@ import {
 	waitForNoLoading,
 } from '@/test/helpers/app-ready';
 
-const BASE_URL = 'http://localhost:5173';
+const BASE_URL = process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173';
 
 test.describe('Data Completeness - Styled View vs API @automated-manual', () => {
 	test.setTimeout(60000);

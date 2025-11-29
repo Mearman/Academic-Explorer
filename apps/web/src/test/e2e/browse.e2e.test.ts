@@ -15,7 +15,7 @@ import { test, expect } from '@playwright/test';
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 
 // All 12 OpenAlex entity types that should be displayed
 const EXPECTED_ENTITY_TYPES = [

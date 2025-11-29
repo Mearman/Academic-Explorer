@@ -24,7 +24,7 @@ const urlsPath = join(__dirname, '../../data/openalex-test-urls.json');
 const urlsData: { urls: string[]; totalUrls: number } = JSON.parse(readFileSync(urlsPath, 'utf-8'));
 const urls: string[] = urlsData.urls;
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL

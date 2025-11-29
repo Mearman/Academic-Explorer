@@ -10,7 +10,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await createTestBookmarks(page);
 
     // Navigate to bookmarks page
-    await page.goto("http://localhost:5173/#/bookmarks");
+    await page.goto("/#/bookmarks");
 
     // Wait for page to load
     await page.waitForLoadState("networkidle");
@@ -25,7 +25,7 @@ test.describe("Bulk Bookmarks Management", () => {
   // Helper function to create test bookmarks
   async function createTestBookmarks(page: any): Promise<void> {
     // Navigate to author page first to ensure context is loaded
-    await page.goto("http://localhost:5173/#/authors/A5017898742");
+    await page.goto("/#/authors/A5017898742");
     await page.waitForLoadState("networkidle");
 
     // Create bookmarks programmatically by accessing global service

@@ -6,7 +6,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Bookmark Functionality E2E Tests", () => {
-  const BASE_URL = "http://localhost:5173";
+  const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
   // Test entities from different types
   const TEST_ENTITIES = [

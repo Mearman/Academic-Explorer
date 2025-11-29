@@ -6,7 +6,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
-  const BASE_URL = "http://localhost:5173";
+  const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
   // The exact bioplastics URL pattern from the requirements
   const BIOMATERIALS_URL = "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc";

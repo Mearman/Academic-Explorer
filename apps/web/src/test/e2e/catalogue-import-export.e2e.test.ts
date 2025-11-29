@@ -7,7 +7,7 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("Catalogue Import/Export Functionality", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
       page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
@@ -90,7 +90,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     // Note: This test requires actual compressed data export functionality
     // which triggers file download (browser download handler).
     // Navigate to catalogue first
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     // Test implementation would go here when feature is ready
     expect(true).toBe(true); // Placeholder until feature is implemented
@@ -165,7 +165,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
   test("should validate import data structure", async ({ page }) => {
     // Import validation logic exists in ImportModal
     // Navigate to catalogue first
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     // Placeholder until validation feature is fully testable
     expect(true).toBe(true);
@@ -173,7 +173,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
   test("should handle large import data", async ({ page }) => {
     // Import Modal uses loading state (aria-busy)
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     // Placeholder until large import handling is fully testable
     expect(true).toBe(true);
@@ -237,7 +237,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
   test("should handle duplicate detection during import", async ({ page }) => {
     // ImportModal shows duplicate count in preview but always creates new lists
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     // Placeholder until duplicate detection is fully testable
     expect(true).toBe(true);
@@ -269,7 +269,7 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   ];
 
   for (const entity of entities) {
-    await page.goto(`http://localhost:5173/#/${entity.type}/${entity.id}`, { timeout: 30000 });
+    await page.goto(`/#/${entity.type}/${entity.id}`, { timeout: 30000 });
     await page.waitForLoadState("networkidle", { timeout: 30000 });
 
     const addToCatalogueButton = page.locator('[data-testid="add-to-catalogue-button"]');
@@ -292,7 +292,7 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   }
 
   // Navigate back to catalogue page
-  await page.goto("http://localhost:5173/#/catalogue", { timeout: 30000 });
+  await page.goto("/#/catalogue", { timeout: 30000 });
   await page.waitForLoadState("networkidle", { timeout: 30000 });
 }
 
@@ -302,7 +302,7 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
 //   await createListWithMultipleEntities(page, "Export Test List");
 //
 //   // Select the list and export
-//   await page.goto("http://localhost:5173/#/catalogue");
+//   await page.goto("/#/catalogue");
 //   await page.waitForLoadState("networkidle");
 //
 //   await page.click('[data-testid="selected-list-title"]:has-text("Export Test List")');

@@ -4,7 +4,7 @@
 
 import { test, expect } from "@playwright/test";
 
-const BASE_URL = "http://localhost:5173";
+const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("Sidebar Functionality E2E Tests", () => {
   test.setTimeout(30000); // Reduced timeout for faster execution

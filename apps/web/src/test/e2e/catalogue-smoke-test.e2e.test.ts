@@ -8,7 +8,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Catalogue Smoke Test", () => {
   test("should load catalogue page directly", async ({ page }) => {
     // Navigate directly to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Wait for catalogue to load (any of these indicators)
@@ -29,7 +29,7 @@ test.describe("Catalogue Smoke Test", () => {
 
   test("should show create list functionality", async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Wait for page to load
@@ -56,7 +56,7 @@ test.describe("Catalogue Smoke Test", () => {
 
   test("should handle catalogue database initialization", async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
 
     // Wait for page to load
@@ -83,7 +83,7 @@ test.describe("Catalogue Smoke Test", () => {
 
   test("should handle navigation elements", async ({ page }) => {
     // Start from home page
-    await page.goto("http://localhost:5173/#/");
+    await page.goto("/#/");
     await page.waitForLoadState("networkidle");
 
     // Look for navigation elements

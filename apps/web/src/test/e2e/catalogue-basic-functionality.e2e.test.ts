@@ -7,7 +7,7 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("Catalogue Basic Functionality", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to catalogue page
-    await page.goto("http://localhost:5173/#/catalogue");
+    await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     // Wait for catalogue to load
     await Promise.race([

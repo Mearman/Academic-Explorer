@@ -6,7 +6,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("OpenAlex URL Redirection and Bookmarking", () => {
-  const BASE_URL = "http://localhost:5173";
+  const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
   // Sample URLs from openalex-urls.json that should be bookmarkable
   // (Currently used as documentation of test URL patterns)
