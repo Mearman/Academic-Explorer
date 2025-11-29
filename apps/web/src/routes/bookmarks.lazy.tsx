@@ -1,5 +1,5 @@
 import type { EntityType, Bookmark } from "@bibgraph/types";
-import { BookmarkList, BookmarkSearchFilters } from "@bibgraph/ui";
+import { BookmarkList, BookmarkSearchFilters, BookmarkTable, BookmarkGrid } from "@bibgraph/ui";
 import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@bibgraph/utils";
 import type { ExportFormat, ExportOptions, CatalogueEntity } from "@bibgraph/utils";
 import {
@@ -16,6 +16,7 @@ import {
 	Modal,
 	Checkbox,
 	Select,
+	SegmentedControl,
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import {
@@ -24,6 +25,9 @@ import {
 	IconFileExport,
 	IconSortDescending,
 	IconSortAscending,
+	IconList,
+	IconTable,
+	IconLayoutGrid,
 } from "@tabler/icons-react";
 import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -31,7 +35,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
-import type { BookmarksSearch } from "./bookmarks";
+import type { BookmarksSearch, BookmarkViewMode } from "./bookmarks";
 
 /**
  * Convert CatalogueEntity to Bookmark type
@@ -96,6 +100,7 @@ function BookmarksIndexPage() {
 	const [matchAllTags, setMatchAllTags] = useState(search.matchAll || false);
 
 	// View options state from URL
+	const [viewMode, setViewMode] = useState<BookmarkViewMode>(search.viewMode || "list");
 	const [groupByType, setGroupByType] = useState(search.groupByType ?? true);
 	const [sortBy, setSortBy] = useState<"date" | "title" | "type">(search.sortBy || "date");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">(search.sortOrder || "desc");
@@ -124,19 +129,21 @@ function BookmarksIndexPage() {
 		if (sortBy !== "date") newSearch.sortBy = sortBy;
 		if (sortOrder !== "desc") newSearch.sortOrder = sortOrder;
 		if (!groupByType) newSearch.groupByType = groupByType;
+		if (viewMode !== "list") newSearch.viewMode = viewMode;
 
 		navigate({
 			to: "/bookmarks",
 			search: newSearch,
 			replace: true,
 		});
-	}, [debouncedSearchQuery, entityTypeFilter, tagFilters, matchAllTags, sortBy, sortOrder, groupByType, navigate]);
+	}, [debouncedSearchQuery, entityTypeFilter, tagFilters, matchAllTags, sortBy, sortOrder, groupByType, viewMode, navigate]);
 
 	logger.debug("bookmarks", "Bookmarks index page rendering", {
 		bookmarksCount: bookmarks.length,
 		searchQuery,
 		entityTypeFilter,
 		tagFilters,
+		viewMode,
 		groupByType,
 		sortBy,
 		sortOrder,
@@ -274,13 +281,52 @@ function BookmarksIndexPage() {
 
 						{/* View Controls */}
 						<Group gap="sm">
-							<Button
-								variant={groupByType ? "filled" : "light"}
+							{/* View Mode Toggle */}
+							<SegmentedControl
 								size="sm"
-								onClick={() => setGroupByType(!groupByType)}
-							>
-								{groupByType ? "Grouped" : "Flat"}
-							</Button>
+								value={viewMode}
+								onChange={(value) => setViewMode(value as BookmarkViewMode)}
+								data={[
+									{
+										value: "list",
+										label: (
+											<Group gap={4} wrap="nowrap">
+												<IconList size={16} />
+												<Text size="sm">List</Text>
+											</Group>
+										),
+									},
+									{
+										value: "table",
+										label: (
+											<Group gap={4} wrap="nowrap">
+												<IconTable size={16} />
+												<Text size="sm">Table</Text>
+											</Group>
+										),
+									},
+									{
+										value: "card",
+										label: (
+											<Group gap={4} wrap="nowrap">
+												<IconLayoutGrid size={16} />
+												<Text size="sm">Card</Text>
+											</Group>
+										),
+									},
+								]}
+							/>
+
+							{/* Group toggle - only shown for list view */}
+							{viewMode === "list" && (
+								<Button
+									variant={groupByType ? "filled" : "light"}
+									size="sm"
+									onClick={() => setGroupByType(!groupByType)}
+								>
+									{groupByType ? "Grouped" : "Flat"}
+								</Button>
+							)}
 
 							<Menu shadow="md" width={200}>
 								<Menu.Target>
@@ -349,19 +395,43 @@ function BookmarksIndexPage() {
 					</Alert>
 				)}
 
-				{/* Bookmark List */}
-				<BookmarkList
-					bookmarks={filteredBookmarks}
-					groupByType={groupByType}
-					sortBy={sortBy}
-					sortOrder={sortOrder}
-					onDeleteBookmark={handleDelete}
-					onNavigate={handleNavigate}
-					onUpdateTags={handleUpdateTags}
-					loading={loading}
-					emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
-					data-testid="bookmark-list"
-				/>
+				{/* Bookmark Views */}
+				{viewMode === "list" && (
+					<BookmarkList
+						bookmarks={filteredBookmarks}
+						groupByType={groupByType}
+						sortBy={sortBy}
+						sortOrder={sortOrder}
+						onDeleteBookmark={handleDelete}
+						onNavigate={handleNavigate}
+						onUpdateTags={handleUpdateTags}
+						loading={loading}
+						emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
+						data-testid="bookmark-list"
+					/>
+				)}
+
+				{viewMode === "table" && (
+					<BookmarkTable
+						bookmarks={filteredBookmarks}
+						onDeleteBookmark={handleDelete}
+						onNavigate={handleNavigate}
+						loading={loading}
+						emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
+						data-testid="bookmark-table"
+					/>
+				)}
+
+				{viewMode === "card" && (
+					<BookmarkGrid
+						bookmarks={filteredBookmarks}
+						onDeleteBookmark={handleDelete}
+						onNavigate={handleNavigate}
+						loading={loading}
+						emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
+						data-testid="bookmark-grid"
+					/>
+				)}
 			</Stack>
 
 			{/* Export Modal */}

@@ -3,10 +3,12 @@
  */
 
 export * from "./BookmarkButton";
+export * from "./BookmarkGrid";
 export * from "./BookmarkIcon";
 export * from "./BookmarkList";
 export * from "./BookmarkListItem";
 export * from "./BookmarkSearchFilters";
+export * from "./BookmarkTable";
 export * from "./EntityTypeBadge";
 export * from "./FieldSelectionPreview";
 export * from "./TagBadge";

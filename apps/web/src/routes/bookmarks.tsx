@@ -7,6 +7,8 @@ import { LazyRoute } from "@/components/routing/LazyRoute";
 
 const BookmarksIndexPage = lazy(() => import("./bookmarks.lazy"));
 
+export type BookmarkViewMode = "list" | "table" | "card";
+
 export interface BookmarksSearch {
   search?: string;
   entityType?: EntityType;
@@ -15,6 +17,7 @@ export interface BookmarksSearch {
   sortBy?: "date" | "title" | "type";
   sortOrder?: "asc" | "desc";
   groupByType?: boolean;
+  viewMode?: BookmarkViewMode;
 }
 
 export const Route = createFileRoute("/bookmarks")({
@@ -40,6 +43,9 @@ export const Route = createFileRoute("/bookmarks")({
         ? search.sortOrder
         : undefined,
       groupByType: search.groupByType === "true" || search.groupByType === true,
+      viewMode: search.viewMode === "list" || search.viewMode === "table" || search.viewMode === "card"
+        ? search.viewMode
+        : undefined,
     };
   },
 });
