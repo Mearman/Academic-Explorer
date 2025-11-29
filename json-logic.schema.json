@@ -1,0 +1,506 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"$id": "https://raw.githubusercontent.com/Mearman/BibGraph/refs/heads/main/json-logic.schema.json",
+	"title": "JSON Logic Schema",
+	"description": "JSON Schema for JSON Logic rules (jsonlogic.com compliant)",
+	"$ref": "#/definitions/jsonLogicRule",
+	"definitions": {
+		"jsonLogicRule": {
+			"description": "A JSON Logic rule (jsonlogic.com compliant)",
+			"oneOf": [
+				{ "$ref": "#/definitions/jsonLogicPrimitive" },
+				{ "$ref": "#/definitions/jsonLogicOperation" }
+			]
+		},
+		"jsonLogicPrimitive": {
+			"description": "Primitive value (string, number, boolean, null, array)",
+			"oneOf": [
+				{ "type": "string" },
+				{ "type": "number" },
+				{ "type": "boolean" },
+				{ "type": "null" },
+				{
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" }
+				}
+			]
+		},
+		"jsonLogicOperation": {
+			"type": "object",
+			"description": "JSON Logic operation",
+			"oneOf": [
+				{ "$ref": "#/definitions/varOp" },
+				{ "$ref": "#/definitions/missingOp" },
+				{ "$ref": "#/definitions/missingSomeOp" },
+				{ "$ref": "#/definitions/ifOp" },
+				{ "$ref": "#/definitions/andOp" },
+				{ "$ref": "#/definitions/orOp" },
+				{ "$ref": "#/definitions/notOp" },
+				{ "$ref": "#/definitions/doubleBangOp" },
+				{ "$ref": "#/definitions/comparisonOp" },
+				{ "$ref": "#/definitions/arithmeticOp" },
+				{ "$ref": "#/definitions/minMaxOp" },
+				{ "$ref": "#/definitions/inOp" },
+				{ "$ref": "#/definitions/arrayIterationOp" },
+				{ "$ref": "#/definitions/mapOp" },
+				{ "$ref": "#/definitions/filterOp" },
+				{ "$ref": "#/definitions/reduceOp" },
+				{ "$ref": "#/definitions/mergeOp" },
+				{ "$ref": "#/definitions/catOp" },
+				{ "$ref": "#/definitions/substrOp" },
+				{ "$ref": "#/definitions/logOp" },
+				{ "$ref": "#/definitions/xorOp" },
+				{ "$ref": "#/definitions/pathExistsOp" },
+				{ "$ref": "#/definitions/hasTagOp" },
+				{ "$ref": "#/definitions/hasTargetOp" },
+				{ "$ref": "#/definitions/hasAnyTagOp" },
+				{ "$ref": "#/definitions/hasAllTagsOp" }
+			]
+		},
+		"varOp": {
+			"type": "object",
+			"description": "Access data from context. Available: tags, targets, root, name, '' (iteration context)",
+			"properties": {
+				"var": {
+					"oneOf": [
+						{ "type": "string" },
+						{ "type": "number" },
+						{ "$ref": "#/definitions/jsonLogicRule" }
+					]
+				}
+			},
+			"required": ["var"],
+			"additionalProperties": false
+		},
+		"missingOp": {
+			"type": "object",
+			"description": "Returns array of keys that are missing from data",
+			"properties": {
+				"missing": {
+					"oneOf": [
+						{ "type": "string" },
+						{
+							"type": "array",
+							"items": { "type": "string" }
+						}
+					]
+				}
+			},
+			"required": ["missing"],
+			"additionalProperties": false
+		},
+		"missingSomeOp": {
+			"type": "object",
+			"description": "Returns missing keys if below minimum required",
+			"properties": {
+				"missing_some": {
+					"type": "array",
+					"items": [
+						{ "type": "number", "description": "Minimum required" },
+						{
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Keys to check"
+						}
+					],
+					"minItems": 2,
+					"maxItems": 2
+				}
+			},
+			"required": ["missing_some"],
+			"additionalProperties": false
+		},
+		"ifOp": {
+			"type": "object",
+			"description": "Conditional: [condition, then, else, ...]",
+			"properties": {
+				"if": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2
+				}
+			},
+			"required": ["if"],
+			"additionalProperties": false
+		},
+		"andOp": {
+			"type": "object",
+			"description": "Logical AND - returns first falsy or last value",
+			"properties": {
+				"and": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" }
+				}
+			},
+			"required": ["and"],
+			"additionalProperties": false
+		},
+		"orOp": {
+			"type": "object",
+			"description": "Logical OR - returns first truthy or last value",
+			"properties": {
+				"or": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" }
+				}
+			},
+			"required": ["or"],
+			"additionalProperties": false
+		},
+		"notOp": {
+			"type": "object",
+			"description": "Logical NOT",
+			"properties": {
+				"!": { "$ref": "#/definitions/jsonLogicRule" },
+				"not": { "$ref": "#/definitions/jsonLogicRule" }
+			},
+			"additionalProperties": false
+		},
+		"doubleBangOp": {
+			"type": "object",
+			"description": "Cast to boolean (truthy check)",
+			"properties": {
+				"!!": { "$ref": "#/definitions/jsonLogicRule" }
+			},
+			"required": ["!!"],
+			"additionalProperties": false
+		},
+		"comparisonOp": {
+			"type": "object",
+			"description": "Comparison operators (==, ===, !=, !==, <, <=, >, >=)",
+			"properties": {
+				"==": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2
+				},
+				"===": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2
+				},
+				"!=": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2
+				},
+				"!==": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2
+				},
+				"<": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 3,
+					"description": "Less than. 3 args for between: a < b < c"
+				},
+				"<=": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 3
+				},
+				">": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 3
+				},
+				">=": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 3
+				}
+			},
+			"additionalProperties": false
+		},
+		"arithmeticOp": {
+			"type": "object",
+			"description": "Arithmetic operators (+, -, *, /, %)",
+			"properties": {
+				"+": {
+					"oneOf": [
+						{ "$ref": "#/definitions/jsonLogicRule" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/jsonLogicRule" }
+						}
+					],
+					"description": "Addition or cast to number (single arg)"
+				},
+				"-": {
+					"oneOf": [
+						{ "$ref": "#/definitions/jsonLogicRule" },
+						{
+							"type": "array",
+							"items": { "$ref": "#/definitions/jsonLogicRule" },
+							"minItems": 1,
+							"maxItems": 2
+						}
+					],
+					"description": "Subtraction or negation (single arg)"
+				},
+				"*": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Multiplication"
+				},
+				"/": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "Division"
+				},
+				"%": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "Modulo"
+				}
+			},
+			"additionalProperties": false
+		},
+		"minMaxOp": {
+			"type": "object",
+			"description": "Min/max operators",
+			"properties": {
+				"min": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Minimum value"
+				},
+				"max": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Maximum value"
+				}
+			},
+			"additionalProperties": false
+		},
+		"inOp": {
+			"type": "object",
+			"description": "Check array membership or substring",
+			"properties": {
+				"in": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[needle, haystack]"
+				}
+			},
+			"required": ["in"],
+			"additionalProperties": false
+		},
+		"arrayIterationOp": {
+			"type": "object",
+			"description": "Array iteration (some, all, none)",
+			"properties": {
+				"some": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[array, condition] - any element passes"
+				},
+				"all": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[array, condition] - all elements pass"
+				},
+				"none": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[array, condition] - no elements pass"
+				}
+			},
+			"additionalProperties": false
+		},
+		"mapOp": {
+			"type": "object",
+			"description": "Transform array elements",
+			"properties": {
+				"map": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[array, mapper]"
+				}
+			},
+			"required": ["map"],
+			"additionalProperties": false
+		},
+		"filterOp": {
+			"type": "object",
+			"description": "Keep elements passing test",
+			"properties": {
+				"filter": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "[array, condition]"
+				}
+			},
+			"required": ["filter"],
+			"additionalProperties": false
+		},
+		"reduceOp": {
+			"type": "object",
+			"description": "Combine array into single value",
+			"properties": {
+				"reduce": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 3,
+					"maxItems": 3,
+					"description": "[array, reducer, initial]. Use {var:'current'} or {var:'accumulator'} in reducer"
+				}
+			},
+			"required": ["reduce"],
+			"additionalProperties": false
+		},
+		"mergeOp": {
+			"type": "object",
+			"description": "Merge/flatten arrays",
+			"properties": {
+				"merge": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Arrays to merge"
+				}
+			},
+			"required": ["merge"],
+			"additionalProperties": false
+		},
+		"catOp": {
+			"type": "object",
+			"description": "Concatenate strings",
+			"properties": {
+				"cat": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Values to concatenate as strings"
+				}
+			},
+			"required": ["cat"],
+			"additionalProperties": false
+		},
+		"substrOp": {
+			"type": "object",
+			"description": "Extract substring",
+			"properties": {
+				"substr": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"minItems": 2,
+					"maxItems": 3,
+					"description": "[string, start, length?]. Negative start/length supported"
+				}
+			},
+			"required": ["substr"],
+			"additionalProperties": false
+		},
+		"logOp": {
+			"type": "object",
+			"description": "Console log and pass through value",
+			"properties": {
+				"log": { "$ref": "#/definitions/jsonLogicRule" }
+			},
+			"required": ["log"],
+			"additionalProperties": false
+		},
+		"xorOp": {
+			"type": "object",
+			"description": "Exactly one condition true (extension)",
+			"properties": {
+				"xor": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/jsonLogicRule" },
+					"description": "Conditions - exactly one must be true"
+				}
+			},
+			"required": ["xor"],
+			"additionalProperties": false
+		},
+		"pathExistsOp": {
+			"type": "object",
+			"description": "Check if file/directory exists in project (extension)",
+			"properties": {
+				"pathExists": {
+					"oneOf": [
+						{ "type": "string" },
+						{ "$ref": "#/definitions/jsonLogicRule" }
+					],
+					"description": "Path relative to project root"
+				}
+			},
+			"required": ["pathExists"],
+			"additionalProperties": false
+		},
+		"hasTagOp": {
+			"type": "object",
+			"description": "Check if project has tag (convenience shortcut)",
+			"properties": {
+				"hasTag": {
+					"type": "string",
+					"description": "Tag to check"
+				}
+			},
+			"required": ["hasTag"],
+			"additionalProperties": false
+		},
+		"hasTargetOp": {
+			"type": "object",
+			"description": "Check if project has target (convenience shortcut)",
+			"properties": {
+				"hasTarget": {
+					"type": "string",
+					"description": "Target to check"
+				}
+			},
+			"required": ["hasTarget"],
+			"additionalProperties": false
+		},
+		"hasAnyTagOp": {
+			"type": "object",
+			"description": "Check if project has any of the tags (convenience shortcut)",
+			"properties": {
+				"hasAnyTag": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "Tags to check (OR)"
+				}
+			},
+			"required": ["hasAnyTag"],
+			"additionalProperties": false
+		},
+		"hasAllTagsOp": {
+			"type": "object",
+			"description": "Check if project has all tags (convenience shortcut)",
+			"properties": {
+				"hasAllTags": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "Tags to check (AND)"
+				}
+			},
+			"required": ["hasAllTags"],
+			"additionalProperties": false
+		}
+	}
+}
