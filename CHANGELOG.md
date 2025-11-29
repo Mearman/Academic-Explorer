@@ -1,3 +1,10 @@
+## 22.10.0 (2025-11-29)
+
+* chore(config): enhance syncpack pre-commit hook configuration ([c82d9f4](https://github.com/Mearman/BibGraph/commit/c82d9f4))
+* chore(release): 22.9.0 [skip ci] ([0980fe6](https://github.com/Mearman/BibGraph/commit/0980fe6))
+* refactor(schema): extract JSON Logic schema into separate file ([49b7467](https://github.com/Mearman/BibGraph/commit/49b7467))
+* feat(web): add Nx Atomizer and --only-changed for incremental E2E caching ([3c92b3f](https://github.com/Mearman/BibGraph/commit/3c92b3f))
+
 ## 22.9.0 (2025-11-29)
 
 * ci(deps): bump actions/setup-node from 4 to 6 (#146) ([270bb2b](https://github.com/Mearman/BibGraph/commit/270bb2b)), closes [#146](https://github.com/Mearman/BibGraph/issues/146)
