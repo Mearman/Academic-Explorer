@@ -65,14 +65,14 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
             </Text>
           )}
 
-          {(worksCount !== undefined || citedByCount !== undefined) && (
+          {(worksCount != null || citedByCount != null) && (
             <Group gap="md" mt="xs">
-              {worksCount !== undefined && (
+              {worksCount != null && (
                 <Text size="sm" c="dimmed">
                   Works: <Text span fw={500}>{worksCount.toLocaleString()}</Text>
                 </Text>
               )}
-              {citedByCount !== undefined && (
+              {citedByCount != null && (
                 <Text size="sm" c="dimmed">
                   Citations: <Text span fw={500}>{citedByCount.toLocaleString()}</Text>
                 </Text>
