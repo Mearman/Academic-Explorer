@@ -152,7 +152,9 @@ export function dijkstra<N extends Node, E extends Edge>(
 
     // Relax all edges
     for (const edge of edgesResult.value) {
-      const neighborId = edge.target;
+      // For undirected graphs, the neighbor could be either source or target
+      // depending on which end of the edge we're at
+      const neighborId = edge.source === currentId ? edge.target : edge.source;
 
       // Get source and target nodes for weight function
       const sourceNodeResult = graph.getNode(currentId);
