@@ -3,6 +3,7 @@
  * Provides the foundation for all filter field types with consistent UI and behavior
  */
 
+import type { EntityFilters } from "@bibgraph/types";
 import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@bibgraph/utils/ui";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
@@ -11,19 +12,13 @@ import React, { useCallback, useMemo } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
-
-
 import { BooleanFilter } from "../fields/BooleanFilter";
 import { DateFilter } from "../fields/DateFilter";
 import { EntityFilter } from "../fields/EntityFilter";
 import { EnumFilter } from "../fields/EnumFilter";
 import { NumericFilter } from "../fields/NumericFilter";
 import { TextFilter } from "../fields/TextFilter";
-import type {
-  FilterFieldProps,
-  FilterCondition,
-  EntityFilters,
-} from "../types/filter-ui";
+import type { FilterFieldProps, FilterCondition } from "../types/filter-ui";
 
 interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
   extends FilterFieldProps<T> {
