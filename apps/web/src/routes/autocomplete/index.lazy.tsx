@@ -47,9 +47,11 @@ const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
 
 /**
  * Parse comma-separated entity types from URL
+ * Returns null if no types param, empty array if "none", or parsed types
  */
-function parseEntityTypes(typesParam: string | undefined): EntityType[] {
-  if (!typesParam) return [];
+function parseEntityTypes(typesParam: string | undefined): EntityType[] | null {
+  if (!typesParam) return null; // No param = use default (all types)
+  if (typesParam === "none") return []; // Explicitly cleared
   return typesParam
     .split(",")
     .map((t) => t.trim() as EntityType)
@@ -75,14 +77,16 @@ function AutocompleteGeneralRoute() {
   // If no types specified in URL, default to all types (all checkboxes checked)
   const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(() => {
     const typesFromUrl = parseEntityTypes(urlSearch.types);
-    return typesFromUrl.length > 0 ? typesFromUrl : [...AUTOCOMPLETE_ENTITY_TYPES];
+    // null = no param (default to all), [] = explicitly cleared, array = specific types
+    if (typesFromUrl === null) return [...AUTOCOMPLETE_ENTITY_TYPES];
+    return typesFromUrl;
   });
 
   // Update selected types when URL changes
   useEffect(() => {
     const typesFromUrl = parseEntityTypes(urlSearch.types);
-    // If URL has types, use them; if URL has no types param, default to all
-    const effectiveTypes = typesFromUrl.length > 0 ? typesFromUrl : [...AUTOCOMPLETE_ENTITY_TYPES];
+    // null = no param (default to all), [] = explicitly cleared, array = specific types
+    const effectiveTypes = typesFromUrl === null ? [...AUTOCOMPLETE_ENTITY_TYPES] : typesFromUrl;
     if (JSON.stringify(effectiveTypes) !== JSON.stringify(selectedTypes)) {
       setSelectedTypes(effectiveTypes);
     }
@@ -115,9 +119,14 @@ function AutocompleteGeneralRoute() {
       if (query) {
         params.set("q", query);
       }
-      const serializedTypes = serializeEntityTypes(types);
-      if (serializedTypes) {
-        params.set("types", serializedTypes);
+      // Use "none" to explicitly indicate cleared state vs missing param
+      if (types.length === 0) {
+        params.set("types", "none");
+      } else {
+        const serializedTypes = serializeEntityTypes(types);
+        if (serializedTypes) {
+          params.set("types", serializedTypes);
+        }
       }
       if (urlSearch.filter) {
         params.set("filter", urlSearch.filter);
@@ -329,6 +338,7 @@ function AutocompleteGeneralRoute() {
           selectedTypes={selectedTypes}
           onChange={handleEntityTypeChange}
           title="Filter by Entity Type"
+          inline
         />
 
         {urlSearch.filter && (

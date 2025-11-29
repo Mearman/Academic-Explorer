@@ -121,6 +121,28 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
             </Badge>
           );
         })}
+        {showButtons && (
+          <>
+            <Button
+              size="xs"
+              variant="subtle"
+              onClick={handleSelectAll}
+              disabled={allExplicitlySelected}
+              data-testid="select-all-button"
+            >
+              Select All
+            </Button>
+            <Button
+              size="xs"
+              variant="subtle"
+              onClick={handleClearAll}
+              disabled={noneSelected}
+              data-testid="clear-all-button"
+            >
+              Clear All
+            </Button>
+          </>
+        )}
       </Group>
     );
   }
