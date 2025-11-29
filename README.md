@@ -64,6 +64,16 @@ pnpm nx e2e web --grep="@entity"    # Filter by tag
 pnpm nx e2e web --list              # List tests
 ```
 
+### Accessibility & Performance
+
+```bash
+pnpm test:a11y                      # Run pa11y accessibility tests (WCAG 2.1 AA)
+pnpm test:a11y:dev                  # Run a11y tests against dev server
+pnpm lighthouse                     # Run Lighthouse CI performance tests
+nx run web:a11y                     # Direct Nx task for accessibility
+nx run web:lighthouse               # Direct Nx task for performance
+```
+
 ## Monorepo Structure
 
 ```
@@ -414,11 +424,12 @@ await provider.initializeSpecialLists(); // Always initialize first
 
 | Job | Duration | Description |
 |-----|----------|-------------|
-| build-and-test | 30min | Build + typecheck + lint + test |
-| quality-gates | 40min | Full test suite + security audit (daily/main) |
+| validate | 45min | Build + typecheck + lint + all tests |
+| security-audit | 10min | pnpm audit vulnerability scanning |
 | e2e | 30min | Playwright tests against built app |
 | coverage | 15min | Aggregate coverage + Codecov upload |
-| performance | 20min | Lighthouse CI + pa11y accessibility |
+| accessibility | 15min | pa11y WCAG 2.1 AA compliance tests |
+| performance | 15min | Lighthouse CI performance audits |
 | deploy | 15min | GitHub Pages (after quality-gates + e2e pass) |
 | post-deploy-e2e | 25min | Live site verification |
 | rollback | 10min | Automatic rollback if post-deploy fails |

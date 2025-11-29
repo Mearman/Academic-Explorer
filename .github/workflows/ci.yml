@@ -374,10 +374,59 @@ jobs:
             echo "To generate coverage, run tests with the \`--coverage\` flag."
           } >> "${GITHUB_STEP_SUMMARY}"
 
-  # Performance and accessibility tests
+  # Accessibility tests (pa11y)
+  accessibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [validate, changes]
+    if: always() && needs.validate.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'a11y-check'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: build-artifacts
+
+      - name: Install pa11y-ci
+        run: npm install -g pa11y-ci
+
+      - name: Start application
+        run: |
+          pnpm nx preview web &
+          sleep 10
+
+      - name: Run accessibility tests
+        run: pa11y-ci --config apps/web/.pa11yci.json
+        continue-on-error: true
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: accessibility-report
+          path: pa11y-ci-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Performance tests (Lighthouse)
   performance:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     needs: [validate, changes]
     if: always() && needs.validate.result == 'success' && (github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'perf-check'))
     steps:
@@ -402,24 +451,28 @@ jobs:
         with:
           name: build-artifacts
 
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+
       - name: Start application
         run: |
           pnpm nx preview web &
           sleep 10
 
       - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli@0.13.x
-          lhci autorun || echo "Lighthouse CI failed but continuing"
+        run: lhci autorun
         continue-on-error: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
-      - name: Run accessibility tests
-        run: |
-          npm install -g pa11y-ci
-          pa11y-ci --sitemap http://localhost:4173/sitemap.xml --exclude http://localhost:4173/static || echo "Accessibility tests failed but continuing"
-        continue-on-error: true
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: lighthouse-report
+          path: .lighthouseci/
+          retention-days: 7
+          if-no-files-found: ignore
 
   # Deployment
   deploy:
@@ -739,7 +792,7 @@ jobs:
   results:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [validate, security-audit, e2e, coverage, performance, deploy, post-deploy-e2e, release, rollback]
+    needs: [validate, security-audit, e2e, coverage, accessibility, performance, deploy, post-deploy-e2e, release, rollback]
     if: always()
     steps:
       - name: Download coverage reports
@@ -761,7 +814,8 @@ jobs:
             echo "| 🔒 Security Audit | ${{ needs.security-audit.result }} | Vulnerability scanning |"
             echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
-            echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
+            echo "| ♿ Accessibility | ${{ needs.accessibility.result }} | pa11y WCAG 2.1 AA |"
+            echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse CI |"
             echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.validate.outputs.should-deploy == 'true' && 'GitHub Pages (after all tests pass)' || 'Skipped' }} |"
             echo "| 🎯 Post-Deploy E2E | ${{ needs.post-deploy-e2e.result }} | ${{ needs.post-deploy-e2e.result == 'success' && 'Live site verification passed' || (needs.post-deploy-e2e.result == 'skipped' && 'Not run' || 'Live site verification failed') }} |"
             echo "| 🔄 Rollback | ${{ needs.rollback.result }} | ${{ needs.rollback.result == 'success' && 'Automatic rollback completed' || (needs.rollback.result == 'skipped' && 'Not needed' || 'Rollback failed') }} |"

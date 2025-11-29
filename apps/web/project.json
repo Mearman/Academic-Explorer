@@ -67,6 +67,40 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
+    },
+    "a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm nx preview web &",
+          "sleep 5",
+          "pa11y-ci --config {projectRoot}/.pa11yci.json"
+        ],
+        "parallel": false
+      },
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "a11y:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pa11y-ci --config {projectRoot}/.pa11yci-dev.json"
+      },
+      "cache": false
+    },
+    "lighthouse": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm nx preview web &",
+          "sleep 5",
+          "lhci autorun"
+        ],
+        "parallel": false,
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["build"],
+      "cache": false
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

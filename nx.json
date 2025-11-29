@@ -525,25 +525,14 @@
         "{workspaceRoot}/coverage"
       ]
     },
-        "a11y:test": {
+        "a11y": {
       "cache": false,
       "dependsOn": [
         "build"
       ],
       "inputs": [
         "^production",
-        "{workspaceRoot}/.pa11yci.json",
-        "{projectRoot}/dist/**/*"
-      ]
-    },
-    "a11y:lighthouse": {
-      "cache": false,
-      "dependsOn": [
-        "build"
-      ],
-      "inputs": [
-        "^production",
-        "{workspaceRoot}/.lighthouserc.js",
+        "{projectRoot}/.pa11yci.json",
         "{projectRoot}/dist/**/*"
       ]
     },
@@ -552,16 +541,19 @@
       "inputs": [
         "source",
         "configs",
-        "{workspaceRoot}/.pa11yci-dev.json"
+        "{projectRoot}/.pa11yci-dev.json"
       ]
     },
-    "a11y:ci": {
+    "lighthouse": {
       "cache": false,
       "dependsOn": [
-        "a11y:test",
-        "a11y:lighthouse"
+        "build"
       ],
-      "inputs": []
+      "inputs": [
+        "^production",
+        "{workspaceRoot}/.lighthouserc.json",
+        "{projectRoot}/dist/**/*"
+      ]
     },
     "test:a11y": {
       "cache": true,
@@ -598,7 +590,16 @@
       "dependsOn": [
         "lint",
         "test:a11y",
-        "a11y:ci"
+        "a11y"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    "verify:perf": {
+      "cache": true,
+      "dependsOn": [
+        "lint",
+        "lighthouse"
       ],
       "inputs": [],
       "outputs": []
