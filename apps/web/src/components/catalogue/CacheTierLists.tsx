@@ -30,6 +30,9 @@ import {
   IconExternalLink,
   IconRefresh,
   IconTrash,
+  IconBrandGithub,
+  IconFolder,
+  IconCloud,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState, useCallback } from "react";
@@ -39,6 +42,25 @@ import React, { useEffect, useState, useCallback } from "react";
 interface CacheTierSummary {
   memory: { count: number; entities: CachedEntityEntry[] };
   indexedDB: { count: number; entities: CachedEntityEntry[] };
+}
+
+interface StaticCacheTierConfig {
+  gitHubPages: {
+    url: string;
+    isConfigured: boolean;
+    isProduction: boolean;
+    isLocalhost: boolean;
+  };
+  localStatic: {
+    path: string;
+    isAvailable: boolean;
+  };
+}
+
+interface CacheTierStats {
+  requests: number;
+  hits: number;
+  averageLoadTime: number;
 }
 
 interface EntityTypeCount {
@@ -301,11 +323,144 @@ function CacheTierCard({
   );
 }
 
+interface StaticCacheTierCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  url: string;
+  isConfigured: boolean;
+  stats: CacheTierStats | null;
+  isLoading: boolean;
+  onRefresh: () => void;
+  color: string;
+  badges?: React.ReactNode;
+}
+
+function StaticCacheTierCard({
+  title,
+  description,
+  icon,
+  url,
+  isConfigured,
+  stats,
+  isLoading,
+  onRefresh,
+  color,
+  badges,
+}: StaticCacheTierCardProps) {
+  const hitRate = stats && stats.requests > 0 ? (stats.hits / stats.requests) * 100 : 0;
+
+  return (
+    <Card withBorder padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+      <Group justify="space-between" mb="md">
+        <Group>
+          <ThemeIcon size="lg" variant="light" color={color}>
+            {icon}
+          </ThemeIcon>
+          <div>
+            <Text fw={500} size="lg">{title}</Text>
+            <Text size="xs" c="dimmed">{description}</Text>
+          </div>
+        </Group>
+        <Group gap="xs">
+          {badges}
+          <Tooltip label="Refresh">
+            <ActionIcon variant="subtle" size="sm" onClick={onRefresh} loading={isLoading}>
+              <IconRefresh size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Group>
+
+      {!isConfigured ? (
+        <Paper withBorder p="md" bg="gray.0">
+          <Text size="sm" c="dimmed" ta="center">
+            Not configured
+          </Text>
+        </Paper>
+      ) : isLoading ? (
+        <Stack align="center" py="xl">
+          <Loader size="sm" />
+          <Text size="xs" c="dimmed">Loading cache data...</Text>
+        </Stack>
+      ) : (
+        <Stack gap="md">
+          {/* URL Display */}
+          <Paper withBorder p="xs" radius="sm">
+            <Text size="xs" c="dimmed" fw={500} mb={4}>Cache URL</Text>
+            <Text size="sm" ff="monospace" style={{ wordBreak: "break-all" }}>
+              {url}
+            </Text>
+          </Paper>
+
+          {/* Stats Grid */}
+          {stats && (
+            <>
+              <SimpleGrid cols={{ base: 2, sm: 3 }} spacing="xs">
+                <Paper withBorder p="xs" radius="sm">
+                  <Text size="xs" c="dimmed" fw={500}>Requests</Text>
+                  <Text size="lg" fw={700}>{stats.requests.toLocaleString()}</Text>
+                </Paper>
+                <Paper withBorder p="xs" radius="sm">
+                  <Text size="xs" c="dimmed" fw={500}>Hits</Text>
+                  <Text size="lg" fw={700}>{stats.hits.toLocaleString()}</Text>
+                </Paper>
+                <Paper withBorder p="xs" radius="sm">
+                  <Text size="xs" c="dimmed" fw={500}>Hit Rate</Text>
+                  <Text size="lg" fw={700}>{hitRate.toFixed(1)}%</Text>
+                </Paper>
+              </SimpleGrid>
+
+              {/* Hit Rate Bar */}
+              {stats.requests > 0 && (
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="xs" c="dimmed">Cache Hit Rate</Text>
+                    <Text size="xs" c="dimmed">{stats.hits} / {stats.requests}</Text>
+                  </Group>
+                  <Progress
+                    value={hitRate}
+                    color={hitRate > 80 ? "green" : hitRate > 50 ? "blue" : "orange"}
+                    size="sm"
+                  />
+                </div>
+              )}
+
+              {/* Average Load Time */}
+              {stats.averageLoadTime > 0 && (
+                <Paper withBorder p="xs" radius="sm">
+                  <Group justify="space-between">
+                    <Text size="xs" c="dimmed" fw={500}>Avg Load Time</Text>
+                    <Text size="sm" fw={500}>{stats.averageLoadTime.toFixed(0)}ms</Text>
+                  </Group>
+                </Paper>
+              )}
+            </>
+          )}
+
+          {!stats && (
+            <Paper withBorder p="md" bg="gray.0">
+              <Text size="sm" c="dimmed" ta="center">
+                No statistics available yet
+              </Text>
+            </Paper>
+          )}
+        </Stack>
+      )}
+    </Card>
+  );
+}
+
 export function CacheTierLists() {
   const [summary, setSummary] = useState<CacheTierSummary | null>(null);
+  const [staticConfig, setStaticConfig] = useState<StaticCacheTierConfig | null>(null);
+  const [tierStats, setTierStats] = useState<{
+    gitHubPages: CacheTierStats | null;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingMemory, setIsRefreshingMemory] = useState(false);
   const [isRefreshingIndexedDB, setIsRefreshingIndexedDB] = useState(false);
+  const [isRefreshingStatic, setIsRefreshingStatic] = useState(false);
 
   const loadCacheSummary = useCallback(async () => {
     try {
@@ -316,10 +471,31 @@ export function CacheTierLists() {
     }
   }, []);
 
+  const loadStaticConfig = useCallback(() => {
+    try {
+      const config = cachedOpenAlex.getStaticCacheTierConfig();
+      setStaticConfig(config);
+    } catch (error) {
+      logger.error("cache-tier-ui", "Failed to load static cache config", { error });
+    }
+  }, []);
+
+  const loadTierStats = useCallback(async () => {
+    try {
+      const stats = await cachedOpenAlex.getStaticCacheStats();
+      setTierStats({
+        gitHubPages: stats.tierStats?.github_pages ?? null,
+      });
+    } catch (error) {
+      logger.error("cache-tier-ui", "Failed to load tier stats", { error });
+    }
+  }, []);
+
   useEffect(() => {
     setIsLoading(true);
-    loadCacheSummary().finally(() => setIsLoading(false));
-  }, [loadCacheSummary]);
+    loadStaticConfig();
+    Promise.all([loadCacheSummary(), loadTierStats()]).finally(() => setIsLoading(false));
+  }, [loadCacheSummary, loadStaticConfig, loadTierStats]);
 
   const handleRefreshMemory = useCallback(async () => {
     setIsRefreshingMemory(true);
@@ -357,6 +533,16 @@ export function CacheTierLists() {
     }
   }, [loadCacheSummary]);
 
+  const handleRefreshStatic = useCallback(async () => {
+    setIsRefreshingStatic(true);
+    try {
+      loadStaticConfig();
+      await loadTierStats();
+    } finally {
+      setIsRefreshingStatic(false);
+    }
+  }, [loadStaticConfig, loadTierStats]);
+
   if (isLoading) {
     return (
       <Stack align="center" py="xl">
@@ -388,14 +574,16 @@ export function CacheTierLists() {
         <div>
           <Text size="lg" fw={500}>Cache Tier Overview</Text>
           <Text size="sm" c="dimmed">
-            View entities stored in each cache tier. Memory cache is session-only, IndexedDB persists across sessions.
+            Multi-tier caching: Memory → IndexedDB → Static Files → OpenAlex API
           </Text>
         </div>
         <Badge size="lg" variant="light">
-          {(summary.memory.count + summary.indexedDB.count).toLocaleString()} total entities
+          {(summary.memory.count + summary.indexedDB.count).toLocaleString()} cached entities
         </Badge>
       </Group>
 
+      {/* Local Cache Tiers */}
+      <Text size="sm" fw={500} c="dimmed" mt="xs">Local Cache Tiers</Text>
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
         <CacheTierCard
           title="Memory Cache"
@@ -419,6 +607,67 @@ export function CacheTierLists() {
           isPersistent={true}
           maxEntries={10000}
         />
+      </SimpleGrid>
+
+      {/* Static Cache Tiers */}
+      <Text size="sm" fw={500} c="dimmed" mt="md">Static Cache Tiers</Text>
+      <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
+        {/* GitHub Pages Cache - shown in production */}
+        {staticConfig?.gitHubPages.isProduction && (
+          <StaticCacheTierCard
+            title="GitHub Pages Cache"
+            description="Pre-cached entities from GitHub Pages CDN"
+            icon={<IconBrandGithub size={20} />}
+            url={staticConfig.gitHubPages.url}
+            isConfigured={staticConfig.gitHubPages.isConfigured}
+            stats={tierStats?.gitHubPages ?? null}
+            isLoading={isRefreshingStatic}
+            onRefresh={handleRefreshStatic}
+            color="grape"
+            badges={
+              <Badge size="xs" color="grape" variant="light">
+                Remote CDN
+              </Badge>
+            }
+          />
+        )}
+
+        {/* Local Static Cache - shown in dev mode */}
+        {staticConfig?.gitHubPages.isLocalhost && (
+          <StaticCacheTierCard
+            title="Local Static Cache"
+            description="Pre-cached entities served from local dev server"
+            icon={<IconFolder size={20} />}
+            url={staticConfig.localStatic.path || staticConfig.gitHubPages.url}
+            isConfigured={staticConfig.localStatic.isAvailable}
+            stats={tierStats?.gitHubPages ?? null}
+            isLoading={isRefreshingStatic}
+            onRefresh={handleRefreshStatic}
+            color="teal"
+            badges={
+              <Badge size="xs" color="teal" variant="light">
+                Dev Mode
+              </Badge>
+            }
+          />
+        )}
+
+        {/* Show message if no static cache is configured */}
+        {staticConfig && !staticConfig.gitHubPages.isConfigured && (
+          <Card withBorder padding="md">
+            <Stack align="center" gap="md" py="lg">
+              <ThemeIcon size="xl" variant="light" color="gray">
+                <IconCloud size={24} />
+              </ThemeIcon>
+              <div style={{ textAlign: "center" }}>
+                <Text fw={500}>No Static Cache Configured</Text>
+                <Text size="sm" c="dimmed">
+                  Static caching is not configured for this environment.
+                </Text>
+              </div>
+            </Stack>
+          </Card>
+        )}
       </SimpleGrid>
     </Stack>
   );

@@ -519,6 +519,25 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   getMemoryCacheSize(): number {
     return staticDataProvider.getMemoryCacheSize();
   }
+
+  /**
+   * Get static cache tier configuration for display
+   * Includes GitHub Pages URL and local static path info
+   */
+  getStaticCacheTierConfig(): {
+    gitHubPages: {
+      url: string;
+      isConfigured: boolean;
+      isProduction: boolean;
+      isLocalhost: boolean;
+    };
+    localStatic: {
+      path: string;
+      isAvailable: boolean;
+    };
+  } {
+    return staticDataProvider.getStaticCacheTierConfig();
+  }
 }
 
 /**

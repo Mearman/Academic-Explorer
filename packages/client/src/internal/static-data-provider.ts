@@ -778,6 +778,13 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   }> {
     return calculateCacheStats(this.stats);
   }
+
+  /**
+   * Get the configured base URL for the GitHub Pages cache
+   */
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
 }
 
 /**
@@ -1205,6 +1212,40 @@ class StaticDataProvider {
       indexedDB: {
         count: indexedDBEntities.length,
         entities: indexedDBEntities,
+      },
+    };
+  }
+
+  /**
+   * Get static cache tier configuration for display
+   * Includes GitHub Pages URL and local static path info
+   */
+  getStaticCacheTierConfig(): {
+    gitHubPages: {
+      url: string;
+      isConfigured: boolean;
+      isProduction: boolean;
+      isLocalhost: boolean;
+    };
+    localStatic: {
+      path: string;
+      isAvailable: boolean;
+    };
+  } {
+    const gitHubPagesUrl = this.gitHubPagesCacheTier.getBaseUrl();
+    const isLocalhost = gitHubPagesUrl.startsWith("/");
+    const isProduction = gitHubPagesUrl.includes("github.io") || gitHubPagesUrl.includes("bibgraph.com");
+
+    return {
+      gitHubPages: {
+        url: gitHubPagesUrl,
+        isConfigured: gitHubPagesUrl.length > 0,
+        isProduction,
+        isLocalhost,
+      },
+      localStatic: {
+        path: isLocalhost ? gitHubPagesUrl : "",
+        isAvailable: isLocalhost,
       },
     };
   }
