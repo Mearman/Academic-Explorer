@@ -506,6 +506,9 @@ importers:
       '@bibgraph/utils':
         specifier: workspace:*
         version: link:../utils
+      dexie:
+        specifier: ^4.0.11
+        version: 4.2.1
     devDependencies:
       '@testing-library/jest-dom':
         specifier: 6.9.1
