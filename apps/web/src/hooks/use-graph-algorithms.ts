@@ -26,6 +26,12 @@ import {
   getCycleInfo,
   getCorePeriphery,
   getBiconnectedComponents,
+  getTriangles,
+  getStarPatterns,
+  getCoCitations,
+  getBibliographicCoupling,
+  getKTruss,
+  getClusterQuality,
   type CommunityResult,
   type PathResult,
   type ComponentResult,
@@ -37,6 +43,12 @@ import {
   type CycleResult,
   type CorePeripheryResult,
   type BiconnectedResult,
+  type TriangleResult,
+  type StarPatternResult,
+  type CoCitationResult,
+  type BibliographicCouplingResult,
+  type KTrussResult,
+  type ClusterQualityResult,
 } from '@/services/graph-algorithms';
 
 /**
@@ -310,6 +322,102 @@ export function useBiconnectedComponents(
     if (nodes.length < 2) return null;
     return getBiconnectedComponents(nodes, edges);
   }, [nodes, edges]);
+}
+
+/**
+ * Hook for triangle detection
+ */
+export function useTriangles(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): TriangleResult {
+  return useMemo(() => {
+    if (nodes.length < 3 || edges.length < 3) {
+      return { triangles: [], count: 0, clusteringCoefficient: 0 };
+    }
+    return getTriangles(nodes, edges);
+  }, [nodes, edges]);
+}
+
+/**
+ * Hook for star pattern detection
+ */
+export function useStarPatterns(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  options: { minDegree?: number; type?: 'in' | 'out' } = {}
+): StarPatternResult {
+  const { minDegree = 5, type = 'out' } = options;
+  return useMemo(() => {
+    if (nodes.length === 0) return { patterns: [], count: 0 };
+    return getStarPatterns(nodes, edges, { minDegree, type });
+  }, [nodes, edges, minDegree, type]);
+}
+
+/**
+ * Hook for co-citation detection
+ */
+export function useCoCitations(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  minCount: number = 2
+): CoCitationResult {
+  return useMemo(() => {
+    if (nodes.length === 0) return { pairs: [] };
+    return getCoCitations(nodes, edges, minCount);
+  }, [nodes, edges, minCount]);
+}
+
+/**
+ * Hook for bibliographic coupling detection
+ */
+export function useBibliographicCoupling(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  minShared: number = 2
+): BibliographicCouplingResult {
+  return useMemo(() => {
+    if (nodes.length === 0) return { pairs: [] };
+    return getBibliographicCoupling(nodes, edges, minShared);
+  }, [nodes, edges, minShared]);
+}
+
+/**
+ * Hook for k-truss extraction
+ */
+export function useKTruss(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  k: number = 3
+): KTrussResult {
+  return useMemo(() => {
+    if (nodes.length < 3 || edges.length < 3 || k < 2) {
+      return { nodes: [], edges: [], k, nodeCount: 0, edgeCount: 0 };
+    }
+    return getKTruss(nodes, edges, k);
+  }, [nodes, edges, k]);
+}
+
+/**
+ * Hook for cluster quality metrics
+ */
+export function useClusterQuality(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  communities: CommunityResult[]
+): ClusterQualityResult {
+  return useMemo(() => {
+    if (nodes.length === 0 || communities.length === 0) {
+      return {
+        modularity: 0,
+        avgConductance: 0,
+        avgDensity: 0,
+        coverageRatio: 0,
+        numClusters: 0,
+      };
+    }
+    return getClusterQuality(nodes, edges, communities);
+  }, [nodes, edges, communities]);
 }
 
 /**

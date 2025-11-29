@@ -28,6 +28,10 @@ import {
   dijkstra,
   // Metrics
   calculateModularity,
+  calculateConductance,
+  calculateDensity,
+  calculateCoverageRatio,
+  calculateClusterMetrics,
   // Decomposition
   kCoreDecomposition,
   corePeripheryDecomposition,
@@ -36,10 +40,17 @@ import {
   extractEgoNetwork,
   filterGraph,
   extractInducedSubgraph,
+  extractKTruss,
+  // Motif Detection
+  detectTriangles,
+  detectStarPatterns,
+  detectCoCitations,
+  detectBibliographicCoupling,
   // Types
   type Node as AlgorithmNode,
   type Edge as AlgorithmEdge,
   type Community,
+  type ClusterMetrics,
 } from '@bibgraph/algorithms';
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 
@@ -184,6 +195,73 @@ export interface SpectralPartitionResult {
     edgeCuts: number;
     balance: number;
   }>;
+}
+
+/**
+ * Triangle motif result
+ */
+export interface TriangleResult {
+  triangles: Array<{
+    nodes: [string, string, string];
+  }>;
+  count: number;
+  clusteringCoefficient: number;
+}
+
+/**
+ * Star pattern result
+ */
+export interface StarPatternResult {
+  patterns: Array<{
+    hubId: string;
+    leafIds: string[];
+    type: 'in' | 'out';
+  }>;
+  count: number;
+}
+
+/**
+ * Co-citation pair result
+ */
+export interface CoCitationResult {
+  pairs: Array<{
+    paper1Id: string;
+    paper2Id: string;
+    count: number;
+  }>;
+}
+
+/**
+ * Bibliographic coupling result
+ */
+export interface BibliographicCouplingResult {
+  pairs: Array<{
+    paper1Id: string;
+    paper2Id: string;
+    sharedReferences: number;
+  }>;
+}
+
+/**
+ * K-Truss extraction result
+ */
+export interface KTrussResult {
+  nodes: string[];
+  edges: Array<{ source: string; target: string }>;
+  k: number;
+  nodeCount: number;
+  edgeCount: number;
+}
+
+/**
+ * Cluster quality metrics result
+ */
+export interface ClusterQualityResult {
+  modularity: number;
+  avgConductance: number;
+  avgDensity: number;
+  coverageRatio: number;
+  numClusters: number;
 }
 
 /**
@@ -819,6 +897,218 @@ export function getBiconnectedComponents(
 }
 
 /**
+ * Detect triangle motifs in the graph
+ */
+export function getTriangles(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): TriangleResult {
+  const graph = createGraph(nodes, edges, false);
+  const result = detectTriangles(graph);
+
+  if (!result.ok) {
+    return {
+      triangles: [],
+      count: 0,
+      clusteringCoefficient: 0,
+    };
+  }
+
+  const triangles = result.value.map((t) => ({
+    nodes: [t.nodes[0].id, t.nodes[1].id, t.nodes[2].id] as [string, string, string],
+  }));
+
+  // Calculate global clustering coefficient
+  // C = 3 * triangles / connected_triples
+  const nodeCount = nodes.length;
+  const triangleCount = triangles.length;
+
+  // Estimate connected triples from degrees
+  let connectedTriples = 0;
+  const degreeMap = new Map<string, number>();
+  for (const edge of edges) {
+    degreeMap.set(edge.source, (degreeMap.get(edge.source) ?? 0) + 1);
+    degreeMap.set(edge.target, (degreeMap.get(edge.target) ?? 0) + 1);
+  }
+  for (const degree of degreeMap.values()) {
+    connectedTriples += (degree * (degree - 1)) / 2;
+  }
+
+  const clusteringCoefficient = connectedTriples > 0
+    ? (3 * triangleCount) / connectedTriples
+    : 0;
+
+  return {
+    triangles,
+    count: triangleCount,
+    clusteringCoefficient: Math.min(1, clusteringCoefficient),
+  };
+}
+
+/**
+ * Detect star patterns (hub nodes with many connections)
+ */
+export function getStarPatterns(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  options: { minDegree?: number; type?: 'in' | 'out' } = {}
+): StarPatternResult {
+  const { minDegree = 5, type = 'out' } = options;
+  const graph = createGraph(nodes, edges, true);
+  const result = detectStarPatterns(graph, { minDegree, type });
+
+  if (!result.ok) {
+    return {
+      patterns: [],
+      count: 0,
+    };
+  }
+
+  return {
+    patterns: result.value.map((star) => ({
+      hubId: star.hub.id,
+      leafIds: star.leaves.map((leaf) => leaf.id),
+      type: star.type,
+    })),
+    count: result.value.length,
+  };
+}
+
+/**
+ * Detect co-citation pairs (papers cited together)
+ */
+export function getCoCitations(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  minCount: number = 2
+): CoCitationResult {
+  const graph = createGraph(nodes, edges, true);
+  const result = detectCoCitations(graph, { minCount });
+
+  if (!result.ok) {
+    return {
+      pairs: [],
+    };
+  }
+
+  return {
+    pairs: result.value.map((pair) => ({
+      paper1Id: pair.paper1.id,
+      paper2Id: pair.paper2.id,
+      count: pair.count,
+    })),
+  };
+}
+
+/**
+ * Detect bibliographic coupling pairs (papers citing same references)
+ */
+export function getBibliographicCoupling(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  minShared: number = 2
+): BibliographicCouplingResult {
+  const graph = createGraph(nodes, edges, true);
+  const result = detectBibliographicCoupling(graph, { minShared });
+
+  if (!result.ok) {
+    return {
+      pairs: [],
+    };
+  }
+
+  return {
+    pairs: result.value.map((pair) => ({
+      paper1Id: pair.paper1.id,
+      paper2Id: pair.paper2.id,
+      sharedReferences: pair.sharedReferences,
+    })),
+  };
+}
+
+/**
+ * Extract k-truss subgraph (edges in at least k-2 triangles)
+ */
+export function getKTruss(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  k: number = 3
+): KTrussResult {
+  const graph = createGraph(nodes, edges, false);
+  const result = extractKTruss(graph, { k });
+
+  if (!result.ok) {
+    return {
+      nodes: [],
+      edges: [],
+      k,
+      nodeCount: 0,
+      edgeCount: 0,
+    };
+  }
+
+  const trussNodes = result.value.getAllNodes().map((n) => n.id);
+  const trussEdges = result.value.getAllEdges().map((e) => ({
+    source: e.source,
+    target: e.target,
+  }));
+
+  return {
+    nodes: trussNodes,
+    edges: trussEdges,
+    k,
+    nodeCount: trussNodes.length,
+    edgeCount: trussEdges.length,
+  };
+}
+
+/**
+ * Calculate cluster quality metrics for a community assignment
+ */
+export function getClusterQuality(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  communities: CommunityResult[]
+): ClusterQualityResult {
+  const graph = createGraph(nodes, edges, false);
+
+  // Convert CommunityResult to node sets for metrics
+  const nodeSets: Set<AcademicNode>[] = [];
+  for (const community of communities) {
+    const nodeSet = new Set<AcademicNode>();
+    for (const nodeId of community.nodeIds) {
+      const node = graph.getNode(nodeId);
+      if (node.some) {
+        nodeSet.add(node.value);
+      }
+    }
+    nodeSets.push(nodeSet);
+  }
+
+  // Calculate individual metrics
+  let totalConductance = 0;
+  let totalDensity = 0;
+
+  for (const nodeSet of nodeSets) {
+    totalConductance += calculateConductance(graph, nodeSet);
+    totalDensity += calculateDensity(graph, nodeSet);
+  }
+
+  const avgConductance = nodeSets.length > 0 ? totalConductance / nodeSets.length : 0;
+  const avgDensity = nodeSets.length > 0 ? totalDensity / nodeSets.length : 0;
+  const coverageRatio = calculateCoverageRatio(graph, nodeSets);
+  const modularity = getModularityScore(nodes, edges, communities);
+
+  return {
+    modularity,
+    avgConductance,
+    avgDensity,
+    coverageRatio,
+    numClusters: communities.length,
+  };
+}
+
+/**
  * Get all algorithms available
  */
 export const AVAILABLE_ALGORITHMS = {
@@ -826,8 +1116,10 @@ export const AVAILABLE_ALGORITHMS = {
   analysis: ['connected-components', 'strongly-connected-components', 'cycle-detection', 'topological-sort'] as const,
   traversal: ['bfs', 'dfs'] as const,
   pathfinding: ['dijkstra'] as const,
-  decomposition: ['k-core', 'core-periphery', 'biconnected'] as const,
+  decomposition: ['k-core', 'core-periphery', 'biconnected', 'k-truss'] as const,
   extraction: ['ego-network', 'filter', 'subgraph'] as const,
+  motifs: ['triangles', 'star-patterns', 'co-citations', 'bibliographic-coupling'] as const,
+  metrics: ['modularity', 'conductance', 'density', 'coverage'] as const,
 } as const;
 
 export type ClusteringAlgorithm = typeof AVAILABLE_ALGORITHMS.clustering[number];
@@ -836,3 +1128,5 @@ export type TraversalAlgorithm = typeof AVAILABLE_ALGORITHMS.traversal[number];
 export type PathfindingAlgorithm = typeof AVAILABLE_ALGORITHMS.pathfinding[number];
 export type DecompositionAlgorithm = typeof AVAILABLE_ALGORITHMS.decomposition[number];
 export type ExtractionAlgorithm = typeof AVAILABLE_ALGORITHMS.extraction[number];
+export type MotifAlgorithm = typeof AVAILABLE_ALGORITHMS.motifs[number];
+export type MetricAlgorithm = typeof AVAILABLE_ALGORITHMS.metrics[number];

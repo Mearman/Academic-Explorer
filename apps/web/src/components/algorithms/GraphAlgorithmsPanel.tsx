@@ -42,6 +42,10 @@ import {
   IconCircles,
   IconFocusCentered,
   IconLink,
+  IconPoint,
+  IconTriangle,
+  IconStar,
+  IconChartBar,
 } from '@tabler/icons-react';
 import React, { useState, useMemo } from 'react';
 
@@ -58,6 +62,11 @@ import {
   useTopologicalSort,
   useCorePeriphery,
   useBiconnectedComponents,
+  useEgoNetwork,
+  useTriangles,
+  useStarPatterns,
+  useKTruss,
+  useClusterQuality,
   type CommunityDetectionOptions,
 } from '@/hooks/use-graph-algorithms';
 import { findShortestPath, type PathResult, type ClusteringAlgorithm } from '@/services/graph-algorithms';
@@ -157,6 +166,24 @@ export function GraphAlgorithmsPanel({
 
   // Biconnected components hook
   const biconnectedComponents = useBiconnectedComponents(nodes, edges);
+
+  // Ego network state and hook
+  const [egoCenter, setEgoCenter] = useState<string | null>(null);
+  const [egoRadius, setEgoRadius] = useState<number>(1);
+  const egoNetwork = useEgoNetwork(nodes, edges, egoCenter, egoRadius, true);
+
+  // Motif detection hooks
+  const triangles = useTriangles(nodes, edges);
+  const [starMinDegree, setStarMinDegree] = useState<number>(3);
+  const [starType, setStarType] = useState<'in' | 'out'>('out');
+  const starPatterns = useStarPatterns(nodes, edges, { minDegree: starMinDegree, type: starType });
+
+  // K-Truss state and hook
+  const [kTrussK, setKTrussK] = useState<number>(3);
+  const kTruss = useKTruss(nodes, edges, kTrussK);
+
+  // Cluster quality metrics
+  const clusterQuality = useClusterQuality(nodes, edges, communities);
 
   // Traversal state and hooks
   const [traversalStartNode, setTraversalStartNode] = useState<string | null>(null);
@@ -1073,6 +1100,316 @@ export function GraphAlgorithmsPanel({
                 <Text size="sm" c="dimmed">
                   Requires at least 2 nodes for biconnected component analysis.
                 </Text>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Ego Network */}
+        <Accordion.Item value="ego-network">
+          <Accordion.Control icon={<IconPoint size={18} />}>
+            Ego Network
+            {egoNetwork && (
+              <Badge ml="xs" size="sm" variant="light">
+                {egoNetwork.nodes.length} nodes
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                Extract the local neighborhood around a center node within a given radius.
+              </Text>
+              <Select
+                label="Center Node"
+                placeholder="Select center node"
+                data={nodeOptions}
+                value={egoCenter}
+                onChange={setEgoCenter}
+                searchable
+                clearable
+              />
+              <NumberInput
+                label="Radius"
+                description="Number of hops from the center node"
+                value={egoRadius}
+                onChange={(value) => setEgoRadius(typeof value === 'number' ? value : 1)}
+                min={1}
+                max={5}
+                step={1}
+              />
+
+              {egoNetwork && egoCenter && (
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Nodes in Ego Network</Text>
+                    <Badge variant="light">{egoNetwork.nodes.length}</Badge>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Edges in Ego Network</Text>
+                    <Badge variant="light">{egoNetwork.edges.length}</Badge>
+                  </Group>
+                  <Button
+                    variant="light"
+                    size="xs"
+                    onClick={() => onHighlightNodes?.(egoNetwork.nodes.map(n => n.id))}
+                  >
+                    Highlight Ego Network
+                  </Button>
+                </Stack>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Motif Detection */}
+        <Accordion.Item value="motifs">
+          <Accordion.Control icon={<IconTriangle size={18} />}>
+            Motif Detection
+            <Badge ml="xs" size="sm" variant="light">
+              {triangles.count} triangles
+            </Badge>
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                Detect common graph patterns: triangles (3-cliques) and star patterns (hub nodes).
+              </Text>
+
+              {/* Triangles */}
+              <Card withBorder p="xs">
+                <Group justify="space-between" mb="xs">
+                  <Text size="sm" fw={500}>Triangles (3-Cliques)</Text>
+                  <Badge variant="light">{triangles.count}</Badge>
+                </Group>
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text size="xs" c="dimmed">Triangle Count</Text>
+                    <Badge size="xs" variant="outline">{triangles.count}</Badge>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text size="xs" c="dimmed">Global Clustering Coefficient</Text>
+                    <Tooltip label="Probability that two neighbors of a node are connected (0-1)">
+                      <Badge
+                        size="xs"
+                        variant="outline"
+                        color={triangles.clusteringCoefficient > 0.3 ? 'green' : triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray'}
+                      >
+                        {(triangles.clusteringCoefficient * 100).toFixed(1)}%
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+                  {triangles.triangles.length > 0 && (
+                    <Button
+                      variant="light"
+                      size="xs"
+                      onClick={() => {
+                        const uniqueNodes = new Set<string>();
+                        triangles.triangles.slice(0, 10).forEach(t => {
+                          t.nodes.forEach(n => uniqueNodes.add(n));
+                        });
+                        onHighlightNodes?.(Array.from(uniqueNodes));
+                      }}
+                    >
+                      Highlight First 10 Triangles
+                    </Button>
+                  )}
+                </Stack>
+              </Card>
+
+              {/* Star Patterns */}
+              <Card withBorder p="xs">
+                <Group justify="space-between" mb="xs">
+                  <Text size="sm" fw={500}>Star Patterns (Hub Nodes)</Text>
+                  <Badge variant="light">{starPatterns.count}</Badge>
+                </Group>
+                <Stack gap="xs">
+                  <NumberInput
+                    label="Minimum Degree"
+                    description="Nodes with at least this many connections"
+                    value={starMinDegree}
+                    onChange={(value) => setStarMinDegree(typeof value === 'number' ? value : 3)}
+                    min={2}
+                    max={20}
+                    step={1}
+                    size="xs"
+                  />
+                  <Select
+                    label="Star Type"
+                    data={[
+                      { value: 'out', label: 'Out-Star (outgoing edges)' },
+                      { value: 'in', label: 'In-Star (incoming edges)' },
+                    ]}
+                    value={starType}
+                    onChange={(value) => setStarType(value as 'in' | 'out')}
+                    size="xs"
+                  />
+                  {starPatterns.patterns.length > 0 && (
+                    <>
+                      <Text size="xs" c="dimmed">
+                        Found {starPatterns.count} hub nodes with {starMinDegree}+ connections
+                      </Text>
+                      <List spacing="xs" size="sm">
+                        {starPatterns.patterns.slice(0, 5).map((pattern, idx) => (
+                          <List.Item
+                            key={pattern.hubId}
+                            icon={
+                              <ThemeIcon size={16} radius="xl" variant="light" color="orange">
+                                <IconStar size={10} />
+                              </ThemeIcon>
+                            }
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => onHighlightNodes?.([pattern.hubId, ...pattern.leafIds])}
+                          >
+                            <Text size="xs">
+                              Hub {pattern.hubId.slice(0, 10)}... ({pattern.leafIds.length} leaves)
+                            </Text>
+                          </List.Item>
+                        ))}
+                        {starPatterns.patterns.length > 5 && (
+                          <Text size="xs" c="dimmed">
+                            +{starPatterns.patterns.length - 5} more hubs
+                          </Text>
+                        )}
+                      </List>
+                    </>
+                  )}
+                </Stack>
+              </Card>
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* K-Truss */}
+        <Accordion.Item value="k-truss">
+          <Accordion.Control icon={<IconChartDonut size={18} />}>
+            K-Truss Decomposition
+            {kTruss.nodeCount > 0 && (
+              <Badge ml="xs" size="sm" variant="light">
+                {kTruss.nodeCount} nodes
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                K-truss: subgraph where every edge participates in at least (k-2) triangles.
+                Provides stronger cohesion guarantees than k-core.
+              </Text>
+              <NumberInput
+                label="K Value"
+                description="k=3 means edges in at least 1 triangle, k=4 means at least 2 triangles"
+                value={kTrussK}
+                onChange={(value) => setKTrussK(typeof value === 'number' ? value : 3)}
+                min={2}
+                max={10}
+                step={1}
+              />
+
+              {kTruss.nodeCount > 0 ? (
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Nodes in {kTrussK}-truss</Text>
+                    <Badge variant="light">{kTruss.nodeCount}</Badge>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Edges in {kTrussK}-truss</Text>
+                    <Badge variant="light">{kTruss.edgeCount}</Badge>
+                  </Group>
+                  <Button
+                    variant="light"
+                    size="xs"
+                    onClick={() => onHighlightNodes?.(kTruss.nodes)}
+                    leftSection={<IconChartDonut size={14} />}
+                  >
+                    Highlight K-Truss
+                  </Button>
+                </Stack>
+              ) : (
+                <Text size="sm" c="dimmed">
+                  No {kTrussK}-truss exists (try a lower k value or add more edges)
+                </Text>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        {/* Cluster Quality Metrics */}
+        <Accordion.Item value="cluster-quality">
+          <Accordion.Control icon={<IconChartBar size={18} />}>
+            Cluster Quality Metrics
+            {communities.length > 0 && (
+              <Badge ml="xs" size="sm" variant="light" color="green">
+                {communities.length} clusters
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="xs" c="dimmed">
+                Quality metrics for the current community detection result.
+                Run community detection first to see these metrics.
+              </Text>
+
+              {communities.length > 0 ? (
+                <>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Modularity</Text>
+                    <Tooltip label="Community structure quality (-0.5 to 1.0, higher is better)">
+                      <Badge
+                        color={clusterQuality.modularity > 0.4 ? 'green' : clusterQuality.modularity > 0.2 ? 'yellow' : 'red'}
+                        variant="light"
+                      >
+                        {clusterQuality.modularity.toFixed(4)}
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Avg. Conductance</Text>
+                    <Tooltip label="Ratio of boundary to internal edges (0-1, lower is better)">
+                      <Badge
+                        color={clusterQuality.avgConductance < 0.3 ? 'green' : clusterQuality.avgConductance < 0.5 ? 'yellow' : 'red'}
+                        variant="light"
+                      >
+                        {clusterQuality.avgConductance.toFixed(4)}
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Avg. Density</Text>
+                    <Tooltip label="Internal edge density of clusters (0-1, higher is better)">
+                      <Badge
+                        color={clusterQuality.avgDensity > 0.5 ? 'green' : clusterQuality.avgDensity > 0.2 ? 'yellow' : 'gray'}
+                        variant="light"
+                      >
+                        {(clusterQuality.avgDensity * 100).toFixed(1)}%
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Coverage Ratio</Text>
+                    <Tooltip label="Fraction of edges within clusters (0-1, higher is better)">
+                      <Badge
+                        color={clusterQuality.coverageRatio > 0.7 ? 'green' : clusterQuality.coverageRatio > 0.4 ? 'yellow' : 'gray'}
+                        variant="light"
+                      >
+                        {(clusterQuality.coverageRatio * 100).toFixed(1)}%
+                      </Badge>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Number of Clusters</Text>
+                    <Badge variant="light">{clusterQuality.numClusters}</Badge>
+                  </Group>
+                </>
+              ) : (
+                <Alert icon={<IconAlertCircle size={16} />} color="gray">
+                  Run community detection to see cluster quality metrics.
+                </Alert>
               )}
             </Stack>
           </Accordion.Panel>
