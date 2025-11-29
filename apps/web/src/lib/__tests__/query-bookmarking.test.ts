@@ -10,8 +10,8 @@ import {
   areQueriesEquivalent,
   generateQueryTitle,
   PAGINATION_PARAMETERS,
-  type OpenAlexSearchParams
 } from "../query-bookmarking";
+import type { OpenAlexSearchParams } from "../route-schemas";
 
 describe("Query Bookmarking", () => {
   const mockSearchParams: OpenAlexSearchParams = {

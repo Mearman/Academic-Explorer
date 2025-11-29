@@ -8,9 +8,8 @@
  * - URL prettification (decoding encoded characters)
  */
 
-import type { AutocompleteResult } from "@bibgraph/client";
 import { cachedOpenAlex } from "@bibgraph/client";
-import type { EntityType } from "@bibgraph/types";
+import type { AutocompleteResult, EntityType } from "@bibgraph/types";
 import { ENTITY_METADATA } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import { useQuery } from "@tanstack/react-query";

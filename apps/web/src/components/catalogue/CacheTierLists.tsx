@@ -3,8 +3,8 @@
  * Shows synthetic system lists for Memory and IndexedDB cache tiers
  */
 
-import type { CachedEntityEntry } from "@bibgraph/client";
 import { cachedOpenAlex } from "@bibgraph/client";
+import type { CachedEntityEntry } from "@bibgraph/client/internal/static-data-provider";
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {

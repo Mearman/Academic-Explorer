@@ -31,9 +31,6 @@ import {
 import { validateStaticData } from "./internal/type-helpers";
 import { AutocompleteApi } from "./utils/autocomplete";
 
-// Re-export CachedEntityEntry for external consumers
-export type { CachedEntityEntry };
-
 export interface ClientApis {
   works: WorksApi;
   authors: AuthorsApi;

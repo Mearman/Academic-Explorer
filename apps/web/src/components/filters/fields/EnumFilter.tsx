@@ -1,12 +1,14 @@
-import type { FilterFieldOption as UtilsFilterFieldOption } from "@bibgraph/utils/ui";
+import type {
+  FilterFieldConfig,
+  FilterFieldOption as UtilsFilterFieldOption,
+  FilterOperator,
+} from "@bibgraph/utils/ui";
 import {
   BaseFilter,
   createEnumOptions,
   type BaseFilterRenderProps,
 } from "@bibgraph/utils/ui/filter-base";
 import { MultiSelect, Select } from "@mantine/core";
-
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 
 interface EnumFilterProps {

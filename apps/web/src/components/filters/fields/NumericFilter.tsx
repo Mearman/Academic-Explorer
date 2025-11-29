@@ -1,7 +1,6 @@
+import type { FilterFieldConfig, FilterOperator } from "@bibgraph/utils/ui";
 import { BaseFilter, type BaseFilterRenderProps } from "@bibgraph/utils/ui/filter-base";
 import { NumberInput } from "@mantine/core";
-
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface NumericFilterProps {
   value: number;

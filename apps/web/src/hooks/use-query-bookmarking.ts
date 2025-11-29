@@ -14,8 +14,8 @@ import {
   generateQueryId,
   getPaginationInfo,
   areQueriesEquivalent,
-  type OpenAlexSearchParams
 } from "@/lib/query-bookmarking";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 import { useUserInteractions } from "./use-user-interactions";
 

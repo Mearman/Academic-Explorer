@@ -1,7 +1,6 @@
+import type { FilterFieldConfig, FilterOperator } from "@bibgraph/utils/ui";
 import { BaseFilter, type BaseFilterRenderProps } from "@bibgraph/utils/ui/filter-base";
 import { Switch } from "@mantine/core";
-
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface BooleanFilterProps {
   value: boolean;

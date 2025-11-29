@@ -1,8 +1,7 @@
+import type { FilterFieldConfig, FilterOperator } from "@bibgraph/utils/ui";
 import { BaseFilter, type BaseFilterRenderProps } from "@bibgraph/utils/ui/filter-base";
 import { TextInput } from "@mantine/core";
 import React from "react";
-
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface DateFilterProps {
   value: string | [string, string] | null;
