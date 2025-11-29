@@ -20,6 +20,18 @@ const limeColors: MantineColorTuple = ["#f7fee7", "#ecfccb", "#d9f99d", "#bef264
 const indigoColors: MantineColorTuple = ["#eef2ff", "#e0e7ff", "#c7d2fe", "#a5b4fc", "#818cf8", "#6366f1", "#4f46e5", "#4338ca", "#3730a3", "#312e81"];
 const grayColors: MantineColorTuple = ["#f9fafb", "#f3f4f6", "#e5e7eb", "#d1d5db", "#9ca3af", "#6b7280", "#4b5563", "#374151", "#1f2937", "#111827"];
 
+// Additional neutral color palettes for enhanced theming
+const zincColors: MantineColorTuple = ["#fafafa", "#f4f4f5", "#e4e4e7", "#d4d4d8", "#a1a1aa", "#71717a", "#52525b", "#3f3f46", "#27272a", "#18181b"];
+const slateColors: MantineColorTuple = ["#f8fafc", "#f1f5f9", "#e2e8f0", "#cbd5e1", "#94a3b8", "#64748b", "#475569", "#334155", "#1e293b", "#0f172a"];
+const stoneColors: MantineColorTuple = ["#fafaf9", "#f5f5f4", "#e7e5e4", "#d6d3d1", "#a8a29e", "#78716c", "#57534e", "#44403c", "#292524", "#1c1917"];
+const neutralColors: MantineColorTuple = ["#fafafa", "#f5f5f5", "#e5e5e5", "#d4d4d4", "#a3a3a3", "#737373", "#525252", "#404040", "#262626", "#171717"];
+
+// Additional semantic colors
+const amberColors: MantineColorTuple = ["#fffbeb", "#fef3c7", "#fde68a", "#fcd34d", "#fbbf24", "#f59e0b", "#d97706", "#b45309", "#92400e", "#78350f"];
+const emeraldColors: MantineColorTuple = ["#ecfdf5", "#d1fae5", "#a7f3d0", "#6ee7b7", "#34d399", "#10b981", "#059669", "#047857", "#065f46", "#064e3b"];
+const roseColors: MantineColorTuple = ["#fff1f2", "#ffe4e6", "#fecdd3", "#fda4af", "#fb7185", "#f43f5e", "#e11d48", "#be123c", "#9f1239", "#881337"];
+const violetColors: MantineColorTuple = ["#f5f3ff", "#ede9fe", "#ddd6fe", "#c4b5fd", "#a78bfa", "#8b5cf6", "#7c3aed", "#6d28d9", "#5b21b6", "#4c1d95"];
+
 // Export theme utilities for use in Mantine configuration
 export const getMantineThemeTokens = () => ({
   colors: {
@@ -28,7 +40,7 @@ export const getMantineThemeTokens = () => ({
     red: redColors,
     pink: pinkColors,
     grape: purpleColors,
-    violet: purpleColors,
+    violet: violetColors,
     indigo: indigoColors,
     blue: blueColors,
     cyan: cyanColors,
@@ -37,6 +49,14 @@ export const getMantineThemeTokens = () => ({
     lime: limeColors,
     yellow: orangeColors,
     orange: orangeColors,
+    // Additional color options
+    zinc: zincColors,
+    slate: slateColors,
+    stone: stoneColors,
+    neutral: neutralColors,
+    amber: amberColors,
+    emerald: emeraldColors,
+    rose: roseColors,
   },
   spacing: {
     xs: "0.625rem",
@@ -91,6 +111,16 @@ export const extendedColors = {
   lime: limeColors,
   indigo: indigoColors,
   gray: grayColors,
+  // Additional neutral colors
+  zinc: zincColors,
+  slate: slateColors,
+  stone: stoneColors,
+  neutral: neutralColors,
+  // Additional semantic colors
+  amber: amberColors,
+  emerald: emeraldColors,
+  rose: roseColors,
+  violet: violetColors,
 };
 
 // Export entity color function for backward compatibility
