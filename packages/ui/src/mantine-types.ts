@@ -1,13 +1,15 @@
 /**
- * Re-export Mantine types for peer dependency compatibility
+ * Mantine types documentation
  *
- * Allows consumers to import common Mantine types from this package
- * without direct @mantine/core imports in their code
+ * Common Mantine types should be imported directly from @mantine/core:
+ * - MantineColor
+ * - MantineSize
+ * - MantineRadius
+ * - MantineTheme
+ *
+ * Example:
+ * import type { MantineColor, MantineSize } from "@mantine/core";
  */
 
-export type {
-	MantineColor,
-	MantineSize,
-	MantineRadius,
-	MantineTheme,
-} from "@mantine/core";
+// This file documents the pattern but doesn't re-export
+// Import directly from @mantine/core in consuming code

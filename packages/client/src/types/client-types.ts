@@ -3,13 +3,8 @@
  * All entity types should be imported directly from @bibgraph/types where needed
  */
 
-// Core client types
-export type {
-  OpenAlexId,
-  OpenAlexError,
-  OpenAlexResponse,
-  AutocompleteResult,
-} from "@bibgraph/types/entities";
+// Note: Core types (OpenAlexId, OpenAlexError, OpenAlexResponse, AutocompleteResult)
+// should be imported directly from @bibgraph/types where needed
 
 // Note: AutocompleteOptions is defined in utils/autocomplete.ts (canonical source)
 // Import from there directly to avoid barrel file re-export duplicates
@@ -32,4 +27,5 @@ export interface OpenAlexQueryParams {
   include_xpac?: boolean;
 }
 
-export type { OpenAlexClientConfig } from "../client";
+// Note: OpenAlexClientConfig is exported from ../client directly
+// Don't re-export here to avoid barrel file duplicate export errors

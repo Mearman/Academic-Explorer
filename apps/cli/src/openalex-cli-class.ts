@@ -1968,5 +1968,5 @@ export class OpenAlexCLI {
 	}
 }
 
-// Export types for testing
-export type { CacheOptions, IndexEntry, QueryOptions, UnifiedIndex }
+// Note: Types for testing should be imported directly from their source modules
+// e.g., import type { UnifiedIndex } from '@bibgraph/utils/static-data/cache-utilities'

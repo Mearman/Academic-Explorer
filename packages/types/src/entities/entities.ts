@@ -471,33 +471,5 @@ export const KEYWORD_FIELDS = keywordSchema.keyof().options
 
 export type KeywordField = (typeof KEYWORD_FIELDS)[number]
 
-// Re-export types from base.ts to make them available to other modules
-export type {
-	APCInfo,
-	APCPrice,
-	AuthorIds,
-	ConceptIds,
-	ConceptItem,
-	DOI,
-	FunderIds,
-	InstitutionIds,
-	KeywordIds,
-	OpenAlexId,
-	ORCID,
-	PartialExceptId,
-	PublisherIds,
-	RORId,
-	SourceIds,
-	SummaryStats,
-	TopicIds,
-	TopicItem,
-	WikidataId,
-	WorkIds,
-	BaseIdsSchema,
-	InstitutionIdsSchema,
-	APCInfoSchema,
-	APCPriceSchema,
-	SummaryStatsSchema,
-	ConceptItemSchema,
-	TopicItemSchema,
-} from "./base"
+// Note: Types from ./base are exported via the barrel file (index.ts)
+// Do not re-export here to avoid duplicate exports

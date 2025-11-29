@@ -69,16 +69,10 @@ export const noReexportFromNonBarrel = createRule({
         }
       },
 
-      // Handle `export * from "./module"` - always wrong in non-barrel files
-      // But allow `export * as Name from "./module"` (namespace exports)
+      // Handle `export * from "./module"` and `export * as X from "./module"`
+      // Both are wrong in non-barrel files
       ExportAllDeclaration(node) {
         if (!node.source || typeof node.source.value !== "string") {
-          return;
-        }
-
-        // Allow namespace exports: `export * as Namespace from "./module"`
-        // These are different from `export * from` - they create organized namespaces
-        if (node.exported) {
           return;
         }
 
@@ -105,13 +99,6 @@ export const noReexportFromNonBarrel = createRule({
         // Case 1: Direct re-export with source: `export { x } from "./y"`
         if (node.source && typeof node.source.value === "string") {
           const source = node.source.value;
-
-          // Allow type-only re-exports from external packages (not relative imports)
-          // e.g., `export type { MantineColor } from "@mantine/core"`
-          // But disallow `export type { Foo } from "./local-module"` to prevent barrel duplicates
-          if (node.exportKind === "type" && !source.startsWith(".")) {
-            return;
-          }
 
           if (node.specifiers.length === 0) {
             return;

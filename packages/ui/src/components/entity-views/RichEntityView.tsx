@@ -71,5 +71,3 @@ export function RichEntityView({
 		</div>
 	);
 }
-
-export * from "./matchers";

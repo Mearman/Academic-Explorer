@@ -3,7 +3,6 @@
  */
 
 export * from "./mantine-types";
-export * from "./namespaces";
 export * from "./atoms/index";
 export * from "./bookmarks/index";
 export * from "./components/index";

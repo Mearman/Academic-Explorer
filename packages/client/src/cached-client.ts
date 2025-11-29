@@ -31,8 +31,7 @@ import {
 import { validateStaticData } from "./internal/type-helpers";
 import { AutocompleteApi } from "./utils/autocomplete";
 
-// Re-export types for external use
-export type { CachedEntityEntry } from "./internal/static-data-provider";
+// Note: CachedEntityEntry is exported via the barrel file (index.ts)
 
 export interface ClientApis {
   works: WorksApi;
