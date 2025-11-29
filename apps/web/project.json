@@ -28,6 +28,14 @@
     "test:e2e": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": [
+        "{projectRoot}/e2e/**/*",
+        "{projectRoot}/src/test/**/*",
+        "{projectRoot}/playwright.config.ts",
+        "^production"
+      ],
       "options": {
         "config": "apps/web/playwright.config.ts"
       }
@@ -35,6 +43,8 @@
     "test:e2e:headed": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "cache": false,
+      "dependsOn": ["build"],
       "options": {
         "config": "apps/web/playwright.config.ts",
         "headed": true
@@ -43,6 +53,8 @@
     "test:e2e:ui": {
       "executor": "@nx/playwright:playwright",
       "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "cache": false,
+      "dependsOn": ["build"],
       "options": {
         "config": "apps/web/playwright.config.ts",
         "ui": true

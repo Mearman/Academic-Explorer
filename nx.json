@@ -364,13 +364,6 @@
         "^build"
       ]
     },
-    "e2e": {
-      "cache": true,
-      "dependsOn": [
-        "build",
-        "test:integration"
-      ]
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "cache": true,
@@ -632,20 +625,6 @@
       ],
       "outputs": [
         "{projectRoot}/coverage"
-      ]
-    },
-    "e2e:headed": {
-      "cache": false,
-      "dependsOn": [
-        "build",
-        "test:integration"
-      ]
-    },
-    "e2e:ui": {
-      "cache": false,
-      "dependsOn": [
-        "build",
-        "test:integration"
       ]
     },
     "prepublishOnly": {
