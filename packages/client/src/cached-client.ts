@@ -538,6 +538,14 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   } {
     return staticDataProvider.getStaticCacheTierConfig();
   }
+
+  /**
+   * Enumerate entities available in the static cache (GitHub Pages or local)
+   * Fetches index files to discover available pre-cached entities
+   */
+  async enumerateStaticCacheEntities(): Promise<CachedEntityEntry[]> {
+    return staticDataProvider.enumerateStaticCacheEntities();
+  }
 }
 
 /**

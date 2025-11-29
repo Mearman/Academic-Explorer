@@ -3,9 +3,9 @@
  * Internal utilities without external dependencies
  */
 
-export type StaticEntityType = 'authors' | 'works' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders';
+export type StaticEntityType = 'authors' | 'works' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders' | 'concepts';
 
-const VALID_ENTITY_TYPES = new Set<string>(['authors', 'works', 'sources', 'institutions', 'topics', 'publishers', 'funders']);
+const VALID_ENTITY_TYPES = new Set<string>(['authors', 'works', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts']);
 
 function isStaticEntityType(value: string): value is StaticEntityType {
 	return VALID_ENTITY_TYPES.has(value);
