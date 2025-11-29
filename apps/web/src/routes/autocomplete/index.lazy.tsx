@@ -115,24 +115,31 @@ function AutocompleteGeneralRoute() {
 
       // Otherwise, update the types in the current URL
       setSelectedTypes(types);
-      const params = new URLSearchParams();
+
+      // Build URL params, avoiding URLSearchParams encoding for types (commas get encoded)
+      const paramParts: string[] = [];
       if (query) {
-        params.set("q", query);
+        paramParts.push(`q=${encodeURIComponent(query)}`);
       }
-      // Use "none" to explicitly indicate cleared state vs missing param
+
+      // Determine types param: omit if all selected, "none" if cleared, otherwise list
+      const allSelected = types.length === AUTOCOMPLETE_ENTITY_TYPES.length &&
+        AUTOCOMPLETE_ENTITY_TYPES.every(t => types.includes(t));
+
       if (types.length === 0) {
-        params.set("types", "none");
-      } else {
-        const serializedTypes = serializeEntityTypes(types);
-        if (serializedTypes) {
-          params.set("types", serializedTypes);
-        }
+        paramParts.push("types=none");
+      } else if (!allSelected) {
+        // Only include types param if not all selected (partial selection)
+        paramParts.push(`types=${types.join(",")}`);
       }
+      // If all selected, omit types param entirely (default state)
+
       if (urlSearch.filter) {
-        params.set("filter", urlSearch.filter);
+        paramParts.push(`filter=${encodeURIComponent(urlSearch.filter)}`);
       }
-      const newHash = params.toString()
-        ? `#/autocomplete?${params.toString()}`
+
+      const newHash = paramParts.length > 0
+        ? `#/autocomplete?${paramParts.join("&")}`
         : "#/autocomplete";
       window.history.replaceState(null, "", newHash);
     },
@@ -295,19 +302,29 @@ function AutocompleteGeneralRoute() {
 
   const handleSearch = (value: string) => {
     setQuery(value);
-    const params = new URLSearchParams();
+
+    // Build URL params, avoiding URLSearchParams encoding for types
+    const paramParts: string[] = [];
     if (value) {
-      params.set("q", value);
+      paramParts.push(`q=${encodeURIComponent(value)}`);
     }
-    const serializedTypes = serializeEntityTypes(selectedTypes);
-    if (serializedTypes) {
-      params.set("types", serializedTypes);
+
+    // Determine types param: omit if all selected, "none" if cleared, otherwise list
+    const allSelected = selectedTypes.length === AUTOCOMPLETE_ENTITY_TYPES.length &&
+      AUTOCOMPLETE_ENTITY_TYPES.every(t => selectedTypes.includes(t));
+
+    if (selectedTypes.length === 0) {
+      paramParts.push("types=none");
+    } else if (!allSelected) {
+      paramParts.push(`types=${selectedTypes.join(",")}`);
     }
+
     if (urlSearch.filter) {
-      params.set("filter", urlSearch.filter);
+      paramParts.push(`filter=${encodeURIComponent(urlSearch.filter)}`);
     }
-    const newHash = params.toString()
-      ? `#/autocomplete?${params.toString()}`
+
+    const newHash = paramParts.length > 0
+      ? `#/autocomplete?${paramParts.join("&")}`
       : "#/autocomplete";
     window.history.replaceState(null, "", newHash);
   };

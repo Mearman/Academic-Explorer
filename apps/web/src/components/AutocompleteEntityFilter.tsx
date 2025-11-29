@@ -71,22 +71,28 @@ export function AutocompleteEntityFilter({
 }: AutocompleteEntityFilterProps) {
   const handleChange = useCallback(
     (types: EntityType[]) => {
-      // If no types or all types selected, go to general autocomplete
-      if (
-        types.length === 0 ||
-        types.length === AUTOCOMPLETE_ENTITY_TYPES.length
-      ) {
-        // If we have an onSelectionChange callback, call it for state updates
+      // If all types selected, go to general autocomplete (default view)
+      if (types.length === AUTOCOMPLETE_ENTITY_TYPES.length) {
         if (onSelectionChange) {
           onSelectionChange(types);
         }
-
-        // Navigate to general autocomplete
         const params = new URLSearchParams();
         if (query) params.set("q", query);
         window.location.hash = params.toString()
           ? `/autocomplete?${params.toString()}`
           : "/autocomplete";
+        return;
+      }
+
+      // If no types selected, go to general autocomplete with explicit "none"
+      if (types.length === 0) {
+        if (onSelectionChange) {
+          onSelectionChange(types);
+        }
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        params.set("types", "none");
+        window.location.hash = `/autocomplete?${params.toString()}`;
         return;
       }
 
