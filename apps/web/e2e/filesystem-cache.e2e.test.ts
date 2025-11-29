@@ -73,18 +73,19 @@ test.describe('Filesystem Cache', () => {
     // Navigate to non-existent work
     await page.goto(`/#/works/${nonExistentId}`, { waitUntil: 'domcontentloaded' });
 
-    // Wait for page to finish loading - should show error
-    await page.waitForLoadState('load');
+    // Wait for error state to appear (allow time for API request to fail)
+    await page.waitForSelector('[data-testid="error-state"]', { timeout: 15000 });
 
-    // Verify appropriate error handling
+    // Verify error state is shown
     const pageContent = await page.textContent('body');
-    const hasError = pageContent?.includes('error') ||
+    const hasError = pageContent?.includes('Error') ||
+                     pageContent?.includes('error') ||
                      pageContent?.includes('not found') ||
                      pageContent?.includes('404');
 
     expect(hasError).toBe(true);
 
-    console.log(`✅ Test completed - Cache miss handled gracefully`);
+    console.log(`✅ Test completed - Cache miss handled gracefully with error state`);
   });
 
   test.describe.parallel('Multiple entity types', () => {
