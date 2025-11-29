@@ -46,7 +46,7 @@
     "syncpack:list": "nx run bibgraph:syncpack:list",
     "test": "NODE_OPTIONS='--max-old-space-size=8192' NX_DAEMON=false timeout 300 nx run-many -t test --output-style=stream",
     "test:accessibility": "nx run web:test:accessibility",
-    "test:accessibility:dev": "nx run web:a11y:dev",
+    "test:accessibility:dev": "nx run web:test:accessibility:dev",
     "test:aggregate": "tsx scripts/aggregate-tests.ts",
     "test:urls": "tsx scripts/test-urls.ts",
     "test:web": "nx run web:test",

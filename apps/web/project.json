@@ -107,6 +107,11 @@
       "dependsOn": ["a11y"],
       "cache": false
     },
+    "test:accessibility:dev": {
+      "executor": "nx:noop",
+      "dependsOn": ["a11y:dev"],
+      "cache": false
+    },
     "test:performance": {
       "executor": "nx:noop",
       "dependsOn": ["lighthouse"],

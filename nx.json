@@ -592,6 +592,13 @@
       ],
       "inputs": []
     },
+    "test:accessibility:dev": {
+      "cache": false,
+      "dependsOn": [
+        "a11y:dev"
+      ],
+      "inputs": []
+    },
     "test:performance": {
       "cache": false,
       "dependsOn": [
