@@ -33,19 +33,6 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
 /**
- * Entity types that have dedicated autocomplete routes
- */
-const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
-  "works",
-  "authors",
-  "sources",
-  "institutions",
-  "concepts",
-  "publishers",
-  "funders",
-];
-
-/**
  * Parse comma-separated entity types from URL
  */
 function parseEntityTypes(typesParam: string | undefined): EntityType[] {
@@ -91,25 +78,7 @@ function AutocompleteGeneralRoute() {
   // Handle entity type filter changes
   const handleEntityTypeChange = useCallback(
     (types: EntityType[]) => {
-      // If exactly one type is selected and it has a dedicated route, navigate there
-      if (
-        types.length === 1 &&
-        ENTITY_AUTOCOMPLETE_ROUTES.includes(types[0])
-      ) {
-        const entityType = types[0];
-        const params = new URLSearchParams();
-        if (query) {
-          params.set("q", query);
-        }
-        const searchParams = params.toString();
-        const hash = searchParams
-          ? `#/autocomplete/${entityType}?${searchParams}`
-          : `#/autocomplete/${entityType}`;
-        window.location.hash = hash.replace("#", "");
-        return;
-      }
-
-      // Otherwise, update the types in the current URL
+      // Update the types in the current URL (stay on general autocomplete page)
       setSelectedTypes(types);
       const params = new URLSearchParams();
       if (query) {
