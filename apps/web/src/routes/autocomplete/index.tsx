@@ -8,6 +8,8 @@ const autocompleteSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
   search: z.string().optional().catch(undefined),
   q: z.string().optional().catch(undefined),
+  // Comma-separated list of entity types to search (empty = all)
+  types: z.string().optional().catch(undefined),
 });
 
 const AutocompleteGeneralRoute = lazy(() => import("./index.lazy"));

@@ -1,7 +1,7 @@
-import {
-  cachedOpenAlex,
-  type AutocompleteResult,
-} from "@bibgraph/client";
+import type { AutocompleteResult } from "@bibgraph/client";
+import { cachedOpenAlex } from "@bibgraph/client";
+import type { EntityType } from "@bibgraph/types";
+import { ENTITY_METADATA } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
   Alert,
@@ -17,16 +17,52 @@ import {
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EntityGrid } from "@/components/EntityGrid";
 import { EntityListView } from "@/components/EntityListView";
+import {
+  AUTOCOMPLETE_ENTITY_TYPES,
+  EntityTypeFilter,
+} from "@/components/EntityTypeFilter";
 import { BaseTable } from "@/components/tables/BaseTable";
 import { ViewModeToggle, type TableViewMode } from "@/components/ViewModeToggle";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
+
+/**
+ * Entity types that have dedicated autocomplete routes
+ */
+const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
+  "works",
+  "authors",
+  "sources",
+  "institutions",
+  "concepts",
+  "publishers",
+  "funders",
+];
+
+/**
+ * Parse comma-separated entity types from URL
+ */
+function parseEntityTypes(typesParam: string | undefined): EntityType[] {
+  if (!typesParam) return [];
+  return typesParam
+    .split(",")
+    .map((t) => t.trim() as EntityType)
+    .filter((t) => AUTOCOMPLETE_ENTITY_TYPES.includes(t));
+}
+
+/**
+ * Serialize entity types to comma-separated string for URL
+ */
+function serializeEntityTypes(types: EntityType[]): string | undefined {
+  if (types.length === 0) return undefined;
+  return types.join(",");
+}
 
 
 function AutocompleteGeneralRoute() {
@@ -34,6 +70,61 @@ function AutocompleteGeneralRoute() {
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
   const [viewMode, setViewMode] = useState<TableViewMode>("list");
   const { getEntityColor } = useThemeColors();
+
+  // Parse selected entity types from URL
+  const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(() =>
+    parseEntityTypes(urlSearch.types)
+  );
+
+  // Update selected types when URL changes
+  useEffect(() => {
+    const typesFromUrl = parseEntityTypes(urlSearch.types);
+    if (JSON.stringify(typesFromUrl) !== JSON.stringify(selectedTypes)) {
+      setSelectedTypes(typesFromUrl);
+    }
+  }, [urlSearch.types]);
+
+  // Handle entity type filter changes
+  const handleEntityTypeChange = useCallback(
+    (types: EntityType[]) => {
+      // If exactly one type is selected and it has a dedicated route, navigate there
+      if (
+        types.length === 1 &&
+        ENTITY_AUTOCOMPLETE_ROUTES.includes(types[0])
+      ) {
+        const entityType = types[0];
+        const params = new URLSearchParams();
+        if (query) {
+          params.set("q", query);
+        }
+        const searchParams = params.toString();
+        const hash = searchParams
+          ? `#/autocomplete/${entityType}?${searchParams}`
+          : `#/autocomplete/${entityType}`;
+        window.location.hash = hash.replace("#", "");
+        return;
+      }
+
+      // Otherwise, update the types in the current URL
+      setSelectedTypes(types);
+      const params = new URLSearchParams();
+      if (query) {
+        params.set("q", query);
+      }
+      const serializedTypes = serializeEntityTypes(types);
+      if (serializedTypes) {
+        params.set("types", serializedTypes);
+      }
+      if (urlSearch.filter) {
+        params.set("filter", urlSearch.filter);
+      }
+      const newHash = params.toString()
+        ? `#/autocomplete?${params.toString()}`
+        : "#/autocomplete";
+      window.history.replaceState(null, "", newHash);
+    },
+    [query, urlSearch.filter]
+  );
 
   // Define table columns for AutocompleteResult
   const tableColumns = useMemo<ColumnDef<AutocompleteResult>[]>(() => [
@@ -135,10 +226,30 @@ function AutocompleteGeneralRoute() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["autocomplete", "general", query],
+    queryKey: ["autocomplete", "general", query, selectedTypes],
     queryFn: async () => {
       if (!query.trim()) return [];
 
+      // If specific types are selected, use searchMultipleTypes
+      if (selectedTypes.length > 0) {
+        logger.debug(
+          "autocomplete",
+          "Fetching filtered autocomplete suggestions",
+          { query, types: selectedTypes },
+        );
+
+        const response =
+          await cachedOpenAlex.client.autocomplete.search(query, selectedTypes);
+
+        logger.debug("autocomplete", "Filtered suggestions received", {
+          count: response.length,
+          types: selectedTypes,
+        });
+
+        return response;
+      }
+
+      // Otherwise, use general autocomplete (all types)
       logger.debug(
         "autocomplete",
         "Fetching general autocomplete suggestions",
@@ -164,6 +275,10 @@ function AutocompleteGeneralRoute() {
     if (value) {
       params.set("q", value);
     }
+    const serializedTypes = serializeEntityTypes(selectedTypes);
+    if (serializedTypes) {
+      params.set("types", serializedTypes);
+    }
     if (urlSearch.filter) {
       params.set("filter", urlSearch.filter);
     }
@@ -177,10 +292,11 @@ function AutocompleteGeneralRoute() {
     <Container size="lg" py="xl">
       <Stack gap="xl">
         <div>
-          <Title order={1}>General Autocomplete</Title>
+          <Title order={1}>Autocomplete Search</Title>
           <Text c="dimmed" size="sm" mt="xs">
-            Search across all entity types with real-time suggestions from the
-            OpenAlex database
+            {selectedTypes.length === 0
+              ? "Search across all entity types with real-time suggestions from the OpenAlex database"
+              : `Searching ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`}
           </Text>
         </div>
 
@@ -190,6 +306,12 @@ function AutocompleteGeneralRoute() {
           onChange={(event) => handleSearch(event.currentTarget.value)}
           leftSection={<IconSearch size={16} />}
           size="md"
+        />
+
+        <EntityTypeFilter
+          selectedTypes={selectedTypes}
+          onChange={handleEntityTypeChange}
+          title="Filter by Entity Type"
         />
 
         {urlSearch.filter && (

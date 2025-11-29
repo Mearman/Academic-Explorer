@@ -10,6 +10,7 @@ export * from "./EntityGrid";
 export * from "./EntityList";
 export * from "./EntityListView";
 export * from "./EntityListWithQueryBookmarking";
+export * from "./EntityTypeFilter";
 export * from "./FieldSelector";
 export * from "./HistoryManager";
 export * from "./MetadataImprovementBadges.example";
