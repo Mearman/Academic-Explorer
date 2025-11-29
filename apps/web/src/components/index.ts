@@ -3,6 +3,7 @@
  */
 
 export * from "./ApiCallTracker";
+export * from "./AutocompleteEntityFilter";
 export * from "./BookmarkManager";
 export * from "./EnhancedSearchInterface";
 export * from "./EntityDataDisplay";
