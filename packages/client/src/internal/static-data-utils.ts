@@ -3,30 +3,22 @@
  * Internal utilities without external dependencies
  */
 
-export type StaticEntityType = 'author' | 'work' | 'source' | 'institution' | 'topic' | 'publisher' | 'funder';
+export type StaticEntityType = 'authors' | 'works' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders';
+
+const VALID_ENTITY_TYPES = new Set<string>(['authors', 'works', 'sources', 'institutions', 'topics', 'publishers', 'funders']);
+
+function isStaticEntityType(value: string): value is StaticEntityType {
+	return VALID_ENTITY_TYPES.has(value);
+}
 
 /**
- * Convert OpenAlex entity type to static entity type
+ * Validate and return entity type for static cache lookup
  */
 export function toStaticEntityType(entityType: string): StaticEntityType {
-	switch (entityType) {
-		case 'authors':
-			return 'author';
-		case 'works':
-			return 'work';
-		case 'sources':
-			return 'source';
-		case 'institutions':
-			return 'institution';
-		case 'topics':
-			return 'topic';
-		case 'publishers':
-			return 'publisher';
-		case 'funders':
-			return 'funder';
-		default:
-			throw new Error(`Unknown entity type: ${entityType}`);
+	if (isStaticEntityType(entityType)) {
+		return entityType;
 	}
+	throw new Error(`Unknown entity type: ${entityType}`);
 }
 
 /**
