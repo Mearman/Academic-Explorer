@@ -140,6 +140,30 @@ test.describe("Page Smoke Tests - Utility Pages", () => {
   test("/text - Text analysis page loads successfully", async ({ page }) => {
     await expectPageLoads(page, "/text");
   });
+
+  test("/text/concepts - Text concepts page loads successfully", async ({
+    page,
+  }) => {
+    await expectPageLoads(page, "/text/concepts");
+  });
+
+  test("/text/keywords - Text keywords page loads successfully", async ({
+    page,
+  }) => {
+    await expectPageLoads(page, "/text/keywords");
+  });
+
+  test("/text/topics - Text topics page loads successfully", async ({
+    page,
+  }) => {
+    await expectPageLoads(page, "/text/topics");
+  });
+
+  test("/explore/graph - Graph exploration page loads successfully", async ({
+    page,
+  }) => {
+    await expectPageLoads(page, "/explore/graph");
+  });
 });
 
 test.describe("Page Smoke Tests - Entity Index Pages", () => {
@@ -278,6 +302,12 @@ test.describe("Page Smoke Tests - External ID Resolution", () => {
     page,
   }) => {
     await expectPageLoads(page, "/institutions/ror:00cvxb145");
+  });
+
+  test("/works/doi.10.1038/nature12373 - DOI resolution loads successfully", async ({
+    page,
+  }) => {
+    await expectPageLoads(page, "/works/doi:10.1038/nature12373");
   });
 });
 
