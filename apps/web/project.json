@@ -60,6 +60,26 @@
         "ui": true
       }
     },
+    "test:e2e:changed": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "cache": false,
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pnpm playwright test --only-changed --config playwright.config.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "test:e2e:changed:ci": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/test-results", "{projectRoot}/playwright-report"],
+      "cache": false,
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pnpm playwright test --only-changed=origin/${GITHUB_BASE_REF:-main} --config playwright.config.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
     "test:watch": {
       "executor": "nx:run-commands",
       "options": {

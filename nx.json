@@ -25,6 +25,13 @@
   },
   "plugins": [
     {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "playwright",
+        "ciTargetName": "playwright-ci"
+      }
+    },
+    {
       "plugin": "./tools/plugins/infer-targets.ts",
       "options": {
         "rules": [
