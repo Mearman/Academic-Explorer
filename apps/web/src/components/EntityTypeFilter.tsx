@@ -60,31 +60,47 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
 }) => {
   // Handle checkbox toggle
   const handleToggle = (type: EntityType) => {
+    // When selectedTypes is empty, it means "all types" - so clicking unchecks one
+    if (selectedTypes.length === 0) {
+      // Uncheck this type by selecting all others
+      onChange(availableTypes.filter((t) => t !== type));
+      return;
+    }
+
     const isCurrentlySelected = selectedTypes.includes(type);
 
     if (isCurrentlySelected) {
       // Remove from selection
-      onChange(selectedTypes.filter((t) => t !== type));
+      const newSelection = selectedTypes.filter((t) => t !== type);
+      // If removing would leave empty, keep at least this one or go back to "all"
+      onChange(newSelection);
     } else {
-      // Add to selection
-      onChange([...selectedTypes, type]);
+      // Add to selection - if this completes all types, reset to empty (meaning "all")
+      const newSelection = [...selectedTypes, type];
+      if (newSelection.length === availableTypes.length) {
+        onChange([]);
+      } else {
+        onChange(newSelection);
+      }
     }
   };
 
-  // Handle clear all (select none)
+  // Handle clear all (deselect all - show nothing)
   const handleClearAll = () => {
+    // Clear means no filters, which in this UI means "all types"
+    // But the button should reset to empty array (all types shown)
     onChange([]);
   };
 
-  // Handle select all
+  // Handle select all (explicitly select all types, then normalize to empty)
   const handleSelectAll = () => {
-    onChange([...availableTypes]);
+    onChange([]);
   };
 
-  const allSelected =
-    selectedTypes.length === availableTypes.length ||
-    selectedTypes.length === 0;
-  const noneSelected = selectedTypes.length === 0;
+  // All selected means either explicitly all selected OR empty (which means "all")
+  const allSelected = selectedTypes.length === 0;
+  // None explicitly selected (but empty means "all", so this is for UI state)
+  const hasExplicitSelection = selectedTypes.length > 0;
 
   if (inline) {
     return (
@@ -132,7 +148,7 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
               size="xs"
               variant="subtle"
               onClick={handleClearAll}
-              disabled={noneSelected}
+              disabled={!hasExplicitSelection}
               data-testid="clear-all-button"
             >
               Clear All
