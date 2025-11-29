@@ -2,6 +2,7 @@ import {
   cachedOpenAlex,
   type AutocompleteResult,
 } from "@bibgraph/client";
+import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
   Alert,
@@ -18,8 +19,13 @@ import {
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
+
+import {
+  AUTOCOMPLETE_ENTITY_TYPES,
+  EntityTypeFilter,
+} from "@/components/EntityTypeFilter";
 
 const autocompleteInstitutionsSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
@@ -89,6 +95,33 @@ function AutocompleteInstitutionsRoute() {
     window.history.replaceState(null, "", newHash);
   };
 
+  const handleEntityTypeChange = useCallback(
+    (types: EntityType[]) => {
+      if (types.length === 0 || types.length === AUTOCOMPLETE_ENTITY_TYPES.length) {
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete?${params.toString()}`
+          : "/autocomplete";
+        return;
+      }
+      if (types.length === 1) {
+        const entityType = types[0];
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete/${entityType}?${params.toString()}`
+          : `/autocomplete/${entityType}`;
+        return;
+      }
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      params.set("types", types.join(","));
+      window.location.hash = `/autocomplete?${params.toString()}`;
+    },
+    [query]
+  );
+
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
@@ -106,6 +139,12 @@ function AutocompleteInstitutionsRoute() {
           onChange={(event) => handleSearch(event.currentTarget.value)}
           leftSection={<IconSearch size={16} />}
           size="md"
+        />
+
+        <EntityTypeFilter
+          selectedTypes={["institutions"]}
+          onChange={handleEntityTypeChange}
+          inline
         />
 
         {urlSearch.filter && (

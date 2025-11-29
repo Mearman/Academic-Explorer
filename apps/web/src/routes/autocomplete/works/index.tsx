@@ -2,6 +2,7 @@ import {
   cachedOpenAlex,
   type AutocompleteResult,
 } from "@bibgraph/client";
+import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
   Alert,
@@ -18,8 +19,13 @@ import {
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
+
+import {
+  AUTOCOMPLETE_ENTITY_TYPES,
+  EntityTypeFilter,
+} from "@/components/EntityTypeFilter";
 
 const autocompleteWorksSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
@@ -89,6 +95,39 @@ function AutocompleteWorksRoute() {
     });
   };
 
+  // Handle entity type filter changes - navigate to selected type's route
+  const handleEntityTypeChange = useCallback(
+    (types: EntityType[]) => {
+      // If no types or all types selected, go to general autocomplete
+      if (types.length === 0 || types.length === AUTOCOMPLETE_ENTITY_TYPES.length) {
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete?${params.toString()}`
+          : "/autocomplete";
+        return;
+      }
+
+      // If single type selected, navigate to that type's route
+      if (types.length === 1) {
+        const entityType = types[0];
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        window.location.hash = params.toString()
+          ? `/autocomplete/${entityType}?${params.toString()}`
+          : `/autocomplete/${entityType}`;
+        return;
+      }
+
+      // Multiple types selected - go to general with types param
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      params.set("types", types.join(","));
+      window.location.hash = `/autocomplete?${params.toString()}`;
+    },
+    [query]
+  );
+
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
@@ -106,6 +145,12 @@ function AutocompleteWorksRoute() {
           onChange={(event) => handleSearch(event.currentTarget.value)}
           leftSection={<IconSearch size={16} />}
           size="md"
+        />
+
+        <EntityTypeFilter
+          selectedTypes={["works"]}
+          onChange={handleEntityTypeChange}
+          inline
         />
 
         {urlSearch.filter && (
