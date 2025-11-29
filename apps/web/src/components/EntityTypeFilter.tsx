@@ -45,6 +45,12 @@ export interface EntityTypeFilterProps {
 
   /** Show as inline chips instead of vertical list */
   inline?: boolean;
+
+  /**
+   * Whether to show Select All / Clear All buttons
+   * @default true
+   */
+  showButtons?: boolean;
 }
 
 /**
@@ -57,58 +63,50 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
   availableTypes = AUTOCOMPLETE_ENTITY_TYPES,
   title = "Entity Types",
   inline = false,
+  showButtons = true,
 }) => {
   // Handle checkbox toggle
   const handleToggle = (type: EntityType) => {
-    // When selectedTypes is empty, it means "all types" - so clicking unchecks one
-    if (selectedTypes.length === 0) {
-      // Uncheck this type by selecting all others
-      onChange(availableTypes.filter((t) => t !== type));
-      return;
-    }
-
     const isCurrentlySelected = selectedTypes.includes(type);
 
     if (isCurrentlySelected) {
       // Remove from selection
       const newSelection = selectedTypes.filter((t) => t !== type);
-      // If removing would leave empty, keep at least this one or go back to "all"
       onChange(newSelection);
     } else {
-      // Add to selection - if this completes all types, reset to empty (meaning "all")
+      // Add to selection
       const newSelection = [...selectedTypes, type];
-      if (newSelection.length === availableTypes.length) {
-        onChange([]);
-      } else {
-        onChange(newSelection);
-      }
+      onChange(newSelection);
     }
   };
 
-  // Handle clear all (deselect all - show nothing)
-  const handleClearAll = () => {
-    // Clear means no filters, which in this UI means "all types"
-    // But the button should reset to empty array (all types shown)
-    onChange([]);
-  };
-
-  // Handle select all (explicitly select all types, then normalize to empty)
+  // Handle select all - explicitly select all available types
   const handleSelectAll = () => {
+    // Set to all available types (visually all checked)
+    onChange([...availableTypes]);
+  };
+
+  // Handle clear all - deselect all types (none checked)
+  const handleClearAll = () => {
+    // Empty array with explicit "none" state - parent handles this as "no filter" or "no results"
+    // For this component, we pass an empty array to indicate nothing is selected
     onChange([]);
   };
 
-  // All selected means either explicitly all selected OR empty (which means "all")
-  const allSelected = selectedTypes.length === 0;
-  // None explicitly selected (but empty means "all", so this is for UI state)
-  const hasExplicitSelection = selectedTypes.length > 0;
+  // Check if all types are explicitly selected
+  const allExplicitlySelected = availableTypes.every((t) =>
+    selectedTypes.includes(t)
+  );
+  // Check if none are selected (empty array)
+  const noneSelected = selectedTypes.length === 0;
 
   if (inline) {
     return (
       <Group gap="xs" wrap="wrap" data-testid="entity-type-filter-inline">
         {availableTypes.map((type) => {
           const metadata = ENTITY_METADATA[type];
-          const isChecked =
-            selectedTypes.length === 0 || selectedTypes.includes(type);
+          // Only checked if explicitly in the selection (not when empty)
+          const isChecked = selectedTypes.includes(type);
 
           return (
             <Badge
@@ -134,33 +132,35 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
           <Title order={3} size="h4">
             {title}
           </Title>
-          <Group gap="xs">
-            <Button
-              size="xs"
-              variant="subtle"
-              onClick={handleSelectAll}
-              disabled={allSelected}
-              data-testid="select-all-button"
-            >
-              Select All
-            </Button>
-            <Button
-              size="xs"
-              variant="subtle"
-              onClick={handleClearAll}
-              disabled={!hasExplicitSelection}
-              data-testid="clear-all-button"
-            >
-              Clear All
-            </Button>
-          </Group>
+          {showButtons && (
+            <Group gap="xs">
+              <Button
+                size="xs"
+                variant="subtle"
+                onClick={handleSelectAll}
+                disabled={allExplicitlySelected}
+                data-testid="select-all-button"
+              >
+                Select All
+              </Button>
+              <Button
+                size="xs"
+                variant="subtle"
+                onClick={handleClearAll}
+                disabled={noneSelected}
+                data-testid="clear-all-button"
+              >
+                Clear All
+              </Button>
+            </Group>
+          )}
         </Group>
 
         <Group gap="xs" wrap="wrap">
           {availableTypes.map((type) => {
             const metadata = ENTITY_METADATA[type];
-            const isChecked =
-              selectedTypes.length === 0 || selectedTypes.includes(type);
+            // Only checked if explicitly in the selection
+            const isChecked = selectedTypes.includes(type);
 
             return (
               <Checkbox

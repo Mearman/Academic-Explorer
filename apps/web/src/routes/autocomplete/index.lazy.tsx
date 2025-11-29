@@ -72,15 +72,19 @@ function AutocompleteGeneralRoute() {
   const { getEntityColor } = useThemeColors();
 
   // Parse selected entity types from URL
-  const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(() =>
-    parseEntityTypes(urlSearch.types)
-  );
+  // If no types specified in URL, default to all types (all checkboxes checked)
+  const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(() => {
+    const typesFromUrl = parseEntityTypes(urlSearch.types);
+    return typesFromUrl.length > 0 ? typesFromUrl : [...AUTOCOMPLETE_ENTITY_TYPES];
+  });
 
   // Update selected types when URL changes
   useEffect(() => {
     const typesFromUrl = parseEntityTypes(urlSearch.types);
-    if (JSON.stringify(typesFromUrl) !== JSON.stringify(selectedTypes)) {
-      setSelectedTypes(typesFromUrl);
+    // If URL has types, use them; if URL has no types param, default to all
+    const effectiveTypes = typesFromUrl.length > 0 ? typesFromUrl : [...AUTOCOMPLETE_ENTITY_TYPES];
+    if (JSON.stringify(effectiveTypes) !== JSON.stringify(selectedTypes)) {
+      setSelectedTypes(effectiveTypes);
     }
   }, [urlSearch.types]);
 
@@ -221,6 +225,11 @@ function AutocompleteGeneralRoute() {
     }
   }, [urlSearch.q, urlSearch.search, query]);
 
+  // Check if all types are selected (for determining search behavior)
+  const allTypesSelected =
+    selectedTypes.length === AUTOCOMPLETE_ENTITY_TYPES.length &&
+    AUTOCOMPLETE_ENTITY_TYPES.every((t) => selectedTypes.includes(t));
+
   const {
     data: results = [],
     isLoading,
@@ -230,42 +239,48 @@ function AutocompleteGeneralRoute() {
     queryFn: async () => {
       if (!query.trim()) return [];
 
-      // If specific types are selected, use searchMultipleTypes
-      if (selectedTypes.length > 0) {
+      // If no types selected, return empty (user cleared all filters)
+      if (selectedTypes.length === 0) {
+        logger.debug("autocomplete", "No entity types selected, skipping search");
+        return [];
+      }
+
+      // If all types selected, use general autocomplete (more efficient)
+      if (allTypesSelected) {
         logger.debug(
           "autocomplete",
-          "Fetching filtered autocomplete suggestions",
-          { query, types: selectedTypes },
+          "Fetching general autocomplete suggestions (all types)",
+          { query },
         );
 
         const response =
-          await cachedOpenAlex.client.autocomplete.search(query, selectedTypes);
+          await cachedOpenAlex.client.autocomplete.autocompleteGeneral(query);
 
-        logger.debug("autocomplete", "Filtered suggestions received", {
+        logger.debug("autocomplete", "General suggestions received", {
           count: response.length,
-          types: selectedTypes,
         });
 
         return response;
       }
 
-      // Otherwise, use general autocomplete (all types)
+      // Otherwise, search specific types
       logger.debug(
         "autocomplete",
-        "Fetching general autocomplete suggestions",
-        { query },
+        "Fetching filtered autocomplete suggestions",
+        { query, types: selectedTypes },
       );
 
       const response =
-        await cachedOpenAlex.client.autocomplete.autocompleteGeneral(query);
+        await cachedOpenAlex.client.autocomplete.search(query, selectedTypes);
 
-      logger.debug("autocomplete", "General suggestions received", {
+      logger.debug("autocomplete", "Filtered suggestions received", {
         count: response.length,
+        types: selectedTypes,
       });
 
       return response;
     },
-    enabled: query.trim().length > 0,
+    enabled: query.trim().length > 0 && selectedTypes.length > 0,
     staleTime: 30000,
   });
 
@@ -295,8 +310,10 @@ function AutocompleteGeneralRoute() {
           <Title order={1}>Autocomplete Search</Title>
           <Text c="dimmed" size="sm" mt="xs">
             {selectedTypes.length === 0
-              ? "Search across all entity types with real-time suggestions from the OpenAlex database"
-              : `Searching ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`}
+              ? "Select at least one entity type to search"
+              : allTypesSelected
+                ? "Search across all entity types with real-time suggestions from the OpenAlex database"
+                : `Searching ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`}
           </Text>
         </div>
 
@@ -320,15 +337,28 @@ function AutocompleteGeneralRoute() {
           </Alert>
         )}
 
-        {!query.trim() && (
+        {selectedTypes.length === 0 && (
+          <Alert
+            icon={<IconInfoCircle />}
+            title="No entity types selected"
+            color="yellow"
+            variant="light"
+          >
+            <Text size="sm">
+              Select at least one entity type above to search.
+            </Text>
+          </Alert>
+        )}
+
+        {selectedTypes.length > 0 && !query.trim() && (
           <Card withBorder>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter a search term to see suggestions
               </Text>
               <Text size="sm" c="dimmed" ta="center">
-                Start typing to get real-time autocomplete suggestions from all
-                OpenAlex entities
+                Start typing to get real-time autocomplete suggestions from
+                {allTypesSelected ? " all OpenAlex entities" : ` ${selectedTypes.length} selected entity types`}
               </Text>
             </Stack>
           </Card>
@@ -366,7 +396,7 @@ function AutocompleteGeneralRoute() {
           </Alert>
         )}
 
-        {!isLoading && results.length === 0 && query.trim() && (
+        {!isLoading && results.length === 0 && query.trim() && selectedTypes.length > 0 && (
           <Alert
             icon={<IconInfoCircle />}
             title="No results"
@@ -374,8 +404,9 @@ function AutocompleteGeneralRoute() {
             variant="light"
           >
             <Text size="sm">
-              No results found matching &quot;{query}&quot;. Try different
-              search terms.
+              No results found matching &quot;{query}&quot;
+              {!allTypesSelected && ` in ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`}.
+              Try different search terms{!allTypesSelected && " or select more entity types"}.
             </Text>
           </Alert>
         )}
