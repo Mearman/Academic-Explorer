@@ -376,12 +376,12 @@ export function GraphAlgorithmsPanel({
                 label="Algorithm"
                 description={ALGORITHM_INFO[communityAlgorithm]}
                 data={[
-                  { value: 'louvain', label: 'Louvain', group: 'Modularity-based' },
-                  { value: 'leiden', label: 'Leiden', group: 'Modularity-based' },
-                  { value: 'label-propagation', label: 'Label Propagation', group: 'Propagation-based' },
-                  { value: 'infomap', label: 'Infomap', group: 'Information-theoretic' },
-                  { value: 'spectral', label: 'Spectral Partitioning', group: 'Matrix-based' },
-                  { value: 'hierarchical', label: 'Hierarchical Clustering', group: 'Agglomerative' },
+                  { value: 'louvain', label: 'Louvain (Modularity-based)' },
+                  { value: 'leiden', label: 'Leiden (Modularity-based)' },
+                  { value: 'label-propagation', label: 'Label Propagation (Propagation-based)' },
+                  { value: 'infomap', label: 'Infomap (Information-theoretic)' },
+                  { value: 'spectral', label: 'Spectral Partitioning (Matrix-based)' },
+                  { value: 'hierarchical', label: 'Hierarchical Clustering (Agglomerative)' },
                 ]}
                 value={communityAlgorithm}
                 onChange={(value) => setCommunityAlgorithm(value as ClusteringAlgorithm)}
