@@ -257,6 +257,89 @@ describe('dijkstra (Shortest Path)', () => {
     });
   });
 
+  describe('Undirected graph traversal', () => {
+    it('should find path traversing edge backwards in undirected graph', () => {
+      // Regression test for bug where dijkstra always used edge.target as neighbor,
+      // failing to find paths that require traversing edges from target to source.
+      //
+      // Graph: A -- B -- C (undirected)
+      // Edges defined as: A->B, B->C
+      // Path from C to A requires traversing B->C backwards (C to B)
+      // and A->B backwards (B to A)
+      const undirectedGraph = new Graph<TestNode, TestEdge>(false);
+
+      undirectedGraph.addNode({ id: 'A', type: 'test', label: 'Node A' });
+      undirectedGraph.addNode({ id: 'B', type: 'test', label: 'Node B' });
+      undirectedGraph.addNode({ id: 'C', type: 'test', label: 'Node C' });
+
+      // Edges defined in one direction only
+      undirectedGraph.addEdge({ id: 'E1', source: 'A', target: 'B', type: 'test-edge' });
+      undirectedGraph.addEdge({ id: 'E2', source: 'B', target: 'C', type: 'test-edge' });
+
+      // Find path from C to A (requires traversing both edges backwards)
+      const result = dijkstra(undirectedGraph, 'C', 'A');
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.some).toBe(true);
+        if (result.value.some) {
+          const path = result.value.value;
+          expect(path.nodes.map(n => n.id)).toEqual(['C', 'B', 'A']);
+          expect(path.totalWeight).toBe(2);
+        }
+      }
+    });
+
+    it('should find path using mix of forward and backward edges in undirected graph', () => {
+      // Graph: A -- B -- C -- D (undirected)
+      // Edges: A->B, C->B (backwards!), C->D
+      // Path from A to D: A->B, then B<-C (backward), then C->D
+      const undirectedGraph = new Graph<TestNode, TestEdge>(false);
+
+      undirectedGraph.addNode({ id: 'A', type: 'test', label: 'Node A' });
+      undirectedGraph.addNode({ id: 'B', type: 'test', label: 'Node B' });
+      undirectedGraph.addNode({ id: 'C', type: 'test', label: 'Node C' });
+      undirectedGraph.addNode({ id: 'D', type: 'test', label: 'Node D' });
+
+      undirectedGraph.addEdge({ id: 'E1', source: 'A', target: 'B', type: 'test-edge' });
+      undirectedGraph.addEdge({ id: 'E2', source: 'C', target: 'B', type: 'test-edge' }); // Note: C->B not B->C
+      undirectedGraph.addEdge({ id: 'E3', source: 'C', target: 'D', type: 'test-edge' });
+
+      const result = dijkstra(undirectedGraph, 'A', 'D');
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.some).toBe(true);
+        if (result.value.some) {
+          const path = result.value.value;
+          expect(path.nodes.map(n => n.id)).toEqual(['A', 'B', 'C', 'D']);
+          expect(path.totalWeight).toBe(3);
+        }
+      }
+    });
+
+    it('should respect edge direction in directed graph (no backward traversal)', () => {
+      // Same graph structure but directed - path C->A should NOT exist
+      const directedGraph = new Graph<TestNode, TestEdge>(true);
+
+      directedGraph.addNode({ id: 'A', type: 'test', label: 'Node A' });
+      directedGraph.addNode({ id: 'B', type: 'test', label: 'Node B' });
+      directedGraph.addNode({ id: 'C', type: 'test', label: 'Node C' });
+
+      // Edges only go A->B->C
+      directedGraph.addEdge({ id: 'E1', source: 'A', target: 'B', type: 'test-edge' });
+      directedGraph.addEdge({ id: 'E2', source: 'B', target: 'C', type: 'test-edge' });
+
+      // Path from C to A should NOT exist in directed graph
+      const result = dijkstra(directedGraph, 'C', 'A');
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.some).toBe(false); // No path exists
+      }
+    });
+  });
+
   describe('Type preservation', () => {
     it('should preserve node and edge type information', () => {
       graph.addNode({ id: 'A', type: 'test', label: 'Node A' });
