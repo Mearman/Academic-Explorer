@@ -24,15 +24,15 @@ import {
   type EnvironmentInfo,
   type CachedEntityEntry,
 } from "./internal/static-data-provider";
-
-// Re-export types for external use
-export type { CachedEntityEntry } from "./internal/static-data-provider";
 import {
   cleanOpenAlexId,
   toStaticEntityType,
 } from "./internal/static-data-utils";
 import { validateStaticData } from "./internal/type-helpers";
 import { AutocompleteApi } from "./utils/autocomplete";
+
+// Re-export types for external use
+export type { CachedEntityEntry } from "./internal/static-data-provider";
 
 export interface ClientApis {
   works: WorksApi;

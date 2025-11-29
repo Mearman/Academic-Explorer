@@ -1258,7 +1258,7 @@ export function GraphAlgorithmsPanel({
                         Found {starPatterns.count} hub nodes with {starMinDegree}+ connections
                       </Text>
                       <List spacing="xs" size="sm">
-                        {starPatterns.patterns.slice(0, 5).map((pattern, idx) => (
+                        {starPatterns.patterns.slice(0, 5).map((pattern) => (
                           <List.Item
                             key={pattern.hubId}
                             icon={
@@ -1311,7 +1311,7 @@ export function GraphAlgorithmsPanel({
                         Found {coCitations.pairs.length} co-citation pairs
                       </Text>
                       <List spacing="xs" size="sm">
-                        {coCitations.pairs.slice(0, 5).map((pair, idx) => (
+                        {coCitations.pairs.slice(0, 5).map((pair) => (
                           <List.Item
                             key={`${pair.paper1Id}-${pair.paper2Id}`}
                             icon={
@@ -1364,7 +1364,7 @@ export function GraphAlgorithmsPanel({
                         Found {bibCoupling.pairs.length} coupled paper pairs
                       </Text>
                       <List spacing="xs" size="sm">
-                        {bibCoupling.pairs.slice(0, 5).map((pair, idx) => (
+                        {bibCoupling.pairs.slice(0, 5).map((pair) => (
                           <List.Item
                             key={`${pair.paper1Id}-${pair.paper2Id}`}
                             icon={

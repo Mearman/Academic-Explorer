@@ -31,7 +31,6 @@ import {
   calculateConductance,
   calculateDensity,
   calculateCoverageRatio,
-  calculateClusterMetrics,
   // Decomposition
   kCoreDecomposition,
   corePeripheryDecomposition,
@@ -50,7 +49,6 @@ import {
   type Node as AlgorithmNode,
   type Edge as AlgorithmEdge,
   type Community,
-  type ClusterMetrics,
 } from '@bibgraph/algorithms';
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 
@@ -920,7 +918,6 @@ export function getTriangles(
 
   // Calculate global clustering coefficient
   // C = 3 * triangles / connected_triples
-  const nodeCount = nodes.length;
   const triangleCount = triangles.length;
 
   // Estimate connected triples from degrees
