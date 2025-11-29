@@ -244,6 +244,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
+          path: .
 
       - name: Validate build artifacts
         run: |
@@ -375,6 +376,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
+          path: .
 
       - name: Install pa11y-ci
         run: npm install -g pa11y-ci
@@ -419,6 +421,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
+          path: .
 
       - name: Install Lighthouse CI
         run: npm install -g @lhci/cli@0.13.x
@@ -476,6 +479,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
+          path: .
 
       - name: Install PostHog CLI
         run: npm install -g @posthog/cli
