@@ -22,7 +22,7 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx serve web --watch"
+        "command": "nx serve web"
       }
     },
     "test:e2e": {
