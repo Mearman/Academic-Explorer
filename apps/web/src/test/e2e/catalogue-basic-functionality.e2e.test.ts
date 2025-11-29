@@ -156,7 +156,7 @@ test.describe("Catalogue Basic Functionality", () => {
     await expect(page.locator('[data-testid="selected-list-title"]:has-text("Updated Test List")')).toBeVisible({ timeout: 10000 });
   });
 
-  test.fixme("should delete a list", async ({ page }) => {
+  test("should delete a list", async ({ page }) => {
     // First create a list
     await createTestList(page, "Deletable Test List");
 

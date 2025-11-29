@@ -97,12 +97,8 @@ test.describe('Data Consistency - All 276 URLs', () => {
         // Fetch the API data directly
         const response = await fetch(apiUrl);
 
-        // Some entities may have been deleted or merged - skip them
-        if (!response.ok) {
-          console.log(`⚠️  Skipping ${apiUrl} - API returned ${response.status}`);
-          test.skip();
-          return;
-        }
+        // API should return a valid response for all test URLs
+        expect(response.ok).toBe(true);
 
         const apiData = await response.json();
 
