@@ -164,7 +164,14 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       );
       this.requestStats.errors++;
 
-      return await this.tryStaticCache({ cleanId, entityType });
+      // Try static cache as last resort
+      const staticResult = await this.tryStaticCache({ cleanId, entityType });
+      if (staticResult) {
+        return staticResult;
+      }
+
+      // If both API and static cache failed, throw the original error
+      throw apiError;
     }
   }
 
@@ -174,38 +181,32 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     const cleanId = cleanOpenAlexId(id);
     this.requestStats.totalRequests++;
 
-    try {
-      const entityType = this.detectEntityTypeFromId(cleanId);
+    const entityType = this.detectEntityTypeFromId(cleanId);
 
-      if (!entityType) {
-        logger.warn("client", "Could not determine entity type for ID", {
-          id: cleanId,
-        });
-        return null;
-      }
-
-      // Try static cache first if enabled
-      if (this.staticCacheEnabled) {
-        const staticResult = await this.tryStaticCache({ cleanId, entityType });
-        if (staticResult) {
-          return staticResult;
-        }
-      }
-
-      // Fallback to API
-      this.requestStats.apiFallbacks++;
-      logger.debug("client", "Falling back to API for entity", { id: cleanId });
-
-      const apiResult = await this.tryApiFallback({
-        cleanId,
-        entityType,
+    if (!entityType) {
+      logger.warn("client", "Could not determine entity type for ID", {
+        id: cleanId,
       });
-      return isOpenAlexEntity(apiResult) ? apiResult : null;
-    } catch (error: unknown) {
-      this.requestStats.errors++;
-      logger.error("client", "Failed to get entity", { id: cleanId, error });
       return null;
     }
+
+    // Try static cache first if enabled
+    if (this.staticCacheEnabled) {
+      const staticResult = await this.tryStaticCache({ cleanId, entityType });
+      if (staticResult) {
+        return staticResult;
+      }
+    }
+
+    // Fallback to API - let errors propagate
+    this.requestStats.apiFallbacks++;
+    logger.debug("client", "Falling back to API for entity", { id: cleanId });
+
+    const apiResult = await this.tryApiFallback({
+      cleanId,
+      entityType,
+    });
+    return isOpenAlexEntity(apiResult) ? apiResult : null;
   }
 
   /**
