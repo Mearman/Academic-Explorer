@@ -31,6 +31,8 @@ env:
   # Skip Husky hooks in CI to prevent build loops
   HUSKY: 0
   CI: true
+  # E2E test parallelism - number of shards for Playwright test distribution
+  E2E_SHARDS: 10
   # Option B: Disable database cache if Option A (caching full .nx dir) doesn't work
   # Uncomment these three lines to fall back to legacy file-based caching:
   # NX_DISABLE_DB: true
@@ -245,17 +247,31 @@ jobs:
       - name: Run security audit
         run: pnpm audit --audit-level moderate
 
+  # Setup E2E sharding matrix dynamically from E2E_SHARDS env var
+  setup-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      shards: ${{ steps.set-matrix.outputs.shards }}
+    steps:
+      - name: Generate shard matrix
+        id: set-matrix
+        run: |
+          shards="[$(seq -s, 1 "$E2E_SHARDS")]"
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+          echo "Generated shard matrix: $shards"
+
   # E2E tests - Full application tests (run after validate)
-  # Uses matrix sharding to run tests in parallel across 4 runners
+  # Uses matrix sharding to run tests in parallel across E2E_SHARDS runners
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, changes]
+    needs: [validate, changes, setup-e2e]
     if: always() && needs.validate.result == 'success' && needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: ${{ fromJson(needs.setup-e2e.outputs.shards) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -297,10 +313,10 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Run E2E tests (shard ${{ matrix.shard }}/4)
+      - name: Run E2E tests (shard ${{ matrix.shard }}/${{ env.E2E_SHARDS }})
         run: |
           cd apps/web
-          pnpm exec playwright test --shard=${{ matrix.shard }}/4
+          pnpm exec playwright test --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }}
 
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v5
