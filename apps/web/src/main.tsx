@@ -209,12 +209,26 @@ const isProduction = typeof window !== 'undefined' && (
   window.location.hostname === 'bibgraph.com' ||
   window.location.hostname.endsWith('.github.io')
 );
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+);
+
 if (isProduction) {
   cachedOpenAlex.updateConfig({
     staticCacheGitHubPagesUrl:
       "https://mearman.github.io/BibGraph/data/openalex/",
   });
   logger.debug("main", "Configured production static cache URL");
+} else if (isLocalhost) {
+  // Configure local static cache for dev server and E2E preview server
+  // This enables the static cache tier to use committed cache files
+  // Dev: served from public/data/openalex/ via Vite
+  // E2E preview: served from dist/data/openalex/ via vite preview
+  cachedOpenAlex.updateConfig({
+    staticCacheGitHubPagesUrl: "/data/openalex/",
+  });
+  logger.debug("main", "Configured local static cache URL for development/E2E");
 }
 
 // Create QueryClient for TanStack Query
