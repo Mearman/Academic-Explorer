@@ -3,37 +3,33 @@
  */
 
 import { logger } from "@bibgraph/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
   TextInput,
   Card,
   Text,
   Group,
   Stack,
-  Badge,
   Loader,
   ActionIcon,
   Tooltip,
   Title,
   Button,
 } from "@mantine/core";
-import { modals } from "@mantine/modals";
 import {
   IconBookmark,
   IconBookmarkOff,
   IconSearch,
-  IconExternalLink,
   IconX,
   IconBook,
-  IconTrash,
   IconSettings,
   IconList,
 } from "@tabler/icons-react";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
+import { BookmarkCard } from "./BookmarkCard";
 import * as styles from "./sidebar.css";
 
 interface BookmarksSidebarProps {
@@ -69,7 +65,6 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
   };
 
   const { bookmarks, isLoadingBookmarks, refreshData } = safeUseUserInteractions();
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredBookmarks = searchQuery
@@ -80,61 +75,6 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
           bookmark.entityType.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : bookmarks;
-
-  const handleNavigate = (bookmark: CatalogueEntity) => {
-    // Extract URL from bookmark notes or construct from entity
-    let url = "";
-
-    // Try to extract URL from notes
-    const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
-    if (urlMatch) {
-      url = urlMatch[1];
-    } else if (bookmark.entityId.startsWith("search-") || bookmark.entityId.startsWith("list-")) {
-      // For search and list bookmarks, use the URL from notes
-      const urlFromNotes = bookmark.notes?.match(/URL: ([^\n]+)/);
-      url = urlFromNotes?.[1] || "";
-    } else {
-      // For entity bookmarks, construct the internal path
-      url = `/${bookmark.entityType}/${bookmark.entityId}`;
-    }
-
-    // Handle navigation
-    if (url.startsWith("/")) {
-      navigate({ to: url });
-    } else if (url.startsWith("https://api.openalex.org")) {
-      // Convert API URL to internal path for navigation
-      const internalPath = url.replace("https://api.openalex.org", "");
-      navigate({ to: internalPath });
-    } else if (url) {
-      window.location.href = url;
-    }
-
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const handleDeleteBookmark = (bookmarkRecordId: string, bookmarkTitle: string) => {
-    modals.openConfirmModal({
-      title: "Delete Bookmark",
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete "{bookmarkTitle}"? This action cannot be undone.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: async () => {
-        try {
-          await catalogueService.removeBookmark(bookmarkRecordId);
-          await refreshData();
-        } catch (error) {
-          logger.error("bookmarks", "Failed to delete bookmark:", error);
-        }
-      },
-    });
-  };
 
   if (isLoadingBookmarks) {
     return (
@@ -253,88 +193,14 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
           </Card>
         ) : (
           <Stack gap="xs">
-            {filteredBookmarks.map((bookmark) => {
-              // Extract title from bookmark notes or use entity ID
-              let title = bookmark.entityId;
-              const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
-              if (titleMatch) {
-                title = titleMatch[1];
-              } else if (bookmark.entityId.startsWith("search-")) {
-                title = `Search: ${bookmark.entityId.replace("search-", "").split("-")[0]}`;
-              } else if (bookmark.entityId.startsWith("list-")) {
-                title = `List: ${bookmark.entityId.replace("list-", "")}`;
-              } else {
-                title = `${bookmark.entityType}: ${bookmark.entityId}`;
-              }
-
-              return (
-                <Card
-                  key={bookmark.id || bookmark.entityId}
-                  withBorder
-                  padding="xs"
-                  shadow="none"
-                  className={styles.bookmarkCard}
-                  onClick={() => handleNavigate(bookmark)}
-                >
-                  <Group justify="space-between" align="flex-start" gap="xs">
-                    <Stack gap="xs" style={{ flex: 1 }}>
-                      <Text
-                        size="xs"
-                        fw={500}
-                        lineClamp={2}
-                        className={styles.bookmarkTitle}
-                      >
-                        {title}
-                      </Text>
-                      {bookmark.notes && (
-                        <Text size="xs" c="dimmed" lineClamp={2}>
-                          {bookmark.notes.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n')}
-                        </Text>
-                      )}
-                      <Badge size="xs" variant="light" className={styles.tagBadge}>
-                        {bookmark.entityType}
-                      </Badge>
-                      <Text size="xs" c="dimmed">
-                        {new Date(bookmark.addedAt).toLocaleDateString()}
-                      </Text>
-                    </Stack>
-                    <Group gap="xs">
-                      <Tooltip label="Open bookmark">
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          className={styles.actionButton}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleNavigate(bookmark);
-                          }}
-                        >
-                          <IconExternalLink size={12} />
-                        </ActionIcon>
-                      </Tooltip>
-                      {bookmark.id && (
-                        <Tooltip label="Delete bookmark">
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            color="red"
-                            className={styles.actionButton}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (bookmark.id) {
-                                handleDeleteBookmark(bookmark.id, title);
-                              }
-                            }}
-                          >
-                            <IconTrash size={12} />
-                          </ActionIcon>
-                        </Tooltip>
-                      )}
-                    </Group>
-                  </Group>
-                </Card>
-              );
-            })}
+            {filteredBookmarks.map((bookmark) => (
+              <BookmarkCard
+                key={bookmark.id || bookmark.entityId}
+                bookmark={bookmark}
+                onClose={onClose}
+                onDeleted={refreshData}
+              />
+            ))}
           </Stack>
         )}
       </div>

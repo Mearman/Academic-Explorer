@@ -3,7 +3,7 @@
  */
 
 import { logError, logger } from "@bibgraph/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
+import type { CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
   TextInput,
   Card,
@@ -15,20 +15,19 @@ import {
   Divider,
   Tooltip,
 } from "@mantine/core";
-import { modals } from "@mantine/modals";
 import {
   IconHistory,
   IconSearch,
-  IconExternalLink,
   IconTrash,
   IconX,
   IconSettings,
 } from "@tabler/icons-react";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
+import { HistoryCard } from "./HistoryCard";
 import * as styles from "./sidebar.css";
 
 interface HistorySidebarProps {
@@ -36,7 +35,6 @@ interface HistorySidebarProps {
 }
 
 export function HistorySidebar({ onClose }: HistorySidebarProps) {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Use the refactored user interactions hook for history
@@ -57,56 +55,6 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     } catch (error) {
       logError(logger, "Failed to clear history", error, "HistorySidebar");
     }
-  };
-
-  const handleNavigate = (entry: CatalogueEntity) => {
-    // Extract URL from entry notes or construct from entity
-    let url = "";
-
-    // Try to extract URL from notes
-    const urlMatch = entry.notes?.match(/URL: ([^\n]+)/);
-    if (urlMatch) {
-      url = urlMatch[1];
-    } else if (entry.entityId.startsWith("search-") || entry.entityId.startsWith("list-")) {
-      // For search and list entries, use the URL from notes
-      const urlFromNotes = entry.notes?.match(/URL: ([^\n]+)/);
-      url = urlFromNotes?.[1] || "";
-    } else {
-      // For entity entries, construct the internal path
-      url = `/${entry.entityType}/${entry.entityId}`;
-    }
-
-    // Handle navigation
-    if (url.startsWith("/")) {
-      navigate({ to: url });
-    } else if (url) {
-      window.location.href = url;
-    }
-
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const handleDeleteHistoryEntry = (entityRecordId: string, entryTitle?: string) => {
-    modals.openConfirmModal({
-      title: "Delete History Entry",
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to delete {entryTitle ? `"${entryTitle}"` : "this history entry"}? This action cannot be undone.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: async () => {
-        try {
-          await catalogueService.removeEntityFromList("history-list", entityRecordId);
-        } catch (error) {
-          logError(logger, "Failed to delete history entry", error, "HistorySidebar");
-        }
-      },
-    });
   };
 
   const formatDate = (date: Date) => {
@@ -249,87 +197,14 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                     {entries.length} {entries.length === 1 ? 'item' : 'items'}
                   </Text>
                 </div>
-{entries.map((entry) => {
-                  // Extract title from entry notes or use entity ID
-                  let title = entry.entityId;
-                  const titleMatch = entry.notes?.match(/Title: ([^\n]+)/);
-                  if (titleMatch) {
-                    title = titleMatch[1];
-                  } else if (entry.entityId.startsWith("search-")) {
-                    title = `Search: ${entry.entityId.replace("search-", "").split("-")[0]}`;
-                  } else if (entry.entityId.startsWith("list-")) {
-                    title = `List: ${entry.entityId.replace("list-", "")}`;
-                  } else {
-                    title = `${entry.entityType}: ${entry.entityId}`;
-                  }
-
-                  return (
-                    <Card
-                      key={`${entry.entityId}-${entry.addedAt}`}
-                      withBorder
-                      padding="xs"
-                      shadow="none"
-                      className={styles.historyCard}
-                      onClick={() => handleNavigate(entry)}
-                    >
-                      <Group justify="space-between" align="flex-start" gap="xs">
-                        <Stack gap="xs" style={{ flex: 1 }}>
-                          <Text
-                            size="xs"
-                            fw={500}
-                            lineClamp={1}
-                            className={styles.historyEntry}
-                          >
-                            {title}
-                          </Text>
-                          {entry.notes && (
-                            <Text size="xs" c="dimmed" lineClamp={1}>
-                              {entry.notes.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n')}
-                            </Text>
-                          )}
-                          <Text size="xs" c="dimmed">
-                            {formatDate(new Date(entry.addedAt))}
-                          </Text>
-                        </Stack>
-                        <Group gap="xs">
-                          <Tooltip label="Navigate to this entry">
-                            <ActionIcon
-                              size="sm"
-                              variant="subtle"
-                              className={styles.navigationButton}
-                              aria-label={`Navigate to ${title}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleNavigate(entry);
-                              }}
-                            >
-                              <IconExternalLink size={12} />
-                            </ActionIcon>
-                          </Tooltip>
-                          {entry.id && (
-                            <Tooltip label="Delete history entry">
-                              <ActionIcon
-                                size="sm"
-                                variant="subtle"
-                                color="red"
-                                className={styles.actionButton}
-                                aria-label={`Delete ${title} from history`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (entry.id) {
-                                    handleDeleteHistoryEntry(entry.id, title);
-                                  }
-                                }}
-                              >
-                                <IconTrash size={12} />
-                              </ActionIcon>
-                            </Tooltip>
-                          )}
-                        </Group>
-                      </Group>
-                    </Card>
-                  );
-                })}
+{entries.map((entry) => (
+                  <HistoryCard
+                    key={`${entry.entityId}-${entry.addedAt}`}
+                    entry={entry}
+                    onClose={onClose}
+                    formatDate={formatDate}
+                  />
+                ))}
                 {groupKey !== Object.keys(groupedEntries)[Object.keys(groupedEntries).length - 1] && (
                   <Divider size="xs" className={styles.groupDivider} />
                 )}
