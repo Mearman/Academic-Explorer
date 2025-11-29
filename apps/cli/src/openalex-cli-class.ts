@@ -144,7 +144,7 @@ const NodeErrorSchema = z
 //   per_page: z.number().optional(),
 // }).strict(); // Strict validation for meta properties
 
-interface QueryOptions {
+export interface QueryOptions {
 	search?: string
 	filter?: string
 	select?: string[]
@@ -153,7 +153,7 @@ interface QueryOptions {
 	page?: number
 }
 
-interface CacheOptions {
+export interface CacheOptions {
 	useCache: boolean
 	saveToCache: boolean
 	cacheOnly: boolean
