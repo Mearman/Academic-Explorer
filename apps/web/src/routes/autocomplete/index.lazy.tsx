@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -46,9 +46,15 @@ function parseEntityTypes(typesParam: string | undefined): EntityType[] | null {
 
 function AutocompleteGeneralRoute() {
   const urlSearch = useSearch({ from: "/autocomplete/" });
+  const navigate = useNavigate();
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
   const [viewMode, setViewMode] = useState<TableViewMode>("list");
   const { getEntityColor } = useThemeColors();
+
+  // Navigation handler for entity cards in list/grid views
+  const handleNavigate = useCallback((path: string) => {
+    navigate({ to: path });
+  }, [navigate]);
 
   // Parse selected entity types from URL
   // If no types specified in URL, default to all types (all checkboxes checked)
@@ -418,12 +424,14 @@ function AutocompleteGeneralRoute() {
             {viewMode === "list" && (
               <EntityListView
                 items={results.map(transformAutocompleteResultToGridItem)}
+                onNavigate={handleNavigate}
               />
             )}
 
             {viewMode === "grid" && (
               <EntityGrid
                 items={results.map(transformAutocompleteResultToGridItem)}
+                onNavigate={handleNavigate}
               />
             )}
           </Stack>
