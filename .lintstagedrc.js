@@ -1,9 +1,12 @@
 export default {
   // Package.json files - run syncpack to fix versions and formatting
   // Use function form to prevent lint-staged from passing filenames as args
+  // Order: fix mismatches -> apply semver ranges -> format -> lint to verify
   '**/package.json': [
     () => 'syncpack fix-mismatches',
-    () => 'syncpack format'
+    () => 'syncpack set-semver-ranges',
+    () => 'syncpack format',
+    () => 'syncpack lint'
   ],
 
   // TypeScript and JavaScript files in packages and apps
