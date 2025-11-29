@@ -113,21 +113,37 @@ type BiasMode = 'position' | 'value';
  *              With bias=2: 50% of values ≤ ~2500 nodes, 71% ≤ ~5000 nodes
  */
 function randomLogNodeRange(bias: number, mode: BiasMode): [number, number] {
-  if (mode === 'position') {
-    // Bias on slider position - clusters at left of slider (very low node counts)
-    const a = Math.pow(Math.random(), bias) * 100;
-    const b = Math.pow(Math.random(), bias) * 100;
-    const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
-    return [linearToLogNodes(minPos), linearToLogNodes(maxPos)];
-  } else {
-    // Bias on node count value - scales with actual node count
-    const minNodes = 5;
-    const maxNodes = 10000;
-    const biasedA = Math.pow(Math.random(), bias);
-    const biasedB = Math.pow(Math.random(), bias);
-    const nodeA = Math.round(minNodes + biasedA * (maxNodes - minNodes));
-    const nodeB = Math.round(minNodes + biasedB * (maxNodes - minNodes));
-    return nodeA <= nodeB ? [nodeA, nodeB] : [nodeB, nodeA];
+  // Default safe values in case of any calculation issues
+  const DEFAULT_MIN = 5;
+  const DEFAULT_MAX = 200;
+
+  try {
+    if (mode === 'position') {
+      // Bias on slider position - clusters at left of slider (very low node counts)
+      const a = Math.pow(Math.random(), bias) * 100;
+      const b = Math.pow(Math.random(), bias) * 100;
+      const [minPos, maxPos] = a <= b ? [a, b] : [b, a];
+      const minVal = linearToLogNodes(minPos);
+      const maxVal = linearToLogNodes(maxPos);
+      // Validate results are finite and in valid range
+      const safeMin = Number.isFinite(minVal) && minVal >= 5 && minVal <= 10000 ? minVal : DEFAULT_MIN;
+      const safeMax = Number.isFinite(maxVal) && maxVal >= 5 && maxVal <= 10000 ? maxVal : DEFAULT_MAX;
+      return [Math.min(safeMin, safeMax), Math.max(safeMin, safeMax)];
+    } else {
+      // Bias on node count value - scales with actual node count
+      const minNodes = 5;
+      const maxNodes = 10000;
+      const biasedA = Math.pow(Math.random(), bias);
+      const biasedB = Math.pow(Math.random(), bias);
+      const nodeA = Math.round(minNodes + biasedA * (maxNodes - minNodes));
+      const nodeB = Math.round(minNodes + biasedB * (maxNodes - minNodes));
+      const safeA = Number.isFinite(nodeA) ? Math.max(5, Math.min(10000, nodeA)) : DEFAULT_MIN;
+      const safeB = Number.isFinite(nodeB) ? Math.max(5, Math.min(10000, nodeB)) : DEFAULT_MAX;
+      return safeA <= safeB ? [safeA, safeB] : [safeB, safeA];
+    }
+  } catch {
+    // Fallback to safe defaults if any error occurs
+    return [DEFAULT_MIN, DEFAULT_MAX];
   }
 }
 
@@ -315,11 +331,30 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
 
   const adjustedTotalWeight = Object.values(adjustedWeights).reduce((sum, e) => sum + e.weight, 0);
 
+  // Track all generated node IDs to ensure uniqueness
+  const allGeneratedIds = new Set<string>();
+
   allEntityTypes.forEach((type) => {
     const weight = adjustedWeights[type].weight;
-    const count = Math.max(1, Math.round((totalNodes * weight) / adjustedTotalWeight));
+    // Guard against division by zero or NaN - default to at least 1 node per type
+    const rawCount = adjustedTotalWeight > 0
+      ? Math.round((totalNodes * weight) / adjustedTotalWeight)
+      : 0;
+    const count = Math.max(1, Number.isFinite(rawCount) ? rawCount : 1);
     const prefix = ENTITY_DISTRIBUTION[type].prefix;
-    const ids = Array.from({ length: count }, (_, i) => `${prefix}${i + 1}`);
+    const ids: string[] = [];
+    let idCounter = 1;
+    // Generate unique IDs, incrementing counter until we have enough unique ones
+    while (ids.length < count) {
+      const candidateId = `${prefix}${idCounter}`;
+      if (!allGeneratedIds.has(candidateId)) {
+        ids.push(candidateId);
+        allGeneratedIds.add(candidateId);
+      }
+      idCounter++;
+      // Safety limit to prevent infinite loop
+      if (idCounter > count * 2 + 100) break;
+    }
     nodesByType.set(type, ids);
   });
 
@@ -587,9 +622,26 @@ function AlgorithmsPage() {
       const cuts = Array.from({ length: n - 1 }, () => Math.floor(Math.random() * 101));
       const sorted = [0, ...cuts, 100].sort((a, b) => a - b);
       const percentages: Partial<Record<EntityType, number>> = {};
+      let totalAssigned = 0;
       ENTITY_TYPES_ORDERED.forEach((type, i) => {
-        percentages[type] = sorted[i + 1] - sorted[i];
+        const value = sorted[i + 1] - sorted[i];
+        // Ensure each percentage is a valid non-negative finite number
+        const safeValue = Number.isFinite(value) && value >= 0 ? value : 0;
+        percentages[type] = safeValue;
+        totalAssigned += safeValue;
       });
+      // Safety check: if total doesn't equal 100, adjust the largest category
+      if (totalAssigned !== 100 && totalAssigned > 0) {
+        const adjustment = 100 - totalAssigned;
+        // Find the type with highest percentage and adjust it
+        const maxType = ENTITY_TYPES_ORDERED.reduce((max, type) =>
+          (percentages[type] || 0) > (percentages[max] || 0) ? type : max
+        );
+        percentages[maxType] = Math.max(0, (percentages[maxType] || 0) + adjustment);
+      } else if (totalAssigned === 0) {
+        // Fallback: give 100% to works if all are 0
+        percentages['works'] = 100;
+      }
       return percentages as Record<EntityType, number>;
     };
 
@@ -989,13 +1041,18 @@ function AlgorithmsPage() {
                         />
                         <RangeSlider
                           value={[
-                            logNodesToLinear(graphConfig.totalNodeCountRange[0]),
-                            logNodesToLinear(graphConfig.totalNodeCountRange[1])
+                            // Ensure valid finite values for the slider
+                            Math.max(0, Math.min(100, Number.isFinite(logNodesToLinear(graphConfig.totalNodeCountRange[0])) ? logNodesToLinear(graphConfig.totalNodeCountRange[0]) : 0)),
+                            Math.max(0, Math.min(100, Number.isFinite(logNodesToLinear(graphConfig.totalNodeCountRange[1])) ? logNodesToLinear(graphConfig.totalNodeCountRange[1]) : 100))
                           ]}
-                          onChange={(val) => updateConfig('totalNodeCountRange', [
-                            linearToLogNodes(val[0]),
-                            linearToLogNodes(val[1])
-                          ])}
+                          onChange={(val) => {
+                            const min = linearToLogNodes(val[0]);
+                            const max = linearToLogNodes(val[1]);
+                            // Only update if values are valid
+                            if (Number.isFinite(min) && Number.isFinite(max) && min <= max) {
+                              updateConfig('totalNodeCountRange', [min, max]);
+                            }
+                          }}
                           min={0}
                           max={100}
                           step={0.5}
