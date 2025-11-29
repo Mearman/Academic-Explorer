@@ -177,7 +177,7 @@ import "@mantine/dates/styles.css";
 
 // Import the Vanilla Extract theme adapter
 import { mantineThemeClass, mantineVars } from "./styles/mantine-theme.css";
-import { getMantineThemeTokens, extendedColors } from "./styles/mantine-theme-config";
+import { getMantineThemeTokens } from "./styles/mantine-theme-config";
 import { themeClass } from "./styles/theme.css";
 
 // Create Mantine theme using design tokens and Vanilla Extract integration
@@ -187,24 +187,8 @@ const theme = createTheme({
   respectReducedMotion: true,
   autoContrast: true,
 
-  // Integrate Vanilla Extract theme variables
-  colors: {
-    // Use only the standard color palettes that Mantine expects
-    dark: extendedColors.dark,
-    gray: extendedColors.gray,
-    red: extendedColors.red,
-    pink: extendedColors.pink,
-    grape: extendedColors.purple, // Mantine uses 'grape' for purple
-    violet: extendedColors.purple, // Mantine alternative
-    indigo: extendedColors.indigo,
-    blue: extendedColors.blue,
-    cyan: extendedColors.cyan,
-    teal: extendedColors.teal,
-    green: extendedColors.green,
-    lime: extendedColors.lime,
-    yellow: extendedColors.orange, // Map orange to yellow as Mantine alternative
-    orange: extendedColors.orange,
-  },
+  // Integrate Vanilla Extract theme variables using properly typed tokens
+  colors: getMantineThemeTokens().colors,
 
   // Configure font family from Vanilla Extract theme
   fontFamily: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
