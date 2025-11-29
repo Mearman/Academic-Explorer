@@ -1111,6 +1111,62 @@ class StaticDataProvider {
   }
 
   /**
+   * Set static data in the cache (memory and IndexedDB tiers)
+   * Used to cache API results for future lookups
+   */
+  async setStaticData(
+    entityType: StaticEntityType,
+    id: string,
+    data: unknown,
+  ): Promise<void> {
+    // Cache in memory tier
+    try {
+      await this.memoryCacheTier.set(entityType, id, data);
+    } catch (error: unknown) {
+      logger.debug(this.LOG_PREFIX, "Failed to cache in memory tier", {
+        entityType,
+        id,
+        error,
+      });
+    }
+
+    // Cache in IndexedDB tier for persistence
+    if (
+      this.environment === Environment.BROWSER ||
+      this.environment === Environment.WORKER
+    ) {
+      try {
+        await this.indexedDBCacheTier.set(entityType, id, data);
+      } catch (error: unknown) {
+        logger.debug(this.LOG_PREFIX, "Failed to cache in IndexedDB tier", {
+          entityType,
+          id,
+          error,
+        });
+      }
+    }
+
+    // Cache in local disk tier for Node.js environment
+    if (this.environment === Environment.NODE) {
+      try {
+        await this.localDiskCacheTier.set(entityType, id, data);
+      } catch (error: unknown) {
+        logger.debug(this.LOG_PREFIX, "Failed to cache in local disk tier", {
+          entityType,
+          id,
+          error,
+        });
+      }
+    }
+
+    logger.debug(this.LOG_PREFIX, "Cached entity data", {
+      entityType,
+      id,
+      environment: this.environment,
+    });
+  }
+
+  /**
    * Enumerate all entities in the memory cache
    */
   enumerateMemoryCacheEntities(): CachedEntityEntry[] {
