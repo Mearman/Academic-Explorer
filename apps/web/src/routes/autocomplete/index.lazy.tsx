@@ -58,15 +58,6 @@ function parseEntityTypes(typesParam: string | undefined): EntityType[] | null {
     .filter((t) => AUTOCOMPLETE_ENTITY_TYPES.includes(t));
 }
 
-/**
- * Serialize entity types to comma-separated string for URL
- */
-function serializeEntityTypes(types: EntityType[]): string | undefined {
-  if (types.length === 0) return undefined;
-  return types.join(",");
-}
-
-
 function AutocompleteGeneralRoute() {
   const urlSearch = useSearch({ from: "/autocomplete/" });
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
