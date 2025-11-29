@@ -30,9 +30,11 @@ import {
   IconBook,
   IconSearch,
   IconEdit,
+  IconDatabase,
 } from "@tabler/icons-react";
 import React, { useState, useEffect } from "react";
 
+import { CacheTierLists } from "@/components/catalogue/CacheTierLists";
 import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
 import { CatalogueListComponent } from "@/components/catalogue/CatalogueList";
 import { CreateListModal } from "@/components/catalogue/CreateListModal";
@@ -260,6 +262,9 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
             <Tabs.Tab value="bibliographies" leftSection={<IconBook size={16} />}>
               Bibliographies ({filteredLists.filter(l => l.type === "bibliography").length})
             </Tabs.Tab>
+            <Tabs.Tab value="cache-tiers" leftSection={<IconDatabase size={16} />}>
+              Cache Tiers
+            </Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="lists" pt="md">
@@ -284,6 +289,10 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
               isLoading={isLoadingLists}
               listType="bibliography"
             />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="cache-tiers" pt="md">
+            <CacheTierLists />
           </Tabs.Panel>
         </Tabs>
 

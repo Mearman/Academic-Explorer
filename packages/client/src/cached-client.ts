@@ -22,7 +22,11 @@ import {
   staticDataProvider,
   type CacheStatistics,
   type EnvironmentInfo,
+  type CachedEntityEntry,
 } from "./internal/static-data-provider";
+
+// Re-export types for external use
+export type { CachedEntityEntry } from "./internal/static-data-provider";
 import {
   cleanOpenAlexId,
   toStaticEntityType,
@@ -482,6 +486,39 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         url: config.staticCacheGitHubPagesUrl,
       });
     }
+  }
+
+  /**
+   * Enumerate entities in the memory cache
+   * Memory cache is session-only and cleared on page refresh
+   */
+  enumerateMemoryCacheEntities(): CachedEntityEntry[] {
+    return staticDataProvider.enumerateMemoryCacheEntities();
+  }
+
+  /**
+   * Enumerate entities in the IndexedDB cache
+   * IndexedDB cache is persistent across sessions
+   */
+  async enumerateIndexedDBEntities(): Promise<CachedEntityEntry[]> {
+    return staticDataProvider.enumerateIndexedDBEntities();
+  }
+
+  /**
+   * Get a summary of all cache tiers with entity counts
+   */
+  async getCacheTierSummary(): Promise<{
+    memory: { count: number; entities: CachedEntityEntry[] };
+    indexedDB: { count: number; entities: CachedEntityEntry[] };
+  }> {
+    return staticDataProvider.getCacheTierSummary();
+  }
+
+  /**
+   * Get memory cache size (number of entities)
+   */
+  getMemoryCacheSize(): number {
+    return staticDataProvider.getMemoryCacheSize();
   }
 }
 

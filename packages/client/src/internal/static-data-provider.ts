@@ -68,6 +68,18 @@ interface CacheTierInterface {
 }
 
 /**
+ * Cached entity entry for enumeration
+ */
+export interface CachedEntityEntry {
+  entityType: StaticEntityType;
+  entityId: string;
+  cachedAt: number;
+  lastAccessedAt: number;
+  accessCount: number;
+  dataSize: number;
+}
+
+/**
  * Memory cache implementation with LRU eviction
  */
 class MemoryCacheTier implements CacheTierInterface {
@@ -81,6 +93,32 @@ class MemoryCacheTier implements CacheTierInterface {
 
   private getKey(entityType: StaticEntityType, id: string): string {
     return `${entityType}:${id}`;
+  }
+
+  /**
+   * Enumerate all entities in the memory cache
+   */
+  enumerateEntities(): CachedEntityEntry[] {
+    const entries: CachedEntityEntry[] = [];
+    for (const [key, entry] of this.cache.entries()) {
+      const [entityType, entityId] = key.split(":") as [StaticEntityType, string];
+      entries.push({
+        entityType,
+        entityId,
+        cachedAt: entry.timestamp,
+        lastAccessedAt: entry.timestamp,
+        accessCount: entry.accessCount,
+        dataSize: JSON.stringify(entry.data).length,
+      });
+    }
+    return entries;
+  }
+
+  /**
+   * Get the number of entities in the cache
+   */
+  getSize(): number {
+    return this.cache.size;
   }
 
   private evictLRU(): void {
@@ -435,6 +473,35 @@ class IndexedDBCacheTier implements CacheTierInterface {
    */
   async clearByType(entityType: StaticEntityType): Promise<number> {
     return this.dexieTier.clearByType(entityType);
+  }
+
+  /**
+   * Enumerate all entities in the IndexedDB cache
+   */
+  async enumerateEntities(): Promise<CachedEntityEntry[]> {
+    if (!isIndexedDBAvailable()) {
+      return [];
+    }
+
+    try {
+      const db = await import("../cache/dexie/entity-cache-db").then(m => m.getEntityCacheDB());
+      if (!db) {
+        return [];
+      }
+
+      const records = await db.entities.toArray();
+      return records.map(record => ({
+        entityType: record.entityType,
+        entityId: record.entityId,
+        cachedAt: record.cachedAt,
+        lastAccessedAt: record.lastAccessedAt,
+        accessCount: record.accessCount,
+        dataSize: record.dataSize,
+      }));
+    } catch (error) {
+      logger.warn(this.LOG_PREFIX, "Failed to enumerate IndexedDB entities", { error });
+      return [];
+    }
   }
 }
 
@@ -1040,6 +1107,49 @@ class StaticDataProvider {
       isDevelopment,
       isProduction,
       isTest,
+    };
+  }
+
+  /**
+   * Enumerate all entities in the memory cache
+   */
+  enumerateMemoryCacheEntities(): CachedEntityEntry[] {
+    return this.memoryCacheTier.enumerateEntities();
+  }
+
+  /**
+   * Enumerate all entities in the IndexedDB cache
+   */
+  async enumerateIndexedDBEntities(): Promise<CachedEntityEntry[]> {
+    return this.indexedDBCacheTier.enumerateEntities();
+  }
+
+  /**
+   * Get memory cache size
+   */
+  getMemoryCacheSize(): number {
+    return this.memoryCacheTier.getSize();
+  }
+
+  /**
+   * Get all cache tier entity counts for display
+   */
+  async getCacheTierSummary(): Promise<{
+    memory: { count: number; entities: CachedEntityEntry[] };
+    indexedDB: { count: number; entities: CachedEntityEntry[] };
+  }> {
+    const memoryEntities = this.enumerateMemoryCacheEntities();
+    const indexedDBEntities = await this.enumerateIndexedDBEntities();
+
+    return {
+      memory: {
+        count: memoryEntities.length,
+        entities: memoryEntities,
+      },
+      indexedDB: {
+        count: indexedDBEntities.length,
+        entities: indexedDBEntities,
+      },
     };
   }
 }

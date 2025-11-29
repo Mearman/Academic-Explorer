@@ -4,6 +4,7 @@
 
 export * from "./AddToCatalogueButton";
 export * from "./AddToListModal";
+export * from "./CacheTierLists";
 export * from "./CatalogueEntities";
 export * from "./CatalogueErrorBoundary";
 export * from "./CatalogueList";
