@@ -73,12 +73,7 @@ import {
 } from '@/hooks/use-graph-algorithms';
 import { findShortestPath, type PathResult, type ClusteringAlgorithm } from '@/services/graph-algorithms';
 
-export interface CommunityResult {
-  id: number;
-  nodeIds: string[];
-  size: number;
-  density: number;
-}
+import type { CommunityResult } from './types';
 
 interface GraphAlgorithmsPanelProps {
   nodes: GraphNode[];
