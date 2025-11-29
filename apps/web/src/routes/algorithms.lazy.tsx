@@ -35,7 +35,7 @@ import {
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
-import { GraphAlgorithmsPanel, type CommunityResult } from '@/components/algorithms/GraphAlgorithmsPanel';
+import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
 
 /**
@@ -817,7 +817,7 @@ function AlgorithmsPage() {
           {/* Main Content Grid */}
           <Grid>
             {/* Left: Graph Data Summary + Configuration */}
-            <Grid.Col span={{ base: 12, md: 4 }}>
+            <Grid.Col span={{ base: 12, md: 3 }}>
               <Stack gap="md">
                 {/* Configuration Card */}
                 <Card withBorder p="md">
@@ -1115,10 +1115,10 @@ function AlgorithmsPage() {
               </Stack>
             </Grid.Col>
 
-            {/* Right: Algorithms Panel */}
-            <Grid.Col span={{ base: 12, md: 8 }}>
+            {/* Right: Algorithms Panel with Category Tabs */}
+            <Grid.Col span={{ base: 12, md: 9 }}>
               <Paper withBorder p="md">
-                <GraphAlgorithmsPanel
+                <AlgorithmTabs
                   nodes={graphData.nodes}
                   edges={graphData.edges}
                   onHighlightNodes={handleHighlightNodes}
