@@ -100,10 +100,8 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+    // Require bookmarks to exist for this test
+    expect(count).toBeGreaterThan(0);
 
     // Get the first bookmark checkbox
     const firstCheckbox = bookmarkCards.first().locator('input[type="checkbox"]');
@@ -128,10 +126,8 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+    // Require bookmarks to exist for this test
+    expect(count).toBeGreaterThan(0);
 
     // Click Select All button
     await page.locator('button:has-text("Select All")').click();
@@ -156,10 +152,8 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+    // Require bookmarks to exist for this test
+    expect(count).toBeGreaterThan(0);
 
     // First select all
     await page.locator('button:has-text("Select All")').click();
@@ -183,10 +177,8 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+    // Require bookmarks to exist for this test
+    expect(count).toBeGreaterThan(0);
 
     // Get initial count
     const initialCount = count;
@@ -249,22 +241,18 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+    // Require bookmarks to exist for this test
+    expect(count).toBeGreaterThan(0);
 
     // Get the title of the first bookmark for searching
     const firstTitle = await bookmarkCards.first().locator('[data-testid="bookmark-title-link"]').textContent();
 
-    if (!firstTitle) {
-      test.skip();
-      return;
-    }
+    // Require title to exist
+    expect(firstTitle).toBeTruthy();
 
     // Search for the first bookmark title (use main content to avoid sidebar conflicts)
     const searchInput = page.locator('main input[placeholder="Search bookmarks..."]');
-    await searchInput.fill(firstTitle);
+    await searchInput.fill(firstTitle!);
 
     // Wait for search to filter
     await page.waitForTimeout(500);
@@ -287,14 +275,25 @@ test.describe("Bulk Bookmarks Management", () => {
   });
 
   test("should show empty state when no bookmarks exist", async ({ page }) => {
-    // This test is for when there are no bookmarks
-    const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
-    const count = await bookmarkCards.count();
+    // This test verifies empty state - clear any existing bookmarks first
+    await page.evaluate(async () => {
+      try {
+        // @ts-expect-error accessing global test service
+        const { userInteractionsService } = window;
+        if (userInteractionsService) {
+          const bookmarks = await userInteractionsService.getBookmarks();
+          for (const bookmark of bookmarks) {
+            await userInteractionsService.removeBookmark(bookmark.id);
+          }
+        }
+      } catch (e) {
+        console.log('Could not clear bookmarks:', e);
+      }
+    });
 
-    if (count > 0) {
-      test.skip();
-      return;
-    }
+    // Reload to see empty state
+    await page.reload();
+    await page.waitForLoadState("networkidle");
 
     // Check for empty state in main content
     await expect(page.locator('main:has-text("No bookmarks yet")')).toBeVisible();
@@ -309,10 +308,8 @@ test.describe("Bulk Bookmarks Management", () => {
     const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const count = await bookmarkCards.count();
 
-    if (count < 2) {
-      test.skip();
-      return;
-    }
+    // Require at least 2 bookmarks for this test
+    expect(count).toBeGreaterThanOrEqual(2);
 
     // Helper function to open/close bookmarks sidebar
     const toggleSidebar = async () => {

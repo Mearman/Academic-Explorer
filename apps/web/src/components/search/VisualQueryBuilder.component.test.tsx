@@ -265,7 +265,7 @@ describe("VisualQueryBuilder", () => {
     expect(screen.getByText("1 filter")).toBeTruthy();
   });
 
-  it.skip("disables interactions when disabled prop is true", () => {
+  it("disables interactions when disabled prop is true", () => {
     render(
       <VisualQueryBuilder
         entityType="works"

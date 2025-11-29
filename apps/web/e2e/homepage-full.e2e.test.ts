@@ -496,8 +496,8 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       }
     });
 
-    // Skip zoom tests due to timing sensitivity and browser zoom API inconsistencies
-    test.skip("should maintain readability at 150% zoom level", async ({ page }) => {
+    // Zoom tests - may have timing sensitivity and browser zoom API inconsistencies
+    test("should maintain readability at 150% zoom level", async ({ page }) => {
       // Skipped: CSS zoom behavior is inconsistent across browsers and CI environments.
       // Browser zoom affects viewport dimensions and element sizes in ways that are
       // difficult to test deterministically. Visual regression testing would be more
@@ -534,13 +534,12 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await expect(card).toBeVisible({ timeout: 15000 });
     });
 
-    test.skip("should maintain layout integrity at 200% zoom level", async ({
+    test("should maintain layout integrity at 200% zoom level", async ({
       page,
     }) => {
-      // Skipped: CSS zoom behavior is inconsistent across browsers and CI environments.
-      // At 200% zoom, layout calculations become unreliable due to browser rounding
-      // and viewport adjustment behaviors. This test would be better suited for manual
-      // verification or visual regression testing tools like Percy/Chromatic.
+      // Note: CSS zoom behavior may be inconsistent across browsers and CI environments.
+      // At 200% zoom, layout calculations may be unreliable due to browser rounding
+      // and viewport adjustment behaviors.
       await page.goto("/", {
         waitUntil: "networkidle",
         timeout: 30000,

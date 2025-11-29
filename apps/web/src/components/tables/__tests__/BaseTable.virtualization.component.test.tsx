@@ -94,7 +94,7 @@ const TableWrapper = ({ children }: { children: React.ReactNode }) => (
   <div>{children}</div>
 );
 
-describe.skip("BaseTable Virtualization", () => {
+describe("BaseTable Virtualization", () => {
   it("should render normally with small datasets (no virtualization)", () => {
     const data = generateTestData(50);
 

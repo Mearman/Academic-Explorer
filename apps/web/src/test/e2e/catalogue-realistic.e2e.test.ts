@@ -131,9 +131,8 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
     expect(compressionAvailable || true).toBeTruthy(); // Dependencies are loaded
   });
 
-  test.skip("should have proper Mantine UI components for catalogue", async ({ page }) => {
-    // SKIPPED: Test is flaky in full test suite - timeouts during Mantine component verification
-    // Likely due to test environment timing or component loading issues
+  test("should have proper Mantine UI components for catalogue", async ({ page }) => {
+    // Note: Test may be flaky - timeouts during Mantine component verification
     // Navigate to home page
     await page.goto("http://localhost:5173/#/");
     await page.waitForLoadState("networkidle");

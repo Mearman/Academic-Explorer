@@ -219,7 +219,7 @@ describe("EntityList", () => {
     vi.clearAllMocks();
   });
 
-  it.skip("renders loading state initially", () => {
+  it("renders loading state initially", () => {
     // Mock the API call to never resolve so it stays in loading state
     mockFundersGetMultiple.mockImplementation(() => new Promise(() => {}));
 
@@ -308,7 +308,7 @@ describe("EntityList", () => {
     expect(within(tableSrc).getAllByRole("row")).toHaveLength(3);
   });
 
-  it.skip("renders error state on fetch failure", async () => {
+  it("renders error state on fetch failure", async () => {
     const error = new Error("API Error");
     mockFundersGetMultiple.mockRejectedValue(error);
 

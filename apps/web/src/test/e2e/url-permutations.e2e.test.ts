@@ -290,12 +290,11 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
     // Test that all format variations of the same URL load the same data
     test('all format variations should load equivalent content', async ({ page }) => {
       const testUrl = testData.urls.find(url => isEntityDetail(url));
-      if (!testUrl) {
-        test.skip();
-        return;
-      }
 
-      const permutations = generateUrlPermutations(testUrl);
+      // Require test data to include entity detail URLs
+      expect(testUrl).toBeTruthy();
+
+      const permutations = generateUrlPermutations(testUrl!);
       const timeout = getTimeout();
       const contents: string[] = [];
 
@@ -334,12 +333,11 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
     majorEntityTypes.forEach(entityType => {
       test(`should load ${entityType} entity pages`, async ({ page }) => {
         const entityUrls = urlsByEntityType[entityType];
-        if (!entityUrls || entityUrls.length === 0) {
-          test.skip();
-          return;
-        }
 
-        const testUrl = entityUrls[0];
+        // Require test data to include URLs for this entity type
+        expect(entityUrls?.length).toBeGreaterThan(0);
+
+        const testUrl = entityUrls![0];
         const permutations = generateUrlPermutations(testUrl);
         const directUrl = permutations[0];
         const timeout = getTimeout();
@@ -368,11 +366,10 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
   });
 });
 
-// NOTE: These tests are temporarily skipped because they make direct fetch() calls to the real OpenAlex API
-// instead of testing UI behavior with mocked responses. This violates the test design principle of
-// testing application behavior, not API accuracy. These tests should be refactored to verify UI
-// displays mocked data correctly, or moved to an integration test suite that verifies API contracts.
-test.describe.skip('Data Integrity - API vs Displayed Content', () => {
+// NOTE: These tests make direct fetch() calls to the real OpenAlex API
+// instead of testing UI behavior with mocked responses. They verify UI
+// displays data correctly and can be used for integration testing.
+test.describe('Data Integrity - API vs Displayed Content', () => {
   test.setTimeout(60000);
 
   test.beforeEach(async () => {

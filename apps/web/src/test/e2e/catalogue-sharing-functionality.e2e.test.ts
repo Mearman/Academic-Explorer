@@ -15,10 +15,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     ]);
   });
 
-  test.skip("should open share modal for a list", async ({ page }) => {
-    // SKIPPED: Test depends on entity page functionality (adding entities to lists)
-    // which is flaky in full test suite due to API mocking issues (HTTP 400/403 errors)
-    // Passes when run alone but fails in full suite due to test isolation issues
+  test("should open share modal for a list", async ({ page }) => {
+    // Note: Test depends on entity page functionality (adding entities to lists)
     // Create a test list first
     await createTestListWithEntities(page, "Shareable Test List");
 
@@ -93,9 +91,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     await expect(page.locator('text="QR Code"')).toBeVisible();
   });
 
-  test.skip("should import list from shared URL", async ({ page }) => {
-    // SKIPPED: Import functionality shows "Import Failed" error
-    // The share URL format or import backend may not be fully implemented
+  test("should import list from shared URL", async ({ page }) => {
+    // Note: Import functionality may show "Import Failed" error if not fully implemented
     // First create a list and get its share URL
     await createTestListWithEntities(page, "Original Shared List");
     await page.click('[data-testid="selected-list-title"]:has-text("Original Shared List")');
@@ -135,9 +132,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     await expect(page.locator('text="imported"')).toBeVisible();
   });
 
-  test.skip("should import list from URL parameters", async ({ page }) => {
-    // SKIPPED: This test expects automatic import modal when navigating to a share URL
-    // This functionality may not be implemented yet
+  test("should import list from URL parameters", async ({ page }) => {
+    // Note: This test expects automatic import modal when navigating to a share URL
     // Create a list and get share URL in first context
     const shareUrl = await createAndGetShareUrl(page);
 
@@ -176,9 +172,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     await expect(page.getByRole('alert', { name: 'Import Failed' })).toBeVisible({ timeout: 10000 });
   });
 
-  test.skip("should make list public when sharing", async ({ page }) => {
-    // SKIPPED: This test expects lists to automatically become public when shared
-    // The feature may not be implemented or may use different visibility indicators
+  test("should make list public when sharing", async ({ page }) => {
+    // Note: This test expects lists to automatically become public when shared
     // Create a list
     await createTestListWithEntities(page, "Public List Test");
 
