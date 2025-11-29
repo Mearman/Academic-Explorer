@@ -1,19 +1,21 @@
 <!--
 Sync Impact Report:
-Version: 2.9.0 → 2.10.0 (MINOR: Added Principle XV - DRY Code & Configuration)
+Version: 2.10.0 → 2.11.0 (MINOR: Added Principle XVI - Presentation/Functionality Decoupling)
 Modified Principles: None
 Added Sections:
-  - Principle XV: DRY Code & Configuration - requires eliminating duplication in code,
-    configuration, and tooling; proactive cruft cleanup; single source of truth
-  - Quality Gates section: Added DRY verification gate
-  - Development Workflow section: Added DRY verification checks
+  - Principle XVI: Presentation/Functionality Decoupling - requires separation of UI
+    components from business logic in the web app; containers vs presentational components;
+    hooks for logic, components for display
+  - Quality Gates section: Added Presentation/Functionality Decoupling verification gate
+  - Development Workflow section: Added architecture separation checks
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ plan-template.md: Constitution Check section updated with principle 15
-  - ✅ spec-template.md: Constitution Alignment section updated with principle 15
-  - ✅ tasks-template.md: Constitution compliance verification checklist updated with principle 15
+  - ✅ plan-template.md: Constitution Check section updated with principle 16
+  - ✅ spec-template.md: Constitution Alignment section updated with principle 16
+  - ✅ tasks-template.md: Constitution compliance verification checklist updated with principle 16
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.10.0: Added Principle XV - DRY Code & Configuration
   - v2.9.0: Strengthened Principle IX "Pre-existing is not an excuse"
   - v2.8.0: Added Principle XIV - Working Files Hygiene
   - v2.7.0: Added Principle XIII - Build Output Isolation
@@ -898,6 +900,134 @@ repository quality. Cleanup is part of leaving the repo better than you found it
 **Relationship to Development-Stage Pragmatism (Principle VII)**: During development,
 aggressively delete and consolidate without worrying about backward compatibility.
 
+### XVI. Presentation/Functionality Decoupling (NON-NEGOTIABLE)
+
+**Presentation and functionality MUST always be decoupled in the web app**. UI components
+MUST NOT contain business logic. Business logic MUST NOT be embedded in rendering code.
+This separation enables testability, reusability, and maintainability of both layers.
+
+**Architectural separation requirements**:
+- **Presentational components** handle rendering, styling, and user interaction
+- **Container components/hooks** handle state management, data fetching, and business logic
+- **Services/utilities** encapsulate complex business rules and calculations
+- Logic MUST be testable independently of React rendering
+- UI MUST be testable independently of business logic
+
+**Component structure requirements**:
+```typescript
+// ❌ WRONG: Logic mixed with presentation
+function WorkCard({ work }: Props) {
+  const [bookmarked, setBookmarked] = useState(false);
+  const handleBookmark = async () => {
+    await storageProvider.addToList('bookmarks', work.id);
+    setBookmarked(true);
+    analytics.track('bookmark', { workId: work.id });
+  };
+  const citationCount = work.cited_by_count || 0;
+  const normalizedScore = Math.min(citationCount / 1000, 1);
+  return <Card onClick={handleBookmark}>...</Card>;
+}
+
+// ✅ CORRECT: Presentation and functionality separated
+// Hook handles logic
+function useWorkBookmark(workId: string) {
+  const [bookmarked, setBookmarked] = useState(false);
+  const handleBookmark = useCallback(async () => {
+    await storageProvider.addToList('bookmarks', workId);
+    setBookmarked(true);
+    analytics.track('bookmark', { workId });
+  }, [workId]);
+  return { bookmarked, handleBookmark };
+}
+
+// Utility handles calculation
+function calculateNormalizedScore(citationCount: number): number {
+  return Math.min(citationCount / 1000, 1);
+}
+
+// Component handles presentation only
+function WorkCard({ work, bookmarked, onBookmark, normalizedScore }: Props) {
+  return <Card onClick={onBookmark}>...</Card>;
+}
+
+// Container composes them
+function WorkCardContainer({ work }: Props) {
+  const { bookmarked, handleBookmark } = useWorkBookmark(work.id);
+  const normalizedScore = calculateNormalizedScore(work.cited_by_count || 0);
+  return (
+    <WorkCard
+      work={work}
+      bookmarked={bookmarked}
+      onBookmark={handleBookmark}
+      normalizedScore={normalizedScore}
+    />
+  );
+}
+```
+
+**Prohibited patterns**:
+- Components that directly call storage providers
+- Components that directly call external APIs
+- Components that contain complex calculations or algorithms
+- Components that manage global state mutations
+- Event handlers with business logic beyond simple state updates
+- Inline data transformations in JSX
+- Components that are impossible to test without mocking many dependencies
+
+**Acceptable patterns**:
+- Presentational components receive data and callbacks via props
+- Custom hooks encapsulate stateful logic and side effects
+- Service modules contain pure business logic functions
+- Container components compose hooks and pass data to presentational components
+- Simple state updates (toggle, increment) directly in event handlers
+
+**Testing implications**:
+- Business logic in hooks/services can be tested without React
+- Presentational components can be tested with simple props
+- Integration tests verify composition works correctly
+- No need to mock storage/API in presentational component tests
+
+**File organization guidance**:
+```
+components/
+├── WorkCard/
+│   ├── WorkCard.tsx           # Presentational component
+│   ├── WorkCard.hooks.ts      # Custom hooks for this component
+│   ├── WorkCard.utils.ts      # Pure utility functions
+│   ├── WorkCard.container.tsx # Container (optional - can be in parent)
+│   └── WorkCard.test.tsx      # Component tests
+```
+
+**Rationale**: The web app has experienced maintainability issues from tightly coupled
+components where business logic, state management, and rendering are intertwined. This
+coupling makes components:
+1. **Difficult to test** - Must mock many dependencies to test simple rendering
+2. **Hard to reuse** - Logic is tied to specific UI, can't be shared
+3. **Expensive to modify** - Changes to logic require touching UI code and vice versa
+4. **Prone to bugs** - Side effects in rendering cause unexpected behavior
+5. **Hard to reason about** - Must understand entire component to make changes
+
+Decoupling provides:
+1. **Testability** - Logic tested separately from UI; UI tested with simple props
+2. **Reusability** - Same logic in different UIs; same UI with different logic
+3. **Maintainability** - Changes isolated to appropriate layer
+4. **Debuggability** - Clear separation helps locate bugs
+5. **Team scalability** - Different developers can work on logic vs UI
+6. **Performance** - Easier to optimize rendering vs computation separately
+
+**Relationship to Monorepo Architecture (Principle III)**: Shared business logic
+belongs in `@bibgraph/utils` or domain-specific packages; UI components belong in
+`@bibgraph/ui` or `apps/web`.
+
+**Relationship to Type Safety (Principle I)**: Decoupled components have cleaner
+type signatures—props types for presentation, return types for hooks.
+
+**Relationship to Test-First Development (Principle II)**: Decoupled logic is
+easier to write tests for first; pure functions are trivially testable.
+
+**Relationship to DRY Code & Configuration (Principle XV)**: Decoupled logic can
+be extracted and reused; embedded logic tends to be duplicated.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -989,6 +1119,16 @@ slash commands from the available commands list:
 **No DRY violations**: Create abstractions over duplication. If the same logic appears in
 two places, extract it to `packages/utils` or create a shared package.
 
+**Architecture separation** (web app only): Before creating or modifying components:
+```bash
+# Check if component has business logic that should be extracted
+# Look for: storage calls, API calls, complex calculations
+grep -E "(storageProvider|apiClient|await.*fetch)" apps/web/src/components/
+
+# Verify hooks follow container/presentational pattern
+# Hooks should return data + callbacks, not JSX
+```
+
 **Commit discipline**: After completing each atomic task:
 1. Verify all quality gates pass for the changes
 2. Clean up any temporary working files (debug screenshots, fix documents)
@@ -1006,12 +1146,12 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all fifteen core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all sixteen core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
 development-stage pragmatism, test-first bug fixes, repository integrity, continuous
 execution, complete implementation, spec index maintenance, build output isolation,
-working files hygiene, and DRY code & configuration.
+working files hygiene, DRY code & configuration, and presentation/functionality decoupling.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -1078,6 +1218,15 @@ MUST be documented in commit messages and changelogs.
 - No commented-out code blocks in production files
 - Proactive cruft cleanup performed during every session
 
+**Presentation/functionality decoupling verification** (web app only):
+- No business logic in presentational components
+- No storage provider calls directly in components
+- No external API calls directly in components
+- Complex calculations extracted to utility functions
+- Stateful logic encapsulated in custom hooks
+- Components testable with simple props (no heavy mocking)
+- Clear separation between container and presentational components
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -1093,4 +1242,4 @@ For runtime development guidance specific to BibGraph workflows, see `CLAUDE.md`
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.10.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-27
+**Version**: 2.11.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-29

@@ -48,6 +48,7 @@ Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 13. **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
 14. **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts cleaned up before commit
 15. **DRY Code & Configuration**: No duplicate logic; extract shared code to utils; configuration extends shared base; proactive cruft cleanup
+16. **Presentation/Functionality Decoupling**: Web app components separate presentation from logic; business logic in hooks/services, rendering in components; testable layers
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure

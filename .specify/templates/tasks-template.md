@@ -176,6 +176,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] TypeScript builds output to dist/, not alongside source files (Build Output Isolation)
   - [ ] Working files cleaned up before commit (Working Files Hygiene)
   - [ ] No duplicate logic; shared code extracted; configuration extends base; cruft cleaned (DRY Code & Configuration)
+  - [ ] Web app components separate presentation from logic; business logic in hooks/services (Presentation/Functionality Decoupling)
 
 ---
 
