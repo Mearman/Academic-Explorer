@@ -329,6 +329,7 @@ interface StaticCacheTierCardProps {
   icon: React.ReactNode;
   url: string;
   isConfigured: boolean;
+  entities: CachedEntityEntry[];
   stats: CacheTierStats | null;
   isLoading: boolean;
   onRefresh: () => void;
@@ -342,13 +343,22 @@ function StaticCacheTierCard({
   icon,
   url,
   isConfigured,
+  entities,
   stats,
   isLoading,
   onRefresh,
   color,
   badges,
 }: StaticCacheTierCardProps) {
+  const navigate = useNavigate();
+  const entityTypeCounts = groupByEntityType(entities);
   const hitRate = stats && stats.requests > 0 ? (stats.hits / stats.requests) * 100 : 0;
+
+  const handleEntityClick = (entity: CachedEntityEntry) => {
+    const entityType = entity.entityType as EntityType;
+    const path = `/${entityType}/${entity.entityId}`;
+    navigate({ to: path });
+  };
 
   return (
     <Card withBorder padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replace(/\s+/g, "-")}`}>
@@ -393,55 +403,132 @@ function StaticCacheTierCard({
             </Text>
           </Paper>
 
-          {/* Stats Grid */}
-          {stats && (
-            <>
-              <SimpleGrid cols={{ base: 2, sm: 3 }} spacing="xs">
+          {/* Summary Stats */}
+          <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs">
+            <Paper withBorder p="xs" radius="sm">
+              <Text size="xs" c="dimmed" fw={500}>Entities</Text>
+              <Text size="lg" fw={700}>{entities.length.toLocaleString()}</Text>
+            </Paper>
+            <Paper withBorder p="xs" radius="sm">
+              <Text size="xs" c="dimmed" fw={500}>Entity Types</Text>
+              <Text size="lg" fw={700}>{entityTypeCounts.length}</Text>
+            </Paper>
+            {stats && (
+              <>
                 <Paper withBorder p="xs" radius="sm">
                   <Text size="xs" c="dimmed" fw={500}>Requests</Text>
                   <Text size="lg" fw={700}>{stats.requests.toLocaleString()}</Text>
                 </Paper>
                 <Paper withBorder p="xs" radius="sm">
-                  <Text size="xs" c="dimmed" fw={500}>Hits</Text>
-                  <Text size="lg" fw={700}>{stats.hits.toLocaleString()}</Text>
-                </Paper>
-                <Paper withBorder p="xs" radius="sm">
                   <Text size="xs" c="dimmed" fw={500}>Hit Rate</Text>
                   <Text size="lg" fw={700}>{hitRate.toFixed(1)}%</Text>
                 </Paper>
-              </SimpleGrid>
+              </>
+            )}
+          </SimpleGrid>
 
-              {/* Hit Rate Bar */}
-              {stats.requests > 0 && (
-                <div>
-                  <Group justify="space-between" mb="xs">
-                    <Text size="xs" c="dimmed">Cache Hit Rate</Text>
-                    <Text size="xs" c="dimmed">{stats.hits} / {stats.requests}</Text>
-                  </Group>
-                  <Progress
-                    value={hitRate}
-                    color={hitRate > 80 ? "green" : hitRate > 50 ? "blue" : "orange"}
-                    size="sm"
-                  />
-                </div>
-              )}
-
-              {/* Average Load Time */}
-              {stats.averageLoadTime > 0 && (
-                <Paper withBorder p="xs" radius="sm">
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed" fw={500}>Avg Load Time</Text>
-                    <Text size="sm" fw={500}>{stats.averageLoadTime.toFixed(0)}ms</Text>
-                  </Group>
-                </Paper>
-              )}
-            </>
+          {/* Hit Rate Bar */}
+          {stats && stats.requests > 0 && (
+            <div>
+              <Group justify="space-between" mb="xs">
+                <Text size="xs" c="dimmed">Cache Hit Rate</Text>
+                <Text size="xs" c="dimmed">{stats.hits} / {stats.requests}</Text>
+              </Group>
+              <Progress
+                value={hitRate}
+                color={hitRate > 80 ? "green" : hitRate > 50 ? "blue" : "orange"}
+                size="sm"
+              />
+            </div>
           )}
 
-          {!stats && (
+          {/* Entity Type Breakdown & Entity List */}
+          {entities.length > 0 && (
+            <Accordion variant="contained">
+              <Accordion.Item value="breakdown">
+                <Accordion.Control>
+                  <Group gap="xs">
+                    <Text size="sm" fw={500}>Entity Type Breakdown</Text>
+                    <Badge size="xs" variant="light">{entityTypeCounts.length} types</Badge>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs">
+                    {entityTypeCounts.map(({ entityType, count }) => (
+                      <Paper key={entityType} withBorder p="xs" radius="sm">
+                        <Group gap="xs">
+                          <Badge size="xs" color={getEntityTypeColor(entityType)} variant="filled">
+                            {count}
+                          </Badge>
+                          <Text size="xs" tt="capitalize">{entityType}</Text>
+                        </Group>
+                      </Paper>
+                    ))}
+                  </SimpleGrid>
+                </Accordion.Panel>
+              </Accordion.Item>
+
+              <Accordion.Item value="entities">
+                <Accordion.Control>
+                  <Group gap="xs">
+                    <Text size="sm" fw={500}>Cached Entities</Text>
+                    <Badge size="xs" variant="light">Last 20</Badge>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Box style={{ overflowX: "auto" }}>
+                    <Table striped highlightOnHover>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Type</Table.Th>
+                          <Table.Th>ID</Table.Th>
+                          <Table.Th>Cached</Table.Th>
+                          <Table.Th></Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        {entities
+                          .slice()
+                          .sort((a, b) => b.cachedAt - a.cachedAt)
+                          .slice(0, 20)
+                          .map((entity, idx) => (
+                            <Table.Tr key={`${entity.entityType}-${entity.entityId}-${idx}`}>
+                              <Table.Td>
+                                <Badge size="xs" color={getEntityTypeColor(entity.entityType)} variant="light">
+                                  {entity.entityType}
+                                </Badge>
+                              </Table.Td>
+                              <Table.Td>
+                                <Text size="xs" ff="monospace">{entity.entityId}</Text>
+                              </Table.Td>
+                              <Table.Td>
+                                <Text size="xs" c="dimmed">{formatTimeAgo(entity.cachedAt)}</Text>
+                              </Table.Td>
+                              <Table.Td>
+                                <Tooltip label="View entity">
+                                  <ActionIcon
+                                    variant="subtle"
+                                    size="xs"
+                                    onClick={() => handleEntityClick(entity)}
+                                  >
+                                    <IconExternalLink size={12} />
+                                  </ActionIcon>
+                                </Tooltip>
+                              </Table.Td>
+                            </Table.Tr>
+                          ))}
+                      </Table.Tbody>
+                    </Table>
+                  </Box>
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          )}
+
+          {entities.length === 0 && (
             <Paper withBorder p="md" bg="gray.0">
               <Text size="sm" c="dimmed" ta="center">
-                No statistics available yet
+                No entities cached in static storage
               </Text>
             </Paper>
           )}
@@ -454,6 +541,7 @@ function StaticCacheTierCard({
 export function CacheTierLists() {
   const [summary, setSummary] = useState<CacheTierSummary | null>(null);
   const [staticConfig, setStaticConfig] = useState<StaticCacheTierConfig | null>(null);
+  const [staticCacheEntities, setStaticCacheEntities] = useState<CachedEntityEntry[]>([]);
   const [tierStats, setTierStats] = useState<{
     gitHubPages: CacheTierStats | null;
   } | null>(null);
@@ -491,11 +579,20 @@ export function CacheTierLists() {
     }
   }, []);
 
+  const loadStaticCacheEntities = useCallback(async () => {
+    try {
+      const entities = await cachedOpenAlex.enumerateStaticCacheEntities();
+      setStaticCacheEntities(entities);
+    } catch (error) {
+      logger.error("cache-tier-ui", "Failed to load static cache entities", { error });
+    }
+  }, []);
+
   useEffect(() => {
     setIsLoading(true);
     loadStaticConfig();
-    Promise.all([loadCacheSummary(), loadTierStats()]).finally(() => setIsLoading(false));
-  }, [loadCacheSummary, loadStaticConfig, loadTierStats]);
+    Promise.all([loadCacheSummary(), loadTierStats(), loadStaticCacheEntities()]).finally(() => setIsLoading(false));
+  }, [loadCacheSummary, loadStaticConfig, loadTierStats, loadStaticCacheEntities]);
 
   const handleRefreshMemory = useCallback(async () => {
     setIsRefreshingMemory(true);
@@ -537,11 +634,11 @@ export function CacheTierLists() {
     setIsRefreshingStatic(true);
     try {
       loadStaticConfig();
-      await loadTierStats();
+      await Promise.all([loadTierStats(), loadStaticCacheEntities()]);
     } finally {
       setIsRefreshingStatic(false);
     }
-  }, [loadStaticConfig, loadTierStats]);
+  }, [loadStaticConfig, loadTierStats, loadStaticCacheEntities]);
 
   if (isLoading) {
     return (
@@ -620,6 +717,7 @@ export function CacheTierLists() {
             icon={<IconBrandGithub size={20} />}
             url={staticConfig.gitHubPages.url}
             isConfigured={staticConfig.gitHubPages.isConfigured}
+            entities={staticCacheEntities}
             stats={tierStats?.gitHubPages ?? null}
             isLoading={isRefreshingStatic}
             onRefresh={handleRefreshStatic}
@@ -640,6 +738,7 @@ export function CacheTierLists() {
             icon={<IconFolder size={20} />}
             url={staticConfig.localStatic.path || staticConfig.gitHubPages.url}
             isConfigured={staticConfig.localStatic.isAvailable}
+            entities={staticCacheEntities}
             stats={tierStats?.gitHubPages ?? null}
             isLoading={isRefreshingStatic}
             onRefresh={handleRefreshStatic}

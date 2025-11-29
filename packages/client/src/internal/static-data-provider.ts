@@ -1249,6 +1249,73 @@ class StaticDataProvider {
       },
     };
   }
+
+  /**
+   * Enumerate available entities in the static cache by fetching index files
+   * Returns entities that are available in the static JSON cache (GitHub Pages or local)
+   */
+  async enumerateStaticCacheEntities(): Promise<CachedEntityEntry[]> {
+    const baseUrl = this.gitHubPagesCacheTier.getBaseUrl();
+    if (!baseUrl) {
+      return [];
+    }
+
+    const entries: CachedEntityEntry[] = [];
+    const entityTypes: StaticEntityType[] = [
+      "authors",
+      "works",
+      "sources",
+      "institutions",
+      "topics",
+      "publishers",
+      "funders",
+      "concepts",
+    ];
+
+    for (const entityType of entityTypes) {
+      try {
+        const indexUrl = `${baseUrl}${entityType}/index.json`;
+        const response = await fetch(indexUrl, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const indexData = await response.json() as {
+          lastUpdated?: string;
+          files?: Record<string, {
+            url?: string;
+            lastRetrieved?: string;
+            contentHash?: string;
+          }>;
+        };
+
+        if (indexData.files) {
+          for (const [entityId, fileInfo] of Object.entries(indexData.files)) {
+            const lastRetrieved = fileInfo.lastRetrieved
+              ? new Date(fileInfo.lastRetrieved).getTime()
+              : Date.now();
+
+            entries.push({
+              entityType,
+              entityId,
+              cachedAt: lastRetrieved,
+              lastAccessedAt: lastRetrieved,
+              accessCount: 0, // Static cache doesn't track access count
+              dataSize: 0, // Would need to fetch to determine size
+            });
+          }
+        }
+      } catch (error) {
+        logger.debug(this.LOG_PREFIX, `Failed to fetch index for ${entityType}`, { error });
+      }
+    }
+
+    return entries;
+  }
 }
 
 export const staticDataProvider = new StaticDataProvider();
