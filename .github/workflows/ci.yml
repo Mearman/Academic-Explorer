@@ -246,11 +246,16 @@ jobs:
         run: pnpm audit --audit-level moderate
 
   # E2E tests - Full application tests (run after validate)
+  # Uses matrix sharding to run tests in parallel across 4 runners
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     needs: [validate, changes]
     if: always() && needs.validate.result == 'success' && needs.changes.outputs.code == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -292,15 +297,17 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Run E2E tests
-        run: pnpm nx test:e2e web
+      - name: Run E2E tests (shard ${{ matrix.shard }}/4)
+        run: |
+          cd apps/web
+          pnpm exec playwright test --shard=${{ matrix.shard }}/4
 
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v5
         if: failure()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-report-shard-${{ matrix.shard }}
+          path: apps/web/test-results/
           retention-days: 7
 
   # Aggregate coverage and generate reports

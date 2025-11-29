@@ -15,8 +15,9 @@ export default defineConfig({
   testMatch: ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"],
 
   // Run tests in parallel - E2E tests are browser-isolated
+  // With 4 shards in CI, each shard handles ~19 tests, so 3 workers per shard is efficient
   fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  workers: process.env.CI ? 3 : 4,
 
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
