@@ -4,6 +4,7 @@
  */
 
 import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import {
   ActionIcon,
   Menu,
@@ -28,7 +29,6 @@ import {
 import React, { useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 
 interface AddToCatalogueButtonProps {
   /** Entity type (works, authors, etc.) */

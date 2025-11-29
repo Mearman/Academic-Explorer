@@ -3,6 +3,7 @@
  * Handles lists, bibliographies, and entity management
  */
 
+import { logger } from "@bibgraph/utils";
 import { SPECIAL_LIST_IDS } from "@bibgraph/utils/storage/catalogue-db";
 import {
   Container,
@@ -42,7 +43,6 @@ import { ExportModal } from "@/components/catalogue/ExportModal";
 import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
-import { logger } from "@/lib/logger";
 import { settingsActions } from "@/stores/settings-store";
 
 

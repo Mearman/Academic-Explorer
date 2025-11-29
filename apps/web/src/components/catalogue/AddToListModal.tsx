@@ -3,6 +3,7 @@
  */
 
 import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import {
   Select,
   Button,
@@ -18,7 +19,6 @@ import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 
 
 interface AddToListModalProps {

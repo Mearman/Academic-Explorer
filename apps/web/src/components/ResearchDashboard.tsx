@@ -3,6 +3,7 @@
  * Provides a central hub for researchers to manage their research workflow
  */
 
+import { logger } from "@bibgraph/utils";
 import {
   Container,
   Grid,
@@ -43,7 +44,6 @@ import { useNavigate } from "@tanstack/react-router";
 import React, { useState, useEffect } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 
 
 interface QuickSearchProps {

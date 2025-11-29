@@ -8,7 +8,6 @@ import { createApiUrlRequest } from "@bibgraph/utils/storage/user-interactions-d
 import { type OpenAlexSearchParams } from "./route-schemas";
 
 // Re-export the type for use in other modules
-export type { OpenAlexSearchParams };
 
 /**
  * Pagination parameters that should be excluded from query bookmark identification

@@ -50,7 +50,6 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
 }
 
 // Re-export the official usePostHog hook for convenience
-export { usePostHog } from '@posthog/react'
 
 // Re-export PostHogErrorBoundary from @posthog/react
-export { PostHogErrorBoundary } from '@posthog/react'
+

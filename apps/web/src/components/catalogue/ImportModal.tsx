@@ -3,6 +3,7 @@
  */
 
 import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import {
   TextInput,
   Button,
@@ -30,7 +31,6 @@ import {
 import React, { useState, useCallback } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 import type { ExportFormat } from "@/types/catalogue";
 
 

@@ -6,6 +6,7 @@
 import type { CachedEntityEntry } from "@bibgraph/client";
 import { cachedOpenAlex } from "@bibgraph/client";
 import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import {
   Card,
   Group,
@@ -34,7 +35,6 @@ import { useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState, useCallback } from "react";
 
 
-import { logger } from "@/lib/logger";
 
 interface CacheTierSummary {
   memory: { count: number; entities: CachedEntityEntry[] };

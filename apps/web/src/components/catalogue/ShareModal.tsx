@@ -2,6 +2,7 @@
  * Modal component for sharing catalogue lists
  */
 
+import { logger } from "@bibgraph/utils";
 import {
   Button,
   Group,
@@ -23,7 +24,6 @@ import {
 import QRCode from "qrcode";
 import React, { useState, useEffect } from "react";
 
-import { logger } from "@/lib/logger";
 
 interface ShareModalProps {
   shareUrl: string;

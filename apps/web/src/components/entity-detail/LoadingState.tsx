@@ -1,8 +1,8 @@
 import type { EntityType } from "@bibgraph/types";
+import { logger } from "@bibgraph/utils";
 import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
 import React from "react";
 
-import { logger } from "@/lib/logger";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 

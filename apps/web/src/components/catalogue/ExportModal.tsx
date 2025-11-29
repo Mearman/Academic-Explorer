@@ -2,6 +2,7 @@
  * Modal component for exporting catalogue lists
  */
 
+import { logger } from "@bibgraph/utils";
 import {
   Radio,
   Button,
@@ -15,7 +16,6 @@ import { IconAlertCircle, IconCheck, IconDownload } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 
 
 type ExportFormat = "compressed" | "json" | "csv" | "bibtex";

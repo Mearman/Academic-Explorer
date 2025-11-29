@@ -3,6 +3,7 @@
  * Provides sophisticated search options with filters and refinements
  */
 
+import { logger } from "@bibgraph/utils";
 import {
   Card,
   TextInput,
@@ -35,7 +36,6 @@ import {
 } from "@tabler/icons-react";
 import React, { useState, useEffect } from "react";
 
-import { logger } from "@/lib/logger";
 
 
 interface SearchFilters {

@@ -3,6 +3,7 @@
  */
 
 import type { ListType } from "@bibgraph/utils";
+import { logger } from "@bibgraph/utils";
 import {
   TextInput,
   Textarea,
@@ -17,7 +18,6 @@ import {
 } from "@mantine/core";
 import React, { useState } from "react";
 
-import { logger } from "@/lib/logger";
 
 interface CreateListModalProps {
   onClose: () => void;

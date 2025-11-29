@@ -4,6 +4,7 @@
 
 import type { EntityType } from "@bibgraph/types";
 import { type CatalogueList } from "@bibgraph/utils"
+import { logger } from "@bibgraph/utils";
 import {
   Card,
   Group,
@@ -35,7 +36,6 @@ import {
 import React, { useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { logger } from "@/lib/logger";
 
 interface CatalogueListProps {
   lists: CatalogueList[];

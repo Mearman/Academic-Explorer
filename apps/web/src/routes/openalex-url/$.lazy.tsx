@@ -1,4 +1,4 @@
-import { EntityDetectionService } from "@bibgraph/utils";
+import { EntityDetectionService , logger } from "@bibgraph/utils";
 import {
   useNavigate,
   useParams,
@@ -7,7 +7,6 @@ import {
 import { useEffect } from "react";
 
 // Temporarily remove logger import to avoid potential issues
-import { logger } from "@/lib/logger";
 
 function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
   const obj: Record<string, unknown> = {};

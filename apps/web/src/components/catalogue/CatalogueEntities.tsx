@@ -6,6 +6,7 @@
 import type { EntityType } from "@bibgraph/types";
 import { ENTITY_METADATA } from "@bibgraph/types";
 import { type CatalogueEntity } from "@bibgraph/utils"
+import { logger } from "@bibgraph/utils";
 import {
   DndContext,
   closestCenter,
@@ -57,7 +58,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useState, useRef } from "react";
 
 import { useCatalogueContext } from "@/contexts/catalogue-context";
-import { logger } from "@/lib/logger";
 import {
   isWorkMetadata,
   isAuthorMetadata,
