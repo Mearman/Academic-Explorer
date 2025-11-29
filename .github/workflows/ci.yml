@@ -17,10 +17,10 @@ on:
         default: false
         type: boolean
 
-# Group runs by workflow + branch/PR but don't cancel in-progress runs
+# Group runs by workflow + branch/PR and cancel in-progress runs on new pushes
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: "20"
