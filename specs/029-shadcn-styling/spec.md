@@ -14,6 +14,7 @@
 - **Q**: Where should styling system preferences be stored and managed? → **A**: Settings store alongside theme preferences
 - **Q**: How should components adapt to different styling systems? → **A**: Styling injection pattern with multiple Vanilla Extract theme contracts (MantineThemeContract, ShadcnThemeContract, RadixThemeContract)
 - **Q**: Where should users access the styling system switcher in the UI? → **A**: Both locations with sync (header toggle + settings page)
+- **Q**: Should color preferences be maintained when switching between styling systems? → **A**: Yes - implement color synchronization with automatic mapping between systems while allowing per-system fine-tuning
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -78,6 +79,23 @@ As a user switching between light and dark modes within any styling system, I ex
 
 ---
 
+### User Story 5 - Color Synchronization (Priority: P1)
+
+As a user customizing the BibGraph interface, I expect my selected color preference to be maintained when switching between different styling systems, so I don't lose my visual customization when exploring different design approaches.
+
+**Why this priority**: Essential UX feature - users expect their color choices to persist across styling system changes
+
+**Independent Test**: Can be fully tested by setting a color in one system, switching to another system, and verifying the color mapping is applied correctly
+
+**Acceptance Scenarios**:
+
+1. **Given** I set my primary color to green in the Mantine system, **When** I switch to shadcn system, **Then** the interface automatically uses the green color equivalent (hue 120) in shadcn styling
+2. **Given** I set my primary color to blue (hue 220) in shadcn system, **When** I switch to Mantine system, **Then** the interface automatically uses Mantine's blue color for primary elements
+3. **Given** I have a custom color preference set, **When** I switch between any styling systems, **Then** my color preference is preserved through automatic mapping while allowing per-system fine-tuning
+4. **Given** I want different color nuances per system, **When** I override the mapped color in a specific system, **Then** the override is preserved when returning to that system while maintaining the global preference for other systems
+
+---
+
 ### Edge Cases
 
 - What happens when styling system switching occurs during component interactions?
@@ -106,6 +124,11 @@ As a user switching between light and dark modes within any styling system, I ex
 - **FR-013**: System MUST maintain bundle size increase under 10% from current baseline (increased to accommodate multiple theme contracts)
 - **FR-014**: System MUST ensure styling system switching completes in under 200ms (includes theme contract loading and application)
 - **FR-015**: System MUST maintain all existing Mantine component functionality while enabling switchable styling
+- **FR-016**: System MUST provide color synchronization that maintains user's color preference when switching between styling systems
+- **FR-017**: System MUST automatically map colors between styling systems (Mantine color names ↔ shadcn HSL hues ↔ Radix accent colors)
+- **FR-018**: System MUST allow per-system color fine-tuning while preserving global color preference
+- **FR-019**: System MUST store global color preference independently of system-specific color settings
+- **FR-020**: System MUST provide color mapping for common colors (red, blue, green, violet, orange, yellow, purple, gray) across all systems
 
 ### Key Entities *(include if feature involves data)*
 
@@ -133,6 +156,11 @@ As a user switching between light and dark modes within any styling system, I ex
 - **SC-010**: Styling system preferences persist correctly in settings store across browser sessions
 - **SC-011**: Header toggle and settings page styling system controls remain synchronized
 - **SC-012**: All existing Mantine component functionality is preserved across all styling systems
+- **SC-013**: User's color preference is maintained when switching between all three styling systems (100% consistency)
+- **SC-014**: Color mapping completes in under 50ms during styling system switches (included in <200ms total)
+- **SC-015**: All common colors (red, blue, green, violet, orange, yellow, purple, gray) have equivalent mappings across systems
+- **SC-016**: Per-system color overrides are preserved while global color preference remains as default
+- **SC-017**: Color synchronization works correctly across light/dark theme modes
 
 ## Constitution Alignment *(recommended)*
 
