@@ -10,6 +10,7 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
+import { minHeightFull, flex1, textBreakAll, overflowHidden, borderSecondary, overflowX, borderBottomSecondary, overflowScroll, textMonospace, codeDisplay } from "@/styles";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
@@ -110,7 +111,7 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={{ minHeight: "100vh" }} data-testid="entity-detail-layout">
+    <Container size="lg" p="xl" bg="var(--mantine-color-body)" className={minHeightFull} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
         <Paper p="xl" radius="xl" withBorder>
@@ -139,7 +140,7 @@ export function EntityDetailLayout({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       {config.name} ID:
                     </Text>
-                    <Code style={{ flex: 1, wordBreak: "break-all" }}>
+                    <Code className={`${flex1} ${textBreakAll}`}>
                       {entityId}
                     </Code>
                   </Group>
@@ -147,7 +148,7 @@ export function EntityDetailLayout({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       Select fields:
                     </Text>
-                    <Text size="sm" c="dimmed" style={{ flex: 1 }}>
+                    <Text size="sm" c="dimmed" className={flex1}>
                       {selectParam && typeof selectParam === 'string'
                         ? selectParam
                         : `default (${selectFields.length} fields)`}
@@ -231,8 +232,8 @@ export function EntityDetailLayout({
 
         {/* Content Section */}
         {viewMode === "raw" ? (
-          <Paper withBorder radius="xl" style={{ overflow: "hidden" }}>
-            <Paper p="md" bg={colors.background.tertiary} style={{ borderBottom: `1px solid ${colors.border.secondary}` }}>
+          <Paper withBorder radius="xl" className={overflowHidden}>
+            <Paper p="md" bg={colors.background.tertiary} className={borderBottomSecondary()}>
               <Group gap="sm">
                 <IconCode size={20} color={colors.text.primary} />
                 <Text size="lg" fw={600} c={colors.text.primary}>
@@ -240,16 +241,12 @@ export function EntityDetailLayout({
                 </Text>
               </Group>
             </Paper>
-            <Paper p="xl" bg={colors.background.secondary} style={{ overflowX: "auto", maxHeight: "1000px" }}>
+            <Paper p="xl" bg={colors.background.secondary} className={overflowScroll()}>
               <Text
                 component="pre"
                 size="sm"
                 c={colors.text.primary}
-                style={{
-                  fontFamily: "'SF Mono', 'Monaco', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
-                  whiteSpace: "pre",
-                  lineHeight: 1.6
-                }}
+                className={codeDisplay}
               >
                 {JSON.stringify(data, null, 2)}
               </Text>

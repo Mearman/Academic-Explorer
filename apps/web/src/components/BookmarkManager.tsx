@@ -37,6 +37,7 @@ import {
   useSelectedBookmarks,
 } from "@/contexts/bookmark-selection-context";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { cursorPointer, textDimmed } from "@/styles";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;
@@ -98,8 +99,7 @@ function BookmarkCard({
             flex={1}
             fw={500}
             c="inherit"
-            style={{ cursor: "pointer" }}
-            className="hover:text-blue-600 transition-colors"
+            className={`${cursorPointer} hover:text-blue-600 transition-colors`}
             data-testid="bookmark-title-link"
           >
             {title}
@@ -328,7 +328,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       {filteredBookmarks.length === 0 ? (
         <Card withBorder p="xl">
           <Stack align="center" gap="md">
-            <div style={{ color: "var(--mantine-color-gray-4)" }}>
+            <div className={textDimmed}>
             <IconBookmarkOff size={48} />
           </div>
             <Text size="lg" fw={500}>
