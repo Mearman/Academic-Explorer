@@ -115,11 +115,11 @@ function ComparisonResults() {
       if (savedDatasets) {
         const parsedDatasets: unknown = JSON.parse(savedDatasets);
         if (isSTARDatasetArray(parsedDatasets)) {
-          const datasets = parsedDatasets;
-          setStarDatasets(datasets);
+          
+          setStarDatasets(parsedDatasets);
 
           // Initialize comparison runs for each dataset
-          const runs: ComparisonRun[] = datasets.map((dataset) => ({
+          const runs: ComparisonRun[] = parsedDatasets.map((dataset) => ({
             id: `run_${dataset.id}`,
             datasetName: dataset.name,
             runDate: new Date(),

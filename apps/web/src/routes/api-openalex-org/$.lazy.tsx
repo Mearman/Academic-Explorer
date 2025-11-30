@@ -101,7 +101,7 @@ function ApiOpenAlexRoute() {
 
         // Handle the case where the splat contains the path part of an OpenAlex URL
         // (when the test constructs /api-openalex-org/{path})
-        const pathWithQuery = decodedId;
+        
 
         // Special handling for external IDs with colons (ror:, issn:, orcid:, etc.)
         // These need to be routed to dedicated external ID routes
@@ -109,7 +109,7 @@ function ApiOpenAlexRoute() {
         const issnPattern = /^sources\/issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
         const orcidPattern = /^authors\/orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
 
-        const rorMatch = pathWithQuery.match(rorPattern);
+        const rorMatch = decodedId.match(rorPattern);
         if (rorMatch) {
           logger.debug(
             "routing",
@@ -121,7 +121,7 @@ function ApiOpenAlexRoute() {
           return;
         }
 
-        const issnMatch = pathWithQuery.match(issnPattern);
+        const issnMatch = decodedId.match(issnPattern);
         if (issnMatch) {
           logger.debug(
             "routing",
@@ -133,7 +133,7 @@ function ApiOpenAlexRoute() {
           return;
         }
 
-        const orcidMatch = pathWithQuery.match(orcidPattern);
+        const orcidMatch = decodedId.match(orcidPattern);
         if (orcidMatch) {
           logger.debug(
             "routing",
@@ -147,11 +147,11 @@ function ApiOpenAlexRoute() {
 
         // Check if this looks like an OpenAlex path (starts with entity type or known endpoint)
         const entityType = EntityDetectionService.detectEntityType(
-          pathWithQuery.split("?")[0],
+          decodedId.split("?")[0],
         );
         if (entityType) {
           // This is an entity path like "W2741809807"
-          const targetPath = `/${entityType}/${pathWithQuery}`;
+          const targetPath = `/${entityType}/${decodedId}`;
           const { path, search } = parsePathAndSearch(targetPath);
           navigate({ to: path, search, replace: true });
           return;
@@ -159,18 +159,18 @@ function ApiOpenAlexRoute() {
 
         // Check if this is a list endpoint
         if (
-          pathWithQuery.startsWith("works") ||
-          pathWithQuery.startsWith("authors") ||
-          pathWithQuery.startsWith("institutions") ||
-          pathWithQuery.startsWith("concepts") ||
-          pathWithQuery.startsWith("funders") ||
-          pathWithQuery.startsWith("publishers") ||
-          pathWithQuery.startsWith("sources") ||
-          pathWithQuery.startsWith("topics") ||
-          pathWithQuery.startsWith("keywords")
+          decodedId.startsWith("works") ||
+          decodedId.startsWith("authors") ||
+          decodedId.startsWith("institutions") ||
+          decodedId.startsWith("concepts") ||
+          decodedId.startsWith("funders") ||
+          decodedId.startsWith("publishers") ||
+          decodedId.startsWith("sources") ||
+          decodedId.startsWith("topics") ||
+          decodedId.startsWith("keywords")
         ) {
           // Preserve query parameters by using navigate with parsed search
-          const targetPath = `/${pathWithQuery}`;
+          const targetPath = `/${decodedId}`;
           const { path, search } = parsePathAndSearch(targetPath, routeSearch as Record<string, unknown>);
           logger.debug(
             "routing",
@@ -183,8 +183,8 @@ function ApiOpenAlexRoute() {
         }
 
         // Check if this is an autocomplete endpoint
-        if (pathWithQuery.startsWith("autocomplete/")) {
-          const targetPath = `/${pathWithQuery}`;
+        if (decodedId.startsWith("autocomplete/")) {
+          const targetPath = `/${decodedId}`;
           const { path, search } = parsePathAndSearch(targetPath);
           navigate({ to: path, search, replace: true });
           return;
