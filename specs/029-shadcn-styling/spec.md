@@ -5,6 +5,12 @@
 **Status**: Draft
 **Input**: User description: "create a spec from this plan"
 
+## Clarifications
+
+### Session 2025-11-30
+- **Q**: Approach to shadcn integration - migrate from Mantine or enhance Mantine? → **A**: Implement shadcn-inspired theming for Mantine using Vanilla Extract (reference: https://github.com/RubixCube-Innovations/mantine-theme-builder), NOT migrate from Mantine to shadcn
+- **Q**: Theming scope - color palettes, entity styling, or both? → **A**: Use hash-based colors (already working, must be preserved), focus on academic color palettes and UI component styling patterns
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Broken UI Component Fix (Priority: P1)
@@ -63,7 +69,7 @@ As a user switching between light and dark modes, I expect the theme to apply co
 ### Functional Requirements
 
 - **FR-001**: System MUST eliminate all Tailwind class usage from production UI components
-- **FR-002**: System MUST replace Mantine CSS variables with shadcn CSS variables in UI components
+- **FR-002**: System MUST implement shadcn-inspired theming for Mantine using Vanilla Extract (NOT migrate from Mantine to shadcn)
 - **FR-003**: System MUST preserve existing hash-based color logic for graph visualization nodes and edges
 - **FR-004**: System MUST establish consistent visual design patterns using the research theme's 20 color palettes
 - **FR-005**: System MUST fix broken DataState component and other components with styling issues

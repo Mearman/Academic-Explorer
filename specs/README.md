@@ -7,8 +7,8 @@ This directory contains all feature specifications for BibGraph, organized using
 | Status | Count |
 |--------|-------|
 | ✅ Complete | 19 |
-| 🚧 In Progress | 4 |
-| 📝 Draft | 4 |
+| 🚧 In Progress | 5 |
+| 📝 Draft | 3 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -266,9 +266,9 @@ Extension of spec-015 for complete relationship coverage. Added relationship ext
 ---
 
 ### spec-029: shadcn Styling Standardization
-**Status**: 📝 Draft | **Created**: 2025-11-30
+**Status**: 🚧 In Progress (Planning Complete) | **Created**: 2025-11-30
 
-Standardize UI component styling using shadcn theme system while preserving existing hash-based color logic for graph visualization. Eliminate Tailwind classes from production UI components, replace Mantine CSS variables with shadcn variables, and implement consistent visual design patterns using the research theme's 20 color palettes.
+Standardize UI component styling using shadcn-inspired theming for Mantine with official Vanilla Extract integration while preserving existing hash-based color logic for graph visualization. 52 atomic tasks across 8 phases: eliminate Tailwind classes, replace Mantine CSS variables with Vanilla Extract theme system, implement consistent visual design patterns using research theme's 20 color palettes, ensure <100ms theme switching with <5% bundle increase.
 
 [View Spec](./029-shadcn-styling/)
 
