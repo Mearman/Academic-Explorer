@@ -75,14 +75,14 @@ function getVar(data: DataContext, path: JsonLogicValue): JsonLogicValue {
 	}
 
 	const parts = path.split(".")
-	let current: JsonLogicValue = data
+	
 	for (const part of parts) {
-		if (current === null || current === undefined) {
+		if (data === null || data === undefined) {
 			return undefined
 		}
-		current = current[part]
+		data = data[part]
 	}
-	return current
+	return data
 }
 
 function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext): JsonLogicValue {

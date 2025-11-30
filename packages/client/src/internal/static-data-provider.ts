@@ -249,7 +249,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
       if (parsedData === null || parsedData === undefined) {
         throw new Error(`Invalid JSON data in file: ${filePath}`);
       }
-      const data = parsedData;
+      
 
       this.stats.hits++;
       const loadTime = Date.now() - startTime;
@@ -257,7 +257,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
       return {
         found: true,
-        data,
+        parsedData,
         cacheHit: true,
         tier: CacheTier.LOCAL_DISK,
         loadTime,
