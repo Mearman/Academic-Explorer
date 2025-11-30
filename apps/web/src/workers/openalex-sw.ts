@@ -85,7 +85,7 @@ declare const self: ServiceWorkerGlobalScope & {
 // Note: precacheManifest contains the list of files to cache
 // const precacheManifest = self.__WB_MANIFEST;
 
-const sw = self;
+
 
 // Service worker initialized with precache manifest
 // Note: precacheManifest contains the list of files to cache
@@ -101,19 +101,19 @@ interface FetchEvent extends ExtendableEvent {
 }
 
 // Install event - set up the service worker
-sw.addEventListener("install", () => {
+self.addEventListener("install", () => {
   // Service worker installation starting - activating immediately
-  sw.skipWaiting(); // Activate immediately
+  self.skipWaiting(); // Activate immediately
 });
 
 // Activate event - clean up old caches
-sw.addEventListener("activate", (event) => {
+self.addEventListener("activate", (event) => {
   // Service worker activation starting - claiming all clients
-  (event as ExtendableEvent).waitUntil(sw.clients.claim()); // Take control immediately
+  (event as ExtendableEvent).waitUntil(self.clients.claim()); // Take control immediately
 });
 
 // Fetch event - intercept network requests
-sw.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", (event) => {
   const fetchEvent = event as FetchEvent;
   const { request } = fetchEvent;
   const url = new URL(request.url);
@@ -129,9 +129,9 @@ sw.addEventListener("fetch", (event) => {
  */
 function isDevelopmentEnvironment(): boolean {
   return (
-    sw.location.hostname === "localhost" ||
-    sw.location.hostname === "127.0.0.1" ||
-    sw.location.port === "5173"
+    self.location.hostname === "localhost" ||
+    self.location.hostname === "127.0.0.1" ||
+    self.location.port === "5173"
   );
 }
 

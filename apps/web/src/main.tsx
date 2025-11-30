@@ -180,7 +180,7 @@ import "@mantine/dates/styles.css";
 import { shadcnMantineTheme } from "./styles/shadcn-mantine-theme";
 
 // Use the complete shadcn theme system
-const theme = shadcnMantineTheme;
+
 
 // Initialize global error handling, network monitoring, and performance tracking
 setupGlobalErrorHandling(logger);
@@ -346,7 +346,7 @@ const reactErrorHandlers = {
 createRoot(rootElement, reactErrorHandlers).render(
   <QueryClientProvider client={queryClient}>
     <PostHogProvider>
-      <MantineProvider theme={theme} defaultColorScheme="auto">
+      <MantineProvider theme={shadcnMantineTheme} defaultColorScheme="auto">
         <ModalsProvider>
           <Notifications />
           <StorageProviderWrapper provider={storageProvider}>
