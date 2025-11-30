@@ -70,6 +70,7 @@
     "scripts": "Build and utility scripts",
     "tools": "Development tools",
     "release": "Release configuration",
-    "docs": "Documentation"
+    "docs": "Documentation",
+    "spec": "Feature specifications (specs/)"
   }
 }

@@ -8,7 +8,7 @@ This directory contains all feature specifications for BibGraph, organized using
 |--------|-------|
 | ✅ Complete | 19 |
 | 🚧 In Progress | 4 |
-| 📝 Draft | 3 |
+| 📝 Draft | 4 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -265,6 +265,15 @@ Extension of spec-015 for complete relationship coverage. Added relationship ext
 
 ---
 
+### spec-029: shadcn Styling Standardization
+**Status**: 📝 Draft | **Created**: 2025-11-30
+
+Standardize UI component styling using shadcn theme system while preserving existing hash-based color logic for graph visualization. Eliminate Tailwind classes from production UI components, replace Mantine CSS variables with shadcn variables, and implement consistent visual design patterns using the research theme's 20 color palettes.
+
+[View Spec](./029-shadcn-styling/)
+
+---
+
 ## Known Issues
 
 ### Spec Numbering Cleanup (2025-11-25)
@@ -317,4 +326,4 @@ All specifications must align with the [BibGraph Constitution](../.specify/memor
 
 ---
 
-**Last Updated**: 2025-11-26 | **Total Specs**: 28 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-11-30 | **Total Specs**: 29 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
