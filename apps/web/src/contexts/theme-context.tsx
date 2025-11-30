@@ -9,11 +9,13 @@ import type { ShadcnPalette } from '@/styles/shadcn-colors'
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 type ColorScheme = ShadcnPalette
 type ColorMode = 'light' | 'dark' | 'auto'
+type BorderRadius = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 interface ThemeConfig {
   componentLibrary: ComponentLibrary
   colorScheme: ColorScheme
   colorMode: ColorMode
+  borderRadius: BorderRadius
 }
 
 // Theme context interface
@@ -22,6 +24,7 @@ interface ThemeContextType {
   setComponentLibrary: (library: ComponentLibrary) => void;
   setColorScheme: (scheme: ColorScheme) => void;
   setColorMode: (mode: ColorMode | "auto") => void;
+  setBorderRadius: (radius: BorderRadius) => void;
   resetTheme: () => void;
 }
 
@@ -33,6 +36,7 @@ const defaultThemeConfig: ThemeConfig = {
   componentLibrary: "mantine",
   colorScheme: "blue",
   colorMode: "light",
+  borderRadius: "md",
 };
 
 // Theme provider component
@@ -67,9 +71,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const setBorderRadius = (radius: BorderRadius) => {
+    setConfig((prev) => ({
+      ...prev,
+      borderRadius: radius,
+    }));
+  };
+
   const resetTheme = () => {
     setConfig(defaultThemeConfig);
   };
+
+  // Border radius value mappings
+  const radiusValues = {
+    xs: "2px",
+    sm: "4px",
+    md: "8px",
+    lg: "12px",
+    xl: "16px",
+  } as const;
 
   // Keyboard shortcuts for theme switching
   useHotkeys([
@@ -88,7 +108,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               textTransform: "none",
               letterSpacing: "0.025em",
               transition: "all 0.2s ease",
-              borderRadius: "6px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -96,7 +116,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           styles: {
             root: {
               boxShadow: "var(--mantine-shadow-md)",
-              borderRadius: "8px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -106,7 +126,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               fontSize: "14px",
               lineHeight: "1.5",
               minHeight: "36px",
-              borderRadius: "6px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -119,7 +139,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             root: {
               fontWeight: 500,
               transition: "all 0.15s ease-in-out",
-              borderRadius: "8px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -127,7 +147,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           styles: {
             root: {
               boxShadow: "var(--mantine-shadow-sm)",
-              borderRadius: "12px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -137,7 +157,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               fontSize: "14px",
               lineHeight: "1.5",
               minHeight: "40px",
-              borderRadius: "8px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -150,7 +170,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             root: {
               fontWeight: 400,
               transition: "all 0.1s ease",
-              borderRadius: "4px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -158,7 +178,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           styles: {
             root: {
               boxShadow: "var(--mantine-shadow-sm)",
-              borderRadius: "6px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -168,7 +188,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               fontSize: "14px",
               lineHeight: "1.5",
               minHeight: "32px",
-              borderRadius: "4px",
+              borderRadius: radiusValues[config.borderRadius],
             },
           },
         },
@@ -197,6 +217,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setComponentLibrary,
     setColorScheme,
     setColorMode,
+    setBorderRadius,
     resetTheme,
   };
 

@@ -19,14 +19,14 @@ import {
 } from "@tabler/icons-react";
 
 import { useTheme } from "@/contexts/theme-context";
-import type { ComponentLibrary, ColorScheme } from "@/styles/theme-contracts";
+import type { ComponentLibrary, ColorScheme, BorderRadius } from "@/styles/theme-contracts";
 
 interface ThemeSettingsProps {
   onClose?: () => void;
 }
 
 export function ThemeSettings({ onClose }: ThemeSettingsProps) {
-  const { config, setComponentLibrary, setColorScheme, setColorMode, resetTheme } = useTheme();
+  const { config, setComponentLibrary, setColorScheme, setColorMode, setBorderRadius, resetTheme } = useTheme();
 
   const componentLibraryData = [
     {
@@ -85,6 +85,14 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
     },
   ];
 
+  const borderRadiusData = [
+    { value: "xs", label: "XS (2px)", description: "Extra small radius" },
+    { value: "sm", label: "SM (4px)", description: "Small radius" },
+    { value: "md", label: "MD (8px)", description: "Medium radius" },
+    { value: "lg", label: "LG (12px)", description: "Large radius" },
+    { value: "xl", label: "XL (16px)", description: "Extra large radius" },
+  ] as const;
+
   const handleComponentLibraryChange = (value: string | null) => {
     if (value && ["mantine", "shadcn", "radix"].includes(value)) {
       setComponentLibrary(value as ComponentLibrary);
@@ -100,6 +108,12 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
   const handleColorModeChange = (value: string) => {
     if (["light", "dark", "auto"].includes(value)) {
       setColorMode(value as "light" | "dark" | "auto");
+    }
+  };
+
+  const handleBorderRadiusChange = (value: string | null) => {
+    if (value && ["xs", "sm", "md", "lg", "xl"].includes(value)) {
+      setBorderRadius(value as BorderRadius);
     }
   };
 
@@ -130,6 +144,9 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
             </Badge>
             <Badge variant="light" size="sm">
               {config.colorMode}
+            </Badge>
+            <Badge variant="light" size="sm">
+              Radius: {config.borderRadius.toUpperCase()}
             </Badge>
           </Group>
         </Group>
@@ -190,6 +207,36 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
           value={config.colorMode}
           onChange={handleColorModeChange}
           fullWidth
+        />
+      </Stack>
+
+      {/* Border Radius Selection */}
+      <Stack gap="sm">
+        <Text size="sm" fw={600}>
+          Border Radius
+        </Text>
+        <Select
+          data={borderRadiusData}
+          value={config.borderRadius}
+          onChange={handleBorderRadiusChange}
+          description="Choose the border radius for components"
+          renderOption={({ option }) => (
+            <Group gap={8}>
+              <div
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: option.value === "xs" ? "2px" :
+                                 option.value === "sm" ? "4px" :
+                                 option.value === "md" ? "8px" :
+                                 option.value === "lg" ? "12px" : "16px",
+                  backgroundColor: "var(--mantine-color-gray-6)",
+                  border: "1px solid var(--mantine-color-gray-3)",
+                }}
+              />
+              <span>{option.label}</span>
+            </Group>
+          )}
         />
       </Stack>
 
