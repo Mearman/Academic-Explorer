@@ -1,11 +1,12 @@
 /**
- * Theme colors utility hook
- * Provides consistent access to theme colors across light and dark modes
+ * Theme colors utility hook using shadcn theme system
+ * Provides consistent access to shadcn theme colors across light and dark modes
  */
 
-import { detectEntityType , getEntityColor as getTaxonomyColorName } from "@bibgraph/types";
+import { detectEntityType, getEntityColor as getTaxonomyColorName } from "@bibgraph/types";
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useMemo, useCallback } from "react";
+import { getAcademicEntityColors } from "@/styles/css-variable-resolver";
 
 export function useThemeColors() {
   const theme = useMantineTheme();
@@ -19,7 +20,7 @@ export function useThemeColors() {
           ? "dark"
           : "light";
       } catch {
-        return "light"; // Fallback to light mode if matchMedia fails
+        return "light";
       }
     }
     return colorScheme;
@@ -27,9 +28,12 @@ export function useThemeColors() {
 
   const isDark = resolvedColorScheme === "dark";
 
+  // Get shadcn academic entity colors
+  const shadcnEntityColors = getAcademicEntityColors(resolvedColorScheme);
+
   // Base color utilities - memoized to prevent React 19 infinite loops
   const getColor = useCallback(
-    (color: string, shade: number = 5) => {
+    (color: string, shade: number = 6) => {
       if (color in theme.colors) {
         return theme.colors[color][shade] || color;
       }
@@ -38,64 +42,56 @@ export function useThemeColors() {
     [theme.colors],
   );
 
-  // Semantic colors that adapt to light/dark mode - cached to prevent React 19 infinite loops
+  // Semantic colors using shadcn theme system - cached to prevent React 19 infinite loops
   const colors = useMemo(
     () => ({
-      // Text colors - using Mantine CSS variables for better theme integration
+      // Text colors using shadcn semantic colors
       text: {
-        primary: "var(--mantine-color-text)",
-        secondary: isDark ? (theme.colors.gray?.[3] ?? "#d1d5db") : (theme.colors.gray?.[6] ?? "#4b5563"),
-        tertiary: isDark ? (theme.colors.gray?.[4] ?? "#9ca3af") : (theme.colors.gray?.[5] ?? "#6b7280"),
-        inverse: isDark ? (theme.colors.gray?.[9] ?? "#111827") : (theme.colors.gray?.[0] ?? "#f9fafb"),
+        primary: isDark ? theme.colors.stone?.[0] ?? "#fafaf9" : theme.colors.stone?.[9] ?? "#0c0a09",
+        secondary: isDark ? theme.colors.zinc?.[4] ?? "#a1a1aa" : theme.colors.zinc?.[5] ?? "#71717a",
+        tertiary: isDark ? theme.colors.zinc?.[5] ?? "#71717a" : theme.colors.zinc?.[4] ?? "#a1a1aa",
+        inverse: isDark ? theme.colors.stone?.[9] ?? "#0c0a09" : theme.colors.stone?.[0] ?? "#fafaf9",
       },
 
-      // Background colors - using Mantine CSS variables for better theme integration
+      // Background colors using shadcn semantic colors
       background: {
-        primary: "var(--mantine-color-body)",
-        secondary: isDark ? (theme.colors.gray?.[8] ?? "#1f2937") : (theme.colors.gray?.[0] ?? "#f9fafb"),
-        tertiary: isDark ? (theme.colors.gray?.[7] ?? "#374151") : (theme.colors.gray?.[1] ?? "#f3f4f6"),
-        overlay: isDark ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.95)",
-        blur: isDark ? "rgba(31, 41, 55, 0.95)" : "rgba(255, 255, 255, 0.95)",
+        primary: isDark ? theme.colors.slate?.[10] ?? "#020617" : theme.colors.slate?.[0] ?? "#f8fafc",
+        secondary: isDark ? theme.colors.slate?.[9] ?? "#0f172a" : theme.colors.slate?.[1] ?? "#f1f5f9",
+        tertiary: isDark ? theme.colors.slate?.[8] ?? "#1e293b" : theme.colors.slate?.[2] ?? "#e2e8f0",
+        overlay: isDark ? "rgba(2, 6, 23, 0.8)" : "rgba(248, 250, 252, 0.95)",
+        blur: isDark ? "rgba(15, 23, 42, 0.95)" : "rgba(241, 245, 249, 0.95)",
       },
 
-      // Border colors - using Mantine CSS variables for better theme integration
+      // Border colors using shadcn semantic colors
       border: {
-        primary: "var(--mantine-color-default-border)",
-        secondary: isDark ? (theme.colors.gray?.[6] ?? "#4b5563") : (theme.colors.gray?.[3] ?? "#d1d5db"),
+        primary: isDark ? theme.colors.zinc?.[8] ?? "#27272a" : theme.colors.zinc?.[2] ?? "#e4e4e7",
+        secondary: isDark ? theme.colors.zinc?.[7] ?? "#3f3f46" : theme.colors.zinc?.[3] ?? "#d4d4d8",
       },
 
-      // Semantic colors
-      primary: theme.colors.blue?.[5] ?? "#3b82f6",
-      success: theme.colors.green?.[5] ?? "#10b981",
-      warning: theme.colors.yellow?.[5] ?? "#f59e0b",
-      error: theme.colors.red?.[5] ?? "#ef4444",
-      info: theme.colors.blue?.[5] ?? "#3b82f6",
+      // Semantic colors using shadcn primary/secondary system
+      primary: theme.colors.stone?.[6] ?? "#57534e",
+      secondary: theme.colors.zinc?.[6] ?? "#52525b",
+      success: theme.colors.emerald?.[6] ?? "#059669",
+      warning: theme.colors.orange?.[6] ?? "#ea580c",
+      error: theme.colors.red?.[6] ?? "#dc2626",
+      info: theme.colors.sky?.[6] ?? "#0284c7",
 
-      // Academic entity colors
+      // Academic entity colors using shadcn palette mapping
       entity: {
-        work: theme.colors.blue?.[5] ?? "#3b82f6",
-        author: theme.colors.green?.[5] ?? "#51cf66",
-        source: theme.colors.purple?.[5] ?? "#c084fc",
-        institution: theme.colors.orange?.[5] ?? "#ea580c",
-        concept: theme.colors.pink?.[5] ?? "#f06595",
-        topic: theme.colors.red?.[5] ?? "#fa5252",
-        publisher: theme.colors.teal?.[5] ?? "#14b8a6",
-        funder: theme.colors.cyan?.[5] ?? "#22b8cf",
+        work: getColor(shadcnEntityColors.work, 6),
+        author: getColor(shadcnEntityColors.author, 6),
+        source: getColor(shadcnEntityColors.source, 6),
+        institution: getColor(shadcnEntityColors.institution, 6),
+        concept: getColor(shadcnEntityColors.concept, 6),
+        topic: getColor(shadcnEntityColors.topic, 6),
+        publisher: getColor(shadcnEntityColors.publisher, 6),
+        funder: getColor(shadcnEntityColors.funder, 6),
       },
 
-      // Entity to color name mapping for shade access
-      entityColorNames: {
-        work: "blue",
-        author: "green",
-        source: "purple",
-        institution: "orange",
-        concept: "pink",
-        topic: "red",
-        publisher: "teal",
-        funder: "cyan",
-      },
+      // Entity to shadcn color name mapping for shade access
+      entityColorNames: shadcnEntityColors,
     }),
-    [theme.colors, isDark],
+    [theme.colors, isDark, shadcnEntityColors, getColor],
   );
 
   // Type guard for valid entity color keys
@@ -163,8 +159,9 @@ export function useThemeColors() {
     },
     [colors, isValidEntityColorKey],
   );
+
   const getEntityColorShade = useCallback(
-    (entityType: string | null | undefined, shade: number = 5): string => {
+    (entityType: string | null | undefined, shade: number = 6): string => {
       // Handle undefined or null entity type
       if (!entityType) {
         return getColor("blue", shade);
@@ -187,7 +184,7 @@ export function useThemeColors() {
         const detectedType = detectEntityType(entityType);
         if (detectedType) {
           const taxonomyColorName = getTaxonomyColorName(detectedType);
-          // Taxonomy color names directly map to Mantine palette names
+          // Taxonomy color names directly map to shadcn palette names
           return getColor(taxonomyColorName, shade);
         }
       } catch {
@@ -206,5 +203,6 @@ export function useThemeColors() {
     getEntityColorShade,
     isDark,
     theme,
+    resolvedColorScheme,
   };
 }

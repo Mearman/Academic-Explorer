@@ -4,30 +4,28 @@
 
 import { style } from "@vanilla-extract/css";
 
-import { vars } from "@/styles/theme.css";
-
 export const sidebarContainer = style({
   height: "100%",
   display: "flex",
   flexDirection: "column",
-  padding: vars.space[4], // md
+  padding: "1rem",
 });
 
 export const sidebarHeader = style({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  marginBottom: vars.space[2], // sm
+  marginBottom: "0.5rem",
 });
 
 export const sidebarTitle = style({
   display: "flex",
   alignItems: "center",
-  gap: vars.space[1], // xs
+  gap: "0.25rem",
 });
 
 export const searchInput = style({
-  marginBottom: vars.space[4], // md
+  marginBottom: "1rem",
 });
 
 export const scrollableContent = style({
@@ -40,8 +38,8 @@ export const emptyState = style({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  gap: vars.space[4], // md
-  padding: vars.space[8], // xl
+  gap: "1rem",
+  padding: "2rem",
   textAlign: "center",
 });
 
@@ -50,7 +48,7 @@ export const bookmarkCard = style({
   transition: "all 0.2s ease",
   ":hover": {
     transform: "translateY(-1px)",
-    boxShadow: vars.shadow.sm,
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
   },
 });
 
@@ -62,7 +60,7 @@ export const bookmarkTitle = style({
   lineHeight: "1.4",
   transition: "color 0.2s ease",
   ":hover": {
-    color: vars.color.primary[600],
+    color: "var(--shadcn-primary)",
   },
 });
 
@@ -71,7 +69,7 @@ export const historyCard = style({
   transition: "all 0.2s ease",
   ":hover": {
     transform: "translateX(2px)",
-    backgroundColor: vars.color.background.secondary,
+    backgroundColor: "var(--shadcn-accent)",
   },
 });
 
@@ -83,7 +81,7 @@ export const historyEntry = style({
   lineHeight: "1.4",
   transition: "color 0.2s ease",
   ":hover": {
-    color: vars.color.primary[600],
+    color: "var(--shadcn-primary)",
   },
 });
 
@@ -95,49 +93,49 @@ export const actionButton = style({
 });
 
 export const tagBadge = style({
-  fontSize: vars.fontSize.xs,
-  fontWeight: vars.fontWeight.normal,
+  fontSize: "0.75rem",
+  fontWeight: "400",
 });
 
 export const footerText = style({
   textAlign: "center",
-  fontSize: vars.fontSize.xs,
-  color: vars.color.gray[500],
-  marginTop: vars.space[4], // md
+  fontSize: "0.75rem",
+  color: "var(--shadcn-muted-foreground)",
+  marginTop: "1rem",
 });
 
 export const resizeHandle = style({
   cursor: "ew-resize",
   transition: "background-color 0.2s ease",
   ":hover": {
-    backgroundColor: vars.color.gray[200],
+    backgroundColor: "var(--shadcn-border)",
   },
 });
 
 export const pinnedIndicator = style({
-  color: vars.color.primary[600],
+  color: "var(--shadcn-primary)",
 });
 
 export const groupHeader = style({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  marginBottom: vars.space[1], // xs
+  marginBottom: "0.25rem",
 });
 
 export const groupTitle = style({
-  fontSize: vars.fontSize.xs,
-  fontWeight: vars.fontWeight.semibold,
-  color: vars.color.gray[500],
+  fontSize: "0.75rem",
+  fontWeight: "600",
+  color: "var(--shadcn-muted-foreground)",
 });
 
 export const groupDivider = style({
-  margin: `${vars.space[3]} 0`, // sm
+  margin: "0.75rem 0",
 });
 
 export const navigationButton = style({
   transition: "all 0.2s ease",
   ":hover": {
-    backgroundColor: vars.color.background.secondary,
+    backgroundColor: "var(--shadcn-accent)",
   },
 });

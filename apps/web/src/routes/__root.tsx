@@ -6,7 +6,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { NavigationTracker } from "@/components/NavigationTracker";
 import { UrlFixer } from "@/components/UrlFixer";
 
-import { themeClass } from "../styles/theme.css";
+import { shadcnLightTheme } from "../styles/shadcn-theme.css";
 
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
@@ -14,7 +14,7 @@ function RootLayout() {
   // MainLayout re-enabled after fixing React 19 hook violations
   // The layout-store was refactored to ensure stable method references
   return (
-    <div className={themeClass}>
+    <div className={shadcnLightTheme}>
       <UrlFixer />
       <NavigationTracker />
       <MainLayout>

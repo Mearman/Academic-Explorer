@@ -1,16 +1,14 @@
 import { style } from "@vanilla-extract/css";
 
-import { vars } from "./theme.css";
-
 export const pageTitle = style({
-  fontSize: vars.fontSize["2xl"],
-  fontWeight: vars.fontWeight.bold,
+  fontSize: "1.5rem",
+  fontWeight: "600",
   marginBottom: "1rem",
 });
 
 export const pageDescription = style({
-  fontSize: vars.fontSize.md,
-  color: vars.color.text.secondary,
+  fontSize: "1rem",
+  color: "var(--shadcn-muted-foreground)",
   marginBottom: "1.5rem",
-  lineHeight: vars.lineHeight.relaxed,
+  lineHeight: "1.625",
 });
