@@ -36,8 +36,7 @@ export function SCCItem({
         <List spacing="xs" size="sm">
           {stronglyConnectedComponents.components
             .sort((a, b) => b.length - a.length)
-            .slice(0, 8)
-            .map((component, index) => (
+                        .map((component, index) => (
             <List.Item
               key={index}
               icon={
@@ -56,12 +55,7 @@ export function SCCItem({
               </Group>
             </List.Item>
           ))}
-          {stronglyConnectedComponents.components.length > 8 && (
-            <Text size="xs" c="dimmed">
-              +{stronglyConnectedComponents.components.length - 8} more SCCs
-            </Text>
-          )}
-        </List>
+                </List>
       )}
     </Stack>
   );
