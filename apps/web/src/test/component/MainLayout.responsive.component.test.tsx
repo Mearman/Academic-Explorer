@@ -7,6 +7,7 @@
  */
 
 import { MantineProvider } from '@mantine/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
@@ -38,6 +39,29 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
 // Import after mocks
 import { MainLayout } from '@/components/layout/MainLayout';
+import { LayoutProvider } from '@/stores/layout-store';
+
+// Test wrapper with essential providers only
+const createTestWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, gcTime: 0 },
+      mutations: { retry: false },
+    },
+  });
+
+  const AllProviders = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider defaultColorScheme="light">
+        <LayoutProvider>
+          {children}
+        </LayoutProvider>
+      </MantineProvider>
+    </QueryClientProvider>
+  );
+
+  return AllProviders;
+};
 
 describe('MainLayout.responsive - Structure Tests', () => {
   afterEach(() => {
@@ -46,11 +70,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
 
   describe('T008-T009: Responsive navigation structure', () => {
     it('should render mobile hamburger menu button', () => {
-      render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       // Mobile menu button should exist with hiddenFrom="md"
       const menuButton = screen.getByRole('button', { name: /open navigation menu/i });
@@ -59,11 +79,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
     });
 
     it('should render desktop navigation buttons', () => {
-      render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       // Desktop navigation buttons should exist (visibleFrom="md")
       // Note: We can't test CSS visibility in component tests, only DOM structure
@@ -74,11 +90,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
     });
 
     it('should wrap search input with visibleFrom Box', () => {
-      render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       // Search input should exist in DOM
       const searchInput = screen.getByLabelText(/global search input/i);
@@ -88,11 +100,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
 
   describe('T011: Responsive header height structure', () => {
     it('should render AppShell header', () => {
-      const { container } = render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      const { container } = render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       const header = container.querySelector('.mantine-AppShell-header');
       expect(header).toBeInTheDocument();
@@ -101,11 +109,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
 
   describe('T012: Navigation accessibility', () => {
     it('should have accessible hamburger menu button', () => {
-      render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       const menuButton = screen.getByRole('button', { name: /open navigation menu/i });
       expect(menuButton).toHaveAttribute('aria-label');
@@ -113,11 +117,7 @@ describe('MainLayout.responsive - Structure Tests', () => {
     });
 
     it('should have accessible sidebar toggle buttons', () => {
-      render(
-        <MantineProvider>
-          <MainLayout>Test</MainLayout>
-        </MantineProvider>
-      );
+      render(<MainLayout>Test</MainLayout>, { wrapper: createTestWrapper() });
 
       const leftToggle = screen.getByRole('button', { name: /toggle left sidebar/i });
       const rightToggle = screen.getByRole('button', { name: /toggle right sidebar/i });
