@@ -34,7 +34,7 @@
 #    - Can update single agents or all existing agent files
 #    - Creates default Claude file if no agent files exist
 #
-# Usage: ./update-agent-context.sh [agent_type]
+# Usage: ./update-agent-context.sh [agent_type] [--spec=###]
 # Agent types: claude|gemini|copilot|cursor-agent|qwen|opencode|codex|windsurf|kilocode|auggie|q
 # Leave empty to update all existing agent files
 
@@ -48,15 +48,43 @@ set -o pipefail
 # Configuration and Global Variables
 #==============================================================================
 
+# Parse command line arguments
+SPEC_NUMBER=""
+AGENT_TYPE=""
+
+for arg in "$@"; do
+    case "$arg" in
+        --spec=*)
+            SPEC_NUMBER="${arg#*=}"
+            ;;
+        --help|-h)
+            echo "Usage: $0 [agent_type] [--spec=###]"
+            echo "Agent types: claude|gemini|copilot|cursor-agent|qwen|opencode|codex|windsurf|kilocode|auggie|q"
+            echo "  --spec=###  Use specific spec number (e.g., 029)"
+            echo "  --help      Show this help message"
+            exit 0
+            ;;
+        *)
+            if [[ -z "$AGENT_TYPE" ]]; then
+                AGENT_TYPE="$arg"
+            fi
+            ;;
+    esac
+done
+
 # Get script directory and load common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
+
+# Set SPEC_NUMBER environment variable if provided
+if [[ -n "$SPEC_NUMBER" ]]; then
+    export SPEC_NUMBER="$SPEC_NUMBER"
+fi
 
 # Get all paths and variables from common functions
 eval $(get_feature_paths)
 
 NEW_PLAN="$IMPL_PLAN"  # Alias for compatibility with existing code
-AGENT_TYPE="${1:-}"
 
 # Agent-specific file paths  
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"

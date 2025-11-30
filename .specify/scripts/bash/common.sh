@@ -124,17 +124,68 @@ find_feature_dir_by_prefix() {
     fi
 }
 
+# Find feature directory by explicit spec number (e.g., "029" from "029")
+find_feature_dir_by_spec_number() {
+    local repo_root="$1"
+    local spec_number="$2"
+    local specs_dir="$repo_root/specs"
+
+    # Validate spec number format (3 digits)
+    if [[ ! "$spec_number" =~ ^[0-9]{3}$ ]]; then
+        echo "ERROR: Spec number must be 3 digits (e.g., 029)" >&2
+        return 1
+    fi
+
+    # Search for directories in specs/ that start with this number
+    local matches=()
+    if [[ -d "$specs_dir" ]]; then
+        for dir in "$specs_dir"/"$spec_number"-*; do
+            if [[ -d "$dir" ]]; then
+                matches+=("$(basename "$dir")")
+            fi
+        done
+    fi
+
+    # Handle results
+    if [[ ${#matches[@]} -eq 0 ]]; then
+        echo "ERROR: No spec directory found with number '$spec_number'" >&2
+        echo "Expected directory pattern: specs/$spec_number-*" >&2
+        return 1
+    elif [[ ${#matches[@]} -eq 1 ]]; then
+        # Exactly one match - perfect!
+        for match in "${matches[@]}"; do
+            echo "$specs_dir/$match"
+            return 0
+        done
+    else
+        # Multiple matches - this shouldn't happen with proper naming convention
+        echo "ERROR: Multiple spec directories found with number '$spec_number': ${matches[*]}" >&2
+        echo "Please ensure only one spec directory exists per numeric prefix." >&2
+        return 1
+    fi
+}
+
 get_feature_paths() {
     local repo_root=$(get_repo_root)
     local current_branch=$(get_current_branch)
     local has_git_repo="false"
+    local feature_dir=""
 
     if has_git; then
         has_git_repo="true"
     fi
 
-    # Use prefix-based lookup to support multiple branches per spec
-    local feature_dir=$(find_feature_dir_by_prefix "$repo_root" "$current_branch")
+    # Check if SPEC_NUMBER environment variable is set
+    if [[ -n "${SPEC_NUMBER:-}" ]]; then
+        # Use explicit spec number
+        feature_dir=$(find_feature_dir_by_spec_number "$repo_root" "$SPEC_NUMBER")
+        if [[ $? -ne 0 ]]; then
+            return 1
+        fi
+    else
+        # Use prefix-based lookup to support multiple branches per spec
+        feature_dir=$(find_feature_dir_by_prefix "$repo_root" "$current_branch")
+    fi
 
     cat <<EOF
 REPO_ROOT='$repo_root'
