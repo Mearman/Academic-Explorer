@@ -348,10 +348,10 @@ import type { EntityType } from "@bibgraph/types" // Canonical source
 
 ### Nx Best Practices
 
-- **Cache issues**: Run `nx reset` to clear corrupted cache
-- **Daemon hangs**: Use `pnpm kill-nx` or `pnpm kill-nx:emergency`
-- **Affected builds**: Use `nx affected:build` for incremental builds
-- **Task dependencies**: Nx automatically handles build order (via `^build`)
+- `nx reset` - Clear corrupted cache
+- `pnpm kill-nx` - Fix daemon hangs
+- `nx affected:build` - Incremental builds
+- Build order handled automatically via `^build` dependencies
 
 ## Testing Strategy
 
@@ -361,24 +361,24 @@ Tests run **SERIALLY** to prevent OOM errors (8GB heap limit). Parallel executio
 
 ### Test Execution Order (Fail-Fast)
 
-1. **Type Check** - TypeScript validation (automatic Nx dependency)
+1. **Type Check** - TypeScript validation (automatic)
 2. **Unit Tests** - Fast, isolated component tests
 3. **Component Tests** - React component integration tests
 4. **Integration Tests** - Cross-component integration tests
-5. **E2E Tests** - Full application end-to-end tests (Playwright)
+5. **E2E Tests** - Full application tests (Playwright)
 
 ### Test Configuration
 
 **Vitest** (primary test runner):
-- Serial execution: `maxConcurrency: 1`, `poolOptions.threads.singleThread: true`
-- Fake IndexedDB: `fake-indexeddb` package for storage provider tests
+- Serial execution (`maxConcurrency: 1`, `poolOptions.threads.singleThread: true`)
+- Fake IndexedDB (`fake-indexeddb` package) for storage tests
 - MSW for API mocking
 - Coverage: v8 provider with workspace aggregation
 
 **Playwright** (E2E tests):
 - Config: `apps/web/playwright.config.ts`
 - Accessibility: `@axe-core/playwright` integration
-- Serial execution: `workers: 1` (prevents OOM)
+- Serial execution (`workers: 1`) prevents OOM
 
 ### E2E Testing Patterns
 
@@ -424,25 +424,11 @@ await provider.initializeSpecialLists(); // Always initialize first
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflow** (`.github/workflows/ci.yml`):
+**CI/CD Pipeline** (`.github/workflows/ci.yml`):
 
-| Job | Duration | Description |
-|-----|----------|-------------|
-| validate | 45min | Build + typecheck + lint + all tests |
-| security-audit | 10min | pnpm audit vulnerability scanning |
-| e2e | 30min | Playwright tests against built app |
-| coverage | 15min | Aggregate coverage + Codecov upload |
-| test-accessibility | 15min | pa11y WCAG 2.1 AA compliance tests |
-| test-performance | 15min | Lighthouse CI performance audits |
-| deploy | 15min | GitHub Pages (after quality-gates + e2e pass) |
-| post-deploy-e2e | 25min | Live site verification |
-| rollback | 10min | Automatic rollback if post-deploy fails |
-| release | 20min | semantic-release (after post-deploy-e2e) |
+**Jobs**: validate (45min) → security-audit (10min) → e2e (30min) → coverage (15min) → test-accessibility (15min) → test-performance (15min) → deploy (15min) → post-deploy-e2e (25min) → release (20min)
 
-**Environment Variables**:
-- `NODE_OPTIONS: --max-old-space-size=8192` (8GB heap)
-- `NX_DAEMON: false` (disable daemon in CI)
-- `HUSKY: 0` (skip git hooks in CI)
+**Environment**: `NODE_OPTIONS: --max-old-space-size=8192`, `NX_DAEMON: false`, `HUSKY: 0`
 
 ## Key Features
 
@@ -478,16 +464,7 @@ Location: `packages/algorithms/`
 **Pathfinding**: Dijkstra with priority queue (8ms for 500 nodes/2000 edges)
 **Analysis**: Connected components, SCC, cycle detection, topological sort
 
-**Clustering Algorithms** (9 implemented):
-1. Louvain - Modularity optimization (97% optimized)
-2. Spectral - Normalized Laplacian + k-means
-3. Hierarchical - Agglomerative clustering
-4. K-Core - Batagelj-Zaversnik algorithm
-5. Leiden - Louvain with connectivity guarantee
-6. Label Propagation - Fast linear-time
-7. Infomap - Information-theoretic
-8. Core-Periphery - Borgatti-Everett model
-9. Biconnected Components - Tarjan's articulation points
+**Clustering Algorithms** (9 implemented): Louvain, Spectral, Hierarchical, K-Core, Leiden, Label Propagation, Infomap, Core-Periphery, Biconnected Components
 
 See [packages/algorithms/README.md](packages/algorithms/README.md) for full documentation.
 
