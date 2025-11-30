@@ -4,8 +4,10 @@ import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 import { shadcnMantineTheme } from "@/styles/shadcn-mantine-theme";
 
+import type { ShadcnPalette } from '@/styles/shadcn-colors'
+
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
-type ColorScheme = 'blue' | 'green' | 'orange' | 'purple' | 'red' | 'neutral'
+type ColorScheme = ShadcnPalette
 type ColorMode = 'light' | 'dark' | 'auto'
 
 interface ThemeConfig {
@@ -200,9 +202,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const mantineTheme = generateMantineTheme();
 
+  // Determine the effective color scheme
+  const effectiveColorScheme = config.colorMode === 'auto' ? systemColorMode : config.colorMode;
+
   return (
     <ThemeContext.Provider value={contextValue}>
-      <MantineProvider theme={mantineTheme} defaultColorScheme={config.colorMode}>
+      <MantineProvider
+        theme={mantineTheme}
+        defaultColorScheme={effectiveColorScheme}
+        forceColorScheme={effectiveColorScheme}
+      >
         {children}
       </MantineProvider>
     </ThemeContext.Provider>
