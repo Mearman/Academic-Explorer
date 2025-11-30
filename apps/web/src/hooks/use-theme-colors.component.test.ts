@@ -742,10 +742,11 @@ describe("useThemeColors", () => {
     it("should handle empty entity type strings", () => {
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.getEntityColor("")).toBe(mockTheme.colors!.blue[5]);
-      expect(result.current.getEntityColorShade("")).toBe(
-        mockTheme.colors!.blue[5],
-      );
+      // Hash-based color system generates deterministic colors from strings
+      // Empty string should produce a valid hex color
+      const emptyColor = result.current.getEntityColor("");
+      expect(emptyColor).toMatch(/^#[0-9a-fA-F]{6}$/); // Valid hex color
+      expect(result.current.getEntityColorShade("")).toBe(emptyColor);
     });
 
     it("should handle missing matchMedia gracefully", () => {
