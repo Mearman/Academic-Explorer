@@ -306,7 +306,9 @@ Location: `apps/web/src/routes/`
 
 ## Development Guidelines
 
-For the complete set of non-negotiable development principles, see the [Project Constitution](.specify/memory/constitution.md). Key principles include type safety, test-first development, atomic commits, repository integrity, and complete implementation requirements.
+For the complete set of non-negotiable development principles, see the [Project Constitution](@.specify/memory/constitution.md). Key principles include type safety, test-first development, atomic commits, repository integrity, and complete implementation requirements.
+
+> @.specify/memory/constitution.md
 
 ### Code Quality Rules
 
