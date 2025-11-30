@@ -112,11 +112,19 @@ interface StylingSettings {
   darkMode: boolean;
   autoDarkMode: boolean;
 
-  // System-specific preferences
+  // Global color preference (maps across systems)
+  colorPreference: {
+    type: 'semantic' | 'hue' | 'name' | 'hex';
+    value: string | number;
+    autoMap: boolean;
+    lastUpdated: Date;
+  };
+
+  // System-specific preferences (overrides only)
   systemPreferences: {
-    mantine: MantinePreferences;
-    shadcn: ShadcnPreferences;
-    radix: RadixPreferences;
+    mantine: Partial<MantinePreferences> & { hasOverride: boolean };
+    shadcn: Partial<ShadcnPreferences> & { hasOverride: boolean };
+    radix: Partial<RadixPreferences> & { hasOverride: boolean };
   };
 
   // Performance settings
@@ -150,15 +158,44 @@ interface RadixPreferences {
 }
 ```
 
-**Description**: User preferences for styling system behavior and appearance.
+**Description**: User preferences for styling system behavior and appearance with color synchronization.
 
 **Validation Rules**:
 - `activeSystem` must match one of the available systems
-- `primaryColor` values must be valid Mantine color names
-- Hue values must be within 0-360 range
-- Font sizes must match predefined options
+- `colorPreference.type` must be valid color type
+- `colorPreference.value` must match type constraints
+- `systemPreferences.hasOverride` indicates manual override from auto-mapping
 
-### 4. ThemeCache
+### 4. ColorMapper
+
+```typescript
+interface ColorMapping {
+  semantic: string;      // 'red', 'blue', 'green', etc.
+  mantine: string;        // Mantine color name
+  shadcn: number;         // HSL hue value (0-360)
+  radix: string;          // Radix accent color
+  hex: string;           // Hex value for reference
+  rgb: string;           // RGB value for reference
+  category: 'primary' | 'secondary' | 'accent' | 'neutral' | 'semantic';
+}
+
+interface ColorMapper {
+  mappings: Map<string, ColorMapping>;
+  mapToSystem: (color: string | number, targetSystem: StylingSystem) => ColorMapping | null;
+  mapFromSystem: (systemColor: string | number, sourceSystem: StylingSystem) => ColorMapping | null;
+  validateColor: (color: string | number, type: string) => boolean;
+}
+```
+
+**Description**: Handles bidirectional color mapping between styling systems.
+
+**Validation Rules**:
+- All mappings must have valid color values for each system
+- Hue values must be within 0-360 range
+- Mantine color names must be valid Mantine colors
+- Radix accent colors must be supported
+
+### 5. ThemeCache
 
 ```typescript
 interface ThemeCacheEntry {
