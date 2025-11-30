@@ -82,13 +82,13 @@ export function MotifDetectionItem({
               size="xs"
               onClick={() => {
                 const uniqueNodes = new Set<string>();
-                triangles.triangles.slice(0, 10).forEach(t => {
+                triangles.triangles.forEach(t => {
                   t.nodes.forEach(n => uniqueNodes.add(n));
                 });
                 onHighlightNodes?.(Array.from(uniqueNodes));
               }}
             >
-              Highlight First 10 Triangles
+              Highlight All Triangles
             </Button>
           )}
         </Stack>
@@ -127,7 +127,7 @@ export function MotifDetectionItem({
                 Found {starPatterns.count} hub nodes with {starMinDegree}+ connections
               </Text>
               <List spacing="xs" size="sm">
-                {starPatterns.patterns.slice(0, 5).map((pattern) => (
+                {starPatterns.patterns.map((pattern) => (
                   <List.Item
                     key={pattern.hubId}
                     icon={
@@ -139,16 +139,11 @@ export function MotifDetectionItem({
                     onClick={() => onHighlightNodes?.([pattern.hubId, ...pattern.leafIds])}
                   >
                     <Text size="xs">
-                      Hub {pattern.hubId.slice(0, 10)}... ({pattern.leafIds.length} leaves)
+                      Hub {pattern.hubId} ({pattern.leafIds.length} leaves)
                     </Text>
                   </List.Item>
                 ))}
-                {starPatterns.patterns.length > 5 && (
-                  <Text size="xs" c="dimmed">
-                    +{starPatterns.patterns.length - 5} more hubs
-                  </Text>
-                )}
-              </List>
+                </List>
             </>
           )}
         </Stack>
@@ -180,7 +175,7 @@ export function MotifDetectionItem({
                 Found {coCitations.pairs.length} co-citation pairs
               </Text>
               <List spacing="xs" size="sm">
-                {coCitations.pairs.slice(0, 5).map((pair) => (
+                {coCitations.pairs.map((pair) => (
                   <List.Item
                     key={`${pair.paper1Id}-${pair.paper2Id}`}
                     icon={
@@ -192,16 +187,11 @@ export function MotifDetectionItem({
                     onClick={() => onHighlightNodes?.([pair.paper1Id, pair.paper2Id])}
                   >
                     <Text size="xs">
-                      {pair.paper1Id.slice(0, 8)}... & {pair.paper2Id.slice(0, 8)}... ({pair.count}x)
+                      {pair.paper1Id} & {pair.paper2Id} ({pair.count}x)
                     </Text>
                   </List.Item>
-                ))}
-                {coCitations.pairs.length > 5 && (
-                  <Text size="xs" c="dimmed">
-                    +{coCitations.pairs.length - 5} more pairs
-                  </Text>
-                )}
-              </List>
+                })}
+                </List>
             </>
           )}
         </Stack>
@@ -233,7 +223,7 @@ export function MotifDetectionItem({
                 Found {bibCoupling.pairs.length} coupled paper pairs
               </Text>
               <List spacing="xs" size="sm">
-                {bibCoupling.pairs.slice(0, 5).map((pair) => (
+                {bibCoupling.pairs.map((pair) => (
                   <List.Item
                     key={`${pair.paper1Id}-${pair.paper2Id}`}
                     icon={
@@ -245,16 +235,11 @@ export function MotifDetectionItem({
                     onClick={() => onHighlightNodes?.([pair.paper1Id, pair.paper2Id])}
                   >
                     <Text size="xs">
-                      {pair.paper1Id.slice(0, 8)}... & {pair.paper2Id.slice(0, 8)}... ({pair.sharedReferences} shared)
+                      {pair.paper1Id} & {pair.paper2Id} ({pair.sharedReferences} shared)
                     </Text>
                   </List.Item>
-                ))}
-                {bibCoupling.pairs.length > 5 && (
-                  <Text size="xs" c="dimmed">
-                    +{bibCoupling.pairs.length - 5} more pairs
-                  </Text>
-                )}
-              </List>
+                })}
+                </List>
             </>
           )}
         </Stack>
