@@ -33,7 +33,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Execution Steps
 
-1. **Setup**: Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS list.
+1. **Setup**: Parse user arguments for spec number (format: --spec=029). If spec number provided, run `.specify/scripts/bash/check-prerequisites.sh --json --spec=###` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS list. Otherwise run `.specify/scripts/bash/check-prerequisites.sh --json`.
    - All file paths must be absolute.
    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
