@@ -53,6 +53,14 @@ nx reset                          # Reset Nx cache (use when cache issues occur)
 ```bash
 pnpm clean                        # Remove dist, coverage, .nx/cache
 pnpm kill-nx                      # Kill stuck Nx daemon processes
+pnpm kill-nx:emergency            # Force kill all Nx processes and clean temp files
+```
+
+### Barrel Management (Barrelsby Integration)
+
+```bash
+pnpm barrels                      # Generate barrel files via Nx across all projects
+pnpm barrels:dry                  # Preview barrel changes without applying
 ```
 
 ### E2E Tests

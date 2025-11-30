@@ -7,4 +7,3 @@ export * from "./atoms/index";
 export * from "./bookmarks/index";
 export * from "./components/index";
 export * from "./hooks/index";
-export * from "./styles/index";

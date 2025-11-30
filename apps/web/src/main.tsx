@@ -18,6 +18,7 @@ import { PostHogProvider } from "@/components/PostHogProvider";
 import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
 import { AppActivityProvider } from "@/stores/app-activity-store";
 import { LayoutProvider } from "@/stores/layout-store";
+import { ThemeProvider } from "@/contexts/theme-context";
 import { initWebVitals } from "@/utils/web-vitals";
 
 import { routeTree } from "./routeTree.gen";
@@ -176,10 +177,8 @@ import "@mantine/dates/styles.css";
 
 // Import { registerOpenAlexServiceWorker } from "@/lib/service-worker";
 
-// Import shadcn theme integration
+// Import shadcn theme integration from theme builder
 import { shadcnMantineTheme } from "./styles/shadcn-mantine-theme";
-
-// Use the complete shadcn theme system
 
 
 // Initialize global error handling, network monitoring, and performance tracking
@@ -346,7 +345,7 @@ const reactErrorHandlers = {
 createRoot(rootElement, reactErrorHandlers).render(
   <QueryClientProvider client={queryClient}>
     <PostHogProvider>
-      <MantineProvider theme={shadcnMantineTheme} defaultColorScheme="auto">
+      <ThemeProvider>
         <ModalsProvider>
           <Notifications />
           <StorageProviderWrapper provider={storageProvider}>
@@ -357,7 +356,7 @@ createRoot(rootElement, reactErrorHandlers).render(
             </LayoutProvider>
           </StorageProviderWrapper>
         </ModalsProvider>
-      </MantineProvider>
+      </ThemeProvider>
     </PostHogProvider>
   </QueryClientProvider>,
 );
