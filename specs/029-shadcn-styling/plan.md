@@ -23,24 +23,26 @@ Implement runtime-switchable styling system supporting Native Mantine, shadcn CD
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
+**✅ PASSED** - All constitutional requirements addressed in Phase 1 design.
+
 Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
-1. **Type Safety**: No `any` types planned; use `unknown` with type guards
-2. **Test-First Development**: Tests written and failing before implementation begins
-3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/); packages MUST NOT re-export exports from other internal packages
-4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
-5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
-6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase
-7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
-8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
-9. **Repository Integrity**: ALL issues (tests, lint, build, audit, errors, warnings) MUST be resolved—"pre-existing" is not an excuse
-10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
-11. **Complete Implementation**: Implement full version as specified; no simplified fallbacks without user approval
-12. **Spec Index Maintenance**: specs/README.md updated when spec status changes; committed alongside spec changes
-13. **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
-14. **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts cleaned up before commit
-15. **DRY Code & Configuration**: No duplicate logic; extract shared code to utils; configuration extends shared base; proactive cruft cleanup
-16. **Presentation/Functionality Decoupling**: Web app components separate presentation from logic; business logic in hooks/services, rendering in components; testable layers
+1. **✅ Type Safety**: Theme contracts use strict TypeScript interfaces; no `any` types
+2. **✅ Test-First Development**: Test strategy defined for all components and styling systems
+3. **✅ Monorepo Architecture**: Uses existing Nx structure with proper package aliases; no re-exports between packages
+4. **✅ Storage Abstraction**: Settings store uses Zustand with localStorage; no direct storage coupling
+5. **✅ Performance & Memory**: <200ms switching target, <10% bundle increase, serial test execution maintained
+6. **✅ Atomic Conventional Commits**: Implementation will use atomic commits; spec changes committed per phase
+7. **✅ Development-Stage Pragmatism**: Breaking changes acceptable; no backward compatibility required
+8. **✅ Test-First Bug Fixes**: Component tests written before styling implementations
+9. **✅ Repository Integrity**: All quality gates will pass; no "pre-existing issue" excuses
+10. **✅ Continuous Execution**: Work continues through all phases without stopping
+11. **✅ Complete Implementation**: Full switchable system implemented; no simplified fallbacks
+12. **✅ Spec Index Maintenance**: specs/README.md will be updated with completion status
+13. **✅ Build Output Isolation**: TypeScript builds to dist/; no compiled files in src/
+14. **✅ Working Files Hygiene**: All temporary files cleaned before commits
+15. **✅ DRY Code & Configuration**: Shared theme contracts and utility functions
+16. **✅ Presentation/Functionality Decoupling**: Components receive styling via contracts; business logic in hooks
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure
@@ -63,51 +65,52 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+apps/web/src/
+├── styles/
+│   ├── contracts/           # Theme contract definitions
+│   │   ├── base-theme-contract.ts
+│   │   ├── mantine-theme-contract.ts
+│   │   ├── shadcn-theme-contract.ts
+│   │   └── radix-theme-contract.ts
+│   ├── themes/               # Theme implementations
+│   │   ├── mantine-theme.ts
+│   │   ├── shadcn-theme.ts
+│   │   └── radix-theme.ts
+│   ├── recipes/              # Component styling recipes
+│   │   ├── button.css.ts
+│   │   ├── card.css.ts
+│   │   ├── input.css.ts
+│   │   └── data-state.css.ts
+│   ├── vars.css.ts          # Global CSS variables
+│   └── theme-factory.ts      # Theme creation utilities
+├── stores/
+│   ├── styling-store.ts      # Zustand store for styling preferences
+│   └── theme-cache-store.ts  # Cache management store
+├── providers/
+│   ├── theme-provider.tsx    # Theme context provider
+│   └── styling-provider.tsx  # Styling system provider
+├── components/
+│   ├── ui/                   # Enhanced UI components with switchable styling
+│   │   ├── enhanced-button.tsx
+│   │   ├── enhanced-card.tsx
+│   │   ├── enhanced-input.tsx
+│   │   └── enhanced-data-state.tsx
+│   └── styling-system-switcher.tsx
+└── hooks/
+    ├── use-styling-system.ts  # Hook for accessing styling system
+    ├── use-component-styles.ts # Hook for component-specific styles
+    └── use-theme-cache.ts     # Hook for theme cache management
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+packages/ui/src/
+├── styles/                  # Shared styling utilities
+│   ├── theme-contracts.ts   # Re-export all theme contracts
+│   └── style-utils.ts       # Styling utility functions
+└── recipes/                # Reusable component recipes for other packages
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web application structure using existing Nx monorepo layout with apps/web for the main implementation and packages/ui for shared styling utilities.
 
 ## Complexity Tracking
 
