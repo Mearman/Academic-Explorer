@@ -83,7 +83,7 @@ export function TraversalItem({
                   Visit order (level by level):
                 </Text>
                 <Group gap="xs" wrap="wrap">
-                  {bfsResult.visitOrder.slice(0, 10).map((nodeId, index) => (
+                  {bfsResult.visitOrder.map((nodeId, index) => (
                     <Tooltip key={nodeId} label={nodeId}>
                       <Badge
                         size="xs"
@@ -95,9 +95,6 @@ export function TraversalItem({
                       </Badge>
                     </Tooltip>
                   ))}
-                  {bfsResult.visitOrder.length > 10 && (
-                    <Text size="xs" c="dimmed">+{bfsResult.visitOrder.length - 10} more</Text>
-                  )}
                 </Group>
                 <Button
                   variant="light"
@@ -129,7 +126,7 @@ export function TraversalItem({
                   Visit order (depth first):
                 </Text>
                 <Group gap="xs" wrap="wrap">
-                  {dfsResult.visitOrder.slice(0, 10).map((nodeId, index) => (
+                  {dfsResult.visitOrder.map((nodeId, index) => (
                     <Tooltip key={nodeId} label={nodeId}>
                       <Badge
                         size="xs"
@@ -141,9 +138,6 @@ export function TraversalItem({
                       </Badge>
                     </Tooltip>
                   ))}
-                  {dfsResult.visitOrder.length > 10 && (
-                    <Text size="xs" c="dimmed">+{dfsResult.visitOrder.length - 10} more</Text>
-                  )}
                 </Group>
                 <Button
                   variant="light"
