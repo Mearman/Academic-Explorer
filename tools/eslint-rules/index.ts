@@ -2,6 +2,7 @@ import { barrelsbyHeader } from "./barrelsby-header.js";
 import { noDeprecated } from "./no-deprecated.js";
 import { noDuplicateReexports } from "./no-duplicate-reexports.js";
 import { noReexportFromNonBarrel } from "./no-reexport-from-non-barrel.js";
+import { noRedundantAssignment } from "./no-redundant-assignment.js";
 
 export const customRulesPlugin = {
   rules: {
@@ -9,5 +10,6 @@ export const customRulesPlugin = {
     "no-deprecated": noDeprecated,
     "no-duplicate-reexports": noDuplicateReexports,
     "no-reexport-from-non-barrel": noReexportFromNonBarrel,
+    "no-redundant-assignment": noRedundantAssignment,
   },
 };
