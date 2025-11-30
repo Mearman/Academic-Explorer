@@ -19,31 +19,52 @@ import {
 
 describe('Edge Styling System', () => {
   describe('TYPE_COLORS', () => {
-    it('should have colors for all core relationship types', () => {
-      expect(TYPE_COLORS.AUTHORSHIP).toBe('var(--shadcn-blue-500)');
-      expect(TYPE_COLORS.REFERENCE).toBe('var(--shadcn-violet-500)');
-      expect(TYPE_COLORS.PUBLICATION).toBe('var(--shadcn-emerald-500)');
-      expect(TYPE_COLORS.TOPIC).toBe('var(--shadcn-red-400)');
-      expect(TYPE_COLORS.AFFILIATION).toBe('var(--shadcn-orange-500)');
-      expect(TYPE_COLORS.HOST_ORGANIZATION).toBe('var(--shadcn-purple-500)');
-      expect(TYPE_COLORS.LINEAGE).toBe('var(--shadcn-teal-500)');
+    it('should have hash-based colors for all core relationship types', () => {
+      // All colors should be valid hex values (generated from hash-based system)
+      Object.values(TYPE_COLORS).forEach((color) => {
+        expect(color).toMatch(/^#[0-9A-F]{6}$/i); // Valid hex color format
+      });
+
+      // All colors should be different (hash-based distribution)
+      const uniqueColors = new Set(Object.values(TYPE_COLORS));
+      expect(uniqueColors.size).toBeGreaterThan(1); // At least 2 different colors
+
+      // Verify core relationship types exist and have hex colors
+      expect(TYPE_COLORS.AUTHORSHIP).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.REFERENCE).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.PUBLICATION).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.TOPIC).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.AFFILIATION).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.HOST_ORGANIZATION).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(TYPE_COLORS.LINEAGE).toMatch(/^#[0-9A-F]{6}$/i);
     });
 
     it('should have fallback color for unknown types', () => {
-      expect(TYPE_COLORS.RELATED_TO).toBe('var(--shadcn-zinc-500)');
+      expect(TYPE_COLORS.RELATED_TO).toMatch(/^#[0-9A-F]{6}$/i);
     });
   });
 
   describe('getTypeColor', () => {
-    it('should return correct color for each relationship type', () => {
-      expect(getTypeColor(RelationType.AUTHORSHIP)).toBe('var(--shadcn-blue-500)');
-      expect(getTypeColor(RelationType.REFERENCE)).toBe('var(--shadcn-violet-500)');
-      expect(getTypeColor(RelationType.PUBLICATION)).toBe('var(--shadcn-emerald-500)');
-      expect(getTypeColor(RelationType.AFFILIATION)).toBe('var(--shadcn-orange-500)');
+    it('should return hash-based color for each relationship type', () => {
+      // Colors should be valid hex values generated from hash
+      expect(getTypeColor(RelationType.AUTHORSHIP)).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(getTypeColor(RelationType.REFERENCE)).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(getTypeColor(RelationType.PUBLICATION)).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(getTypeColor(RelationType.AFFILIATION)).toMatch(/^#[0-9A-F]{6}$/i);
+
+      // Same relationship type should always return the same color (deterministic)
+      const authorshipColor1 = getTypeColor(RelationType.AUTHORSHIP);
+      const authorshipColor2 = getTypeColor(RelationType.AUTHORSHIP);
+      expect(authorshipColor1).toBe(authorshipColor2);
+
+      // Different relationship types should have different colors
+      const authorshipColor = getTypeColor(RelationType.AUTHORSHIP);
+      const referenceColor = getTypeColor(RelationType.REFERENCE);
+      expect(authorshipColor).not.toBe(referenceColor);
     });
 
     it('should return fallback color for RELATED_TO', () => {
-      expect(getTypeColor(RelationType.RELATED_TO)).toBe('var(--shadcn-zinc-500)');
+      expect(getTypeColor(RelationType.RELATED_TO)).toMatch(/^#[0-9A-F]{6}$/i);
     });
   });
 
@@ -63,10 +84,13 @@ describe('Edge Styling System', () => {
 
     it('should use type-specific color for outbound edges', () => {
       const authorshipStyle = getOutboundStyle(RelationType.AUTHORSHIP);
-      expect(authorshipStyle.stroke).toBe('var(--shadcn-blue-500)');
+      expect(authorshipStyle.stroke).toMatch(/^#[0-9A-F]{6}$/i); // Hash-based hex color
 
       const referenceStyle = getOutboundStyle(RelationType.REFERENCE);
-      expect(referenceStyle.stroke).toBe('var(--shadcn-violet-500)');
+      expect(referenceStyle.stroke).toMatch(/^#[0-9A-F]{6}$/i); // Hash-based hex color
+
+      // Different relationship types should have different colors
+      expect(authorshipStyle.stroke).not.toBe(referenceStyle.stroke);
     });
   });
 
@@ -86,10 +110,13 @@ describe('Edge Styling System', () => {
 
     it('should use type-specific color for inbound edges', () => {
       const authorshipStyle = getInboundStyle(RelationType.AUTHORSHIP);
-      expect(authorshipStyle.stroke).toBe('var(--shadcn-blue-500)');
+      expect(authorshipStyle.stroke).toMatch(/^#[0-9A-F]{6}$/i); // Hash-based hex color
 
       const referenceStyle = getInboundStyle(RelationType.REFERENCE);
-      expect(referenceStyle.stroke).toBe('var(--shadcn-violet-500)');
+      expect(referenceStyle.stroke).toMatch(/^#[0-9A-F]{6}$/i); // Hash-based hex color
+
+      // Different relationship types should have different colors
+      expect(authorshipStyle.stroke).not.toBe(referenceStyle.stroke);
     });
   });
 
@@ -129,9 +156,9 @@ describe('Edge Styling System', () => {
           expect(style['data-direction']).toBe('outbound');
           expect(style['data-relation-type']).toBe(type);
 
-          // Verify has color (CSS custom property format)
+          // Verify has color (hex format)
           expect(style.stroke).toBeTruthy();
-          expect(style.stroke).toMatch(/^var\(--shadcn-[a-z]+-[0-9]+\)$/);
+          expect(style.stroke).toMatch(/^#[0-9A-F]{6}$/i);
         });
       });
     });
@@ -160,9 +187,9 @@ describe('Edge Styling System', () => {
           expect(style['data-direction']).toBe('inbound');
           expect(style['data-relation-type']).toBe(type);
 
-          // Verify has color (CSS custom property format)
+          // Verify has color (hex format)
           expect(style.stroke).toBeTruthy();
-          expect(style.stroke).toMatch(/^var\(--shadcn-[a-z]+-[0-9]+\)$/);
+          expect(style.stroke).toMatch(/^#[0-9A-F]{6}$/i);
         });
       });
     });
@@ -290,9 +317,9 @@ describe('Edge Styling System', () => {
 
   describe('Accessibility (WCAG 2.1 Level AA)', () => {
     it('should use colors with sufficient contrast', () => {
-      // All TYPE_COLORS should be CSS custom properties referencing shadcn colors
+      // All TYPE_COLORS should be hex colors
       Object.values(TYPE_COLORS).forEach((color) => {
-        expect(color).toMatch(/^var\(--shadcn-[a-z]+-[0-9]+\)$/);
+        expect(color).toMatch(/^#[0-9A-F]{6}$/i);
       });
 
       // Colors should be distinct (at least 3:1 contrast for graphical objects)

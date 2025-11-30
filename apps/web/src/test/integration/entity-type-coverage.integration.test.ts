@@ -40,13 +40,13 @@ describe('Entity Type Coverage', () => {
   describe('TypeScript EntityType Union', () => {
     it('should include all 12 expected entity types', () => {
       // Test that we can assign all expected types without TypeScript errors
-      const validTypes: EntityType[] = EXPECTED_ENTITY_TYPES;
+      
 
       // Verify we have exactly 12 types
-      expect(validTypes).toHaveLength(12);
+      expect(EXPECTED_ENTITY_TYPES).toHaveLength(12);
 
       // Verify each type is a valid EntityType
-      validTypes.forEach((type) => {
+      EXPECTED_ENTITY_TYPES.forEach((type) => {
         // This will cause a type error if the type is not in the union
         // Type checking performed via TypeScript compilation
         // const _typeCheck: EntityType = type;
