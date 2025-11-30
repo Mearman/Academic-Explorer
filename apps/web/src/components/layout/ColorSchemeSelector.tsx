@@ -1,5 +1,4 @@
 import { Menu, Badge, Box, Group, Text, useMantineTheme } from '@mantine/core'
-import { SplitButton } from '@/components/ui/SplitButton'
 import {
   IconSun,
   IconMoon,
@@ -8,6 +7,8 @@ import {
   IconCheck
 } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
+
+import { SplitButton } from '@/components/ui/SplitButton'
 import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 
 interface ColorSchemeSelectorProps {

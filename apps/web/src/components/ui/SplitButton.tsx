@@ -71,7 +71,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
             {...mainButtonProps}
             h={height}
             color={mainButtonColor}
-            styles={(theme) => ({
+            styles={() => ({
               root: {
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
@@ -92,7 +92,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
             w={height}
             h={height}
             color={dropdownColor}
-            styles={(theme) => ({
+            styles={() => ({
               root: {
                 borderTopLeftRadius: 0,
                 borderBottomLeftRadius: 0,
@@ -116,7 +116,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
               {...mainButtonProps}
               h={height}
               color={mainButtonColor}
-              styles={(theme) => ({
+              styles={() => ({
                 root: {
                   borderTopRightRadius: 0,
                   borderBottomRightRadius: 0,
@@ -137,7 +137,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
               w={height}
               h={height}
               color={dropdownColor}
-              styles={(theme) => ({
+              styles={() => ({
                 root: {
                   borderTopLeftRadius: 0,
                   borderBottomLeftRadius: 0,

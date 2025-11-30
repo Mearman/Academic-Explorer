@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react'
 import { MantineProvider } from '@mantine/core'
+import { render, screen, fireEvent } from '@testing-library/react'
+
 import { ColorSchemeSelector } from './ColorSchemeSelector'
 
 const mockSetColorScheme = vi.fn()
