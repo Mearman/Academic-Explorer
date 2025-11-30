@@ -8,6 +8,8 @@
 
 import type { GraphNode } from "@bibgraph/types";
 
+import { SPECIAL_STATE_COLORS as HASH_BASED_COLORS } from "../../styles/hash-colors";
+
 /**
  * Style properties for graph nodes
  * Compatible with both SVG and CSS styling
@@ -34,29 +36,11 @@ export interface NodeStyleProperties {
 }
 
 /**
- * Color palette for node styling using shadcn theme variables
+ * Color palette for node styling derived from hash-based generation
+ * Colors are deterministic based on state type strings
  * Follows WCAG 2.1 Level AA contrast guidelines
  */
-const COLORS = {
-  // Standard work colors - use academic entity colors
-  standard: {
-    fill: 'var(--shadcn-blue)', // Blue-600 from shadcn palette
-    stroke: 'var(--shadcn-blue-filled)', // Filled variant
-  },
-
-  // Xpac work colors (muted, desaturated)
-  xpac: {
-    fill: 'var(--shadcn-slate-400)', // Slate-400 (muted blue-gray)
-    stroke: 'var(--shadcn-slate-500)', // Slate-500
-  },
-
-  // Warning indicators for unverified authors
-  warning: {
-    fill: 'var(--shadcn-amber-400)', // Amber-400
-    stroke: 'var(--shadcn-amber-filled)', // Amber filled variant
-    tint: 'var(--shadcn-amber-50)', // Amber-50 (very light tint)
-  },
-} as const;
+const COLORS = HASH_BASED_COLORS;
 
 /**
  * Get styling for xpac works

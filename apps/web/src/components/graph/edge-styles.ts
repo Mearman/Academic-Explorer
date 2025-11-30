@@ -12,6 +12,8 @@
 import type { GraphEdge, EdgeDirection } from "@bibgraph/types";
 import { RelationType } from "@bibgraph/types";
 
+import { RELATIONSHIP_TYPE_COLORS as HASH_BASED_COLORS } from "../../styles/hash-colors";
+
 /**
  * Style properties for graph edges
  * Compatible with both SVG and CSS styling
@@ -38,28 +40,11 @@ export interface EdgeStyleProperties {
 }
 
 /**
- * Type-specific colors for relationship types using shadcn theme variables
+ * Type-specific colors for relationship types derived from hash-based generation
+ * Colors are deterministic based on relationship type string hashes
  * All colors meet WCAG 2.1 Level AA contrast ratio (≥3:1 for graphical objects)
  */
-export const TYPE_COLORS = {
-  AUTHORSHIP: 'var(--shadcn-blue-500)', // Blue - Work → Author
-  REFERENCE: 'var(--shadcn-violet-500)', // Violet - Work → Work citations
-  PUBLICATION: 'var(--shadcn-emerald-500)', // Emerald - Work → Source
-  TOPIC: 'var(--shadcn-red-400)', // Red - Work → Topic
-  AFFILIATION: 'var(--shadcn-orange-500)', // Orange - Author → Institution
-  HOST_ORGANIZATION: 'var(--shadcn-purple-500)', // Purple - Source → Publisher
-  LINEAGE: 'var(--shadcn-teal-500)', // Teal - Institution → Institution
-
-  // Additional/less common types
-  FUNDED_BY: 'var(--shadcn-orange-600)', // Dark Orange
-  PUBLISHER_CHILD_OF: 'var(--shadcn-purple-600)', // Deep Purple
-  WORK_HAS_KEYWORD: 'var(--shadcn-red-600)', // Red
-  AUTHOR_RESEARCHES: 'var(--shadcn-blue-600)', // Blue
-  INSTITUTION_LOCATED_IN: 'var(--shadcn-green-600)', // Green
-  FUNDER_LOCATED_IN: 'var(--shadcn-amber-700)', // Amber
-  TOPIC_PART_OF_FIELD: 'var(--shadcn-purple-700)', // Purple
-  RELATED_TO: 'var(--shadcn-zinc-500)', // Zinc - catch-all
-} as const;
+export const TYPE_COLORS = HASH_BASED_COLORS;
 
 /**
  * Default styling constants
