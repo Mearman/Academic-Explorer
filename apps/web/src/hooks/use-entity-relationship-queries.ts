@@ -366,7 +366,7 @@ function createRelationshipSection(
     direction,
     label: config.label,
     items,
-    items,
+    visibleItems: items,
     totalCount,
     visibleCount,
     hasMore,
