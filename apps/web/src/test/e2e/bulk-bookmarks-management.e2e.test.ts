@@ -181,8 +181,8 @@ test.describe("Bulk Bookmarks Management", () => {
     expect(count).toBeGreaterThan(0);
 
     // Get initial count
-    const initialCount = count;
-    console.log(`Starting with ${initialCount} bookmarks`);
+    
+    console.log(`Starting with ${count} bookmarks`);
 
     // Select at least one bookmark (or all if there are few)
     if (count >= 2) {
@@ -232,7 +232,7 @@ test.describe("Bulk Bookmarks Management", () => {
     console.log(`Ended with ${finalCount} bookmarks after bulk delete`);
 
     // The count should have decreased by the number of deleted bookmarks
-    const expectedFinalCount = initialCount >= 2 ? initialCount - 2 : initialCount - 1;
+    const expectedFinalCount = count >= 2 ? count - 2 : count - 1;
     expect(finalCount).toBeLessThanOrEqual(expectedFinalCount);
   });
 
