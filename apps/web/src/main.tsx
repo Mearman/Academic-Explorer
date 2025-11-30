@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { cachedOpenAlex } from "@bibgraph/client";
 import { DexieStorageProvider } from "@bibgraph/utils";
 import { setupGlobalErrorHandling, logger } from "@bibgraph/utils/logger";
