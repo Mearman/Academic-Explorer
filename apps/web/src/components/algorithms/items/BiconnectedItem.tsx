@@ -51,7 +51,7 @@ export function BiconnectedItem({
                 Removing these nodes would disconnect the graph:
               </Text>
               <Group gap="xs" wrap="wrap">
-                {biconnectedComponents.articulationPoints.slice(0, 8).map((nodeId) => (
+                {biconnectedComponents.articulationPoints.map((nodeId) => (
                   <Badge
                     key={nodeId}
                     size="xs"
@@ -60,15 +60,10 @@ export function BiconnectedItem({
                     style={{ cursor: 'pointer' }}
                     onClick={() => onHighlightNodes?.([nodeId])}
                   >
-                    {nodeId.slice(0, 10)}...
+                    {nodeId}
                   </Badge>
                 ))}
-                {biconnectedComponents.articulationPoints.length > 8 && (
-                  <Text size="xs" c="dimmed">
-                    +{biconnectedComponents.articulationPoints.length - 8} more
-                  </Text>
-                )}
-              </Group>
+                </Group>
               <Button
                 variant="light"
                 size="xs"
@@ -87,7 +82,6 @@ export function BiconnectedItem({
             <List spacing="xs" size="sm">
               {biconnectedComponents.components
                 .sort((a, b) => b.nodes.length - a.nodes.length)
-                .slice(0, 6)
                 .map((component) => (
                 <List.Item
                   key={component.id}
@@ -117,11 +111,6 @@ export function BiconnectedItem({
                   </Group>
                 </List.Item>
               ))}
-              {biconnectedComponents.components.length > 6 && (
-                <Text size="xs" c="dimmed">
-                  +{biconnectedComponents.components.length - 6} more components
-                </Text>
-              )}
             </List>
           </Box>
         </>

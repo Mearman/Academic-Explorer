@@ -82,7 +82,7 @@ export function TopologicalSortItem({
                 Nodes ordered so all edges point from earlier to later nodes.
               </Text>
               <Group gap="xs" wrap="wrap">
-                {topologicalOrder.slice(0, 10).map((nodeId, index) => (
+                {topologicalOrder.map((nodeId, index) => (
                   <Tooltip key={nodeId} label={nodeId}>
                     <Badge
                       size="xs"
@@ -94,10 +94,7 @@ export function TopologicalSortItem({
                     </Badge>
                   </Tooltip>
                 ))}
-                {topologicalOrder.length > 10 && (
-                  <Text size="xs" c="dimmed">+{topologicalOrder.length - 10} more</Text>
-                )}
-              </Group>
+                </Group>
               <Button
                 variant="light"
                 size="xs"

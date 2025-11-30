@@ -209,7 +209,7 @@ export function CommunityDetectionItem({
             Communities (sorted by size)
           </Text>
           <List spacing="xs" size="sm">
-            {sortedCommunities.slice(0, 10).map((community) => (
+            {sortedCommunities.map((community) => (
               <List.Item
                 key={community.id}
                 icon={
@@ -239,12 +239,7 @@ export function CommunityDetectionItem({
                 </Group>
               </List.Item>
             ))}
-            {sortedCommunities.length > 10 && (
-              <Text size="xs" c="dimmed" mt="xs">
-                +{sortedCommunities.length - 10} more communities
-              </Text>
-            )}
-          </List>
+            </List>
         </Box>
       )}
     </Stack>
