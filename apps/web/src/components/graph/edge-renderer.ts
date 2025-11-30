@@ -14,6 +14,7 @@ import {
   getEdgeStyle,
   getEdgeHoverStyle,
   getEdgeFilteredStyle,
+  TYPE_COLORS,
   type EdgeStyleProperties,
 } from "./edge-styles";
 
@@ -40,7 +41,7 @@ export function renderEdgeOnCanvas(
   ctx.save();
 
   // Set stroke style
-  ctx.strokeStyle = style.stroke || '#708090';
+  ctx.strokeStyle = style.stroke || TYPE_COLORS.RELATED_TO;
   ctx.lineWidth = (style.strokeWidth || 2) / globalScale;
   ctx.globalAlpha = style.strokeOpacity ?? style.opacity ?? 0.8;
 
@@ -75,7 +76,7 @@ export function getSvgEdgeAttributes(
   const style = getEdgeStyle(edge);
 
   return {
-    stroke: style.stroke || '#708090',
+    stroke: style.stroke || TYPE_COLORS.RELATED_TO,
     'stroke-width': style.strokeWidth || 2,
     'stroke-dasharray': style.strokeDasharray || 'none',
     'stroke-opacity': style.strokeOpacity ?? style.opacity ?? 0.8,
@@ -100,7 +101,7 @@ export function getDomEdgeStyle(
   const style = getEdgeStyle(edge);
 
   return {
-    borderColor: style.borderColor || style.stroke || '#708090',
+    borderColor: style.borderColor || style.stroke || TYPE_COLORS.RELATED_TO,
     borderStyle: style.borderStyle || (style.strokeDasharray ? 'dashed' : 'solid'),
     borderWidth: style.strokeWidth || 2,
     opacity: style.opacity ?? 0.8,
@@ -121,7 +122,7 @@ export function getDomEdgeStyle(
  */
 export function getEdgeColor(edge: GraphEdge): string {
   const style = getEdgeStyle(edge);
-  return style.stroke || '#708090';
+  return style.stroke || TYPE_COLORS.RELATED_TO;
 }
 
 /**
@@ -185,7 +186,7 @@ export function createEdgeCanvasObjectFunction() {
  */
 export function getEdgeHoverColor(edge: GraphEdge): string {
   const style = getEdgeHoverStyle(edge);
-  return style.stroke || '#708090';
+  return style.stroke || TYPE_COLORS.RELATED_TO;
 }
 
 /**
@@ -197,7 +198,7 @@ export function getEdgeHoverColor(edge: GraphEdge): string {
  */
 export function getEdgeFilteredColor(edge: GraphEdge): string {
   const style = getEdgeFilteredStyle(edge);
-  return style.stroke || '#708090';
+  return style.stroke || TYPE_COLORS.RELATED_TO;
 }
 
 /**
