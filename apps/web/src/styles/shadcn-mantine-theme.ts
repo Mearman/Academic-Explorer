@@ -1,4 +1,5 @@
 import { createTheme, MantineColorsTuple } from '@mantine/core'
+
 import { generateMantineColors } from './css-variable-resolver'
 
 const shadcnColors = generateMantineColors()
@@ -139,7 +140,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     Card: {
-      vars: (theme) => ({
+      vars: () => ({
         'card-bg': 'var(--mantine-color-body)',
         'card-border': 'var(--mantine-color-default-border)',
       }),

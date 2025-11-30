@@ -19,6 +19,7 @@ import {
 import { IconCircle, IconLink } from '@tabler/icons-react';
 
 import { useBiconnectedComponents } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function BiconnectedItem({

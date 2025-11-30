@@ -16,6 +16,7 @@ import {
 import { IconGraph } from '@tabler/icons-react';
 
 import { useGraphStatistics, useCycleDetection } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function GraphStatisticsCard({

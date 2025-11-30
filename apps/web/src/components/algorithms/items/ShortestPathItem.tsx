@@ -19,6 +19,7 @@ import { IconAlertCircle, IconCircleCheck, IconRoute } from '@tabler/icons-react
 import { useState, useMemo } from 'react';
 
 import { findShortestPath, type PathResult } from '@/services/graph-algorithms';
+
 import type { PathAlgorithmProps } from '../types';
 
 export function ShortestPathItem({

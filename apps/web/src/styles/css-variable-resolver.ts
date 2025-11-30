@@ -53,15 +53,12 @@ export const generateMantineColors = (): Record<string, string[]> => {
 
 export const resolveThemeVariable = (
   palette: ShadcnPalette,
-  shade: ShadcnShade,
-  mode: 'light' | 'dark'
+  shade: ShadcnShade
 ): string => {
   return `var(--shadcn-${palette}-${shade * 50 + 50})`
 }
 
-export const resolveCSSVariable = (variableName: string, mode: 'light' | 'dark'): string => {
-  const lightVars = generateCSSVariables('light')
-  const darkVars = generateCSSVariables('dark')
+export const resolveCSSVariable = (variableName: string): string => {
   return `var(--shadcn-${variableName})`
 }
 
@@ -72,7 +69,7 @@ export const createCSSVariableString = (mode: 'light' | 'dark'): string => {
     .join('\n  ')
 }
 
-export const getAcademicEntityColors = (mode: 'light' | 'dark') => ({
+export const getAcademicEntityColors = () => ({
   work: 'blue',
   author: 'green',
   source: 'violet',

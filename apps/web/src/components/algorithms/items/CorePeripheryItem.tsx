@@ -17,6 +17,7 @@ import {
 import { useState } from 'react';
 
 import { useCorePeriphery } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function CorePeripheryItem({

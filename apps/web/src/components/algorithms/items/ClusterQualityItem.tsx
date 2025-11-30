@@ -16,6 +16,7 @@ import {
 import { IconAlertCircle } from '@tabler/icons-react';
 
 import { useClusterQuality } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps, CommunityResult } from '../types';
 
 interface ClusterQualityItemProps extends AlgorithmItemBaseProps {

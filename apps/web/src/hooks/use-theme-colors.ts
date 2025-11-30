@@ -6,6 +6,7 @@
 import { detectEntityType, getEntityColor as getTaxonomyColorName } from "@bibgraph/types";
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useMemo, useCallback } from "react";
+
 import { getAcademicEntityColors } from "@/styles/css-variable-resolver";
 
 export function useThemeColors() {
@@ -29,7 +30,7 @@ export function useThemeColors() {
   const isDark = resolvedColorScheme === "dark";
 
   // Get shadcn academic entity colors
-  const shadcnEntityColors = getAcademicEntityColors(resolvedColorScheme);
+  const shadcnEntityColors = getAcademicEntityColors();
 
   // Base color utilities - memoized to prevent React 19 infinite loops
   const getColor = useCallback(

@@ -17,6 +17,7 @@ import {
 import { useState, useMemo } from 'react';
 
 import { useEgoNetwork } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function EgoNetworkItem({

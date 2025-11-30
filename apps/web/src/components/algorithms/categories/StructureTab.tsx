@@ -5,7 +5,7 @@
  * @module components/algorithms/categories/StructureTab
  */
 
-import { Accordion, Badge, Stack, Text } from '@mantine/core';
+import { Accordion, Badge } from '@mantine/core';
 import {
   IconNetwork,
   IconCircles,
@@ -13,13 +13,14 @@ import {
   IconArrowsSort,
 } from '@tabler/icons-react';
 
+import { useConnectedComponents, useStronglyConnectedComponents, useCycleInfo } from '@/hooks/use-graph-algorithms';
+
 import {
   ConnectedComponentsItem,
   SCCItem,
   BiconnectedItem,
   TopologicalSortItem,
 } from '../items';
-import { useConnectedComponents, useStronglyConnectedComponents, useCycleInfo } from '@/hooks/use-graph-algorithms';
 import type { CategoryTabProps } from '../types';
 
 export function StructureTab({

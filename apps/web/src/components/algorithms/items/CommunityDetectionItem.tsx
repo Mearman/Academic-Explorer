@@ -24,7 +24,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 
 import { useCommunityDetection, type CommunityDetectionOptions } from '@/hooks/use-graph-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
-import type { CommunityAlgorithmProps, CommunityResult } from '../types';
+
+import type { CommunityAlgorithmProps } from '../types';
 
 /**
  * Algorithm descriptions for user guidance

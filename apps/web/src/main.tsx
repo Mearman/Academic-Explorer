@@ -1,7 +1,7 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { DexieStorageProvider } from "@bibgraph/utils";
 import { setupGlobalErrorHandling, logger } from "@bibgraph/utils/logger";
-import { MantineProvider, createTheme } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -177,7 +177,6 @@ import "@mantine/dates/styles.css";
 
 // Import shadcn theme integration
 import { shadcnMantineTheme } from "./styles/shadcn-mantine-theme";
-import { shadcnLightTheme, shadcnDarkThemeVariables } from "./styles/shadcn-theme.css";
 
 // Use the complete shadcn theme system
 const theme = shadcnMantineTheme;

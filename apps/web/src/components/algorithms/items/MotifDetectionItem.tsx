@@ -27,6 +27,7 @@ import {
   useCoCitations,
   useBibliographicCoupling,
 } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function MotifDetectionItem({

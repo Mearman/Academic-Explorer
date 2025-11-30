@@ -1,4 +1,5 @@
 import { useMantineColorScheme, useMantineTheme } from '@mantine/core'
+
 import { getAcademicEntityColors } from '@/styles/css-variable-resolver'
 import { shadcnPalettes, type ShadcnPalette } from '@/styles/shadcn-colors'
 
@@ -24,7 +25,7 @@ export const useShadcnTheme = () => {
 
   const selectedPalette = getColorPalette()
 
-  const academicEntityColors = getAcademicEntityColors(resolvedColorScheme)
+  const academicEntityColors = getAcademicEntityColors()
 
   const getEntityColor = (entityType: keyof typeof academicEntityColors): string => {
     const colorKey = academicEntityColors[entityType]

@@ -55,4 +55,4 @@ export interface AlgorithmTabsProps extends AlgorithmItemBaseProps, CommunityAlg
 /**
  * Props for category tab components
  */
-export interface CategoryTabProps extends AlgorithmTabsProps {}
+export type CategoryTabProps = AlgorithmTabsProps;

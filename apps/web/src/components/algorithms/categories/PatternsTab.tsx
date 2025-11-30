@@ -23,8 +23,9 @@
 import { Accordion, Badge } from '@mantine/core';
 import { IconTriangle } from '@tabler/icons-react';
 
-import { MotifDetectionItem } from '../items';
 import { useTriangles } from '@/hooks/use-graph-algorithms';
+
+import { MotifDetectionItem } from '../items';
 import type { CategoryTabProps } from '../types';
 
 export function PatternsTab({

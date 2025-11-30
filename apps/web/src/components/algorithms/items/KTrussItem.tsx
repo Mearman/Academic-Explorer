@@ -17,6 +17,7 @@ import { IconChartDonut } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { useKTruss } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function KTrussItem({

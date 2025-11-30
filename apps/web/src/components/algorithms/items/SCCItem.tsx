@@ -16,6 +16,7 @@ import {
 import { IconCircleDot } from '@tabler/icons-react';
 
 import { useStronglyConnectedComponents } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function SCCItem({

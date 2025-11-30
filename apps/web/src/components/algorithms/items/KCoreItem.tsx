@@ -17,6 +17,7 @@ import { IconChartDonut } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { useKCore } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function KCoreItem({

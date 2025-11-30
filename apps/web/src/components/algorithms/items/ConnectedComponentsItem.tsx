@@ -16,6 +16,7 @@ import {
 import { IconCircleDot } from '@tabler/icons-react';
 
 import { useConnectedComponents } from '@/hooks/use-graph-algorithms';
+
 import type { AlgorithmItemBaseProps } from '../types';
 
 export function ConnectedComponentsItem({
