@@ -177,7 +177,7 @@ import "@mantine/dates/styles.css";
 
 // Import shadcn theme integration
 import { shadcnMantineTheme } from "./styles/shadcn-mantine-theme";
-import { shadcnLightTheme, shadcnDarkTheme } from "./styles/shadcn-theme.css";
+import { shadcnLightTheme, shadcnDarkThemeVariables } from "./styles/shadcn-theme.css";
 
 // Use the complete shadcn theme system
 const theme = shadcnMantineTheme;

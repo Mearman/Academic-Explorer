@@ -1,11 +1,11 @@
-import { Button, ActionIcon, Menu, Badge, Box, Group, Text, useMantineTheme } from '@mantine/core'
+import { Menu, Badge, Box, Group, Text, useMantineTheme } from '@mantine/core'
+import { SplitButton } from '@/components/ui/SplitButton'
 import {
   IconSun,
   IconMoon,
   IconDeviceDesktop,
   IconPalette,
-  IconCheck,
-  IconChevronDown
+  IconCheck
 } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
@@ -27,7 +27,6 @@ export const ColorSchemeSelector = ({
   setColorScheme
 }: ColorSchemeSelectorProps) => {
   const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>('blue')
-  const [menuOpen, setMenuOpen] = useState(false)
   const theme = useMantineTheme()
 
   // Load saved palette from localStorage on mount
@@ -60,173 +59,138 @@ export const ColorSchemeSelector = ({
   }
 
   
-  return (
-    <Menu
-      opened={menuOpen}
-      onChange={setMenuOpen}
-      position="bottom-end"
-    >
-      <Menu.Target>
-        <Group gap={0} miw={120} style={{ height: '34px' }}>
-          {/* Main button for cycling theme modes */}
-          <Button
-            variant="outline"
-            size="sm"
-            color={selectedPalette}
-            h={34}
-            onClick={cycleColorScheme}
-            aria-label="Toggle color scheme"
-            styles={{
-              root: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                borderRightWidth: 0,
-                flex: 1,
-                height: '34px'
-              },
-              inner: {
-                justifyContent: 'flex-start',
-                height: '34px'
-              }
-            }}
-            title={`Theme: ${COLOR_SCHEME_LABELS[colorScheme].label} (Click to cycle)`}
-          >
-            <Group gap={4} miw={0}>
-              {getCurrentIcon()}
-              <Text size="xs" fw={500} truncate>
-                {COLOR_SCHEME_LABELS[colorScheme].label}
-              </Text>
+  // Create dropdown items for the SplitButton
+  const dropdownItems = (
+    <>
+      {/* Color Scheme Selection */}
+      <Menu.Label>Theme Mode</Menu.Label>
+      {Object.entries(COLOR_SCHEME_LABELS).map(([scheme, { icon: Icon, label }]) => (
+        <Menu.Item
+          key={scheme}
+          leftSection={<Icon size={16} />}
+          onClick={() => setColorScheme(scheme as 'light' | 'dark' | 'auto')}
+          rightSection={colorScheme === scheme ? <IconCheck size={16} /> : null}
+        >
+          {label}
+        </Menu.Item>
+      ))}
+
+      <Menu.Divider />
+
+      {/* Color Palette Selection */}
+      <Menu.Label>
+        <Group gap={6}>
+          <IconPalette size={16} />
+          Color Palette
+        </Group>
+      </Menu.Label>
+
+      <Box p="xs" style={{ maxHeight: 200, overflowY: 'auto' }}>
+        <Box
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 4
+          }}
+        >
+          {shadcnPaletteNames.map((palette) => (
+            <Menu.Item
+              key={palette}
+              onClick={() => setSelectedPalette(palette)}
+              p={4}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 8px',
+                borderRadius: 4,
+                backgroundColor: selectedPalette === palette
+                  ? 'var(--mantine-color-blue-light)'
+                  : 'transparent'
+              }}
+            >
               <Box
-                w={6}
-                h={6}
+                w={12}
+                h={12}
                 style={{
-                  backgroundColor: theme.colors[selectedPalette][6],
+                  backgroundColor: theme.colors[palette][6],
                   borderRadius: 2,
-                  flexShrink: 0
+                  border: selectedPalette === palette
+                    ? `2px solid ${theme.colors.blue[6]}`
+                    : `1px solid ${theme.colors.gray[3]}`
                 }}
               />
-            </Group>
-          </Button>
-
-          {/* Dropdown arrow button */}
-          <ActionIcon
-            variant="outline"
-            size="sm"
-            color={selectedPalette}
-            w={34}
-            h={34}
-            aria-label="Color palette options"
-            styles={{
-              root: {
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                borderLeftWidth: 1,
-                height: '34px',
-                width: '34px'
-              }
-            }}
-            title={`Palette: ${selectedPalette} (Click for options)`}
-          >
-            <IconChevronDown size={14} />
-          </ActionIcon>
-        </Group>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        {/* Color Scheme Selection */}
-        <Menu.Label>Theme Mode</Menu.Label>
-        {Object.entries(COLOR_SCHEME_LABELS).map(([scheme, { icon: Icon, label }]) => (
-          <Menu.Item
-            key={scheme}
-            leftSection={<Icon size={16} />}
-            onClick={() => setColorScheme(scheme as 'light' | 'dark' | 'auto')}
-            rightSection={colorScheme === scheme ? <IconCheck size={16} /> : null}
-          >
-            {label}
-          </Menu.Item>
-        ))}
-
-        <Menu.Divider />
-
-        {/* Color Palette Selection */}
-        <Menu.Label>
-          <Group gap={6}>
-            <IconPalette size={16} />
-            Color Palette
-          </Group>
-        </Menu.Label>
-
-        <Box p="xs" style={{ maxHeight: 200, overflowY: 'auto' }}>
-          <Box
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 4
-            }}
-          >
-            {shadcnPaletteNames.map((palette) => (
-              <Menu.Item
-                key={palette}
-                onClick={() => setSelectedPalette(palette)}
-                p={4}
+              <Text
+                size="xs"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '4px 8px',
-                  borderRadius: 4,
-                  backgroundColor: selectedPalette === palette
-                    ? 'var(--mantine-color-blue-light)'
-                    : 'transparent'
+                  fontSize: 11,
+                  textTransform: 'capitalize',
+                  fontWeight: selectedPalette === palette ? 600 : 400
                 }}
               >
-                <Box
-                  w={12}
-                  h={12}
-                  style={{
-                    backgroundColor: theme.colors[palette][6],
-                    borderRadius: 2,
-                    border: selectedPalette === palette
-                      ? `2px solid ${theme.colors.blue[6]}`
-                      : `1px solid ${theme.colors.gray[3]}`
-                  }}
-                />
-                <Text
-                  size="xs"
-                  style={{
-                    fontSize: 11,
-                    textTransform: 'capitalize',
-                    fontWeight: selectedPalette === palette ? 600 : 400
-                  }}
-                >
-                  {palette}
-                </Text>
-                {selectedPalette === palette && (
-                  <IconCheck size={12} style={{ marginLeft: 'auto' }} />
-                )}
-              </Menu.Item>
-            ))}
-          </Box>
+                {palette}
+              </Text>
+              {selectedPalette === palette && (
+                <IconCheck size={12} style={{ marginLeft: 'auto' }} />
+              )}
+            </Menu.Item>
+          ))}
         </Box>
+      </Box>
 
-        <Menu.Divider />
+      <Menu.Divider />
 
-        {/* Current Selection Display */}
-        <Box p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
-          <Group gap="xs">
-            <Badge size="xs" variant="light">
+      {/* Current Selection Display */}
+      <Box p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
+        <Group gap="xs">
+          <Badge size="xs" variant="light">
+            {COLOR_SCHEME_LABELS[colorScheme].label}
+          </Badge>
+          <Badge
+            size="xs"
+            variant="light"
+            color={selectedPalette}
+          >
+            {selectedPalette}
+          </Badge>
+        </Group>
+      </Box>
+    </>
+  )
+
+  return (
+    <SplitButton
+      height={34}
+      mainButtonProps={{
+        variant: 'outline',
+        size: 'sm',
+        color: selectedPalette,
+        onClick: cycleColorScheme,
+        'aria-label': 'Toggle color scheme',
+        title: `Theme: ${COLOR_SCHEME_LABELS[colorScheme].label} (Click to cycle)`,
+        children: (
+          <Group gap={4} miw={0}>
+            {getCurrentIcon()}
+            <Text size="xs" fw={500} truncate>
               {COLOR_SCHEME_LABELS[colorScheme].label}
-            </Badge>
-            <Badge
-              size="xs"
-              variant="light"
-              color={selectedPalette}
-            >
-              {selectedPalette}
-            </Badge>
+            </Text>
+            <Box
+              w={6}
+              h={6}
+              style={{
+                backgroundColor: theme.colors[selectedPalette][6],
+                borderRadius: 2,
+                flexShrink: 0
+              }}
+            />
           </Group>
-        </Box>
-      </Menu.Dropdown>
-    </Menu>
+        )
+      }}
+      dropdownButtonProps={{
+        'aria-label': 'Color palette options',
+        title: `Palette: ${selectedPalette} (Click for options)`
+      }}
+      dropdownItems={dropdownItems}
+    />
   )
 }

@@ -41,3 +41,4 @@ export * from "./routing/index";
 export * from "./search/index";
 export * from "./sections/index";
 export * from "./tables/index";
+export * from "./ui/index";
