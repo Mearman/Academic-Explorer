@@ -11,23 +11,12 @@ import { Box, LoadingOverlay } from '@mantine/core';
 import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject } from 'react-force-graph-2d';
 
+import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
+
 import { getEdgeStyle } from './edge-styles';
 
-// Entity type colors using shadcn theme variables for consistent styling
-const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
-  works: 'var(--shadcn-blue)',           // blue - uses academic entity mapping
-  authors: 'var(--shadcn-green)',         // green
-  sources: 'var(--shadcn-violet)',        // violet
-  institutions: 'var(--shadcn-orange)',   // orange
-  topics: 'var(--shadcn-red)',            // red
-  publishers: 'var(--shadcn-teal)',       // teal
-  funders: 'var(--shadcn-cyan)',          // cyan
-  concepts: 'var(--shadcn-pink)',         // pink
-  keywords: 'var(--shadcn-zinc)',         // zinc
-  domains: 'var(--shadcn-slate)',         // slate
-  fields: 'var(--shadcn-emerald)',        // emerald
-  subfields: 'var(--shadcn-purple)',      // purple
-};
+// Entity type colors using hash-based generation for deterministic, consistent coloring
+const ENTITY_TYPE_COLORS: Record<EntityType, string> = HASH_BASED_ENTITY_COLORS;
 
 // Node for the force graph (extends NodeObject)
 interface ForceGraphNode extends NodeObject {
@@ -119,10 +108,10 @@ const DEFAULT_SEED = 42;
  * Simple seeded random number generator for deterministic layouts
  */
 function seededRandom(seed: number): () => number {
-  let s = seed;
+  
   return () => {
-    s = (s * 1103515245 + 12345) & 0x7fffffff;
-    return s / 0x7fffffff;
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed / 0x7fffffff;
   };
 }
 
