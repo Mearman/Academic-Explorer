@@ -7,7 +7,7 @@ This directory contains all feature specifications for BibGraph, organized using
 | Status | Count |
 |--------|-------|
 | ✅ Complete | 19 |
-| 🚧 In Progress | 4 |
+| 🚧 In Progress | 5 |
 | 📝 Draft | 3 |
 | ⚠️ Archived | 2 |
 
@@ -265,6 +265,15 @@ Extension of spec-015 for complete relationship coverage. Added relationship ext
 
 ---
 
+### spec-029: shadcn Styling Standardization
+**Status**: 🚧 In Progress (Planning Complete) | **Created**: 2025-11-30
+
+Standardize UI component styling using shadcn-inspired theming for Mantine with official Vanilla Extract integration while preserving existing hash-based color logic for graph visualization. 52 atomic tasks across 8 phases: eliminate Tailwind classes, replace Mantine CSS variables with Vanilla Extract theme system, implement consistent visual design patterns using research theme's 20 color palettes, ensure <100ms theme switching with <5% bundle increase.
+
+[View Spec](./029-shadcn-styling/)
+
+---
+
 ## Known Issues
 
 ### Spec Numbering Cleanup (2025-11-25)
@@ -317,4 +326,4 @@ All specifications must align with the [BibGraph Constitution](../.specify/memor
 
 ---
 
-**Last Updated**: 2025-11-26 | **Total Specs**: 28 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-11-30 | **Total Specs**: 29 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
