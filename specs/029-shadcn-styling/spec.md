@@ -1,15 +1,19 @@
-# Feature Specification: shadcn Styling Standardization
+# Feature Specification: Switchable Styling System Architecture
 
 **Feature Branch**: `029-shadcn-styling`
 **Created**: 2025-11-30
 **Status**: Draft
-**Input**: User description: "create a spec from this plan"
+**Input**: User description: "update spec 29 so that we can switch between the native mantine styles and the shad-cdn based styles, as well as allowing us to add radix based styles later"
 
 ## Clarifications
 
 ### Session 2025-11-30
 - **Q**: Approach to shadcn integration - migrate from Mantine or enhance Mantine? → **A**: Implement shadcn-inspired theming for Mantine using Vanilla Extract (reference: https://github.com/RubixCube-Innovations/mantine-theme-builder), NOT migrate from Mantine to shadcn
 - **Q**: Theming scope - color palettes, entity styling, or both? → **A**: Use hash-based colors (already working, must be preserved), focus on academic color palettes and UI component styling patterns
+- **Q**: How should users switch between styling systems - runtime toggle (like theme switching) or build-time configuration? → **A**: Runtime toggle (like light/dark theme switching)
+- **Q**: Where should styling system preferences be stored and managed? → **A**: Settings store alongside theme preferences
+- **Q**: How should components adapt to different styling systems? → **A**: Styling injection pattern with multiple Vanilla Extract theme contracts (MantineThemeContract, ShadcnThemeContract, RadixThemeContract)
+- **Q**: Where should users access the styling system switcher in the UI? → **A**: Both locations with sync (header toggle + settings page)
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -43,61 +47,92 @@ As a user exploring academic literature, I expect the interface to have a consis
 
 ---
 
-### User Story 3 - Theme Consistency (Priority: P3)
+### User Story 3 - Styling System Switching (Priority: P1)
 
-As a user switching between light and dark modes, I expect the theme to apply consistently across all UI components while preserving the academic entity color mappings (works=blue, authors=green, etc.) that help identify different content types.
+As a user of the BibGraph application, I expect to seamlessly switch between different styling systems (Native Mantine, shadcn CDN-inspired, Radix-based) and have the entire interface immediately adapt to the selected system while maintaining all functionality.
 
-**Why this priority**: Improves accessibility and visual comfort for different lighting conditions
+**Why this priority**: Core feature requirement - enables user choice and supports different visual preferences
 
-**Independent Test**: Can be fully tested by toggling theme settings and verifying all components adapt correctly while maintaining entity color consistency
+**Independent Test**: Can be fully tested by switching between styling systems using both header toggle and settings page, verifying immediate UI adaptation
 
 **Acceptance Scenarios**:
 
-1. **Given** I switch from light to dark mode, **When** the theme changes, **Then** all UI components update their styling appropriately
-2. **Given** I view academic entities, **When** in either theme mode, **Then** entity type colors remain consistent (works=blue, authors=green, etc.)
+1. **Given** I click the styling system toggle in the header, **When** I select a different styling system, **Then** the entire interface immediately adopts the new styling patterns within 200ms
+2. **Given** I change the styling system in the settings page, **When** I return to the main interface, **Then** the header toggle reflects the new selection and all components use the new styling
+3. **Given** I refresh the browser or return later, **When** the application loads, **Then** my selected styling system preference is preserved and applied
+
+---
+
+### User Story 4 - Theme Consistency Across Styling Systems (Priority: P2)
+
+As a user switching between light and dark modes within any styling system, I expect the theme to apply consistently across all UI components while preserving the academic entity color mappings (works=blue, authors=green, etc.) that help identify different content types.
+
+**Why this priority**: Ensures accessibility and visual comfort are maintained across all styling systems
+
+**Independent Test**: Can be fully tested by toggling theme settings in each styling system and verifying consistent behavior
+
+**Acceptance Scenarios**:
+
+1. **Given** I switch from light to dark mode in any styling system, **When** the theme changes, **Then** all UI components update their styling appropriately
+2. **Given** I view academic entities across different styling systems, **When** in either theme mode, **Then** entity type colors remain consistent (works=blue, authors=green, etc.)
 
 ---
 
 ### Edge Cases
 
-- What happens when theme switching occurs during component interactions?
-- How does the system handle components that use both UI styling and graph visualization colors?
-- What happens when custom color themes are applied?
+- What happens when styling system switching occurs during component interactions?
+- How does the system handle components that use both UI styling and graph visualization colors during styling system switches?
+- What happens when custom color themes are applied across different styling systems?
+- How does the system handle rapid switching between styling systems (multiple clicks in quick succession)?
+- What happens if a styling system fails to load or encounters errors during switching?
+- How are styling system preferences handled when the settings store is corrupted or unavailable?
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST eliminate all Tailwind class usage from production UI components
-- **FR-002**: System MUST implement shadcn-inspired theming for Mantine using Vanilla Extract (NOT migrate from Mantine to shadcn)
-- **FR-003**: System MUST preserve existing hash-based color logic for graph visualization nodes and edges
-- **FR-004**: System MUST establish consistent visual design patterns using the research theme's 20 color palettes
-- **FR-005**: System MUST fix broken DataState component and other components with styling issues
-- **FR-006**: System MUST implement Vanilla Extract recipes for consistent component styling patterns
-- **FR-007**: System MUST maintain academic entity color mappings (works=blue, authors=green, sources=violet, etc.) in UI elements
-- **FR-008**: System MUST ensure theme switching works consistently across all UI components
-- **FR-009**: System MUST apply proper focus states, hover effects, and disabled states following shadcn patterns
-- **FR-010**: System MUST maintain bundle size increase under 5% from current baseline
+- **FR-001**: System MUST support runtime switching between three styling systems: Native Mantine, shadcn CDN-inspired, and Radix-based
+- **FR-002**: System MUST eliminate all Tailwind class usage from production UI components
+- **FR-003**: System MUST implement multiple Vanilla Extract theme contracts (MantineThemeContract, ShadcnThemeContract, RadixThemeContract) for styling injection pattern
+- **FR-004**: System MUST preserve existing hash-based color logic for graph visualization nodes and edges
+- **FR-005**: System MUST establish consistent visual design patterns using the research theme's 20 color palettes across all styling systems
+- **FR-006**: System MUST fix broken DataState component and other components with styling issues
+- **FR-007**: System MUST implement Vanilla Extract recipes for consistent component styling patterns within each styling system
+- **FR-008**: System MUST maintain academic entity color mappings (works=blue, authors=green, sources=violet, etc.) in UI elements across all styling systems
+- **FR-009**: System MUST ensure theme switching works consistently across all UI components and styling systems
+- **FR-010**: System MUST provide styling system switcher in both header (quick toggle) and settings page (detailed options) with synchronization
+- **FR-011**: System MUST store styling system preferences in settings store alongside theme preferences
+- **FR-012**: System MUST apply proper focus states, hover effects, and disabled states following patterns appropriate to active styling system
+- **FR-013**: System MUST maintain bundle size increase under 10% from current baseline (increased to accommodate multiple theme contracts)
+- **FR-014**: System MUST ensure styling system switching completes in under 200ms (includes theme contract loading and application)
+- **FR-015**: System MUST maintain all existing Mantine component functionality while enabling switchable styling
 
 ### Key Entities *(include if feature involves data)*
 
-- **UI Components**: Interactive elements that display and respond to user actions
-- **Theme System**: Visual styling system that defines colors, spacing, and typography
-- **Color Variables**: CSS custom properties that define the visual appearance
-- **Component Recipes**: Reusable styling patterns for consistent component behavior
+- **UI Components**: Interactive elements that display and respond to user actions, using styling injection pattern
+- **Styling Systems**: Three distinct styling approaches - Native Mantine, shadcn CDN-inspired, and Radix-based
+- **Theme Contracts**: Vanilla Extract contracts (MantineThemeContract, ShadcnThemeContract, RadixThemeContract) defining styling patterns
+- **Styling System Manager**: Service that manages runtime switching between styling systems
+- **Settings Store**: User preference storage for styling system selection alongside theme preferences
+- **Component Recipes**: Reusable styling patterns for consistent component behavior within each styling system
+- **Hash-based Colors**: Existing color generation system for graph visualization (preserved unchanged)
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
 - **SC-001**: Zero Tailwind classes appear in production code (verified by code analysis)
-- **SC-002**: Zero Mantine CSS variables remain in UI components (replaced with shadcn variables)
-- **SC-003**: All UI components render without visual artifacts or styling errors
-- **SC-004**: Theme switching completes in under 100ms across all components
-- **SC-005**: Bundle size increase stays under 5% from current baseline
-- **SC-006**: Academic entity color application is 100% consistent across UI elements
-- **SC-007**: Graph visualization colors remain completely unchanged (hash-based logic preserved)
-- **SC-008**: All interactive states (hover, focus, disabled) follow consistent shadcn patterns
+- **SC-002**: All three styling systems (Native Mantine, shadcn CDN-inspired, Radix-based) are fully functional with proper theme contracts
+- **SC-003**: All UI components render without visual artifacts or styling errors across all styling systems
+- **SC-004**: Styling system switching completes in under 200ms across all components
+- **SC-005**: Theme switching completes in under 100ms across all components within active styling system
+- **SC-006**: Bundle size increase stays under 10% from current baseline (increased to accommodate multiple theme contracts)
+- **SC-007**: Academic entity color application is 100% consistent across UI elements and styling systems
+- **SC-008**: Graph visualization colors remain completely unchanged (hash-based logic preserved)
+- **SC-009**: All interactive states (hover, focus, disabled) follow patterns appropriate to active styling system
+- **SC-010**: Styling system preferences persist correctly in settings store across browser sessions
+- **SC-011**: Header toggle and settings page styling system controls remain synchronized
+- **SC-012**: All existing Mantine component functionality is preserved across all styling systems
 
 ## Constitution Alignment *(recommended)*
 

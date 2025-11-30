@@ -1,50 +1,52 @@
-# Implementation Plan: shadcn Styling Standardization
+# Implementation Plan: Switchable Styling System Architecture
 
-**Branch**: `029-shadcn-styling` | **Date**: 2025-11-30 | **Spec**: [spec.md](./spec.md)
+**Branch**: `029-spec-29` | **Date**: 2025-11-30 | **Spec**: [specs/029-shadcn-styling/spec.md](./spec.md)
 **Input**: Feature specification from `/specs/029-shadcn-styling/spec.md`
 
 ## Summary
 
-Standardize UI component styling using shadcn-inspired theming for Mantine with official Vanilla Extract integration while preserving existing hash-based color logic for graph visualization. This involves: (1) eliminating Tailwind classes from production UI components, (2) replacing Mantine CSS variables with Vanilla Extract theme system, (3) implementing Vanilla Extract recipes for consistent styling patterns, (4) integrating academic color palettes from research files, and (5) ensuring theme switching performance under 100ms with <5% bundle size increase.
+Implement runtime-switchable styling system supporting Native Mantine, shadcn CDN-inspired, and Radix-based approaches using Vanilla Extract theme contracts. Components maintain Mantine functionality while receiving different styling injections based on user preferences stored in settings store.
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.9.2, React 19
-**Primary Dependencies**: Mantine UI 7.x, Vanilla Extract 5.x, Nx 22.x
-**Storage**: N/A (styling feature - no new persistence)
-**Testing**: Vitest 4.x, React Testing Library 16.x, Playwright E2E
-**Target Platform**: Web browser (desktop & mobile)
-**Project Type**: Web application (Nx monorepo - apps/web)
-**Performance Goals**: Theme switching <100ms, bundle size increase <5%, CSS generation at compile-time
-**Constraints**: Must preserve existing hash-based graph colors, maintain academic entity mappings, no breaking changes to graph visualization
-**Scale/Scope**: ~50 UI components across the web application, component-level styling patterns
+**Language/Version**: TypeScript 5.x (strict mode)
+**Primary Dependencies**: Mantine UI 7.x, Vanilla Extract, React 19, TanStack Router, Zustand
+**Storage**: IndexedDB via Dexie for user preferences, localStorage for theme state
+**Testing**: Vitest (serial execution), Playwright for E2E, @axe-core/playwright for accessibility
+**Target Platform**: Web browser (modern browsers supporting CSS custom properties)
+**Project Type**: Web application (Nx monorepo - apps/web + packages/)
+**Performance Goals**: Styling system switching <200ms, bundle size increase <10%
+**Constraints**: Must preserve hash-based graph colors, maintain Mantine component functionality, serial test execution (memory constraints)
+**Scale/Scope**: All UI components in BibGraph application (~50+ components)
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-**✅ CONSTITUTION COMPLIANCE VERIFIED**
-
 Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
-1. **Type Safety**: ✅ Vanilla Extract provides compile-time CSS type safety, TypeScript theme configurations
-2. **Test-First Development**: ✅ Component tests will be written before styling implementation
-3. **Monorepo Architecture**: ✅ Changes stay within apps/web and packages/ui structure, no new packages
-4. **Storage Abstraction**: ✅ N/A - no storage operations involved in styling feature
-5. **Performance & Memory**: ✅ Theme switching <100ms target, compile-time CSS generation, no heavy computation
-6. **Atomic Conventional Commits**: ✅ Planned atomic commits for each component styling update
-7. **Development-Stage Pragmatism**: ✅ Breaking CSS changes acceptable during development
-8. **Test-First Bug Fixes**: ✅ Visual bug tests will reproduce issues before fixes
-9. **Repository Integrity**: ✅ All lint/build/test issues will be resolved before completion
-10. **Continuous Execution**: ✅ Planning proceeds through all phases without stopping
-11. **Complete Implementation**: ✅ Full shadcn-inspired theming as specified, no simplified fallbacks
-12. **Spec Index Maintenance**: ✅ specs/README.md updated and committed alongside changes
-13. **Build Output Isolation**: ✅ Vanilla Extract compiles to dist/, CSS properly isolated
-14. **Working Files Hygiene**: ✅ Debug styling artifacts cleaned up before commits
-15. **DRY Code & Configuration**: ✅ Shared styling recipes extracted to packages/ui
-16. **Presentation/Functionality Decoupling**: ✅ Styling separated from business logic, testable layers
+1. **Type Safety**: No `any` types planned; use `unknown` with type guards
+2. **Test-First Development**: Tests written and failing before implementation begins
+3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/); packages MUST NOT re-export exports from other internal packages
+4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
+5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
+6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase
+7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
+8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
+9. **Repository Integrity**: ALL issues (tests, lint, build, audit, errors, warnings) MUST be resolved—"pre-existing" is not an excuse
+10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion; if no outstanding questions after /speckit.plan, automatically invoke /speckit.tasks then /speckit.implement
+11. **Complete Implementation**: Implement full version as specified; no simplified fallbacks without user approval
+12. **Spec Index Maintenance**: specs/README.md updated when spec status changes; committed alongside spec changes
+13. **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
+14. **Working Files Hygiene**: Debug screenshots, fix chain docs, and temporary artifacts cleaned up before commit
+15. **DRY Code & Configuration**: No duplicate logic; extract shared code to utils; configuration extends shared base; proactive cruft cleanup
+16. **Presentation/Functionality Decoupling**: Web app components separate presentation from logic; business logic in hooks/services, rendering in components; testable layers
 
-**Complexity Justification**: Not required - feature enhances existing structure without adding complexity
+**Complexity Justification Required?** Document in Complexity Tracking section if this feature:
+- Adds new packages/apps beyond existing structure
+- Introduces new storage provider implementations
+- Requires new worker threads
+- Violates YAGNI or adds architectural complexity
 
 ## Project Structure
 
