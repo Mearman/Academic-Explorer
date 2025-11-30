@@ -30,7 +30,7 @@ export function ConnectedComponentsItem({
     <Stack gap="sm">
       {connectedComponents.components.length > 0 && (
         <List spacing="xs" size="sm">
-          {connectedComponents.components.slice(0, 5).map((component, index) => (
+          {connectedComponents.components.map((component, index) => (
             <List.Item
               key={index}
               icon={
@@ -49,12 +49,7 @@ export function ConnectedComponentsItem({
               </Group>
             </List.Item>
           ))}
-          {connectedComponents.components.length > 5 && (
-            <Text size="xs" c="dimmed">
-              +{connectedComponents.components.length - 5} more components
-            </Text>
-          )}
-        </List>
+                </List>
       )}
     </Stack>
   );
