@@ -82,7 +82,7 @@ export function BiconnectedItem({
             <List spacing="xs" size="sm">
               {biconnectedComponents.components
                 .sort((a, b) => b.nodes.length - a.nodes.length)
-                                .map((component) => (
+                .map((component) => (
                 <List.Item
                   key={component.id}
                   icon={
@@ -110,8 +110,8 @@ export function BiconnectedItem({
                     </Badge>
                   </Group>
                 </List.Item>
-              })}
-                </List>
+              ))}
+            </List>
           </Box>
         </>
       ) : (
