@@ -257,7 +257,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
       return {
         found: true,
-        parsedData,
+        data: parsedData,
         cacheHit: true,
         tier: CacheTier.LOCAL_DISK,
         loadTime,
