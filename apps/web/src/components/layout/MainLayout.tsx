@@ -20,9 +20,6 @@ import {
   Badge,
 } from "@mantine/core";
 import {
-  IconMoon,
-  IconSun,
-  IconDeviceDesktop,
   IconLayoutSidebar,
   IconLayoutSidebarRight,
   IconPinned,
@@ -36,6 +33,7 @@ import React, { useState, useCallback, useRef } from "react";
 
 import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
+import { ColorSchemeSelector } from "./ColorSchemeSelector";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { HeaderSearchInput } from "./HeaderSearchInput";
@@ -82,28 +80,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // Mobile search state
   const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
-
-
-  // Theme toggle logic
-  const cycleColorScheme = () => {
-    if (colorScheme === "auto") {
-      setColorScheme("light");
-    } else if (colorScheme === "light") {
-      setColorScheme("dark");
-    } else {
-      setColorScheme("auto");
-    }
-  };
-
-  const getThemeIcon = () => {
-    if (colorScheme === "auto") {
-      return <IconDeviceDesktop size={18} />;
-    } else if (colorScheme === "dark") {
-      return <IconMoon size={18} />;
-    } else {
-      return <IconSun size={18} />;
-    }
-  };
 
   // Drag handling for sidebar resizing
   const handleDragStart = useCallback(
@@ -398,16 +374,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </Menu>
             )}
 
-            {/* Theme toggle (hidden on mobile when search expanded) */}
+            {/* Color scheme selector (hidden on mobile when search expanded) */}
             {!mobileSearchExpanded && (
-              <ActionIcon
-                onClick={cycleColorScheme}
-                variant="outline"
-                size="lg"
-                aria-label="Toggle color scheme"
-              >
-                {getThemeIcon()}
-              </ActionIcon>
+              <ColorSchemeSelector
+                colorScheme={colorScheme}
+                setColorScheme={setColorScheme}
+              />
             )}
           </Group>
         </Group>

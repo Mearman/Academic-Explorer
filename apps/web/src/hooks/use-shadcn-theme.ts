@@ -1,5 +1,6 @@
 import { useMantineColorScheme, useMantineTheme } from '@mantine/core'
 import { getAcademicEntityColors } from '@/styles/css-variable-resolver'
+import { shadcnPalettes, type ShadcnPalette } from '@/styles/shadcn-colors'
 
 export const useShadcnTheme = () => {
   const { colorScheme } = useMantineColorScheme()
@@ -9,6 +10,19 @@ export const useShadcnTheme = () => {
   const resolvedColorScheme = colorScheme === 'auto'
     ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     : colorScheme
+
+  // Get selected color palette from localStorage
+  const getColorPalette = (): ShadcnPalette => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bibgraph-color-palette')
+      if (saved && saved in shadcnPalettes) {
+        return saved as ShadcnPalette
+      }
+    }
+    return 'blue' // default palette
+  }
+
+  const selectedPalette = getColorPalette()
 
   const academicEntityColors = getAcademicEntityColors(resolvedColorScheme)
 
@@ -25,24 +39,28 @@ export const useShadcnTheme = () => {
     return mantineTheme.colors[colorKey][variant]
   }
 
+  const getPaletteColor = (palette: ShadcnPalette = selectedPalette, shade: number = 6): string => {
+    return shadcnPalettes[palette][shade] || shadcnPalettes.blue[shade]
+  }
+
   const getSemanticColor = (semanticKey: string): string => {
     switch (semanticKey) {
       case 'primary':
-        return mantineTheme.colors.primary[6]
+        return getPaletteColor()
       case 'secondary':
-        return mantineTheme.colors.secondary[6]
+        return shadcnPalettes.zinc[6]
       case 'accent':
-        return mantineTheme.colors.accent[6]
+        return getPaletteColor(selectedPalette, 5)
       case 'background':
-        return colorScheme === 'dark' ? '#09090b' : '#ffffff'
+        return resolvedColorScheme === 'dark' ? shadcnPalettes.slate[10] : shadcnPalettes.slate[0]
       case 'foreground':
-        return colorScheme === 'dark' ? '#fafafa' : '#09090b'
+        return resolvedColorScheme === 'dark' ? shadcnPalettes.slate[0] : shadcnPalettes.slate[9]
       case 'muted':
-        return colorScheme === 'dark' ? '#71717a' : '#a1a1aa'
+        return resolvedColorScheme === 'dark' ? shadcnPalettes.zinc[5] : shadcnPalettes.zinc[4]
       case 'border':
-        return colorScheme === 'dark' ? '#27272a' : '#e4e4e7'
+        return resolvedColorScheme === 'dark' ? shadcnPalettes.zinc[8] : shadcnPalettes.zinc[2]
       default:
-        return mantineTheme.colors.primary[6]
+        return getPaletteColor()
     }
   }
 
@@ -50,8 +68,10 @@ export const useShadcnTheme = () => {
     colorScheme: resolvedColorScheme,
     theme: mantineTheme,
     academicEntityColors,
+    selectedPalette,
     getEntityColor,
     getEntityColorVariant,
+    getPaletteColor,
     getSemanticColor,
     isDark: resolvedColorScheme === 'dark',
     isLight: resolvedColorScheme === 'light',
