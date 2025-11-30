@@ -11,6 +11,16 @@ export interface CSSVariableMapping {
   }
 }
 
+// Helper function to create alpha-blended colors
+const alpha = (color: string, alphaValue: number): string => {
+  return `${color}${Math.round(alphaValue * 255).toString(16).padStart(2, '0')}`
+}
+
+// Helper to detect neutral colors
+const isNeutralColor = (palette: string): boolean => {
+  return ["zinc", "slate", "gray", "neutral", "stone"].includes(palette)
+}
+
 export const resolveSemanticColor = (
   semanticKey: string,
   mode: 'light' | 'dark'
@@ -25,7 +35,7 @@ export const resolveSemanticColor = (
 export const generateCSSVariables = (mode: 'light' | 'dark'): ThemeColors => {
   const colors: ThemeColors = {}
 
-  // Generate palette variables
+  // Generate base palette variables
   Object.entries(shadcnPalettes).forEach(([paletteName, shades]) => {
     shades.forEach((color, shadeIndex) => {
       colors[`--shadcn-${paletteName}-${shadeIndex * 50 + 50}`] = color
@@ -37,6 +47,47 @@ export const generateCSSVariables = (mode: 'light' | 'dark'): ThemeColors => {
     const [palette, shade] = colorValue.split('.')
     const color = shadcnPalettes[palette as ShadcnPalette][parseInt(shade) as ShadcnShade]
     colors[`--shadcn-${semanticKey}`] = color
+  })
+
+  // Generate variant variables (filled, light, outline, contrast) with hover states
+  Object.entries(shadcnPalettes).forEach(([paletteName, shades]) => {
+    const baseColor = paletteName
+
+    // Filled variants
+    const filledShade = isNeutralColor(paletteName) ? 8 :
+                        ["yellow", "lime"].includes(paletteName) ? 4 :
+                        ["green", "blue"].includes(paletteName) ? 6 : 5
+
+    colors[`--shadcn-${paletteName}-filled`] = shades[filledShade - 1]
+    colors[`--shadcn-${paletteName}-filled-hover`] = alpha(shades[filledShade - 1], 0.9)
+
+    // Light variants with alpha blending
+    const lightBaseShade = 4
+    const lightAlpha = mode === 'dark' ? 0.15 : 0.1
+    colors[`--shadcn-${paletteName}-light`] = alpha(shades[lightBaseShade - 1], lightAlpha)
+    colors[`--shadcn-${paletteName}-light-hover`] = alpha(shades[lightBaseShade - 1], lightAlpha * 0.8)
+
+    const lightColorShade = mode === 'dark' ? 3 : 6
+    colors[`--shadcn-${paletteName}-light-color`] = shades[lightColorShade - 1]
+
+    // Outline variants
+    const outlineShade = isNeutralColor(paletteName) ? 8 :
+                        mode === 'dark' ?
+                          (["orange", "indigo", "violet", "purple", "fuchsia", "pink"].includes(paletteName) ? 6 : 5) :
+                          (["green", "blue"].includes(paletteName) ? 6 : 5)
+
+    colors[`--shadcn-${paletteName}-outline`] = shades[outlineShade - 1]
+    colors[`--shadcn-${paletteName}-outline-hover`] = alpha(shades[lightBaseShade - 1], mode === 'dark' ? 0.15 : 0.1)
+
+    // Contrast variants
+    const contrastMap: Record<string, number> = {
+      zinc: 0, slate: 0, gray: 0, neutral: 0, stone: 0,
+      red: 0, rose: 0,
+      orange: 0, amber: 0, lime: 0, emerald: 0, teal: 0, cyan: 0, sky: 0, indigo: 0, fuchsia: 0, purple: 0, pink: 0,
+      yellow: 6, green: mode === 'light' ? 0 : 9, blue: 0
+    }
+
+    colors[`--shadcn-${paletteName}-contrast`] = shades[contrastMap[paletteName] || 0]
   })
 
   return colors
@@ -60,6 +111,16 @@ export const resolveThemeVariable = (
 
 export const resolveCSSVariable = (variableName: string): string => {
   return `var(--shadcn-${variableName})`
+}
+
+// Enhanced resolver for variant access
+export const resolveVariantVariable = (
+  palette: ShadcnPalette,
+  variant: 'filled' | 'light' | 'outline' | 'contrast',
+  hover?: boolean
+): string => {
+  const hoverSuffix = hover ? '-hover' : ''
+  return `var(--shadcn-${palette}-${variant}${hoverSuffix})`
 }
 
 export const createCSSVariableString = (mode: 'light' | 'dark'): string => {

@@ -367,13 +367,13 @@ function ComparisonResults() {
           style={{
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#1f2937",
+            color: "var(--shadcn-foreground)",
             marginBottom: "8px",
           }}
         >
           STAR Comparison Results
         </h1>
-        <p style={{ fontSize: "16px", color: "#6b7280" }}>
+        <p style={{ fontSize: "16px", color: "var(--shadcn-muted-foreground)" }}>
           Detailed analysis of BibGraph performance against systematic
           literature review ground truth
         </p>
@@ -394,7 +394,7 @@ function ComparisonResults() {
             style={{
               fontSize: "20px",
               fontWeight: "600",
-              color: "#1f2937",
+              color: "var(--shadcn-foreground)",
               marginBottom: "16px",
             }}
           >
@@ -416,7 +416,7 @@ function ComparisonResults() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "16px",
-                    backgroundColor: "#f9fafb",
+                    backgroundColor: "var(--shadcn-muted)",
                     borderRadius: "8px",
                     border: BORDER_DEFAULT,
                   }}
@@ -426,13 +426,13 @@ function ComparisonResults() {
                       style={{
                         fontSize: "16px",
                         fontWeight: "500",
-                        color: "#1f2937",
+                        color: "var(--shadcn-foreground)",
                         marginBottom: "4px",
                       }}
                     >
                       {dataset.name}
                     </h3>
-                    <p style={{ fontSize: "14px", color: "#6b7280" }}>
+                    <p style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)" }}>
                       {dataset.originalPaperCount} papers •{" "}
                       {dataset.reviewTopic}
                     </p>
@@ -440,7 +440,7 @@ function ComparisonResults() {
                       <div
                         style={{
                           fontSize: "12px",
-                          color: "#3b82f6",
+                          color: "var(--shadcn-primary)",
                           marginTop: "4px",
                         }}
                       >
@@ -457,11 +457,11 @@ function ComparisonResults() {
                     style={{
                       padding: "8px 16px",
                       backgroundColor: isCompleted
-                        ? "#10b981"
+                        ? "var(--shadcn-success)"
                         : isRunning
-                          ? "#f59e0b"
-                          : "#3b82f6",
-                      color: "white",
+                          ? "var(--shadcn-warning)"
+                          : "var(--shadcn-primary)",
+                      color: "var(--shadcn-primary-foreground)",
                       border: "none",
                       borderRadius: "6px",
                       fontSize: "14px",
@@ -489,7 +489,7 @@ function ComparisonResults() {
       {displayResults.length === 0 ? (
         <div
           style={{
-            backgroundColor: "#f9fafb",
+            backgroundColor: "var(--shadcn-muted)",
             borderRadius: "12px",
             border: BORDER_DEFAULT,
             padding: "48px 24px",
@@ -503,14 +503,14 @@ function ComparisonResults() {
             style={{
               fontSize: "18px",
               fontWeight: "600",
-              color: "#374151",
+              color: "var(--shadcn-foreground)",
               marginBottom: "8px",
             }}
           >
             No comparison results available
           </h3>
           <p
-            style={{ fontSize: "14px", color: "#6b7280", marginBottom: "24px" }}
+            style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)", marginBottom: "24px" }}
           >
             {starDatasets.length === 0
               ? "Upload STAR datasets first, then run comparisons to see detailed performance metrics here"
@@ -542,7 +542,7 @@ function ComparisonResults() {
                   style={{
                     fontSize: "32px",
                     fontWeight: "bold",
-                    color: "#3b82f6",
+                    color: "var(--shadcn-primary)",
                     marginBottom: "8px",
                   }}
                 >
@@ -551,7 +551,7 @@ function ComparisonResults() {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     fontWeight: "500",
                   }}
                 >
@@ -572,7 +572,7 @@ function ComparisonResults() {
                   style={{
                     fontSize: "32px",
                     fontWeight: "bold",
-                    color: "#10b981",
+                    color: "var(--shadcn-success)",
                     marginBottom: "8px",
                   }}
                 >
@@ -581,7 +581,7 @@ function ComparisonResults() {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     fontWeight: "500",
                   }}
                 >
@@ -602,7 +602,7 @@ function ComparisonResults() {
                   style={{
                     fontSize: "32px",
                     fontWeight: "bold",
-                    color: "#8b5cf6",
+                    color: "var(--shadcn-purple-500)",
                     marginBottom: "8px",
                   }}
                 >
@@ -611,7 +611,7 @@ function ComparisonResults() {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     fontWeight: "500",
                   }}
                 >
@@ -632,7 +632,7 @@ function ComparisonResults() {
                   style={{
                     fontSize: "32px",
                     fontWeight: "bold",
-                    color: "#f59e0b",
+                    color: "var(--shadcn-warning)",
                     marginBottom: "8px",
                   }}
                 >
@@ -641,7 +641,7 @@ function ComparisonResults() {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     fontWeight: "500",
                   }}
                 >
@@ -662,7 +662,7 @@ function ComparisonResults() {
                   style={{
                     fontSize: "32px",
                     fontWeight: "bold",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     marginBottom: "8px",
                   }}
                 >
@@ -671,7 +671,7 @@ function ComparisonResults() {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#6b7280",
+                    color: "var(--shadcn-muted-foreground)",
                     fontWeight: "500",
                   }}
                 >
@@ -694,14 +694,14 @@ function ComparisonResults() {
               style={{
                 padding: "20px",
                 borderBottom: BORDER_DEFAULT,
-                backgroundColor: "#f9fafb",
+                backgroundColor: "var(--shadcn-muted)",
               }}
             >
               <h2
                 style={{
                   fontSize: "18px",
                   fontWeight: "600",
-                  color: "#1f2937",
+                  color: "var(--shadcn-foreground)",
                   margin: 0,
                 }}
               >
@@ -721,7 +721,7 @@ function ComparisonResults() {
                       padding: "20px",
                       borderBottom:
                         index < displayResults.length - 1
-                          ? "1px solid #f3f4f6"
+                          ? "1px solid var(--shadcn-border)"
                           : "none",
                     }}
                   >
@@ -738,7 +738,7 @@ function ComparisonResults() {
                           style={{
                             fontSize: "16px",
                             fontWeight: "600",
-                            color: "#1f2937",
+                            color: "var(--shadcn-foreground)",
                             marginBottom: "4px",
                           }}
                         >
@@ -747,13 +747,13 @@ function ComparisonResults() {
                         <p
                           style={{
                             fontSize: "14px",
-                            color: "#6b7280",
+                            color: "var(--shadcn-muted-foreground)",
                             marginBottom: "8px",
                           }}
                         >
                           Query: &quot;{result.searchCriteria.query}&quot;
                         </p>
-                        <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                        <p style={{ fontSize: "12px", color: "var(--shadcn-zinc-400)" }}>
                           Completed on {result.runDate.toLocaleDateString()} •
                           {formatTime(
                             ("executionTime" in result
@@ -773,12 +773,12 @@ function ComparisonResults() {
                         style={{
                           backgroundColor:
                             result.status === "completed"
-                              ? "#dcfce7"
-                              : "#fef3c7",
+                              ? "var(--shadcn-success/0.1)"
+                              : "var(--shadcn-warning/0.1)",
                           color:
                             result.status === "completed"
-                              ? "#065f46"
-                              : "#92400e",
+                              ? "var(--shadcn-success-foreground)"
+                              : "var(--shadcn-warning-foreground)",
                           padding: "4px 8px",
                           borderRadius: "4px",
                           fontSize: "12px",
@@ -804,12 +804,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#3b82f6",
+                            color: "var(--shadcn-primary)",
                           }}
                         >
                           {formatPercent(metrics.precision)}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           Precision
                         </div>
                       </div>
@@ -819,12 +819,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#10b981",
+                            color: "var(--shadcn-success)",
                           }}
                         >
                           {formatPercent(metrics.recall)}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           Recall
                         </div>
                       </div>
@@ -834,12 +834,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#8b5cf6",
+                            color: "var(--shadcn-purple-500)",
                           }}
                         >
                           {formatPercent(metrics.f1Score)}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           F1-Score
                         </div>
                       </div>
@@ -849,12 +849,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#059669",
+                            color: "var(--shadcn-emerald-600)",
                           }}
                         >
                           {metrics.truePositives}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           True Positives
                         </div>
                       </div>
@@ -864,12 +864,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#dc2626",
+                            color: "var(--shadcn-destructive)",
                           }}
                         >
                           {metrics.falsePositives}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           False Positives
                         </div>
                       </div>
@@ -879,12 +879,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#b45309",
+                            color: "var(--shadcn-amber-700)",
                           }}
                         >
                           {metrics.falseNegatives}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           False Negatives
                         </div>
                       </div>
@@ -894,12 +894,12 @@ function ComparisonResults() {
                           style={{
                             fontSize: "20px",
                             fontWeight: "bold",
-                            color: "#f59e0b",
+                            color: "var(--shadcn-warning)",
                           }}
                         >
                           +{metrics.additionalPapersFound}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
                           Additional Found
                         </div>
                       </div>
@@ -914,8 +914,8 @@ function ComparisonResults() {
                     >
                       <button
                         style={{
-                          backgroundColor: "#f3f4f6",
-                          color: "#374151",
+                          backgroundColor: "var(--shadcn-secondary)",
+                          color: "var(--shadcn-secondary-foreground)",
                           padding: "8px 12px",
                           borderRadius: "6px",
                           border: "none",
@@ -937,8 +937,8 @@ function ComparisonResults() {
 
                       <button
                         style={{
-                          backgroundColor: "#3b82f6",
-                          color: "white",
+                          backgroundColor: "var(--shadcn-primary)",
+                          color: "var(--shadcn-primary-foreground)",
                           padding: "8px 12px",
                           borderRadius: "6px",
                           border: "none",
@@ -960,8 +960,8 @@ function ComparisonResults() {
 
                       <button
                         style={{
-                          backgroundColor: "#10b981",
-                          color: "white",
+                          backgroundColor: "var(--shadcn-success)",
+                          color: "var(--shadcn-primary-foreground)",
                           padding: "8px 12px",
                           borderRadius: "6px",
                           border: "none",
@@ -1002,20 +1002,20 @@ function ComparisonResults() {
                 style={{
                   padding: "20px",
                   borderBottom: BORDER_DEFAULT,
-                  backgroundColor: "#f9fafb",
+                  backgroundColor: "var(--shadcn-muted)",
                 }}
               >
                 <h2
                   style={{
                     fontSize: "18px",
                     fontWeight: "600",
-                    color: "#1f2937",
+                    color: "var(--shadcn-foreground)",
                     marginBottom: "8px",
                   }}
                 >
                   Meta-Analysis Visualizations
                 </h2>
-                <p style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}>
+                <p style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)", margin: 0 }}>
                   Advanced charts and statistical visualizations for thesis
                   presentation
                 </p>
@@ -1026,7 +1026,7 @@ function ComparisonResults() {
                 style={{
                   display: "flex",
                   borderBottom: BORDER_DEFAULT,
-                  backgroundColor: "#fafbfc",
+                  backgroundColor: "var(--shadcn-accent)",
                 }}
               >
                 {[
@@ -1052,25 +1052,25 @@ function ComparisonResults() {
                       border: "none",
                       backgroundColor:
                         activeVisualizationTab === tab.key
-                          ? "white"
+                          ? "var(--shadcn-background)"
                           : "transparent",
                       color:
                         activeVisualizationTab === tab.key
-                          ? "#3b82f6"
-                          : "#6b7280",
+                          ? "var(--shadcn-primary)"
+                          : "var(--shadcn-muted-foreground)",
                       fontWeight:
                         activeVisualizationTab === tab.key ? "600" : "400",
                       fontSize: "14px",
                       cursor: "pointer",
                       borderBottom:
                         activeVisualizationTab === tab.key
-                          ? "2px solid #3b82f6"
+                          ? "2px solid var(--shadcn-primary)"
                           : "none",
                       transition: "all 0.2s",
                     }}
                     onMouseEnter={(e) => {
                       if (activeVisualizationTab !== tab.key) {
-                        e.currentTarget.style.backgroundColor = "#f3f4f6";
+                        e.currentTarget.style.backgroundColor = "var(--shadcn-muted)";
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -1125,20 +1125,20 @@ function ComparisonResults() {
                 style={{
                   padding: "20px",
                   borderBottom: BORDER_DEFAULT,
-                  backgroundColor: "#f9fafb",
+                  backgroundColor: "var(--shadcn-muted)",
                 }}
               >
                 <h2
                   style={{
                     fontSize: "18px",
                     fontWeight: "600",
-                    color: "#1f2937",
+                    color: "var(--shadcn-foreground)",
                     marginBottom: "8px",
                   }}
                 >
                   Missing Paper Detection
                 </h2>
-                <p style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}>
+                <p style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)", margin: 0 }}>
                   Identify potentially relevant papers that systematic reviews
                   may have missed
                 </p>
@@ -1152,7 +1152,7 @@ function ComparisonResults() {
                     style={{
                       fontSize: "14px",
                       fontWeight: "500",
-                      color: "#374151",
+                      color: "var(--shadcn-foreground)",
                       display: "block",
                       marginBottom: "8px",
                     }}
@@ -1170,9 +1170,9 @@ function ComparisonResults() {
                     style={{
                       padding: "8px 12px",
                       borderRadius: "6px",
-                      border: "1px solid #d1d5db",
+                      border: "1px solid var(--shadcn-border)",
                       fontSize: "14px",
-                      backgroundColor: "white",
+                      backgroundColor: "var(--shadcn-background)",
                       minWidth: "300px",
                     }}
                   >
@@ -1214,7 +1214,7 @@ function ComparisonResults() {
                     style={{
                       textAlign: "center",
                       padding: "48px 24px",
-                      backgroundColor: "#f9fafb",
+                      backgroundColor: "var(--shadcn-muted)",
                       borderRadius: "8px",
                     }}
                   >
@@ -1225,14 +1225,14 @@ function ComparisonResults() {
                       style={{
                         fontSize: "18px",
                         fontWeight: "600",
-                        color: "#374151",
+                        color: "var(--shadcn-foreground)",
                         marginBottom: "8px",
                       }}
                     >
                       Select a Dataset
                     </h3>
                     <p
-                      style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}
+                      style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)", margin: 0 }}
                     >
                       Choose a STAR dataset above to begin missing paper
                       detection analysis
@@ -1246,9 +1246,9 @@ function ComparisonResults() {
           {/* Thesis Integration Notes */}
           <div
             style={{
-              backgroundColor: "#fef3c7",
+              backgroundColor: "var(--shadcn-warning/0.1)",
               borderRadius: "8px",
-              border: "1px solid #fbbf24",
+              border: "1px solid var(--shadcn-warning/0.3)",
               padding: "16px",
               marginTop: "24px",
             }}
@@ -1257,7 +1257,7 @@ function ComparisonResults() {
               style={{
                 fontSize: "16px",
                 fontWeight: "600",
-                color: "#92400e",
+                color: "var(--shadcn-warning-foreground)",
                 marginBottom: "8px",
               }}
             >
@@ -1271,7 +1271,7 @@ function ComparisonResults() {
             <p
               style={{
                 fontSize: "14px",
-                color: "#78350f",
+                color: "var(--shadcn-warning-foreground)",
                 lineHeight: "1.5",
                 margin: 0,
               }}

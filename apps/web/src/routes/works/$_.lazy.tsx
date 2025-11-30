@@ -153,7 +153,7 @@ function WorkRoute() {
         <div
           style={{
             fontFamily: "monospace",
-            backgroundColor: "#f5f5f5",
+            backgroundColor: "var(--shadcn-muted)",
             padding: "10px",
             borderRadius: "4px",
             marginBottom: "20px",
@@ -162,7 +162,7 @@ function WorkRoute() {
         >
           {decodedWorkId}
         </div>
-        <div style={{ fontSize: "14px", color: "#666" }}>
+        <div style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)" }}>
           Detecting entity type and resolving to OpenAlex ID
         </div>
       </div>
@@ -179,26 +179,26 @@ function WorkRoute() {
           fontSize: "16px",
         }}
       >
-        <div style={{ marginBottom: "20px", fontSize: "18px", color: "#e74c3c" }}>
+        <div style={{ marginBottom: "20px", fontSize: "18px", color: "var(--shadcn-destructive)" }}>
           Error Processing Work ID
         </div>
         <div
           style={{
             fontFamily: "monospace",
-            backgroundColor: "#fdf2f2",
+            backgroundColor: "var(--shadcn-destructive/0.1)",
             padding: "10px",
             borderRadius: "4px",
             marginBottom: "20px",
-            border: "1px solid #fecaca",
+            border: "1px solid var(--shadcn-destructive/0.3)",
             wordBreak: "break-all",
           }}
         >
           {decodedWorkId}
         </div>
-        <div style={{ fontSize: "14px", color: "#e74c3c", marginBottom: "20px" }}>
+        <div style={{ fontSize: "14px", color: "var(--shadcn-destructive)", marginBottom: "20px" }}>
           {externalIdError}
         </div>
-        <div style={{ fontSize: "12px", color: "#666" }}>
+        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
           Please check the work ID format and try again.
         </div>
       </div>

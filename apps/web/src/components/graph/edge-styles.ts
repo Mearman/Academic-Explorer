@@ -38,27 +38,27 @@ export interface EdgeStyleProperties {
 }
 
 /**
- * Type-specific colors for relationship types
+ * Type-specific colors for relationship types using shadcn theme variables
  * All colors meet WCAG 2.1 Level AA contrast ratio (≥3:1 for graphical objects)
  */
 export const TYPE_COLORS = {
-  AUTHORSHIP: '#4A90E2', // Blue - Work → Author
-  REFERENCE: '#7B68EE', // Medium Slate Blue - Work → Work citations
-  PUBLICATION: '#50C878', // Emerald - Work → Source
-  TOPIC: '#FF6B6B', // Light Coral - Work → Topic
-  AFFILIATION: '#FFA500', // Orange - Author → Institution
-  HOST_ORGANIZATION: '#9370DB', // Medium Purple - Source → Publisher
-  LINEAGE: '#20B2AA', // Light Sea Green - Institution → Institution
+  AUTHORSHIP: 'var(--shadcn-blue-500)', // Blue - Work → Author
+  REFERENCE: 'var(--shadcn-violet-500)', // Violet - Work → Work citations
+  PUBLICATION: 'var(--shadcn-emerald-500)', // Emerald - Work → Source
+  TOPIC: 'var(--shadcn-red-400)', // Red - Work → Topic
+  AFFILIATION: 'var(--shadcn-orange-500)', // Orange - Author → Institution
+  HOST_ORGANIZATION: 'var(--shadcn-purple-500)', // Purple - Source → Publisher
+  LINEAGE: 'var(--shadcn-teal-500)', // Teal - Institution → Institution
 
   // Additional/less common types
-  FUNDED_BY: '#FF8C00', // Dark Orange
-  PUBLISHER_CHILD_OF: '#8B4789', // Purple
-  WORK_HAS_KEYWORD: '#DC143C', // Crimson
-  AUTHOR_RESEARCHES: '#4682B4', // Steel Blue
-  INSTITUTION_LOCATED_IN: '#2E8B57', // Sea Green
-  FUNDER_LOCATED_IN: '#CD853F', // Peru
-  TOPIC_PART_OF_FIELD: '#9932CC', // Dark Orchid
-  RELATED_TO: '#708090', // Slate Gray - catch-all
+  FUNDED_BY: 'var(--shadcn-orange-600)', // Dark Orange
+  PUBLISHER_CHILD_OF: 'var(--shadcn-purple-600)', // Deep Purple
+  WORK_HAS_KEYWORD: 'var(--shadcn-red-600)', // Red
+  AUTHOR_RESEARCHES: 'var(--shadcn-blue-600)', // Blue
+  INSTITUTION_LOCATED_IN: 'var(--shadcn-green-600)', // Green
+  FUNDER_LOCATED_IN: 'var(--shadcn-amber-700)', // Amber
+  TOPIC_PART_OF_FIELD: 'var(--shadcn-purple-700)', // Purple
+  RELATED_TO: 'var(--shadcn-zinc-500)', // Zinc - catch-all
 } as const;
 
 /**

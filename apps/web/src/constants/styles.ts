@@ -1,6 +1,6 @@
 /**
  * Common style constants for inline styles
- * These should eventually be migrated to use the theme tokens from styles/theme.css.ts
+ * Now using shadcn theme variables for consistent theming
  */
 
 // Font sizes
@@ -18,21 +18,21 @@ export const FONT_WEIGHT_MEDIUM = "500";
 export const FONT_WEIGHT_SEMIBOLD = "600";
 export const FONT_WEIGHT_BOLD = "700";
 
-// Colors
-export const COLOR_TEXT_PRIMARY = "#1f2937";
-export const COLOR_TEXT_SECONDARY = "#6b7280";
-export const COLOR_TEXT_TERTIARY = "#4b5563";
-export const COLOR_GRAY_600 = "#6b7280";
-export const COLOR_GRAY_500 = "#6b7280";
-export const COLOR_GRAY_700 = "#374151";
-export const COLOR_BLUE_500 = "#3b82f6";
-export const COLOR_GREEN_500 = "#10b981";
-export const COLOR_RED_500 = "#ef4444";
-export const COLOR_YELLOW_500 = "#f59e0b";
-export const COLOR_AMBER_700 = "#92400e";
-export const COLOR_PURPLE_500 = "#8b5cf6";
-export const COLOR_CYAN_500 = "#06b6d4";
-export const COLOR_PINK_500 = "#ec4899";
+// Colors using shadcn theme variables
+export const COLOR_TEXT_PRIMARY = "var(--shadcn-foreground)";
+export const COLOR_TEXT_SECONDARY = "var(--shadcn-muted-foreground)";
+export const COLOR_TEXT_TERTIARY = "var(--shadcn-muted-foreground)";
+export const COLOR_GRAY_600 = "var(--shadcn-zinc-500)";
+export const COLOR_GRAY_500 = "var(--shadcn-zinc-500)";
+export const COLOR_GRAY_700 = "var(--shadcn-zinc-600)";
+export const COLOR_BLUE_500 = "var(--shadcn-blue)";
+export const COLOR_GREEN_500 = "var(--shadcn-green)";
+export const COLOR_RED_500 = "var(--shadcn-red)";
+export const COLOR_YELLOW_500 = "var(--shadcn-amber)";
+export const COLOR_AMBER_700 = "var(--shadcn-amber-700)";
+export const COLOR_PURPLE_500 = "var(--shadcn-violet)";
+export const COLOR_CYAN_500 = "var(--shadcn-cyan)";
+export const COLOR_PINK_500 = "var(--shadcn-pink)";
 
 // Border radius
 export const BORDER_RADIUS_SM = "6px";
@@ -52,20 +52,20 @@ export const MARGIN_BOTTOM_8 = { marginBottom: "8px" };
 export const MARGIN_BOTTOM_16 = { marginBottom: "16px" };
 export const MARGIN_BOTTOM_24 = { marginBottom: "24px" };
 
-// Borders
-export const BORDER_DEFAULT = "1px solid #e5e7eb";
-export const BORDER_STYLE = "1px solid #e5e7eb";
-export const BORDER_ERROR = "1px solid #fca5a5";
-export const BORDER_WARNING = "1px solid #fbbf24";
-export const BORDER_GRAY_LIGHT = "1px solid var(--mantine-color-gray-3)";
-export const BORDER_INPUT = "1px solid #d1d5db";
+// Borders using shadcn theme variables
+export const BORDER_DEFAULT = "1px solid var(--shadcn-border)";
+export const BORDER_STYLE = "1px solid var(--shadcn-border)";
+export const BORDER_ERROR = "1px solid var(--shadcn-red-200)";
+export const BORDER_WARNING = "1px solid var(--shadcn-amber-300)";
+export const BORDER_GRAY_LIGHT = "1px solid var(--shadcn-zinc-300)";
+export const BORDER_INPUT = "1px solid var(--shadcn-zinc-300)";
 
-// Background colors
-export const BG_WHITE = "white";
-export const BG_GRAY_50 = "#f9fafb";
-export const BG_GRAY_100 = "#f3f4f6";
-export const BG_RED_50 = "#fef2f2";
-export const BG_YELLOW_50 = "#fef3c7";
+// Background colors using shadcn theme variables
+export const BG_WHITE = "var(--shadcn-background)";
+export const BG_GRAY_50 = "var(--shadcn-gray-50)";
+export const BG_GRAY_100 = "var(--shadcn-gray-100)";
+export const BG_RED_50 = "var(--shadcn-red-50)";
+export const BG_YELLOW_50 = "var(--shadcn-amber-50)";
 
 // Flexbox utilities
 export const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";

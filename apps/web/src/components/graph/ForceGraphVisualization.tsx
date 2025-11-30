@@ -13,20 +13,20 @@ import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject 
 
 import { getEdgeStyle } from './edge-styles';
 
-// Entity type colors for consistent styling
+// Entity type colors using shadcn theme variables for consistent styling
 const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
-  works: '#3b82f6',       // blue
-  authors: '#22c55e',     // green
-  sources: '#f59e0b',     // amber
-  institutions: '#8b5cf6', // violet
-  topics: '#ec4899',      // pink
-  publishers: '#06b6d4',  // cyan
-  funders: '#84cc16',     // lime
-  concepts: '#6366f1',    // indigo
-  keywords: '#f97316',    // orange
-  domains: '#ef4444',     // red
-  fields: '#14b8a6',      // teal
-  subfields: '#a855f7',   // purple
+  works: 'var(--shadcn-blue)',           // blue - uses academic entity mapping
+  authors: 'var(--shadcn-green)',         // green
+  sources: 'var(--shadcn-violet)',        // violet
+  institutions: 'var(--shadcn-orange)',   // orange
+  topics: 'var(--shadcn-red)',            // red
+  publishers: 'var(--shadcn-teal)',       // teal
+  funders: 'var(--shadcn-cyan)',          // cyan
+  concepts: 'var(--shadcn-pink)',         // pink
+  keywords: 'var(--shadcn-zinc)',         // zinc
+  domains: 'var(--shadcn-slate)',         // slate
+  fields: 'var(--shadcn-emerald)',        // emerald
+  subfields: 'var(--shadcn-purple)',      // purple
 };
 
 // Node for the force graph (extends NodeObject)
@@ -266,7 +266,7 @@ export function ForceGraphVisualization({
     // Draw node circle
     ctx.beginPath();
     ctx.arc(x, y, size, 0, 2 * Math.PI);
-    ctx.fillStyle = style.color ?? ENTITY_TYPE_COLORS[forceNode.entityType] ?? '#888';
+    ctx.fillStyle = style.color ?? ENTITY_TYPE_COLORS[forceNode.entityType] ?? 'var(--shadcn-muted-foreground)';
     ctx.fill();
 
     // Draw border if specified
@@ -283,7 +283,7 @@ export function ForceGraphVisualization({
       ctx.font = `${fontSize}px Sans-Serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillStyle = isHighlighted ? '#333' : '#999';
+      ctx.fillStyle = isHighlighted ? 'var(--shadcn-foreground)' : 'var(--shadcn-muted-foreground)';
       ctx.fillText(label, x, y + size + 2);
     }
 
@@ -305,8 +305,8 @@ export function ForceGraphVisualization({
     if (!source.x || !source.y || !target.x || !target.y) return;
 
     ctx.globalAlpha = isHighlighted ? (style.opacity ?? 0.6) : 0.1;
-    ctx.strokeStyle = style.color ?? '#999';
-    ctx.fillStyle = style.color ?? '#999';
+    ctx.strokeStyle = style.color ?? 'var(--shadcn-muted-foreground)';
+    ctx.fillStyle = style.color ?? 'var(--shadcn-muted-foreground)';
     ctx.lineWidth = (style.width ?? 1) / globalScale;
 
     if (style.dashed) {
@@ -446,7 +446,7 @@ function getDefaultNodeStyle(
   communityId?: number,
   communityColors?: Map<number, string>
 ): NodeStyle {
-  let color = ENTITY_TYPE_COLORS[node.entityType] ?? '#888';
+  let color = ENTITY_TYPE_COLORS[node.entityType] ?? 'var(--shadcn-muted-foreground)';
 
   // Use community color if available
   if (communityId !== undefined && communityColors?.has(communityId)) {
@@ -457,7 +457,7 @@ function getDefaultNodeStyle(
     color,
     size: isHighlighted ? 8 : 6,
     opacity: 1,
-    borderColor: isHighlighted ? '#fff' : undefined,
+    borderColor: isHighlighted ? 'var(--shadcn-background)' : undefined,
     borderWidth: isHighlighted ? 2 : 0,
   };
 }
@@ -478,7 +478,7 @@ function getDefaultLinkStyle(
   // Path highlight mode overrides edge type colors
   if (isHighlighted && isPathHighlightMode) {
     return {
-      color: '#3b82f6', // Blue for path highlighting
+      color: 'var(--shadcn-primary)', // Primary color for path highlighting
       width: 3,
       opacity: 0.8,
       dashed: false,
@@ -487,7 +487,7 @@ function getDefaultLinkStyle(
   }
 
   return {
-    color: edgeStyle.stroke ?? '#999',
+    color: edgeStyle.stroke ?? 'var(--shadcn-muted-foreground)',
     width: edgeStyle.strokeWidth ?? 2,
     opacity: edgeStyle.strokeOpacity ?? 0.6,
     dashed: edgeStyle.strokeDasharray !== undefined,

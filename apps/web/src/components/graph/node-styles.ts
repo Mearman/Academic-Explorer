@@ -34,27 +34,27 @@ export interface NodeStyleProperties {
 }
 
 /**
- * Color palette for node styling
+ * Color palette for node styling using shadcn theme variables
  * Follows WCAG 2.1 Level AA contrast guidelines
  */
 const COLORS = {
-  // Standard work colors
+  // Standard work colors - use academic entity colors
   standard: {
-    fill: '#3b82f6', // Blue-500
-    stroke: '#2563eb', // Blue-600
+    fill: 'var(--shadcn-blue)', // Blue-600 from shadcn palette
+    stroke: 'var(--shadcn-blue-filled)', // Filled variant
   },
 
   // Xpac work colors (muted, desaturated)
   xpac: {
-    fill: '#94a3b8', // Slate-400 (muted blue-gray)
-    stroke: '#64748b', // Slate-500
+    fill: 'var(--shadcn-slate-400)', // Slate-400 (muted blue-gray)
+    stroke: 'var(--shadcn-slate-500)', // Slate-500
   },
 
   // Warning indicators for unverified authors
   warning: {
-    fill: '#fbbf24', // Amber-400
-    stroke: '#f59e0b', // Amber-500
-    tint: '#fef3c7', // Amber-50 (very light tint)
+    fill: 'var(--shadcn-amber-400)', // Amber-400
+    stroke: 'var(--shadcn-amber-filled)', // Amber filled variant
+    tint: 'var(--shadcn-amber-50)', // Amber-50 (very light tint)
   },
 } as const;
 

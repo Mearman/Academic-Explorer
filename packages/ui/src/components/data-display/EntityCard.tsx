@@ -1,4 +1,5 @@
 import type { EntityType } from "@bibgraph/types";
+import { ENTITY_METADATA } from "@bibgraph/types";
 import { Anchor, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { forwardRef } from "react";
 
@@ -91,8 +92,8 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
                 {displayName}
               </Text>
             )}
-            <Badge color="blue" variant="light" size="sm">
-              {entityType}
+            <Badge color={ENTITY_METADATA[entityType].color} variant="light" size="sm">
+              {ENTITY_METADATA[entityType].displayName}
             </Badge>
           </Group>
 
