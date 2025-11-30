@@ -37,7 +37,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
-import { flex1 } from '@/styles';
+import { flex1 } from '@/styles/common.css';
 
 /**
  * Configuration for sample graph generation

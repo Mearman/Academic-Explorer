@@ -10,10 +10,12 @@ import { useState, useEffect } from 'react'
 
 import { SplitButton } from '@/components/ui/SplitButton'
 import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
+import { useTheme } from '@/contexts/theme-context'
+
+type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 
 interface ColorSchemeSelectorProps {
-  colorScheme: 'light' | 'dark' | 'auto'
-  setColorScheme: (scheme: 'light' | 'dark' | 'auto') => void
+  // No props needed - uses theme context
 }
 
 const COLOR_SCHEME_LABELS = {
@@ -23,39 +25,41 @@ const COLOR_SCHEME_LABELS = {
 } as const
 
 
-export const ColorSchemeSelector = ({
-  colorScheme,
-  setColorScheme
-}: ColorSchemeSelectorProps) => {
-  const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>('blue')
+const COMPONENT_LIBRARY_LABELS = {
+  mantine: { label: 'Mantine', description: 'Full-featured component library' },
+  shadcn: { label: 'shadcn/ui', description: 'Modern Radix-based components' },
+  radix: { label: 'Radix UI', description: 'Unstyled accessible primitives' }
+} as const
+
+export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
+  const { config, setColorScheme, setColorMode, setComponentLibrary } = useTheme()
+  const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>(config.colorScheme as ShadcnPalette)
   const theme = useMantineTheme()
 
-  // Load saved palette from localStorage on mount
+  // Update local state when theme context changes
   useEffect(() => {
-    const saved = localStorage.getItem('bibgraph-color-palette')
-    if (saved && shadcnPaletteNames.includes(saved as ShadcnPalette)) {
-      setSelectedPalette(saved as ShadcnPalette)
-    }
-  }, [])
+    setSelectedPalette(config.colorScheme as ShadcnPalette)
+  }, [config.colorScheme])
 
-  // Save palette to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem('bibgraph-color-palette', selectedPalette)
-  }, [selectedPalette])
+  // Handle palette changes
+  const handlePaletteChange = (palette: ShadcnPalette) => {
+    setSelectedPalette(palette)
+    setColorScheme(palette as any) // Theme context expects ColorScheme type
+  }
 
   const getCurrentIcon = () => {
-    const IconComponent = COLOR_SCHEME_LABELS[colorScheme].icon
+    const IconComponent = COLOR_SCHEME_LABELS[config.colorMode].icon
     return <IconComponent size={18} />
   }
 
   // Cycle through color schemes: auto -> light -> dark -> auto
   const cycleColorScheme = () => {
-    if (colorScheme === "auto") {
-      setColorScheme("light");
-    } else if (colorScheme === "light") {
-      setColorScheme("dark");
+    if (config.colorMode === "auto") {
+      setColorMode("light");
+    } else if (config.colorMode === "light") {
+      setColorMode("dark");
     } else {
-      setColorScheme("auto");
+      setColorMode("auto");
     }
   }
 
@@ -69,8 +73,8 @@ export const ColorSchemeSelector = ({
         <Menu.Item
           key={scheme}
           leftSection={<Icon size={16} />}
-          onClick={() => setColorScheme(scheme as 'light' | 'dark' | 'auto')}
-          rightSection={colorScheme === scheme ? <IconCheck size={16} /> : null}
+          onClick={() => setColorMode(scheme as 'light' | 'dark' | 'auto')}
+          rightSection={config.colorMode === scheme ? <IconCheck size={16} /> : null}
         >
           {label}
         </Menu.Item>
@@ -86,7 +90,7 @@ export const ColorSchemeSelector = ({
         </Group>
       </Menu.Label>
 
-      <Box p="xs" style={{ maxHeight: 200, overflowY: 'auto' }}>
+      <Box p="xs">
         <Box
           style={{
             display: 'grid',
@@ -97,7 +101,7 @@ export const ColorSchemeSelector = ({
           {shadcnPaletteNames.map((palette) => (
             <Menu.Item
               key={palette}
-              onClick={() => setSelectedPalette(palette)}
+              onClick={() => handlePaletteChange(palette)}
               p={4}
               style={{
                 display: 'flex',
@@ -141,11 +145,33 @@ export const ColorSchemeSelector = ({
 
       <Menu.Divider />
 
+      {/* Component Library Selection */}
+      <Menu.Label>
+        <Group gap={6}>
+          <IconPalette size={16} />
+          Component Library
+        </Group>
+      </Menu.Label>
+      {Object.entries(COMPONENT_LIBRARY_LABELS).map(([lib, { label, description }]) => (
+        <Menu.Item
+          key={lib}
+          onClick={() => setComponentLibrary(lib as ComponentLibrary)}
+          rightSection={config.componentLibrary === lib ? <IconCheck size={16} /> : null}
+        >
+          <Box>
+            <Text size="sm">{label}</Text>
+            <Text size="xs" c="dimmed">{description}</Text>
+          </Box>
+        </Menu.Item>
+      ))}
+
+      <Menu.Divider />
+
       {/* Current Selection Display */}
       <Box p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
         <Group gap="xs">
           <Badge size="xs" variant="light">
-            {COLOR_SCHEME_LABELS[colorScheme].label}
+            {COLOR_SCHEME_LABELS[config.colorMode].label}
           </Badge>
           <Badge
             size="xs"
@@ -153,6 +179,9 @@ export const ColorSchemeSelector = ({
             color={selectedPalette}
           >
             {selectedPalette}
+          </Badge>
+          <Badge size="xs" variant="outline">
+            {COMPONENT_LIBRARY_LABELS[config.componentLibrary].label}
           </Badge>
         </Group>
       </Box>
@@ -168,12 +197,12 @@ export const ColorSchemeSelector = ({
         color: selectedPalette,
         onClick: cycleColorScheme,
         'aria-label': 'Toggle color scheme',
-        title: `Theme: ${COLOR_SCHEME_LABELS[colorScheme].label} (Click to cycle)`,
+        title: `Theme: ${COLOR_SCHEME_LABELS[config.colorMode].label} (Click to cycle)`,
         children: (
           <Group gap={4} miw={0}>
             {getCurrentIcon()}
             <Text size="xs" fw={500} truncate>
-              {COLOR_SCHEME_LABELS[colorScheme].label}
+              {COLOR_SCHEME_LABELS[config.colorMode].label}
             </Text>
             <Box
               w={6}

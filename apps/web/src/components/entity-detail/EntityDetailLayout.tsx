@@ -10,7 +10,7 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import { minHeightFull, flex1, textBreakAll, overflowHidden, borderSecondary, overflowX, borderBottomSecondary, overflowScroll, textMonospace, codeDisplay } from "@/styles";
+import { minHeightFull, flex1, textBreakAll, overflowHidden, borderSecondary, overflowX, borderBottomSecondary, overflowScroll, textMonospace, codeDisplay } from "@/styles/common.css";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 

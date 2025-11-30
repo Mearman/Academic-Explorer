@@ -40,6 +40,8 @@ import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
+// import { ThemeDropdown } from "./ThemeDropdown";
+// import { ThemeSettings } from "@/components/ThemeSettings";
 
 // Static build info - computed once at module load
 const buildInfo = getBuildInfo();
@@ -81,6 +83,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   // Mobile search state
   const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
 
+  
   // Drag handling for sidebar resizing
   const handleDragStart = useCallback(
     ({ side, e }: { side: "left" | "right"; e: React.MouseEvent }) => {
@@ -374,12 +377,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </Menu>
             )}
 
-            {/* Color scheme selector (hidden on mobile when search expanded) */}
+            {/* Theme dropdown (hidden on mobile when search expanded) */}
             {!mobileSearchExpanded && (
-              <ColorSchemeSelector
-                colorScheme={colorScheme}
-                setColorScheme={setColorScheme}
-              />
+              <ColorSchemeSelector />
             )}
           </Group>
         </Group>
@@ -630,6 +630,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </Stack>
         )}
       </AppShell.Main>
-    </AppShell>
+
+      </AppShell>
   );
 };

@@ -44,7 +44,7 @@ import {
   virtualTableContainer,
   virtualTableRow,
   virtualTableCell,
-} from "@/styles";
+} from "@/styles/common.css";
 
 interface BaseTableProps<T> {
   data: T[];

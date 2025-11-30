@@ -13,4 +13,4 @@ export * from "./LeftSidebarDynamic";
 export * from "./MainLayout";
 export * from "./RightRibbon";
 export * from "./SidebarFallback";
-export * from "./sidebar.css";
+export * from "./ThemeDropdown";

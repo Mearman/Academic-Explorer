@@ -1,0 +1,150 @@
+import React, { useState } from "react";
+import {
+  Menu,
+  ActionIcon,
+  Modal,
+  Group,
+  Text,
+  Badge,
+} from "@mantine/core";
+import {
+  IconPalette,
+  IconColorPicker,
+  IconSun,
+  IconMoon,
+  IconDeviceDesktop,
+} from "@tabler/icons-react";
+
+import { ThemeSettings } from "@/components/ThemeSettings";
+import { useTheme } from "@/contexts/theme-context";
+import type { ComponentLibrary, ColorScheme } from "@/styles/theme-contracts";
+
+interface ThemeDropdownProps {
+  variant?: "dropdown" | "action-icon";
+  size?: "sm" | "md" | "lg";
+}
+
+export function ThemeDropdown({ variant = "action-icon", size = "lg" }: ThemeDropdownProps) {
+  const { config } = useTheme();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const componentLibraryLabels: Record<ComponentLibrary, string> = {
+    mantine: "Mantine",
+    shadcn: "shadcn/ui",
+    radix: "Radix UI",
+  };
+
+  const colorSchemeLabels: Record<ColorScheme, string> = {
+    blue: "Blue",
+    green: "Green",
+    orange: "Orange",
+    purple: "Purple",
+    red: "Red",
+    neutral: "Neutral",
+  };
+
+  const colorModeIcons = {
+    light: <IconSun size={14} />,
+    dark: <IconMoon size={14} />,
+    auto: <IconDeviceDesktop size={14} />,
+  };
+
+  const handleOpenSettings = () => {
+    setModalOpen(true);
+  };
+
+  const themeContent = (
+    <Menu.Dropdown>
+      <Menu.Label>
+        <Group justify="space-between">
+          <Text size="xs" fw={600}>
+            Current Theme
+          </Text>
+          <Group gap={4}>
+            <Badge variant="light" size="xs">
+              {componentLibraryLabels[config.componentLibrary]}
+            </Badge>
+            <Badge variant="outline" size="xs">
+              {colorSchemeLabels[config.colorScheme]}
+            </Badge>
+          </Group>
+        </Group>
+      </Menu.Label>
+
+      <Menu.Divider />
+
+      <Menu.Item
+        leftSection={<IconColorPicker size={16} />}
+        rightSection={
+          <Group gap={4}>
+            {colorModeIcons[config.colorMode]}
+            <Badge variant="transparent" size="xs" c="dimmed">
+              {config.colorMode}
+            </Badge>
+          </Group>
+        }
+        onClick={handleOpenSettings}
+      >
+        Theme Settings
+      </Menu.Item>
+
+      <Menu.Item
+        leftSection={<IconPalette size={16} />}
+        onClick={handleOpenSettings}
+      >
+        Customize Theme
+      </Menu.Item>
+    </Menu.Dropdown>
+  );
+
+  if (variant === "dropdown") {
+    return (
+      <>
+        <Menu>
+          <Menu.Target>
+            <Group gap={6}>
+              <IconPalette size={16} />
+              <Text size="sm">Theme</Text>
+            </Group>
+          </Menu.Target>
+          {themeContent}
+        </Menu>
+
+        <Modal
+          opened={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title="Theme Settings"
+          size="lg"
+        >
+          <ThemeSettings onClose={() => setModalOpen(false)} />
+        </Modal>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Menu>
+        <Menu.Target>
+          <ActionIcon
+            variant="subtle"
+            size={size}
+            aria-label="Theme settings"
+          >
+            <IconPalette size={18} />
+          </ActionIcon>
+        </Menu.Target>
+        {themeContent}
+      </Menu>
+
+      <Modal
+        opened={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Theme Settings"
+        size="lg"
+      >
+        <ThemeSettings onClose={() => setModalOpen(false)} />
+      </Modal>
+    </>
+  );
+}

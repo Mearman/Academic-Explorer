@@ -37,7 +37,7 @@ import {
   useSelectedBookmarks,
 } from "@/contexts/bookmark-selection-context";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { cursorPointer, textDimmed } from "@/styles";
+import { cursorPointer, textDimmed } from "@/styles/common.css";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;

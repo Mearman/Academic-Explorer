@@ -21,6 +21,7 @@ export * from "./NavigationTracker";
 export * from "./PostHogProvider";
 export * from "./QueryBookmarkButton";
 export * from "./ResearchDashboard";
+export * from "./ThemeSettings";
 export * from "./UrlFixer";
 export * from "./ViewModeToggle";
 export * from "./types";
