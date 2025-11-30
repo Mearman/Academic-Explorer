@@ -37,6 +37,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
+import { flex1 } from '@/styles';
 
 /**
  * Configuration for sample graph generation
@@ -885,7 +886,7 @@ function AlgorithmsPage() {
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
                         allowNegative={false}
-                        style={{ flex: 1 }}
+                        className={flex1}
                         size="xs"
                       />
                       <Button
@@ -936,7 +937,7 @@ function AlgorithmsPage() {
                             { value: 6, label: '6' },
                           ]}
                           size="sm"
-                          style={{ flex: 1 }}
+                          className={flex1}
                         />
                         <NumberInput
                           value={graphConfig.componentCount}
@@ -992,7 +993,7 @@ function AlgorithmsPage() {
                             { value: 10, label: '10' },
                           ]}
                           size="sm"
-                          style={{ flex: 1 }}
+                          className={flex1}
                         />
                         <NumberInput
                           value={graphConfig.edgesPerNodeRange[1]}
@@ -1066,7 +1067,7 @@ function AlgorithmsPage() {
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
-                          style={{ flex: 1 }}
+                          className={flex1}
                         />
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
@@ -1126,7 +1127,7 @@ function AlgorithmsPage() {
                               max={100}
                               step={1}
                               size="xs"
-                              style={{ flex: 1 }}
+                              className={flex1}
                             />
                             <NumberInput
                               value={graphConfig.entityPercentages[entityType]}

@@ -30,6 +30,21 @@ import { useState, useRef, useEffect } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
 import { BORDER_GRAY_LIGHT } from "@/constants/styles";
+import {
+  tableMinWidth300,
+  textCenter,
+  padding24,
+  minHeight400,
+  positionAbsolute,
+  widthFull,
+  positionRelative,
+  cursorPointer,
+  tableHeaderCell,
+  tableRow,
+  virtualTableContainer,
+  virtualTableRow,
+  virtualTableCell,
+} from "@/styles";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -141,7 +156,7 @@ export function BaseTable<T>({
           leftSection={<IconSearch size={16} />}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          style={{ minWidth: 300 }}
+          className={tableMinWidth300}
         />
 
         <Group>
@@ -177,10 +192,7 @@ export function BaseTable<T>({
           {headerGroup.headers.map((header) => (
             <Table.Th
               key={header.id}
-              style={{
-                cursor: header.column.getCanSort() ? "pointer" : "default",
-                userSelect: "none",
-              }}
+              className={tableHeaderCell({ sortable: header.column.getCanSort() })}
               onClick={header.column.getToggleSortingHandler()}
             >
               <Group gap="xs" justify="space-between">
@@ -214,7 +226,7 @@ export function BaseTable<T>({
     <Table.Tr>
       <Table.Td
         colSpan={colSpan}
-        style={{ textAlign: "center", padding: "2rem" }}
+        className={`${textCenter} ${padding24}`}
       >
         <Text c="dimmed">No data available</Text>
       </Table.Td>
@@ -280,15 +292,13 @@ export function BaseTable<T>({
         key={row.id}
         type="button"
         aria-label={ariaLabel}
+        className={virtualTableRow({
+          clickable: hasOnRowClick,
+          striped: virtualRow.index % 2 === 0
+        })}
         style={{
-          ...getVirtualRowStyle(virtualRow, hasOnRowClick),
-          border: "none",
-          background: "none",
-          padding: 0,
-          textAlign: "left",
-          width: "100%",
-          font: "inherit",
-          color: "inherit",
+          height: `${virtualRow.size}px`,
+          transform: `translateY(${virtualRow.start}px)`,
         }}
         onClick={hasOnRowClick ? () => handleRowClick(row.original) : undefined}
         onKeyDown={hasOnRowClick ? handleRowKeyDown(row.original) : undefined}
@@ -298,7 +308,14 @@ export function BaseTable<T>({
         {row.getVisibleCells().map((cell, cellIndex) => (
           <div
             key={cell.id}
-            style={getCellStyle(cellIndex, row.getVisibleCells().length)}
+            className={virtualTableCell({
+              flex: cellIndex === 1 ? "one" : "auto",
+              hasBorder: cellIndex < row.getVisibleCells().length - 1
+            })}
+            style={{
+              padding: "0 8px",
+              minWidth: getMinWidthForCell(cellIndex),
+            }}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </div>
@@ -330,11 +347,9 @@ export function BaseTable<T>({
 
       <ScrollArea
         ref={parentRef}
+        className={virtualTableContainer()}
         style={{
           height: `${maxHeight}px`,
-          overflow: "auto",
-          border: BORDER_GRAY_LIGHT,
-          borderTop: "none",
         }}
       >
         {isLoading ? (
@@ -344,15 +359,14 @@ export function BaseTable<T>({
             </Table.Tbody>
           </Table>
         ) : rows.length === 0 ? (
-          <div style={{ padding: "2rem", textAlign: "center" }}>
+          <div className={`${padding24} ${textCenter}`}>
             <Text c="dimmed">No data available</Text>
           </div>
         ) : (
           <div
+            className={`${widthFull} ${positionRelative}`}
             style={{
               height: `${rowVirtualizer.getTotalSize()}px`,
-              width: "100%",
-              position: "relative",
             }}
           >
             {rowVirtualizer.getVirtualItems().map(renderVirtualRow)}
@@ -371,6 +385,7 @@ export function BaseTable<T>({
       withColumnBorders
       stickyHeader
       style={{ minHeight: isLoading ? 400 : "auto" }}
+      className={minHeight400}
     >
       {renderTableHeader()}
 
@@ -391,7 +406,7 @@ export function BaseTable<T>({
                     role={onRowClick ? "button" : undefined}
                     aria-label={ariaLabel}
                     tabIndex={onRowClick ? 0 : undefined}
-                    style={{ cursor: onRowClick ? "pointer" : "default" }}
+                    className={tableRow({ clickable: !!onRowClick })}
                     onClick={
                       onRowClick
                         ? () => handleRowClick(row.original)

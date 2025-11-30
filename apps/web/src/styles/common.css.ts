@@ -589,3 +589,147 @@ export const overflowScroll = recipe({
     maxHeight: "1000px",
   },
 });
+
+// Table-specific styles
+export const tableCursorSortable = style({
+  cursor: "pointer",
+  userSelect: "none",
+});
+
+export const tableCursorDefault = style({
+  cursor: "default",
+});
+
+export const tableCursorPointer = style({
+  cursor: "pointer",
+});
+
+export const tableCellPadding = style({
+  padding: "8px 12px",
+});
+
+export const tableCellBorder = style({
+  borderRight: "1px solid var(--mantine-color-gray-3)",
+});
+
+export const tableStripedBackground = style({
+  backgroundColor: "var(--mantine-color-gray-0)",
+});
+
+export const tableMinWidth300 = style({
+  minWidth: "300px",
+});
+
+export const borderNone = style({
+  border: "none",
+});
+
+export const backgroundNone = style({
+  background: "none",
+});
+
+export const fontInherit = style({
+  font: "inherit",
+});
+
+export const colorInherit = style({
+  color: "inherit",
+});
+
+export const borderTopNone = style({
+  borderTop: "none",
+});
+
+// Complex table recipes
+export const tableHeaderCell = recipe({
+  base: tableCursorSortable,
+  variants: {
+    sortable: {
+      true: tableCursorSortable,
+      false: tableCursorDefault,
+    },
+  },
+  defaultVariants: {
+    sortable: true,
+  },
+});
+
+export const tableRow = recipe({
+  variants: {
+    clickable: {
+      true: tableCursorPointer,
+      false: {},
+    },
+  },
+  defaultVariants: {
+    clickable: false,
+  },
+});
+
+export const virtualTableContainer = recipe({
+  base: {
+    height: "600px",
+    overflow: "auto",
+    border: "1px solid var(--mantine-color-gray-3)",
+    borderTop: "none",
+  },
+});
+
+export const virtualTableRow = recipe({
+  base: {
+    border: "none",
+    background: "none",
+    textAlign: "left" as const,
+    width: "100%",
+    font: "inherit",
+    color: "inherit",
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    display: "flex",
+    alignItems: "center",
+    padding: "8px 12px",
+    borderBottom: "1px solid var(--mantine-color-gray-3)",
+  },
+  variants: {
+    clickable: {
+      true: {
+        cursor: "pointer",
+      },
+      false: {},
+    },
+    striped: {
+      true: {
+        backgroundColor: "var(--mantine-color-gray-0)",
+      },
+      false: {
+        backgroundColor: "transparent",
+      },
+    },
+  },
+  defaultVariants: {
+    clickable: false,
+    striped: false,
+  },
+});
+
+export const virtualTableCell = recipe({
+  variants: {
+    flex: {
+      auto: {
+        flex: "0 0 auto",
+      },
+      one: {
+        flex: "1",
+      },
+    },
+    hasBorder: {
+      true: tableCellBorder,
+      false: {},
+    },
+  },
+  defaultVariants: {
+    flex: "auto",
+    hasBorder: true,
+  },
+});
