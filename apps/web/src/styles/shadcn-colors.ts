@@ -82,6 +82,7 @@ export const shadcnPalettes = {
 } as const
 
 export type ShadcnPalette = keyof typeof shadcnPalettes
+export { type ShadcnPalette as ColorScheme }
 export type ShadcnShade = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 export const shadcnPaletteNames: ShadcnPalette[] = [
