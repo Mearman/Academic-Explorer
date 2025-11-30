@@ -135,6 +135,7 @@ export default tseslint.config([
             "custom/no-deprecated": "error",
             "custom/no-duplicate-reexports": "error",
             "custom/no-reexport-from-non-barrel": "error",
+            "custom/no-redundant-assignment": "off", // Rule created and tested, disabled to reduce noise
 
             // Import rules
             "import/no-relative-packages": "error",
