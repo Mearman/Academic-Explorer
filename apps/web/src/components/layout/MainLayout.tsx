@@ -33,9 +33,9 @@ import React, { useState, useCallback, useRef } from "react";
 
 import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
-import { ColorSchemeSelector } from "./ColorSchemeSelector";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
+import { ColorSchemeSelector } from "./ColorSchemeSelector";
 import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
 import { LeftRibbon } from "./LeftRibbon";
