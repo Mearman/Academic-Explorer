@@ -1,6 +1,6 @@
-# Quickstart Guide: shadcn Styling Standardization
+# Quick Start: Switchable Styling System Implementation
 
-**Purpose**: Rapid setup guide for implementing shadcn-inspired theming with Mantine v7 + Vanilla Extract
+**Purpose**: Rapid setup guide for implementing runtime switchable styling systems with Mantine UI integration
 **Target**: Developers implementing the 029-shadcn-styling feature
 **Time Estimate**: 30-60 minutes initial setup
 
