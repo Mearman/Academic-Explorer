@@ -343,7 +343,7 @@ function createRelationshipSection(
     createRelationshipItem(entity, config, direction)
   );
 
-  const visibleItems = items;
+  
   const visibleCount = items.length;
   const hasMore = totalCount > visibleCount;
 
@@ -366,7 +366,7 @@ function createRelationshipSection(
     direction,
     label: config.label,
     items,
-    visibleItems,
+    items,
     totalCount,
     visibleCount,
     hasMore,

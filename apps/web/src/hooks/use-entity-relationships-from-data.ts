@@ -143,15 +143,15 @@ function createRelationshipSection(
   isPartialData: boolean = false,
 ): RelationshipSection {
   const totalCount = items.length;
-  const pageSize = DEFAULT_PAGE_SIZE;
-  const visibleItems = items.slice(0, pageSize);
+  
+  const visibleItems = items.slice(0, DEFAULT_PAGE_SIZE);
   const visibleCount = visibleItems.length;
-  const hasMore = totalCount > pageSize;
+  const hasMore = totalCount > DEFAULT_PAGE_SIZE;
 
   const pagination: PaginationState = {
-    pageSize,
+    DEFAULT_PAGE_SIZE,
     currentPage: 0,
-    totalPages: Math.ceil(totalCount / pageSize),
+    totalPages: Math.ceil(totalCount / DEFAULT_PAGE_SIZE),
     hasNextPage: hasMore,
     hasPreviousPage: false,
   };
