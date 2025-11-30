@@ -149,7 +149,7 @@ function createRelationshipSection(
   const hasMore = totalCount > DEFAULT_PAGE_SIZE;
 
   const pagination: PaginationState = {
-    DEFAULT_PAGE_SIZE,
+    pageSize: DEFAULT_PAGE_SIZE,
     currentPage: 0,
     totalPages: Math.ceil(totalCount / DEFAULT_PAGE_SIZE),
     hasNextPage: hasMore,
