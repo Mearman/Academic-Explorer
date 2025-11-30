@@ -26,6 +26,7 @@ JSON_MODE=false
 REQUIRE_TASKS=false
 INCLUDE_TASKS=false
 PATHS_ONLY=false
+SPEC_NUMBER=""
 
 for arg in "$@"; do
     case "$arg" in
@@ -41,6 +42,9 @@ for arg in "$@"; do
         --paths-only)
             PATHS_ONLY=true
             ;;
+        --spec=*)
+            SPEC_NUMBER="${arg#*=}"
+            ;;
         --help|-h)
             cat << 'EOF'
 Usage: check-prerequisites.sh [OPTIONS]
@@ -52,18 +56,22 @@ OPTIONS:
   --require-tasks     Require tasks.md to exist (for implementation phase)
   --include-tasks     Include tasks.md in AVAILABLE_DOCS list
   --paths-only        Only output path variables (no prerequisite validation)
+  --spec=###          Use specific spec number (e.g., 029)
   --help, -h          Show this help message
 
 EXAMPLES:
   # Check task prerequisites (plan.md required)
   ./check-prerequisites.sh --json
-  
+
   # Check implementation prerequisites (plan.md + tasks.md required)
   ./check-prerequisites.sh --json --require-tasks --include-tasks
-  
+
   # Get feature paths only (no validation)
   ./check-prerequisites.sh --paths-only
-  
+
+  # Use specific spec number
+  ./check-prerequisites.sh --json --spec=029
+
 EOF
             exit 0
             ;;
@@ -78,9 +86,17 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# Set SPEC_NUMBER environment variable if provided
+if [[ -n "$SPEC_NUMBER" ]]; then
+    export SPEC_NUMBER="$SPEC_NUMBER"
+fi
+
 # Get feature paths and validate branch
 eval $(get_feature_paths)
-check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
+# Skip branch validation when using explicit spec number
+if [[ -z "$SPEC_NUMBER" ]]; then
+    check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
+fi
 
 # If paths-only mode, output paths and exit (support JSON + paths-only combined)
 if $PATHS_ONLY; then

@@ -24,7 +24,7 @@ Identify inconsistencies, duplications, ambiguities, and underspecified items ac
 
 ### 1. Initialize Analysis Context
 
-Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+Parse user arguments for spec number (format: --spec=029). If spec number provided, run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks --spec=###` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Otherwise run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks`. Derive absolute paths:
 
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md

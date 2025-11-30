@@ -4,21 +4,26 @@ set -e
 
 # Parse command line arguments
 JSON_MODE=false
+SPEC_NUMBER=""
 ARGS=()
 
 for arg in "$@"; do
     case "$arg" in
-        --json) 
-            JSON_MODE=true 
+        --json)
+            JSON_MODE=true
             ;;
-        --help|-h) 
-            echo "Usage: $0 [--json]"
-            echo "  --json    Output results in JSON format"
-            echo "  --help    Show this help message"
-            exit 0 
+        --spec=*)
+            SPEC_NUMBER="${arg#*=}"
             ;;
-        *) 
-            ARGS+=("$arg") 
+        --help|-h)
+            echo "Usage: $0 [--json] [--spec=###]"
+            echo "  --json       Output results in JSON format"
+            echo "  --spec=###   Use specific spec number (e.g., 029)"
+            echo "  --help       Show this help message"
+            exit 0
+            ;;
+        *)
+            ARGS+=("$arg")
             ;;
     esac
 done
@@ -26,6 +31,11 @@ done
 # Get script directory and load common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
+
+# Set SPEC_NUMBER environment variable if provided
+if [[ -n "$SPEC_NUMBER" ]]; then
+    export SPEC_NUMBER="$SPEC_NUMBER"
+fi
 
 # Get all paths and variables from common functions
 eval $(get_feature_paths)

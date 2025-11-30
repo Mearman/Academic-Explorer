@@ -18,7 +18,7 @@ Note: This clarification workflow is expected to run (and be completed) BEFORE i
 
 Execution steps:
 
-1. Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` from repo root **once** (combined `--json --paths-only` mode / `-Json -PathsOnly`). Parse minimal JSON payload fields:
+1. Parse user arguments for spec number (format: --spec=029). If spec number provided, run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only --spec=###` from repo root **once** (combined mode). Otherwise run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only`. Parse minimal JSON payload fields:
    - `FEATURE_DIR`
    - `FEATURE_SPEC`
    - (Optionally capture `IMPL_PLAN`, `TASKS` for future chained flows.)
