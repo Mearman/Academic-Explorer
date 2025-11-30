@@ -114,7 +114,7 @@ export const ColorSchemeSelector = ({
                 w={12}
                 h={12}
                 style={{
-                  backgroundColor: theme.colors[palette][6],
+                  backgroundColor: theme.colors[palette]?.[6] || theme.colors.gray[6],
                   borderRadius: 2,
                   border: selectedPalette === palette
                     ? `2px solid ${theme.colors.blue[6]}`
@@ -179,7 +179,7 @@ export const ColorSchemeSelector = ({
               w={6}
               h={6}
               style={{
-                backgroundColor: theme.colors[selectedPalette][6],
+                backgroundColor: theme.colors[selectedPalette]?.[6] || theme.colors.gray[6],
                 borderRadius: 2,
                 flexShrink: 0
               }}
