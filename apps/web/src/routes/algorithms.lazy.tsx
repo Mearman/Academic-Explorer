@@ -712,51 +712,21 @@ function AlgorithmsPage() {
     }
 
     if (viewMode === '2D') {
-      // Calculate bounding box of selected nodes for 2D
-      let minX = Infinity, maxX = -Infinity;
-      let minY = Infinity, maxY = -Infinity;
+      // Create a Set of selected node IDs for the filter
+      // The filter function receives the internal graph nodes which may have string or number IDs
+      const selectedIdSet = new Set(selectedNodes.map(n => n.id));
 
-      selectedNodes.forEach((n) => {
-        const x = n.x ?? 0;
-        const y = n.y ?? 0;
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-      });
-
-      const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
-      const boundingWidth = maxX - minX;
-      const boundingHeight = maxY - minY;
-
-      // Get viewport dimensions
-      const viewportWidth = graph.width?.() ?? 800;
-      const viewportHeight = graph.height?.() ?? 450;
-
-      // Calculate zoom to fit bounding box with padding
-      const padding = 100; // pixels of padding
-      const zoomX = (viewportWidth - padding * 2) / Math.max(boundingWidth, 1);
-      const zoomY = (viewportHeight - padding * 2) / Math.max(boundingHeight, 1);
-      const targetZoom = Math.min(zoomX, zoomY, 4); // Cap max zoom at 4x
-
-      if (graph.centerAt && graph.zoom) {
-        // Center on the bounding box center, then set zoom
-        graph.centerAt(centerX, centerY, 200);
-        const zoomFn = graph.zoom;
-        setTimeout(() => {
-          zoomFn(targetZoom, 300);
-        }, 250);
-      } else if (graph.centerAt) {
-        graph.centerAt(centerX, centerY, 300);
-      } else {
-        // Fallback to zoomToFit with filter (unreliable but better than nothing)
-        graph.zoomToFit(
-          300,
-          100,
-          (node) => node.id != null && highlightedNodes.has(String(node.id))
-        );
-      }
+      // Use zoomToFit with a filter - this is the most reliable method
+      // The filter receives nodes from the internal d3 simulation
+      graph.zoomToFit(
+        400,
+        50,
+        (node: FilterNode) => {
+          if (node.id == null) return false;
+          // Check both string and original form since d3 may preserve original types
+          return selectedIdSet.has(String(node.id)) || selectedIdSet.has(node.id as string);
+        }
+      );
     } else {
       // 3D mode: use manual camera positioning since zoomToFit filter is unreliable
       // Calculate bounding box of selected nodes
