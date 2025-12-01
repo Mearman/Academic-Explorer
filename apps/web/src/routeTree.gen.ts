@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
@@ -84,6 +85,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/history.lazy').then((d) => d.Route))
+const GraphRoute = GraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/graph.lazy').then((d) => d.Route))
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
@@ -428,6 +434,7 @@ export interface FileRoutesByFullPath {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/graph': typeof GraphRoute
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -489,6 +496,7 @@ export interface FileRoutesByTo {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/graph': typeof GraphRoute
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -551,6 +559,7 @@ export interface FileRoutesById {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/graph': typeof GraphRoute
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -614,6 +623,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/graph'
     | '/history'
     | '/search'
     | '/settings'
@@ -675,6 +685,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/graph'
     | '/history'
     | '/search'
     | '/settings'
@@ -736,6 +747,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/graph'
     | '/history'
     | '/search'
     | '/settings'
@@ -798,6 +810,7 @@ export interface RootRouteChildren {
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
+  GraphRoute: typeof GraphRoute
   HistoryRoute: typeof HistoryRoute
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
@@ -865,6 +878,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/graph': {
+      id: '/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -1300,6 +1320,7 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
+  GraphRoute: GraphRoute,
   HistoryRoute: HistoryRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
