@@ -539,29 +539,65 @@ function AlgorithmsPage() {
     []
   );
 
-  // Fit all nodes to view
+  // Fit all nodes to view with proper centering
   const handleFitAll = useCallback(() => {
-    if (graphMethodsRef.current?.zoomToFit) {
-      graphMethodsRef.current.zoomToFit(400, 50);
+    const graph = graphMethodsRef.current;
+    if (!graph?.zoomToFit) return;
+
+    // For 2D: use centerAt to properly center, then zoomToFit
+    // For 3D: zoomToFit handles both zoom and centering
+    if (viewMode === '2D' && graph.centerAt) {
+      // First center on origin, then fit
+      graph.centerAt(0, 0, 200);
+      setTimeout(() => {
+        graph.zoomToFit(300, 100);
+      }, 200);
+    } else {
+      // 3D mode - just zoomToFit with larger padding for better centering
+      graph.zoomToFit(400, 100);
     }
-  }, []);
+  }, [viewMode]);
 
   // Fit selected nodes to view (or all if none selected)
   const handleFitSelected = useCallback(() => {
-    if (!graphMethodsRef.current?.zoomToFit) return;
+    const graph = graphMethodsRef.current;
+    if (!graph?.zoomToFit) return;
 
     if (highlightedNodes.size === 0) {
-      // No selection - fit all
-      graphMethodsRef.current.zoomToFit(400, 50);
+      // No selection - use fit all behavior
+      handleFitAll();
     } else {
-      // Fit to selected nodes only
-      graphMethodsRef.current.zoomToFit(
-        400,
-        50,
-        (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
-      );
+      // Calculate center of selected nodes for 2D
+      if (viewMode === '2D' && graph.centerAt) {
+        // Get the nodes from the graph data
+        const selectedNodes = graphData.nodes.filter(n => highlightedNodes.has(n.id));
+        if (selectedNodes.length > 0) {
+          // Calculate centroid of selected nodes
+          const sumX = selectedNodes.reduce((sum, n) => sum + (n.x ?? 0), 0);
+          const sumY = selectedNodes.reduce((sum, n) => sum + (n.y ?? 0), 0);
+          const centerX = sumX / selectedNodes.length;
+          const centerY = sumY / selectedNodes.length;
+
+          // Center on the centroid, then fit to selection
+          graph.centerAt(centerX, centerY, 200);
+          setTimeout(() => {
+            graph.zoomToFit(
+              300,
+              100,
+              (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+            );
+          }, 200);
+        }
+      } else {
+        // 3D mode - just zoomToFit with filter
+        graph.zoomToFit(
+          400,
+          100,
+          (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+        );
+      }
     }
-  }, [highlightedNodes]);
+  }, [highlightedNodes, viewMode, graphData.nodes, handleFitAll]);
 
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
