@@ -84,13 +84,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setConfig(defaultThemeConfig);
   };
 
-  // Border radius value mappings
+  // Border radius value mappings (matching Tailwind CSS)
   const radiusValues = {
-    xs: "2px",
-    sm: "4px",
-    md: "8px",
-    lg: "12px",
-    xl: "16px",
+    xs: "2px",   // rounded-sm
+    sm: "4px",   // rounded (default)
+    md: "6px",   // rounded-md
+    lg: "8px",   // rounded-lg
+    xl: "12px",  // rounded-xl
+    "2xl": "16px", // rounded-2xl
+    "3xl": "24px", // rounded-3xl
+    full: "9999px", // rounded-full
   } as const;
 
   // Keyboard shortcuts for theme switching
@@ -140,16 +143,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           styles: {
             root: {
               fontWeight: 500,
-              transition: "all 0.15s ease-in-out",
+              transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
               borderRadius: radiusValues[config.borderRadius],
+              fontFamily: 'inherit',
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              },
+              '&:active': {
+                transform: 'translateY(0)',
+              },
             },
           },
         },
         Card: {
           styles: {
             root: {
-              boxShadow: "var(--mantine-shadow-sm)",
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
               borderRadius: radiusValues[config.borderRadius],
+              backgroundColor: 'hsl(var(--shadcn-card))',
+              border: '1px solid hsl(var(--shadcn-border))',
+              transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              },
             },
           },
         },
@@ -158,8 +175,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             input: {
               fontSize: "14px",
               lineHeight: "1.5",
-              minHeight: "40px",
+              minHeight: "40px", // h-10 in shadcn
               borderRadius: radiusValues[config.borderRadius],
+              backgroundColor: 'hsl(var(--shadcn-background))',
+              border: '1px solid hsl(var(--shadcn-border))',
+              '&:focus': {
+                borderColor: 'hsl(var(--shadcn-ring))',
+                boxShadow: '0 0 0 3px hsl(var(--shadcn-ring) / 0.1)',
+                outline: 'none',
+              },
+              '&:focus-visible': {
+                outline: '2px solid hsl(var(--shadcn-ring))',
+                outlineOffset: '2px',
+              },
             },
           },
         },
@@ -173,13 +201,29 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               fontWeight: 400,
               transition: "all 0.1s ease",
               borderRadius: radiusValues[config.borderRadius],
+              fontFamily: 'inherit',
+              // Radix is unstyled by default - minimal styling
+              background: 'transparent',
+              border: '1px solid transparent',
+              cursor: 'pointer',
+              '&:disabled': {
+                opacity: '0.5',
+                cursor: 'not-allowed',
+              },
+              '&:focus-visible': {
+                outline: '2px solid hsl(var(--shadcn-ring))',
+                outlineOffset: '2px',
+              },
             },
           },
         },
         Card: {
           styles: {
             root: {
-              boxShadow: "var(--mantine-shadow-sm)",
+              // Radix is unstyled - absolutely minimal
+              background: 'transparent',
+              border: 'none',
+              boxShadow: 'none',
               borderRadius: radiusValues[config.borderRadius],
             },
           },
@@ -189,8 +233,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             input: {
               fontSize: "14px",
               lineHeight: "1.5",
-              minHeight: "32px",
+              minHeight: "32px", // More compact for Radix
               borderRadius: radiusValues[config.borderRadius],
+              // Radix is unstyled - minimal browser defaults
+              background: 'white',
+              border: '1px solid #ccc',
+              padding: '0 8px',
+              '&:focus': {
+                outline: '2px solid hsl(var(--shadcn-ring))',
+                outlineOffset: '2px',
+                borderColor: 'hsl(var(--shadcn-ring))',
+              },
+              '&:disabled': {
+                opacity: '0.5',
+                cursor: 'not-allowed',
+                backgroundColor: '#f5f5f5',
+              },
             },
           },
         },
