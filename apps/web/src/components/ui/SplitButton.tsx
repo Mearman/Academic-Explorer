@@ -157,84 +157,85 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
 
     // Render with dropdown menu if items are provided
     return (
-      <Menu position="bottom-end">
-        <Menu.Target>
-          <Group ref={ref} {...mergedGroupProps}>
-            {/* Main button */}
-            <Button
-              {...mainButtonProps}
-              h={height}
-              color={mainButtonColor}
-              styles={() => {
-                const currentRadius = getThemeBorderRadius()
-                return {
-                  root: {
-                    borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
-                    borderTopRightRadius: '0px !important',
-                    borderBottomRightRadius: '0px !important',
-                    borderRightWidth: 0,
-                    flex: 1,
-                    height: `${height}px`,
-                    borderStyle: 'solid',
-                    transition: 'all 0.15s ease-in-out',
-                    marginRight: '-1px', // Compensate for border overlap
-                    '&:hover': {
-                      backgroundColor: 'var(--mantine-color-blue-light-hover)',
-                      borderColor: 'var(--mantine-color-blue-light-hover)',
-                      zIndex: 1
-                    }
-                  },
-                  inner: {
-                    justifyContent: 'flex-start',
-                    height: `${height - 2}px`, // Account for borders
-                    paddingLeft: '8px',
-                    padding: '0 8px'
+      <>
+        <Group ref={ref} {...mergedGroupProps}>
+          {/* Main button */}
+          <Button
+            {...mainButtonProps}
+            h={height}
+            color={mainButtonColor}
+            styles={() => {
+              const currentRadius = getThemeBorderRadius()
+              return {
+                root: {
+                  borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                  borderTopRightRadius: '0px !important',
+                  borderBottomRightRadius: '0px !important',
+                  borderRightWidth: 0,
+                  flex: 1,
+                  height: `${height}px`,
+                  borderStyle: 'solid',
+                  transition: 'all 0.15s ease-in-out',
+                  marginRight: '-1px', // Compensate for border overlap
+                  '&:hover': {
+                    backgroundColor: 'var(--mantine-color-blue-light-hover)',
+                    borderColor: 'var(--mantine-color-blue-light-hover)',
+                    zIndex: 1
                   }
+                },
+                inner: {
+                  justifyContent: 'flex-start',
+                  height: `${height - 2}px`, // Account for borders
+                  paddingLeft: '8px',
+                  padding: '0 8px'
                 }
-              }}
-            />
+              }
+            }}
+          />
 
-            {/* Dropdown arrow button */}
-            <ActionIcon
-              {...mergedDropdownProps}
-              w={height}
-              h={height}
-              color={dropdownColor}
-              styles={() => {
-                const currentRadius = getThemeBorderRadius()
-                return {
-                  root: {
-                    borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
-                    borderTopLeftRadius: '0px !important',
-                    borderBottomLeftRadius: '0px !important',
-                    borderLeftWidth: 1,
-                    height: `${height}px`,
-                    width: `${height}px`,
-                    borderStyle: 'solid',
-                    backgroundColor: 'transparent',
-                    transition: 'all 0.15s ease-in-out',
-                    flexShrink: 0, // Prevent button from shrinking
-                    position: 'relative',
-                    zIndex: 2, // Ensure dropdown button is on top
-                    '&:hover': {
-                      backgroundColor: 'var(--mantine-color-' + dropdownColor + '-light-hover)',
-                      transform: 'scale(1.05)',
-                      zIndex: 3
-                    },
-                    '&:active': {
-                      transform: 'scale(0.95)'
+          {/* Dropdown arrow button */}
+          <Menu position="bottom-end">
+            <Menu.Target>
+              <ActionIcon
+                {...mergedDropdownProps}
+                w={height}
+                h={height}
+                color={dropdownColor}
+                styles={() => {
+                  const currentRadius = getThemeBorderRadius()
+                  return {
+                    root: {
+                      borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                      borderTopLeftRadius: '0px !important',
+                      borderBottomLeftRadius: '0px !important',
+                      borderLeftWidth: 1,
+                      height: `${height}px`,
+                      width: `${height}px`,
+                      borderStyle: 'solid',
+                      backgroundColor: 'transparent',
+                      transition: 'all 0.15s ease-in-out',
+                      flexShrink: 0, // Prevent button from shrinking
+                      position: 'relative',
+                      zIndex: 2, // Ensure dropdown button is on top
+                      '&:hover': {
+                        backgroundColor: 'var(--mantine-color-' + dropdownColor + '-light-hover)',
+                        transform: 'scale(1.05)',
+                        zIndex: 3
+                      },
+                      '&:active': {
+                        transform: 'scale(0.95)'
+                      }
                     }
                   }
-                }
-              }}
-            />
-          </Group>
-        </Menu.Target>
-
-        <Menu.Dropdown>
-          {dropdownItems}
-        </Menu.Dropdown>
-      </Menu>
+                }}
+              />
+            </Menu.Target>
+            <Menu.Dropdown>
+              {dropdownItems}
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+      </>
     )
   }
 )
