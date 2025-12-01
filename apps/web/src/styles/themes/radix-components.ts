@@ -11,7 +11,8 @@ export const radixComponents = {
         transition: "all 0.1s ease",
         fontFamily: 'inherit',
         // Radix is unstyled by default - minimal browser styling
-        background: 'transparent',
+        // Use backgroundColor (not background shorthand) for consistency with other themes
+        backgroundColor: 'transparent',
         border: '1px solid transparent',
         cursor: 'pointer',
         '&:disabled': {
@@ -45,7 +46,8 @@ export const radixComponents = {
     styles: {
       root: {
         // Radix is unstyled - absolutely minimal
-        background: 'var(--card-bg)',
+        // Use backgroundColor (not background shorthand) for consistency with other themes
+        backgroundColor: 'var(--card-bg)',
         border: 'none',
         boxShadow: 'none',
         borderRadius: 'var(--card-radius)',
@@ -63,9 +65,9 @@ export const radixComponents = {
         fontSize: "14px",
         lineHeight: "1.5",
         minHeight: "32px", // More compact for Radix
-        // Radix is unstyled - minimal browser defaults
-        background: 'white',
-        border: '1px solid #ccc',
+        // Radix is unstyled - use Mantine body color for proper theme support
+        backgroundColor: 'var(--mantine-color-body)',
+        border: '1px solid var(--mantine-color-default-border)',
         padding: '0 8px',
         '&:focus': {
           outline: '2px solid var(--mantine-color-blue-6)',
@@ -75,7 +77,7 @@ export const radixComponents = {
         '&:disabled': {
           opacity: '0.5',
           cursor: 'not-allowed',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'var(--mantine-color-gray-1)',
         },
       },
     },
@@ -88,9 +90,9 @@ export const radixComponents = {
         fontSize: "14px",
         lineHeight: "1.5",
         minHeight: "32px", // More compact for Radix
-        // Radix is unstyled - minimal browser defaults
-        background: 'white',
-        border: '1px solid #ccc',
+        // Radix is unstyled - use Mantine body color for proper theme support
+        backgroundColor: 'var(--mantine-color-body)',
+        border: '1px solid var(--mantine-color-default-border)',
         padding: '0 8px',
         '&:focus': {
           outline: '2px solid var(--mantine-color-blue-6)',
@@ -100,7 +102,7 @@ export const radixComponents = {
         '&:disabled': {
           opacity: '0.5',
           cursor: 'not-allowed',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'var(--mantine-color-gray-1)',
         },
       },
     },
@@ -112,9 +114,9 @@ export const radixComponents = {
       textarea: {
         fontSize: "14px",
         lineHeight: "1.5",
-        // Radix is unstyled - minimal browser defaults
-        background: 'white',
-        border: '1px solid #ccc',
+        // Radix is unstyled - use Mantine body color for proper theme support
+        backgroundColor: 'var(--mantine-color-body)',
+        border: '1px solid var(--mantine-color-default-border)',
         padding: '8px',
         resize: 'vertical',
         '&:focus': {
@@ -125,7 +127,7 @@ export const radixComponents = {
         '&:disabled': {
           opacity: '0.5',
           cursor: 'not-allowed',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'var(--mantine-color-gray-1)',
         },
       },
     },
@@ -136,13 +138,13 @@ export const radixComponents = {
     styles: {
       thumb: {
         backgroundColor: "var(--mantine-color-white)",
-        borderColor: "#ccc",
+        borderColor: "var(--mantine-color-default-border)",
         border: '1px solid',
       },
       track: {
-        borderColor: "#ccc",
+        borderColor: "var(--mantine-color-default-border)",
         border: '1px solid',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: 'var(--mantine-color-gray-1)',
       },
     },
   },
@@ -174,14 +176,14 @@ export const radixComponents = {
     },
     vars: (theme) => ({
       content: {
-        'modal-bg': 'white', // Minimal white background
+        'modal-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'modal-shadow': 'none', // No shadow for Radix
       },
     }),
     styles: {
       content: {
         backgroundColor: 'var(--modal-bg)',
-        border: '1px solid #ccc',
+        border: '1px solid var(--mantine-color-default-border)',
         boxShadow: 'none',
       },
     },
@@ -191,14 +193,14 @@ export const radixComponents = {
   Drawer: {
     vars: (theme) => ({
       content: {
-        'drawer-bg': 'white', // Minimal white background
+        'drawer-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'drawer-shadow': 'none', // No shadow for Radix
       },
     }),
     styles: {
       content: {
         backgroundColor: 'var(--drawer-bg)',
-        border: '1px solid #ccc',
+        border: '1px solid var(--mantine-color-default-border)',
         boxShadow: 'none',
       },
     },
@@ -208,14 +210,14 @@ export const radixComponents = {
   Popover: {
     vars: (theme) => ({
       dropdown: {
-        'popover-bg': 'white', // Minimal white background
+        'popover-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'popover-shadow': 'none', // No shadow for Radix
       },
     }),
     styles: {
       dropdown: {
         backgroundColor: 'var(--popover-bg)',
-        border: '1px solid #ccc',
+        border: '1px solid var(--mantine-color-default-border)',
         boxShadow: 'none',
       },
     },
@@ -225,8 +227,8 @@ export const radixComponents = {
   Tooltip: {
     vars: () => ({
       tooltip: {
-        '--tooltip-bg': 'black', // Simple black tooltip
-        '--tooltip-color': 'white',
+        '--tooltip-bg': 'var(--mantine-color-gray-9)', // Dark tooltip using theme color
+        '--tooltip-color': 'var(--mantine-color-white)',
       },
     }),
     styles: {
@@ -245,27 +247,27 @@ export const radixComponents = {
     vars: (theme) => ({
       root: {
         '--appshell-bg': 'transparent',
-        '--appshell-border-color': '#ccc',
+        '--appshell-border-color': 'var(--mantine-color-default-border)',
       },
       navbar: {
         '--navbar-bg': 'transparent',
-        '--navbar-border-color': '#ccc',
+        '--navbar-border-color': 'var(--mantine-color-default-border)',
         '--navbar-padding': 'var(--mantine-spacing-md)',
       },
       header: {
         '--header-bg': 'transparent',
-        '--header-border-color': '#ccc',
+        '--header-border-color': 'var(--mantine-color-default-border)',
         '--header-height': 'rem(60px)',
         '--header-padding': 'var(--mantine-spacing-md)',
       },
       aside: {
         '--aside-bg': 'transparent',
-        '--aside-border-color': '#ccc',
+        '--aside-border-color': 'var(--mantine-color-default-border)',
         '--aside-padding': 'var(--mantine-spacing-md)',
       },
       footer: {
         '--footer-bg': 'transparent',
-        '--footer-border-color': '#ccc',
+        '--footer-border-color': 'var(--mantine-color-default-border)',
         '--footer-padding': 'var(--mantine-spacing-md)',
       },
     }),
@@ -301,7 +303,7 @@ export const radixComponents = {
   Accordion: {
     vars: (theme) => ({
       root: {
-        '--accordion-border-color': '#ccc',
+        '--accordion-border-color': 'var(--mantine-color-default-border)',
         '--accordion-radius': 'var(--mantine-radius-default)',
       },
       item: {
@@ -310,8 +312,8 @@ export const radixComponents = {
         '--accordion-item-transition': 'all 0.1s ease',
       },
       control: {
-        '--accordion-control-color': 'black',
-        '--accordion-control-bg-hover': '#f5f5f5',
+        '--accordion-control-color': 'var(--mantine-color-text)',
+        '--accordion-control-bg-hover': 'var(--mantine-color-gray-1)',
         '--accordion-control-padding': 'var(--mantine-spacing-md)',
         '--accordion-control-font-weight': '400',
         '--accordion-control-transition': 'var(--accordion-item-transition)',
@@ -321,7 +323,7 @@ export const radixComponents = {
         '--accordion-content-bg': 'transparent',
       },
       chevron: {
-        '--accordion-chevron-color': '#666',
+        '--accordion-chevron-color': 'var(--mantine-color-dimmed)',
         '--accordion-chevron-size': 'rem(16px)',
         '--accordion-chevron-transition': 'transform 0.1s ease',
       },
