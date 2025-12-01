@@ -9,9 +9,9 @@ export const mantineTheme = createTheme({
   colors: foundationColors,
   ...foundationSettings,
   other: {
-    // Clear any shadcn CSS custom properties that might persist
-    '--shadcn-background': 'initial',
-    '--shadcn-foreground': 'initial',
+    // Override shadcn CSS properties to use Mantine equivalents (globalStyle in shadcn-theme.css.ts sets body color)
+    '--shadcn-background': 'var(--mantine-color-body)',
+    '--shadcn-foreground': 'var(--mantine-color-text)',
     '--shadcn-card': 'initial',
     '--shadcn-card-foreground': 'initial',
     '--shadcn-popover': 'initial',

@@ -374,4 +374,35 @@ export const radixComponents = {
       },
     },
   },
+
+  // Radix Title - minimal styling with Mantine text color
+  Title: {
+    vars: () => ({
+      root: {
+        '--title-color': 'var(--mantine-color-text)',
+        '--title-line-height': '1.3',
+      },
+    }),
+    styles: {
+      root: {
+        color: 'var(--title-color)',
+        lineHeight: 'var(--title-line-height)',
+        fontWeight: 400, // Radix is more minimal
+      },
+    },
+  },
+
+  // Radix Text - minimal styling with Mantine text color
+  Text: {
+    vars: () => ({
+      root: {
+        '--text-color': 'var(--mantine-color-text)',
+      },
+    }),
+    styles: {
+      root: {
+        color: 'var(--text-color)',
+      },
+    },
+  },
 }

@@ -359,4 +359,34 @@ export const mantineComponents = {
       },
     },
   },
+
+  // Reset Title styles to Mantine defaults - ensures color inheritance is overridden
+  Title: {
+    vars: () => ({
+      root: {
+        '--title-color': 'var(--mantine-color-text)',
+        '--title-line-height': '1.3',
+      },
+    }),
+    styles: {
+      root: {
+        color: 'var(--title-color)',
+        lineHeight: 'var(--title-line-height)',
+      },
+    },
+  },
+
+  // Reset Text styles to Mantine defaults - ensures color inheritance is overridden
+  Text: {
+    vars: () => ({
+      root: {
+        '--text-color': 'var(--mantine-color-text)',
+      },
+    }),
+    styles: {
+      root: {
+        color: 'var(--text-color)',
+      },
+    },
+  },
 }
