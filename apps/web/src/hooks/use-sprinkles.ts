@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useCallback } from 'react';
-import { sprinkles } from '../styles/sprinkles/config';
+import { sprinkles } from '../styles/sprinkles';
 import {
   createDynamicSpacing,
   interactiveStates,
@@ -12,7 +12,7 @@ import {
   createButtonStyles
 } from '../styles/sprinkles/dynamic-theme';
 import { useTheme } from '../contexts/theme-context';
-import type { SprinklesProps as Sprinkles } from '../styles/sprinkles/config';
+import type { Sprinkles } from '../styles/sprinkles';
 import type { ComponentLibrary } from '../styles/theme-contracts';
 
 /**
