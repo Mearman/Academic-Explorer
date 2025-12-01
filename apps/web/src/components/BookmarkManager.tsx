@@ -37,7 +37,7 @@ import {
   useSelectedBookmarks,
 } from "@/contexts/bookmark-selection-context";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { cursorPointer, textDimmed } from "@/styles/common.css";
+import { sprinkles } from "@/styles/sprinkles";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;
@@ -99,7 +99,7 @@ function BookmarkCard({
             flex={1}
             fw={500}
             c="inherit"
-            className={`${cursorPointer} hover:text-blue-600 transition-colors`}
+            className={sprinkles({ cursor: 'pointer', transition: 'normal' })}
             data-testid="bookmark-title-link"
           >
             {title}
@@ -328,9 +328,9 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       {filteredBookmarks.length === 0 ? (
         <Card withBorder p="xl">
           <Stack align="center" gap="md">
-            <div className={textDimmed}>
-            <IconBookmarkOff size={48} />
-          </div>
+            <div className={sprinkles({ color: 'dimmed' })}>
+              <IconBookmarkOff size={48} />
+            </div>
             <Text size="lg" fw={500}>
               {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
             </Text>
