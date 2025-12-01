@@ -703,31 +703,27 @@ function AlgorithmsPage() {
       return;
     }
 
-    // Get actual node positions from graph
-    const graphNodes = graph.graphData?.()?.nodes ?? [];
-    const selectedNodes = graphNodes.filter((n) => highlightedNodes.has(n.id));
-    if (selectedNodes.length === 0) {
-      fitToViewAll();
-      return;
-    }
-
     if (viewMode === '2D') {
-      // Create a Set of selected node IDs for the filter
-      // The filter function receives the internal graph nodes which may have string or number IDs
-      const selectedIdSet = new Set(selectedNodes.map(n => n.id));
-
-      // Use zoomToFit with a filter - this is the most reliable method
+      // Use zoomToFit with a filter directly using highlightedNodes
       // The filter receives nodes from the internal d3 simulation
       graph.zoomToFit(
         400,
         50,
         (node: FilterNode) => {
           if (node.id == null) return false;
-          // Check both string and original form since d3 may preserve original types
-          return selectedIdSet.has(String(node.id)) || selectedIdSet.has(node.id as string);
+          // Check both string conversion since highlightedNodes contains strings
+          const nodeIdStr = String(node.id);
+          return highlightedNodes.has(nodeIdStr);
         }
       );
     } else {
+      // 3D mode needs actual node positions from graph
+      const graphNodes = graph.graphData?.()?.nodes ?? [];
+      const selectedNodes = graphNodes.filter((n) => highlightedNodes.has(String(n.id)));
+      if (selectedNodes.length === 0) {
+        fitToViewAll();
+        return;
+      }
       // 3D mode: use manual camera positioning since zoomToFit filter is unreliable
       // Calculate bounding box of selected nodes
       let minX = Infinity, maxX = -Infinity;
