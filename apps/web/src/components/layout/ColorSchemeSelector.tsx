@@ -103,7 +103,8 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 4
+            gap: 4,
+            alignContent: 'start'
           }}
         >
           {shadcnPaletteNames.map((palette) => (
@@ -115,7 +116,7 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 8px',
+                padding: '6px 8px',
                 borderRadius: 4,
                 backgroundColor: selectedPalette === palette
                   ? 'var(--mantine-color-blue-light)'
@@ -188,7 +189,8 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 4
+            gap: 4,
+            alignContent: 'start'
           }}
         >
           {BORDER_RADIUS_OPTIONS.map((radius) => (
@@ -200,7 +202,7 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 8px',
+                padding: '6px 8px',
                 borderRadius: 4,
                 backgroundColor: config.borderRadius === radius.value
                   ? 'var(--mantine-color-blue-light)'
