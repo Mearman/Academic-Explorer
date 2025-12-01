@@ -13,7 +13,8 @@ import {
   ActionIcon,
   Tooltip,
   Title,
-  Button,
+  Divider,
+  Collapse,
 } from "@mantine/core";
 import {
   IconBookmark,
@@ -23,13 +24,18 @@ import {
   IconBook,
   IconSettings,
   IconList,
+  IconChevronDown,
+  IconChevronRight,
+  IconPlus,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { useCatalogue } from "@/hooks/useCatalogue";
 
 import { BookmarkCard } from "./BookmarkCard";
+import { CatalogueListCard } from "./CatalogueListCard";
 import * as styles from "./sidebar.css";
 
 interface BookmarksSidebarProps {
@@ -65,7 +71,10 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
   };
 
   const { bookmarks, isLoadingBookmarks, refreshData } = safeUseUserInteractions();
+  const { lists, isLoadingLists } = useCatalogue({ autoRefresh: true });
   const [searchQuery, setSearchQuery] = useState("");
+  const [listsExpanded, setListsExpanded] = useState(true);
+  const [bookmarksExpanded, setBookmarksExpanded] = useState(true);
 
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
@@ -113,26 +122,20 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     );
   }
 
+  // Filter lists to exclude special system lists (bookmarks, history)
+  const userLists = lists.filter(list =>
+    list.type === "list" || list.type === "bibliography"
+  );
+
   return (
     <div className={styles.sidebarContainer}>
       {/* Header */}
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarTitle}>
-          <IconBookmark size={18} />
-          <Title order={6}>Bookmarks</Title>
+          <IconBook size={18} />
+          <Title order={6}>Collections</Title>
         </div>
         <Group gap="xs">
-          <Tooltip label="Manage all bookmarks">
-            <ActionIcon
-              size="sm"
-              variant="subtle"
-              component={Link}
-              to="/bookmarks"
-              aria-label="Go to bookmarks management page"
-            >
-              <IconSettings size={14} />
-            </ActionIcon>
-          </Tooltip>
           {onClose && (
             <ActionIcon size="sm" variant="subtle" onClick={onClose}>
               <IconX size={14} />
@@ -141,76 +144,169 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
         </Group>
       </div>
 
-      {/* Catalogue Navigation */}
-      <div className={styles.searchInput}>
-        <Group justify="space-between" align="center">
-          <Text size="sm" fw={500}>Collections</Text>
-          <IconBook size={14} />
-        </Group>
-        <Button
-          variant="subtle"
-          size="sm"
-          leftSection={<IconList size={14} />}
-          onClick={() => {
-            window.location.hash = "/catalogue";
-            if (onClose) onClose();
-          }}
-          title="Catalogue"
-          fullWidth
-        >
-          Catalogue
-        </Button>
-      </div>
-
-      {/* Search */}
-      <div className={styles.searchInput}>
-        <TextInput
-          placeholder="Search bookmarks..."
-          aria-label="Search bookmarks"
-          label="Search bookmarks"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          leftSection={<IconSearch size={14} />}
-          size="sm"
-        />
-      </div>
-
-      {/* Bookmarks List */}
+      {/* Scrollable Content */}
       <div className={styles.scrollableContent}>
-        {filteredBookmarks.length === 0 ? (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
-            <div className={styles.emptyState}>
-              <IconBookmarkOff size={32} />
-              <Text size="sm" fw={500} ta="center">
-                {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
-              </Text>
-              <Text size="xs" c="dimmed" ta="center">
-                {searchQuery
-                  ? "Try adjusting your search terms"
-                  : "Bookmark entities you want to revisit later"}
-              </Text>
-            </div>
-          </Card>
-        ) : (
-          <Stack gap="xs">
-            {filteredBookmarks.map((bookmark) => (
-              <BookmarkCard
-                key={bookmark.id || bookmark.entityId}
-                bookmark={bookmark}
-                onClose={onClose}
-                onDeleted={refreshData}
-              />
-            ))}
-          </Stack>
-        )}
+        {/* Catalogue Lists Section */}
+        <div style={{ marginBottom: "1rem" }}>
+          <Group
+            justify="space-between"
+            align="center"
+            style={{ cursor: "pointer", marginBottom: "0.5rem" }}
+            onClick={() => setListsExpanded(!listsExpanded)}
+          >
+            <Group gap="xs">
+              {listsExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+              <IconList size={14} />
+              <Text size="sm" fw={600}>Lists</Text>
+              <Text size="xs" c="dimmed">({userLists.length})</Text>
+            </Group>
+            <Group gap="xs">
+              <Tooltip label="Create new list">
+                <ActionIcon
+                  size="xs"
+                  variant="subtle"
+                  component={Link}
+                  to="/catalogue"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    if (onClose) onClose();
+                  }}
+                  aria-label="Create new list"
+                >
+                  <IconPlus size={12} />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="Manage catalogue">
+                <ActionIcon
+                  size="xs"
+                  variant="subtle"
+                  component={Link}
+                  to="/catalogue"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    if (onClose) onClose();
+                  }}
+                  aria-label="Go to catalogue management"
+                >
+                  <IconSettings size={12} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          </Group>
+
+          <Collapse in={listsExpanded}>
+            {isLoadingLists ? (
+              <Group justify="center" p="sm">
+                <Loader size="xs" />
+                <Text size="xs" c="dimmed">Loading lists...</Text>
+              </Group>
+            ) : userLists.length === 0 ? (
+              <Card withBorder p="sm">
+                <Text size="xs" c="dimmed" ta="center">
+                  No lists yet. Create one from the Catalogue page.
+                </Text>
+              </Card>
+            ) : (
+              <Stack gap="xs">
+                {userLists.map((list) => (
+                  <CatalogueListCard
+                    key={list.id}
+                    list={list}
+                    onClose={onClose}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Collapse>
+        </div>
+
+        <Divider my="sm" />
+
+        {/* Bookmarks Section */}
+        <div>
+          <Group
+            justify="space-between"
+            align="center"
+            style={{ cursor: "pointer", marginBottom: "0.5rem" }}
+            onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
+          >
+            <Group gap="xs">
+              {bookmarksExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+              <IconBookmark size={14} />
+              <Text size="sm" fw={600}>Bookmarks</Text>
+              <Text size="xs" c="dimmed">({bookmarks.length})</Text>
+            </Group>
+            <Tooltip label="Manage bookmarks">
+              <ActionIcon
+                size="xs"
+                variant="subtle"
+                component={Link}
+                to="/bookmarks"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  if (onClose) onClose();
+                }}
+                aria-label="Go to bookmarks management"
+              >
+                <IconSettings size={12} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+
+          <Collapse in={bookmarksExpanded}>
+            {/* Search */}
+            {bookmarks.length > 0 && (
+              <div style={{ marginBottom: "0.5rem" }}>
+                <TextInput
+                  placeholder="Search bookmarks..."
+                  aria-label="Search bookmarks"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftSection={<IconSearch size={14} />}
+                  size="xs"
+                />
+              </div>
+            )}
+
+            {isLoadingBookmarks ? (
+              <Group justify="center" p="sm">
+                <Loader size="xs" />
+                <Text size="xs" c="dimmed">Loading bookmarks...</Text>
+              </Group>
+            ) : filteredBookmarks.length === 0 ? (
+              <Card withBorder p="sm">
+                <div className={styles.emptyState} style={{ padding: "1rem" }}>
+                  <IconBookmarkOff size={24} />
+                  <Text size="xs" fw={500} ta="center">
+                    {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
+                  </Text>
+                  <Text size="xs" c="dimmed" ta="center">
+                    {searchQuery
+                      ? "Try adjusting your search"
+                      : "Bookmark entities to revisit later"}
+                  </Text>
+                </div>
+              </Card>
+            ) : (
+              <Stack gap="xs">
+                {filteredBookmarks.map((bookmark) => (
+                  <BookmarkCard
+                    key={bookmark.id || bookmark.entityId}
+                    bookmark={bookmark}
+                    onClose={onClose}
+                    onDeleted={refreshData}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Collapse>
+        </div>
       </div>
 
       {/* Footer */}
-      {bookmarks.length > 0 && (
-        <Text className={styles.footerText}>
-          {filteredBookmarks.length} of {bookmarks.length} bookmarks
-        </Text>
-      )}
+      <Text className={styles.footerText}>
+        {userLists.length} lists, {bookmarks.length} bookmarks
+      </Text>
     </div>
   );
 }

@@ -49,9 +49,10 @@ import { settingsActions } from "@/stores/settings-store";
 interface CatalogueManagerProps {
   onNavigate?: (url: string) => void;
   shareData?: string; // T064: Compressed share data from URL parameter
+  initialListId?: string; // Initial list to select (from sidebar navigation)
 }
 
-export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProps) {
+export function CatalogueManager({ onNavigate, shareData, initialListId }: CatalogueManagerProps) {
   const {
     lists,
     selectedList,
@@ -92,6 +93,17 @@ export function CatalogueManager({ onNavigate, shareData }: CatalogueManagerProp
       setShowImportModal(true);
     }
   }, [shareData]);
+
+  // Select list from URL parameter (sidebar navigation)
+  useEffect(() => {
+    if (initialListId && lists.length > 0 && !selectedList) {
+      const targetList = lists.find(l => l.id === initialListId);
+      if (targetList) {
+        logger.debug("catalogue-ui", "Selecting list from URL param", { initialListId });
+        selectList(initialListId);
+      }
+    }
+  }, [initialListId, lists, selectedList, selectList]);
 
   // Load stats when selected list changes
   useEffect(() => {

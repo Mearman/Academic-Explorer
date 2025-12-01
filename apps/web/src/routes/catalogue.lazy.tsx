@@ -14,14 +14,15 @@ function CataloguePage() {
   const search = Route.useSearch() as CatalogueSearch;
 
   logger.debug("catalogue", "Catalogue page rendering", {
-    hasShareData: !!search.data
+    hasShareData: !!search.data,
+    initialListId: search.list,
   });
 
   return (
     <CatalogueProvider>
       <CatalogueErrorBoundary>
         <div data-testid="catalogue-manager">
-          <CatalogueManager shareData={search.data} />
+          <CatalogueManager shareData={search.data} initialListId={search.list} />
         </div>
       </CatalogueErrorBoundary>
     </CatalogueProvider>
