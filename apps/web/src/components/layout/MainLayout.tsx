@@ -34,18 +34,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
 
-import {
-  flexContainer,
-  flexColumn,
-  flex1,
-  positionRelative,
-  cursorPointer,
-  cursorResize,
-  fullWidth,
-  fullHeight,
-  dragHandle,
-  overflowAuto
-} from "@/styles/common.css";
+import { sprinkles } from "@/styles/sprinkles";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { ColorSchemeSelector } from "./ColorSchemeSelector";
@@ -182,7 +171,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     size="xl"
                     fw={600}
                     c="blue"
-                    className={cursorPointer}
+                    className={sprinkles({ cursor: 'pointer' })}
                   >
                     BibGraph
                   </Text>
@@ -196,7 +185,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Badge
                     variant="light"
                     size="sm"
-                    className={cursorPointer}
+                    className={sprinkles({ cursor: 'pointer' })}
                   >
                     v{buildInfo.version}
                   </Badge>
@@ -217,7 +206,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             {/* Mobile search - expandable input */}
             <Box
               hiddenFrom="sm"
-              className={flexContainer}
+              className={sprinkles({ display: 'flex' })}
               style={{
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -235,7 +224,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </ActionIcon>
               ) : (
                 <>
-                  <Box className={flex1} style={{ minWidth: 0 }}>
+                  <Box className={sprinkles({ flex: '1', minWidth: '0' })} style={{}}>
                     <HeaderSearchInput />
                   </Box>
                   <ActionIcon
@@ -414,7 +403,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Left Sidebar */}
       <AppShell.Navbar p={0}>
         <div
-          className={[flexContainer, fullHeight, positionRelative].join(' ')}
+          className={sprinkles({ display: 'flex', height: 'full', position: 'relative' })}
           style={{ overflow: "hidden" }}
         >
           {/* Always visible left ribbon */}
@@ -427,7 +416,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 flex={1}
                 p={{ base: 'xs', sm: 'sm' }}
                 data-testid="left-sidebar-content"
-                className={[flexColumn, fullHeight].join(' ')}
+                className={sprinkles({ flexDirection: 'column', height: 'full' })}
                 style={{ overflow: "hidden" }}
               >
                 {/* Pinning controls */}
@@ -495,7 +484,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 h="100%"
                 bg={isDragging === "left" ? "blue" : "transparent"}
                 style={{ position: "absolute", right: 0, top: 0, zIndex: 10 }}
-                className={cursorResize}
+                className={sprinkles({ cursor: 'resize' })}
                 bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "left", e });
@@ -553,7 +542,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 h="100%"
                 bg={isDragging === "right" ? "blue" : "transparent"}
                 style={{ position: "absolute", left: 0, top: 0, zIndex: 10 }}
-                className={cursorResize}
+                className={sprinkles({ cursor: 'resize' })}
                 bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "right", e });
@@ -635,7 +624,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <AppShell.Main
         data-testid="main-content"
-        className={[flexColumn, overflowAuto].join(' ')}
+        className={sprinkles({ flexDirection: 'column', overflow: 'auto' })}
       >
         {children ?? (
           <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
