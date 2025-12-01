@@ -52,7 +52,7 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
     { value: "orange", label: "Orange", color: "#fd7e14" },
     { value: "purple", label: "Purple", color: "#9775fa" },
     { value: "red", label: "Red", color: "#fa5252" },
-    { value: "neutral", label: "Neutral", color: "#495057" },
+    { value: "zinc", label: "Zinc", color: "#71717a" },
   ] as const;
 
   const colorModeData = [

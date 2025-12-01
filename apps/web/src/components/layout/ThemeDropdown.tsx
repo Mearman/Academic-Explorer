@@ -40,7 +40,21 @@ export function ThemeDropdown({ variant = "action-icon", size = "lg" }: ThemeDro
     orange: "Orange",
     purple: "Purple",
     red: "Red",
-    neutral: "Neutral",
+    zinc: "Zinc",
+    slate: "Slate",
+    stone: "Stone",
+    amber: "Amber",
+    yellow: "Yellow",
+    lime: "Lime",
+    emerald: "Emerald",
+    teal: "Teal",
+    cyan: "Cyan",
+    sky: "Sky",
+    indigo: "Indigo",
+    violet: "Violet",
+    fuchsia: "Fuchsia",
+    pink: "Pink",
+    rose: "Rose"
   };
 
   const colorModeIcons = {

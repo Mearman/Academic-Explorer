@@ -31,8 +31,16 @@ const COMPONENT_LIBRARY_LABELS = {
   radix: { label: 'Radix UI', description: 'Unstyled accessible primitives' }
 } as const
 
+const BORDER_RADIUS_OPTIONS = [
+  { value: 'xs', label: 'XS', size: 2, description: 'Extra Small' },
+  { value: 'sm', label: 'SM', size: 4, description: 'Small' },
+  { value: 'md', label: 'MD', size: 8, description: 'Medium' },
+  { value: 'lg', label: 'LG', size: 12, description: 'Large' },
+  { value: 'xl', label: 'XL', size: 16, description: 'Extra Large' }
+] as const
+
 export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
-  const { config, setColorScheme, setColorMode, setComponentLibrary } = useTheme()
+  const { config, setColorScheme, setColorMode, setComponentLibrary, setBorderRadius } = useTheme()
   const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>(config.colorScheme as ShadcnPalette)
   const theme = useMantineTheme()
 
@@ -167,6 +175,68 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
 
       <Menu.Divider />
 
+      {/* Border Radius Selection */}
+      <Menu.Label>
+        <Group gap={6}>
+          <IconPalette size={16} />
+          Border Radius
+        </Group>
+      </Menu.Label>
+      <Box p="xs">
+        <Box
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 4
+          }}
+        >
+          {BORDER_RADIUS_OPTIONS.map((radius) => (
+            <Menu.Item
+              key={radius.value}
+              onClick={() => setBorderRadius(radius.value)}
+              p={4}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 8px',
+                borderRadius: 4,
+                backgroundColor: config.borderRadius === radius.value
+                  ? 'var(--mantine-color-blue-light)'
+                  : 'transparent'
+              }}
+            >
+              <Box
+                w={12}
+                h={12}
+                style={{
+                  backgroundColor: theme.colors.gray[6],
+                  borderRadius: `${radius.size}px`,
+                  border: config.borderRadius === radius.value
+                    ? `2px solid ${theme.colors.blue[6]}`
+                    : `1px solid ${theme.colors.gray[3]}`
+                }}
+              />
+              <Text
+                size="xs"
+                style={{
+                  fontSize: 11,
+                  textTransform: 'uppercase',
+                  fontWeight: config.borderRadius === radius.value ? 600 : 400
+                }}
+              >
+                {radius.label}
+              </Text>
+              {config.borderRadius === radius.value && (
+                <IconCheck size={12} style={{ marginLeft: 'auto' }} />
+              )}
+            </Menu.Item>
+          ))}
+        </Box>
+      </Box>
+
+      <Menu.Divider />
+
       {/* Current Selection Display */}
       <Box p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
         <Group gap="xs">
@@ -182,6 +252,9 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
           </Badge>
           <Badge size="xs" variant="outline">
             {COMPONENT_LIBRARY_LABELS[config.componentLibrary].label}
+          </Badge>
+          <Badge size="xs" variant="light">
+            Radius: {(config.borderRadius || 'md').toUpperCase()}
           </Badge>
         </Group>
       </Box>
