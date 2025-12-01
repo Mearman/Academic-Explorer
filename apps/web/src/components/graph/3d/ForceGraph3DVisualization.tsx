@@ -4,17 +4,28 @@
  * Renders a graph using react-force-graph-3d with customizable styling.
  * Presentation logic (colors, highlights, filters) is passed in as props,
  * keeping this component focused on rendering.
+ *
+ * Features:
+ * - Camera state persistence (position, zoom saved to localStorage)
+ * - Performance monitoring (FPS, frame time, jank detection)
+ * - Level of Detail (LOD) system for adaptive quality
+ * - Frustum culling optimization for large graphs
  */
 
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
-import { detectWebGLCapabilities } from '@bibgraph/utils';
-import { Box, LoadingOverlay } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
+import { detectWebGLCapabilities, GraphLODManager, LODLevel } from '@bibgraph/utils';
+import { Box, LoadingOverlay, Text, Badge, Group, Stack } from '@mantine/core';
+import { IconAlertTriangle, IconActivity } from '@tabler/icons-react';
 import React, { useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 
+import { useCameraPersistence } from '../../../hooks/useCameraPersistence';
+import {
+  useGraph3DPerformance,
+  getPerformanceLevelColor,
+} from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
 import { getEdgeStyle } from '../edge-styles';
 
@@ -103,6 +114,19 @@ export interface ForceGraph3DVisualizationProps {
   seed?: number;
   /** Callback when WebGL is unavailable */
   onWebGLUnavailable?: (reason: string) => void;
+
+  // === New Performance Features ===
+
+  /** Enable camera state persistence (position saved to localStorage) */
+  enableCameraPersistence?: boolean;
+  /** Storage key for camera persistence (default: 'graph3d-camera') */
+  cameraStorageKey?: string;
+  /** Enable performance monitoring overlay */
+  showPerformanceOverlay?: boolean;
+  /** Enable adaptive LOD (Level of Detail) based on distance and performance */
+  enableAdaptiveLOD?: boolean;
+  /** Callback when performance drops below threshold */
+  onPerformanceDrop?: (fps: number) => void;
 }
 
 /** Default seed for deterministic layouts */
@@ -166,12 +190,58 @@ export function ForceGraph3DVisualization({
   enableSimulation = true,
   seed,
   onWebGLUnavailable,
+  // New performance features
+  enableCameraPersistence = false,
+  cameraStorageKey = 'graph3d-camera',
+  showPerformanceOverlay = false,
+  enableAdaptiveLOD = false,
+  onPerformanceDrop,
 }: ForceGraph3DVisualizationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Use any for the ref type to avoid complex generic type issues with react-force-graph-3d
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(undefined);
   const [webglStatus, setWebglStatus] = useState<{ available: boolean; reason?: string } | null>(null);
+
+  // === Performance Features Hooks ===
+
+  // Camera persistence - saves camera position to localStorage
+  const {
+    cameraState: savedCameraState,
+    updateCameraState,
+    resetCamera,
+  } = useCameraPersistence({
+    enabled: enableCameraPersistence,
+    storageKey: cameraStorageKey,
+    debounceMs: 300,
+  });
+
+  // Performance monitoring - tracks FPS, frame times, jank
+  const {
+    stats: performanceStats,
+    frameStart,
+    frameEnd,
+    updateVisibleCounts,
+  } = useGraph3DPerformance({
+    enabled: showPerformanceOverlay || enableAdaptiveLOD,
+    onPerformanceDrop: onPerformanceDrop
+      ? (stats) => onPerformanceDrop(stats.fps)
+      : undefined,
+    fpsThreshold: 30,
+  });
+
+  // LOD Manager - adjusts detail based on distance and performance
+  const lodManager = useMemo(() => {
+    if (!enableAdaptiveLOD) return null;
+    return new GraphLODManager({
+      adaptiveMode: true,
+      targetFps: 60,
+      minFps: 30,
+    });
+  }, [enableAdaptiveLOD]);
+
+  // Track camera position for LOD calculations
+  const cameraPositionRef = useRef({ x: 0, y: 0, z: 500 });
 
   // Check WebGL availability on mount
   useEffect(() => {
@@ -274,6 +344,7 @@ export function ForceGraph3DVisualization({
   }, [highlightedNodeIds, highlightedPath, highlightedPathEdges]);
 
   // 3D node rendering - return a Three.js object with depth-based visual effects
+  // Uses LOD (Level of Detail) to adjust quality based on camera distance
   const nodeThreeObject = useCallback((node: ForceGraphNode) => {
     const isHighlighted = isNodeHighlighted(node.id);
     const communityId = communityAssignments?.get(node.id);
@@ -287,27 +358,55 @@ export function ForceGraph3DVisualization({
     const baseSize = style.size ?? 6;
     const opacity = isHighlighted ? (style.opacity ?? 1) : 0.3;
 
+    // Calculate LOD based on distance to camera
+    let lodLevel = LODLevel.HIGH;
+    let lodSettings: { segments: number; showLabel: boolean; materialType: 'basic' | 'phong'; useRing: boolean } = {
+      segments: 16,
+      showLabel: true,
+      materialType: 'phong',
+      useRing: true,
+    };
+
+    if (lodManager && node.x !== undefined && node.y !== undefined && node.z !== undefined) {
+      lodLevel = lodManager.getEffectiveLOD(
+        { x: node.x, y: node.y, z: node.z ?? 0 },
+        cameraPositionRef.current
+      );
+      lodSettings = lodManager.getNodeRenderSettings(lodLevel);
+    }
+
     // Create a group to hold both sphere and label
     const group = new THREE.Group();
 
-    // Create sphere geometry with enhanced material for better depth perception
-    const geometry = new THREE.SphereGeometry(baseSize, 16, 16);
+    // Create sphere geometry with LOD-adjusted segments
+    const geometry = new THREE.SphereGeometry(baseSize, lodSettings.segments, lodSettings.segments);
 
-    // Use MeshPhongMaterial for better lighting and depth perception
-    const material = new THREE.MeshPhongMaterial({
-      color,
-      transparent: true,
-      opacity,
-      emissive: new THREE.Color(color).multiplyScalar(0.2), // Subtle glow
-      emissiveIntensity: isHighlighted ? 0.3 : 0.1,
-      shininess: 50,
-    });
+    // Use LOD-appropriate material
+    let material: THREE.Material;
+    if (lodSettings.materialType === 'phong') {
+      // High quality: MeshPhongMaterial for better lighting and depth perception
+      material = new THREE.MeshPhongMaterial({
+        color,
+        transparent: true,
+        opacity,
+        emissive: new THREE.Color(color).multiplyScalar(0.2),
+        emissiveIntensity: isHighlighted ? 0.3 : 0.1,
+        shininess: 50,
+      });
+    } else {
+      // Low quality: MeshBasicMaterial (faster, no lighting calculations)
+      material = new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity,
+      });
+    }
 
     const sphere = new THREE.Mesh(geometry, material);
 
-    // Add subtle ring for highlighted nodes (visual emphasis)
-    if (isHighlighted) {
-      const ringGeometry = new THREE.RingGeometry(baseSize * 1.2, baseSize * 1.4, 32);
+    // Add subtle ring for highlighted nodes (only at high LOD)
+    if (isHighlighted && lodSettings.useRing) {
+      const ringGeometry = new THREE.RingGeometry(baseSize * 1.2, baseSize * 1.4, lodSettings.segments * 2);
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -321,18 +420,20 @@ export function ForceGraph3DVisualization({
 
     group.add(sphere);
 
-    // Add label as sprite text (always faces camera)
-    const sprite = new SpriteText(node.label);
-    sprite.color = isHighlighted ? '#ffffff' : '#888888';
-    sprite.textHeight = 4;
-    sprite.position.y = baseSize + 5;
-    sprite.backgroundColor = isHighlighted ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)';
-    sprite.padding = 1;
-    sprite.borderRadius = 2;
-    group.add(sprite);
+    // Add label as sprite text (only if LOD allows labels)
+    if (lodSettings.showLabel) {
+      const sprite = new SpriteText(node.label);
+      sprite.color = isHighlighted ? '#ffffff' : '#888888';
+      sprite.textHeight = 4;
+      sprite.position.y = baseSize + 5;
+      sprite.backgroundColor = isHighlighted ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)';
+      sprite.padding = 1;
+      sprite.borderRadius = 2;
+      group.add(sprite);
+    }
 
     return group;
-  }, [isNodeHighlighted, communityAssignments, communityColors, getNodeStyle]);
+  }, [isNodeHighlighted, communityAssignments, communityColors, getNodeStyle, lodManager]);
 
   // Link color based on highlighting
   const linkColor = useCallback((link: ForceGraphLink) => {
@@ -459,15 +560,91 @@ export function ForceGraph3DVisualization({
     }
   }, [enableSimulation]);
 
-  // Fit graph to view on data change
+  // Fit graph to view on data change (or restore saved camera position)
   useEffect(() => {
     if (graphRef.current && graphData.nodes.length > 0) {
       // Small delay to let simulation settle
       setTimeout(() => {
-        graphRef.current?.zoomToFit(400, 50);
+        // If we have a saved camera state and persistence is enabled, restore it
+        if (enableCameraPersistence && savedCameraState) {
+          graphRef.current?.cameraPosition(
+            savedCameraState.position,
+            savedCameraState.lookAt,
+            0 // Instant transition
+          );
+        } else {
+          graphRef.current?.zoomToFit(400, 50);
+        }
       }, 500);
     }
-  }, [graphData.nodes.length]);
+  }, [graphData.nodes.length, enableCameraPersistence, savedCameraState]);
+
+  // Track camera position changes for persistence and LOD
+  useEffect(() => {
+    if (!graphRef.current) return;
+
+    const graph = graphRef.current;
+
+    // Set up a render loop callback to track camera and performance
+    const onFrame = () => {
+      if (!graph.camera) return;
+
+      const camera = graph.camera();
+      if (camera) {
+        const pos = camera.position;
+        cameraPositionRef.current = { x: pos.x, y: pos.y, z: pos.z };
+
+        // Save camera state for persistence
+        if (enableCameraPersistence) {
+          const controls = graph.controls?.();
+          const lookAt = controls?.target
+            ? { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+            : { x: 0, y: 0, z: 0 };
+
+          updateCameraState({
+            position: { x: pos.x, y: pos.y, z: pos.z },
+            lookAt,
+            zoom: pos.z,
+          });
+        }
+
+        // Record frame time for LOD manager
+        if (lodManager) {
+          lodManager.recordFrameTime();
+        }
+      }
+
+      // Performance monitoring frame callbacks
+      if (showPerformanceOverlay || enableAdaptiveLOD) {
+        frameEnd();
+        frameStart();
+        updateVisibleCounts(graphData.nodes.length, graphData.links.length);
+      }
+    };
+
+    // Hook into the render loop via requestAnimationFrame
+    let animationFrameId: number;
+    const animate = () => {
+      onFrame();
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [
+    enableCameraPersistence,
+    updateCameraState,
+    showPerformanceOverlay,
+    enableAdaptiveLOD,
+    lodManager,
+    frameStart,
+    frameEnd,
+    updateVisibleCounts,
+    graphData.nodes.length,
+    graphData.links.length,
+  ]);
 
   if (!visible) {
     return null;
@@ -559,6 +736,92 @@ export function ForceGraph3DVisualization({
         // Reduce physics complexity for large graphs
         d3AlphaMin={graphData.nodes.length > 500 ? 0.01 : 0.001}
       />
+
+      {/* Performance Overlay */}
+      {showPerformanceOverlay && performanceStats.isMonitoring && (
+        <Box
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            borderRadius: 'var(--mantine-radius-sm)',
+            padding: '8px 12px',
+            color: '#fff',
+            fontSize: 'var(--mantine-font-size-xs)',
+            fontFamily: 'monospace',
+            zIndex: 10,
+            minWidth: 140,
+          }}
+        >
+          <Stack gap={4}>
+            <Group gap={8} justify="space-between">
+              <Group gap={4}>
+                <IconActivity size={14} />
+                <Text size="xs" fw={500}>Performance</Text>
+              </Group>
+              <Badge
+                size="xs"
+                color={
+                  performanceStats.performanceLevel === 'good'
+                    ? 'green'
+                    : performanceStats.performanceLevel === 'ok'
+                      ? 'yellow'
+                      : 'red'
+                }
+              >
+                {performanceStats.performanceLevel.toUpperCase()}
+              </Badge>
+            </Group>
+            <Group gap={8} justify="space-between">
+              <Text size="xs" c="dimmed">FPS:</Text>
+              <Text
+                size="xs"
+                fw={500}
+                style={{ color: getPerformanceLevelColor(performanceStats.performanceLevel) }}
+              >
+                {performanceStats.fps}
+              </Text>
+            </Group>
+            <Group gap={8} justify="space-between">
+              <Text size="xs" c="dimmed">Frame:</Text>
+              <Text size="xs">{performanceStats.avgFrameTime.toFixed(1)}ms</Text>
+            </Group>
+            <Group gap={8} justify="space-between">
+              <Text size="xs" c="dimmed">Nodes:</Text>
+              <Text size="xs">{performanceStats.visibleNodes}</Text>
+            </Group>
+            <Group gap={8} justify="space-between">
+              <Text size="xs" c="dimmed">Edges:</Text>
+              <Text size="xs">{performanceStats.visibleEdges}</Text>
+            </Group>
+            {performanceStats.jankScore > 10 && (
+              <Group gap={8} justify="space-between">
+                <Text size="xs" c="dimmed">Jank:</Text>
+                <Text size="xs" c="red">{performanceStats.jankScore}%</Text>
+              </Group>
+            )}
+            {performanceStats.memoryMB !== null && (
+              <Group gap={8} justify="space-between">
+                <Text size="xs" c="dimmed">Memory:</Text>
+                <Text size="xs">{performanceStats.memoryMB}MB</Text>
+              </Group>
+            )}
+            {enableAdaptiveLOD && lodManager && (
+              <Group gap={8} justify="space-between">
+                <Text size="xs" c="dimmed">LOD:</Text>
+                <Text size="xs">
+                  {lodManager.getGlobalLOD() === LODLevel.HIGH
+                    ? 'HIGH'
+                    : lodManager.getGlobalLOD() === LODLevel.MEDIUM
+                      ? 'MED'
+                      : 'LOW'}
+                </Text>
+              </Group>
+            )}
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 }

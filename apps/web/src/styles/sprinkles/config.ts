@@ -58,17 +58,17 @@ const cssPropertyMap: Record<string, string> = {
   'xl': 'xl',
 };
 
-// Color token mapping
+// Color token mapping - all colors use CSS variables for proper theme support
 const colorTokenMap: Record<string, string> = {
-  'dimmed': '#868e96',
-  'border': '#dee2e6',
-  'background': '#ffffff',
+  'dimmed': 'var(--mantine-color-dimmed)',
+  'border': 'var(--mantine-color-default-border)',
+  'background': 'var(--mantine-color-body)',
   'normal': 'all 0.2s ease',
-  'text': '#212529',
+  'text': 'var(--mantine-color-text)',
   'textPrimary': 'var(--mantine-color-gray-9)',
   'textSecondary': 'var(--mantine-color-gray-6)',
   'textMuted': 'var(--mantine-color-gray-5)',
-  'bg': 'var(--mantine-color-white)',
+  'bg': 'var(--mantine-color-body)',
   'bgHover': 'var(--mantine-color-gray-0)',
   'primary': 'var(--mantine-color-blue-6)',
   'primaryHover': 'var(--mantine-color-blue-7)',

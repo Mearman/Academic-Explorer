@@ -228,7 +228,7 @@ export const createButtonStyles = (
  */
 export const applyDynamicTheme = (element: HTMLElement, theme: any) => {
   const vars = {
-    [dynamicThemeVars.colors.primary]: theme.colors?.primary || '#3b82f6',
+    [dynamicThemeVars.colors.primary]: theme.colors?.primary || 'var(--mantine-color-blue-6)',
     [dynamicThemeVars.spacing.md]: theme.spacing?.md || '16px',
     [dynamicThemeVars.borderRadius.md]: theme.borderRadius?.md || '8px',
   };
@@ -306,26 +306,27 @@ export const createThemeValue = (key: string, value: string) => {
 
 /**
  * Get component library theme configuration
+ * Uses CSS variables for proper theme/dark mode support
  */
 export const getComponentLibraryTheme = (library: ComponentLibrary) => {
   const themes = {
     mantine: {
-      primary: '#339af0',
-      primaryHover: '#1c7ed6',
-      background: '#ffffff',
-      border: '#dee2e6',
+      primary: 'var(--mantine-color-blue-6)',
+      primaryHover: 'var(--mantine-color-blue-7)',
+      background: 'var(--mantine-color-body)',
+      border: 'var(--mantine-color-default-border)',
     },
     shadcn: {
-      primary: '#3b82f6',
-      primaryHover: '#2563eb',
-      background: '#ffffff',
-      border: '#e2e8f0',
+      primary: 'var(--mantine-color-blue-5)',
+      primaryHover: 'var(--mantine-color-blue-6)',
+      background: 'var(--mantine-color-body)',
+      border: 'var(--mantine-color-default-border)',
     },
     radix: {
-      primary: '#64748b',
-      primaryHover: '#475569',
-      background: '#ffffff',
-      border: '#f1f5f9',
+      primary: 'var(--mantine-color-gray-6)',
+      primaryHover: 'var(--mantine-color-gray-7)',
+      background: 'var(--mantine-color-body)',
+      border: 'var(--mantine-color-default-border)',
     },
   };
 

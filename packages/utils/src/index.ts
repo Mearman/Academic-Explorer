@@ -30,6 +30,7 @@ export * from "./cache-browser/index";
 export * from "./environment/index";
 export * from "./formatters/index";
 export * from "./hooks/index";
+export * from "./spatial/index";
 export * from "./state/index";
 export * from "./static-data/index";
 export * from "./storage/index";

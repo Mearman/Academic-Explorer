@@ -1,0 +1,600 @@
+/**
+ * Octree - 3D spatial indexing data structure
+ *
+ * Provides efficient spatial queries for 3D point data:
+ * - Point insertion and removal
+ * - Range queries (find all points in a bounding box)
+ * - Nearest neighbor queries
+ * - Ray intersection queries
+ *
+ * Used for optimizing 3D graph visualization operations like:
+ * - Frustum culling (determining visible nodes)
+ * - Node selection (finding nodes near a click point)
+ * - Collision detection
+ */
+
+import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+
+/**
+ * Item stored in the octree with associated data
+ */
+export interface OctreeItem<T> {
+  position: Position3D;
+  data: T;
+}
+
+/**
+ * Octree configuration options
+ */
+export interface OctreeConfig {
+  /** Maximum items per node before subdivision (default: 8) */
+  maxItems?: number;
+  /** Maximum depth of the tree (default: 8) */
+  maxDepth?: number;
+  /** Minimum node size (default: 1) */
+  minSize?: number;
+}
+
+const DEFAULT_CONFIG: Required<OctreeConfig> = {
+  maxItems: 8,
+  maxDepth: 8,
+  minSize: 1,
+};
+
+/**
+ * Octree node representing a cubic region of 3D space
+ */
+class OctreeNode<T> {
+  bounds: BoundingBox3D;
+  items: OctreeItem<T>[];
+  children: OctreeNode<T>[] | null;
+  depth: number;
+
+  constructor(bounds: BoundingBox3D, depth: number) {
+    this.bounds = bounds;
+    this.items = [];
+    this.children = null;
+    this.depth = depth;
+  }
+
+  /**
+   * Check if this node is a leaf (no children)
+   */
+  isLeaf(): boolean {
+    return this.children === null;
+  }
+
+  /**
+   * Get the center point of this node's bounds
+   */
+  getCenter(): Position3D {
+    return {
+      x: (this.bounds.min.x + this.bounds.max.x) / 2,
+      y: (this.bounds.min.y + this.bounds.max.y) / 2,
+      z: (this.bounds.min.z + this.bounds.max.z) / 2,
+    };
+  }
+
+  /**
+   * Get the size of this node
+   */
+  getSize(): number {
+    return this.bounds.max.x - this.bounds.min.x;
+  }
+}
+
+/**
+ * Octree spatial index for 3D points
+ */
+export class Octree<T> {
+  private root: OctreeNode<T>;
+  private config: Required<OctreeConfig>;
+  private itemCount: number;
+
+  /**
+   * Create a new Octree
+   *
+   * @param bounds - The bounding box containing all points
+   * @param config - Configuration options
+   */
+  constructor(bounds: BoundingBox3D, config: OctreeConfig = {}) {
+    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.root = new OctreeNode<T>(bounds, 0);
+    this.itemCount = 0;
+  }
+
+  /**
+   * Get the number of items in the tree
+   */
+  get size(): number {
+    return this.itemCount;
+  }
+
+  /**
+   * Get the bounds of the octree
+   */
+  get bounds(): BoundingBox3D {
+    return this.root.bounds;
+  }
+
+  /**
+   * Insert an item into the octree
+   *
+   * @param position - 3D position of the item
+   * @param data - Associated data
+   * @returns true if inserted successfully
+   */
+  insert(position: Position3D, data: T): boolean {
+    if (!this.containsPoint(this.root.bounds, position)) {
+      return false;
+    }
+
+    this.insertIntoNode(this.root, { position, data });
+    this.itemCount++;
+    return true;
+  }
+
+  /**
+   * Remove an item from the octree
+   *
+   * @param position - Position of the item to remove
+   * @param data - Data to match (uses reference equality)
+   * @returns true if removed successfully
+   */
+  remove(position: Position3D, data: T): boolean {
+    const removed = this.removeFromNode(this.root, position, data);
+    if (removed) {
+      this.itemCount--;
+    }
+    return removed;
+  }
+
+  /**
+   * Clear all items from the octree
+   */
+  clear(): void {
+    this.root = new OctreeNode<T>(this.root.bounds, 0);
+    this.itemCount = 0;
+  }
+
+  /**
+   * Query all items within a bounding box
+   *
+   * @param queryBounds - The bounding box to search within
+   * @returns Array of items within the bounds
+   */
+  queryRange(queryBounds: BoundingBox3D): OctreeItem<T>[] {
+    const results: OctreeItem<T>[] = [];
+    this.queryRangeNode(this.root, queryBounds, results);
+    return results;
+  }
+
+  /**
+   * Query all items within a sphere
+   *
+   * @param center - Center of the sphere
+   * @param radius - Radius of the sphere
+   * @returns Array of items within the sphere
+   */
+  querySphere(center: Position3D, radius: number): OctreeItem<T>[] {
+    // First query the bounding box of the sphere for efficiency
+    const sphereBounds: BoundingBox3D = {
+      min: {
+        x: center.x - radius,
+        y: center.y - radius,
+        z: center.z - radius,
+      },
+      max: {
+        x: center.x + radius,
+        y: center.y + radius,
+        z: center.z + radius,
+      },
+    };
+
+    const candidates = this.queryRange(sphereBounds);
+    const radiusSquared = radius * radius;
+
+    return candidates.filter(item => {
+      const dx = item.position.x - center.x;
+      const dy = item.position.y - center.y;
+      const dz = item.position.z - center.z;
+      return dx * dx + dy * dy + dz * dz <= radiusSquared;
+    });
+  }
+
+  /**
+   * Find the nearest neighbor to a point
+   *
+   * @param point - The query point
+   * @param maxDistance - Maximum search distance (optional)
+   * @returns The nearest item or null if none found
+   */
+  findNearest(point: Position3D, maxDistance?: number): OctreeItem<T> | null {
+    let nearest: OctreeItem<T> | null = null;
+    let nearestDistSq = maxDistance !== undefined ? maxDistance * maxDistance : Infinity;
+
+    this.findNearestNode(this.root, point, (item, distSq) => {
+      if (distSq < nearestDistSq) {
+        nearest = item;
+        nearestDistSq = distSq;
+      }
+    });
+
+    return nearest;
+  }
+
+  /**
+   * Find the k nearest neighbors to a point
+   *
+   * @param point - The query point
+   * @param k - Number of neighbors to find
+   * @param maxDistance - Maximum search distance (optional)
+   * @returns Array of nearest items sorted by distance
+   */
+  findKNearest(point: Position3D, k: number, maxDistance?: number): OctreeItem<T>[] {
+    const candidates: Array<{ item: OctreeItem<T>; distSq: number }> = [];
+    const maxDistSq = maxDistance !== undefined ? maxDistance * maxDistance : Infinity;
+
+    this.findNearestNode(this.root, point, (item, distSq) => {
+      if (distSq <= maxDistSq) {
+        candidates.push({ item, distSq });
+      }
+    });
+
+    // Sort by distance and return top k
+    candidates.sort((a, b) => a.distSq - b.distSq);
+    return candidates.slice(0, k).map(c => c.item);
+  }
+
+  /**
+   * Query items that intersect a ray
+   *
+   * @param origin - Ray origin
+   * @param direction - Ray direction (should be normalized)
+   * @param maxDistance - Maximum distance along ray
+   * @returns Array of items that intersect the ray
+   */
+  queryRay(
+    origin: Position3D,
+    direction: Position3D,
+    maxDistance: number = Infinity
+  ): OctreeItem<T>[] {
+    const results: OctreeItem<T>[] = [];
+    this.queryRayNode(this.root, origin, direction, maxDistance, results);
+    return results;
+  }
+
+  /**
+   * Get all items in the octree
+   */
+  getAllItems(): OctreeItem<T>[] {
+    const results: OctreeItem<T>[] = [];
+    this.collectAllItems(this.root, results);
+    return results;
+  }
+
+  /**
+   * Rebuild the octree with new bounds
+   *
+   * @param newBounds - New bounding box
+   */
+  rebuild(newBounds: BoundingBox3D): void {
+    const items = this.getAllItems();
+    this.root = new OctreeNode<T>(newBounds, 0);
+    this.itemCount = 0;
+
+    for (const item of items) {
+      this.insert(item.position, item.data);
+    }
+  }
+
+  // Private methods
+
+  private insertIntoNode(node: OctreeNode<T>, item: OctreeItem<T>): void {
+    // If node is a leaf
+    if (node.isLeaf()) {
+      // Add item if under capacity or at max depth
+      if (node.items.length < this.config.maxItems || node.depth >= this.config.maxDepth) {
+        node.items.push(item);
+        return;
+      }
+
+      // Check if node is too small to subdivide
+      if (node.getSize() <= this.config.minSize) {
+        node.items.push(item);
+        return;
+      }
+
+      // Subdivide and redistribute items
+      this.subdivide(node);
+    }
+
+    // Insert into appropriate child
+    const childIndex = this.getChildIndex(node, item.position);
+    if (node.children) {
+      this.insertIntoNode(node.children[childIndex], item);
+    }
+  }
+
+  private subdivide(node: OctreeNode<T>): void {
+    const center = node.getCenter();
+    const min = node.bounds.min;
+    const max = node.bounds.max;
+
+    // Create 8 children (octants)
+    node.children = [
+      // Bottom layer (z < center)
+      new OctreeNode<T>({ min: { x: min.x, y: min.y, z: min.z }, max: { x: center.x, y: center.y, z: center.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: center.x, y: min.y, z: min.z }, max: { x: max.x, y: center.y, z: center.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: min.x, y: center.y, z: min.z }, max: { x: center.x, y: max.y, z: center.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: center.x, y: center.y, z: min.z }, max: { x: max.x, y: max.y, z: center.z } }, node.depth + 1),
+      // Top layer (z >= center)
+      new OctreeNode<T>({ min: { x: min.x, y: min.y, z: center.z }, max: { x: center.x, y: center.y, z: max.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: center.x, y: min.y, z: center.z }, max: { x: max.x, y: center.y, z: max.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: min.x, y: center.y, z: center.z }, max: { x: center.x, y: max.y, z: max.z } }, node.depth + 1),
+      new OctreeNode<T>({ min: { x: center.x, y: center.y, z: center.z }, max: { x: max.x, y: max.y, z: max.z } }, node.depth + 1),
+    ];
+
+    // Redistribute existing items to children
+    for (const item of node.items) {
+      const childIndex = this.getChildIndex(node, item.position);
+      this.insertIntoNode(node.children[childIndex], item);
+    }
+
+    // Clear items from this node (no longer a leaf)
+    node.items = [];
+  }
+
+  private getChildIndex(node: OctreeNode<T>, position: Position3D): number {
+    const center = node.getCenter();
+    let index = 0;
+
+    if (position.x >= center.x) index |= 1;
+    if (position.y >= center.y) index |= 2;
+    if (position.z >= center.z) index |= 4;
+
+    return index;
+  }
+
+  private removeFromNode(node: OctreeNode<T>, position: Position3D, data: T): boolean {
+    if (node.isLeaf()) {
+      const index = node.items.findIndex(
+        item => item.data === data &&
+          item.position.x === position.x &&
+          item.position.y === position.y &&
+          item.position.z === position.z
+      );
+
+      if (index !== -1) {
+        node.items.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+
+    if (node.children) {
+      const childIndex = this.getChildIndex(node, position);
+      return this.removeFromNode(node.children[childIndex], position, data);
+    }
+
+    return false;
+  }
+
+  private queryRangeNode(
+    node: OctreeNode<T>,
+    queryBounds: BoundingBox3D,
+    results: OctreeItem<T>[]
+  ): void {
+    // Skip if node doesn't intersect query
+    if (!this.boundsIntersect(node.bounds, queryBounds)) {
+      return;
+    }
+
+    // Check items in this node
+    for (const item of node.items) {
+      if (this.containsPoint(queryBounds, item.position)) {
+        results.push(item);
+      }
+    }
+
+    // Recurse into children
+    if (node.children) {
+      for (const child of node.children) {
+        this.queryRangeNode(child, queryBounds, results);
+      }
+    }
+  }
+
+  private findNearestNode(
+    node: OctreeNode<T>,
+    point: Position3D,
+    callback: (item: OctreeItem<T>, distSq: number) => void
+  ): void {
+    // Check items in this node
+    for (const item of node.items) {
+      const distSq = this.distanceSquared(point, item.position);
+      callback(item, distSq);
+    }
+
+    // Recurse into children, prioritizing closer ones
+    if (node.children) {
+      // Sort children by distance to query point
+      const sortedChildren = node.children
+        .map((child, index) => ({
+          child,
+          index,
+          distSq: this.distanceToNodeSquared(point, child.bounds),
+        }))
+        .sort((a, b) => a.distSq - b.distSq);
+
+      for (const { child } of sortedChildren) {
+        this.findNearestNode(child, point, callback);
+      }
+    }
+  }
+
+  private queryRayNode(
+    node: OctreeNode<T>,
+    origin: Position3D,
+    direction: Position3D,
+    maxDistance: number,
+    results: OctreeItem<T>[]
+  ): void {
+    // Skip if ray doesn't intersect node bounds
+    if (!this.rayIntersectsBounds(origin, direction, maxDistance, node.bounds)) {
+      return;
+    }
+
+    // Check items in this node
+    for (const item of node.items) {
+      // Simple proximity check for now (could be improved with exact ray-point distance)
+      const dist = this.pointToRayDistance(item.position, origin, direction);
+      if (dist < 10) { // Configurable threshold
+        results.push(item);
+      }
+    }
+
+    // Recurse into children
+    if (node.children) {
+      for (const child of node.children) {
+        this.queryRayNode(child, origin, direction, maxDistance, results);
+      }
+    }
+  }
+
+  private collectAllItems(node: OctreeNode<T>, results: OctreeItem<T>[]): void {
+    results.push(...node.items);
+
+    if (node.children) {
+      for (const child of node.children) {
+        this.collectAllItems(child, results);
+      }
+    }
+  }
+
+  private containsPoint(bounds: BoundingBox3D, point: Position3D): boolean {
+    return (
+      point.x >= bounds.min.x && point.x <= bounds.max.x &&
+      point.y >= bounds.min.y && point.y <= bounds.max.y &&
+      point.z >= bounds.min.z && point.z <= bounds.max.z
+    );
+  }
+
+  private boundsIntersect(a: BoundingBox3D, b: BoundingBox3D): boolean {
+    return (
+      a.min.x <= b.max.x && a.max.x >= b.min.x &&
+      a.min.y <= b.max.y && a.max.y >= b.min.y &&
+      a.min.z <= b.max.z && a.max.z >= b.min.z
+    );
+  }
+
+  private distanceSquared(a: Position3D, b: Position3D): number {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const dz = a.z - b.z;
+    return dx * dx + dy * dy + dz * dz;
+  }
+
+  private distanceToNodeSquared(point: Position3D, bounds: BoundingBox3D): number {
+    // Find closest point on bounds to query point
+    const closest: Position3D = {
+      x: Math.max(bounds.min.x, Math.min(point.x, bounds.max.x)),
+      y: Math.max(bounds.min.y, Math.min(point.y, bounds.max.y)),
+      z: Math.max(bounds.min.z, Math.min(point.z, bounds.max.z)),
+    };
+    return this.distanceSquared(point, closest);
+  }
+
+  private rayIntersectsBounds(
+    origin: Position3D,
+    direction: Position3D,
+    maxDistance: number,
+    bounds: BoundingBox3D
+  ): boolean {
+    // Simplified AABB-ray intersection test
+    let tMin = 0;
+    let tMax = maxDistance;
+
+    for (const axis of ['x', 'y', 'z'] as const) {
+      const invD = 1 / direction[axis];
+      let t0 = (bounds.min[axis] - origin[axis]) * invD;
+      let t1 = (bounds.max[axis] - origin[axis]) * invD;
+
+      if (invD < 0) {
+        [t0, t1] = [t1, t0];
+      }
+
+      tMin = Math.max(tMin, t0);
+      tMax = Math.min(tMax, t1);
+
+      if (tMax < tMin) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private pointToRayDistance(point: Position3D, origin: Position3D, direction: Position3D): number {
+    // Vector from origin to point
+    const v: Position3D = {
+      x: point.x - origin.x,
+      y: point.y - origin.y,
+      z: point.z - origin.z,
+    };
+
+    // Project v onto direction
+    const dot = v.x * direction.x + v.y * direction.y + v.z * direction.z;
+
+    // Closest point on ray
+    const closest: Position3D = {
+      x: origin.x + direction.x * dot,
+      y: origin.y + direction.y * dot,
+      z: origin.z + direction.z * dot,
+    };
+
+    return Math.sqrt(this.distanceSquared(point, closest));
+  }
+}
+
+/**
+ * Create an octree from an array of positioned items
+ */
+export function createOctreeFromItems<T>(
+  items: Array<{ position: Position3D; data: T }>,
+  config?: OctreeConfig
+): Octree<T> {
+  if (items.length === 0) {
+    return new Octree<T>(
+      { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
+      config
+    );
+  }
+
+  // Calculate bounds from items
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+
+  for (const item of items) {
+    minX = Math.min(minX, item.position.x);
+    minY = Math.min(minY, item.position.y);
+    minZ = Math.min(minZ, item.position.z);
+    maxX = Math.max(maxX, item.position.x);
+    maxY = Math.max(maxY, item.position.y);
+    maxZ = Math.max(maxZ, item.position.z);
+  }
+
+  // Add padding to bounds
+  const padding = Math.max(maxX - minX, maxY - minY, maxZ - minZ) * 0.1;
+  const bounds: BoundingBox3D = {
+    min: { x: minX - padding, y: minY - padding, z: minZ - padding },
+    max: { x: maxX + padding, y: maxY + padding, z: maxZ + padding },
+  };
+
+  const octree = new Octree<T>(bounds, config);
+  for (const item of items) {
+    octree.insert(item.position, item.data);
+  }
+
+  return octree;
+}
