@@ -19,7 +19,7 @@ export const radixComponents = {
           cursor: 'not-allowed',
         },
         '&:focus-visible': {
-          outline: '2px solid hsl(var(--shadcn-ring))',
+          outline: '2px solid var(--mantine-color-blue-6)',
           outlineOffset: '2px',
         },
       },
@@ -68,9 +68,9 @@ export const radixComponents = {
         border: '1px solid #ccc',
         padding: '0 8px',
         '&:focus': {
-          outline: '2px solid hsl(var(--shadcn-ring))',
+          outline: '2px solid var(--mantine-color-blue-6)',
           outlineOffset: '2px',
-          borderColor: 'hsl(var(--shadcn-ring))',
+          borderColor: 'var(--mantine-color-blue-6)',
         },
         '&:disabled': {
           opacity: '0.5',
@@ -93,9 +93,9 @@ export const radixComponents = {
         border: '1px solid #ccc',
         padding: '0 8px',
         '&:focus': {
-          outline: '2px solid hsl(var(--shadcn-ring))',
+          outline: '2px solid var(--mantine-color-blue-6)',
           outlineOffset: '2px',
-          borderColor: 'hsl(var(--shadcn-ring))',
+          borderColor: 'var(--mantine-color-blue-6)',
         },
         '&:disabled': {
           opacity: '0.5',
@@ -118,9 +118,9 @@ export const radixComponents = {
         padding: '8px',
         resize: 'vertical',
         '&:focus': {
-          outline: '2px solid hsl(var(--shadcn-ring))',
+          outline: '2px solid var(--mantine-color-blue-6)',
           outlineOffset: '2px',
-          borderColor: 'hsl(var(--shadcn-ring))',
+          borderColor: 'var(--mantine-color-blue-6)',
         },
         '&:disabled': {
           opacity: '0.5',
@@ -355,7 +355,7 @@ export const radixComponents = {
           backgroundColor: 'var(--accordion-control-bg-hover)',
         },
         '&:focus-visible': {
-          outline: '2px solid hsl(var(--shadcn-ring))',
+          outline: '2px solid var(--mantine-color-blue-6)',
           outlineOffset: '2px',
         },
       },
