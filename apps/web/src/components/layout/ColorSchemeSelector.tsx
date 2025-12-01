@@ -12,12 +12,7 @@ import { useState, useEffect } from 'react'
 import { SplitButton } from '@/components/ui/SplitButton'
 import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 import { useTheme } from '@/contexts/theme-context'
-import {
-  gridLayout,
-  menuItem,
-  colorSwatch,
-  textUppercase
-} from '@/styles/common.css'
+import { sprinkles } from '@/styles/sprinkles'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 
@@ -157,20 +152,21 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
       </Menu.Label>
 
       <Box p="xs">
-        <div className={gridLayout({ columns: 3, gap: 'xs' })}>
+        <div className={sprinkles({ gridColumns: '3', gridGap: 'xs' })}>
           {shadcnPaletteNames.map((palette) => (
             <Menu.Item
               key={palette}
               onClick={() => handlePaletteChange(palette)}
-              className={menuItem({
-                selected: selectedPalette === palette,
-                gap: 'xs'
+              className={sprinkles({
+                menuItem: true,
+                menuItemSelected: selectedPalette === palette
               })}
             >
               <Box
-                className={colorSwatch({
-                  size: 'sm',
-                  selected: selectedPalette === palette
+                className={sprinkles({
+                  colorSwatch: true,
+                  colorSwatchSize: 'sm',
+                  colorSwatchSelected: selectedPalette === palette
                 })}
                 bg={palette}
               />
@@ -251,14 +247,14 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
         </Group>
       </Menu.Label>
       <Box p="xs">
-        <div className={gridLayout({ columns: 3, gap: 'xs' })}>
+        <div className={sprinkles({ gridColumns: '3', gridGap: 'xs' })}>
           {BORDER_RADIUS_OPTIONS.map((radius) => (
             <Menu.Item
               key={radius.value}
               onClick={() => setBorderRadius(radius.value)}
-              className={menuItem({
-                selected: config.borderRadius === radius.value,
-                gap: 'xs'
+              className={sprinkles({
+                menuItem: true,
+                menuItemSelected: config.borderRadius === radius.value
               })}
             >
               <Box
@@ -266,15 +262,16 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
                 h={12}
                 bg="gray"
                 style={{ borderRadius: `${radius.size}px` }}
-                className={colorSwatch({
-                  size: 'sm',
-                  selected: config.borderRadius === radius.value
+                className={sprinkles({
+                  colorSwatch: true,
+                  colorSwatchSize: 'sm',
+                  colorSwatchSelected: config.borderRadius === radius.value
                 })}
               />
               <Text
                 size="xs"
                 fw={config.borderRadius === radius.value ? 600 : 400}
-                className={textUppercase}
+                className={sprinkles({ textTransform: 'uppercase' })}
               >
                 {radius.label}
               </Text>
@@ -293,7 +290,7 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
       {/* Reset to Defaults */}
       <Menu.Item
         onClick={resetTheme}
-        className={menuItem({ gap: 'sm' })}
+        className={sprinkles({ menuItem: true })}
         c="red"
         fw={500}
       >
@@ -320,7 +317,7 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
               {COLOR_SCHEME_LABELS[config.colorMode].label}
             </Text>
             <Box
-              className={colorSwatch({ size: 'xs' })}
+              className={sprinkles({ colorSwatch: true, colorSwatchSize: 'xs' })}
               bg={selectedPalette || 'gray'}
             />
           </Group>
