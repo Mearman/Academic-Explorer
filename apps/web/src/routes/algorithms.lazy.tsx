@@ -758,25 +758,131 @@ function AlgorithmsPage() {
         maxZ = Math.max(maxZ, pos.z);
       });
 
-      // Calculate centroid and dimensions
-      const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
-      const centerZ = (minZ + maxZ) / 2;
+      // Calculate centroid
+      const n = matchedPositions.length;
+      let centerX = 0, centerY = 0, centerZ = 0;
+      matchedPositions.forEach((pos) => {
+        centerX += pos.x;
+        centerY += pos.y;
+        centerZ += pos.z;
+      });
+      centerX /= n;
+      centerY /= n;
+      centerZ /= n;
+
+      // Calculate dimensions for distance
       const width = maxX - minX;
       const height = maxY - minY;
       const depth = maxZ - minZ;
-
-      // Calculate camera distance to fit the bounding box
       const maxDimension = Math.max(width, height, depth, 50);
       const cameraDistance = maxDimension * 1.5 + 100;
 
+      // Find optimal viewing direction using PCA
+      // Compute covariance matrix
+      let cxx = 0, cxy = 0, cxz = 0, cyy = 0, cyz = 0, czz = 0;
+      matchedPositions.forEach((pos) => {
+        const dx = pos.x - centerX;
+        const dy = pos.y - centerY;
+        const dz = pos.z - centerZ;
+        cxx += dx * dx;
+        cxy += dx * dy;
+        cxz += dx * dz;
+        cyy += dy * dy;
+        cyz += dy * dz;
+        czz += dz * dz;
+      });
+      cxx /= n; cxy /= n; cxz /= n; cyy /= n; cyz /= n; czz /= n;
+
+      // Find the eigenvector with smallest eigenvalue using power iteration
+      // This gives us the direction of least variance (the "thin" axis)
+      // We want to view from this direction to see the largest cross-section
+      let viewDir = { x: 0, y: 0, z: 1 }; // Default to z-axis
+
+      if (n >= 3) {
+        // Use power iteration to find the two largest eigenvectors of the covariance matrix
+        // The cross product gives us the direction of least variance (smallest eigenvector)
+        // This is the optimal viewing direction to see the largest cross-sectional area
+
+        // Power iteration for largest eigenvector (direction of most spread)
+        let vx = 1, vy = 0.5, vz = 0.3;
+        for (let iter = 0; iter < 20; iter++) {
+          const newX = cxx * vx + cxy * vy + cxz * vz;
+          const newY = cxy * vx + cyy * vy + cyz * vz;
+          const newZ = cxz * vx + cyz * vy + czz * vz;
+          const mag = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
+          if (mag > 0.0001) {
+            vx = newX / mag;
+            vy = newY / mag;
+            vz = newZ / mag;
+          }
+        }
+
+        // vx, vy, vz is now the direction of maximum variance
+        // For a second eigenvector, we deflate and iterate again
+        let ux = 0.3, uy = 1, uz = 0.5;
+        // Make orthogonal to first
+        const dot1 = ux * vx + uy * vy + uz * vz;
+        ux -= dot1 * vx;
+        uy -= dot1 * vy;
+        uz -= dot1 * vz;
+        let mag = Math.sqrt(ux * ux + uy * uy + uz * uz);
+        if (mag > 0.0001) {
+          ux /= mag; uy /= mag; uz /= mag;
+        }
+
+        for (let iter = 0; iter < 20; iter++) {
+          let newX = cxx * ux + cxy * uy + cxz * uz;
+          let newY = cxy * ux + cyy * uy + cyz * uz;
+          let newZ = cxz * ux + cyz * uy + czz * uz;
+          // Project out first eigenvector
+          const dot = newX * vx + newY * vy + newZ * vz;
+          newX -= dot * vx;
+          newY -= dot * vy;
+          newZ -= dot * vz;
+          mag = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
+          if (mag > 0.0001) {
+            ux = newX / mag;
+            uy = newY / mag;
+            uz = newZ / mag;
+          }
+        }
+
+        // The third eigenvector (smallest variance) is the cross product of the first two
+        viewDir = {
+          x: vy * uz - vz * uy,
+          y: vz * ux - vx * uz,
+          z: vx * uy - vy * ux,
+        };
+
+        // Normalize
+        mag = Math.sqrt(viewDir.x ** 2 + viewDir.y ** 2 + viewDir.z ** 2);
+        if (mag > 0.0001) {
+          viewDir.x /= mag;
+          viewDir.y /= mag;
+          viewDir.z /= mag;
+        }
+
+        // Prefer camera to be "above" (positive y component) for intuitive viewing
+        if (viewDir.y < 0) {
+          viewDir.x = -viewDir.x;
+          viewDir.y = -viewDir.y;
+          viewDir.z = -viewDir.z;
+        }
+      }
+
       console.log('[fitToViewSelected] 3D centroid:', { centerX, centerY, centerZ });
+      console.log('[fitToViewSelected] 3D viewDir:', viewDir);
       console.log('[fitToViewSelected] 3D cameraDistance:', cameraDistance);
+
+      // Position camera along the optimal viewing direction
+      const camX = centerX + viewDir.x * cameraDistance;
+      const camY = centerY + viewDir.y * cameraDistance;
+      const camZ = centerZ + viewDir.z * cameraDistance;
 
       // Use cameraPosition for smooth animation
       if (graph.cameraPosition) {
         graph.cameraPosition(
-          { x: centerX, y: centerY, z: centerZ + cameraDistance },
+          { x: camX, y: camY, z: camZ },
           { x: centerX, y: centerY, z: centerZ },
           400
         );
