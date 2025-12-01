@@ -1,6 +1,7 @@
 import { Button, ActionIcon, Group, GroupProps, Menu } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { forwardRef } from 'react'
+import { useTheme } from '@/contexts/theme-context'
 
 // Use intersection with record to allow any valid HTML button attributes
 interface SplitButtonProps {
@@ -39,6 +40,19 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
     dropdownItems,
     height = 34
   }, ref) => {
+    const { config } = useTheme()
+
+    // Get current theme border radius value
+    const getThemeBorderRadius = () => {
+      const radiusMap = {
+        xs: '4px',
+        sm: '8px',
+        md: '16px',
+        lg: '24px',
+        xl: '32px'
+      } as const
+      return radiusMap[config.borderRadius] || '16px'
+    }
 
     const defaultDropdownProps = {
       variant: 'outline' as const,
@@ -52,7 +66,10 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
     const defaultGroupProps: GroupProps = {
       gap: 0,
       miw: 120,
-      style: { height: `${height}px` }
+      style: {
+        height: `${height}px`,
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
+      }
     }
 
     const mergedDropdownProps = { ...defaultDropdownProps, ...dropdownButtonProps }
@@ -71,19 +88,33 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
             {...mainButtonProps}
             h={height}
             color={mainButtonColor}
-            styles={() => ({
-              root: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                borderRightWidth: 0,
-                flex: 1,
-                height: `${height}px`
-              },
-              inner: {
-                justifyContent: 'flex-start',
-                height: `${height}px`
+            styles={() => {
+              const currentRadius = getThemeBorderRadius()
+              return {
+                root: {
+                  borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                  borderTopRightRadius: '0px !important',
+                  borderBottomRightRadius: '0px !important',
+                  borderRightWidth: 0,
+                  flex: 1,
+                  height: `${height}px`,
+                  borderStyle: 'solid',
+                  transition: 'all 0.15s ease-in-out',
+                  marginRight: '-1px', // Compensate for border overlap
+                  '&:hover': {
+                    backgroundColor: 'var(--mantine-color-blue-light-hover)',
+                    borderColor: 'var(--mantine-color-blue-light-hover)',
+                    zIndex: 1
+                  }
+                },
+                inner: {
+                  justifyContent: 'flex-start',
+                  height: `${height - 2}px`, // Account for borders
+                  paddingLeft: '8px',
+                  padding: '0 8px'
+                }
               }
-            })}
+            }}
           />
 
           {/* Dropdown arrow button */}
@@ -92,15 +123,33 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
             w={height}
             h={height}
             color={dropdownColor}
-            styles={() => ({
-              root: {
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                borderLeftWidth: 1,
-                height: `${height}px`,
-                width: `${height}px`
+            styles={() => {
+              const currentRadius = getThemeBorderRadius()
+              return {
+                root: {
+                  borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                  borderTopLeftRadius: '0px !important',
+                  borderBottomLeftRadius: '0px !important',
+                  borderLeftWidth: 1,
+                  height: `${height}px`,
+                  width: `${height}px`,
+                  borderStyle: 'solid',
+                  backgroundColor: 'var(--mantine-color-gray-1)',
+                  transition: 'all 0.15s ease-in-out',
+                  flexShrink: 0, // Prevent button from shrinking
+                  position: 'relative',
+                  zIndex: 2, // Ensure dropdown button is on top
+                  '&:hover': {
+                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    transform: 'scale(1.05)',
+                    zIndex: 3
+                  },
+                  '&:active': {
+                    transform: 'scale(0.95)'
+                  }
+                }
               }
-            })}
+            }}
           />
         </Group>
       )
@@ -116,19 +165,33 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
               {...mainButtonProps}
               h={height}
               color={mainButtonColor}
-              styles={() => ({
-                root: {
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                  borderRightWidth: 0,
-                  flex: 1,
-                  height: `${height}px`
-                },
-                inner: {
-                  justifyContent: 'flex-start',
-                  height: `${height}px`
+              styles={() => {
+                const currentRadius = getThemeBorderRadius()
+                return {
+                  root: {
+                    borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                    borderTopRightRadius: '0px !important',
+                    borderBottomRightRadius: '0px !important',
+                    borderRightWidth: 0,
+                    flex: 1,
+                    height: `${height}px`,
+                    borderStyle: 'solid',
+                    transition: 'all 0.15s ease-in-out',
+                    marginRight: '-1px', // Compensate for border overlap
+                    '&:hover': {
+                      backgroundColor: 'var(--mantine-color-blue-light-hover)',
+                      borderColor: 'var(--mantine-color-blue-light-hover)',
+                      zIndex: 1
+                    }
+                  },
+                  inner: {
+                    justifyContent: 'flex-start',
+                    height: `${height - 2}px`, // Account for borders
+                    paddingLeft: '8px',
+                    padding: '0 8px'
+                  }
                 }
-              })}
+              }}
             />
 
             {/* Dropdown arrow button */}
@@ -137,15 +200,33 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
               w={height}
               h={height}
               color={dropdownColor}
-              styles={() => ({
-                root: {
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                  borderLeftWidth: 1,
-                  height: `${height}px`,
-                  width: `${height}px`
+              styles={() => {
+                const currentRadius = getThemeBorderRadius()
+                return {
+                  root: {
+                    borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
+                    borderTopLeftRadius: '0px !important',
+                    borderBottomLeftRadius: '0px !important',
+                    borderLeftWidth: 1,
+                    height: `${height}px`,
+                    width: `${height}px`,
+                    borderStyle: 'solid',
+                    backgroundColor: 'var(--mantine-color-gray-1)',
+                    transition: 'all 0.15s ease-in-out',
+                    flexShrink: 0, // Prevent button from shrinking
+                    position: 'relative',
+                    zIndex: 2, // Ensure dropdown button is on top
+                    '&:hover': {
+                      backgroundColor: 'var(--mantine-color-gray-0)',
+                      transform: 'scale(1.05)',
+                      zIndex: 3
+                    },
+                    '&:active': {
+                      transform: 'scale(0.95)'
+                    }
+                  }
                 }
-              })}
+              }}
             />
           </Group>
         </Menu.Target>
