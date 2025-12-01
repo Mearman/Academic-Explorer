@@ -249,7 +249,7 @@ function ApiOpenAlexRoute() {
           ? `?${new URLSearchParams(routeSearch as Record<string, string>).toString()}`
           : ""}
       </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
+      <div style={{ marginTop: "20px", fontSize: "14px", color: "var(--mantine-color-dimmed)" }}>
         Detecting entity type and redirecting
       </div>
     </div>

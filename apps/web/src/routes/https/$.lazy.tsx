@@ -139,7 +139,7 @@ function HttpsRoute() {
       <div style={{ marginBottom: "20px" }}>
         https://{decodeURIComponent(externalId)}
       </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
+      <div style={{ marginTop: "20px", fontSize: "14px", color: "var(--mantine-color-dimmed)" }}>
         Detecting entity type and redirecting
       </div>
     </div>

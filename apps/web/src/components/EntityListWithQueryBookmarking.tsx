@@ -119,7 +119,7 @@ export function EntityListWithQueryBookmarking({
         <div style={{
           marginTop: "1rem",
           padding: "0.5rem",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "var(--mantine-color-gray-1)",
           borderRadius: "4px",
           fontSize: "12px",
           fontFamily: "monospace"

@@ -74,7 +74,7 @@ function RORInstitutionRoute() {
       <div
         style={{
           fontFamily: "monospace",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "var(--mantine-color-gray-1)",
           padding: "10px",
           borderRadius: "4px",
         }}
