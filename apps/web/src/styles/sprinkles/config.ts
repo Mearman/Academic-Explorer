@@ -40,6 +40,7 @@ export const paddingMd = style({ padding: 'var(--mantine-spacing-md)' });
 export const paddingLg = style({ padding: 'var(--mantine-spacing-lg)' });
 export const paddingXl = style({ padding: 'var(--mantine-spacing-xl)' });
 export const paddingNone = style({ padding: '0' });
+export const padding24 = style({ padding: '24px' });
 
 export const marginXs = style({ margin: 'var(--mantine-spacing-xs)' });
 export const marginSm = style({ margin: 'var(--mantine-spacing-sm)' });
@@ -113,6 +114,8 @@ export const cursorGrabbing = style({ cursor: 'grabbing' });
 export const cursorHelp = style({ cursor: 'help' });
 export const cursorResize = style({ cursor: 'ew-resize' });
 
+export const userSelectNone = style({ userSelect: 'none' });
+
 export const transitionFast = style({ transition: 'all 0.15s ease' });
 export const transitionNormal = style({ transition: 'all 0.2s ease' });
 export const transitionSlow = style({ transition: 'all 0.3s ease' });
@@ -122,6 +125,10 @@ export const widthFull = style({ width: '100%' });
 export const heightFull = style({ height: '100%' });
 export const minWidth0 = style({ minWidth: '0' });
 export const maxWidth100 = style({ maxWidth: '100%' });
+
+export const minWidth300 = style({ minWidth: '300px' });
+
+export const minHeight400 = style({ minHeight: '400px' });
 
 // Positioning utilities
 export const positionRelative = style({ position: 'relative' });
@@ -185,6 +192,7 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.padding === 'lg') classNames.push(paddingLg);
   if (styles.padding === 'xl') classNames.push(paddingXl);
   if (styles.padding === 'none') classNames.push(paddingNone);
+  if (styles.padding === '24px') classNames.push(padding24);
 
   if (styles.margin === 'xs') classNames.push(marginXs);
   if (styles.margin === 'sm') classNames.push(marginSm);
@@ -258,6 +266,8 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.cursor === 'help') classNames.push(cursorHelp);
   if (styles.cursor === 'resize') classNames.push(cursorResize);
 
+  if (styles.userSelect === 'none') classNames.push(userSelectNone);
+
   if (styles.transition === 'fast') classNames.push(transitionFast);
   if (styles.transition === 'normal') classNames.push(transitionNormal);
   if (styles.transition === 'slow') classNames.push(transitionSlow);
@@ -266,7 +276,9 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.width === 'full') classNames.push(widthFull);
   if (styles.height === 'full') classNames.push(heightFull);
   if (styles.minWidth === '0') classNames.push(minWidth0);
+  if (styles.minWidth === '300px') classNames.push(minWidth300);
   if (styles.maxWidth === '100%') classNames.push(maxWidth100);
+  if (styles.minHeight === '400px') classNames.push(minHeight400);
 
   // Positioning properties
   if (styles.position === 'relative') classNames.push(positionRelative);

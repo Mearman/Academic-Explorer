@@ -30,21 +30,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
 import { BORDER_GRAY_LIGHT } from "@/constants/styles";
-import {
-  tableMinWidth300,
-  textCenter,
-  padding24,
-  minHeight400,
-  positionAbsolute,
-  widthFull,
-  positionRelative,
-  cursorPointer,
-  tableHeaderCell,
-  tableRow,
-  virtualTableContainer,
-  virtualTableRow,
-  virtualTableCell,
-} from "@/styles/common.css";
+import { sprinkles } from "@/styles/sprinkles";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -156,7 +142,7 @@ export function BaseTable<T>({
           leftSection={<IconSearch size={16} />}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className={tableMinWidth300}
+          className={sprinkles({ minWidth: '300px' })}
         />
 
         <Group>
@@ -192,7 +178,10 @@ export function BaseTable<T>({
           {headerGroup.headers.map((header) => (
             <Table.Th
               key={header.id}
-              className={tableHeaderCell({ sortable: header.column.getCanSort() })}
+              className={sprinkles({
+                cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                userSelect: 'none'
+              })}
               onClick={header.column.getToggleSortingHandler()}
             >
               <Group gap="xs" justify="space-between">
@@ -226,7 +215,7 @@ export function BaseTable<T>({
     <Table.Tr>
       <Table.Td
         colSpan={colSpan}
-        className={`${textCenter} ${padding24}`}
+        className={sprinkles({ textAlign: 'center', padding: '24px' })}
       >
         <Text c="dimmed">No data available</Text>
       </Table.Td>
@@ -292,11 +281,24 @@ export function BaseTable<T>({
         key={row.id}
         type="button"
         aria-label={ariaLabel}
-        className={virtualTableRow({
-          clickable: hasOnRowClick,
-          striped: virtualRow.index % 2 === 0
+        className={sprinkles({
+          cursor: hasOnRowClick ? 'pointer' : 'default'
         })}
         style={{
+          border: 'none',
+          background: 'none',
+          textAlign: 'left' as const,
+          width: '100%',
+          font: 'inherit',
+          color: 'inherit',
+          position: 'absolute' as const,
+          top: 0,
+          left: 0,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '8px 12px',
+          borderBottom: '1px solid var(--mantine-color-gray-3)',
+          backgroundColor: virtualRow.index % 2 === 0 ? 'var(--mantine-color-gray-0)' : 'transparent',
           height: `${virtualRow.size}px`,
           transform: `translateY(${virtualRow.start}px)`,
         }}
@@ -308,11 +310,9 @@ export function BaseTable<T>({
         {row.getVisibleCells().map((cell, cellIndex) => (
           <div
             key={cell.id}
-            className={virtualTableCell({
-              flex: cellIndex === 1 ? "one" : "auto",
-              hasBorder: cellIndex < row.getVisibleCells().length - 1
-            })}
             style={{
+              flex: cellIndex === 1 ? '1' : '0 0 auto',
+              borderRight: cellIndex < row.getVisibleCells().length - 1 ? '1px solid var(--mantine-color-gray-3)' : 'none',
               padding: "0 8px",
               minWidth: getMinWidthForCell(cellIndex),
             }}
@@ -347,9 +347,11 @@ export function BaseTable<T>({
 
       <ScrollArea
         ref={parentRef}
-        className={virtualTableContainer()}
+        className={sprinkles({ overflow: 'auto' })}
         style={{
           height: `${maxHeight}px`,
+          border: '1px solid var(--mantine-color-gray-3)',
+          borderTop: 'none'
         }}
       >
         {isLoading ? (
@@ -359,12 +361,12 @@ export function BaseTable<T>({
             </Table.Tbody>
           </Table>
         ) : rows.length === 0 ? (
-          <div className={`${padding24} ${textCenter}`}>
+          <div className={sprinkles({ padding: '24px', textAlign: 'center' })}>
             <Text c="dimmed">No data available</Text>
           </div>
         ) : (
           <div
-            className={`${widthFull} ${positionRelative}`}
+            className={sprinkles({ width: 'full', position: 'relative' })}
             style={{
               height: `${rowVirtualizer.getTotalSize()}px`,
             }}
@@ -385,7 +387,7 @@ export function BaseTable<T>({
       withColumnBorders
       stickyHeader
       style={{ minHeight: isLoading ? 400 : "auto" }}
-      className={minHeight400}
+      className={sprinkles({ minHeight: '400px' })}
     >
       {renderTableHeader()}
 
@@ -406,7 +408,7 @@ export function BaseTable<T>({
                     role={onRowClick ? "button" : undefined}
                     aria-label={ariaLabel}
                     tabIndex={onRowClick ? 0 : undefined}
-                    className={tableRow({ clickable: !!onRowClick })}
+                    className={sprinkles({ cursor: onRowClick ? 'pointer' : 'default' })}
                     onClick={
                       onRowClick
                         ? () => handleRowClick(row.original)
