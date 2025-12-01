@@ -6,9 +6,9 @@ This directory contains all feature specifications for BibGraph, organized using
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 19 |
-| 🚧 In Progress | 5 |
-| 📝 Draft | 3 |
+| ✅ Complete | 20 |
+| 🚧 In Progress | 4 |
+| 📝 Draft | 5 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -265,12 +265,30 @@ Extension of spec-015 for complete relationship coverage. Added relationship ext
 
 ---
 
-### spec-029: shadcn Styling Standardization
-**Status**: 🚧 In Progress (Planning Complete) | **Created**: 2025-11-30
+### spec-029: Advanced Literature Review Workflows
+**Status**: 📝 Draft | **Created**: 2025-11-30
 
-Standardize UI component styling using shadcn-inspired theming for Mantine with official Vanilla Extract integration while preserving existing hash-based color logic for graph visualization. 52 atomic tasks across 8 phases: eliminate Tailwind classes, replace Mantine CSS variables with Vanilla Extract theme system, implement consistent visual design patterns using research theme's 20 color palettes, ensure <100ms theme switching with <5% bundle increase.
+Enhanced catalogue feature for advanced literature review workflows including PRISMA systematic reviews, semantic analysis, citation export formats (BibTeX/RIS), custom entity support for non-OpenAlex works, and live file system synchronization using browser File System Access API.
 
-[View Spec](./029-shadcn-styling/)
+[View Spec](./029-literature-review/)
+
+---
+
+### spec-030: Remove Algorithm Result Truncation
+**Status**: 📝 Draft | **Created**: 2025-11-30
+
+Remove algorithm result truncation to show all results instead of "+N more" text, enabling complete data visibility for research analysis.
+
+[View Spec](./030-remove-algorithm-truncation/)
+
+---
+
+### spec-031: 3D Graph Visualization
+**Status**: ✅ Complete | **Completed**: 2025-11-30
+
+3D graph visualization for the algorithms page using react-force-graph-3d. Interactive 3D exploration with camera controls, enhanced depth cues via MeshPhongMaterial, 2D/3D mode toggle with localStorage persistence, WebGL detection with graceful degradation, keyboard accessibility (arrow keys, +/-, Home, R). E2E and unit tests included.
+
+[View Spec](./031-3d-graph-visualization/)
 
 ---
 
@@ -326,4 +344,4 @@ All specifications must align with the [BibGraph Constitution](../.specify/memor
 
 ---
 
-**Last Updated**: 2025-11-30 | **Total Specs**: 29 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-12-01 | **Total Specs**: 31 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
