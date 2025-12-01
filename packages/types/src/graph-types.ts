@@ -184,3 +184,222 @@ export interface ForceSimulationTask {
 		seed?: number
 	}
 }
+
+// ============================================================================
+// 3D Graph Visualization Types
+// ============================================================================
+
+/**
+ * 3D position interface extending 2D Position
+ */
+export interface Position3D {
+	x: number
+	y: number
+	z: number
+}
+
+/**
+ * Visualization mode for graph rendering
+ */
+export type ViewMode = '2D' | '3D'
+
+/**
+ * Control mode for 3D camera interactions
+ */
+export type ControlMode = 'explore' | 'analyze' | 'present'
+
+/**
+ * GraphNode extended with 3D positioning and rendering properties
+ */
+export interface GraphNode3D extends Omit<GraphNode, 'x' | 'y'> {
+	position: Position3D
+	/** Current velocity in 3D space for physics simulation */
+	velocity?: Position3D
+	/** Accumulated forces for simulation */
+	force?: Position3D
+	/** Mass for physics calculations */
+	mass?: number
+	/** Collision/space allocation radius */
+	radius?: number
+	/** Override color for 3D context */
+	color?: string
+	/** Transparency based on depth */
+	opacity?: number
+	/** Size scaling factor */
+	scale?: number
+	/** Bounding box for spatial queries */
+	bounds?: BoundingBox3D
+	/** Current level-of-detail */
+	lodLevel?: number
+}
+
+/**
+ * GraphEdge extended with 3D curve support
+ */
+export interface GraphEdge3D extends GraphEdge {
+	/** 3D curve control points for curved edges */
+	controlPoints?: Position3D[]
+	/** Curve interpolation type */
+	curveType?: 'linear' | 'quadratic' | 'cubic'
+	/** Edge width based on camera distance */
+	width?: number
+	/** Transparency based on depth */
+	opacity?: number
+	/** Bounding box for edge culling */
+	bounds?: BoundingBox3D
+	/** Current level-of-detail */
+	lodLevel?: number
+}
+
+/**
+ * 3D bounding box for spatial indexing and frustum culling
+ */
+export interface BoundingBox3D {
+	min: Position3D
+	max: Position3D
+}
+
+/**
+ * Camera state for 3D visualization persistence
+ */
+export interface CameraState3D {
+	position: Position3D
+	target: Position3D
+	up: Position3D
+	/** Field of view in degrees */
+	fov?: number
+	/** Zoom level */
+	zoom?: number
+	/** Near clipping plane */
+	near?: number
+	/** Far clipping plane */
+	far?: number
+}
+
+/**
+ * Camera animation settings
+ */
+export interface CameraAnimation {
+	/** Animation duration in milliseconds */
+	duration: number
+	/** Easing function */
+	easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+	/** Callback when animation completes */
+	onComplete?: () => void
+}
+
+/**
+ * Camera control configuration
+ */
+export interface ControlSettings {
+	enableRotate: boolean
+	enablePan: boolean
+	enableZoom: boolean
+	rotateSpeed: number
+	panSpeed: number
+	zoomSpeed: number
+	dampingFactor: number
+}
+
+/**
+ * Level-of-detail configuration for performance optimization
+ */
+export interface LODConfig {
+	/** Distance thresholds for each level */
+	distances: number[]
+	/** Rendering settings per level */
+	detailLevels: DetailLevel[]
+	/** Smooth transition between levels */
+	transitionSmoothness: number
+}
+
+/**
+ * Detail level configuration
+ */
+export interface DetailLevel {
+	level: number
+	maxDistance: number
+	nodeRadius: number
+	edgeWidth: number
+	labelsVisible: boolean
+	instancedRendering: boolean
+	maxVisibleNodes: number
+	useSimplifiedGeometry: boolean
+}
+
+/**
+ * Performance metrics for 3D rendering
+ */
+export interface PerformanceMetrics3D {
+	/** Current frames per second */
+	frameRate: number
+	/** Frame time in milliseconds */
+	frameTime: number
+	/** Number of draw calls per frame */
+	drawCalls: number
+	/** Currently visible nodes */
+	visibleNodes: number
+	/** Currently visible edges */
+	visibleEdges: number
+	/** Current LOD level */
+	currentLODLevel: number
+}
+
+/**
+ * 3D graph data container
+ */
+export interface GraphData3D {
+	nodes: GraphNode3D[]
+	edges: GraphEdge3D[]
+}
+
+/**
+ * User preferences for 3D visualization
+ */
+export interface Visualization3DPreferences {
+	defaultViewMode: ViewMode
+	autoDetectWebGL: boolean
+	enableAnimations: boolean
+	animationSpeed: number
+	enableShadows: boolean
+	antialiasLevel: 'low' | 'medium' | 'high'
+	performanceMode: 'quality' | 'balanced' | 'performance'
+}
+
+// ============================================================================
+// 3D Type Guards
+// ============================================================================
+
+/**
+ * Type guard for Position3D
+ */
+export function isPosition3D(obj: unknown): obj is Position3D {
+	return obj !== null &&
+		typeof obj === 'object' &&
+		'x' in obj && 'y' in obj && 'z' in obj &&
+		typeof (obj as Position3D).x === 'number' &&
+		typeof (obj as Position3D).y === 'number' &&
+		typeof (obj as Position3D).z === 'number'
+}
+
+/**
+ * Type guard for GraphNode3D
+ */
+export function isGraphNode3D(obj: unknown): obj is GraphNode3D {
+	return obj !== null &&
+		typeof obj === 'object' &&
+		'id' in obj && 'entityType' in obj && 'position' in obj &&
+		isPosition3D((obj as GraphNode3D).position)
+}
+
+/**
+ * Type guard for CameraState3D
+ */
+export function isCameraState3D(obj: unknown): obj is CameraState3D {
+	return obj !== null &&
+		typeof obj === 'object' &&
+		'position' in obj && 'target' in obj && 'up' in obj &&
+		isPosition3D((obj as CameraState3D).position) &&
+		isPosition3D((obj as CameraState3D).target) &&
+		isPosition3D((obj as CameraState3D).up)
+}
