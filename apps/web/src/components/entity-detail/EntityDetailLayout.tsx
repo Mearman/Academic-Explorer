@@ -10,7 +10,7 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import { minHeightFull, flex1, textBreakAll, overflowHidden, borderSecondary, overflowX, borderBottomSecondary, overflowScroll, textMonospace, codeDisplay } from "@/styles/common.css";
+import { sprinkles } from "@/styles/sprinkles";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
@@ -111,12 +111,12 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-body)" className={minHeightFull} data-testid="entity-detail-layout">
+    <Container size="lg" p="xl" bg="var(--mantine-color-body)" className={sprinkles({ minHeight: 'full' })} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
         <Paper p="xl" radius="xl" withBorder>
           <Group align="flex-start" justify="space-between" gap="xl">
-            <Stack gap="lg" flex={1}>
+            <Stack gap="lg" className={sprinkles({ flex: '1' })}>
               <Badge
                 size="xl"
                 variant="light"
@@ -140,7 +140,7 @@ export function EntityDetailLayout({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       {config.name} ID:
                     </Text>
-                    <Code className={`${flex1} ${textBreakAll}`}>
+                    <Code className={sprinkles({ flex: '1', wordBreak: 'break-all' })}>
                       {entityId}
                     </Code>
                   </Group>
@@ -148,7 +148,7 @@ export function EntityDetailLayout({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       Select fields:
                     </Text>
-                    <Text size="sm" c="dimmed" className={flex1}>
+                    <Text size="sm" c="dimmed" className={sprinkles({ flex: '1' })}>
                       {selectParam && typeof selectParam === 'string'
                         ? selectParam
                         : `default (${selectFields.length} fields)`}
@@ -232,8 +232,8 @@ export function EntityDetailLayout({
 
         {/* Content Section */}
         {viewMode === "raw" ? (
-          <Paper withBorder radius="xl" className={overflowHidden}>
-            <Paper p="md" bg={colors.background.tertiary} className={borderBottomSecondary()}>
+          <Paper withBorder radius="xl" className={sprinkles({ overflow: 'hidden' })}>
+            <Paper p="md" bg={colors.background.tertiary} className={sprinkles({ borderBottomSecondary: true })}>
               <Group gap="sm">
                 <IconCode size={20} color={colors.text.primary} />
                 <Text size="lg" fw={600} c={colors.text.primary}>
@@ -241,12 +241,12 @@ export function EntityDetailLayout({
                 </Text>
               </Group>
             </Paper>
-            <Paper p="xl" bg={colors.background.secondary} className={overflowScroll()}>
+            <Paper p="xl" bg={colors.background.secondary} className={sprinkles({ overflowScroll: true })}>
               <Text
                 component="pre"
                 size="sm"
                 c={colors.text.primary}
-                className={codeDisplay}
+                className={sprinkles({ codeDisplay: true })}
               >
                 {JSON.stringify(data, null, 2)}
               </Text>
