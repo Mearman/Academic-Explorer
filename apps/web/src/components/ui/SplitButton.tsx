@@ -194,7 +194,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
           />
 
           {/* Dropdown arrow button */}
-          <Menu position="bottom-end">
+          <Menu position="bottom-end" closeOnItemClick={false}>
             <Menu.Target>
               <ActionIcon
                 {...mergedDropdownProps}
