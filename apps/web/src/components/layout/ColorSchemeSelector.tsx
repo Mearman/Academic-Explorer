@@ -1,10 +1,11 @@
-import { Menu, Badge, Box, Group, Text, useMantineTheme } from '@mantine/core'
+import { Menu, Badge, Box, Group, Text, useMantineTheme, ActionIcon } from '@mantine/core'
 import {
   IconSun,
   IconMoon,
   IconDeviceDesktop,
   IconPalette,
-  IconCheck
+  IconCheck,
+  IconRotate
 } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 
@@ -55,6 +56,27 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
     setColorScheme(palette as any) // Theme context expects ColorScheme type
   }
 
+  // Reset color palette to default
+  const resetColorPalette = () => {
+    setColorScheme('blue' as any)
+    setSelectedPalette('blue')
+  }
+
+  // Reset border radius to default
+  const resetBorderRadius = () => {
+    setBorderRadius('md')
+  }
+
+  // Reset component library to default
+  const resetComponentLibrary = () => {
+    setComponentLibrary('mantine')
+  }
+
+  // Reset theme mode to default
+  const resetThemeMode = () => {
+    setColorMode('auto')
+  }
+
   const getCurrentIcon = () => {
     const IconComponent = COLOR_SCHEME_LABELS[config.colorMode].icon
     return <IconComponent size={18} />
@@ -76,7 +98,23 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
   const dropdownItems = (
     <>
       {/* Color Scheme Selection */}
-      <Menu.Label>Theme Mode</Menu.Label>
+      <Menu.Label>
+        <Group justify="space-between" w="100%">
+          Theme Mode
+          <ActionIcon
+            size="xs"
+            variant="subtle"
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              resetThemeMode()
+            }}
+            title="Reset theme mode to auto"
+          >
+            <IconRotate size={12} />
+          </ActionIcon>
+        </Group>
+      </Menu.Label>
       {Object.entries(COLOR_SCHEME_LABELS).map(([scheme, { icon: Icon, label }]) => (
         <Menu.Item
           key={scheme}
@@ -92,9 +130,23 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
 
       {/* Color Palette Selection */}
       <Menu.Label>
-        <Group gap={6}>
-          <IconPalette size={16} />
-          Color Palette
+        <Group justify="space-between" w="100%">
+          <Group gap={6}>
+            <IconPalette size={16} />
+            Color Palette
+          </Group>
+          <ActionIcon
+            size="xs"
+            variant="subtle"
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              resetColorPalette()
+            }}
+            title="Reset color palette to default"
+          >
+            <IconRotate size={12} />
+          </ActionIcon>
         </Group>
       </Menu.Label>
 
@@ -157,9 +209,23 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
 
       {/* Component Library Selection */}
       <Menu.Label>
-        <Group gap={6}>
-          <IconPalette size={16} />
-          Component Library
+        <Group justify="space-between" w="100%">
+          <Group gap={6}>
+            <IconPalette size={16} />
+            Component Library
+          </Group>
+          <ActionIcon
+            size="xs"
+            variant="subtle"
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              resetComponentLibrary()
+            }}
+            title="Reset component library to mantine"
+          >
+            <IconRotate size={12} />
+          </ActionIcon>
         </Group>
       </Menu.Label>
       {Object.entries(COMPONENT_LIBRARY_LABELS).map(([lib, { label, description }]) => (
@@ -179,9 +245,23 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
 
       {/* Border Radius Selection */}
       <Menu.Label>
-        <Group gap={6}>
-          <IconPalette size={16} />
-          Border Radius
+        <Group justify="space-between" w="100%">
+          <Group gap={6}>
+            <IconPalette size={16} />
+            Border Radius
+          </Group>
+          <ActionIcon
+            size="xs"
+            variant="subtle"
+            color="gray"
+            onClick={(e) => {
+              e.stopPropagation()
+              resetBorderRadius()
+            }}
+            title="Reset border radius to default"
+          >
+            <IconRotate size={12} />
+          </ActionIcon>
         </Group>
       </Menu.Label>
       <Box p="xs">
