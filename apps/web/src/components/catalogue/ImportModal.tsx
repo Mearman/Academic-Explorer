@@ -381,7 +381,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
 
         {/* Preview Section */}
         {isValidating && (
-          <Paper withBorder p="md">
+          <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <Group gap="xs">
               <Loader size="sm" />
               <Text size="sm" role="status" aria-live="polite">Validating data...</Text>
@@ -390,7 +390,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
         )}
 
         {preview && validationResult?.valid && (
-          <Paper withBorder p="md">
+          <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <Stack gap="md">
               <Group justify="space-between">
                 <Text size="sm" fw={700}>Import Preview</Text>

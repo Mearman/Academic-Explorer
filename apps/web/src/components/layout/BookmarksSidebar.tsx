@@ -178,7 +178,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
       {/* Bookmarks List */}
       <div className={styles.scrollableContent}>
         {filteredBookmarks.length === 0 ? (
-          <Card withBorder p="md">
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <div className={styles.emptyState}>
               <IconBookmarkOff size={32} />
               <Text size="sm" fw={500} ta="center">
