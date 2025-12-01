@@ -6,7 +6,7 @@ import { Title, Text, Container, Paper } from "@mantine/core";
 export function EntityBrowser() {
   return (
     <Container size="lg" py="xl">
-      <Paper p="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+      <Paper p="xl">
         <Title order={1}>Entity Browser</Title>
         <Text mt="md" c="dimmed">
           The Entity Browser component has been temporarily removed during application cleanup.

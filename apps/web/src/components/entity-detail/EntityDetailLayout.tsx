@@ -114,7 +114,7 @@ export function EntityDetailLayout({
     <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={sprinkles({ minHeight: 'full' })} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
-        <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+        <Paper p="xl" radius="xl">
           <Group align="flex-start" justify="space-between" gap="xl">
             <Stack gap="lg" style={sprinkles({ flex: '1' })}>
               <Badge
@@ -134,7 +134,7 @@ export function EntityDetailLayout({
                 {displayName}
               </Title>
 
-              <Paper p="md" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-body)">
+              <Paper p="md" radius="lg" bg="var(--mantine-color-body)">
                 <Stack gap="sm">
                   <Group align="flex-start" gap="sm">
                     <Text size="sm" fw={600} c="dimmed" miw="100px">

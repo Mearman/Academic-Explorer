@@ -148,7 +148,7 @@ export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
   }
 
   return (
-    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="entity-type-filter">
+    <Paper p="md" data-testid="entity-type-filter">
       <Stack gap="md">
         <Group justify="space-between">
           <Title order={3} size="h4">
