@@ -1,51 +1,11 @@
 import { createTheme } from '@mantine/core'
 import { foundationColors, foundationSettings } from './theme-base'
-import { sharedComponents } from './shared-components'
+import { essentialComponents } from './essential-components'
 
-// Mantine-specific component overrides
-const mantineComponentOverrides = {
-  Button: {
-    styles: {
-      root: {
-        fontWeight: 600,
-        textTransform: "none",
-        letterSpacing: "0.025em",
-        transition: "all 0.2s ease",
-      },
-    },
-  },
-  Card: {
-    styles: {
-      root: {
-        boxShadow: "var(--mantine-shadow-md)",
-      },
-    },
-  },
-  Input: {
-    styles: {
-      input: {
-        fontSize: "14px",
-        lineHeight: "1.5",
-        minHeight: "36px",
-      },
-    },
-  },
-}
-
+// PURE MANTINE theme - uses only essential components, no styling overrides
+// This achieves pure Mantine defaults + custom colors/border radius
 export const mantineTheme = createTheme({
   colors: foundationColors,
   ...foundationSettings,
-  components: {
-    ...sharedComponents,
-    // Apply mantine-specific overrides
-    ...Object.fromEntries(
-      Object.entries(mantineComponentOverrides).map(([key, value]) => [
-        key,
-        {
-          ...sharedComponents[key as keyof typeof sharedComponents],
-          ...value,
-        }
-      ])
-    ),
-  },
+  components: essentialComponents, // ONLY essential components, no styling overrides
 })

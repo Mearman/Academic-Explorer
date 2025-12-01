@@ -3,7 +3,7 @@ import { MantineProvider, createTheme, type MantineTheme } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
-import { createComponentLibraryOverrides, radiusValues } from "@/styles/theme-context-utils";
+import { createRuntimeThemeOverrides, radiusValues } from "@/styles/theme-context-utils";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
 
@@ -91,8 +91,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     ["mod+Shift+K", () => setColorMode("auto")],
   ]);
 
-  // Component library theme overrides
-  const componentLibraryOverrides = createComponentLibraryOverrides(config.borderRadius);
+  // Runtime theme overrides for global border radius
+  const runtimeThemeOverrides = createRuntimeThemeOverrides(config.borderRadius);
 
   // Get base theme based on component library selection
   const getBaseTheme = () => {
@@ -111,17 +111,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Generate Mantine theme based on current configuration
   const generateMantineTheme = (): MantineTheme => {
     const baseTheme = getBaseTheme()
-    const libraryOverrides = componentLibraryOverrides[config.componentLibrary];
 
     return createTheme({
       ...baseTheme,
       primaryColor: config.colorScheme,
       focusRing: "auto" as const,
-      // Apply component library specific overrides
-      components: {
-        ...baseTheme.components,
-        ...libraryOverrides.components,
-      },
+      defaultRadius: config.borderRadius, // Apply border radius globally
+      // NO component-level overrides - handled in theme definitions
     }) as MantineTheme;
   };
 
