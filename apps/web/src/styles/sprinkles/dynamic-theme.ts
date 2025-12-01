@@ -7,33 +7,11 @@ import { assignInlineVars, setElementVars } from '@vanilla-extract/dynamic';
 import { themeVars } from '../theme-vars.css';
 import type { ComponentLibrary } from '../theme-contracts';
 
-// Inject fallback CSS for interactive states
+// Inject theme CSS variables for interactive states
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = `
-    .interactive-base {
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    .interactive-disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      pointer-events: none;
-    }
-    .interactive-selected {
-      background-color: var(--mantine-color-white);
-      border-color: var(--mantine-color-blue-6);
-      border-width: 2px;
-      border-style: solid;
-    }
-    .interactive-hoverable {
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .interactive-hoverable:hover {
-      background-color: var(--mantine-color-gray-0);
-    }
-    .color-scheme-light {
+    :root {
       --text-primary: var(--mantine-color-gray-9);
       --text-secondary: var(--mantine-color-gray-6);
       --text-muted: var(--mantine-color-gray-5);
@@ -41,7 +19,7 @@ if (typeof document !== 'undefined') {
       --background-secondary: var(--mantine-color-gray-0);
       --border-primary: var(--mantine-color-gray-3);
     }
-    .color-scheme-dark {
+    [data-mantine-color-scheme="dark"] {
       --text-primary: var(--mantine-color-gray-0);
       --text-secondary: var(--mantine-color-gray-4);
       --text-muted: var(--mantine-color-gray-6);
@@ -81,29 +59,58 @@ export const dynamicThemeVars = {
 } as const;
 
 /**
- * Dynamic interactive states using fallback CSS classes
+ * Dynamic interactive states using inline styles
  * These automatically adapt when the user switches between themes
  */
 export const interactiveStates = {
   // Base interactive style
-  base: 'interactive-base',
+  base: {
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+  },
 
   // Disabled state
-  disabled: 'interactive-disabled',
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: '0.6',
+    pointerEvents: 'none',
+  },
 
   // Selected state
-  selected: 'interactive-selected',
+  selected: {
+    backgroundColor: 'var(--mantine-color-white)',
+    borderColor: 'var(--mantine-color-blue-6)',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+  },
 
   // Hover state
-  hoverable: 'interactive-hoverable',
+  hoverable: {
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
 };
 
 /**
  * Dynamic color schemes that adapt to current theme
  */
 export const colorSchemes = {
-  light: 'color-scheme-light',
-  dark: 'color-scheme-dark',
+  light: {
+    '--text-primary': 'var(--mantine-color-gray-9)',
+    '--text-secondary': 'var(--mantine-color-gray-6)',
+    '--text-muted': 'var(--mantine-color-gray-5)',
+    '--background-primary': 'var(--mantine-color-white)',
+    '--background-secondary': 'var(--mantine-color-gray-0)',
+    '--border-primary': 'var(--mantine-color-gray-3)',
+  },
+  dark: {
+    '--text-primary': 'var(--mantine-color-gray-0)',
+    '--text-secondary': 'var(--mantine-color-gray-4)',
+    '--text-muted': 'var(--mantine-color-gray-6)',
+    '--background-primary': 'var(--mantine-color-dark-6)',
+    '--background-secondary': 'var(--mantine-color-dark-7)',
+    '--border-primary': 'var(--mantine-color-dark-4)',
+  },
 };
 
 /**
@@ -235,8 +242,8 @@ export const applyDynamicTheme = (element: HTMLElement, theme: any) => {
  * Apply color mode theme (light/dark) to an element
  */
 export const applyColorModeTheme = (element: HTMLElement, colorMode: 'light' | 'dark') => {
-  const schemeClass = colorMode === 'light' ? colorSchemes.light : colorSchemes.dark;
-  element.className = element.className.replace(/color-scheme-(light|dark)/g, schemeClass);
+  const schemeClass = colorMode === 'light' ? 'light' : 'dark';
+  element.className = element.className.replace(/color-scheme-(light|dark)/g, `color-scheme-${schemeClass}`);
 };
 
 /**
@@ -246,19 +253,22 @@ export const applyInteractiveProperties = (
   element: HTMLElement,
   options: { disabled?: boolean; selected?: boolean; hoverable?: boolean }
 ) => {
-  const classes: string[] = [];
+  const styles: Record<string, any> = {};
 
   if (options.hoverable !== false) {
-    classes.push(interactiveStates.hoverable);
+    Object.assign(styles, interactiveStates.hoverable);
   }
   if (options.disabled) {
-    classes.push(interactiveStates.disabled);
+    Object.assign(styles, interactiveStates.disabled);
   }
   if (options.selected) {
-    classes.push(interactiveStates.selected);
+    Object.assign(styles, interactiveStates.selected);
   }
 
-  element.classList.add(...classes);
+  // Apply styles directly to the element
+  Object.entries(styles).forEach(([property, value]) => {
+    (element.style as any)[property] = value;
+  });
 };
 
 /**
@@ -286,7 +296,7 @@ export const updateRuntimeTheme = (colorMode: 'light' | 'dark') => {
  */
 export const getCurrentRuntimeTheme = (): 'light' | 'dark' => {
   const root = document.documentElement;
-  return root.classList.contains(colorSchemes.dark) ? 'dark' : 'light';
+  return root.classList.contains('color-scheme-dark') ? 'dark' : 'light';
 };
 
 /**
