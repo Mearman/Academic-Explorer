@@ -773,8 +773,8 @@ function ComparisonResults() {
                         style={{
                           backgroundColor:
                             result.status === "completed"
-                              ? "var(--shadcn-success/0.1)"
-                              : "var(--shadcn-warning/0.1)",
+                              ? "rgba(var(--mantine-color-green-6-rgb), 0.1)"
+                              : "rgba(var(--mantine-color-yellow-6-rgb), 0.1)",
                           color:
                             result.status === "completed"
                               ? "var(--mantine-color-green-7)"
@@ -1246,9 +1246,9 @@ function ComparisonResults() {
           {/* Thesis Integration Notes */}
           <div
             style={{
-              backgroundColor: "var(--shadcn-warning/0.1)",
+              backgroundColor: "rgba(var(--mantine-color-yellow-6-rgb), 0.1)",
               borderRadius: "8px",
-              border: "1px solid var(--shadcn-warning/0.3)",
+              border: "1px solid rgba(var(--mantine-color-yellow-6-rgb), 0.3)",
               padding: "16px",
               marginTop: "24px",
             }}
