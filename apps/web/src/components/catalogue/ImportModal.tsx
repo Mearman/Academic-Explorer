@@ -245,12 +245,10 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
           >
             {(props) => (
               <Paper
-                withBorder
                 p="md"
                 style={{
                   cursor: "pointer",
-                  borderStyle: "dashed",
-                  borderWidth: 2,
+                  border: "2px dashed var(--mantine-color-gray-3)",
                   transition: "all 0.2s",
                 }}
                 {...props}

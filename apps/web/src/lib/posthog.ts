@@ -20,13 +20,15 @@ export const POSTHOG_HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https:/
 // Enable PostHog only if API key is provided (development check)
 export const POSTHOG_ENABLED = Boolean(POSTHOG_API_KEY && POSTHOG_API_KEY !== 'your-posthog-api-key')
 
-// Debug logging for PostHog initialization (always output for debugging)
-console.debug('📊 PostHog Configuration:', {
-  POSTHOG_ENABLED,
-  POSTHOG_API_KEY: POSTHOG_API_KEY ? `${POSTHOG_API_KEY.substring(0, 10)}...` : 'NOT SET',
-  POSTHOG_HOST,
-  shouldInitialize: POSTHOG_ENABLED && typeof window !== 'undefined' && POSTHOG_API_KEY.length > 10 && POSTHOG_HOST.includes('posthog.com')
-})
+// Debug logging for PostHog initialization (only in development)
+if (import.meta.env.DEV) {
+  console.debug('📊 PostHog Configuration:', {
+    POSTHOG_ENABLED,
+    POSTHOG_API_KEY: POSTHOG_API_KEY ? `${POSTHOG_API_KEY.substring(0, 10)}...` : 'NOT SET',
+    POSTHOG_HOST,
+    shouldInitialize: POSTHOG_ENABLED && typeof window !== 'undefined' && POSTHOG_API_KEY.length > 10 && POSTHOG_HOST.includes('posthog.com')
+  });
+}
 
 /**
  * PostHog configuration optimized for academic research tool with EU privacy compliance

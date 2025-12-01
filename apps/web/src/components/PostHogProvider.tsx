@@ -39,14 +39,23 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
     return <>{children}</>
   }
 
-  return (
-    <PostHogReactProvider
-      apiKey={POSTHOG_API_KEY}
-      options={POSTHOG_CONFIG}
-    >
-      {children}
-    </PostHogReactProvider>
-  )
+  try {
+    return (
+      <PostHogReactProvider
+        apiKey={POSTHOG_API_KEY}
+        options={POSTHOG_CONFIG}
+      >
+        {children}
+      </PostHogReactProvider>
+    )
+  } catch (error) {
+    // Log PostHog initialization error but don't break the app
+    console.error('PostHog initialization failed:', error)
+    if (import.meta.env.DEV) {
+      console.warn('PostHog analytics disabled due to initialization error')
+    }
+    return <>{children}</>
+  }
 }
 
 // Re-export the official usePostHog hook for convenience

@@ -199,7 +199,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                 </div>
 {entries.map((entry) => (
                   <HistoryCard
-                    key={`${entry.entityId}-${entry.addedAt}`}
+                    key={`${entry.entityId}-${entry.addedAt.getTime()}`}
                     entry={entry}
                     onClose={onClose}
                     formatDate={formatDate}

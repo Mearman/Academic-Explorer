@@ -217,6 +217,7 @@ function SortableEntityRow({
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState(entity.notes || "");
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   const handleSaveNotes = () => {
     if (!entity.id) return;
@@ -364,10 +365,16 @@ function SortableEntityRow({
             <Button
               color="red"
               data-testid="confirm-remove-entity-button"
+              disabled={removing}
               onClick={async () => {
                 if (!entity.id) return;
-                await onRemove(entity.id);
-                setShowRemoveConfirm(false);
+                setRemoving(true);
+                try {
+                  await onRemove(entity.id);
+                  setShowRemoveConfirm(false);
+                } finally {
+                  setRemoving(false);
+                }
               }}
             >
               Remove

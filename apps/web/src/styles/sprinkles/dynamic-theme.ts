@@ -79,9 +79,7 @@ export const interactiveStates = {
   // Selected state
   selected: {
     backgroundColor: 'var(--mantine-color-white)',
-    borderColor: 'var(--mantine-color-blue-6)',
-    borderWidth: '2px',
-    borderStyle: 'solid',
+    border: '2px solid var(--mantine-color-blue-6)',
   },
 
   // Hover state

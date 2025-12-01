@@ -253,7 +253,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
 
                 return (
                   <Card
-                    key={`${entry.entityId}-${entry.addedAt}`}
+                    key={`${entry.entityId}-${entry.addedAt.getTime()}`}
                     withBorder
                     padding="md"
                     shadow="sm"

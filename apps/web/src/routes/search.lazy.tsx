@@ -232,6 +232,7 @@ function SearchPage() {
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
   });
+  const [loading, setLoading] = useState(false);
 
   // Handle URL parameters on mount
   useEffect(() => {
@@ -296,15 +297,21 @@ function SearchPage() {
               variant="light"
               color={userInteractions.isBookmarked ? "yellow" : "gray"}
               size="sm"
+              disabled={loading}
               onClick={async () => {
-                if (userInteractions.isBookmarked) {
-                  await userInteractions.unbookmarkSearch();
-                } else {
-                  const title = searchFilters.query;
-                  await userInteractions.bookmarkSearch({
-                    title,
-                    searchQuery: searchFilters.query,
-                  });
+                setLoading(true);
+                try {
+                  if (userInteractions.isBookmarked) {
+                    await userInteractions.unbookmarkSearch();
+                  } else {
+                    const title = searchFilters.query;
+                    await userInteractions.bookmarkSearch({
+                      title,
+                      searchQuery: searchFilters.query,
+                    });
+                  }
+                } finally {
+                  setLoading(false);
                 }
               }}
               leftSection={

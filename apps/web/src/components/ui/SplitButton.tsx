@@ -95,7 +95,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                   borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
                   borderTopRightRadius: '0px !important',
                   borderBottomRightRadius: '0px !important',
-                  borderRightWidth: 0,
+                  borderRight: 'none',
                   flex: 1,
                   height: `${height}px`,
                   borderStyle: 'solid',
@@ -130,7 +130,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                   borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
                   borderTopLeftRadius: '0px !important',
                   borderBottomLeftRadius: '0px !important',
-                  borderLeftWidth: 1,
+                  borderLeftWidth: '1px',
                   height: `${height}px`,
                   width: `${height}px`,
                   borderStyle: 'solid',
@@ -171,7 +171,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                   borderRadius: `${currentRadius} 0 0 ${currentRadius}`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
                   borderTopRightRadius: '0px !important',
                   borderBottomRightRadius: '0px !important',
-                  borderRightWidth: 0,
+                  borderRight: 'none',
                   flex: 1,
                   height: `${height}px`,
                   borderStyle: 'solid',
@@ -208,7 +208,7 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                       borderRadius: `0 ${currentRadius} ${currentRadius} 0`, // Use theme radius: top-left, top-right, bottom-right, bottom-left
                       borderTopLeftRadius: '0px !important',
                       borderBottomLeftRadius: '0px !important',
-                      borderLeftWidth: 1,
+                      borderLeftWidth: '1px',
                       height: `${height}px`,
                       width: `${height}px`,
                       borderStyle: 'solid',

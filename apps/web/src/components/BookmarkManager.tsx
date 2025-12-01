@@ -99,7 +99,7 @@ function BookmarkCard({
             flex={1}
             fw={500}
             c="inherit"
-            className={sprinkles({ cursor: 'pointer', transition: 'normal' })}
+            style={sprinkles({ cursor: 'pointer', transition: 'normal' })}
             data-testid="bookmark-title-link"
           >
             {title}
@@ -143,6 +143,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
     bulkRemoveBookmarks
   } = useUserInteractions();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selecting, setSelecting] = useState(false);
 
   // Selection state and actions
   const { state: selectionState } = useBookmarkSelection();
@@ -288,7 +289,16 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
               <Button
                 variant="subtle"
                 size="sm"
-                onClick={() => selectAll(filteredBookmarks.map(b => b.id || b.entityId))}
+                disabled={selecting}
+                onClick={() => {
+                  if (selecting) return;
+                  setSelecting(true);
+                  try {
+                    selectAll(filteredBookmarks.map(b => b.id || b.entityId));
+                  } finally {
+                    setTimeout(() => setSelecting(false), 100);
+                  }
+                }}
               >
                 Select All ({filteredBookmarks.length})
               </Button>
@@ -328,7 +338,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       {filteredBookmarks.length === 0 ? (
         <Card withBorder p="xl">
           <Stack align="center" gap="md">
-            <div className={sprinkles({ color: 'dimmed' })}>
+            <div style={sprinkles({ color: 'dimmed' })}>
               <IconBookmarkOff size={48} />
             </div>
             <Text size="lg" fw={500}>
