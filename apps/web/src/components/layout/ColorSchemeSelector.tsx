@@ -128,9 +128,10 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
                 style={{
                   backgroundColor: theme.colors[palette]?.[6] || theme.colors.gray[6],
                   borderRadius: 2,
-                  border: selectedPalette === palette
-                    ? `2px solid ${theme.colors.blue[6]}`
-                    : `1px solid ${theme.colors.gray[3]}`
+                  border: `1px solid ${theme.colors.gray[3]}`,
+                  boxShadow: selectedPalette === palette
+                    ? `0 0 0 2px ${theme.colors.blue[6]}`
+                    : 'none'
                 }}
               />
               <Text
@@ -212,9 +213,10 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
                 style={{
                   backgroundColor: theme.colors.gray[6],
                   borderRadius: `${radius.size}px`,
-                  border: config.borderRadius === radius.value
-                    ? `2px solid ${theme.colors.blue[6]}`
-                    : `1px solid ${theme.colors.gray[3]}`
+                  border: `1px solid ${theme.colors.gray[3]}`,
+                  boxShadow: config.borderRadius === radius.value
+                    ? `0 0 0 2px ${theme.colors.blue[6]}`
+                    : 'none'
                 }}
               />
               <Text
