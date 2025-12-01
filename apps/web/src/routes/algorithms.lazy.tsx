@@ -72,7 +72,11 @@ interface GraphMethods {
   zoomToFit(duration?: number, padding?: number, nodeFilter?: (node: FilterNode) => boolean): void;
   centerAt?(x: number, y: number, duration?: number): void;
   graphData?(): { nodes: SimulationNode[]; links: unknown[] };
-  zoom?(scale?: number, duration?: number): void;
+  zoom?(scale?: number, duration?: number): number | void;
+
+  // 2D-specific methods for viewport dimensions
+  width?(): number;
+  height?(): number;
 
   // 3D-specific methods
   cameraPosition?(
@@ -723,18 +727,30 @@ function AlgorithmsPage() {
 
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
+      const boundingWidth = maxX - minX;
+      const boundingHeight = maxY - minY;
 
-      if (graph.centerAt) {
-        // Center on the bounding box center, then fit to selection
+      // Get viewport dimensions
+      const viewportWidth = graph.width?.() ?? 800;
+      const viewportHeight = graph.height?.() ?? 450;
+
+      // Calculate zoom to fit bounding box with padding
+      const padding = 100; // pixels of padding
+      const zoomX = (viewportWidth - padding * 2) / Math.max(boundingWidth, 1);
+      const zoomY = (viewportHeight - padding * 2) / Math.max(boundingHeight, 1);
+      const targetZoom = Math.min(zoomX, zoomY, 4); // Cap max zoom at 4x
+
+      if (graph.centerAt && graph.zoom) {
+        // Center on the bounding box center, then set zoom
         graph.centerAt(centerX, centerY, 200);
+        const zoomFn = graph.zoom;
         setTimeout(() => {
-          graph.zoomToFit(
-            300,
-            100,
-            (node) => node.id != null && highlightedNodes.has(String(node.id))
-          );
+          zoomFn(targetZoom, 300);
         }, 250);
+      } else if (graph.centerAt) {
+        graph.centerAt(centerX, centerY, 300);
       } else {
+        // Fallback to zoomToFit with filter (unreliable but better than nothing)
         graph.zoomToFit(
           300,
           100,
