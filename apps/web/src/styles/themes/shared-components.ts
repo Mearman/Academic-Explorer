@@ -264,11 +264,16 @@ export const sharedComponents = {
   },
 
   Loader: {
-    vars: (theme, props) => ({
-      root: {
-        'loader-color': theme.colors[props.color || 'primary'][6],
-      },
-    }),
+    vars: (theme, props) => {
+      const colorKey = props.color && Object.keys(theme.colors).includes(props.color) ? props.color : undefined
+      return {
+        root: {
+          '--loader-color': colorKey
+            ? `var(--mantine-color-${colorKey}-filled)`
+            : 'var(--mantine-primary-color-filled)',
+        },
+      }
+    },
   },
 
   ActionIcon: {
