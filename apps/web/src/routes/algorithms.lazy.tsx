@@ -37,7 +37,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
-import { flex1 } from '@/styles/common.css';
+import { sprinkles } from '@/styles/sprinkles';
 
 /**
  * Configuration for sample graph generation
@@ -886,7 +886,7 @@ function AlgorithmsPage() {
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
                         allowNegative={false}
-                        className={flex1}
+                        className={sprinkles({ flex: '1' })}
                         size="xs"
                       />
                       <Button
@@ -937,7 +937,7 @@ function AlgorithmsPage() {
                             { value: 6, label: '6' },
                           ]}
                           size="sm"
-                          className={flex1}
+                          className={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.componentCount}
@@ -993,7 +993,7 @@ function AlgorithmsPage() {
                             { value: 10, label: '10' },
                           ]}
                           size="sm"
-                          className={flex1}
+                          className={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.edgesPerNodeRange[1]}
@@ -1067,7 +1067,7 @@ function AlgorithmsPage() {
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
-                          className={flex1}
+                          className={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
@@ -1127,7 +1127,7 @@ function AlgorithmsPage() {
                               max={100}
                               step={1}
                               size="xs"
-                              className={flex1}
+                              className={sprinkles({ flex: '1' })}
                             />
                             <NumberInput
                               value={graphConfig.entityPercentages[entityType]}
