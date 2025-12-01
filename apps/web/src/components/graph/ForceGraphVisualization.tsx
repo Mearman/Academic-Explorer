@@ -99,6 +99,8 @@ export interface ForceGraphVisualizationProps {
   enableSimulation?: boolean;
   /** Seed for deterministic initial positions (defaults to 42 for reproducibility) */
   seed?: number;
+  /** Callback when graph methods become available (for external control like zoomToFit) */
+  onGraphReady?: (methods: ForceGraphMethods) => void;
 }
 
 /** Default seed for deterministic layouts */
@@ -134,9 +136,24 @@ export function ForceGraphVisualization({
   onBackgroundClick,
   enableSimulation = true,
   seed,
+  onGraphReady,
 }: ForceGraphVisualizationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphMethods | undefined>(undefined);
+
+  // Notify parent when graph methods become available
+  useEffect(() => {
+    // Use a short delay to ensure the ref is populated after render
+    const checkRef = () => {
+      if (graphRef.current && onGraphReady) {
+        onGraphReady(graphRef.current);
+      }
+    };
+    // Check immediately and after a short delay (for initial mount)
+    checkRef();
+    const timeoutId = setTimeout(checkRef, 100);
+    return () => clearTimeout(timeoutId);
+  }, [onGraphReady]);
 
   // Track container width for responsive sizing
   const [containerWidth, setContainerWidth] = React.useState(width ?? 800);

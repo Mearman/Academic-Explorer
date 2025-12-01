@@ -35,13 +35,15 @@ import {
   IconSquare,
   IconCube,
   IconAlertTriangle,
+  IconFocusCentered,
+  IconFocus2,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
-import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
+import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useViewModePreference } from '@/hooks/useViewModePreference';
 import { sprinkles } from '@/styles/sprinkles';
@@ -524,6 +526,43 @@ function AlgorithmsPage() {
   // View mode: 2D or 3D visualization (persisted to localStorage)
   const { viewMode, setViewMode } = useViewModePreference('2D');
 
+  // Graph methods ref for external control (zoomToFit, etc.)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const graphMethodsRef = useRef<any>(null);
+
+  // Handler for when graph methods become available
+  const handleGraphReady = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (methods: any) => {
+      graphMethodsRef.current = methods;
+    },
+    []
+  );
+
+  // Fit all nodes to view
+  const handleFitAll = useCallback(() => {
+    if (graphMethodsRef.current?.zoomToFit) {
+      graphMethodsRef.current.zoomToFit(400, 50);
+    }
+  }, []);
+
+  // Fit selected nodes to view (or all if none selected)
+  const handleFitSelected = useCallback(() => {
+    if (!graphMethodsRef.current?.zoomToFit) return;
+
+    if (highlightedNodes.size === 0) {
+      // No selection - fit all
+      graphMethodsRef.current.zoomToFit(400, 50);
+    } else {
+      // Fit to selected nodes only
+      graphMethodsRef.current.zoomToFit(
+        400,
+        50,
+        (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+      );
+    }
+  }, [highlightedNodes]);
+
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
   const [pathTarget, setPathTarget] = useState<string | null>(null);
@@ -830,6 +869,29 @@ function AlgorithmsPage() {
                 />
               </Group>
               <Group gap="md">
+                <Group gap="xs">
+                  <Tooltip label="Fit all nodes to view">
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={handleFitAll}
+                      aria-label="Fit all to view"
+                    >
+                      <IconFocusCentered size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label={highlightedNodes.size > 0 ? "Fit selected nodes to view" : "Fit all to view (no selection)"}>
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={handleFitSelected}
+                      aria-label="Fit selected to view"
+                      disabled={highlightedNodes.size === 0}
+                    >
+                      <IconFocus2 size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+                </Group>
                 <Switch
                   label="Simulation"
                   checked={enableSimulation}
@@ -860,6 +922,7 @@ function AlgorithmsPage() {
                 enableSimulation={enableSimulation}
                 onNodeClick={handleNodeClick}
                 onBackgroundClick={handleBackgroundClick}
+                onGraphReady={handleGraphReady}
               />
             ) : (
               <ForceGraph3DVisualization
@@ -874,6 +937,7 @@ function AlgorithmsPage() {
                 enableSimulation={enableSimulation}
                 onNodeClick={handleNodeClick}
                 onBackgroundClick={handleBackgroundClick}
+                onGraphReady={handleGraphReady}
               />
             )}
             {highlightedNodes.size > 0 && (

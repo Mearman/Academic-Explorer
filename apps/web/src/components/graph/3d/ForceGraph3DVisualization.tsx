@@ -127,6 +127,9 @@ export interface ForceGraph3DVisualizationProps {
   enableAdaptiveLOD?: boolean;
   /** Callback when performance drops below threshold */
   onPerformanceDrop?: (fps: number) => void;
+  /** Callback when graph methods become available (for external control like zoomToFit) */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onGraphReady?: (methods: any) => void;
 }
 
 /** Default seed for deterministic layouts */
@@ -196,12 +199,27 @@ export function ForceGraph3DVisualization({
   showPerformanceOverlay = false,
   enableAdaptiveLOD = false,
   onPerformanceDrop,
+  onGraphReady,
 }: ForceGraph3DVisualizationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Use any for the ref type to avoid complex generic type issues with react-force-graph-3d
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(undefined);
   const [webglStatus, setWebglStatus] = useState<{ available: boolean; reason?: string } | null>(null);
+
+  // Notify parent when graph methods become available
+  useEffect(() => {
+    // Use a short delay to ensure the ref is populated after render
+    const checkRef = () => {
+      if (graphRef.current && onGraphReady) {
+        onGraphReady(graphRef.current);
+      }
+    };
+    // Check immediately and after a short delay (for initial mount)
+    checkRef();
+    const timeoutId = setTimeout(checkRef, 100);
+    return () => clearTimeout(timeoutId);
+  }, [onGraphReady]);
 
   // === Performance Features Hooks ===
 
