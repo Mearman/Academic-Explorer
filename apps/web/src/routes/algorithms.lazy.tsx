@@ -718,31 +718,24 @@ function AlgorithmsPage() {
         }
       );
     } else {
-      // 3D mode: use zoomToFit to get node positions, then manually position camera
-      // First, collect node positions via the filter callback
+      // 3D mode: get node positions directly from graphData, then manually position camera
+      // Note: We avoid calling zoomToFit here as it resets the view before we can position
+      const graphNodes = graph.graphData?.()?.nodes ?? [];
       const matchedPositions: Array<{ x: number; y: number; z: number }> = [];
 
-      // Call zoomToFit just to trigger the filter and collect positions
-      graph.zoomToFit(
-        0, // instant (we'll override anyway)
-        0,
-        (node: FilterNode) => {
-          if (node.id == null) return false;
-          const nodeIdStr = String(node.id);
-          const matches = highlightedNodes.has(nodeIdStr);
-          if (matches) {
-            matchedPositions.push({
-              x: node.x ?? 0,
-              y: node.y ?? 0,
-              z: node.z ?? 0,
-            });
-          }
-          return matches;
+      // Collect positions of highlighted nodes
+      graphNodes.forEach((node) => {
+        if (node.id && highlightedNodes.has(String(node.id))) {
+          matchedPositions.push({
+            x: node.x ?? 0,
+            y: node.y ?? 0,
+            z: node.z ?? 0,
+          });
         }
-      );
+      });
 
       if (matchedPositions.length === 0) {
-        console.log('[fitToViewSelected] No matched positions, falling back to fitToViewAll');
+        console.log('[fitToViewSelected] No matched positions from graphData, falling back to fitToViewAll');
         fitToViewAll();
         return;
       }
