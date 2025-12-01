@@ -1,0 +1,293 @@
+/**
+ * Runtime theme application utilities
+ * Provides functions to apply and manage theme changes at runtime
+ */
+
+import { createGlobalTheme } from '@vanilla-extract/css';
+import { themeVars } from '../theme-vars.css';
+import type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius } from '../theme-contracts';
+
+/**
+ * Runtime theme configuration that can be applied dynamically
+ */
+export interface RuntimeThemeConfig {
+  componentLibrary: ComponentLibrary;
+  colorScheme: ColorScheme;
+  colorMode: ColorMode;
+  borderRadius: BorderRadius;
+}
+
+/**
+ * Component library-specific theme values
+ */
+const componentLibraryThemes = {
+  mantine: {
+    spacing: {
+      xs: '4px',
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '32px',
+    },
+    borderRadius: {
+      xs: '2px',
+      sm: '4px',
+      md: '6px',
+      lg: '8px',
+      xl: '12px',
+    },
+    shadows: {
+      sm: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+      md: '0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06)',
+      lg: '0 10px 25px rgba(0, 0, 0, 0.15), 0 6px 10px rgba(0, 0, 0, 0.08)',
+    },
+  },
+  shadcn: {
+    spacing: {
+      xs: '4px',
+      sm: '6px',
+      md: '12px',
+      lg: '20px',
+      xl: '28px',
+    },
+    borderRadius: {
+      xs: '2px',
+      sm: '6px',
+      md: '8px',
+      lg: '12px',
+      xl: '16px',
+    },
+    shadows: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+    },
+  },
+  radix: {
+    spacing: {
+      xs: '2px',
+      sm: '4px',
+      md: '8px',
+      lg: '16px',
+      xl: '24px',
+    },
+    borderRadius: {
+      xs: '1px',
+      sm: '2px',
+      md: '4px',
+      lg: '6px',
+      xl: '8px',
+    },
+    shadows: {
+      sm: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      md: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      lg: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    },
+  },
+} as const;
+
+/**
+ * Border radius values mapping
+ */
+const borderRadiusValues = {
+  xs: '2px',
+  sm: '4px',
+  md: '6px',
+  lg: '8px',
+  xl: '12px',
+} as const;
+
+/**
+ * Apply runtime theme based on configuration
+ * This updates CSS custom properties dynamically
+ */
+export const applyRuntimeTheme = (config: RuntimeThemeConfig) => {
+  const theme = componentLibraryThemes[config.componentLibrary];
+
+  // Apply theme variables to the document root directly
+  // This is the approach recommended for runtime theme switching
+  const root = document.documentElement;
+
+  // Set component library
+  root.style.setProperty(themeVars.componentLibrary, config.componentLibrary);
+
+  // Color scheme mapping
+  root.style.setProperty(themeVars.primaryColor, `var(--mantine-color-${config.colorScheme}-6)`);
+  root.style.setProperty(themeVars.primaryColorHover, `var(--mantine-color-${config.colorScheme}-7)`);
+  root.style.setProperty(themeVars.primaryColorLight, `var(--mantine-color-${config.colorScheme}-0)`);
+  root.style.setProperty(themeVars.backgroundColor, 'var(--mantine-color-white)');
+  root.style.setProperty(themeVars.backgroundColorHover, 'var(--mantine-color-gray-0)');
+  root.style.setProperty(themeVars.surfaceColor, 'var(--mantine-color-white)');
+  root.style.setProperty(themeVars.textColor, 'var(--mantine-color-gray-9)');
+  root.style.setProperty(themeVars.textSecondaryColor, 'var(--mantine-color-gray-6)');
+  root.style.setProperty(themeVars.textMutedColor, 'var(--mantine-color-gray-5)');
+  root.style.setProperty(themeVars.borderColor, 'var(--mantine-color-gray-3)');
+
+  // Component-specific colors
+  root.style.setProperty(themeVars.cardBackground,
+    config.componentLibrary === 'shadcn' ? 'hsl(var(--shadcn-card))' : 'var(--mantine-color-white)');
+  root.style.setProperty(themeVars.inputBackground, 'var(--mantine-color-white)');
+  root.style.setProperty(themeVars.buttonBackground, `var(--mantine-color-${config.colorScheme}-6)`);
+  root.style.setProperty(themeVars.buttonHover, `var(--mantine-color-${config.colorScheme}-7)`);
+
+  // Spacing from component library theme
+  root.style.setProperty(themeVars.spacingUnit, theme.spacing.md);
+  root.style.setProperty(themeVars.spacingSm, theme.spacing.sm);
+  root.style.setProperty(themeVars.spacingMd, theme.spacing.md);
+  root.style.setProperty(themeVars.spacingLg, theme.spacing.lg);
+
+  // Border radius from config
+  root.style.setProperty(themeVars.borderRadius, borderRadiusValues[config.borderRadius]);
+  root.style.setProperty(themeVars.borderRadiusSm, borderRadiusValues.xs);
+  root.style.setProperty(themeVars.borderRadiusLg, borderRadiusValues.lg);
+
+  // Shadows
+  root.style.setProperty(themeVars.shadowSm, theme.shadows.sm);
+  root.style.setProperty(themeVars.shadowMd, theme.shadows.md);
+  root.style.setProperty(themeVars.shadowLg, theme.shadows.lg);
+};
+
+/**
+ * Apply color mode (light/dark) theme
+ * This handles the light/dark mode switching
+ */
+export const applyColorModeTheme = (colorMode: ColorMode) => {
+  const root = document.documentElement;
+
+  if (colorMode === 'dark') {
+    root.setAttribute('data-mantine-color-scheme', 'dark');
+    root.style.colorScheme = 'dark';
+  } else {
+    root.setAttribute('data-mantine-color-scheme', 'light');
+    root.style.colorScheme = 'light';
+  }
+};
+
+/**
+ * Apply dynamic CSS custom properties for interactive states
+ * These properties are used by the dynamic styles
+ */
+export const applyInteractiveProperties = () => {
+  const root = document.documentElement;
+
+  // Set up interactive state variables
+  root.style.setProperty('--hover-background', 'var(--mantine-color-gray-0)');
+  root.style.setProperty('--active-background', 'var(--mantine-color-gray-1)');
+  root.style.setProperty('--selected-background', 'var(--mantine-color-blue-light)');
+
+  // Set up shadcn semantic variables if needed
+  root.style.setProperty('--shadcn-card', '210 40% 98%');
+  root.style.setProperty('--shadcn-border', '214.3 31.8% 91.4%');
+  root.style.setProperty('--shadcn-muted-foreground', '215.4 16.3% 46.9%');
+  root.style.setProperty('--shadcn-destructive', '0 84.2% 60.2%');
+};
+
+/**
+ * Initialize runtime theme system
+ * Call this once when the application starts
+ */
+export const initializeRuntimeTheme = (config: RuntimeThemeConfig) => {
+  // Apply the main theme
+  applyRuntimeTheme(config);
+
+  // Apply color mode
+  applyColorModeTheme(config.colorMode);
+
+  // Set up interactive properties
+  applyInteractiveProperties();
+
+  // Listen for system color scheme changes if using 'auto'
+  if (config.colorMode === 'auto') {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
+      applyColorModeTheme(e.matches ? 'dark' : 'light');
+    };
+
+    mediaQuery.addEventListener('change', handleColorSchemeChange);
+
+    // Apply initial color scheme
+    applyColorModeTheme(mediaQuery.matches ? 'dark' : 'light');
+  }
+};
+
+/**
+ * Update theme at runtime
+ * Use this when the user changes theme settings
+ */
+export const updateRuntimeTheme = (newConfig: Partial<RuntimeThemeConfig>) => {
+  // Get current theme from localStorage or use defaults
+  const currentConfig: RuntimeThemeConfig = {
+    componentLibrary: 'mantine',
+    colorScheme: 'blue',
+    colorMode: 'auto',
+    borderRadius: 'md',
+  };
+
+  // Merge with new configuration
+  const updatedConfig = { ...currentConfig, ...newConfig };
+
+  // Apply the updated theme
+  applyRuntimeTheme(updatedConfig);
+
+  // Apply color mode if it changed
+  if (newConfig.colorMode) {
+    applyColorModeTheme(newConfig.colorMode);
+  }
+
+  // Save to localStorage for persistence
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('theme-config', JSON.stringify(updatedConfig));
+  }
+};
+
+/**
+ * Get current runtime theme configuration
+ */
+export const getCurrentRuntimeTheme = (): RuntimeThemeConfig => {
+  if (typeof window === 'undefined') {
+    return {
+      componentLibrary: 'mantine',
+      colorScheme: 'blue',
+      colorMode: 'auto',
+      borderRadius: 'md',
+    };
+  }
+
+  try {
+    const saved = localStorage.getItem('theme-config');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.warn('Failed to parse theme config from localStorage:', error);
+  }
+
+  return {
+    componentLibrary: 'mantine',
+    colorScheme: 'blue',
+    colorMode: 'auto',
+    borderRadius: 'md',
+  };
+};
+
+/**
+ * Utility to create theme-aware CSS values
+ * This helps components use the correct theme variables
+ */
+export const createThemeValue = (property: keyof typeof themeVars, fallback?: string) => {
+  const cssVar = `var(${themeVars[property]})`;
+  return cssVar === 'var(undefined)' && fallback ? fallback : cssVar;
+};
+
+/**
+ * Get theme value for a specific component library
+ */
+export const getComponentLibraryTheme = (library: ComponentLibrary) => {
+  return componentLibraryThemes[library];
+};
+
+/**
+ * Type exports for TypeScript support
+ */
+export type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius };

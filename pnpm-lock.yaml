@@ -386,9 +386,15 @@ importers:
       '@types/qrcode':
         specifier: 1.5.6
         version: 1.5.6
+      '@vanilla-extract/dynamic':
+        specifier: ^2.1.5
+        version: 2.1.5
       '@vanilla-extract/recipes':
         specifier: 0.5.7
         version: 0.5.7(@vanilla-extract/css@1.17.5(babel-plugin-macros@3.1.0))
+      '@vanilla-extract/sprinkles':
+        specifier: ^1.6.5
+        version: 1.6.5(@vanilla-extract/css@1.17.5(babel-plugin-macros@3.1.0))
       '@xyflow/react':
         specifier: 12.8.5
         version: 12.8.5(@types/react@19.2.7)(immer@11.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -3829,6 +3835,9 @@ packages:
   '@vanilla-extract/css@1.17.5':
     resolution: {integrity: sha512-u29cUVL5Z2qjJ2Eh8pusT1ToGtTeA4eb/y0ygaw2vWv9XFQSixtkBYEsVkrJExSI/0+SR1g8n5NYas4KlWOdfA==}
 
+  '@vanilla-extract/dynamic@2.1.5':
+    resolution: {integrity: sha512-QGIFGb1qyXQkbzx6X6i3+3LMc/iv/ZMBttMBL+Wm/DetQd36KsKsFg5CtH3qy+1hCA/5w93mEIIAiL4fkM8ycw==}
+
   '@vanilla-extract/integration@8.0.4':
     resolution: {integrity: sha512-cmOb7tR+g3ulKvFtSbmdw3YUyIS1d7MQqN+FcbwNhdieyno5xzUyfDCMjeWJhmCSMvZ6WlinkrOkgs6SHB+FRg==}
 
@@ -3837,6 +3846,11 @@ packages:
 
   '@vanilla-extract/recipes@0.5.7':
     resolution: {integrity: sha512-Fvr+htdyb6LVUu+PhH61UFPhwkjgDEk8L4Zq9oIdte42sntpKrgFy90MyTRtGwjVALmrJ0pwRUVr8UoByYeW8A==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
+
+  '@vanilla-extract/sprinkles@1.6.5':
+    resolution: {integrity: sha512-HOYidLONR/SeGk8NBAeI64I4gYdsMX9vJmniL13ZcLVwawyK0s2GUENEAcGA+GYLIoeyQB61UqmhqPodJry7zA==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
 
@@ -13583,6 +13597,10 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
+  '@vanilla-extract/dynamic@2.1.5':
+    dependencies:
+      '@vanilla-extract/private': 1.0.9
+
   '@vanilla-extract/integration@8.0.4(babel-plugin-macros@3.1.0)':
     dependencies:
       '@babel/core': 7.28.5
@@ -13602,6 +13620,10 @@ snapshots:
   '@vanilla-extract/private@1.0.9': {}
 
   '@vanilla-extract/recipes@0.5.7(@vanilla-extract/css@1.17.5(babel-plugin-macros@3.1.0))':
+    dependencies:
+      '@vanilla-extract/css': 1.17.5(babel-plugin-macros@3.1.0)
+
+  '@vanilla-extract/sprinkles@1.6.5(@vanilla-extract/css@1.17.5(babel-plugin-macros@3.1.0))':
     dependencies:
       '@vanilla-extract/css': 1.17.5(babel-plugin-macros@3.1.0)
 
