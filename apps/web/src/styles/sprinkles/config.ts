@@ -4,9 +4,9 @@
  */
 
 // Simple CSS class name generator as fallback
-const generateCSSClass = (styles: Record<string, string>): string => {
+const generateCSSClass = (styles: Record<string, any>): string => {
   const className = Object.entries(styles)
-    .map(([prop, value]) => `${prop}-${value.replace(/[^a-zA-Z0-9]/g, '-')}`)
+    .map(([prop, value]) => `${prop}-${String(value).replace(/[^a-zA-Z0-9]/g, '-')}`)
     .join('-');
 
   // Apply styles inline for now as fallback

@@ -134,7 +134,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     resetTheme,
   };
 
-  const mantineTheme = generateMantineTheme();
+  const currentMantineTheme = generateMantineTheme();
 
   // Determine the effective color scheme
   const effectiveColorScheme = config.colorMode === 'auto' ? systemColorMode : config.colorMode;
@@ -142,7 +142,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeContext.Provider value={contextValue}>
       <MantineProvider
-        theme={mantineTheme}
+        theme={currentMantineTheme}
         defaultColorScheme={effectiveColorScheme}
         forceColorScheme={effectiveColorScheme}
       >
