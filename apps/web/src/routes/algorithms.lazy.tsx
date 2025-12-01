@@ -704,45 +704,61 @@ function AlgorithmsPage() {
     }
 
     if (viewMode === '2D') {
-      // Use zoomToFit with a filter directly using highlightedNodes
-      // The filter receives nodes from the internal d3 simulation
+      // 2D mode: use zoomToFit with filter
       graph.zoomToFit(
         400,
         50,
         (node: FilterNode) => {
           if (node.id == null) return false;
-          // Check both string conversion since highlightedNodes contains strings
           const nodeIdStr = String(node.id);
           return highlightedNodes.has(nodeIdStr);
         }
       );
     } else {
-      // 3D mode needs actual node positions from graph
-      const graphNodes = graph.graphData?.()?.nodes ?? [];
-      const selectedNodes = graphNodes.filter((n) => highlightedNodes.has(String(n.id)));
-      if (selectedNodes.length === 0) {
+      // 3D mode: use zoomToFit to get node positions, then manually position camera
+      // First, collect node positions via the filter callback
+      const matchedPositions: Array<{ x: number; y: number; z: number }> = [];
+
+      // Call zoomToFit just to trigger the filter and collect positions
+      graph.zoomToFit(
+        0, // instant (we'll override anyway)
+        0,
+        (node: FilterNode) => {
+          if (node.id == null) return false;
+          const nodeIdStr = String(node.id);
+          const matches = highlightedNodes.has(nodeIdStr);
+          if (matches) {
+            matchedPositions.push({
+              x: node.x ?? 0,
+              y: node.y ?? 0,
+              z: node.z ?? 0,
+            });
+          }
+          return matches;
+        }
+      );
+
+      if (matchedPositions.length === 0) {
+        console.log('[fitToViewSelected] No matched positions, falling back to fitToViewAll');
         fitToViewAll();
         return;
       }
-      // 3D mode: use manual camera positioning since zoomToFit filter is unreliable
-      // Calculate bounding box of selected nodes
+
+      // Calculate bounding box
       let minX = Infinity, maxX = -Infinity;
       let minY = Infinity, maxY = -Infinity;
       let minZ = Infinity, maxZ = -Infinity;
 
-      selectedNodes.forEach((n) => {
-        const x = n.x ?? 0;
-        const y = n.y ?? 0;
-        const z = n.z ?? 0;
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-        minZ = Math.min(minZ, z);
-        maxZ = Math.max(maxZ, z);
+      matchedPositions.forEach((pos) => {
+        minX = Math.min(minX, pos.x);
+        maxX = Math.max(maxX, pos.x);
+        minY = Math.min(minY, pos.y);
+        maxY = Math.max(maxY, pos.y);
+        minZ = Math.min(minZ, pos.z);
+        maxZ = Math.max(maxZ, pos.z);
       });
 
-      // Calculate center and dimensions
+      // Calculate centroid and dimensions
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
       const centerZ = (minZ + maxZ) / 2;
@@ -750,44 +766,21 @@ function AlgorithmsPage() {
       const height = maxY - minY;
       const depth = maxZ - minZ;
 
-      // Use the largest dimension for camera distance calculation
-      // Account for FOV (~75 degrees) - distance = size / (2 * tan(FOV/2))
-      const maxDimension = Math.max(width, height, depth, 50); // 50 minimum for single nodes
-      const fovFactor = 1.5; // Approximates 1 / tan(37.5°) with padding
-      const cameraDistance = maxDimension * fovFactor + 100;
+      // Calculate camera distance to fit the bounding box
+      const maxDimension = Math.max(width, height, depth, 50);
+      const cameraDistance = maxDimension * 1.5 + 100;
 
-      // Directly set camera position and controls target
-      const camera = graph.camera?.();
-      const controls = graph.controls?.();
+      console.log('[fitToViewSelected] 3D centroid:', { centerX, centerY, centerZ });
+      console.log('[fitToViewSelected] 3D cameraDistance:', cameraDistance);
 
-      if (camera && controls) {
-        // Set the controls target (orbit center) to the bounding box center
-        if (controls.target?.set) {
-          controls.target.set(centerX, centerY, centerZ);
-        } else if (controls.target) {
-          controls.target.x = centerX;
-          controls.target.y = centerY;
-          controls.target.z = centerZ;
-        }
-        // Position camera along z-axis from center
-        if (camera.position?.set) {
-          camera.position.set(centerX, centerY, centerZ + cameraDistance);
-        }
-        // Make camera look at the target
-        if (camera.lookAt) {
-          camera.lookAt(centerX, centerY, centerZ);
-        }
-        // Update controls
-        if (controls.update) {
-          controls.update();
-        }
-      } else if (graph.cameraPosition) {
-        // Fallback to cameraPosition method with lookAt
+      // Use cameraPosition for smooth animation
+      if (graph.cameraPosition) {
         graph.cameraPosition(
           { x: centerX, y: centerY, z: centerZ + cameraDistance },
           { x: centerX, y: centerY, z: centerZ },
-          0 // instant
+          400
         );
+        console.log('[fitToViewSelected] Called cameraPosition');
       }
     }
   }, [highlightedNodes, viewMode, fitToViewAll]);
