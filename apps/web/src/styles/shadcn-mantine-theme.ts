@@ -1472,5 +1472,298 @@ export const shadcnMantineTheme = createTheme({
         },
       },
     },
+
+    // Critical Missing Components (Actively Used)
+
+    Accordion: {
+      vars: (theme) => ({
+        root: {
+          '--accordion-border-color': 'var(--mantine-color-default-border)',
+          '--accordion-radius': 'var(--mantine-radius-default)',
+        },
+        item: {
+          '--accordion-item-bg': 'var(--mantine-color-body)',
+          '--accordion-item-border-color': 'var(--accordion-border-color)',
+          '--accordion-item-transition': 'all 0.2s ease',
+        },
+        control: {
+          '--accordion-control-color': 'var(--mantine-color-default-color)',
+          '--accordion-control-bg-hover': 'var(--mantine-color-default-hover)',
+          '--accordion-control-padding': 'var(--mantine-spacing-md)',
+          '--accordion-control-font-weight': '600',
+          '--accordion-control-transition': 'var(--accordion-item-transition)',
+        },
+        content: {
+          '--accordion-content-padding': 'var(--accordion-control-padding)',
+          '--accordion-content-bg': 'var(--mantine-color-body)',
+        },
+        chevron: {
+          '--accordion-chevron-color': 'var(--mantine-color-dimmed)',
+          '--accordion-chevron-size': 'rem(16px)',
+          '--accordion-chevron-transition': 'transform 0.2s ease',
+        },
+      }),
+      styles: {
+        root: {
+          borderRadius: 'var(--accordion-radius)',
+          overflow: 'hidden',
+        },
+        item: {
+          backgroundColor: 'var(--accordion-item-bg)',
+          border: '1px solid var(--accordion-item-border-color)',
+          borderRadius: 'var(--accordion-radius)',
+          marginBottom: 'var(--mantine-spacing-xs)',
+          transition: 'var(--accordion-item-transition)',
+          '&:last-child': {
+            marginBottom: 0,
+          },
+        },
+        control: {
+          color: 'var(--accordion-control-color)',
+          backgroundColor: 'transparent',
+          border: 'none',
+          padding: 'var(--accordion-control-padding)',
+          fontWeight: 'var(--accordion-control-font-weight)',
+          transition: 'var(--accordion-control-transition)',
+          cursor: 'pointer',
+          width: '100%',
+          textAlign: 'left',
+          '&:hover': {
+            backgroundColor: 'var(--accordion-control-bg-hover)',
+          },
+        },
+        content: {
+          padding: 'var(--accordion-content-padding)',
+          backgroundColor: 'var(--accordion-content-bg)',
+        },
+        chevron: {
+          color: 'var(--accordion-chevron-color)',
+          width: 'var(--accordion-chevron-size)',
+          height: 'var(--accordion-chevron-size)',
+          transition: 'var(--accordion-chevron-transition)',
+          '[data-open]': {
+            transform: 'rotate(180deg)',
+          },
+        },
+      },
+    },
+
+    Slider: {
+      vars: (theme) => ({
+        root: {
+          '--slider-size': 'rem(6px)',
+          '--slider-track-size': 'rem(4px)',
+          '--slider-color': 'var(--mantine-color-primary-filled)',
+          '--slider-track-color': 'var(--mantine-color-default-hover)',
+          '--slider-thumb-size': 'rem(20px)',
+          '--slider-thumb-color': 'var(--mantine-color-white)',
+          '--slider-thumb-border-color': 'var(--mantine-color-primary-filled)',
+          '--slider-mark-size': 'rem(8px)',
+          '--slider-mark-color': 'var(--mantine-color-dimmed)',
+          '--slider-transition': 'all 0.2s ease',
+        },
+        marks: {
+          '--slider-mark-active-color': 'var(--slider-color)',
+        },
+      }),
+      styles: {
+        root: {
+          position: 'relative',
+          height: 'var(--slider-size)',
+        },
+        track: {
+          height: 'var(--slider-track-size)',
+          backgroundColor: 'var(--slider-track-color)',
+          borderRadius: 'var(--mantine-radius-sm)',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '100%',
+        },
+        bar: {
+          height: 'var(--slider-track-size)',
+          backgroundColor: 'var(--slider-color)',
+          borderRadius: 'var(--mantine-radius-sm)',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          transition: 'var(--slider-transition)',
+        },
+        thumb: {
+          width: 'var(--slider-thumb-size)',
+          height: 'var(--slider-thumb-size)',
+          backgroundColor: 'var(--slider-thumb-color)',
+          border: '2px solid var(--slider-thumb-border-color)',
+          borderRadius: '50%',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          cursor: 'grab',
+          transition: 'var(--slider-transition)',
+          '&:active': {
+            cursor: 'grabbing',
+          },
+        },
+        marksContainer: {
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 'var(--mantine-spacing-xs)',
+        },
+        mark: {
+          width: 'var(--slider-mark-size)',
+          height: 'var(--slider-mark-size)',
+          backgroundColor: 'var(--slider-mark-color)',
+          borderRadius: '50%',
+          position: 'absolute',
+          transform: 'translateX(-50%)',
+          transition: 'var(--slider-transition)',
+          '&[data-active]': {
+            backgroundColor: 'var(--slider-mark-active-color)',
+          },
+        },
+        markWrapper: {
+          position: 'absolute',
+          transform: 'translateX(-50%)',
+        },
+        markLabel: {
+          color: 'var(--mantine-color-dimmed)',
+          fontSize: 'var(--mantine-font-size-xs)',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+        },
+      },
+    },
+
+    RangeSlider: {
+      vars: (theme) => ({
+        root: {
+          '--range-slider-size': 'rem(6px)',
+          '--range-slider-track-size': 'rem(4px)',
+          '--range-slider-color': 'var(--mantine-color-primary-filled)',
+          '--range-slider-track-color': 'var(--mantine-color-default-hover)',
+          '--range-slider-thumb-size': 'rem(20px)',
+          '--range-slider-thumb-color': 'var(--mantine-color-white)',
+          '--range-slider-thumb-border-color': 'var(--mantine-color-primary-filled)',
+          '--range-slider-track-active-color': 'var(--range-slider-color)',
+          '--range-slider-transition': 'all 0.2s ease',
+        },
+      }),
+      styles: {
+        root: {
+          position: 'relative',
+          height: 'var(--range-slider-size)',
+        },
+        track: {
+          height: 'var(--range-slider-track-size)',
+          backgroundColor: 'var(--range-slider-track-color)',
+          borderRadius: 'var(--mantine-radius-sm)',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '100%',
+        },
+        bar: {
+          height: 'var(--range-slider-track-size)',
+          backgroundColor: 'var(--range-slider-track-active-color)',
+          borderRadius: 'var(--mantine-radius-sm)',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          transition: 'var(--range-slider-transition)',
+        },
+        thumb: {
+          width: 'var(--range-slider-thumb-size)',
+          height: 'var(--range-slider-thumb-size)',
+          backgroundColor: 'var(--range-slider-thumb-color)',
+          border: '2px solid var(--range-slider-thumb-border-color)',
+          borderRadius: '50%',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          cursor: 'grab',
+          transition: 'var(--range-slider-transition)',
+          '&:active': {
+            cursor: 'grabbing',
+          },
+        },
+      },
+    },
+
+    // TextInput component - Basic text input field styling
+    TextInput: {
+      vars: (theme) => ({
+        input: {
+          '--text-input-size': 'var(--mantine-control-size)',
+          '--text-input-radius': 'var(--mantine-radius-default)',
+          '--text-input-color': 'var(--mantine-color-default-color)',
+          '--text-input-placeholder-color': 'var(--mantine-color-placeholder)',
+          '--text-input-disabled-color': 'var(--mantine-color-disabled)',
+          '--text-input-error-color': 'var(--mantine-color-error)',
+          '--text-input-focused-border-color': 'var(--mantine-color-primary-6)',
+          '--text-input-border-color': 'var(--mantine-color-default-border)',
+          '--text-input-bg': 'var(--mantine-color-default)',
+        },
+      }),
+      styles: (theme) => ({
+        input: {
+          border: '1px solid var(--text-input-border-color)',
+          backgroundColor: 'var(--text-input-bg)',
+          color: 'var(--text-input-color)',
+          '&:focus': {
+            borderColor: 'var(--text-input-focused-border-color)',
+            outline: 'none',
+          },
+          '&:disabled': {
+            color: 'var(--text-input-disabled-color)',
+            backgroundColor: 'var(--mantine-color-disabled)',
+            cursor: 'not-allowed',
+          },
+          '&[data-error]': {
+            borderColor: 'var(--text-input-error-color)',
+            color: 'var(--text-input-error-color)',
+          },
+        },
+        wrapper: {
+          width: '100%',
+        },
+      }),
+    },
+
+  
+    // NativeSelect component - Native browser select dropdown
+    NativeSelect: {
+      vars: (theme) => ({
+        input: {
+          '--native-select-size': 'var(--mantine-control-size)',
+          '--native-select-radius': 'var(--mantine-radius-default)',
+          '--native-select-color': 'var(--mantine-color-default-color)',
+          '--native-select-bg': 'var(--mantine-color-default)',
+          '--native-select-border-color': 'var(--mantine-color-default-border)',
+          '--native-select-focused-border-color': 'var(--mantine-color-primary-6)',
+        },
+      }),
+      styles: (theme) => ({
+        input: {
+          cursor: 'pointer',
+          backgroundColor: 'var(--native-select-bg)',
+          border: '1px solid var(--native-select-border-color)',
+          color: 'var(--native-select-color)',
+          '&:focus': {
+            borderColor: 'var(--native-select-focused-border-color)',
+            outline: 'none',
+          },
+          '&:disabled': {
+            color: 'var(--mantine-color-disabled)',
+            backgroundColor: 'var(--mantine-color-disabled)',
+            cursor: 'not-allowed',
+          },
+        },
+        wrapper: {
+          width: '100%',
+        },
+      }),
+    },
   },
 })
