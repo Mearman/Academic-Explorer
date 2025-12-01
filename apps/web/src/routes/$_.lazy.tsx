@@ -390,14 +390,14 @@ function ExternalIdRoute() {
       <div
         style={{
           fontFamily: "monospace",
-          backgroundColor: "var(--shadcn-muted)",
+          backgroundColor: "var(--mantine-color-gray-1)",
           padding: "10px",
           borderRadius: "4px",
         }}
       >
         {decodeURIComponent(externalId)}
       </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "var(--shadcn-muted-foreground)" }}>
+      <div style={{ marginTop: "20px", fontSize: "14px", color: "var(--mantine-color-dimmed)" }}>
         Detecting entity type and loading data
       </div>
     </div>

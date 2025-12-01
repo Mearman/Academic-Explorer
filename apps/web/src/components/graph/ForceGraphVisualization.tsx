@@ -255,7 +255,7 @@ export function ForceGraphVisualization({
     // Draw node circle
     ctx.beginPath();
     ctx.arc(x, y, size, 0, 2 * Math.PI);
-    ctx.fillStyle = style.color ?? ENTITY_TYPE_COLORS[forceNode.entityType] ?? 'var(--shadcn-muted-foreground)';
+    ctx.fillStyle = style.color ?? ENTITY_TYPE_COLORS[forceNode.entityType] ?? 'var(--mantine-color-dimmed)';
     ctx.fill();
 
     // Draw border if specified
@@ -272,7 +272,7 @@ export function ForceGraphVisualization({
       ctx.font = `${fontSize}px Sans-Serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillStyle = isHighlighted ? 'var(--shadcn-foreground)' : 'var(--shadcn-muted-foreground)';
+      ctx.fillStyle = isHighlighted ? 'var(--mantine-color-text)' : 'var(--mantine-color-dimmed)';
       ctx.fillText(label, x, y + size + 2);
     }
 
@@ -294,8 +294,8 @@ export function ForceGraphVisualization({
     if (!source.x || !source.y || !target.x || !target.y) return;
 
     ctx.globalAlpha = isHighlighted ? (style.opacity ?? 0.6) : 0.1;
-    ctx.strokeStyle = style.color ?? 'var(--shadcn-muted-foreground)';
-    ctx.fillStyle = style.color ?? 'var(--shadcn-muted-foreground)';
+    ctx.strokeStyle = style.color ?? 'var(--mantine-color-dimmed)';
+    ctx.fillStyle = style.color ?? 'var(--mantine-color-dimmed)';
     ctx.lineWidth = (style.width ?? 1) / globalScale;
 
     if (style.dashed) {
@@ -435,7 +435,7 @@ function getDefaultNodeStyle(
   communityId?: number,
   communityColors?: Map<number, string>
 ): NodeStyle {
-  let color = ENTITY_TYPE_COLORS[node.entityType] ?? 'var(--shadcn-muted-foreground)';
+  let color = ENTITY_TYPE_COLORS[node.entityType] ?? 'var(--mantine-color-dimmed)';
 
   // Use community color if available
   if (communityId !== undefined && communityColors?.has(communityId)) {
@@ -446,7 +446,7 @@ function getDefaultNodeStyle(
     color,
     size: isHighlighted ? 8 : 6,
     opacity: 1,
-    borderColor: isHighlighted ? 'var(--shadcn-background)' : undefined,
+    borderColor: isHighlighted ? 'var(--mantine-color-body)' : undefined,
     borderWidth: isHighlighted ? 2 : 0,
   };
 }
@@ -467,7 +467,7 @@ function getDefaultLinkStyle(
   // Path highlight mode overrides edge type colors
   if (isHighlighted && isPathHighlightMode) {
     return {
-      color: 'var(--shadcn-primary)', // Primary color for path highlighting
+      color: 'var(--mantine-primary-color-filled)', // Primary color for path highlighting
       width: 3,
       opacity: 0.8,
       dashed: false,
@@ -476,7 +476,7 @@ function getDefaultLinkStyle(
   }
 
   return {
-    color: edgeStyle.stroke ?? 'var(--shadcn-muted-foreground)',
+    color: edgeStyle.stroke ?? 'var(--mantine-color-dimmed)',
     width: edgeStyle.strokeWidth ?? 2,
     opacity: edgeStyle.strokeOpacity ?? 0.6,
     dashed: edgeStyle.strokeDasharray !== undefined,

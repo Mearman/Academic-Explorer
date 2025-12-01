@@ -153,7 +153,7 @@ function WorkRoute() {
         <div
           style={{
             fontFamily: "monospace",
-            backgroundColor: "var(--shadcn-muted)",
+            backgroundColor: "var(--mantine-color-gray-1)",
             padding: "10px",
             borderRadius: "4px",
             marginBottom: "20px",
@@ -162,7 +162,7 @@ function WorkRoute() {
         >
           {decodedWorkId}
         </div>
-        <div style={{ fontSize: "14px", color: "var(--shadcn-muted-foreground)" }}>
+        <div style={{ fontSize: "14px", color: "var(--mantine-color-dimmed)" }}>
           Detecting entity type and resolving to OpenAlex ID
         </div>
       </div>
@@ -179,26 +179,26 @@ function WorkRoute() {
           fontSize: "16px",
         }}
       >
-        <div style={{ marginBottom: "20px", fontSize: "18px", color: "var(--shadcn-destructive)" }}>
+        <div style={{ marginBottom: "20px", fontSize: "18px", color: "var(--mantine-color-red-6)" }}>
           Error Processing Work ID
         </div>
         <div
           style={{
             fontFamily: "monospace",
-            backgroundColor: "var(--shadcn-destructive/0.1)",
+            backgroundColor: "rgba(var(--mantine-color-red-6-rgb), 0.1)",
             padding: "10px",
             borderRadius: "4px",
             marginBottom: "20px",
-            border: "1px solid var(--shadcn-destructive/0.3)",
+            border: "1px solid rgba(var(--mantine-color-red-6-rgb), 0.3)",
             wordBreak: "break-all",
           }}
         >
           {decodedWorkId}
         </div>
-        <div style={{ fontSize: "14px", color: "var(--shadcn-destructive)", marginBottom: "20px" }}>
+        <div style={{ fontSize: "14px", color: "var(--mantine-color-red-6)", marginBottom: "20px" }}>
           {externalIdError}
         </div>
-        <div style={{ fontSize: "12px", color: "var(--shadcn-muted-foreground)" }}>
+        <div style={{ fontSize: "12px", color: "var(--mantine-color-dimmed)" }}>
           Please check the work ID format and try again.
         </div>
       </div>

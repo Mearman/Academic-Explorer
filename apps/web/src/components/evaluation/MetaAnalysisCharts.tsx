@@ -6,15 +6,15 @@
 import type { ComparisonResults } from "@bibgraph/utils";
 import { useMemo } from "react";
 
-// Common color constants - using CSS custom properties for theme variables
-const COLOR_GRAY_500 = "var(--shadcn-muted-foreground)";
-const COLOR_GRAY_100 = "var(--shadcn-muted)";
-const COLOR_WHITE = "var(--shadcn-background)";
-const COLOR_BLUE_500 = "var(--shadcn-primary)";
-const COLOR_GREEN_500 = "var(--shadcn-success)";
-const COLOR_RED_500 = "var(--shadcn-destructive)";
-const COLOR_AMBER_500 = "var(--shadcn-warning)";
-const COLOR_VIOLET_500 = "var(--shadcn-purple-500)";
+// Common color constants - using Mantine CSS custom properties for theme-agnostic colors
+const COLOR_GRAY_500 = "var(--mantine-color-dimmed)";
+const COLOR_GRAY_100 = "var(--mantine-color-gray-1)";
+const COLOR_WHITE = "var(--mantine-color-body)";
+const COLOR_BLUE_500 = "var(--mantine-primary-color-filled)";
+const COLOR_GREEN_500 = "var(--mantine-color-green-6)";
+const COLOR_RED_500 = "var(--mantine-color-red-6)";
+const COLOR_AMBER_500 = "var(--mantine-color-yellow-6)";
+const COLOR_VIOLET_500 = "var(--mantine-color-violet-5)";
 
 interface MetaAnalysisChartsProps {
   comparisonResults: ComparisonResults[];
@@ -93,7 +93,7 @@ export function PerformanceComparisonChart({
         style={{
           fontSize: "18px",
           fontWeight: "600",
-          color: "var(--shadcn-foreground)",
+          color: "var(--mantine-color-text)",
           marginBottom: "16px",
         }}
       >
@@ -119,7 +119,7 @@ export function PerformanceComparisonChart({
                 width: "200px",
                 fontSize: "14px",
                 fontWeight: "500",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
                 textAlign: "right",
               }}
             >
@@ -153,7 +153,7 @@ export function PerformanceComparisonChart({
                   style={{
                     flex: 1,
                     height: "16px",
-                    backgroundColor: "var(--shadcn-secondary)",
+                    backgroundColor: "var(--mantine-color-gray-2)",
                     borderRadius: "8px",
                     position: "relative",
                     overflow: "hidden",
@@ -172,7 +172,7 @@ export function PerformanceComparisonChart({
                   style={{
                     width: "50px",
                     fontSize: "12px",
-                    color: "var(--shadcn-foreground)",
+                    color: "var(--mantine-color-text)",
                     fontWeight: "600",
                   }}
                 >
@@ -198,7 +198,7 @@ export function PerformanceComparisonChart({
                   style={{
                     flex: 1,
                     height: "16px",
-                    backgroundColor: "var(--shadcn-secondary)",
+                    backgroundColor: "var(--mantine-color-gray-2)",
                     borderRadius: "8px",
                     position: "relative",
                     overflow: "hidden",
@@ -217,7 +217,7 @@ export function PerformanceComparisonChart({
                   style={{
                     width: "50px",
                     fontSize: "12px",
-                    color: "var(--shadcn-foreground)",
+                    color: "var(--mantine-color-text)",
                     fontWeight: "600",
                   }}
                 >
@@ -243,7 +243,7 @@ export function PerformanceComparisonChart({
                   style={{
                     flex: 1,
                     height: "16px",
-                    backgroundColor: "var(--shadcn-secondary)",
+                    backgroundColor: "var(--mantine-color-gray-2)",
                     borderRadius: "8px",
                     position: "relative",
                     overflow: "hidden",
@@ -262,7 +262,7 @@ export function PerformanceComparisonChart({
                   style={{
                     width: "50px",
                     fontSize: "12px",
-                    color: "var(--shadcn-foreground)",
+                    color: "var(--mantine-color-text)",
                     fontWeight: "600",
                   }}
                 >
@@ -329,7 +329,7 @@ export function PrecisionRecallScatterPlot({
         style={{
           fontSize: "18px",
           fontWeight: "600",
-          color: "var(--shadcn-foreground)",
+          color: "var(--mantine-color-text)",
           marginBottom: "16px",
         }}
       >
@@ -354,7 +354,7 @@ export function PrecisionRecallScatterPlot({
               <path
                 d="M 30 0 L 0 0 0 30"
                 fill="none"
-                stroke="var(--shadcn-secondary)"
+                stroke="var(--mantine-color-gray-2)"
                 strokeWidth="1"
               />
             </pattern>
@@ -412,7 +412,7 @@ export function PrecisionRecallScatterPlot({
                   r={radius}
                   fill={COLOR_BLUE_500}
                   fillOpacity={0.7}
-                  stroke="var(--shadcn-primary-600)"
+                  stroke="var(--mantine-color-blue-7)"
                   strokeWidth={2}
                 />
                 <title>
@@ -480,7 +480,7 @@ export function PrecisionRecallScatterPlot({
             style={{
               fontSize: "14px",
               fontWeight: "600",
-              color: "var(--shadcn-foreground)",
+              color: "var(--mantine-color-text)",
               marginBottom: "8px",
             }}
           >
@@ -503,7 +503,7 @@ export function PrecisionRecallScatterPlot({
                   height: "8px",
                   borderRadius: "50%",
                   backgroundColor: COLOR_BLUE_500,
-                  border: "1px solid var(--shadcn-primary-600)",
+                  border: "1px solid var(--mantine-color-blue-7)",
                 }}
               />
               <span
@@ -605,7 +605,7 @@ export function ConfusionMatrixHeatmap({
         style={{
           fontSize: "18px",
           fontWeight: "600",
-          color: "var(--shadcn-foreground)",
+          color: "var(--mantine-color-text)",
           marginBottom: "16px",
         }}
       >
@@ -637,7 +637,7 @@ export function ConfusionMatrixHeatmap({
                 textAlign: "center",
                 fontSize: "12px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
               }}
             >
               Relevant
@@ -648,7 +648,7 @@ export function ConfusionMatrixHeatmap({
                 textAlign: "center",
                 fontSize: "12px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
               }}
             >
               Not Relevant
@@ -669,7 +669,7 @@ export function ConfusionMatrixHeatmap({
                 textAlign: "center",
                 fontSize: "12px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
                 transform: "rotate(-90deg)",
               }}
             >
@@ -686,7 +686,7 @@ export function ConfusionMatrixHeatmap({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "2px solid var(--shadcn-success-700)",
+                border: "2px solid var(--mantine-color-green-7)",
                 fontSize: "12px",
                 fontWeight: "600",
               }}
@@ -705,7 +705,7 @@ export function ConfusionMatrixHeatmap({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "2px solid var(--shadcn-destructive-600)",
+                border: "2px solid var(--mantine-color-red-7)",
                 fontSize: "12px",
                 fontWeight: "600",
               }}
@@ -723,7 +723,7 @@ export function ConfusionMatrixHeatmap({
                 textAlign: "center",
                 fontSize: "12px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
                 transform: "rotate(-90deg)",
               }}
             >
@@ -740,7 +740,7 @@ export function ConfusionMatrixHeatmap({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "2px solid var(--shadcn-warning-600)",
+                border: "2px solid var(--mantine-color-yellow-7)",
                 fontSize: "12px",
                 fontWeight: "600",
               }}
@@ -759,7 +759,7 @@ export function ConfusionMatrixHeatmap({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "2px solid var(--shadcn-muted-foreground)",
+                border: "2px solid var(--mantine-color-dimmed)",
                 fontSize: "12px",
                 fontWeight: "600",
               }}
@@ -784,7 +784,7 @@ export function ConfusionMatrixHeatmap({
               style={{
                 fontSize: "14px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
                 marginBottom: "8px",
               }}
             >
@@ -818,7 +818,7 @@ export function ConfusionMatrixHeatmap({
               style={{
                 fontSize: "14px",
                 fontWeight: "600",
-                color: "var(--shadcn-foreground)",
+                color: "var(--mantine-color-text)",
                 marginBottom: "8px",
               }}
             >
@@ -918,7 +918,7 @@ export function DatasetStatisticsOverview({
         style={{
           fontSize: "18px",
           fontWeight: "600",
-          color: "var(--shadcn-foreground)",
+          color: "var(--mantine-color-text)",
           marginBottom: "16px",
         }}
       >
@@ -936,7 +936,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Dataset
@@ -948,7 +948,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Original
@@ -960,7 +960,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Included
@@ -972,7 +972,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 AE Found
@@ -984,7 +984,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Coverage
@@ -996,7 +996,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Precision
@@ -1008,7 +1008,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Recall
@@ -1020,7 +1020,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 F1-Score
@@ -1032,7 +1032,7 @@ export function DatasetStatisticsOverview({
                   borderBottom: "TABLE_HEADER_BORDER",
                   fontSize: "12px",
                   fontWeight: "600",
-                  color: "var(--shadcn-foreground)",
+                  color: "var(--mantine-color-text)",
                 }}
               >
                 Additional
@@ -1052,7 +1052,7 @@ export function DatasetStatisticsOverview({
                   style={{
                     padding: "12px 8px",
                     fontSize: "14px",
-                    color: "var(--shadcn-foreground)",
+                    color: "var(--mantine-color-text)",
                     maxWidth: "150px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -1086,7 +1086,7 @@ export function DatasetStatisticsOverview({
                     textAlign: "right",
                     padding: "12px 8px",
                     fontSize: "14px",
-                    color: "var(--shadcn-foreground)",
+                    color: "var(--mantine-color-text)",
                     fontWeight: "600",
                   }}
                 >

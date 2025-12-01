@@ -36,7 +36,7 @@ export function renderNodeOnCanvas(
   ctx.save();
 
   // Set fill style
-  ctx.fillStyle = style.fill || 'var(--shadcn-blue)';
+  ctx.fillStyle = style.fill || 'var(--mantine-color-blue-6)';
   ctx.globalAlpha = style.fillOpacity ?? style.opacity ?? 1;
 
   // Draw node circle
@@ -45,7 +45,7 @@ export function renderNodeOnCanvas(
   ctx.fill();
 
   // Draw border
-  ctx.strokeStyle = style.stroke || 'var(--shadcn-blue-filled)';
+  ctx.strokeStyle = style.stroke || 'var(--mantine-color-blue-filled)';
   ctx.lineWidth = (style.strokeWidth || 2) / globalScale;
 
   // Handle dashed borders for xpac works
@@ -75,8 +75,8 @@ export function getSvgNodeAttributes(
   const style = getConditionalNodeStyle(node);
 
   return {
-    fill: style.fill || 'var(--shadcn-blue)',
-    stroke: style.stroke || 'var(--shadcn-blue-filled)',
+    fill: style.fill || 'var(--mantine-color-blue-6)',
+    stroke: style.stroke || 'var(--mantine-color-blue-filled)',
     'stroke-width': style.strokeWidth || 2,
     'stroke-dasharray': style.strokeDasharray || 'none',
     opacity: style.fillOpacity ?? style.opacity ?? 1,
@@ -101,9 +101,9 @@ export function getDomNodeStyle(
   const style = getConditionalNodeStyle(node);
 
   return {
-    border: style.border || `2px solid ${style.stroke || 'var(--shadcn-blue-filled)'}`,
+    border: style.border || `2px solid ${style.stroke || 'var(--mantine-color-blue-filled)'}`,
     borderStyle: style.borderStyle || (style.strokeDasharray ? 'dashed' : 'solid'),
-    backgroundColor: style.backgroundColor || style.fill || 'var(--shadcn-blue)',
+    backgroundColor: style.backgroundColor || style.fill || 'var(--mantine-color-blue-6)',
     opacity: style.opacity ?? 1,
     // Data attributes for testing
     ...(style['data-xpac'] && { 'data-xpac': style['data-xpac'] }),
@@ -122,7 +122,7 @@ export function getDomNodeStyle(
  */
 export function getNodeColor(node: GraphNode): string {
   const style = getConditionalNodeStyle(node);
-  return style.fill || 'var(--shadcn-blue)';
+  return style.fill || 'var(--mantine-color-blue-6)';
 }
 
 /**
@@ -148,7 +148,7 @@ export function createNodeCanvasObjectFunction() {
       const style = getConditionalNodeStyle(node);
       const NODE_RADIUS = 5;
 
-      ctx.fillStyle = style.stroke || 'var(--shadcn-blue-filled)';
+      ctx.fillStyle = style.stroke || 'var(--mantine-color-blue-filled)';
       ctx.font = `${12 / globalScale}px Sans-Serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -209,7 +209,7 @@ export function createNodeThreeObject(
 
   const geometry = new THREE.SphereGeometry(NODE_RADIUS);
   const material = new THREE.MeshLambertMaterial({
-    color: style.fill || 'var(--shadcn-blue)',
+    color: style.fill || 'var(--mantine-color-blue-6)',
     opacity: style.fillOpacity ?? style.opacity ?? 1,
     transparent: (style.fillOpacity ?? style.opacity ?? 1) < 1,
     // Note: Dashed lines not easily supported in Three.js materials

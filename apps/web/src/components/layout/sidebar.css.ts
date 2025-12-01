@@ -60,7 +60,7 @@ export const bookmarkTitle = style({
   lineHeight: "1.4",
   transition: "color 0.2s ease",
   ":hover": {
-    color: "var(--shadcn-primary)",
+    color: "var(--mantine-primary-color-filled)",
   },
 });
 
@@ -69,7 +69,7 @@ export const historyCard = style({
   transition: "all 0.2s ease",
   ":hover": {
     transform: "translateX(2px)",
-    backgroundColor: "var(--shadcn-accent)",
+    backgroundColor: "var(--mantine-color-gray-1)",
   },
 });
 
@@ -81,7 +81,7 @@ export const historyEntry = style({
   lineHeight: "1.4",
   transition: "color 0.2s ease",
   ":hover": {
-    color: "var(--shadcn-primary)",
+    color: "var(--mantine-primary-color-filled)",
   },
 });
 
@@ -100,7 +100,7 @@ export const tagBadge = style({
 export const footerText = style({
   textAlign: "center",
   fontSize: "0.75rem",
-  color: "var(--shadcn-muted-foreground)",
+  color: "var(--mantine-color-dimmed)",
   marginTop: "1rem",
 });
 
@@ -108,12 +108,12 @@ export const resizeHandle = style({
   cursor: "ew-resize",
   transition: "background-color 0.2s ease",
   ":hover": {
-    backgroundColor: "var(--shadcn-border)",
+    backgroundColor: "var(--mantine-color-default-border)",
   },
 });
 
 export const pinnedIndicator = style({
-  color: "var(--shadcn-primary)",
+  color: "var(--mantine-primary-color-filled)",
 });
 
 export const groupHeader = style({
@@ -126,7 +126,7 @@ export const groupHeader = style({
 export const groupTitle = style({
   fontSize: "0.75rem",
   fontWeight: "600",
-  color: "var(--shadcn-muted-foreground)",
+  color: "var(--mantine-color-dimmed)",
 });
 
 export const groupDivider = style({
@@ -136,6 +136,6 @@ export const groupDivider = style({
 export const navigationButton = style({
   transition: "all 0.2s ease",
   ":hover": {
-    backgroundColor: "var(--shadcn-accent)",
+    backgroundColor: "var(--mantine-color-gray-1)",
   },
 });

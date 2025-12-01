@@ -1,6 +1,6 @@
 /**
  * Common style constants for inline styles
- * Now using shadcn theme variables for consistent theming
+ * Using Mantine theme variables for consistent cross-theme support
  */
 
 // Font sizes
@@ -18,21 +18,21 @@ export const FONT_WEIGHT_MEDIUM = "500";
 export const FONT_WEIGHT_SEMIBOLD = "600";
 export const FONT_WEIGHT_BOLD = "700";
 
-// Colors using shadcn theme variables
-export const COLOR_TEXT_PRIMARY = "var(--shadcn-foreground)";
-export const COLOR_TEXT_SECONDARY = "var(--shadcn-muted-foreground)";
-export const COLOR_TEXT_TERTIARY = "var(--shadcn-muted-foreground)";
-export const COLOR_GRAY_600 = "var(--shadcn-zinc-500)";
-export const COLOR_GRAY_500 = "var(--shadcn-zinc-500)";
-export const COLOR_GRAY_700 = "var(--shadcn-zinc-600)";
-export const COLOR_BLUE_500 = "var(--shadcn-blue)";
-export const COLOR_GREEN_500 = "var(--shadcn-green)";
-export const COLOR_RED_500 = "var(--shadcn-red)";
-export const COLOR_YELLOW_500 = "var(--shadcn-amber)";
-export const COLOR_AMBER_700 = "var(--shadcn-amber-700)";
-export const COLOR_PURPLE_500 = "var(--shadcn-violet)";
-export const COLOR_CYAN_500 = "var(--shadcn-cyan)";
-export const COLOR_PINK_500 = "var(--shadcn-pink)";
+// Colors using Mantine theme variables (theme-agnostic)
+export const COLOR_TEXT_PRIMARY = "var(--mantine-color-text)";
+export const COLOR_TEXT_SECONDARY = "var(--mantine-color-dimmed)";
+export const COLOR_TEXT_TERTIARY = "var(--mantine-color-dimmed)";
+export const COLOR_GRAY_600 = "var(--mantine-color-gray-5)";
+export const COLOR_GRAY_500 = "var(--mantine-color-gray-5)";
+export const COLOR_GRAY_700 = "var(--mantine-color-gray-6)";
+export const COLOR_BLUE_500 = "var(--mantine-color-blue-6)";
+export const COLOR_GREEN_500 = "var(--mantine-color-green-6)";
+export const COLOR_RED_500 = "var(--mantine-color-red-6)";
+export const COLOR_YELLOW_500 = "var(--mantine-color-yellow-6)";
+export const COLOR_AMBER_700 = "var(--mantine-color-yellow-7)";
+export const COLOR_PURPLE_500 = "var(--mantine-color-violet-6)";
+export const COLOR_CYAN_500 = "var(--mantine-color-cyan-6)";
+export const COLOR_PINK_500 = "var(--mantine-color-pink-6)";
 
 // Border radius
 export const BORDER_RADIUS_SM = "6px";
@@ -52,20 +52,20 @@ export const MARGIN_BOTTOM_8 = { marginBottom: "8px" };
 export const MARGIN_BOTTOM_16 = { marginBottom: "16px" };
 export const MARGIN_BOTTOM_24 = { marginBottom: "24px" };
 
-// Borders using shadcn theme variables
-export const BORDER_DEFAULT = "1px solid var(--shadcn-border)";
-export const BORDER_STYLE = "1px solid var(--shadcn-border)";
-export const BORDER_ERROR = "1px solid var(--shadcn-red-200)";
-export const BORDER_WARNING = "1px solid var(--shadcn-amber-300)";
-export const BORDER_GRAY_LIGHT = "1px solid var(--shadcn-zinc-300)";
-export const BORDER_INPUT = "1px solid var(--shadcn-zinc-300)";
+// Borders using Mantine theme variables
+export const BORDER_DEFAULT = "1px solid var(--mantine-color-default-border)";
+export const BORDER_STYLE = "1px solid var(--mantine-color-default-border)";
+export const BORDER_ERROR = "1px solid var(--mantine-color-red-2)";
+export const BORDER_WARNING = "1px solid var(--mantine-color-yellow-3)";
+export const BORDER_GRAY_LIGHT = "1px solid var(--mantine-color-gray-3)";
+export const BORDER_INPUT = "1px solid var(--mantine-color-gray-3)";
 
-// Background colors using shadcn theme variables
-export const BG_WHITE = "var(--shadcn-background)";
-export const BG_GRAY_50 = "var(--shadcn-gray-50)";
-export const BG_GRAY_100 = "var(--shadcn-gray-100)";
-export const BG_RED_50 = "var(--shadcn-red-50)";
-export const BG_YELLOW_50 = "var(--shadcn-amber-50)";
+// Background colors using Mantine theme variables
+export const BG_WHITE = "var(--mantine-color-body)";
+export const BG_GRAY_50 = "var(--mantine-color-gray-0)";
+export const BG_GRAY_100 = "var(--mantine-color-gray-1)";
+export const BG_RED_50 = "var(--mantine-color-red-0)";
+export const BG_YELLOW_50 = "var(--mantine-color-yellow-0)";
 
 // Flexbox utilities
 export const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";

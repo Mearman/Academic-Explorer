@@ -8,7 +8,7 @@ export const pageTitle = style({
 
 export const pageDescription = style({
   fontSize: "1rem",
-  color: "var(--shadcn-muted-foreground)",
+  color: "var(--mantine-color-dimmed)",
   marginBottom: "1.5rem",
   lineHeight: "1.625",
 });
