@@ -1,9 +1,10 @@
 import { createTheme } from '@mantine/core'
 import { foundationColors, foundationSettings } from './theme-base'
 import { essentialComponents } from './essential-components'
+import { mantineComponents } from './mantine-components'
 
-// PURE MANTINE theme - uses only essential components, no styling overrides
-// This achieves pure Mantine defaults + custom colors/border radius
+// PURE MANTINE theme - uses essential + mantine components
+// mantineComponents explicitly reset styles that might persist from radix/shadcn themes
 export const mantineTheme = createTheme({
   colors: foundationColors,
   ...foundationSettings,
@@ -49,5 +50,8 @@ export const mantineTheme = createTheme({
     '--shadcn-input-dark': 'initial',
     '--shadcn-ring-dark': 'initial',
   },
-  components: essentialComponents, // ONLY essential components, no styling overrides
+  components: {
+    ...essentialComponents,
+    ...mantineComponents, // Reset styles that might persist from radix/shadcn
+  },
 })
