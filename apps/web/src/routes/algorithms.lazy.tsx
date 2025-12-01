@@ -718,24 +718,48 @@ function AlgorithmsPage() {
         }
       );
     } else {
-      // 3D mode: get node positions directly from graphData, then manually position camera
-      // Note: We avoid calling zoomToFit here as it resets the view before we can position
-      const graphNodes = graph.graphData?.()?.nodes ?? [];
+      // 3D mode: collect node positions via zoomToFit filter, then manually position camera
+      // graphData() returns empty for react-force-graph-3d, so we must use the filter callback
       const matchedPositions: Array<{ x: number; y: number; z: number }> = [];
 
-      // Collect positions of highlighted nodes
-      graphNodes.forEach((node) => {
-        if (node.id && highlightedNodes.has(String(node.id))) {
-          matchedPositions.push({
-            x: node.x ?? 0,
-            y: node.y ?? 0,
-            z: node.z ?? 0,
-          });
+      // Save current camera state to restore after zoomToFit
+      const camera = graph.camera?.();
+      const controls = graph.controls?.();
+      const savedCameraPos = camera?.position ? { ...camera.position } : null;
+      const savedTarget = controls?.target ? { ...controls.target } : null;
+
+      // Call zoomToFit with filter to collect positions (it will also move camera)
+      graph.zoomToFit(
+        0, // instant
+        0,
+        (node: FilterNode) => {
+          if (node.id == null) return false;
+          const nodeIdStr = String(node.id);
+          const matches = highlightedNodes.has(nodeIdStr);
+          if (matches) {
+            matchedPositions.push({
+              x: node.x ?? 0,
+              y: node.y ?? 0,
+              z: node.z ?? 0,
+            });
+          }
+          return matches;
         }
-      });
+      );
+
+      // Immediately restore camera to prevent the "reset" visual glitch
+      if (savedCameraPos && camera?.position?.set) {
+        camera.position.set(savedCameraPos.x, savedCameraPos.y, savedCameraPos.z);
+      }
+      if (savedTarget && controls?.target?.set) {
+        controls.target.set(savedTarget.x, savedTarget.y, savedTarget.z);
+      }
+      if (controls?.update) {
+        controls.update();
+      }
 
       if (matchedPositions.length === 0) {
-        console.log('[fitToViewSelected] No matched positions from graphData, falling back to fitToViewAll');
+        console.log('[fitToViewSelected] No matched positions, falling back to fitToViewAll');
         fitToViewAll();
         return;
       }
