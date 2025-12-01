@@ -544,17 +544,35 @@ function AlgorithmsPage() {
     const graph = graphMethodsRef.current;
     if (!graph?.zoomToFit) return;
 
-    // For 2D: use centerAt to properly center, then zoomToFit
-    // For 3D: zoomToFit handles both zoom and centering
-    if (viewMode === '2D' && graph.centerAt) {
-      // First center on origin, then fit
-      graph.centerAt(0, 0, 200);
-      setTimeout(() => {
+    if (viewMode === '2D') {
+      // For 2D: use centerAt to properly center, then zoomToFit
+      if (graph.centerAt) {
+        graph.centerAt(0, 0, 200);
+        setTimeout(() => {
+          graph.zoomToFit(300, 100);
+        }, 200);
+      } else {
         graph.zoomToFit(300, 100);
-      }, 200);
+      }
     } else {
-      // 3D mode - just zoomToFit with larger padding for better centering
-      graph.zoomToFit(400, 100);
+      // 3D mode: use cameraPosition to reset lookAt to origin, then zoomToFit
+      // Match the parameters from the working keyboard shortcuts (padding: 50)
+      if (graph.cameraPosition) {
+        // Get current camera position
+        const camera = graph.camera?.();
+        const currentZ = camera?.position?.z ?? 500;
+        // Reset lookAt to origin with smooth transition
+        graph.cameraPosition(
+          { x: 0, y: 0, z: currentZ }, // position
+          { x: 0, y: 0, z: 0 }, // lookAt
+          300 // transition duration
+        );
+        setTimeout(() => {
+          graph.zoomToFit(400, 50);
+        }, 350);
+      } else {
+        graph.zoomToFit(400, 50);
+      }
     }
   }, [viewMode]);
 
@@ -566,34 +584,75 @@ function AlgorithmsPage() {
     if (highlightedNodes.size === 0) {
       // No selection - use fit all behavior
       fitToViewAll();
-    } else {
-      // Calculate center of selected nodes for 2D
-      if (viewMode === '2D' && graph.centerAt) {
-        // Get the nodes from the graph data
-        const selectedNodes = graphData.nodes.filter(n => highlightedNodes.has(n.id));
-        if (selectedNodes.length > 0) {
-          // Calculate centroid of selected nodes
-          const sumX = selectedNodes.reduce((sum, n) => sum + (n.x ?? 0), 0);
-          const sumY = selectedNodes.reduce((sum, n) => sum + (n.y ?? 0), 0);
-          const centerX = sumX / selectedNodes.length;
-          const centerY = sumY / selectedNodes.length;
+      return;
+    }
 
-          // Center on the centroid, then fit to selection
-          graph.centerAt(centerX, centerY, 200);
-          setTimeout(() => {
-            graph.zoomToFit(
-              300,
-              100,
-              (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
-            );
-          }, 200);
-        }
+    // Get selected nodes with their positions
+    const selectedNodes = graphData.nodes.filter(n => highlightedNodes.has(n.id));
+    if (selectedNodes.length === 0) {
+      fitToViewAll();
+      return;
+    }
+
+    if (viewMode === '2D') {
+      // Calculate centroid of selected nodes for 2D
+      if (graph.centerAt) {
+        const sumX = selectedNodes.reduce((sum, n) => sum + (n.x ?? 0), 0);
+        const sumY = selectedNodes.reduce((sum, n) => sum + (n.y ?? 0), 0);
+        const centerX = sumX / selectedNodes.length;
+        const centerY = sumY / selectedNodes.length;
+
+        // Center on the centroid, then fit to selection
+        graph.centerAt(centerX, centerY, 200);
+        setTimeout(() => {
+          graph.zoomToFit(
+            300,
+            100,
+            (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+          );
+        }, 200);
       } else {
-        // 3D mode - just zoomToFit with filter
         graph.zoomToFit(
-          400,
+          300,
           100,
           (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+        );
+      }
+    } else {
+      // 3D mode: zoomToFit filter doesn't work reliably, use cameraPosition directly
+      // Calculate 3D centroid and bounding sphere of selected nodes
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nodePositions = selectedNodes.map(n => ({
+        x: (n as any).x ?? 0,
+        y: (n as any).y ?? 0,
+        z: (n as any).z ?? 0,
+      }));
+
+      const centerX = nodePositions.reduce((sum, p) => sum + p.x, 0) / nodePositions.length;
+      const centerY = nodePositions.reduce((sum, p) => sum + p.y, 0) / nodePositions.length;
+      const centerZ = nodePositions.reduce((sum, p) => sum + p.z, 0) / nodePositions.length;
+
+      // Calculate bounding sphere radius (max distance from centroid)
+      const maxRadius = Math.max(
+        ...nodePositions.map(p =>
+          Math.sqrt(
+            Math.pow(p.x - centerX, 2) +
+            Math.pow(p.y - centerY, 2) +
+            Math.pow(p.z - centerZ, 2)
+          )
+        ),
+        50 // Minimum radius for single node
+      );
+
+      // Camera distance should be proportional to bounding sphere (with padding)
+      const cameraDistance = maxRadius * 2.5 + 100;
+
+      if (graph.cameraPosition) {
+        // Position camera at calculated distance, looking at centroid
+        graph.cameraPosition(
+          { x: centerX, y: centerY, z: centerZ + cameraDistance }, // position
+          { x: centerX, y: centerY, z: centerZ }, // lookAt
+          400 // transition duration
         );
       }
     }
