@@ -87,11 +87,14 @@ interface GraphMethods {
   camera?(): {
     position: { x: number; y: number; z: number; set?(x: number, y: number, z: number): void };
     lookAt?(x: number, y: number, z: number): void;
+    up?: { x: number; y: number; z: number; set?(x: number, y: number, z: number): void };
   } | undefined;
   controls?(): {
     target: { x: number; y: number; z: number; set?(x: number, y: number, z: number): void };
     update?(): void;
   } | undefined;
+  // Renderer dimensions for aspect ratio calculation
+  renderer?(): { domElement?: { clientWidth?: number; clientHeight?: number } } | undefined;
 }
 
 /**
@@ -798,6 +801,10 @@ function AlgorithmsPage() {
       // We want to view from this direction to see the largest cross-section
       let viewDir = { x: 0, y: 0, z: 1 }; // Default to z-axis
 
+      // Store eigenvectors for up-vector calculation
+      let v1 = { x: 1, y: 0, z: 0 }; // Largest eigenvector (most spread)
+      let v2 = { x: 0, y: 1, z: 0 }; // Second largest eigenvector
+
       if (n >= 3) {
         // Use power iteration to find the two largest eigenvectors of the covariance matrix
         // The cross product gives us the direction of least variance (smallest eigenvector)
@@ -816,6 +823,7 @@ function AlgorithmsPage() {
             vz = newZ / mag;
           }
         }
+        v1 = { x: vx, y: vy, z: vz };
 
         // vx, vy, vz is now the direction of maximum variance
         // For a second eigenvector, we deflate and iterate again
@@ -846,6 +854,7 @@ function AlgorithmsPage() {
             uz = newZ / mag;
           }
         }
+        v2 = { x: ux, y: uy, z: uz };
 
         // The third eigenvector (smallest variance) is the cross product of the first two
         viewDir = {
@@ -870,8 +879,28 @@ function AlgorithmsPage() {
         }
       }
 
+      // Get viewport aspect ratio to orient the view optimally
+      // For landscape: largest spread should be horizontal
+      // For portrait: largest spread should be vertical
+      let aspectRatio = 16 / 9; // Default landscape
+      const renderer = graph.renderer?.();
+      if (renderer?.domElement) {
+        const w = renderer.domElement.clientWidth ?? 0;
+        const h = renderer.domElement.clientHeight ?? 0;
+        if (w > 0 && h > 0) {
+          aspectRatio = w / h;
+        }
+      }
+
+      // Determine the camera's "up" vector based on aspect ratio
+      // Landscape (aspectRatio > 1): v2 should be up (so v1/largest spread is horizontal)
+      // Portrait (aspectRatio < 1): v1 should be up (so v1/largest spread is vertical)
+      const upVector = aspectRatio >= 1 ? v2 : v1;
+
       console.log('[fitToViewSelected] 3D centroid:', { centerX, centerY, centerZ });
       console.log('[fitToViewSelected] 3D viewDir:', viewDir);
+      console.log('[fitToViewSelected] 3D aspectRatio:', aspectRatio);
+      console.log('[fitToViewSelected] 3D upVector:', upVector);
       console.log('[fitToViewSelected] 3D cameraDistance:', cameraDistance);
 
       // Position camera along the optimal viewing direction
@@ -886,7 +915,24 @@ function AlgorithmsPage() {
           { x: centerX, y: centerY, z: centerZ },
           400
         );
-        console.log('[fitToViewSelected] Called cameraPosition');
+
+        // Set the camera's up vector to align spread with viewport
+        const camera = graph.camera?.();
+        if (camera?.up?.set) {
+          camera.up.set(upVector.x, upVector.y, upVector.z);
+        } else if (camera?.up) {
+          camera.up.x = upVector.x;
+          camera.up.y = upVector.y;
+          camera.up.z = upVector.z;
+        }
+
+        // Update controls to apply the new up vector
+        const controls = graph.controls?.();
+        if (controls?.update) {
+          controls.update();
+        }
+
+        console.log('[fitToViewSelected] Called cameraPosition with up vector');
       }
     }
   }, [highlightedNodes, viewMode, fitToViewAll]);
