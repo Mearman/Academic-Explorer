@@ -26,9 +26,9 @@ const COLOR_SCHEME_LABELS = {
 
 
 const COMPONENT_LIBRARY_LABELS = {
-  mantine: { label: 'Mantine', description: 'Full-featured component library' },
-  shadcn: { label: 'shadcn/ui', description: 'Modern Radix-based components' },
-  radix: { label: 'Radix UI', description: 'Unstyled accessible primitives' }
+  mantine: { label: 'Mantine', description: 'Default Mantine styling and theming' },
+  shadcn: { label: 'shadcn/ui', description: 'shadcn-inspired color schemes applied to Mantine' },
+  radix: { label: 'Radix UI', description: 'Minimal styling approach for Mantine components' }
 } as const
 
 const BORDER_RADIUS_OPTIONS = [
