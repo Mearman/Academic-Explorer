@@ -39,26 +39,40 @@ export const paddingSm = style({ padding: 'var(--mantine-spacing-sm)' });
 export const paddingMd = style({ padding: 'var(--mantine-spacing-md)' });
 export const paddingLg = style({ padding: 'var(--mantine-spacing-lg)' });
 export const paddingXl = style({ padding: 'var(--mantine-spacing-xl)' });
+export const paddingNone = style({ padding: '0' });
 
 export const marginXs = style({ margin: 'var(--mantine-spacing-xs)' });
 export const marginSm = style({ margin: 'var(--mantine-spacing-sm)' });
 export const marginMd = style({ margin: 'var(--mantine-spacing-md)' });
 export const marginLg = style({ margin: 'var(--mantine-spacing-lg)' });
 export const marginXl = style({ margin: 'var(--mantine-spacing-xl)' });
+export const marginNone = style({ margin: '0' });
 
 export const gapXs = style({ gap: 'var(--mantine-spacing-xs)' });
 export const gapSm = style({ gap: 'var(--mantine-spacing-sm)' });
 export const gapMd = style({ gap: 'var(--mantine-spacing-md)' });
 export const gapLg = style({ gap: 'var(--mantine-spacing-lg)' });
+export const gapNone = style({ gap: '0' });
 
 // Color utilities - using Mantine theme variables
 export const colorPrimary = style({ color: 'var(--mantine-color-blue-6)' });
 export const colorText = style({ color: 'var(--mantine-color-gray-9)' });
 export const colorTextSecondary = style({ color: 'var(--mantine-color-gray-6)' });
 export const colorTextMuted = style({ color: 'var(--mantine-color-gray-5)' });
+export const colorError = style({ color: 'var(--mantine-color-red-6)' });
+export const colorSuccess = style({ color: 'var(--mantine-color-green-6)' });
+export const colorWarning = style({ color: 'var(--mantine-color-orange-6)' });
+export const colorInherit = style({ color: 'inherit' });
+export const colorDimmed = style({ color: 'var(--mantine-color-gray-4)' });
+export const colorBlue = style({ color: 'var(--mantine-color-blue-6)' });
+export const colorMutedSecondary = style({ color: 'var(--shadcn-muted-foreground)' });
+export const colorDestructive = style({ color: 'var(--shadcn-destructive)' });
 
 export const backgroundColorPrimary = style({ backgroundColor: 'var(--mantine-color-white)' });
 export const backgroundColorSurface = style({ backgroundColor: 'var(--mantine-color-gray-0)' });
+export const backgroundColorTertiary = style({ backgroundColor: 'var(--mantine-color-blue-0)' });
+export const backgroundColorGray = style({ backgroundColor: 'var(--mantine-color-gray-0)' });
+export const backgroundColorNone = style({ backgroundColor: 'transparent' });
 
 // Typography utilities
 export const fontSizeXs = style({ fontSize: 'var(--mantine-font-size-xs)' });
@@ -79,7 +93,7 @@ export const textAlignRight = style({ textAlign: 'right' });
 // Border utilities
 export const borderSm = style({ borderWidth: '1px', borderStyle: 'solid' });
 export const borderMd = style({ borderWidth: '2px', borderStyle: 'solid' });
-export const borderNone = style({ borderWidth: '0', borderStyle: 'none' });
+export const borderNoneStyle = style({ borderWidth: '0', borderStyle: 'none' });
 
 export const borderColorPrimary = style({ borderColor: 'var(--mantine-color-gray-3)' });
 export const borderColorLight = style({ borderColor: 'var(--mantine-color-gray-2)' });
@@ -94,10 +108,51 @@ export const borderRadiusXl = style({ borderRadius: 'var(--mantine-radius-xl)' }
 export const cursorPointer = style({ cursor: 'pointer' });
 export const cursorDefault = style({ cursor: 'default' });
 export const cursorNotAllowed = style({ cursor: 'not-allowed' });
+export const cursorGrab = style({ cursor: 'grab' });
+export const cursorGrabbing = style({ cursor: 'grabbing' });
+export const cursorHelp = style({ cursor: 'help' });
+export const cursorResize = style({ cursor: 'ew-resize' });
 
 export const transitionFast = style({ transition: 'all 0.15s ease' });
 export const transitionNormal = style({ transition: 'all 0.2s ease' });
 export const transitionSlow = style({ transition: 'all 0.3s ease' });
+
+// Sizing utilities
+export const widthFull = style({ width: '100%' });
+export const heightFull = style({ height: '100%' });
+export const minWidth0 = style({ minWidth: '0' });
+export const maxWidth100 = style({ maxWidth: '100%' });
+
+// Positioning utilities
+export const positionRelative = style({ position: 'relative' });
+export const positionAbsolute = style({ position: 'absolute' });
+
+// Overflow utilities
+export const overflowAuto = style({ overflow: 'auto' });
+export const overflowHidden = style({ overflow: 'hidden' });
+export const overflowXAuto = style({ overflowX: 'auto' });
+export const overflowYAuto = style({ overflowY: 'auto' });
+
+// Opacity utilities
+export const opacity30 = style({ opacity: '0.3' });
+
+// Text utilities
+export const textBreak = style({ wordBreak: 'break-word' });
+export const textBreakAll = style({ wordBreak: 'break-all' });
+export const textMonospace = style({ fontFamily: 'monospace' });
+export const textUppercase = style({ textTransform: 'uppercase' });
+export const textCapitalize = style({ textTransform: 'capitalize' });
+export const textNoDecoration = style({ textDecoration: 'none' });
+export const textLowercase = style({ textTransform: 'lowercase' });
+export const textEllipsis = style({ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+
+// Border utilities
+export const borderTopNone = style({ borderTop: 'none' });
+export const borderBottomNone = style({ borderBottom: 'none' });
+export const borderNone = style({ border: 'none' });
+
+// Flex utilities
+export const flex1 = style({ flex: '1' });
 
 /**
  * Simple sprinkles-like function that combines multiple styles
@@ -129,26 +184,40 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.padding === 'md') classNames.push(paddingMd);
   if (styles.padding === 'lg') classNames.push(paddingLg);
   if (styles.padding === 'xl') classNames.push(paddingXl);
+  if (styles.padding === 'none') classNames.push(paddingNone);
 
   if (styles.margin === 'xs') classNames.push(marginXs);
   if (styles.margin === 'sm') classNames.push(marginSm);
   if (styles.margin === 'md') classNames.push(marginMd);
   if (styles.margin === 'lg') classNames.push(marginLg);
   if (styles.margin === 'xl') classNames.push(marginXl);
+  if (styles.margin === 'none') classNames.push(marginNone);
 
   if (styles.gap === 'xs') classNames.push(gapXs);
   if (styles.gap === 'sm') classNames.push(gapSm);
   if (styles.gap === 'md') classNames.push(gapMd);
   if (styles.gap === 'lg') classNames.push(gapLg);
+  if (styles.gap === 'none') classNames.push(gapNone);
 
   // Color properties
   if (styles.color === 'primary') classNames.push(colorPrimary);
   if (styles.color === 'text') classNames.push(colorText);
   if (styles.color === 'textSecondary') classNames.push(colorTextSecondary);
   if (styles.color === 'textMuted') classNames.push(colorTextMuted);
+  if (styles.color === 'error') classNames.push(colorError);
+  if (styles.color === 'success') classNames.push(colorSuccess);
+  if (styles.color === 'warning') classNames.push(colorWarning);
+  if (styles.color === 'inherit') classNames.push(colorInherit);
+  if (styles.color === 'dimmed') classNames.push(colorDimmed);
+  if (styles.color === 'blue') classNames.push(colorBlue);
+  if (styles.color === 'mutedSecondary') classNames.push(colorMutedSecondary);
+  if (styles.color === 'destructive') classNames.push(colorDestructive);
 
   if (styles.backgroundColor === 'primary') classNames.push(backgroundColorPrimary);
   if (styles.backgroundColor === 'surface') classNames.push(backgroundColorSurface);
+  if (styles.backgroundColor === 'tertiary') classNames.push(backgroundColorTertiary);
+  if (styles.backgroundColor === 'gray') classNames.push(backgroundColorGray);
+  if (styles.backgroundColor === 'none') classNames.push(backgroundColorNone);
 
   // Typography properties
   if (styles.fontSize === 'xs') classNames.push(fontSizeXs);
@@ -184,10 +253,50 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.cursor === 'pointer') classNames.push(cursorPointer);
   if (styles.cursor === 'default') classNames.push(cursorDefault);
   if (styles.cursor === 'not-allowed') classNames.push(cursorNotAllowed);
+  if (styles.cursor === 'grab') classNames.push(cursorGrab);
+  if (styles.cursor === 'grabbing') classNames.push(cursorGrabbing);
+  if (styles.cursor === 'help') classNames.push(cursorHelp);
+  if (styles.cursor === 'resize') classNames.push(cursorResize);
 
   if (styles.transition === 'fast') classNames.push(transitionFast);
   if (styles.transition === 'normal') classNames.push(transitionNormal);
   if (styles.transition === 'slow') classNames.push(transitionSlow);
+
+  // Sizing properties
+  if (styles.width === 'full') classNames.push(widthFull);
+  if (styles.height === 'full') classNames.push(heightFull);
+  if (styles.minWidth === '0') classNames.push(minWidth0);
+  if (styles.maxWidth === '100%') classNames.push(maxWidth100);
+
+  // Positioning properties
+  if (styles.position === 'relative') classNames.push(positionRelative);
+  if (styles.position === 'absolute') classNames.push(positionAbsolute);
+
+  // Overflow properties
+  if (styles.overflow === 'auto') classNames.push(overflowAuto);
+  if (styles.overflow === 'hidden') classNames.push(overflowHidden);
+  if (styles.overflowX === 'auto') classNames.push(overflowXAuto);
+  if (styles.overflowY === 'auto') classNames.push(overflowYAuto);
+
+  // Opacity properties
+  if (styles.opacity === '0.3') classNames.push(opacity30);
+
+  // Text properties
+  if (styles.wordBreak === 'break-word') classNames.push(textBreak);
+  if (styles.wordBreak === 'break-all') classNames.push(textBreakAll);
+  if (styles.fontFamily === 'monospace') classNames.push(textMonospace);
+  if (styles.textTransform === 'uppercase') classNames.push(textUppercase);
+  if (styles.textTransform === 'capitalize') classNames.push(textCapitalize);
+  if (styles.textTransform === 'lowercase') classNames.push(textLowercase);
+  if (styles.textDecoration === 'none') classNames.push(textNoDecoration);
+
+  // Border properties
+  if (styles.borderTop === 'none') classNames.push(borderTopNone);
+  if (styles.borderBottom === 'none') classNames.push(borderBottomNone);
+  if (styles.border === 'none') classNames.push(borderNone);
+
+  // Flex properties
+  if (styles.flex === '1') classNames.push(flex1);
 
   return classNames.join(' ');
 };

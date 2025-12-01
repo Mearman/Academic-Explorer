@@ -39,20 +39,6 @@ export type {
   RuntimeThemeConfig,
 } from './runtime-theme';
 
-// Utility functions and helpers
-export {
-  spacingUtils,
-  layoutUtils,
-  textUtils,
-  colorUtils,
-  interactiveUtils,
-  sizingUtils,
-  positionUtils,
-  borderUtils,
-  migrateInlineStyles,
-  componentLibraryUtils,
-  utils,
-} from './utils';
 
 // Re-export theme contracts for convenience
 export type {
@@ -87,16 +73,5 @@ export { sprinkles as default } from './config';
  *   const { sprinkles } = useSprinkles();
  *   return <div className={sprinkles({ display: 'flex', gap: 'md' })} />;
  * };
- * ```
- *
- * With utilities:
- * ```tsx
- * import { utils } from '@/styles/sprinkles';
- *
- * <div className={utils.layout.flex.center()}>
- *   <div className={utils.spacing.padding.all('md')}>
- *     Content
- *   </div>
- * </div>
  * ```
  */
