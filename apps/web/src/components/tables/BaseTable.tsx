@@ -282,23 +282,23 @@ export function BaseTable<T>({
         type="button"
         aria-label={ariaLabel}
         className={sprinkles({
+          border: 'none',
+          background: 'none',
+          textAlign: 'left',
+          width: 'full',
+          font: 'inherit',
+          color: 'inherit',
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          display: 'flex',
+          alignItems: 'center',
+          paddingX8px: true,
+          borderBottomGray3: true,
+          backgroundColor: virtualRow.index % 2 === 0 ? 'gray0' : 'transparent',
           cursor: hasOnRowClick ? 'pointer' : 'default'
         })}
         style={{
-          border: 'none',
-          background: 'none',
-          textAlign: 'left' as const,
-          width: '100%',
-          font: 'inherit',
-          color: 'inherit',
-          position: 'absolute' as const,
-          top: 0,
-          left: 0,
-          display: 'flex',
-          alignItems: 'center',
-          padding: '8px 12px',
-          borderBottom: '1px solid var(--mantine-color-gray-3)',
-          backgroundColor: virtualRow.index % 2 === 0 ? 'var(--mantine-color-gray-0)' : 'transparent',
           height: `${virtualRow.size}px`,
           transform: `translateY(${virtualRow.start}px)`,
         }}
@@ -310,12 +310,14 @@ export function BaseTable<T>({
         {row.getVisibleCells().map((cell, cellIndex) => (
           <div
             key={cell.id}
-            style={{
-              flex: cellIndex === 1 ? '1' : '0 0 auto',
-              borderRight: cellIndex < row.getVisibleCells().length - 1 ? '1px solid var(--mantine-color-gray-3)' : 'none',
-              padding: "0 8px",
-              minWidth: getMinWidthForCell(cellIndex),
-            }}
+            className={sprinkles({
+              flex: cellIndex === 1 ? '1' : 'auto',
+              borderRightGray3: cellIndex < row.getVisibleCells().length - 1,
+              paddingX8px: true,
+              minWidth: getMinWidthForCell(cellIndex) === '80px' ? '80px' :
+                        getMinWidthForCell(cellIndex) === '120px' ? '120px' :
+                        getMinWidthForCell(cellIndex) === '100px' ? '100px' : 'auto'
+            })}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </div>

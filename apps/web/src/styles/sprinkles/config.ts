@@ -95,6 +95,7 @@ export const textAlignRight = style({ textAlign: 'right' });
 export const borderSm = style({ borderWidth: '1px', borderStyle: 'solid' });
 export const borderMd = style({ borderWidth: '2px', borderStyle: 'solid' });
 export const borderNoneStyle = style({ borderWidth: '0', borderStyle: 'none' });
+export const borderNone = style({ border: 'none' });
 
 export const borderColorPrimary = style({ borderColor: 'var(--mantine-color-gray-3)' });
 export const borderColorLight = style({ borderColor: 'var(--mantine-color-gray-2)' });
@@ -116,6 +117,25 @@ export const cursorResize = style({ cursor: 'ew-resize' });
 
 export const userSelectNone = style({ userSelect: 'none' });
 
+// Complex virtual table utilities
+
+// Additional utilities for virtual table
+export const top0 = style({ top: 0 });
+export const left0 = style({ left: 0 });
+export const paddingX8px = style({ padding: '0 8px' });
+
+// Flex utilities for virtual table cells
+export const flexAuto = style({ flex: '0 0 auto' });
+
+// Border utilities for table cells
+export const borderRightNone = style({ borderRight: 'none' });
+export const borderTopNone = style({ borderTop: 'none' });
+export const borderBottomNone = style({ borderBottom: 'none' });
+export const borderRightGray3 = style({ borderRight: '1px solid var(--mantine-color-gray-3)' });
+export const borderBottomGray3 = style({ borderBottom: '1px solid var(--mantine-color-gray-3)' });
+export const backgroundColorGray0 = style({ backgroundColor: 'var(--mantine-color-gray-0)' });
+export const backgroundColorTransparent = style({ backgroundColor: 'transparent' });
+
 export const transitionFast = style({ transition: 'all 0.15s ease' });
 export const transitionNormal = style({ transition: 'all 0.2s ease' });
 export const transitionSlow = style({ transition: 'all 0.3s ease' });
@@ -127,8 +147,13 @@ export const minWidth0 = style({ minWidth: '0' });
 export const maxWidth100 = style({ maxWidth: '100%' });
 
 export const minWidth300 = style({ minWidth: '300px' });
+export const minWidth80 = style({ minWidth: '80px' });
+export const minWidth120 = style({ minWidth: '120px' });
+export const minWidth100 = style({ minWidth: '100px' });
 
 export const minHeight400 = style({ minHeight: '400px' });
+
+export const flex1 = style({ flex: '1' });
 
 // Positioning utilities
 export const positionRelative = style({ position: 'relative' });
@@ -153,13 +178,6 @@ export const textNoDecoration = style({ textDecoration: 'none' });
 export const textLowercase = style({ textTransform: 'lowercase' });
 export const textEllipsis = style({ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
 
-// Border utilities
-export const borderTopNone = style({ borderTop: 'none' });
-export const borderBottomNone = style({ borderBottom: 'none' });
-export const borderNone = style({ border: 'none' });
-
-// Flex utilities
-export const flex1 = style({ flex: '1' });
 
 /**
  * Simple sprinkles-like function that combines multiple styles
@@ -225,6 +243,8 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.backgroundColor === 'surface') classNames.push(backgroundColorSurface);
   if (styles.backgroundColor === 'tertiary') classNames.push(backgroundColorTertiary);
   if (styles.backgroundColor === 'gray') classNames.push(backgroundColorGray);
+  if (styles.backgroundColor === 'gray0') classNames.push(backgroundColorGray0);
+  if (styles.backgroundColor === 'transparent') classNames.push(backgroundColorTransparent);
   if (styles.backgroundColor === 'none') classNames.push(backgroundColorNone);
 
   // Typography properties
@@ -250,6 +270,7 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
 
   if (styles.borderColor === 'primary') classNames.push(borderColorPrimary);
   if (styles.borderColor === 'light') classNames.push(borderColorLight);
+  if (styles.borderColor === 'gray3') classNames.push(borderRightGray3);
 
   if (styles.borderRadius === 'xs') classNames.push(borderRadiusXs);
   if (styles.borderRadius === 'sm') classNames.push(borderRadiusSm);
@@ -277,12 +298,17 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.height === 'full') classNames.push(heightFull);
   if (styles.minWidth === '0') classNames.push(minWidth0);
   if (styles.minWidth === '300px') classNames.push(minWidth300);
+  if (styles.minWidth === '80px') classNames.push(minWidth80);
+  if (styles.minWidth === '120px') classNames.push(minWidth120);
+  if (styles.minWidth === '100px') classNames.push(minWidth100);
   if (styles.maxWidth === '100%') classNames.push(maxWidth100);
   if (styles.minHeight === '400px') classNames.push(minHeight400);
 
   // Positioning properties
   if (styles.position === 'relative') classNames.push(positionRelative);
   if (styles.position === 'absolute') classNames.push(positionAbsolute);
+  if (styles.top === '0') classNames.push(top0);
+  if (styles.left === '0') classNames.push(left0);
 
   // Overflow properties
   if (styles.overflow === 'auto') classNames.push(overflowAuto);
@@ -309,6 +335,12 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
 
   // Flex properties
   if (styles.flex === '1') classNames.push(flex1);
+  if (styles.flex === 'auto') classNames.push(flexAuto);
+
+  // Boolean properties for specific table utilities
+  if (styles.paddingX8px) classNames.push(paddingX8px);
+  if (styles.borderBottomGray3) classNames.push(borderBottomGray3);
+  if (styles.borderRightGray3) classNames.push(borderRightGray3);
 
   return classNames.join(' ');
 };
