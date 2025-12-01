@@ -8,3 +8,4 @@ export * from "./edge-renderer";
 export * from "./edge-styles";
 export * from "./node-renderer";
 export * from "./node-styles";
+export * from "./3d/index";

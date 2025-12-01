@@ -2,7 +2,7 @@
  * Algorithms Page - Graph algorithms demonstration and analysis
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type { GraphNode, GraphEdge, EntityType, ViewMode } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
 import {
   ActionIcon,
@@ -24,6 +24,7 @@ import {
   Slider,
   RangeSlider,
   Divider,
+  Tooltip,
 } from '@mantine/core';
 import {
   IconGraph,
@@ -31,12 +32,18 @@ import {
   IconInfoCircle,
   IconLock,
   IconLockOpen,
+  IconSquare,
+  IconCube,
+  IconAlertTriangle,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
+import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
+import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
+import { useViewModePreference } from '@/hooks/useViewModePreference';
 import { sprinkles } from '@/styles/sprinkles';
 
 /**
@@ -514,6 +521,9 @@ function AlgorithmsPage() {
   // Enable/disable force simulation
   const [enableSimulation, setEnableSimulation] = useState(true);
 
+  // View mode: 2D or 3D visualization (persisted to localStorage)
+  const { viewMode, setViewMode } = useViewModePreference('2D');
+
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
   const [pathTarget, setPathTarget] = useState<string | null>(null);
@@ -811,7 +821,14 @@ function AlgorithmsPage() {
           {/* Graph Visualization */}
           <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <Group justify="space-between" mb="md">
-              <Title order={5}>Graph Visualization</Title>
+              <Group gap="xs">
+                <Title order={5}>Graph Visualization</Title>
+                <ViewModeToggle
+                  value={viewMode}
+                  onChange={setViewMode}
+                  size="xs"
+                />
+              </Group>
               <Group gap="md">
                 <Switch
                   label="Simulation"
@@ -830,19 +847,35 @@ function AlgorithmsPage() {
                 />
               </Group>
             </Group>
-            <ForceGraphVisualization
-              nodes={graphData.nodes}
-              edges={graphData.edges}
-              height={450}
-              displayMode={displayMode}
-              highlightedNodeIds={highlightedNodes}
-              highlightedPath={highlightedPath}
-              communityAssignments={communityAssignments}
-              communityColors={communityColors}
-              enableSimulation={enableSimulation}
-              onNodeClick={handleNodeClick}
-              onBackgroundClick={handleBackgroundClick}
-            />
+            {viewMode === '2D' ? (
+              <ForceGraphVisualization
+                nodes={graphData.nodes}
+                edges={graphData.edges}
+                height={450}
+                displayMode={displayMode}
+                highlightedNodeIds={highlightedNodes}
+                highlightedPath={highlightedPath}
+                communityAssignments={communityAssignments}
+                communityColors={communityColors}
+                enableSimulation={enableSimulation}
+                onNodeClick={handleNodeClick}
+                onBackgroundClick={handleBackgroundClick}
+              />
+            ) : (
+              <ForceGraph3DVisualization
+                nodes={graphData.nodes}
+                edges={graphData.edges}
+                height={450}
+                displayMode={displayMode}
+                highlightedNodeIds={highlightedNodes}
+                highlightedPath={highlightedPath}
+                communityAssignments={communityAssignments}
+                communityColors={communityColors}
+                enableSimulation={enableSimulation}
+                onNodeClick={handleNodeClick}
+                onBackgroundClick={handleBackgroundClick}
+              />
+            )}
             {highlightedNodes.size > 0 && (
               <Group mt="sm" gap="xs">
                 <Text size="sm" c="dimmed">

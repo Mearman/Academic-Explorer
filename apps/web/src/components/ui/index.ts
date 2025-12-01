@@ -3,3 +3,4 @@
  */
 
 export * from "./SplitButton";
+export * from "./ViewModeToggle";
