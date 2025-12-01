@@ -40,10 +40,11 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 
 import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
-import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/ForceGraphVisualization';
+import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import { useViewModePreference } from '@/hooks/useViewModePreference';
-import { sprinkles } from '@/styles/sprinkles';
+import { useGraphVisualization } from '@/hooks/use-graph-visualization';
+
+import type { DisplayMode } from '@/components/graph/types';
 
 /**
  * Node with simulation coordinates (added by force layout)
@@ -559,21 +560,32 @@ function AlgorithmsPage() {
 
   // Sample graph state
   const [graphData, setGraphData] = useState(() => generateSampleGraph(graphConfig));
-  const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
-  const [highlightedPath, setHighlightedPath] = useState<string[]>([]);
 
-  // Display mode: highlight dims non-selected nodes, filter hides them
-  const [displayMode, setDisplayMode] = useState<DisplayMode>('highlight');
-
-  // Community assignments from algorithm results
-  const [communityAssignments, setCommunityAssignments] = useState<Map<string, number>>(new Map());
-  const [communityColors, setCommunityColors] = useState<Map<number, string>>(new Map());
-
-  // Enable/disable force simulation
-  const [enableSimulation, setEnableSimulation] = useState(true);
-
-  // View mode: 2D or 3D visualization (persisted to localStorage)
-  const { viewMode, setViewMode } = useViewModePreference('2D');
+  // Use the shared visualization state hook
+  const {
+    highlightedNodes,
+    highlightedPath,
+    communityAssignments,
+    communityColors,
+    displayMode,
+    enableSimulation,
+    viewMode,
+    pathSource,
+    pathTarget,
+    highlightNodes: setHighlightedNodesArray,
+    highlightPath: setHighlightedPathArray,
+    clearHighlights,
+    setCommunitiesResult,
+    selectCommunity: handleSelectCommunityFromHook,
+    setDisplayMode,
+    setEnableSimulation,
+    setViewMode,
+    setPathSource,
+    setPathTarget,
+    handleNodeClick: handleNodeClickFromHook,
+    handleBackgroundClick: handleBackgroundClickFromHook,
+    reset: resetVisualization,
+  } = useGraphVisualization();
 
   // Graph methods ref for external control (zoomToFit, etc.)
   const graphMethodsRef = useRef<GraphMethods | null>(null);
@@ -954,20 +966,11 @@ function AlgorithmsPage() {
     }
   }, [highlightedNodes, viewMode, fitToViewAll]);
 
-  // Shortest path node selections (synced with panel and node clicks)
-  const [pathSource, setPathSource] = useState<string | null>(null);
-  const [pathTarget, setPathTarget] = useState<string | null>(null);
-
   // Auto-regenerate graph when configuration changes
   useEffect(() => {
     setGraphData(generateSampleGraph(graphConfig));
-    setHighlightedNodes(new Set());
-    setHighlightedPath([]);
-    setCommunityAssignments(new Map());
-    setCommunityColors(new Map());
-    setPathSource(null);
-    setPathTarget(null);
-  }, [graphConfig]);
+    resetVisualization();
+  }, [graphConfig, resetVisualization]);
 
   // Config update helper
   const updateConfig = useCallback(<K extends keyof SampleGraphConfig>(
@@ -1112,91 +1115,16 @@ function AlgorithmsPage() {
     }
 
     setGraphData(generateSampleGraph(configToUse));
-    setHighlightedNodes(new Set());
-    setHighlightedPath([]);
-    setCommunityAssignments(new Map());
-    setCommunityColors(new Map());
-    setPathSource(null);
-    setPathTarget(null);
-  }, [graphConfig, seedLocked]);
+    resetVisualization();
+  }, [graphConfig, seedLocked, resetVisualization]);
 
-  // Handle node highlighting from algorithm results
-  const handleHighlightNodes = useCallback((nodeIds: string[]) => {
-    setHighlightedNodes(new Set(nodeIds));
-    setHighlightedPath([]);
-  }, []);
-
-  // Handle path highlighting
-  const handleHighlightPath = useCallback((path: string[]) => {
-    setHighlightedPath(path);
-    setHighlightedNodes(new Set(path));
-  }, []);
-
-  // Handle community selection - updates both highlighting and community coloring
-  const handleSelectCommunity = useCallback((communityId: number, nodeIds: string[]) => {
-    setHighlightedNodes(new Set(nodeIds));
-    setHighlightedPath([]);
-  }, []);
-
-  // Handle node click in the visualization
-  // Clicking nodes sets them as source/target for shortest path
-  const handleNodeClick = useCallback((node: GraphNode) => {
-    // Update path source/target selection
-    if (pathSource === node.id) {
-      // Clicking source again clears it
-      setPathSource(null);
-      setHighlightedNodes((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(node.id);
-        return newSet;
-      });
-    } else if (pathTarget === node.id) {
-      // Clicking target again clears it
-      setPathTarget(null);
-      setHighlightedNodes((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(node.id);
-        return newSet;
-      });
-    } else if (pathSource === null) {
-      // No source set - this becomes the source
-      setPathSource(node.id);
-      setHighlightedNodes(new Set([node.id]));
-      setHighlightedPath([]);
-    } else if (pathTarget === null) {
-      // Source set but no target - this becomes the target
-      setPathTarget(node.id);
-      setHighlightedNodes(new Set([pathSource, node.id]));
-      setHighlightedPath([]);
-    } else {
-      // Both set - start over with this as new source
-      setPathSource(node.id);
-      setPathTarget(null);
-      setHighlightedNodes(new Set([node.id]));
-      setHighlightedPath([]);
-    }
-  }, [pathSource, pathTarget]);
-
-  // Clear all highlights when clicking background
-  const handleBackgroundClick = useCallback(() => {
-    setHighlightedNodes(new Set());
-    setHighlightedPath([]);
-    setPathSource(null);
-    setPathTarget(null);
-  }, []);
-
-  // Handle community detection results - update node coloring
-  const handleCommunitiesDetected = useCallback((communities: CommunityResult[], colors: Map<number, string>) => {
-    // Build node -> community assignment map
-    const assignments = new Map<string, number>();
-    communities.forEach((community) => {
-      community.nodeIds.forEach((nodeId) => {
-        assignments.set(nodeId, community.id);
-      });
-    });
-    setCommunityAssignments(assignments);
-    setCommunityColors(colors);
-  }, []);
+  // Handlers for algorithm results - delegating to the hook
+  const handleHighlightNodes = setHighlightedNodesArray;
+  const handleHighlightPath = setHighlightedPathArray;
+  const handleSelectCommunity = handleSelectCommunityFromHook;
+  const handleNodeClick = handleNodeClickFromHook;
+  const handleBackgroundClick = handleBackgroundClickFromHook;
+  const handleCommunitiesDetected = setCommunitiesResult;
 
   // Calculate node type counts
   const nodeTypeCounts = useMemo(() => {
@@ -1344,10 +1272,7 @@ function AlgorithmsPage() {
                 <Button
                   variant="subtle"
                   size="xs"
-                  onClick={() => {
-                    setHighlightedNodes(new Set());
-                    setHighlightedPath([]);
-                  }}
+                  onClick={clearHighlights}
                 >
                   Clear
                 </Button>
@@ -1374,7 +1299,7 @@ function AlgorithmsPage() {
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
                         allowNegative={false}
-                        style={sprinkles({ flex: '1' })}
+                        style={{ flex: '1' }}
                         size="xs"
                       />
                       <Button
@@ -1425,7 +1350,7 @@ function AlgorithmsPage() {
                             { value: 6, label: '6' },
                           ]}
                           size="sm"
-                          style={sprinkles({ flex: '1' })}
+                          style={{ flex: '1' }}
                         />
                         <NumberInput
                           value={graphConfig.componentCount}
@@ -1481,7 +1406,7 @@ function AlgorithmsPage() {
                             { value: 10, label: '10' },
                           ]}
                           size="sm"
-                          style={sprinkles({ flex: '1' })}
+                          style={{ flex: '1' }}
                         />
                         <NumberInput
                           value={graphConfig.edgesPerNodeRange[1]}
@@ -1555,7 +1480,7 @@ function AlgorithmsPage() {
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
-                          style={sprinkles({ flex: '1' })}
+                          style={{ flex: '1' }}
                         />
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
@@ -1615,7 +1540,7 @@ function AlgorithmsPage() {
                               max={100}
                               step={1}
                               size="xs"
-                              style={sprinkles({ flex: '1' })}
+                              style={{ flex: '1' }}
                             />
                             <NumberInput
                               value={graphConfig.entityPercentages[entityType]}
