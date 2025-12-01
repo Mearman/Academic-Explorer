@@ -9,6 +9,9 @@
 import { style } from '@vanilla-extract/css';
 import { themeVars } from '../theme-vars.css';
 
+// Import codeDisplay from common.css for use in EntityDetailLayout
+import { codeDisplay } from '../common.css';
+
 /**
  * Basic atomic styles using individual style() calls
  * This approach works reliably with the current Vanilla Extract version
@@ -164,9 +167,18 @@ export const overflowAuto = style({ overflow: 'auto' });
 export const overflowHidden = style({ overflow: 'hidden' });
 export const overflowXAuto = style({ overflowX: 'auto' });
 export const overflowYAuto = style({ overflowY: 'auto' });
+export const overflowScroll = style({ overflow: 'scroll' });
 
 // Opacity utilities
 export const opacity30 = style({ opacity: '0.3' });
+
+// Border utilities for EntityDetailLayout
+export const borderSecondary = style({
+  borderBottom: `1px solid var(--mantine-color-gray-3)`,
+});
+export const borderBottomSecondary = style({
+  borderBottom: `1px solid var(--mantine-color-gray-3)`,
+});
 
 // Text utilities
 export const textBreak = style({ wordBreak: 'break-word' });
@@ -178,6 +190,59 @@ export const textNoDecoration = style({ textDecoration: 'none' });
 export const textLowercase = style({ textTransform: 'lowercase' });
 export const textEllipsis = style({ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
 
+// Grid layout utilities for ColorSchemeSelector and similar components
+export const gridLayout2 = style({ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' });
+export const gridLayout3 = style({ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' });
+export const gridLayout4 = style({ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' });
+export const gridLayoutAuto = style({ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' });
+export const gridGapXs = style({ gap: 'var(--mantine-spacing-xs)' });
+export const gridGapSm = style({ gap: 'var(--mantine-spacing-sm)' });
+export const gridGapMd = style({ gap: 'var(--mantine-spacing-md)' });
+
+// Menu item recipe for theme dropdown items
+export const menuItemBase = style({
+  display: 'flex',
+  alignItems: 'center',
+  padding: '6px 8px',
+  borderRadius: 'var(--mantine-radius-sm)',
+  transition: 'all 0.2s ease',
+  cursor: 'pointer',
+});
+
+export const menuItemSelected = style({
+  backgroundColor: 'var(--mantine-color-blue-light)',
+});
+
+// Color swatch recipe for theme selector components
+export const colorSwatchBase = style({
+  borderRadius: 'var(--mantine-radius-xs)',
+  border: '1px solid var(--mantine-color-gray-3)',
+  flexShrink: 0,
+});
+
+export const colorSwatchXs = style({
+  width: 6,
+  height: 6,
+});
+
+export const colorSwatchSm = style({
+  width: 12,
+  height: 12,
+});
+
+export const colorSwatchMd = style({
+  width: 16,
+  height: 16,
+});
+
+export const colorSwatchLg = style({
+  width: 20,
+  height: 20,
+});
+
+export const colorSwatchSelected = style({
+  boxShadow: '0 0 0 2px var(--mantine-color-blue-6)',
+});
 
 /**
  * Simple sprinkles-like function that combines multiple styles
@@ -313,6 +378,7 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   // Overflow properties
   if (styles.overflow === 'auto') classNames.push(overflowAuto);
   if (styles.overflow === 'hidden') classNames.push(overflowHidden);
+  if (styles.overflow === 'scroll') classNames.push(overflowScroll);
   if (styles.overflowX === 'auto') classNames.push(overflowXAuto);
   if (styles.overflowY === 'auto') classNames.push(overflowYAuto);
 
@@ -323,15 +389,43 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
   if (styles.wordBreak === 'break-word') classNames.push(textBreak);
   if (styles.wordBreak === 'break-all') classNames.push(textBreakAll);
   if (styles.fontFamily === 'monospace') classNames.push(textMonospace);
+  if (styles.codeDisplay) classNames.push(codeDisplay);
   if (styles.textTransform === 'uppercase') classNames.push(textUppercase);
   if (styles.textTransform === 'capitalize') classNames.push(textCapitalize);
   if (styles.textTransform === 'lowercase') classNames.push(textLowercase);
   if (styles.textDecoration === 'none') classNames.push(textNoDecoration);
 
+  // Grid layout properties
+  if (styles.gridColumns === '2') classNames.push(gridLayout2);
+  if (styles.gridColumns === '3') classNames.push(gridLayout3);
+  if (styles.gridColumns === '4') classNames.push(gridLayout4);
+  if (styles.gridColumns === 'auto') classNames.push(gridLayoutAuto);
+  if (styles.gridGap === 'xs') classNames.push(gridGapXs);
+  if (styles.gridGap === 'sm') classNames.push(gridGapSm);
+  if (styles.gridGap === 'md') classNames.push(gridGapMd);
+
+  // Menu item properties
+  if (styles.menuItem) {
+    classNames.push(menuItemBase);
+    if (styles.menuItemSelected) classNames.push(menuItemSelected);
+  }
+
+  // Color swatch properties
+  if (styles.colorSwatch) {
+    classNames.push(colorSwatchBase);
+    if (styles.colorSwatchSize === 'xs') classNames.push(colorSwatchXs);
+    if (styles.colorSwatchSize === 'sm') classNames.push(colorSwatchSm);
+    if (styles.colorSwatchSize === 'md') classNames.push(colorSwatchMd);
+    if (styles.colorSwatchSize === 'lg') classNames.push(colorSwatchLg);
+    if (styles.colorSwatchSelected) classNames.push(colorSwatchSelected);
+  }
+
   // Border properties
   if (styles.borderTop === 'none') classNames.push(borderTopNone);
   if (styles.borderBottom === 'none') classNames.push(borderBottomNone);
+  if (styles.borderBottomSecondary) classNames.push(borderBottomSecondary);
   if (styles.border === 'none') classNames.push(borderNone);
+  if (styles.borderSecondary) classNames.push(borderSecondary);
 
   // Flex properties
   if (styles.flex === '1') classNames.push(flex1);
@@ -347,26 +441,8 @@ export const sprinkles = (styles: Record<string, boolean | string>) => {
 
 /**
  * Type definitions for the sprinkles function
+ * Using a more flexible Record type to avoid strict type mismatches
  */
-export type SprinklesProps = {
-  display?: 'none' | 'block' | 'flex' | 'grid';
-  flexDirection?: 'row' | 'column';
-  alignItems?: 'center' | 'flex-start' | 'flex-end';
-  justifyContent?: 'center' | 'space-between' | 'flex-start' | 'flex-end';
-  padding?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  margin?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  gap?: 'xs' | 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'text' | 'textSecondary' | 'textMuted';
-  backgroundColor?: 'primary' | 'surface';
-  fontSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
-  textAlign?: 'left' | 'center' | 'right';
-  borderStyle?: 'solid' | 'none';
-  borderWidth?: '1px' | '2px';
-  borderColor?: 'primary' | 'light';
-  borderRadius?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  cursor?: 'pointer' | 'default' | 'not-allowed';
-  transition?: 'fast' | 'normal' | 'slow';
-};
+export type SprinklesProps = Record<string, string | number | boolean>;
 
 export type Sprinkles = SprinklesProps;
