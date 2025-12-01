@@ -3,6 +3,7 @@
  * Provides convenient hooks for using sprinkles with theme awareness
  */
 
+import type { CSSProperties } from 'react';
 import { useMemo, useCallback } from 'react';
 import { sprinkles } from '../styles/sprinkles';
 import {
@@ -118,23 +119,23 @@ export const useInteractiveStates = (options?: {
     };
   }, []);
 
-  const getClassName = useCallback((
+  const getStyles = useCallback((
     base: boolean = true,
     disabled: boolean = false,
     selected: boolean = false,
     hoverable: boolean = true
-  ) => {
-    const classes: string[] = [];
-    if (base) classes.push(states.base);
-    if (disabled) classes.push(states.disabled);
-    if (selected) classes.push(states.selected);
-    if (hoverable) classes.push(states.hoverable);
-    return classes.join(' ');
+  ): CSSProperties => {
+    let combinedStyles: CSSProperties = {};
+    if (base) combinedStyles = { ...combinedStyles, ...(states.base as CSSProperties) };
+    if (disabled) combinedStyles = { ...combinedStyles, ...(states.disabled as CSSProperties) };
+    if (selected) combinedStyles = { ...combinedStyles, ...(states.selected as CSSProperties) };
+    if (hoverable) combinedStyles = { ...combinedStyles, ...(states.hoverable as CSSProperties) };
+    return combinedStyles;
   }, [states]);
 
   return {
     states,
-    getClassName,
+    getStyles,
     isDisabled: options?.disabled || false,
     isSelected: options?.selected || false,
     isHoverable: options?.hoverable !== false,

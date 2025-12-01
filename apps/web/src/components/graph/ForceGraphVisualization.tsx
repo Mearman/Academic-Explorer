@@ -43,24 +43,9 @@ interface ForceGraphLink extends LinkObject {
   originalEdge: GraphEdge;
 }
 
-export type DisplayMode = 'highlight' | 'filter';
-
-export interface NodeStyle {
-  color?: string;
-  size?: number;
-  opacity?: number;
-  borderColor?: string;
-  borderWidth?: number;
-}
-
-export interface LinkStyle {
-  color?: string;
-  width?: number;
-  opacity?: number;
-  curvature?: number;
-  dashed?: boolean;
-  directed?: boolean;
-}
+// Import and re-export shared types
+import type { DisplayMode, NodeStyle, LinkStyle } from './types';
+export type { DisplayMode, NodeStyle, LinkStyle } from './types';
 
 export interface ForceGraphVisualizationProps {
   /** Graph nodes */

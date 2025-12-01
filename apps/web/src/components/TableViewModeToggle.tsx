@@ -4,7 +4,7 @@ import React from "react";
 
 export type TableViewMode = "table" | "list" | "grid";
 
-interface ViewModeToggleProps {
+export interface TableViewModeToggleProps {
   value: TableViewMode;
   onChange: (value: TableViewMode) => void;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -43,11 +43,11 @@ const VIEW_MODE_DATA: Array<{
   },
 ];
 
-export function ViewModeToggle({
+export function TableViewModeToggle({
   value,
   onChange,
   size = "sm",
-}: ViewModeToggleProps) {
+}: TableViewModeToggleProps) {
   return (
     <SegmentedControl
       value={value}

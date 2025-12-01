@@ -2,7 +2,7 @@ import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { EntityList, type EntityListColumnConfig } from "@/components/EntityList";
-import type { TableViewMode } from "@/components/ViewModeToggle";
+import type { TableViewMode } from "@/components/TableViewModeToggle";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 const sourcesColumns: EntityListColumnConfig[] = [

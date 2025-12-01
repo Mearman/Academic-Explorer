@@ -99,7 +99,7 @@ function BookmarkCard({
             flex={1}
             fw={500}
             c="inherit"
-            style={sprinkles({ cursor: 'pointer', transition: 'normal' })}
+            style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
             data-testid="bookmark-title-link"
           >
             {title}
@@ -338,7 +338,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       {filteredBookmarks.length === 0 ? (
         <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
           <Stack align="center" gap="md">
-            <div style={sprinkles({ color: 'dimmed' })}>
+            <div style={{ color: 'var(--mantine-color-dimmed)' }}>
               <IconBookmarkOff size={48} />
             </div>
             <Text size="lg" fw={500}>

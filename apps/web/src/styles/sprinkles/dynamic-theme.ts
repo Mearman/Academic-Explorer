@@ -7,6 +7,47 @@ import { assignInlineVars, setElementVars } from '@vanilla-extract/dynamic';
 import { themeVars } from '../theme-vars.css';
 import type { ComponentLibrary } from '../theme-contracts';
 
+/**
+ * Type definitions for dynamic theme configuration
+ */
+export interface DynamicThemeConfig {
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+  };
+  spacing?: {
+    xs?: string;
+    sm?: string;
+    md?: string;
+    lg?: string;
+    xl?: string;
+  };
+  borderRadius?: {
+    sm?: string;
+    md?: string;
+    lg?: string;
+    xl?: string;
+  };
+}
+
+export interface InteractiveStateProps {
+  disabled?: boolean;
+  selected?: boolean;
+  hoverable?: boolean;
+}
+
+export interface CardProps {
+  elevated?: boolean;
+  library?: ComponentLibrary;
+}
+
+export interface ButtonProps {
+  variant?: 'solid' | 'subtle' | 'outline' | 'ghost';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  library?: ComponentLibrary;
+}
+
 // Inject theme CSS variables for interactive states
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
