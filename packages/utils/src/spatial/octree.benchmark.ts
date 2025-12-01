@@ -186,4 +186,7 @@ async function runBenchmarks() {
   }
 }
 
-runBenchmarks().catch(console.error);
+// Only run when executed directly (not when imported)
+if (import.meta.url.endsWith('octree.benchmark.ts')) {
+  runBenchmarks().catch(console.error);
+}

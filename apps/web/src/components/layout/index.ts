@@ -4,6 +4,7 @@
 
 export * from "./BookmarkCard";
 export * from "./BookmarksSidebar";
+export * from "./CatalogueListCard";
 export * from "./ColorSchemeSelector";
 export * from "./HeaderSearchInput";
 export * from "./HistoryCard";

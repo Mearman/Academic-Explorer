@@ -232,4 +232,7 @@ async function runBenchmarks() {
   }
 }
 
-runBenchmarks().catch(console.error);
+// Only run when executed directly (not when imported)
+if (import.meta.url.endsWith('graph-lod-manager.benchmark.ts')) {
+  runBenchmarks().catch(console.error);
+}

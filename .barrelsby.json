@@ -17,7 +17,8 @@
     "__mocks__",
     "\\.stories\\.",
     "test/",
-    "\\.css\\.ts$"
+    "\\.css\\.ts$",
+    "\\.benchmark\\."
   ],
   "location": "all",
   "singleQuotes": false,
