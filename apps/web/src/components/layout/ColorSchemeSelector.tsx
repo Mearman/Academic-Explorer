@@ -235,30 +235,7 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
         </Box>
       </Box>
 
-      <Menu.Divider />
-
-      {/* Current Selection Display */}
-      <Box p="xs" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
-        <Group gap="xs">
-          <Badge size="xs" variant="light">
-            {COLOR_SCHEME_LABELS[config.colorMode].label}
-          </Badge>
-          <Badge
-            size="xs"
-            variant="light"
-            color={selectedPalette}
-          >
-            {selectedPalette}
-          </Badge>
-          <Badge size="xs" variant="outline">
-            {COMPONENT_LIBRARY_LABELS[config.componentLibrary].label}
-          </Badge>
-          <Badge size="xs" variant="light">
-            Radius: {(config.borderRadius || 'md').toUpperCase()}
-          </Badge>
-        </Group>
-      </Box>
-    </>
+      </>
   )
 
   return (
