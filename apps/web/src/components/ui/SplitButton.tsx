@@ -134,13 +134,13 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                   height: `${height}px`,
                   width: `${height}px`,
                   borderStyle: 'solid',
-                  backgroundColor: 'var(--mantine-color-gray-1)',
+                  backgroundColor: 'transparent',
                   transition: 'all 0.15s ease-in-out',
                   flexShrink: 0, // Prevent button from shrinking
                   position: 'relative',
                   zIndex: 2, // Ensure dropdown button is on top
                   '&:hover': {
-                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    backgroundColor: 'var(--mantine-color-' + dropdownColor + '-light-hover)',
                     transform: 'scale(1.05)',
                     zIndex: 3
                   },
@@ -211,13 +211,13 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
                     height: `${height}px`,
                     width: `${height}px`,
                     borderStyle: 'solid',
-                    backgroundColor: 'var(--mantine-color-gray-1)',
+                    backgroundColor: 'transparent',
                     transition: 'all 0.15s ease-in-out',
                     flexShrink: 0, // Prevent button from shrinking
                     position: 'relative',
                     zIndex: 2, // Ensure dropdown button is on top
                     '&:hover': {
-                      backgroundColor: 'var(--mantine-color-gray-0)',
+                      backgroundColor: 'var(--mantine-color-' + dropdownColor + '-light-hover)',
                       transform: 'scale(1.05)',
                       zIndex: 3
                     },
