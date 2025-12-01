@@ -540,7 +540,7 @@ function AlgorithmsPage() {
   );
 
   // Fit all nodes to view with proper centering
-  const handleFitAll = useCallback(() => {
+  const fitToViewAll = useCallback(() => {
     const graph = graphMethodsRef.current;
     if (!graph?.zoomToFit) return;
 
@@ -559,13 +559,13 @@ function AlgorithmsPage() {
   }, [viewMode]);
 
   // Fit selected nodes to view (or all if none selected)
-  const handleFitSelected = useCallback(() => {
+  const fitToViewSelected = useCallback(() => {
     const graph = graphMethodsRef.current;
     if (!graph?.zoomToFit) return;
 
     if (highlightedNodes.size === 0) {
       // No selection - use fit all behavior
-      handleFitAll();
+      fitToViewAll();
     } else {
       // Calculate center of selected nodes for 2D
       if (viewMode === '2D' && graph.centerAt) {
@@ -597,7 +597,7 @@ function AlgorithmsPage() {
         );
       }
     }
-  }, [highlightedNodes, viewMode, graphData.nodes, handleFitAll]);
+  }, [highlightedNodes, viewMode, graphData.nodes, fitToViewAll]);
 
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
@@ -910,7 +910,7 @@ function AlgorithmsPage() {
                     <ActionIcon
                       variant="subtle"
                       size="sm"
-                      onClick={handleFitAll}
+                      onClick={fitToViewAll}
                       aria-label="Fit all to view"
                     >
                       <IconFocusCentered size={16} />
@@ -920,7 +920,7 @@ function AlgorithmsPage() {
                     <ActionIcon
                       variant="subtle"
                       size="sm"
-                      onClick={handleFitSelected}
+                      onClick={fitToViewSelected}
                       aria-label="Fit selected to view"
                       disabled={highlightedNodes.size === 0}
                     >
