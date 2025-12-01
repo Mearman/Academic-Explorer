@@ -12,6 +12,12 @@ import { useState, useEffect } from 'react'
 import { SplitButton } from '@/components/ui/SplitButton'
 import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 import { useTheme } from '@/contexts/theme-context'
+import {
+  gridLayout,
+  menuItem,
+  colorSwatch,
+  textUppercase
+} from '@/styles/common.css'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 
@@ -151,58 +157,38 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
       </Menu.Label>
 
       <Box p="xs">
-        <Box
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 4,
-            alignContent: 'start'
-          }}
-        >
+        <div className={gridLayout({ columns: 3, gap: 'xs' })}>
           {shadcnPaletteNames.map((palette) => (
             <Menu.Item
               key={palette}
               onClick={() => handlePaletteChange(palette)}
-              p={4}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 8px',
-                borderRadius: 4,
-                backgroundColor: selectedPalette === palette
-                  ? 'var(--mantine-color-blue-light)'
-                  : 'transparent'
-              }}
+              className={menuItem({
+                selected: selectedPalette === palette,
+                gap: 'xs'
+              })}
             >
               <Box
-                w={12}
-                h={12}
-                style={{
-                  backgroundColor: theme.colors[palette]?.[6] || theme.colors.gray[6],
-                  borderRadius: 2,
-                  border: `1px solid ${theme.colors.gray[3]}`,
-                  boxShadow: selectedPalette === palette
-                    ? `0 0 0 2px ${theme.colors.blue[6]}`
-                    : 'none'
-                }}
+                className={colorSwatch({
+                  size: 'sm',
+                  selected: selectedPalette === palette
+                })}
+                bg={palette}
               />
               <Text
                 size="xs"
-                style={{
-                  fontSize: 11,
-                  textTransform: 'capitalize',
-                  fontWeight: selectedPalette === palette ? 600 : 400
-                }}
+                fw={selectedPalette === palette ? 600 : 400}
+                tt="capitalize"
               >
                 {palette}
               </Text>
               {selectedPalette === palette && (
-                <IconCheck size={12} style={{ marginLeft: 'auto' }} />
+                <Box style={{ marginLeft: 'auto' }}>
+                  <IconCheck size={12} />
+                </Box>
               )}
             </Menu.Item>
           ))}
-        </Box>
+        </div>
       </Box>
 
       <Menu.Divider />
@@ -265,58 +251,41 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
         </Group>
       </Menu.Label>
       <Box p="xs">
-        <Box
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 4,
-            alignContent: 'start'
-          }}
-        >
+        <div className={gridLayout({ columns: 3, gap: 'xs' })}>
           {BORDER_RADIUS_OPTIONS.map((radius) => (
             <Menu.Item
               key={radius.value}
               onClick={() => setBorderRadius(radius.value)}
-              p={4}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 8px',
-                borderRadius: 4,
-                backgroundColor: config.borderRadius === radius.value
-                  ? 'var(--mantine-color-blue-light)'
-                  : 'transparent'
-              }}
+              className={menuItem({
+                selected: config.borderRadius === radius.value,
+                gap: 'xs'
+              })}
             >
               <Box
                 w={12}
                 h={12}
-                style={{
-                  backgroundColor: theme.colors.gray[6],
-                  borderRadius: `${radius.size}px`,
-                  border: `1px solid ${theme.colors.gray[3]}`,
-                  boxShadow: config.borderRadius === radius.value
-                    ? `0 0 0 2px ${theme.colors.blue[6]}`
-                    : 'none'
-                }}
+                bg="gray"
+                style={{ borderRadius: `${radius.size}px` }}
+                className={colorSwatch({
+                  size: 'sm',
+                  selected: config.borderRadius === radius.value
+                })}
               />
               <Text
                 size="xs"
-                style={{
-                  fontSize: 11,
-                  textTransform: 'uppercase',
-                  fontWeight: config.borderRadius === radius.value ? 600 : 400
-                }}
+                fw={config.borderRadius === radius.value ? 600 : 400}
+                className={textUppercase}
               >
                 {radius.label}
               </Text>
               {config.borderRadius === radius.value && (
-                <IconCheck size={12} style={{ marginLeft: 'auto' }} />
+                <Box style={{ marginLeft: 'auto' }}>
+                  <IconCheck size={12} />
+                </Box>
               )}
             </Menu.Item>
           ))}
-        </Box>
+        </div>
       </Box>
 
       <Menu.Divider />
@@ -324,14 +293,9 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
       {/* Reset to Defaults */}
       <Menu.Item
         onClick={resetTheme}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '8px 12px',
-          color: 'var(--mantine-color-red-6)',
-          fontWeight: 500
-        }}
+        className={menuItem({ gap: 'sm' })}
+        c="red"
+        fw={500}
       >
         <Text size="sm">Reset to Defaults</Text>
       </Menu.Item>
@@ -356,13 +320,8 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
               {COLOR_SCHEME_LABELS[config.colorMode].label}
             </Text>
             <Box
-              w={6}
-              h={6}
-              style={{
-                backgroundColor: theme.colors[selectedPalette]?.[6] || theme.colors.gray[6],
-                borderRadius: 2,
-                flexShrink: 0
-              }}
+              className={colorSwatch({ size: 'xs' })}
+              bg={selectedPalette || 'gray'}
             />
           </Group>
         )

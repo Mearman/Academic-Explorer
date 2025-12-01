@@ -88,6 +88,10 @@ export const textUppercase = style({
   textTransform: "uppercase",
 });
 
+export const textCapitalize = style({
+  textTransform: "capitalize",
+});
+
 export const textNoDecoration = style({
   textDecoration: "none",
 });
@@ -731,5 +735,248 @@ export const virtualTableCell = recipe({
   defaultVariants: {
     flex: "auto",
     hasBorder: true,
+  },
+});
+
+// Interactive element recipes for replacing common inline styles
+export const interactiveElement = recipe({
+  base: {
+    transition: "all 0.2s ease",
+    borderRadius: "var(--mantine-radius-sm)",
+  },
+  variants: {
+    hover: {
+      true: {
+        ":hover": {
+          backgroundColor: "var(--mantine-color-gray-0)",
+        },
+      },
+      false: {},
+    },
+    clickable: {
+      true: cursorPointer,
+      false: {},
+    },
+    padding: {
+      none: {},
+      xs: { padding: "var(--mantine-spacing-xs)" },
+      sm: { padding: "var(--mantine-spacing-sm)" },
+      md: { padding: "var(--mantine-spacing-md)" },
+    },
+  },
+  defaultVariants: {
+    hover: false,
+    clickable: false,
+    padding: "none",
+  },
+});
+
+// Grid layout recipe for ColorSchemeSelector and similar components
+export const gridLayout = recipe({
+  base: {
+    display: "grid",
+    alignContent: "start",
+  },
+  variants: {
+    columns: {
+      2: { gridTemplateColumns: "repeat(2, 1fr)" },
+      3: { gridTemplateColumns: "repeat(3, 1fr)" },
+      4: { gridTemplateColumns: "repeat(4, 1fr)" },
+      auto: { gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))" },
+    },
+    gap: {
+      none: { gap: "0" },
+      xs: { gap: "var(--mantine-spacing-xs)" },
+      sm: { gap: "var(--mantine-spacing-sm)" },
+      md: { gap: "var(--mantine-spacing-md)" },
+    },
+  },
+  defaultVariants: {
+    columns: 3,
+    gap: "xs",
+  },
+});
+
+// Color swatch recipe for theme selector components
+export const colorSwatch = recipe({
+  base: {
+    borderRadius: "var(--mantine-radius-xs)",
+    border: "1px solid var(--mantine-color-gray-3)",
+    flexShrink: 0,
+  },
+  variants: {
+    size: {
+      xs: {
+        width: 6,
+        height: 6,
+      },
+      sm: {
+        width: 12,
+        height: 12,
+      },
+      md: {
+        width: 16,
+        height: 16,
+      },
+      lg: {
+        width: 20,
+        height: 20,
+      },
+    },
+    selected: {
+      true: {
+        boxShadow: "0 0 0 2px var(--mantine-color-blue-6)",
+      },
+      false: {
+        boxShadow: "none",
+      },
+    },
+  },
+  defaultVariants: {
+    size: "sm",
+    selected: false,
+  },
+});
+
+// Menu item recipe for theme dropdown items
+export const menuItem = recipe({
+  base: {
+    display: "flex",
+    alignItems: "center",
+    padding: "6px 8px",
+    borderRadius: "var(--mantine-radius-sm)",
+    transition: "all 0.2s ease",
+    cursor: "pointer",
+  },
+  variants: {
+    selected: {
+      true: {
+        backgroundColor: "var(--mantine-color-blue-light)",
+      },
+      false: {
+        backgroundColor: "transparent",
+      },
+    },
+    gap: {
+      none: { gap: "0" },
+      xs: { gap: "var(--mantine-spacing-xs)" },
+      sm: { gap: "var(--mantine-spacing-sm)" },
+      md: { gap: "var(--mantine-spacing-md)" },
+    },
+  },
+  defaultVariants: {
+    selected: false,
+    gap: "xs",
+  },
+});
+
+// Additional recipes for replacing inline styles
+export const dragHandle = recipe({
+  base: [
+    positionAbsolute,
+    cursorResize,
+    {
+      backgroundColor: "var(--mantine-color-gray-2)",
+      transition: "background-color 0.2s ease",
+    },
+  ],
+  variants: {
+    position: {
+      left: {
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: 4,
+        cursor: "col-resize",
+      },
+      right: {
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 4,
+        cursor: "col-resize",
+      },
+      top: {
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 4,
+        cursor: "row-resize",
+      },
+      bottom: {
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 4,
+        cursor: "row-resize",
+      },
+    },
+    hover: {
+      true: {
+        backgroundColor: "var(--mantine-color-blue-6)",
+      },
+      false: {},
+    },
+  },
+  defaultVariants: {
+    position: "right",
+    hover: false,
+  },
+});
+
+// Additional typography helpers
+export const textLowercase = style({
+  textTransform: "lowercase",
+});
+
+export const textBreakWord = style({
+  wordBreak: "break-word",
+});
+
+export const textEllipsis = style({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
+// Enhanced loading state recipe (existing one was just a style)
+export const enhancedLoadingState = recipe({
+  base: {
+    letterSpacing: "0.1em",
+    opacity: 0.7,
+  },
+  variants: {
+    size: {
+      xs: { fontSize: "var(--mantine-font-size-xs)" },
+      sm: { fontSize: "var(--mantine-font-size-sm)" },
+      md: { fontSize: "var(--mantine-font-size-md)" },
+    },
+  },
+  defaultVariants: {
+    size: "sm",
+  },
+});
+
+// Sizing helpers for common inline width/height styles
+export const fullWidth = style({
+  width: "100%",
+});
+
+export const fullHeight = style({
+  height: "100%",
+});
+
+export const sizeSquare = recipe({
+  variants: {
+    size: {
+      xs: { width: 12, height: 12 },
+      sm: { width: 16, height: 16 },
+      md: { width: 20, height: 20 },
+      lg: { width: 24, height: 24 },
+      xl: { width: 32, height: 32 },
+    },
+  },
+  defaultVariants: {
+    size: "sm",
   },
 });

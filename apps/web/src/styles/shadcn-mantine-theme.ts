@@ -642,5 +642,118 @@ export const shadcnMantineTheme = createTheme({
         underline: "always",
       },
     },
+
+    // Enhanced Box component with additional style props for inline style replacement
+    Box: {
+      vars: (theme, props) => ({
+        root: {
+          '--box-bg': props.bg ? `var(--mantine-color-${props.bg}-filled)` : undefined,
+          '--box-bg-light': props.bg ? `var(--mantine-color-${props.bg}-light)` : undefined,
+          '--box-bg-outline': props.bg ? `var(--mantine-color-${props.bg}-outline)` : undefined,
+          '--box-color': props.c ? `var(--mantine-color-${props.c}-filled)` : undefined,
+          '--box-border-color': props.bdColor ? `var(--mantine-color-${props.bdColor}-filled)` : undefined,
+          '--box-cursor': props.cursor || undefined,
+          '--box-position': props.pos || undefined,
+          '--box-z-index': props.zIndex?.toString() || undefined,
+          '--box-opacity': props.opacity?.toString() || undefined,
+          '--box-user-select': props.userSelect || undefined,
+          '--box-pointer-events': props.pointerEvents || undefined,
+        }
+      }),
+      styles: {
+        root: {
+          backgroundColor: 'var(--box-bg)',
+          color: 'var(--box-color)',
+          cursor: 'var(--box-cursor)',
+          position: 'var(--box-position)',
+          zIndex: 'var(--box-z-index)',
+          opacity: 'var(--box-opacity)',
+          userSelect: 'var(--box-user-select)',
+          pointerEvents: 'var(--box-pointer-events)',
+        }
+      }
+    },
+
+    // Enhanced Flex component with comprehensive flexbox props
+    Flex: {
+      vars: (theme, props) => ({
+        root: {
+          '--flex-direction': props.direction || 'row',
+          '--flex-align': props.align || 'stretch',
+          '--flex-justify': props.justify || 'flex-start',
+          '--flex-wrap': props.wrap || 'nowrap',
+          '--flex-gap': props.gap ? `var(--mantine-spacing-${props.gap})` : '0',
+          '--flex-column-gap': props.gap ? `var(--mantine-spacing-${props.gap})` : '0',
+          '--flex-row-gap': props.gap ? `var(--mantine-spacing-${props.gap})` : '0',
+        }
+      }),
+      styles: {
+        root: {
+          display: 'flex',
+          flexDirection: 'var(--flex-direction)',
+          alignItems: 'var(--flex-align)',
+          justifyContent: 'var(--flex-justify)',
+          flexWrap: 'var(--flex-wrap)',
+          gap: 'var(--flex-gap)',
+          columnGap: 'var(--flex-column-gap)',
+          rowGap: 'var(--flex-row-gap)',
+        }
+      }
+    },
+
+    // Enhanced Grid component for CSS Grid patterns
+    Grid: {
+      vars: (theme, props) => ({
+        root: {
+          '--grid-template-columns': props.templateColumns || undefined,
+          '--grid-template-rows': props.templateRows || undefined,
+          '--grid-gap': props.gap ? `var(--mantine-spacing-${props.gap})` : '0',
+          '--grid-align-content': props.alignContent || 'start',
+          '--grid-justify-content': props.justifyContent || 'start',
+          '--grid-align-items': props.alignItems || 'stretch',
+        }
+      }),
+      styles: {
+        root: {
+          display: 'grid',
+          gridTemplateColumns: 'var(--grid-template-columns)',
+          gridTemplateRows: 'var(--grid-template-rows)',
+          gap: 'var(--grid-gap)',
+          alignContent: 'var(--grid-align-content)',
+          justifyContent: 'var(--grid-justify-content)',
+          alignItems: 'var(--grid-align-items)',
+        }
+      }
+    },
+
+    // Enhanced Text component for typography props
+    Text: {
+      vars: (theme, props) => ({
+        root: {
+          '--text-font-size': props.size ? `var(--mantine-font-size-${props.size})` : undefined,
+          '--text-font-weight': props.fw?.toString() || undefined,
+          '--text-line-height': props.lh ? `var(--mantine-line-height-${props.lh})` : undefined,
+          '--text-letter-spacing': props.ls ? `${props.ls}` : undefined,
+          '--text-transform': props.tt || undefined,
+          '--text-align': props.ta || undefined,
+          '--text-decoration': props.td || undefined,
+          '--text-white-space': props.ws || undefined,
+          '--text-word-break': props.wb || undefined,
+        }
+      }),
+      styles: {
+        root: {
+          fontSize: 'var(--text-font-size)',
+          fontWeight: 'var(--text-font-weight)',
+          lineHeight: 'var(--text-line-height)',
+          letterSpacing: 'var(--text-letter-spacing)',
+          textTransform: 'var(--text-transform)',
+          textAlign: 'var(--text-align)',
+          textDecoration: 'var(--text-decoration)',
+          whiteSpace: 'var(--text-white-space)',
+          wordBreak: 'var(--text-word-break)',
+        }
+      }
+    },
   },
 })

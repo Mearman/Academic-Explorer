@@ -34,6 +34,19 @@ import React, { useState, useCallback, useRef } from "react";
 import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
 
+import {
+  flexContainer,
+  flexColumn,
+  flex1,
+  positionRelative,
+  cursorPointer,
+  cursorResize,
+  fullWidth,
+  fullHeight,
+  dragHandle,
+  overflowAuto
+} from "@/styles/common.css";
+
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { ColorSchemeSelector } from "./ColorSchemeSelector";
 import { HeaderSearchInput } from "./HeaderSearchInput";
@@ -161,11 +174,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <AppShell.Header>
         <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'md' }}>
           {/* Left side - Title and version (hidden on mobile when search expanded) */}
-          <Group style={{ flex: mobileSearchExpanded ? 0 : 1 }} gap="xs">
+          <Group flex={mobileSearchExpanded ? 0 : 1} gap="xs">
             {!mobileSearchExpanded && (
               <>
                 <Link to="/" style={{ textDecoration: 'none' }}>
-                  <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
+                  <Text
+                    size="xl"
+                    fw={600}
+                    c="blue"
+                    className={cursorPointer}
+                  >
                     BibGraph
                   </Text>
                 </Link>
@@ -178,7 +196,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Badge
                     variant="light"
                     size="sm"
-                    style={{ cursor: 'pointer' }}
+                    className={cursorPointer}
                   >
                     v{buildInfo.version}
                   </Badge>
@@ -197,7 +215,15 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* Right side - Controls */}
           <Group gap="xs">
             {/* Mobile search - expandable input */}
-            <Box hiddenFrom="sm" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: mobileSearchExpanded ? 1 : 'none' }}>
+            <Box
+              hiddenFrom="sm"
+              className={flexContainer}
+              style={{
+                alignItems: 'center',
+                gap: '0.5rem',
+                flex: mobileSearchExpanded ? 1 : 'none'
+              }}
+            >
               {!mobileSearchExpanded ? (
                 <ActionIcon
                   onClick={() => setMobileSearchExpanded(true)}
@@ -209,7 +235,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </ActionIcon>
               ) : (
                 <>
-                  <Box style={{ flex: 1, minWidth: 0 }}>
+                  <Box className={flex1} style={{ minWidth: 0 }}>
                     <HeaderSearchInput />
                   </Box>
                   <ActionIcon
@@ -388,12 +414,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Left Sidebar */}
       <AppShell.Navbar p={0}>
         <div
-          style={{
-            display: "flex",
-            height: "100%",
-            position: "relative",
-            overflow: "hidden",
-          }}
+          className={[flexContainer, fullHeight, positionRelative].join(' ')}
+          style={{ overflow: "hidden" }}
         >
           {/* Always visible left ribbon */}
           <LeftRibbon />
@@ -405,12 +427,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 flex={1}
                 p={{ base: 'xs', sm: 'sm' }}
                 data-testid="left-sidebar-content"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
+                className={[flexColumn, fullHeight].join(' ')}
+                style={{ overflow: "hidden" }}
               >
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
@@ -476,7 +494,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 w={rem(4)}
                 h="100%"
                 bg={isDragging === "left" ? "blue" : "transparent"}
-                style={{ cursor: "ew-resize", position: "absolute", right: 0, top: 0, zIndex: 10 }}
+                style={{ position: "absolute", right: 0, top: 0, zIndex: 10 }}
+                className={cursorResize}
                 bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "left", e });
@@ -533,7 +552,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 w={rem(4)}
                 h="100%"
                 bg={isDragging === "right" ? "blue" : "transparent"}
-                style={{ cursor: "ew-resize", position: "absolute", left: 0, top: 0, zIndex: 10 }}
+                style={{ position: "absolute", left: 0, top: 0, zIndex: 10 }}
+                className={cursorResize}
                 bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "right", e });
@@ -615,13 +635,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <AppShell.Main
         data-testid="main-content"
-        styles={{
-          main: {
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column",
-          },
-        }}
+        className={[flexColumn, overflowAuto].join(' ')}
       >
         {children ?? (
           <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
