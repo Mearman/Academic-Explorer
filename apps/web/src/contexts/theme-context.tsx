@@ -35,7 +35,7 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 const defaultThemeConfig: ThemeConfig = {
   componentLibrary: "mantine",
   colorScheme: "blue",
-  colorMode: "light",
+  colorMode: "auto",
   borderRadius: "md",
 };
 
@@ -79,6 +79,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetTheme = () => {
+    // Remove user preferences from localStorage to revert to defaults
+    localStorage.removeItem("theme-config");
     setConfig(defaultThemeConfig);
   };
 

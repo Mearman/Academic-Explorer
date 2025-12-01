@@ -40,7 +40,7 @@ const BORDER_RADIUS_OPTIONS = [
 ] as const
 
 export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
-  const { config, setColorScheme, setColorMode, setComponentLibrary, setBorderRadius } = useTheme()
+  const { config, setColorScheme, setColorMode, setComponentLibrary, setBorderRadius, resetTheme } = useTheme()
   const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>(config.colorScheme as ShadcnPalette)
   const theme = useMantineTheme()
 
@@ -234,6 +234,23 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
           ))}
         </Box>
       </Box>
+
+      <Menu.Divider />
+
+      {/* Reset to Defaults */}
+      <Menu.Item
+        onClick={resetTheme}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '8px 12px',
+          color: 'var(--mantine-color-red-6)',
+          fontWeight: 500
+        }}
+      >
+        <Text size="sm">Reset to Defaults</Text>
+      </Menu.Item>
 
       </>
   )
