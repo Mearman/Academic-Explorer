@@ -2,7 +2,7 @@
  * Algorithms Page - Graph algorithms demonstration and analysis
  */
 
-import type { GraphNode, GraphEdge, EntityType, ViewMode } from '@bibgraph/types';
+import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
 import {
   ActionIcon,
@@ -32,9 +32,6 @@ import {
   IconInfoCircle,
   IconLock,
   IconLockOpen,
-  IconSquare,
-  IconCube,
-  IconAlertTriangle,
   IconFocusCentered,
   IconFocus2,
 } from '@tabler/icons-react';
@@ -47,6 +44,51 @@ import { ForceGraphVisualization, type DisplayMode } from '@/components/graph/Fo
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useViewModePreference } from '@/hooks/useViewModePreference';
 import { sprinkles } from '@/styles/sprinkles';
+
+/**
+ * Node with simulation coordinates (added by force layout)
+ * Extends GraphNode with optional z for 3D mode
+ */
+interface SimulationNode extends GraphNode {
+  z?: number;
+}
+
+/**
+ * Minimal node type for filter functions (what the library actually passes)
+ */
+interface FilterNode {
+  id?: string | number;
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+/**
+ * Graph methods from react-force-graph-2d/3d
+ * The library's type definitions are incomplete, so we define the full interface
+ */
+interface GraphMethods {
+  // Core methods (2D and 3D)
+  zoomToFit(duration?: number, padding?: number, nodeFilter?: (node: FilterNode) => boolean): void;
+  centerAt?(x: number, y: number, duration?: number): void;
+  graphData?(): { nodes: SimulationNode[]; links: unknown[] };
+  zoom?(scale?: number, duration?: number): void;
+
+  // 3D-specific methods
+  cameraPosition?(
+    position: { x: number; y: number; z: number },
+    lookAt?: { x: number; y: number; z: number },
+    duration?: number
+  ): void;
+  camera?(): {
+    position: { x: number; y: number; z: number; set?(x: number, y: number, z: number): void };
+    lookAt?(x: number, y: number, z: number): void;
+  } | undefined;
+  controls?(): {
+    target: { x: number; y: number; z: number; set?(x: number, y: number, z: number): void };
+    update?(): void;
+  } | undefined;
+}
 
 /**
  * Configuration for sample graph generation
@@ -527,13 +569,11 @@ function AlgorithmsPage() {
   const { viewMode, setViewMode } = useViewModePreference('2D');
 
   // Graph methods ref for external control (zoomToFit, etc.)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const graphMethodsRef = useRef<any>(null);
+  const graphMethodsRef = useRef<GraphMethods | null>(null);
 
   // Handler for when graph methods become available
   const handleGraphReady = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (methods: any) => {
+    (methods: GraphMethods) => {
       graphMethodsRef.current = methods;
     },
     []
@@ -544,33 +584,105 @@ function AlgorithmsPage() {
     const graph = graphMethodsRef.current;
     if (!graph?.zoomToFit) return;
 
+    // Get actual node positions from the graph
+    const graphNodes = graph.graphData?.()?.nodes ?? [];
+
     if (viewMode === '2D') {
-      // For 2D: use centerAt to properly center, then zoomToFit
-      if (graph.centerAt) {
-        graph.centerAt(0, 0, 200);
+      // For 2D: calculate bounding box center, then use centerAt and zoomToFit
+      if (graph.centerAt && graphNodes.length > 0) {
+        // Calculate bounding box
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+
+        graphNodes.forEach((n) => {
+          const x = n.x ?? 0;
+          const y = n.y ?? 0;
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+        });
+
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+
+        // Center on the bounding box center, then fit
+        graph.centerAt(centerX, centerY, 200);
         setTimeout(() => {
           graph.zoomToFit(300, 100);
-        }, 200);
+        }, 250);
       } else {
         graph.zoomToFit(300, 100);
       }
     } else {
-      // 3D mode: use cameraPosition to reset lookAt to origin, then zoomToFit
-      // Match the parameters from the working keyboard shortcuts (padding: 50)
-      if (graph.cameraPosition) {
-        // Get current camera position
+      // 3D mode: use manual camera positioning since zoomToFit is unreliable
+      if (graph.cameraPosition && graphNodes.length > 0) {
+        // Calculate bounding box of all nodes
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+
+        graphNodes.forEach((n) => {
+          const x = n.x ?? 0;
+          const y = n.y ?? 0;
+          const z = n.z ?? 0;
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+          minZ = Math.min(minZ, z);
+          maxZ = Math.max(maxZ, z);
+        });
+
+        // Calculate center and dimensions
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+        const centerZ = (minZ + maxZ) / 2;
+        const width = maxX - minX;
+        const height = maxY - minY;
+        const depth = maxZ - minZ;
+
+        // Use the largest dimension for camera distance calculation
+        // Account for FOV (~75 degrees) - distance = size / (2 * tan(FOV/2))
+        const maxDimension = Math.max(width, height, depth, 100);
+        const fovFactor = 1.5; // Approximates 1 / tan(37.5°) with padding
+        const cameraDistance = maxDimension * fovFactor + 100;
+
+        // Directly set camera position and controls target
         const camera = graph.camera?.();
-        const currentZ = camera?.position?.z ?? 500;
-        // Reset lookAt to origin with smooth transition
-        graph.cameraPosition(
-          { x: 0, y: 0, z: currentZ }, // position
-          { x: 0, y: 0, z: 0 }, // lookAt
-          300 // transition duration
-        );
-        setTimeout(() => {
-          graph.zoomToFit(400, 50);
-        }, 350);
+        const controls = graph.controls?.();
+
+        if (camera && controls) {
+          // Set the controls target (orbit center) to the bounding box center
+          if (controls.target?.set) {
+            controls.target.set(centerX, centerY, centerZ);
+          } else if (controls.target) {
+            controls.target.x = centerX;
+            controls.target.y = centerY;
+            controls.target.z = centerZ;
+          }
+          // Position camera along z-axis from center
+          if (camera.position?.set) {
+            camera.position.set(centerX, centerY, centerZ + cameraDistance);
+          }
+          // Make camera look at the target
+          if (camera.lookAt) {
+            camera.lookAt(centerX, centerY, centerZ);
+          }
+          // Update controls
+          if (controls.update) {
+            controls.update();
+          }
+        } else {
+          // Fallback to cameraPosition method with lookAt
+          graph.cameraPosition(
+            { x: centerX, y: centerY, z: centerZ + cameraDistance },
+            { x: centerX, y: centerY, z: centerZ },
+            0 // instant
+          );
+        }
       } else {
+        // Fallback to zoomToFit
         graph.zoomToFit(400, 50);
       }
     }
@@ -587,76 +699,116 @@ function AlgorithmsPage() {
       return;
     }
 
-    // Get selected nodes with their positions
-    const selectedNodes = graphData.nodes.filter(n => highlightedNodes.has(n.id));
+    // Get actual node positions from graph
+    const graphNodes = graph.graphData?.()?.nodes ?? [];
+    const selectedNodes = graphNodes.filter((n) => highlightedNodes.has(n.id));
     if (selectedNodes.length === 0) {
       fitToViewAll();
       return;
     }
 
     if (viewMode === '2D') {
-      // Calculate centroid of selected nodes for 2D
-      if (graph.centerAt) {
-        const sumX = selectedNodes.reduce((sum, n) => sum + (n.x ?? 0), 0);
-        const sumY = selectedNodes.reduce((sum, n) => sum + (n.y ?? 0), 0);
-        const centerX = sumX / selectedNodes.length;
-        const centerY = sumY / selectedNodes.length;
+      // Calculate bounding box of selected nodes for 2D
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
 
-        // Center on the centroid, then fit to selection
+      selectedNodes.forEach((n) => {
+        const x = n.x ?? 0;
+        const y = n.y ?? 0;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      });
+
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+
+      if (graph.centerAt) {
+        // Center on the bounding box center, then fit to selection
         graph.centerAt(centerX, centerY, 200);
         setTimeout(() => {
           graph.zoomToFit(
             300,
             100,
-            (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+            (node) => node.id != null && highlightedNodes.has(String(node.id))
           );
-        }, 200);
+        }, 250);
       } else {
         graph.zoomToFit(
           300,
           100,
-          (node: { id?: string }) => node.id && highlightedNodes.has(node.id)
+          (node) => node.id != null && highlightedNodes.has(String(node.id))
         );
       }
     } else {
-      // 3D mode: zoomToFit filter doesn't work reliably, use cameraPosition directly
-      // Calculate 3D centroid and bounding sphere of selected nodes
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const nodePositions = selectedNodes.map(n => ({
-        x: (n as any).x ?? 0,
-        y: (n as any).y ?? 0,
-        z: (n as any).z ?? 0,
-      }));
+      // 3D mode: use manual camera positioning since zoomToFit filter is unreliable
+      // Calculate bounding box of selected nodes
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      let minZ = Infinity, maxZ = -Infinity;
 
-      const centerX = nodePositions.reduce((sum, p) => sum + p.x, 0) / nodePositions.length;
-      const centerY = nodePositions.reduce((sum, p) => sum + p.y, 0) / nodePositions.length;
-      const centerZ = nodePositions.reduce((sum, p) => sum + p.z, 0) / nodePositions.length;
+      selectedNodes.forEach((n) => {
+        const x = n.x ?? 0;
+        const y = n.y ?? 0;
+        const z = n.z ?? 0;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+        minZ = Math.min(minZ, z);
+        maxZ = Math.max(maxZ, z);
+      });
 
-      // Calculate bounding sphere radius (max distance from centroid)
-      const maxRadius = Math.max(
-        ...nodePositions.map(p =>
-          Math.sqrt(
-            Math.pow(p.x - centerX, 2) +
-            Math.pow(p.y - centerY, 2) +
-            Math.pow(p.z - centerZ, 2)
-          )
-        ),
-        50 // Minimum radius for single node
-      );
+      // Calculate center and dimensions
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+      const centerZ = (minZ + maxZ) / 2;
+      const width = maxX - minX;
+      const height = maxY - minY;
+      const depth = maxZ - minZ;
 
-      // Camera distance should be proportional to bounding sphere (with padding)
-      const cameraDistance = maxRadius * 2.5 + 100;
+      // Use the largest dimension for camera distance calculation
+      // Account for FOV (~75 degrees) - distance = size / (2 * tan(FOV/2))
+      const maxDimension = Math.max(width, height, depth, 50); // 50 minimum for single nodes
+      const fovFactor = 1.5; // Approximates 1 / tan(37.5°) with padding
+      const cameraDistance = maxDimension * fovFactor + 100;
 
-      if (graph.cameraPosition) {
-        // Position camera at calculated distance, looking at centroid
+      // Directly set camera position and controls target
+      const camera = graph.camera?.();
+      const controls = graph.controls?.();
+
+      if (camera && controls) {
+        // Set the controls target (orbit center) to the bounding box center
+        if (controls.target?.set) {
+          controls.target.set(centerX, centerY, centerZ);
+        } else if (controls.target) {
+          controls.target.x = centerX;
+          controls.target.y = centerY;
+          controls.target.z = centerZ;
+        }
+        // Position camera along z-axis from center
+        if (camera.position?.set) {
+          camera.position.set(centerX, centerY, centerZ + cameraDistance);
+        }
+        // Make camera look at the target
+        if (camera.lookAt) {
+          camera.lookAt(centerX, centerY, centerZ);
+        }
+        // Update controls
+        if (controls.update) {
+          controls.update();
+        }
+      } else if (graph.cameraPosition) {
+        // Fallback to cameraPosition method with lookAt
         graph.cameraPosition(
-          { x: centerX, y: centerY, z: centerZ + cameraDistance }, // position
-          { x: centerX, y: centerY, z: centerZ }, // lookAt
-          400 // transition duration
+          { x: centerX, y: centerY, z: centerZ + cameraDistance },
+          { x: centerX, y: centerY, z: centerZ },
+          0 // instant
         );
       }
     }
-  }, [highlightedNodes, viewMode, graphData.nodes, fitToViewAll]);
+  }, [highlightedNodes, viewMode, fitToViewAll]);
 
   // Shortest path node selections (synced with panel and node clicks)
   const [pathSource, setPathSource] = useState<string | null>(null);
