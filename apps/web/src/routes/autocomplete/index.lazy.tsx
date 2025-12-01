@@ -343,7 +343,7 @@ function AutocompleteGeneralRoute() {
         )}
 
         {selectedTypes.length > 0 && !query.trim() && (
-          <Card withBorder>
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter a search term to see suggestions

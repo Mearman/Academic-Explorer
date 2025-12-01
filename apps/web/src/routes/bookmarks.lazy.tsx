@@ -265,7 +265,7 @@ function BookmarksIndexPage() {
 		<Container size="lg" p="xl" data-testid="bookmarks-page">
 			<Stack gap="xl">
 				{/* Header */}
-				<Paper p="xl" radius="md" withBorder>
+				<Paper p="xl" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
 					<Group justify="space-between" align="flex-start">
 						<Stack gap="sm">
 							<Group gap="md" align="center">

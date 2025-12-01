@@ -70,7 +70,7 @@ export const RelationshipTypeFilter: React.FC<RelationshipTypeFilterProps> = ({
   const noneSelected = selectedTypes.length === 0;
 
   return (
-    <Paper p="md" withBorder data-testid="relationship-type-filter">
+    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="relationship-type-filter">
       <Stack gap="md">
         <Group justify="space-between">
           <Title order={3} size="h4">{title}</Title>

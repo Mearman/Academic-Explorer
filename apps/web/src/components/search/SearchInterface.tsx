@@ -48,7 +48,7 @@ export function SearchInterface({
   };
 
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Stack gap="md">
         <Group>
           <Title order={3}>Search Academic Literature</Title>

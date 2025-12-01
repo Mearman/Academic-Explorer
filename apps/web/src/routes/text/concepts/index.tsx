@@ -102,7 +102,7 @@ function TextConceptsRoute() {
         />
 
         {!title.trim() && (
-          <Card withBorder>
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter text to analyze
@@ -153,7 +153,7 @@ function TextConceptsRoute() {
               Found {concepts.length} concept{concepts.length !== 1 ? "s" : ""}
             </Text>
             {concepts.map((concept) => (
-              <Card key={concept.id} withBorder padding="md" shadow="sm">
+              <Card key={concept.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
                 <Stack gap="xs">
                   <Group justify="space-between" wrap="nowrap">
                     <Anchor

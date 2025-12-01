@@ -809,7 +809,7 @@ function AlgorithmsPage() {
           </Alert>
 
           {/* Graph Visualization */}
-          <Card withBorder p="md">
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <Group justify="space-between" mb="md">
               <Title order={5}>Graph Visualization</Title>
               <Group gap="md">
@@ -873,7 +873,7 @@ function AlgorithmsPage() {
             <Grid.Col span={{ base: 12, md: 3 }}>
               <Stack gap="md">
                 {/* Configuration Card */}
-                <Card withBorder p="md">
+                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
                   <Title order={5} mb="sm">Graph Configuration</Title>
 
                   <Stack gap="sm">
@@ -886,7 +886,7 @@ function AlgorithmsPage() {
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
                         allowNegative={false}
-                        className={sprinkles({ flex: '1' })}
+                        style={sprinkles({ flex: '1' })}
                         size="xs"
                       />
                       <Button
@@ -937,7 +937,7 @@ function AlgorithmsPage() {
                             { value: 6, label: '6' },
                           ]}
                           size="sm"
-                          className={sprinkles({ flex: '1' })}
+                          style={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.componentCount}
@@ -993,7 +993,7 @@ function AlgorithmsPage() {
                             { value: 10, label: '10' },
                           ]}
                           size="sm"
-                          className={sprinkles({ flex: '1' })}
+                          style={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.edgesPerNodeRange[1]}
@@ -1067,7 +1067,7 @@ function AlgorithmsPage() {
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
-                          className={sprinkles({ flex: '1' })}
+                          style={sprinkles({ flex: '1' })}
                         />
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
@@ -1127,7 +1127,7 @@ function AlgorithmsPage() {
                               max={100}
                               step={1}
                               size="xs"
-                              className={sprinkles({ flex: '1' })}
+                              style={sprinkles({ flex: '1' })}
                             />
                             <NumberInput
                               value={graphConfig.entityPercentages[entityType]}
@@ -1147,7 +1147,7 @@ function AlgorithmsPage() {
                 </Card>
 
                 {/* Graph Summary Card */}
-                <Card withBorder p="md">
+                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
                   <Title order={5} mb="sm">Current Graph Stats</Title>
 
                   <Stack gap="xs">
@@ -1175,7 +1175,7 @@ function AlgorithmsPage() {
 
             {/* Right: Algorithms Panel with Category Tabs */}
             <Grid.Col span={{ base: 12, md: 9 }}>
-              <Paper withBorder p="md">
+              <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
                 <AlgorithmTabs
                   nodes={graphData.nodes}
                   edges={graphData.edges}

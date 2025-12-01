@@ -48,7 +48,7 @@ const cssPropertyMap: Record<string, string> = {
   'paper-bg': 'backgroundColor',
   'paper-shadow': 'boxShadow',
   'loader-color': 'color',
-  'withBorder': 'border',
+  'style={{ border: "1px solid var(--mantine-color-gray-3)" }}': 'border',
 
   // Common values
   'xs': 'xs',
@@ -142,7 +142,7 @@ export const sprinkles = (styles: Record<string, any>) => {
     if (value === undefined || value === null || value === false) return;
 
     // Handle special cases for boolean properties
-    if (key === 'withBorder' && value === true) {
+    if (key === 'style={{ border: "1px solid var(--mantine-color-gray-3)" }}' && value === true) {
       result.style = result.style || {};
       result.style.border = '1px solid var(--mantine-color-gray-3)';
       return;

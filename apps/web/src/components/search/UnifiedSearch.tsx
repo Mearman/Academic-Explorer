@@ -15,7 +15,7 @@ export function UnifiedSearch({ defaultTab = "basic" }: UnifiedSearchProps) {
   const [activeTab, setActiveTab] = useState<string | null>(defaultTab);
 
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Stack gap="md">
         <Title order={2}>Academic Search</Title>
 

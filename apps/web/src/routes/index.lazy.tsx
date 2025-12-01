@@ -64,7 +64,6 @@ function HomePage() {
         shadow="xl"
         padding="xl"
         radius="lg"
-        withBorder
         style={{
           backgroundColor: colors.background.blur,
           backdropFilter: "blur(10px)",
@@ -122,7 +121,7 @@ function HomePage() {
         </form>
 
         {/* Example Searches */}
-        <Card padding="md" radius="md" withBorder style={{ width: "100%", marginTop: "0.5rem" }}>
+        <Card padding="md" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)", width: "100%", marginTop: "0.5rem" }}>
           <Text size="sm" fw={500} mb="sm">
             Try these examples:
           </Text>

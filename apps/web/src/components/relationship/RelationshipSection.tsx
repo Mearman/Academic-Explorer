@@ -37,7 +37,7 @@ export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
   return (
     <Paper
       p="md"
-      withBorder
+      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
       data-testid={testId}
     >
       <Stack gap="md">

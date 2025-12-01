@@ -140,7 +140,7 @@ export const AdvancedQueryBuilder: React.FC<AdvancedQueryBuilderProps> = ({
   const canSearch = query.terms.some((term) => term.text.trim().length > 0);
 
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Stack gap="md">
         <Group justify="space-between" align="center">
           <Text fw={500} size="sm">

@@ -27,7 +27,7 @@ export function GraphStatisticsCard({
   const hasCycles = useCycleDetection(nodes, edges, true);
 
   return (
-    <Card withBorder p="md">
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
       <Title order={5} mb="sm">
         <Group gap="xs">
           <IconGraph size={18} />

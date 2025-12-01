@@ -41,7 +41,7 @@ export function LoadingState({ entityType, entityId, config }: LoadingStateProps
   return (
     <Container size="sm" p="xl" data-testid="loading-state">
       <Flex h="100vh" justify="center" align="center">
-        <Paper p="xl" radius="xl" withBorder w="100%" maw="32rem">
+        <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }} w="100%" maw="32rem">
           <Stack align="center" gap="lg">
             <Loader size="xl" color={loaderColor} />
             <Title order={2} ta="center">

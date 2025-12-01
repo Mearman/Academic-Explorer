@@ -190,7 +190,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
     return (
       <Stack gap="md" mt="xs">
         {value.map((item, index) => (
-          <Card key={index} withBorder p="md" bg={colors?.background.primary}>
+          <Card key={index} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
             <Group gap="sm">
               <Badge
                 circle
@@ -332,7 +332,7 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
         )}
 
         {Object.entries(groups).map(([groupName, groupData]) => (
-          <Card key={groupName} withBorder shadow="sm">
+          <Card key={groupName} style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm">
             <CardSection
               p="md"
               bg={colors?.background.primary}
@@ -360,7 +360,7 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
             <CardSection p="lg">
               <Stack gap="md">
                 {Object.entries(groupData).map(([key, value]) => (
-                  <Card key={key} withBorder p="md" bg={colors?.background.primary}>
+                  <Card key={key} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
                     <Stack gap="xs">
                       <Text size="md" fw={600} c="blue.6">
                         {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}

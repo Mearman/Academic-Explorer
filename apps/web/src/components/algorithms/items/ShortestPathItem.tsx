@@ -119,7 +119,7 @@ export function ShortestPathItem({
       </Button>
 
       {pathResult && (
-        <Card withBorder p="sm" bg="gray.0">
+        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="sm" bg="gray.0">
           {pathResult.found ? (
             <Stack gap="xs">
               <Group justify="space-between">

@@ -233,11 +233,10 @@ const DropZone: React.FC<DropZoneProps> = ({
   const prefersReducedMotion = useReducedMotion();
   return (
     <Paper
-      withBorder
       p="md"
       style={{
         minHeight: isEmpty ? "80px" : "auto",
-        border: "2px dashed #e5e7eb",
+        border: isEmpty ? "2px dashed #e5e7eb" : "1px solid var(--mantine-color-gray-3)",
         backgroundColor: isEmpty ? "#f9fafb" : "white",
         transition: prefersReducedMotion ? "none" : "all 0.2s ease",
       }}
@@ -579,7 +578,7 @@ export function VisualQueryBuilder({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Paper p="md" withBorder>
+      <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
         <Stack gap="md">
           {/* Header */}
           <Group justify="space-between">

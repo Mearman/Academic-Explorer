@@ -19,7 +19,6 @@ function SettingsPage() {
       shadow="xl"
       padding="xl"
       radius="lg"
-      withBorder
       style={{
         backgroundColor: colors.background.blur,
         backdropFilter: "blur(10px)",

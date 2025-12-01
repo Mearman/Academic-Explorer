@@ -33,7 +33,6 @@ export const BuildInfo: React.FC = () => {
       p="xs"
       bg="var(--mantine-color-gray-0)"
       radius="sm"
-      withBorder
       style={{ borderTop: "1px solid var(--mantine-color-gray-3)" }}
     >
       {/* Version */}

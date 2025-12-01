@@ -123,7 +123,7 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
 
   return (
     <Card
-      withBorder
+      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
       padding="xs"
       shadow="none"
       className={styles.bookmarkCard}

@@ -152,7 +152,7 @@ function DatasetsManagement() {
 
       {/* Datasets Grid */}
       {datasets.length === 0 ? (
-        <Card withBorder p="xl" bg="gray.0">
+        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl" bg="gray.0">
           <Stack align="center" gap="md">
             <div style={{ opacity: 0.3 }}>
               <IconChartBar size={48} />
@@ -180,7 +180,7 @@ function DatasetsManagement() {
           spacing="lg"
         >
           {datasets.map((dataset) => (
-            <Card key={dataset.id} withBorder p="md" shadow="sm">
+            <Card key={dataset.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" shadow="sm">
               <Stack gap="md" mb="md">
                 <Title order={3} fw={600} c="gray.7" size="sm">
                   {dataset.name}
@@ -301,7 +301,7 @@ function DatasetsManagement() {
             />
           ) : (
             <Stack gap="md">
-              <Paper p="md" withBorder bg="var(--mantine-color-gray-0)">
+              <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-gray-0)">
                 <Stack gap="xs">
                   <Text size="sm" fw={500}>
                     Selected file: {uploadFile.name}

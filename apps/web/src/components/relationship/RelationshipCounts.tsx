@@ -37,7 +37,7 @@ export const RelationshipCounts: React.FC<RelationshipCountsProps> = ({
   }
 
   return (
-    <Paper p="md" withBorder data-testid="relationship-counts">
+    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="relationship-counts">
       <Group gap="md">
         <Text size="sm" fw={600}>Total Relationships:</Text>
 

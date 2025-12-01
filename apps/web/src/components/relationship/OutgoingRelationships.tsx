@@ -90,12 +90,12 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
     return (
       <Stack gap="md" data-testid="outgoing-relationships-loading">
         <Title order={2} size="h3">Outgoing Relationships</Title>
-        <Paper p="md" withBorder>
+        <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Skeleton height={8} width="40%" mb="sm" />
           <Skeleton height={8} width="60%" mb="xs" />
           <Skeleton height={8} width="50%" />
         </Paper>
-        <Paper p="md" withBorder>
+        <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Skeleton height={8} width="35%" mb="sm" />
           <Skeleton height={8} width="55%" mb="xs" />
           <Skeleton height={8} width="45%" />
@@ -111,7 +111,7 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
     };
 
     return (
-      <Paper p="md" withBorder data-testid="outgoing-relationships-error">
+      <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="outgoing-relationships-error">
         <Stack gap="sm">
           <Text c="red" size="sm">
             Failed to load relationships: {error.message}

@@ -169,7 +169,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
       {/* History List */}
       <div className={styles.scrollableContent}>
         {filteredEntries.length === 0 ? (
-          <Card withBorder p="md">
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
             <Stack align="center" gap="md" className={styles.emptyState}>
               <IconHistory
                 size={32}

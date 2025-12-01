@@ -38,7 +38,7 @@ export function TopologicalSortItem({
             Graph contains cycles - topological sort is not possible.
           </Alert>
           {cycleInfo.cycle.length > 0 && (
-            <Card withBorder p="xs">
+            <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
               <Text size="sm" fw={500} mb="xs">Detected Cycle:</Text>
               <Group gap="xs" wrap="wrap">
                 {cycleInfo.cycle.map((nodeId, index) => (
@@ -76,7 +76,7 @@ export function TopologicalSortItem({
             Graph is a DAG (Directed Acyclic Graph) - topological ordering exists.
           </Alert>
           {topologicalOrder && topologicalOrder.length > 0 && (
-            <Card withBorder p="xs">
+            <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
               <Text size="sm" fw={500} mb="xs">Topological Order:</Text>
               <Text size="xs" c="dimmed" mb="xs">
                 Nodes ordered so all edges point from earlier to later nodes.

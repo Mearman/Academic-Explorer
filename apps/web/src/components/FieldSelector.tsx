@@ -86,7 +86,7 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
   ));
 
   return (
-    <Card withBorder padding="md">
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md">
       <Stack gap="sm">
         <Group justify="space-between" wrap="nowrap">
           <div>

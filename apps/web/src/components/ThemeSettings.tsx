@@ -120,7 +120,7 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
   return (
     <Stack gap="lg">
       {/* Current Theme Summary */}
-      <Card withBorder p="md" bg="var(--mantine-color-body)">
+      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="var(--mantine-color-body)">
         <Group justify="space-between" align="center">
           <Group>
             <IconPalette size={20} color="var(--colors-primary)" />

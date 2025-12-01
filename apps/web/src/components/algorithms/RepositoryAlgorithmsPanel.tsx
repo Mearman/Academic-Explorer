@@ -147,7 +147,7 @@ export function RepositoryAlgorithmsPanel() {
   return (
     <Stack gap="sm">
       {/* Graph Statistics Card */}
-      <Card withBorder p="sm">
+      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="sm">
         <Title order={6} mb="xs">
           <Group gap="xs">
             <IconGraph size={16} />
@@ -334,7 +334,7 @@ export function RepositoryAlgorithmsPanel() {
               </Button>
 
               {pathResult && (
-                <Card withBorder p="xs" bg="gray.0">
+                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" bg="gray.0">
                   {pathResult.found ? (
                     <Stack gap={4}>
                       <Group justify="space-between">
@@ -403,7 +403,7 @@ export function RepositoryAlgorithmsPanel() {
               </Button>
 
               {kCore && (
-                <Card withBorder p="xs">
+                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
                   {kCore.nodes.length > 0 ? (
                     <Group justify="space-between">
                       <Text size="xs" c="dimmed">

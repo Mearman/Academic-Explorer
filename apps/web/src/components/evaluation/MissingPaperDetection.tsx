@@ -129,7 +129,7 @@ export function MissingPaperDetection({
   };
 
   return (
-    <Paper p="lg" radius="lg" withBorder>
+    <Paper p="lg" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Stack gap="lg" mb="lg">
         <Title order={3} c="var(--mantine-color-text)">
           Missing Paper Detection
@@ -141,7 +141,7 @@ export function MissingPaperDetection({
       </Stack>
 
       {/* Configuration Panel */}
-      <Card p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)" mb="lg">
+      <Card p="md" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-gray-0)" mb="lg">
         <Title order={4} mb="md">
           Detection Configuration
         </Title>
@@ -340,7 +340,7 @@ function MissingPaperResults({
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
 
   return (
-    <Card withBorder p={0}>
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p={0}>
       <Tabs value={activeTab} onChange={(value) => {
         if (value === "summary" || value === "candidates" || value === "methods" || value === "validation") {
           setActiveTab(value);
@@ -575,7 +575,7 @@ interface PaperCardProps {
 
 function PaperCard({ paper, rank }: PaperCardProps) {
   return (
-    <Card p="md" withBorder>
+    <Card p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Group justify="space-between" align="flex-start" mb="sm">
         <Box flex={1}>
           <Group align="center" mb="xs">

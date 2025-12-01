@@ -73,7 +73,7 @@ export function EntityDetailLayoutIntegrationExample() {
         />
       )}
 
-      <Paper p="md" radius="lg" withBorder>
+      <Paper p="md" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
         {/* Entity ID and select fields info */}
       </Paper>
     </Stack>

@@ -32,8 +32,8 @@ function AboutPage() {
       shadow="xl"
       padding="xl"
       radius="lg"
-      withBorder
       style={{
+        border: "1px solid var(--mantine-color-gray-3)",
         backgroundColor: colors.background.blur,
         backdropFilter: "blur(10px)",
         maxWidth: "800px",
@@ -50,7 +50,7 @@ function AboutPage() {
           </Text>
         </div>
 
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Title order={3} mb="md">
             Research Focus
           </Title>
@@ -64,7 +64,7 @@ function AboutPage() {
           </Text>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Title order={3} mb="md">
             Key Features
           </Title>
@@ -98,7 +98,7 @@ function AboutPage() {
           </List>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Title order={3} mb="md">
             Technology Stack
           </Title>
@@ -111,7 +111,7 @@ function AboutPage() {
           </Group>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Title order={3} mb="md">
             Development & Deployment
           </Title>

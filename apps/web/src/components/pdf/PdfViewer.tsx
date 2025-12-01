@@ -82,7 +82,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <Paper withBorder p="md" radius="md">
+      <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" radius="md">
         <Stack gap="sm">
           <Group gap="xs">
             <IconFileTypePdf size={20} />
@@ -105,7 +105,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   // Error state
   if (error) {
     return (
-      <Paper withBorder p="md" radius="md">
+      <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" radius="md">
         <Alert
           icon={<IconAlertCircle size={16} />}
           title="PDF Unavailable"
@@ -121,7 +121,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   // Iframe error state
   if (iframeError && pdfUrl) {
     return (
-      <Paper withBorder p="md" radius="md">
+      <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" radius="md">
         <Stack gap="md">
           <Group gap="xs">
             <IconFileTypePdf size={20} />
@@ -171,7 +171,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   }
 
   return (
-    <Paper withBorder p="md" radius="md">
+    <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" radius="md">
       <Stack gap="sm">
         {/* Header */}
         <Group justify="space-between">

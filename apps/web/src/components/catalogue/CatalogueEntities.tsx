@@ -665,7 +665,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
 
   if (!selectedList) {
     return (
-      <Card withBorder p="xl">
+      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
         <Stack align="center" gap="md">
           <Text size="lg" c="dimmed">
             Select a list to view its entities
@@ -677,7 +677,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
 
   if (isLoadingEntities) {
     return (
-      <Card withBorder p="xl">
+      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
         <Stack align="center" gap="md">
           <Loader size="lg" />
           <Text size="sm" c="dimmed">
@@ -690,7 +690,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
 
   if (entities.length === 0) {
     return (
-      <Card withBorder p="xl">
+      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
         <Stack align="center" gap="md">
           <Text size="lg" fw={500} ta="center">
             No entities yet
@@ -705,7 +705,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   }
 
   return (
-    <Card withBorder padding="md">
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md">
       <Stack gap="md">
         {/* Header */}
         <Group justify="space-between">
@@ -789,7 +789,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
         )}
 
         {/* Entities Table - T075: With virtual scrolling for large lists */}
-        <Card withBorder padding={0}>
+        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding={0}>
           <Box
             ref={parentRef}
             style={{

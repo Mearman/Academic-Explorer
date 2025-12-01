@@ -78,7 +78,7 @@ const renderSearchHeader = () => (
 );
 
 const renderEmptyState = () => (
-  <Card withBorder>
+  <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
     <Stack align="center" py="xl">
       <Text size="lg" fw={500}>
         Enter a search term to explore OpenAlex
@@ -365,7 +365,7 @@ function SearchPage() {
           placeholder="Search for works, authors, institutions, topics... e.g. 'machine learning', 'Marie Curie', 'MIT'"
         />
 
-        {hasQuery && <Card withBorder>{renderSearchResults()}</Card>}
+        {hasQuery && <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>{renderSearchResults()}</Card>}
 
         {!hasQuery && renderEmptyState()}
       </Stack>

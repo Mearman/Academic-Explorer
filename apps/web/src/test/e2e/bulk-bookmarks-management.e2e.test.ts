@@ -17,7 +17,7 @@ test.describe("Bulk Bookmarks Management", () => {
 
     // Wait for bookmarks to load (look for bookmark cards or empty state)
     await Promise.race([
-      page.waitForSelector('[data-testid="bookmark-card"], .mantine-Card-withBorder', { timeout: 10000 }),
+      page.waitForSelector('[data-testid="bookmark-card"], .mantine-Card-style={{ border: "1px solid var(--mantine-color-gray-3)" }}', { timeout: 10000 }),
       page.waitForSelector('text="No bookmarks yet"', { timeout: 10000 })
     ]);
   });

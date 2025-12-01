@@ -68,7 +68,7 @@ export function TraversalItem({
       {traversalStartNode && (
         <Stack gap="xs">
           {/* BFS Results */}
-          <Card withBorder p="xs">
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>Breadth-First Search (BFS)</Text>
               {bfsResult && (
@@ -111,7 +111,7 @@ export function TraversalItem({
           </Card>
 
           {/* DFS Results */}
-          <Card withBorder p="xs">
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>Depth-First Search (DFS)</Text>
               {dfsResult && (

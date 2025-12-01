@@ -55,7 +55,7 @@ function EvaluationDashboard() {
         mb="xl"
       >
         {/* Datasets Card */}
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Group justify="space-between" mb="md">
             <ThemeIcon color="blue" size={40} radius="md">
               <IconChartBar size={20} />
@@ -91,7 +91,7 @@ function EvaluationDashboard() {
         </Card>
 
         {/* Comparison Card */}
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Group justify="space-between" mb="md">
             <ThemeIcon color="green" size={40} radius="md">
               <IconSearch size={20} />
@@ -123,7 +123,7 @@ function EvaluationDashboard() {
         </Card>
 
         {/* Results Card */}
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Group justify="space-between" mb="md">
             <ThemeIcon color="yellow" size={40} radius="md">
               <IconTrendingUp size={20} />
@@ -160,7 +160,7 @@ function EvaluationDashboard() {
         bg="gray.0"
         p="lg"
         radius="md"
-        withBorder
+        style={{ border: "1px solid var(--mantine-color-gray-3)" }}
       >
         <Title order={2} fw={600} c="gray.9" mb="md">
           STAR Methodology Overview
@@ -215,7 +215,7 @@ function EvaluationDashboard() {
           mt="md"
           p="md"
           radius="sm"
-          withBorder
+          style={{ border: "1px solid var(--mantine-color-gray-3)" }}
           bg="white"
         >
           <Text size="xs" c="gray.7" fs="italic">

@@ -175,7 +175,7 @@ export function EnhancedSearchInterface({ onSearch, loading = false }: EnhancedS
   ];
 
   return (
-    <Card padding="lg" withBorder shadow="sm">
+    <Card padding="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm">
       <Stack gap="md">
         {/* Header */}
         <Group justify="space-between">
@@ -206,7 +206,7 @@ export function EnhancedSearchInterface({ onSearch, loading = false }: EnhancedS
         <Divider />
 
         {/* Basic Search */}
-        <Card padding="md" withBorder bg="gray.0">
+        <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="gray.0">
           <Stack gap="md">
             <Group gap="sm">
               <Select

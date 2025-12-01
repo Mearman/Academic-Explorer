@@ -115,7 +115,7 @@ export function AutocompletePage({
 
         {/* Empty State (no query) */}
         {!query.trim() && (
-          <Card withBorder>
+          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter a search term to see suggestions
@@ -198,7 +198,7 @@ function AutocompleteResultCard({ result, entityType }: AutocompleteResultCardPr
   const href = `#${metadata.routePath}/${cleanId}`;
 
   return (
-    <Card withBorder padding="md" shadow="sm">
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
       <Stack gap="xs">
         <Group justify="space-between" wrap="nowrap">
           <Anchor href={href} fw={500} size="md">

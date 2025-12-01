@@ -209,7 +209,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
       </Group>
 
       {filteredEntries.length === 0 ? (
-        <Card withBorder p="xl">
+        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
           <Stack align="center" gap="md">
             <IconHistory
               size={48}
@@ -254,7 +254,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
                 return (
                   <Card
                     key={`${entry.entityId}-${entry.addedAt.getTime()}`}
-                    withBorder
+                    style={{ border: "1px solid var(--mantine-color-gray-3)" }}
                     padding="md"
                     shadow="sm"
                   >

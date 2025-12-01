@@ -37,7 +37,7 @@ function CatalogueFallback({
   const errorObj = error instanceof Error ? error : new Error(String(error));
 
   return (
-    <Card withBorder p="xl" bg="red.0">
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl" bg="red.0">
       <Stack gap="md">
         <Group>
           <IconAlertTriangle size={32} color="var(--mantine-color-red-6)" />

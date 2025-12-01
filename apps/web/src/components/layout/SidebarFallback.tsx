@@ -56,7 +56,7 @@ export function SidebarFallback({ title, type, onClose }: SidebarFallbackProps) 
 
       {/* Empty State */}
       <div className={styles.scrollableContent}>
-        <Card withBorder p="md">
+        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
           <div className={styles.emptyState}>
             <IconBookmark size={32} />
             <Text size="sm" fw={500} ta="center">

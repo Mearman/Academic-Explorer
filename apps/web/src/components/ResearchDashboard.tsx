@@ -62,7 +62,7 @@ function QuickSearch({ onSearch }: QuickSearchProps) {
   };
 
   return (
-    <Card padding="md" withBorder>
+    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Title order={4} mb="md">Quick Search</Title>
       <Group gap="sm">
         <Select
@@ -118,7 +118,7 @@ function RecentActivity({ activities }: RecentActivityProps) {
   };
 
   return (
-    <Card padding="md" withBorder h="100%">
+    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} h="100%">
       <Title order={4} mb="md">Recent Activity</Title>
       <List spacing="sm" size="sm">
         {activities.slice(0, 5).map((activity) => (
@@ -199,7 +199,7 @@ function QuickActions({ onAction }: QuickActionsProps) {
   ];
 
   return (
-    <Card padding="md" withBorder>
+    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Title order={4} mb="md">Quick Actions</Title>
       <SimpleGrid cols={3} spacing="md">
         {actions.map((action) => (
@@ -265,7 +265,7 @@ function ResearchStats({ stats }: ResearchStatsProps) {
   ];
 
   return (
-    <Card padding="md" withBorder>
+    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Title order={4} mb="md">Research Statistics</Title>
       <SimpleGrid cols={2} spacing="md">
         {statCards.map((stat) => (
@@ -309,7 +309,7 @@ function PopularTopics({ topics }: PopularTopicsProps) {
   };
 
   return (
-    <Card padding="md" withBorder>
+    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Title order={4} mb="md">Popular Research Topics</Title>
       <Stack gap="sm">
         {topics.map((topic, index) => (
@@ -490,7 +490,7 @@ export function ResearchDashboard() {
               <RecentActivity activities={recentActivity} />
 
               {/* Quick Links */}
-              <Card padding="md" withBorder>
+              <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
                 <Title order={4} mb="md">Quick Links</Title>
                 <Stack gap="xs">
                   <Button

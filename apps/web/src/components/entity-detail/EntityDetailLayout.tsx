@@ -111,12 +111,12 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-body)" className={sprinkles({ minHeight: 'full' })} data-testid="entity-detail-layout">
+    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={sprinkles({ minHeight: 'full' })} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
-        <Paper p="xl" radius="xl" withBorder>
+        <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
           <Group align="flex-start" justify="space-between" gap="xl">
-            <Stack gap="lg" className={sprinkles({ flex: '1' })}>
+            <Stack gap="lg" style={sprinkles({ flex: '1' })}>
               <Badge
                 size="xl"
                 variant="light"
@@ -134,13 +134,13 @@ export function EntityDetailLayout({
                 {displayName}
               </Title>
 
-              <Paper p="md" radius="lg" withBorder bg="var(--mantine-color-body)">
+              <Paper p="md" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-body)">
                 <Stack gap="sm">
                   <Group align="flex-start" gap="sm">
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       {config.name} ID:
                     </Text>
-                    <Code className={sprinkles({ flex: '1', wordBreak: 'break-all' })}>
+                    <Code style={sprinkles({ flex: '1', wordBreak: 'break-all' })}>
                       {entityId}
                     </Code>
                   </Group>
@@ -148,7 +148,7 @@ export function EntityDetailLayout({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       Select fields:
                     </Text>
-                    <Text size="sm" c="dimmed" className={sprinkles({ flex: '1' })}>
+                    <Text size="sm" c="dimmed" style={sprinkles({ flex: '1' })}>
                       {selectParam && typeof selectParam === 'string'
                         ? selectParam
                         : `default (${selectFields.length} fields)`}
@@ -232,21 +232,21 @@ export function EntityDetailLayout({
 
         {/* Content Section */}
         {viewMode === "raw" ? (
-          <Paper withBorder radius="xl" className={sprinkles({ overflow: 'hidden' })}>
-            <Paper p="md" bg={colors.background.tertiary} className={sprinkles({ borderBottomSecondary: true })}>
+          <Paper style={{ ...sprinkles({ overflow: 'hidden' }), border: "1px solid var(--mantine-color-gray-3)" }} radius="xl">
+            <Paper p="md" bg="var(--mantine-color-gray-0)" style={sprinkles({ borderBottomSecondary: true })}>
               <Group gap="sm">
-                <IconCode size={20} color={colors.text.primary} />
-                <Text size="lg" fw={600} c={colors.text.primary}>
+                <IconCode size={20} color="var(--mantine-color-gray-6)" />
+                <Text size="lg" fw={600} c="var(--mantine-color-gray-9)">
                   Raw JSON Data
                 </Text>
               </Group>
             </Paper>
-            <Paper p="xl" bg={colors.background.secondary} className={sprinkles({ overflowScroll: true })}>
+            <Paper p="xl" bg="var(--mantine-color-gray-1)" style={sprinkles({ overflowScroll: true })}>
               <Text
                 component="pre"
                 size="sm"
-                c={colors.text.primary}
-                className={sprinkles({ codeDisplay: true })}
+                c="var(--mantine-color-gray-9)"
+                style={sprinkles({ codeDisplay: true })}
               >
                 {JSON.stringify(data, null, 2)}
               </Text>
