@@ -9,9 +9,6 @@
 import { style } from '@vanilla-extract/css';
 import { themeVars } from '../theme-vars.css';
 
-// Import codeDisplay from common.css for use in EntityDetailLayout
-import { codeDisplay } from '../common.css';
-
 /**
  * Basic atomic styles using individual style() calls
  * This approach works reliably with the current Vanilla Extract version
@@ -189,6 +186,11 @@ export const textCapitalize = style({ textTransform: 'capitalize' });
 export const textNoDecoration = style({ textDecoration: 'none' });
 export const textLowercase = style({ textTransform: 'lowercase' });
 export const textEllipsis = style({ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+export const codeDisplay = style({
+  fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
+  whiteSpace: 'pre',
+  lineHeight: 1.6,
+});
 
 // Grid layout utilities for ColorSchemeSelector and similar components
 export const gridLayout2 = style({ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' });
