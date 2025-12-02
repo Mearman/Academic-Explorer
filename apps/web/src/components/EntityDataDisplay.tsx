@@ -40,7 +40,7 @@ import {
   IconFile,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
@@ -77,32 +77,150 @@ const MASONRY_CONFIG = {
   GAP: 24,
 } as const;
 
-/** Auto-grid component that fills space efficiently using CSS Grid */
-interface AutoGridProps {
+/** Position data for placed items */
+interface ItemPosition {
+  x: number;
+  y: number;
+  width: number;
+}
+
+/**
+ * 2D Bin-packing masonry grid that:
+ * - Measures content sizes synchronously before paint
+ * - Calculates optimal placement using skyline algorithm
+ * - Single render pass - no hidden measurement container
+ */
+interface MasonryGridProps {
   children: React.ReactNode[];
-  /** Minimum column width in pixels (default: 350) */
+  /** Minimum column unit width in pixels (default: 350) */
   minColumnWidth?: number;
   /** Gap between items in pixels (default: 24) */
   gap?: number;
 }
 
-function AutoGrid({
+function MasonryGrid({
   children,
   minColumnWidth = MASONRY_CONFIG.MIN_COLUMN_WIDTH,
   gap = MASONRY_CONFIG.GAP,
-}: AutoGridProps) {
+}: MasonryGridProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<{
+    positions: ItemPosition[];
+    height: number;
+    ready: boolean;
+  }>({ positions: [], height: 0, ready: false });
+  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const rafIdRef = useRef<number>(0);
+
+  const childArray = React.Children.toArray(children);
+
+  // Synchronous layout calculation before paint
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const calculateLayout = () => {
+      const containerWidth = container.offsetWidth;
+      if (containerWidth === 0) return;
+
+      // Calculate grid unit size
+      const numColumns = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+      const columnUnitWidth = (containerWidth - (numColumns - 1) * gap) / numColumns;
+
+      // Skyline tracks height at each column
+      const skyline = new Array(numColumns).fill(0);
+      const newPositions: ItemPosition[] = [];
+
+      // Measure each item and place it
+      for (let i = 0; i < childArray.length; i++) {
+        const itemEl = itemRefs.current.get(i);
+        if (!itemEl) {
+          newPositions.push({ x: 0, y: 0, width: columnUnitWidth });
+          continue;
+        }
+
+        // Measure natural height (width is constrained by column)
+        const itemHeight = itemEl.scrollHeight;
+
+        // All items span 1 column for predictable layout
+        const itemWidth = columnUnitWidth;
+
+        // Find the shortest column
+        let bestColumn = 0;
+        let bestY = skyline[0];
+        for (let col = 1; col < numColumns; col++) {
+          if (skyline[col] < bestY) {
+            bestY = skyline[col];
+            bestColumn = col;
+          }
+        }
+
+        const x = bestColumn * (columnUnitWidth + gap);
+        const y = bestY;
+
+        newPositions.push({ x, y, width: itemWidth });
+
+        // Update skyline
+        skyline[bestColumn] = y + itemHeight + gap;
+      }
+
+      const maxHeight = Math.max(...skyline, 0);
+      setLayout({
+        positions: newPositions,
+        height: maxHeight > gap ? maxHeight - gap : 0,
+        ready: true,
+      });
+    };
+
+    // Initial calculation
+    calculateLayout();
+
+    // Observe container for width changes
+    const resizeObserver = new ResizeObserver(() => {
+      // Cancel pending recalculation
+      cancelAnimationFrame(rafIdRef.current);
+      // Debounce with RAF
+      rafIdRef.current = requestAnimationFrame(calculateLayout);
+    });
+    resizeObserver.observe(container);
+
+    // Also observe each item for height changes (nested content)
+    itemRefs.current.forEach((el) => {
+      resizeObserver.observe(el);
+    });
+
+    return () => {
+      resizeObserver.disconnect();
+      cancelAnimationFrame(rafIdRef.current);
+    };
+  }, [childArray.length, gap, minColumnWidth]);
+
   return (
     <Box
+      ref={containerRef}
       style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(auto-fill, minmax(${minColumnWidth}px, 1fr))`,
-        gridAutoFlow: "dense",
-        gap,
+        position: "relative",
         width: "100%",
+        height: layout.ready ? layout.height : "auto",
       }}
     >
-      {React.Children.map(children, (child) => (
-        <Box style={{ minWidth: 0 }}>
+      {childArray.map((child, index) => (
+        <Box
+          key={index}
+          ref={(el) => {
+            if (el) {
+              itemRefs.current.set(index, el);
+            } else {
+              itemRefs.current.delete(index);
+            }
+          }}
+          style={{
+            position: layout.ready ? "absolute" : "relative",
+            left: layout.positions[index]?.x ?? 0,
+            top: layout.positions[index]?.y ?? 0,
+            width: layout.positions[index]?.width ?? "100%",
+          }}
+        >
           {child}
         </Box>
       ))}
@@ -244,7 +362,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
     // For object arrays, show each item in auto-sizing grid
     return (
       <Box mt="xs">
-        <AutoGrid minColumnWidth={120} gap={8}>
+        <MasonryGrid minColumnWidth={120} gap={8}>
           {value.map((item, index) => (
             <Card
               key={index}
@@ -262,7 +380,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
               </Group>
             </Card>
           ))}
-        </AutoGrid>
+        </MasonryGrid>
       </Box>
     );
   }
@@ -406,7 +524,7 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
       </CardSection>
 
       <CardSection p="lg">
-        <AutoGrid minColumnWidth={150} gap={12}>
+        <MasonryGrid minColumnWidth={150} gap={12}>
           {Object.entries(groupData).map(([key, value]) => (
             <Card
               key={key}
@@ -424,7 +542,7 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
               </Stack>
             </Card>
           ))}
-        </AutoGrid>
+        </MasonryGrid>
       </CardSection>
     </Card>
   );
@@ -447,15 +565,15 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
           />
         )}
 
-        {/* Tiled layout uses auto-sizing masonry grid */}
+        {/* Tiled layout uses 2D bin-packing masonry grid */}
         {layout === "tiled" ? (
-          <AutoGrid>
+          <MasonryGrid>
             {sortedEntries.map(([groupName, groupData]) => (
               <Box key={groupName}>
                 {renderSectionCard([groupName, groupData])}
               </Box>
             ))}
-          </AutoGrid>
+          </MasonryGrid>
         ) : (
           // Stacked layout uses vertical Stack
           sortedEntries.map(renderSectionCard)
