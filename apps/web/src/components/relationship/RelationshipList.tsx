@@ -45,7 +45,10 @@ export const RelationshipList: React.FC<RelationshipListProps> = ({
   }, [visibleCount, section.items.length, onLoadMore]);
 
   const visibleItems = section.items.slice(0, visibleCount);
-  const hasMore = visibleCount < section.items.length;
+  // Show "Load more" if there are more items loaded locally, or more on the server
+  const hasMoreLoaded = visibleCount < section.items.length;
+  const hasMoreOnServer = section.items.length < section.totalCount;
+  const hasMore = hasMoreLoaded || hasMoreOnServer;
 
   return (
     <Stack gap="md">
@@ -62,7 +65,7 @@ export const RelationshipList: React.FC<RelationshipListProps> = ({
       )}
 
       <Text size="sm" c="dimmed">
-        Showing {visibleCount} of {section.items.length}
+        Showing {visibleCount} of {section.totalCount}
       </Text>
     </Stack>
   );
