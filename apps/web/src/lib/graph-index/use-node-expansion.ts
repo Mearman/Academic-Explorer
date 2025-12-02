@@ -132,6 +132,8 @@ export function useNodeExpansion(): UseNodeExpansionResult {
           edgesAdded: 0,
           error: 'Node is already being expanded',
           alreadyExpanded: false,
+          nodes: [],
+          edges: [],
         };
       }
 
@@ -206,6 +208,8 @@ export function useNodeExpansion(): UseNodeExpansionResult {
           edgesAdded: 0,
           error: error.message,
           alreadyExpanded: false,
+          nodes: [],
+          edges: [],
         };
       }
     },
