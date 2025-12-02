@@ -231,6 +231,10 @@ export interface ExtractionResult {
   edgesAdded: number;
   /** Number of stub nodes created */
   stubsCreated: number;
+  /** Stub nodes that were created (for incremental UI updates) */
+  stubNodes: GraphNodeInput[];
+  /** Edges that were created (for incremental UI updates) */
+  edgeInputs: GraphEdgeInput[];
 }
 
 /**
@@ -252,6 +256,8 @@ export async function extractAndIndexRelationships(
     nodesProcessed: 0,
     edgesAdded: 0,
     stubsCreated: 0,
+    stubNodes: [],
+    edgeInputs: [],
   };
 
   // Normalize the entity ID
@@ -313,11 +319,13 @@ export async function extractAndIndexRelationships(
   // Batch add stub nodes
   if (stubInputs.length > 0) {
     await graph.addNodes(stubInputs);
+    result.stubNodes = stubInputs;
   }
 
   // Batch add edges
   if (edgeInputs.length > 0) {
     result.edgesAdded = await graph.addEdges(edgeInputs);
+    result.edgeInputs = edgeInputs;
   }
 
   return result;
@@ -519,6 +527,8 @@ export async function extractAndIndexEntities(
     nodesProcessed: 0,
     edgesAdded: 0,
     stubsCreated: 0,
+    stubNodes: [],
+    edgeInputs: [],
   };
 
   for (const entity of entities) {
@@ -532,6 +542,8 @@ export async function extractAndIndexEntities(
     totalResult.nodesProcessed += result.nodesProcessed;
     totalResult.edgesAdded += result.edgesAdded;
     totalResult.stubsCreated += result.stubsCreated;
+    totalResult.stubNodes.push(...result.stubNodes);
+    totalResult.edgeInputs.push(...result.edgeInputs);
   }
 
   return totalResult;
