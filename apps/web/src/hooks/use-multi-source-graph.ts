@@ -50,6 +50,62 @@ function loadEnabledSources(): Set<string> {
 }
 
 /**
+ * Check if an entity is from the graph list source
+ * T041: Graph list nodes take priority during deduplication
+ */
+function isGraphListEntity(entity: GraphSourceEntity): boolean {
+  // Check sourceId first (most reliable)
+  if (entity.sourceId === 'catalogue:graph-list') {
+    return true;
+  }
+
+  // Also check for provenance metadata (nodes can have provenance even from other sources)
+  if (entity.entityData?._graphListProvenance) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Deduplicate entities with graph list priority
+ * T041: When same entity exists in multiple sources, prioritize graph list version
+ *
+ * @param entities - Array of entities from multiple sources
+ * @returns Deduplicated array with graph list nodes taking priority
+ */
+export function deduplicateEntities(
+  entities: GraphSourceEntity[]
+): GraphSourceEntity[] {
+  const entityMap = new Map<string, GraphSourceEntity>();
+
+  for (const entity of entities) {
+    const existing = entityMap.get(entity.entityId);
+
+    if (!existing) {
+      // First occurrence of this entity - add it
+      entityMap.set(entity.entityId, entity);
+      continue;
+    }
+
+    // Entity already exists - check if we should replace it
+    const entityIsGraphList = isGraphListEntity(entity);
+    const existingIsGraphList = isGraphListEntity(existing);
+
+    if (entityIsGraphList && !existingIsGraphList) {
+      // Replace collection node with graph list node
+      entityMap.set(entity.entityId, entity);
+    } else if (!entityIsGraphList && existingIsGraphList) {
+      // Keep existing graph list node over collection node
+      continue;
+    }
+    // If both are graph list or both are collection, keep first occurrence
+  }
+
+  return Array.from(entityMap.values());
+}
+
+/**
  * Save enabled source IDs to localStorage
  */
 function saveEnabledSources(enabledIds: Set<string>): void {
@@ -292,7 +348,6 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
     }
 
     const allEntities: GraphSourceEntity[] = [];
-    const entityMap = new Map<string, GraphSourceEntity>();
 
     // Load entities from each enabled source
     for (const state of enabledStates) {
@@ -302,13 +357,8 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
         loadingSourcesRef.current.add(state.source.id);
         const entities = await state.source.getEntities();
 
-        for (const entity of entities) {
-          // Deduplicate by entityId (same entity may exist in multiple sources)
-          if (!entityMap.has(entity.entityId)) {
-            entityMap.set(entity.entityId, entity);
-            allEntities.push(entity);
-          }
-        }
+        // Collect all entities (deduplication happens after all sources loaded)
+        allEntities.push(...entities);
       } catch (err) {
         logger.warn(LOG_PREFIX, `Failed to load from ${state.source.id}`, { error: err });
       } finally {
@@ -316,12 +366,15 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
       }
     }
 
-    // Build initial nodes from source entities
-    let nodeArray = allEntities.map(sourceEntityToNode);
-    const entityIds = new Set(allEntities.map(e => e.entityId));
+    // T041: Deduplicate entities with graph list priority
+    const deduplicatedEntities = deduplicateEntities(allEntities);
+
+    // Build initial nodes from deduplicated entities
+    let nodeArray = deduplicatedEntities.map(sourceEntityToNode);
+    const entityIds = new Set(deduplicatedEntities.map(e => e.entityId));
 
     // Build edges from entity relationships
-    const relationshipEdges = buildEdges(allEntities, entityIds);
+    const relationshipEdges = buildEdges(deduplicatedEntities, entityIds);
 
     // Also fetch edges and connected nodes from persistent graph
     // This ensures nodes and edges discovered during expansion are included
