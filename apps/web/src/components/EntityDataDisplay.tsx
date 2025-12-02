@@ -978,92 +978,118 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
     const items: FlatGridItem[] = [];
     let itemIdCounter = 0;
 
-    // Separate Relationships section to place it at the bottom
-    const relationshipsSection = sections.find(s => s.name === "Relationships");
-    const otherSections = sections.filter(s => s.name !== "Relationships");
-
-    // Helper function to process a section
-    const processSection = (section: SectionData, forceFullWidth: boolean = false) => {
-      // Estimate section size
-      const sectionColSpan = forceFullWidth
-        ? cols
-        : Math.min(cols, Math.max(2, Math.ceil(section.fields.length / 2)));
-      const headerRows = 2; // Section header height
-
-      // Find space for section (start with just header)
-      const headerPos = occupancy.findFirstFit(sectionColSpan, headerRows);
-      if (!headerPos) return;
-
-      const sectionBounds = {
-        colStart: headerPos.colStart,
-        colEnd: headerPos.colStart + headerPos.colSpan,
-        rowStart: headerPos.rowStart,
-      };
-
-      // Add section header
-      items.push({
-        id: `section-header-${itemIdCounter++}`,
-        type: 'section-header',
-        content: (
-          <Group gap={8} p={8}>
-            <Box c="blue.6">{section.icon}</Box>
-            <Text size="md" fw={600}>{section.name}</Text>
-            <Badge variant="light" color="gray" size="xs">
-              {section.fields.length}
-            </Badge>
-          </Group>
-        ),
-        position: { ...headerPos },
-        zIndex: 2,
-        depth: 0,
+    // Flatten all fields across sections for global optimization
+    interface FieldWithSection {
+      field: FieldData;
+      section: SectionData;
+      sectionIndex: number;
+    }
+    const allFields: FieldWithSection[] = [];
+    sections.forEach((section, sectionIndex) => {
+      section.fields.forEach(field => {
+        allFields.push({ field, section, sectionIndex });
       });
+    });
 
-      // Reserve header space
-      occupancy.occupyArea(headerPos.colStart, headerPos.rowStart, headerPos.colSpan, headerRows);
+    // Track which sections have been started (header placed)
+    const sectionHeaders = new Map<number, { position: GridPosition; maxRow: number }>();
+    const sectionFieldPositions = new Map<number, GridPosition[]>();
 
-      // Layout fields within section bounds using orientation-optimized placement
-      let sectionMaxRow = headerPos.rowStart + headerRows;
-      const fieldBounds = {
-        colStart: sectionBounds.colStart,
-        colEnd: sectionBounds.colEnd,
-        rowStart: headerPos.rowStart + headerRows,
-      };
+    // Process fields globally, placing them where they fit best
+    for (const { field, section, sectionIndex } of allFields) {
+      // Check if section header needs to be placed
+      if (!sectionHeaders.has(sectionIndex)) {
+        // Determine adaptive section width based on total fields and available space
+        const sectionFieldCount = section.fields.length;
+        // Use full width for sections with many fields, narrower for small sections
+        const minSectionCols = Math.min(cols, Math.max(2, Math.ceil(sectionFieldCount / 3)));
+        const maxSectionCols = cols; // Allow full width expansion
 
-      for (const field of section.fields) {
-        // Use optimized best-fit with orientation consideration
-        const fieldPos = occupancy.findBestFitWithin(field.flexibility, fieldBounds);
-
-        if (!fieldPos) {
-          // Fallback: try global placement if section bounds are too constrained
-          const globalPos = occupancy.findBestFit(field.flexibility);
-          if (globalPos) {
-            occupancy.occupyArea(globalPos.colStart, globalPos.rowStart, globalPos.colSpan, globalPos.rowSpan);
-            sectionMaxRow = Math.max(sectionMaxRow, globalPos.rowStart + globalPos.rowSpan);
-
-            items.push({
-              id: `field-${itemIdCounter++}`,
-              type: 'field-card',
-              content: (
-                <Box p={GROUP_PADDING}>
-                  <Text size="xs" fw={600} c="blue.7" mb={4}>
-                    {field.key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                  </Text>
-                  <Box>
-                    {renderValueContent(field.value, 0, colors)}
-                  </Box>
-                </Box>
-              ),
-              position: globalPos,
-              zIndex: 2,
-              borderColor: "var(--mantine-color-gray-3)",
-              depth: 1,
-            });
-          }
-          continue;
+        // Try to find space for header, preferring wider placements
+        let headerPos: GridPosition | null = null;
+        for (let tryWidth = maxSectionCols; tryWidth >= minSectionCols; tryWidth--) {
+          headerPos = occupancy.findFirstFit(tryWidth, 2);
+          if (headerPos && headerPos.colSpan >= tryWidth) break;
         }
 
+        if (!headerPos) {
+          headerPos = occupancy.findFirstFit(minSectionCols, 2);
+        }
+
+        if (headerPos) {
+          items.push({
+            id: `section-header-${itemIdCounter++}`,
+            type: 'section-header',
+            content: (
+              <Group gap={8} p={8}>
+                <Box c="blue.6">{section.icon}</Box>
+                <Text size="md" fw={600}>{section.name}</Text>
+                <Badge variant="light" color="gray" size="xs">
+                  {section.fields.length}
+                </Badge>
+              </Group>
+            ),
+            position: { ...headerPos },
+            zIndex: 2,
+            depth: 0,
+          });
+          occupancy.occupyArea(headerPos.colStart, headerPos.rowStart, headerPos.colSpan, 2);
+          sectionHeaders.set(sectionIndex, {
+            position: headerPos,
+            maxRow: headerPos.rowStart + 2,
+          });
+          sectionFieldPositions.set(sectionIndex, []);
+        }
+      }
+
+      const sectionHeader = sectionHeaders.get(sectionIndex);
+      if (!sectionHeader) continue;
+
+      // Create flexible bounds that allow expansion beyond initial section width
+      // First try within section bounds, then expand globally
+      const baseBounds = {
+        colStart: sectionHeader.position.colStart,
+        colEnd: sectionHeader.position.colStart + sectionHeader.position.colSpan,
+        rowStart: sectionHeader.maxRow,
+      };
+
+      // Try placement within section bounds first
+      let fieldPos = occupancy.findBestFitWithin(field.flexibility, baseBounds);
+
+      // If no fit within section, try expanding the section bounds
+      if (!fieldPos) {
+        // Try extending to the right
+        const extendedRight = {
+          ...baseBounds,
+          colEnd: Math.min(cols, baseBounds.colEnd + 2),
+        };
+        fieldPos = occupancy.findBestFitWithin(field.flexibility, extendedRight);
+
+        // Try extending to the left
+        if (!fieldPos) {
+          const extendedLeft = {
+            ...baseBounds,
+            colStart: Math.max(0, baseBounds.colStart - 2),
+          };
+          fieldPos = occupancy.findBestFitWithin(field.flexibility, extendedLeft);
+        }
+
+        // Final fallback: global placement with orientation optimization
+        if (!fieldPos) {
+          fieldPos = occupancy.findBestFit(field.flexibility);
+        }
+      }
+
+      if (fieldPos) {
         occupancy.occupyArea(fieldPos.colStart, fieldPos.rowStart, fieldPos.colSpan, fieldPos.rowSpan);
-        sectionMaxRow = Math.max(sectionMaxRow, fieldPos.rowStart + fieldPos.rowSpan);
+
+        // Track field position for section background calculation
+        const positions = sectionFieldPositions.get(sectionIndex) || [];
+        positions.push(fieldPos);
+        sectionFieldPositions.set(sectionIndex, positions);
+
+        // Update section max row
+        sectionHeader.maxRow = Math.max(sectionHeader.maxRow, fieldPos.rowStart + fieldPos.rowSpan);
 
         items.push({
           id: `field-${itemIdCounter++}`,
@@ -1084,13 +1110,70 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
           depth: 1,
         });
       }
+    }
 
-      // Add section background spanning all its content
+    // Second pass: expand items to fill horizontal gaps
+    const expandableItems = items.filter(item => item.type === 'field-card');
+    for (const item of expandableItems) {
+      const pos = item.position;
+
+      // Check if we can expand to the right
+      let canExpandRight = true;
+      const rightCol = pos.colStart + pos.colSpan;
+      if (rightCol < cols) {
+        for (let r = pos.rowStart; r < pos.rowStart + pos.rowSpan; r++) {
+          if (occupancy.isOccupied(rightCol, r)) {
+            canExpandRight = false;
+            break;
+          }
+        }
+        if (canExpandRight) {
+          // Expand by 1 column
+          occupancy.occupyArea(rightCol, pos.rowStart, 1, pos.rowSpan);
+          pos.colSpan += 1;
+        }
+      }
+
+      // Check if we can expand to the left
+      if (pos.colStart > 0) {
+        let canExpandLeft = true;
+        const leftCol = pos.colStart - 1;
+        for (let r = pos.rowStart; r < pos.rowStart + pos.rowSpan; r++) {
+          if (occupancy.isOccupied(leftCol, r)) {
+            canExpandLeft = false;
+            break;
+          }
+        }
+        if (canExpandLeft) {
+          // Expand by 1 column to the left
+          occupancy.occupyArea(leftCol, pos.rowStart, 1, pos.rowSpan);
+          pos.colStart -= 1;
+          pos.colSpan += 1;
+        }
+      }
+    }
+
+    // Add section backgrounds after all fields are placed
+    for (const [sectionIndex, sectionHeader] of sectionHeaders) {
+      const section = sections[sectionIndex];
+      const fieldPositions = sectionFieldPositions.get(sectionIndex) || [];
+
+      // Calculate bounding box of all fields in this section
+      let minCol = sectionHeader.position.colStart;
+      let maxCol = sectionHeader.position.colStart + sectionHeader.position.colSpan;
+      let maxRow = sectionHeader.maxRow;
+
+      for (const pos of fieldPositions) {
+        minCol = Math.min(minCol, pos.colStart);
+        maxCol = Math.max(maxCol, pos.colStart + pos.colSpan);
+        maxRow = Math.max(maxRow, pos.rowStart + pos.rowSpan);
+      }
+
       const sectionBgPos: GridPosition = {
-        colStart: sectionBounds.colStart,
-        colSpan: sectionBounds.colEnd - sectionBounds.colStart,
-        rowStart: headerPos.rowStart,
-        rowSpan: sectionMaxRow - headerPos.rowStart,
+        colStart: minCol,
+        colSpan: maxCol - minCol,
+        rowStart: sectionHeader.position.rowStart,
+        rowSpan: maxRow - sectionHeader.position.rowStart,
       };
 
       items.push({
@@ -1103,16 +1186,6 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
         borderColor: "var(--mantine-color-gray-3)",
         depth: 0,
       });
-    };
-
-    // Process non-relationship sections first (they get bin-packed)
-    for (const section of otherSections) {
-      processSection(section, false);
-    }
-
-    // Process Relationships section last, spanning full width at the bottom
-    if (relationshipsSection) {
-      processSection(relationshipsSection, true);
     }
 
     // Calculate total rows
