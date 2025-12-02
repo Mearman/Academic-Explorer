@@ -6,6 +6,7 @@ export * from "./bookmark";
 export * from "./concepts";
 export * from "./expansion-settings";
 export * from "./grants";
+export * from "./graph-index-types";
 export * from "./graph-types";
 export * from "./keywords";
 export * from "./relationships";
