@@ -50,7 +50,13 @@ import {
   type Edge as AlgorithmEdge,
   type Community,
 } from '@bibgraph/algorithms';
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type {
+  GraphNode,
+  GraphEdge,
+  EntityType,
+  AuthorPosition,
+  WeightableEdgeProperty,
+} from '@bibgraph/types';
 
 /**
  * Algorithm node type that satisfies the algorithms package requirements
@@ -263,6 +269,50 @@ export interface ClusterQualityResult {
 }
 
 /**
+ * Edge property filter for weighted traversal
+ */
+export interface EdgePropertyFilter {
+  /** Filter by author position */
+  authorPosition?: AuthorPosition;
+  /** Filter by corresponding author status */
+  isCorresponding?: boolean;
+  /** Filter by open access status */
+  isOpenAccess?: boolean;
+  /** Minimum score threshold */
+  scoreMin?: number;
+  /** Maximum score threshold */
+  scoreMax?: number;
+}
+
+/**
+ * Weight configuration for pathfinding
+ */
+export interface WeightConfig {
+  /** Use edge property as weight */
+  property?: WeightableEdgeProperty;
+  /** Custom weight function (takes precedence over property) */
+  weightFn?: (edge: GraphEdge, source: GraphNode, target: GraphNode) => number;
+  /** Invert weights (for "shortest = highest score" scenarios) */
+  invert?: boolean;
+  /** Default weight when property is undefined */
+  defaultWeight?: number;
+}
+
+/**
+ * Options for weighted pathfinding
+ */
+export interface WeightedPathOptions {
+  /** Weight configuration */
+  weight?: WeightConfig;
+  /** Filter edges by properties */
+  edgeFilter?: EdgePropertyFilter;
+  /** Filter nodes by entity type */
+  nodeTypes?: EntityType[];
+  /** Treat graph as directed */
+  directed?: boolean;
+}
+
+/**
  * Convert web app GraphNode to algorithm Node
  */
 function toAlgorithmNode(node: GraphNode): AcademicNode {
@@ -285,6 +335,104 @@ function toAlgorithmEdge(edge: GraphEdge): AcademicEdge {
     type: edge.type,
     weight: edge.weight ?? 1,
   };
+}
+
+/**
+ * Build a weight function from WeightConfig
+ *
+ * Priority order:
+ * 1. Custom weightFn (if provided)
+ * 2. Property-based weight extraction
+ * 3. Default weight (defaults to 1)
+ */
+function buildWeightFunction(
+  config?: WeightConfig
+): (edge: AcademicEdge, source: AcademicNode, target: AcademicNode) => number {
+  if (!config) {
+    return () => 1;
+  }
+
+  // Custom weight function takes precedence
+  if (config.weightFn) {
+    const baseFn = config.weightFn;
+    if (config.invert) {
+      return (edge, source, target) => {
+        // Convert to GraphEdge/GraphNode for the user's function
+        const weight = baseFn(
+          edge as unknown as GraphEdge,
+          source as unknown as GraphNode,
+          target as unknown as GraphNode
+        );
+        return 1 / Math.max(weight, 0.001);
+      };
+    }
+    return (edge, source, target) =>
+      baseFn(
+        edge as unknown as GraphEdge,
+        source as unknown as GraphNode,
+        target as unknown as GraphNode
+      );
+  }
+
+  // Property-based weight
+  if (config.property) {
+    const prop = config.property;
+    const defaultWeight = config.defaultWeight ?? 1;
+
+    if (config.invert) {
+      return (edge) => {
+        const value = ((edge as Record<string, unknown>)[prop] as number | undefined) ?? defaultWeight;
+        return 1 / Math.max(value, 0.001);
+      };
+    }
+
+    return (edge) => {
+      return ((edge as Record<string, unknown>)[prop] as number | undefined) ?? defaultWeight;
+    };
+  }
+
+  return () => config.defaultWeight ?? 1;
+}
+
+/**
+ * Apply edge property filter to edges
+ */
+function applyEdgeFilter(
+  edges: GraphEdge[],
+  filter?: EdgePropertyFilter
+): GraphEdge[] {
+  if (!filter) return edges;
+
+  return edges.filter((edge) => {
+    if (filter.authorPosition !== undefined && edge.authorPosition !== filter.authorPosition) {
+      return false;
+    }
+    if (filter.isCorresponding !== undefined && edge.isCorresponding !== filter.isCorresponding) {
+      return false;
+    }
+    if (filter.isOpenAccess !== undefined && edge.isOpenAccess !== filter.isOpenAccess) {
+      return false;
+    }
+    if (filter.scoreMin !== undefined && (edge.score === undefined || edge.score < filter.scoreMin)) {
+      return false;
+    }
+    if (filter.scoreMax !== undefined && (edge.score === undefined || edge.score > filter.scoreMax)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/**
+ * Filter nodes by entity type
+ */
+function applyNodeTypeFilter(
+  nodes: GraphNode[],
+  nodeTypes?: EntityType[]
+): GraphNode[] {
+  if (!nodeTypes || nodeTypes.length === 0) return nodes;
+  const typeSet = new Set(nodeTypes);
+  return nodes.filter((node) => typeSet.has(node.entityType));
 }
 
 /**
@@ -422,17 +570,73 @@ export function detectCommunities(
 
 /**
  * Find shortest path between two nodes using Dijkstra's algorithm
+ *
+ * Supports weighted traversal with edge property filtering and node type filtering.
+ *
+ * @example
+ * ```typescript
+ * // Simple unweighted path
+ * const result = findShortestPath(nodes, edges, 'A', 'B');
+ *
+ * // Weighted by score (inverted so higher score = shorter path)
+ * const result = findShortestPath(nodes, edges, 'A', 'B', {
+ *   weight: { property: 'score', invert: true },
+ * });
+ *
+ * // Path through authors only
+ * const result = findShortestPath(nodes, edges, 'A', 'B', {
+ *   nodeTypes: ['author'],
+ * });
+ *
+ * // Filter edges by score threshold
+ * const result = findShortestPath(nodes, edges, 'A', 'B', {
+ *   edgeFilter: { scoreMin: 0.5 },
+ * });
+ * ```
  */
 export function findShortestPath(
   nodes: GraphNode[],
   edges: GraphEdge[],
   sourceId: string,
   targetId: string,
-  directed: boolean = true
+  options?: WeightedPathOptions | boolean
 ): PathResult {
-  const graph = createGraph(nodes, edges, directed);
+  // Handle legacy boolean `directed` parameter for backward compatibility
+  const opts: WeightedPathOptions = typeof options === 'boolean'
+    ? { directed: options }
+    : (options ?? {});
 
-  const result = dijkstra(graph, sourceId, targetId);
+  const directed = opts.directed ?? true;
+
+  // Apply node type filtering
+  const filteredNodes = applyNodeTypeFilter(nodes, opts.nodeTypes);
+  const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
+
+  // Verify source and target exist in filtered nodes
+  if (opts.nodeTypes && opts.nodeTypes.length > 0) {
+    if (!filteredNodeIds.has(sourceId) || !filteredNodeIds.has(targetId)) {
+      return {
+        path: [],
+        distance: Infinity,
+        found: false,
+      };
+    }
+  }
+
+  // Apply edge filtering - also remove edges referencing filtered-out nodes
+  let filteredEdges = applyEdgeFilter(edges, opts.edgeFilter);
+  if (opts.nodeTypes && opts.nodeTypes.length > 0) {
+    filteredEdges = filteredEdges.filter(
+      e => filteredNodeIds.has(e.source) && filteredNodeIds.has(e.target)
+    );
+  }
+
+  // Build weight function from config
+  const weightFn = buildWeightFunction(opts.weight);
+
+  const graph = createGraph(filteredNodes, filteredEdges, directed);
+
+  const result = dijkstra(graph, sourceId, targetId, weightFn);
 
   // dijkstra returns Result<Option<Path>, GraphError>
   if (!result.ok) {
