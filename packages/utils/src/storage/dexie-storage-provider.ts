@@ -3,7 +3,12 @@
  * Wraps existing CatalogueService to implement the storage provider interface
  */
 
-import type { EntityType } from '@bibgraph/types';
+import type {
+  EntityType,
+  GraphListNode,
+  AddToGraphListParams,
+  PruneGraphListResult,
+} from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
 
@@ -172,5 +177,39 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 
 	async getNonSystemLists(): Promise<CatalogueList[]> {
 		return await this.catalogueService.getNonSystemLists();
+	}
+
+	// ========== Graph List Operations (Feature 038-graph-list) ==========
+
+	async getGraphList(): Promise<GraphListNode[]> {
+		return await this.catalogueService.getGraphList();
+	}
+
+	async addToGraphList(params: AddToGraphListParams): Promise<string> {
+		return await this.catalogueService.addToGraphList(params);
+	}
+
+	async removeFromGraphList(entityId: string): Promise<void> {
+		return await this.catalogueService.removeFromGraphList(entityId);
+	}
+
+	async clearGraphList(): Promise<void> {
+		return await this.catalogueService.clearGraphList();
+	}
+
+	async getGraphListSize(): Promise<number> {
+		return await this.catalogueService.getGraphListSize();
+	}
+
+	async pruneGraphList(): Promise<PruneGraphListResult> {
+		return await this.catalogueService.pruneGraphList();
+	}
+
+	async isInGraphList(entityId: string): Promise<boolean> {
+		return await this.catalogueService.isInGraphList(entityId);
+	}
+
+	async batchAddToGraphList(nodes: AddToGraphListParams[]): Promise<string[]> {
+		return await this.catalogueService.batchAddToGraphList(nodes);
 	}
 }

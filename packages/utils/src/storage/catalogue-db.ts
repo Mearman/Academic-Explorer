@@ -3,7 +3,13 @@
  * Extends user interactions with specialized list management
  */
 
-import type { EntityType } from "@bibgraph/types";
+import type {
+  EntityType,
+  GraphListNode,
+  AddToGraphListParams,
+  PruneGraphListResult,
+} from "@bibgraph/types";
+import { GRAPH_LIST_CONFIG } from "@bibgraph/types";
 import Dexie from "dexie";
 
 import type { GenericLogger } from "../logger.js";
@@ -734,6 +740,21 @@ export class CatalogueService {
         });
         this.logger?.debug(LOG_CATEGORY, "History list initialized");
       }
+
+      const graphList = await this.getList(SPECIAL_LIST_IDS.GRAPH);
+      if (!graphList) {
+        await this.db.catalogueLists.add({
+          id: SPECIAL_LIST_IDS.GRAPH,
+          title: "Graph",
+          description: "System-managed graph working set",
+          type: "list",
+          tags: ["system"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isPublic: false,
+        });
+        this.logger?.debug(LOG_CATEGORY, "Graph list initialized");
+      }
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to initialize special lists", { error });
       throw error;
@@ -920,6 +941,218 @@ export class CatalogueService {
       this.logger?.error(LOG_CATEGORY, "Failed to get non-system lists", { error });
       return [];
     }
+  }
+
+  // ========== Graph List Operations (Feature 038-graph-list) ==========
+
+  /**
+   * Get all nodes in the graph list
+   */
+  async getGraphList(): Promise<GraphListNode[]> {
+    try {
+      const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
+      return entities.map(entity => ({
+        id: entity.id!,
+        entityId: entity.entityId,
+        entityType: entity.entityType,
+        label: entity.notes || entity.entityId, // notes field stores label
+        addedAt: entity.addedAt,
+        provenance: this.parseProvenance(entity.notes),
+      }));
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get graph list", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Add a node to the graph list
+   */
+  async addToGraphList(params: AddToGraphListParams): Promise<string> {
+    try {
+      // Check size limit
+      const currentSize = await this.getGraphListSize();
+      if (currentSize >= GRAPH_LIST_CONFIG.MAX_SIZE) {
+        throw new Error(`Graph list is full (${GRAPH_LIST_CONFIG.MAX_SIZE} nodes). Remove some nodes to add more.`);
+      }
+
+      // Check if node already exists
+      const existing = await this.db.catalogueEntities
+        .where("[listId+entityType+entityId]")
+        .equals([SPECIAL_LIST_IDS.GRAPH, params.entityType, params.entityId])
+        .first();
+
+      if (existing) {
+        // Update provenance
+        await this.db.catalogueEntities.update(existing.id!, {
+          notes: this.serializeProvenanceWithLabel(params.provenance, params.label),
+          addedAt: new Date(),
+        });
+        this.logger?.debug(LOG_CATEGORY, `Updated graph list node: ${params.entityId}`);
+        return existing.id!;
+      }
+
+      // Add new node
+      const id = await this.addEntityToList({
+        listId: SPECIAL_LIST_IDS.GRAPH,
+        entityType: params.entityType,
+        entityId: params.entityId,
+        notes: this.serializeProvenanceWithLabel(params.provenance, params.label),
+      });
+
+      this.logger?.debug(LOG_CATEGORY, `Added node to graph list: ${params.entityId}`);
+      catalogueEventEmitter.emit({ type: 'entity-added', listId: SPECIAL_LIST_IDS.GRAPH, entityIds: [params.entityId] });
+      return id;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to add to graph list", { error, params });
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a node from the graph list
+   */
+  async removeFromGraphList(entityId: string): Promise<void> {
+    try {
+      const entity = await this.db.catalogueEntities
+        .where("listId")
+        .equals(SPECIAL_LIST_IDS.GRAPH)
+        .filter(e => e.entityId === entityId)
+        .first();
+
+      if (entity && entity.id) {
+        await this.removeEntityFromList(SPECIAL_LIST_IDS.GRAPH, entity.id);
+        this.logger?.debug(LOG_CATEGORY, `Removed node from graph list: ${entityId}`);
+        catalogueEventEmitter.emit({ type: 'entity-removed', listId: SPECIAL_LIST_IDS.GRAPH, entityIds: [entityId] });
+      }
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to remove from graph list", { error, entityId });
+      throw error;
+    }
+  }
+
+  /**
+   * Clear all nodes from the graph list
+   */
+  async clearGraphList(): Promise<void> {
+    try {
+      await this.db.catalogueEntities.where("listId").equals(SPECIAL_LIST_IDS.GRAPH).delete();
+      await this.updateList(SPECIAL_LIST_IDS.GRAPH, {});
+      this.logger?.debug(LOG_CATEGORY, "Graph list cleared");
+      catalogueEventEmitter.emit({ type: 'list-updated', listId: SPECIAL_LIST_IDS.GRAPH });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to clear graph list", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Get current size of graph list
+   */
+  async getGraphListSize(): Promise<number> {
+    try {
+      return await this.db.catalogueEntities
+        .where("listId")
+        .equals(SPECIAL_LIST_IDS.GRAPH)
+        .count();
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get graph list size", { error });
+      return 0;
+    }
+  }
+
+  /**
+   * Prune old auto-populated nodes
+   */
+  async pruneGraphList(): Promise<PruneGraphListResult> {
+    try {
+      const cutoffDate = new Date(Date.now() - GRAPH_LIST_CONFIG.PRUNE_AGE_MS);
+      const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
+
+      const toPrune = entities.filter(entity => {
+        const provenance = this.parseProvenance(entity.notes);
+        return provenance === 'auto-population' && entity.addedAt < cutoffDate;
+      });
+
+      const removedNodeIds: string[] = [];
+      for (const entity of toPrune) {
+        if (entity.id) {
+          await this.removeEntityFromList(SPECIAL_LIST_IDS.GRAPH, entity.id);
+          removedNodeIds.push(entity.entityId);
+        }
+      }
+
+      this.logger?.debug(LOG_CATEGORY, `Pruned ${removedNodeIds.length} auto-populated nodes from graph list`);
+      return {
+        removedCount: removedNodeIds.length,
+        removedNodeIds,
+      };
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to prune graph list", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a node exists in the graph list
+   */
+  async isInGraphList(entityId: string): Promise<boolean> {
+    try {
+      const count = await this.db.catalogueEntities
+        .where("listId")
+        .equals(SPECIAL_LIST_IDS.GRAPH)
+        .filter(e => e.entityId === entityId)
+        .count();
+      return count > 0;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to check if in graph list", { error, entityId });
+      return false;
+    }
+  }
+
+  /**
+   * Batch add nodes to graph list
+   */
+  async batchAddToGraphList(nodes: AddToGraphListParams[]): Promise<string[]> {
+    const addedIds: string[] = [];
+    for (const node of nodes) {
+      try {
+        const currentSize = await this.getGraphListSize();
+        if (currentSize >= GRAPH_LIST_CONFIG.MAX_SIZE) {
+          this.logger?.warn(LOG_CATEGORY, `Graph list full, stopping batch add at ${addedIds.length} nodes`);
+          break;
+        }
+        const id = await this.addToGraphList(node);
+        addedIds.push(id);
+      } catch (error) {
+        this.logger?.warn(LOG_CATEGORY, "Failed to add node in batch", { error, node });
+        // Continue with next node
+      }
+    }
+    return addedIds;
+  }
+
+  /**
+   * Helper: Parse provenance from notes field
+   */
+  private parseProvenance(notes: string | undefined): GraphListNode['provenance'] {
+    if (!notes) return 'user';
+    // Notes format: "provenance:TYPE|label:LABEL"
+    const match = notes.match(/^provenance:([^|]+)/);
+    if (match) {
+      const prov = match[1];
+      if (prov === 'user' || prov === 'collection-load' || prov === 'expansion' || prov === 'auto-population') {
+        return prov;
+      }
+    }
+    return 'user';
+  }
+
+  /**
+   * Helper: Serialize provenance and label to notes field
+   */
+  private serializeProvenanceWithLabel(provenance: string, label: string): string {
+    return `provenance:${provenance}|label:${label}`;
   }
 }
 

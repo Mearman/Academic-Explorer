@@ -42,25 +42,25 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 [P] Extend CatalogueStorageProvider interface with getGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T007 [P] Extend CatalogueStorageProvider interface with addToGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T008 [P] Extend CatalogueStorageProvider interface with removeFromGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T009 [P] Extend CatalogueStorageProvider interface with clearGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T010 [P] Extend CatalogueStorageProvider interface with getGraphListSize() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T011 [P] Extend CatalogueStorageProvider interface with pruneGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T012 [P] Extend CatalogueStorageProvider interface with isInGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T013 [P] Extend CatalogueStorageProvider interface with batchAddToGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T014 Update initializeSpecialLists() to create graph list in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T015 Implement getGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T016 Implement addToGraphList() with size limit in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T017 Implement removeFromGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T018 Implement clearGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T019 Implement getGraphListSize() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T020 Implement pruneGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T021 Implement isInGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T022 Implement batchAddToGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T023 Update initializeSpecialLists() to create graph list in packages/utils/src/storage/in-memory-storage-provider.ts
-- [ ] T024 Implement all graph list methods in InMemoryStorageProvider in packages/utils/src/storage/in-memory-storage-provider.ts
+- [X] T006 [P] Extend CatalogueStorageProvider interface with getGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T007 [P] Extend CatalogueStorageProvider interface with addToGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T008 [P] Extend CatalogueStorageProvider interface with removeFromGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T009 [P] Extend CatalogueStorageProvider interface with clearGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T010 [P] Extend CatalogueStorageProvider interface with getGraphListSize() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T011 [P] Extend CatalogueStorageProvider interface with pruneGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T012 [P] Extend CatalogueStorageProvider interface with isInGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T013 [P] Extend CatalogueStorageProvider interface with batchAddToGraphList() in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T014 Update initializeSpecialLists() to create graph list in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T015 Implement getGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T016 Implement addToGraphList() with size limit in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T017 Implement removeFromGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T018 Implement clearGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T019 Implement getGraphListSize() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T020 Implement pruneGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T021 Implement isInGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T022 Implement batchAddToGraphList() in DexieStorageProvider in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T023 Update initializeSpecialLists() to create graph list in packages/utils/src/storage/in-memory-storage-provider.ts
+- [X] T024 Implement all graph list methods in InMemoryStorageProvider in packages/utils/src/storage/in-memory-storage-provider.ts
 
 **Checkpoint**: Foundation ready - storage providers support graph list operations
 

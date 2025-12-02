@@ -3,7 +3,13 @@
  * Uses JavaScript Maps for fast, isolated test execution
  */
 
-import type { EntityType } from '@bibgraph/types';
+import type {
+	EntityType,
+	GraphListNode,
+	AddToGraphListParams,
+	PruneGraphListResult,
+} from '@bibgraph/types';
+import { GRAPH_LIST_CONFIG } from '@bibgraph/types';
 
 import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
@@ -440,6 +446,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	async initializeSpecialLists(): Promise<void> {
 		const bookmarksList = await this.getList(SPECIAL_LIST_IDS.BOOKMARKS);
 		const historyList = await this.getList(SPECIAL_LIST_IDS.HISTORY);
+		const graphList = await this.getList(SPECIAL_LIST_IDS.GRAPH);
 
 		if (!bookmarksList) {
 			const list: CatalogueList = {
@@ -467,6 +474,20 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 				isPublic: false,
 			};
 			this.lists.set(SPECIAL_LIST_IDS.HISTORY, list);
+		}
+
+		if (!graphList) {
+			const list: CatalogueList = {
+				id: SPECIAL_LIST_IDS.GRAPH,
+				title: 'Graph',
+				description: 'System-managed graph working set',
+				type: 'list',
+				tags: ['system'],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				isPublic: false,
+			};
+			this.lists.set(SPECIAL_LIST_IDS.GRAPH, list);
 		}
 	}
 
@@ -584,5 +605,246 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 		return allLists.filter(
 			(list) => list.id && !this.isSpecialList(list.id) && !list.tags?.includes('system')
 		);
+	}
+
+	// ========== Graph List Operations (Feature 038-graph-list) ==========
+
+	/**
+	 * Parse provenance from notes field
+	 * Format: "provenance:TYPE|label:LABEL"
+	 */
+	private parseProvenance(notes: string | undefined): GraphListNode['provenance'] {
+		if (!notes) return 'user';
+		const match = notes.match(/^provenance:([^|]+)/);
+		if (match) {
+			const prov = match[1];
+			if (
+				prov === 'user' ||
+				prov === 'collection-load' ||
+				prov === 'expansion' ||
+				prov === 'auto-population'
+			) {
+				return prov;
+			}
+		}
+		return 'user';
+	}
+
+	/**
+	 * Serialize provenance and label into notes field
+	 * Format: "provenance:TYPE|label:LABEL"
+	 */
+	private serializeProvenanceWithLabel(provenance: string, label: string): string {
+		return `provenance:${provenance}|label:${label}`;
+	}
+
+	async getGraphList(): Promise<GraphListNode[]> {
+		await this.initializeSpecialLists();
+		const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
+
+		return entities
+			.filter((entity) => entity.id !== undefined)
+			.map((entity) => {
+				const provenance = this.parseProvenance(entity.notes);
+
+				// Extract label from notes (format: "provenance:TYPE|label:LABEL")
+				let label = '';
+				if (entity.notes) {
+					const labelMatch = entity.notes.match(/\|label:(.+)$/);
+					if (labelMatch) {
+						label = labelMatch[1];
+					}
+				}
+
+				return {
+					id: entity.id!,
+					entityId: entity.entityId,
+					entityType: entity.entityType,
+					label,
+					addedAt: entity.addedAt,
+					provenance,
+				};
+			});
+	}
+
+	async addToGraphList(params: AddToGraphListParams): Promise<string> {
+		await this.initializeSpecialLists();
+
+		// Check size limit
+		const currentSize = await this.getGraphListSize();
+		if (currentSize >= GRAPH_LIST_CONFIG.MAX_SIZE) {
+			throw new Error(
+				`Graph list size limit reached (${GRAPH_LIST_CONFIG.MAX_SIZE} nodes)`
+			);
+		}
+
+		// Check if entity already exists in graph list
+		for (const entity of this.entities.values()) {
+			if (
+				entity.listId === SPECIAL_LIST_IDS.GRAPH &&
+				entity.entityType === params.entityType &&
+				entity.entityId === params.entityId
+			) {
+				// Update provenance and timestamp if exists
+				if (!entity.id) {
+					continue; // Skip entities without id (should never happen)
+				}
+				const updatedEntity: CatalogueEntity = {
+					...entity,
+					addedAt: new Date(),
+					notes: this.serializeProvenanceWithLabel(params.provenance, params.label),
+				};
+				this.entities.set(entity.id, updatedEntity);
+				return entity.id;
+			}
+		}
+
+		// Add new node
+		const notes = this.serializeProvenanceWithLabel(params.provenance, params.label);
+		return await this.addEntityToList({
+			listId: SPECIAL_LIST_IDS.GRAPH,
+			entityType: params.entityType,
+			entityId: params.entityId,
+			notes,
+		});
+	}
+
+	async removeFromGraphList(entityId: string): Promise<void> {
+		await this.initializeSpecialLists();
+
+		// Find entity by entityId (not record id)
+		let entityRecordId: string | null = null;
+		for (const [id, entity] of this.entities.entries()) {
+			if (entity.listId === SPECIAL_LIST_IDS.GRAPH && entity.entityId === entityId) {
+				entityRecordId = id;
+				break;
+			}
+		}
+
+		if (!entityRecordId) {
+			throw new Error(`Entity ${entityId} not found in graph list`);
+		}
+
+		await this.removeEntityFromList(SPECIAL_LIST_IDS.GRAPH, entityRecordId);
+	}
+
+	async clearGraphList(): Promise<void> {
+		await this.initializeSpecialLists();
+
+		// Delete all entities in graph list
+		const entitiesToDelete: string[] = [];
+		for (const [entityId, entity] of this.entities.entries()) {
+			if (entity.listId === SPECIAL_LIST_IDS.GRAPH) {
+				entitiesToDelete.push(entityId);
+			}
+		}
+
+		for (const entityId of entitiesToDelete) {
+			this.entities.delete(entityId);
+		}
+
+		// Update list's updated timestamp
+		await this.updateList(SPECIAL_LIST_IDS.GRAPH, {});
+	}
+
+	async getGraphListSize(): Promise<number> {
+		await this.initializeSpecialLists();
+		const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
+		return entities.length;
+	}
+
+	async pruneGraphList(): Promise<PruneGraphListResult> {
+		await this.initializeSpecialLists();
+		const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
+
+		const now = new Date();
+		const pruneThreshold = new Date(now.getTime() - GRAPH_LIST_CONFIG.PRUNE_AGE_MS);
+
+		const entitiesToRemove: CatalogueEntity[] = [];
+		for (const entity of entities) {
+			const provenance = this.parseProvenance(entity.notes);
+			if (provenance === 'auto-population' && entity.addedAt < pruneThreshold) {
+				entitiesToRemove.push(entity);
+			}
+		}
+
+		// Remove entities
+		for (const entity of entitiesToRemove) {
+			if (entity.id) {
+				this.entities.delete(entity.id);
+			}
+		}
+
+		// Update list's updated timestamp
+		if (entitiesToRemove.length > 0) {
+			await this.updateList(SPECIAL_LIST_IDS.GRAPH, {});
+		}
+
+		return {
+			removedCount: entitiesToRemove.length,
+			removedNodeIds: entitiesToRemove.map((e) => e.entityId),
+		};
+	}
+
+	async isInGraphList(entityId: string): Promise<boolean> {
+		for (const entity of this.entities.values()) {
+			if (entity.listId === SPECIAL_LIST_IDS.GRAPH && entity.entityId === entityId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	async batchAddToGraphList(nodes: AddToGraphListParams[]): Promise<string[]> {
+		await this.initializeSpecialLists();
+
+		const addedIds: string[] = [];
+		const currentSize = await this.getGraphListSize();
+		let newNodesCount = 0;
+
+		for (const node of nodes) {
+			// Stop if we reach size limit
+			if (currentSize + newNodesCount >= GRAPH_LIST_CONFIG.MAX_SIZE) {
+				break;
+			}
+
+			// Check if node already exists
+			let exists = false;
+			for (const entity of this.entities.values()) {
+				if (
+					entity.listId === SPECIAL_LIST_IDS.GRAPH &&
+					entity.entityType === node.entityType &&
+					entity.entityId === node.entityId
+				) {
+					exists = true;
+					// Update provenance and timestamp
+					if (entity.id) {
+						const updatedEntity: CatalogueEntity = {
+							...entity,
+							addedAt: new Date(),
+							notes: this.serializeProvenanceWithLabel(node.provenance, node.label),
+						};
+						this.entities.set(entity.id, updatedEntity);
+						addedIds.push(entity.id);
+					}
+					break;
+				}
+			}
+
+			if (!exists) {
+				// Add new node
+				const notes = this.serializeProvenanceWithLabel(node.provenance, node.label);
+				const id = await this.addEntityToList({
+					listId: SPECIAL_LIST_IDS.GRAPH,
+					entityType: node.entityType,
+					entityId: node.entityId,
+					notes,
+				});
+				addedIds.push(id);
+				newNodesCount++;
+			}
+		}
+
+		return addedIds;
 	}
 }
