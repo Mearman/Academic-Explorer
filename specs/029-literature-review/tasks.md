@@ -15,7 +15,7 @@ Enhance BibGraph catalogue feature to support advanced literature review workflo
 
 - **P1**: User Story 1 - Citation Export and Reference Management
 - **P1**: User Story 2 - Systematic Review Management
-- **P1**: User Story 6 - Sample Bibliographies from Existing Review Papers
+- **P1**: User Story 6 - Catalogues as First-Class Entities with Parent Relationships
 - **P2**: User Story 3 - Thematic and Semantic Analysis
 - **P2**: User Story 4 - Custom Entity Management
 - **P2**: User Story 5 - Live File System Synchronization
@@ -92,29 +92,29 @@ Enhance BibGraph catalogue feature to support advanced literature review workflo
 - [ ] T049 Create use-literature-review hook in apps/web/src/hooks/use-literature-review.ts
 - [ ] T050 Implement PRISMA flow diagram export functionality
 
-## Phase 5: Sample Bibliographies (User Story 6 - P1)
+## Phase 5: Catalogues as First-Class Entities (User Story 6 - P1)
 
-**Goal**: Implement sample bibliography loading from public folder with full PRISMA workflow support
-**Independent Test**: Load sample bibliography, verify all works display, check PRISMA diagram accuracy, test exports
+**Goal**: Promote lists to first-class entity status with parent relationships and routes
+**Independent Test**: Create list with parent entity, navigate via /lists/L123, test nested lists, load sample lists
 
-- [ ] T051 Create sample bibliography types in packages/types/src/sample-bibliography.ts
-- [ ] T052 [P] Implement sample bibliography provider following static data cache pattern in packages/client/src/internal/sample-bibliography-provider.ts
-- [ ] T053 Create public folder structure for sample bibliographies at apps/web/public/data/sample-bibliographies/
-- [ ] T054 [P] Implement sample bibliography index loader service in apps/web/src/services/sample-bibliography.service.ts
-- [ ] T055 Create SampleBibliographyBrowser component in apps/web/src/components/catalogue/SampleBibliographyBrowser.tsx
-- [ ] T056 [P] Implement sample bibliography detail view with source attribution
-- [ ] T057 Create sample bibliography loading into catalogue state
-- [ ] T058 [P] Integrate sample bibliography works with PRISMA flow diagram
-- [ ] T059 Add sample bibliography export functionality (BibTeX/RIS/CSV)
-- [ ] T060 [P] Create use-sample-bibliographies hook in apps/web/src/hooks/use-sample-bibliographies.ts
-- [ ] T061 Implement sample bibliography filtering (by topic, review type, study count)
-- [ ] T062 Add sample bibliography route in apps/web/src/routes/sample-bibliographies.tsx
-- [ ] T063 [P] Create initial sample bibliographies (minimum 5 covering different review types)
-- [ ] T064 Implement sample bibliography contribution workflow (validation, metadata requirements)
-- [ ] T065 Add sample bibliography section to literature review onboarding flow
-- [ ] T066 [P] Write unit tests for sample bibliography loading and transformation
-- [ ] T067 Write E2E tests for sample bibliography browser workflow
-- [ ] T068 Add sample bibliography data validation using Zod schemas
+- [ ] T051 Add `lists` to EntityType enum in packages/types/src/entity-types.ts
+- [ ] T052 [P] Create CatalogueList interface with parent entity relationship in packages/types/src/catalogue.ts
+- [ ] T053 Implement list ID generation with "L" prefix in packages/utils/src/id-generator.ts
+- [ ] T054 [P] Create list storage provider extending base storage in packages/utils/src/storage/list-storage.provider.ts
+- [ ] T055 Add /lists route tree in apps/web/src/routes/lists/ (primary route)
+- [ ] T056 [P] Create ListDetailPage component in apps/web/src/routes/lists/$listId.tsx
+- [ ] T057 Add /catalogues redirect alias to /lists for backward compatibility
+- [ ] T058 [P] Implement parent entity display component with navigation link
+- [ ] T059 Create "Create list for this entity" action on entity detail pages
+- [ ] T060 [P] Implement nested list support (lists containing lists)
+- [ ] T061 Create use-list hook in apps/web/src/hooks/use-list.ts
+- [ ] T062 [P] Create public folder structure for sample lists at apps/web/public/data/lists/
+- [ ] T063 Implement sample list loader service in apps/web/src/services/sample-list.service.ts
+- [ ] T064 [P] Create SampleListBrowser component for browsing pre-packaged lists
+- [ ] T065 Create initial sample lists (minimum 5: review bibliographies, collaborator lists, etc.)
+- [ ] T066 [P] Integrate list entities with existing entity search and navigation
+- [ ] T067 Write unit tests for list entity operations
+- [ ] T068 [P] Write E2E tests for list routes and parent relationships
 
 ## Phase 6: Thematic and Semantic Analysis (User Story 3 - P2)
 

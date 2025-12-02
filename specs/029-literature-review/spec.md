@@ -92,21 +92,21 @@ As a researcher, I need my BibGraph catalogue to automatically sync with local f
 
 ---
 
-### User Story 6 - Sample Bibliographies from Existing Review Papers (Priority: P1)
+### User Story 6 - Catalogues as First-Class Entities with Parent Relationships (Priority: P1)
 
-As a researcher new to systematic reviews, I need access to sample bibliographies from existing published review papers so I can understand the workflow, see real-world examples of PRISMA stages, and have reference data to explore the tool's capabilities.
+As a researcher, I need catalogues to be first-class entities that can have parent relationships to any other entity (works, authors, institutions, etc.) so I can create meaningful collections like "bibliography of this review paper", "collaborators of this author", or "outputs of this institution".
 
-**Why this priority**: Sample bibliographies serve as both educational resources and demonstration data. They help users understand systematic review workflows without requiring them to build a bibliography from scratch, significantly reducing the barrier to entry.
+**Why this priority**: Promoting catalogues to entity status enables a unified data model where any entity can have associated lists. This supports sample bibliographies, user-created review bibliographies, collaborator networks, and nested collections (lists of lists) with one consistent pattern.
 
-**Independent Test**: Can be fully tested by loading a sample bibliography, verifying all works are accessible, checking PRISMA stage assignments are correct, and confirming export functionality works with the sample data.
+**Independent Test**: Can be fully tested by creating a catalogue with a parent entity, verifying navigation between parent and catalogue, testing nested catalogues, and confirming sample catalogues load correctly.
 
 **Acceptance Scenarios**:
 
-1. **Given** the application loads, **When** user accesses sample bibliographies, **Then** a list of available sample review bibliographies is displayed with metadata (title, topic, study count, review type)
-2. **Given** sample bibliographies are available, **When** user selects one, **Then** all referenced works are loaded and displayed in the catalogue with their PRISMA stage assignments
-3. **Given** a loaded sample bibliography, **When** user views the PRISMA flow diagram, **Then** accurate counts reflect the sample data's screening decisions
-4. **Given** sample bibliographies, **When** user exports to BibTeX/RIS, **Then** export includes all sample works with proper formatting and review metadata
-5. **Given** sample bibliographies from real papers, **When** user views source attribution, **Then** original review paper citation and DOI are clearly displayed
+1. **Given** any entity page, **When** user creates a new catalogue, **Then** they can optionally associate it as a child of that entity with a relationship label (e.g., "bibliography", "collaborators")
+2. **Given** a catalogue with a parent entity, **When** user views the catalogue, **Then** the parent entity is displayed with navigation link and relationship context
+3. **Given** a catalogue entity, **When** user adds another catalogue to it, **Then** nested catalogue relationships are supported (lists of lists)
+4. **Given** sample catalogues in public folder, **When** user browses samples, **Then** pre-packaged catalogues with PRISMA workflows are loadable with full feature support
+5. **Given** a catalogue page, **When** user navigates via URL, **Then** lists are accessible at `/lists/L123` with `/catalogues/L123` as redirect alias
 
 ---
 
@@ -128,20 +128,21 @@ As a researcher new to systematic reviews, I need access to sample bibliographie
 - **FR-012**: Users MUST be able to import/export complete catalogue data to structured local file system
 - **FR-013**: System MUST maintain data integrity and performance for catalogues with 5000+ entities
 - **FR-014**: System MUST provide quality assessment tools with standardized scoring for different study types
-- **FR-015**: System MUST serve sample bibliographies from existing review papers via static JSON files in the public folder
-- **FR-016**: Sample bibliographies MUST include complete metadata: source review paper citation, DOI, PRISMA stage assignments, and work references
-- **FR-017**: System MUST provide a sample bibliography browser with filtering by topic, review type, and study count
-- **FR-018**: Sample bibliographies MUST be loadable into the catalogue as read-only demonstration data with full feature support (PRISMA diagrams, exports, filtering)
-- **FR-019**: System MUST support user contribution of new sample bibliographies with validation and metadata requirements
+- **FR-015**: Catalogues MUST be first-class entities with their own entity type (`lists`) and ID prefix (`L`)
+- **FR-016**: Catalogues MUST support optional parent entity relationships to any entity type (works, authors, institutions, catalogues, etc.)
+- **FR-017**: Catalogues MUST support containing any entity type, including other catalogues (nested lists)
+- **FR-018**: System MUST provide list routes (`/lists/L123`) as primary, with `/catalogues/L123` as redirect alias
+- **FR-019**: System MUST serve sample catalogues as pre-packaged CatalogueList entities via static JSON in the public folder
+- **FR-020**: Sample catalogues MUST use the same data structure as user-created catalogues for consistency
 
 ### Key Entities
 
+- **CatalogueList**: First-class entity representing a collection of entities with optional parent entity relationship, supporting nested catalogues and mixed entity types
 - **LiteratureReview**: Represents a systematic review project with PRISMA stage tracking, research domain, methodology, and progress metrics
 - **ScreeningDecision**: Records inclusion/exclusion decisions with criteria, reasoning, reviewer information, and timestamps
 - **Theme**: Represents thematic analysis results with labels, keywords, relevance scores, and associated studies
 - **CustomEntity**: Extends standard entities with local file system integration, verification status, and extracted metadata
 - **SyncConfiguration**: Manages file system synchronization settings, conflict resolution preferences, and sync status
-- **SampleBibliography**: Pre-packaged bibliography from an existing review paper with source attribution, PRISMA data, and referenced works served via public folder
 
 ## Success Criteria *(mandatory)*
 

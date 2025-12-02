@@ -7,18 +7,144 @@
 
 ```mermaid
 erDiagram
+    CatalogueList ||--o| parentOf |o-- Entity
+    CatalogueList ||--|{ contains }|| Entity
+    CatalogueList ||--o| hasWorkflow |o-- LiteratureReview
     LiteratureReview ||--||{ has } ScreeningDecision
     LiteratureReview ||--o{ tracks }|| PRISMAStage
-    ScreeningDecision ||--|{ evaluates }|| CatalogueEntity
+    ScreeningDecision ||--|{ evaluates }|| Entity
     LiteratureReview ||--o{ analyzes }|| Theme
-    Theme ||--|{ contains }|| CatalogueEntity
-    CatalogueEntity }|--||{ stored in }|| SyncConfiguration
-    CustomEntity }|--||{ extends }|| CatalogueEntity
-    CatalogueEntity ||--o{ includes }|| Excerpt
+    Theme ||--|{ contains }|| Entity
+    Entity }|--||{ stored in }|| SyncConfiguration
+    CustomEntity }|--||{ extends }|| Entity
+    Entity ||--o{ includes }|| Excerpt
     CustomEntity }|--o|| FileInfo
 ```
 
 ## Core Entities
+
+### CatalogueList (First-Class Entity)
+
+Catalogues are promoted to first-class entity status, enabling them to participate in the same relationship patterns as other entities. A catalogue list can have a parent entity (the entity it "belongs to") and contains other entities.
+
+```typescript
+// Catalogue as a first-class entity type
+type EntityType =
+  | "works" | "authors" | "institutions" | "sources"
+  | "publishers" | "funders" | "topics" | "concepts"
+  | "lists"  // NEW: Lists are first-class entities
+
+interface CatalogueList {
+  id: string              // e.g., "L123456789" (L prefix for lists)
+  type: "lists"
+  title: string
+  description?: string
+
+  // Generic parent entity relationship
+  // "This list belongs to / is derived from this entity"
+  parentEntityId?: string      // Any entity ID (Work, Author, Institution, Catalogue, etc.)
+  parentEntityType?: EntityType // The type of the parent entity
+  relationshipLabel?: string   // Human-readable: "bibliography", "collaborators", "outputs"
+
+  // List contents - can contain ANY entity types, including other catalogues
+  entities: Array<{
+    id: string
+    type: EntityType
+    // Optional per-entity metadata (e.g., PRISMA stage, notes)
+    metadata?: Record<string, unknown>
+  }>
+
+  // List categorization
+  listType: "general" | "bibliography" | "collaborators" | "outputs" | "bookmarks" | "history"
+
+  // Optional workflow attachment
+  literatureReviewId?: string  // If this list has PRISMA workflow tracking
+
+  // Visibility and sharing
+  visibility: "private" | "shared" | "public"
+
+  // Metadata
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  tags?: string[]
+}
+```
+
+**Use Cases:**
+
+| Parent Entity | List Type | Contents | Example |
+|---------------|-----------|----------|---------|
+| Work (review paper) | bibliography | Works | Papers cited by a systematic review |
+| Work (draft) | bibliography | Works | User's paper being written |
+| Author | collaborators | Authors | Co-author network |
+| Author | outputs | Works | Curated publication list |
+| Institution | outputs | Works | Research outputs |
+| Institution | members | Authors | Faculty/researchers |
+| Source (journal) | contents | Works | Issue table of contents |
+| Topic | key_papers | Works | Seminal papers in field |
+| Funder | funded | Works | Grant-funded research |
+| Catalogue | subcollection | Catalogues | Nested list (list of lists) |
+| `undefined` | bookmarks | Mixed | User's general bookmarks |
+
+**Recursive Relationships:**
+
+```
+CatalogueList: "My Systematic Reviews"
+  ├── parentEntityId: "A5017898742" (Author - me)
+  ├── parentEntityType: "authors"
+  └── entities: [
+        { id: "L001", type: "catalogues" },  // Review 1 bibliography
+        { id: "L002", type: "catalogues" },  // Review 2 bibliography
+        { id: "L003", type: "catalogues" },  // Review 3 bibliography
+      ]
+
+CatalogueList: "L001" (Review 1 Bibliography)
+  ├── parentEntityId: "W3187234764" (the review paper)
+  ├── parentEntityType: "works"
+  ├── literatureReviewId: "lr-001" (PRISMA workflow)
+  └── entities: [
+        { id: "W123", type: "works", metadata: { prismaStage: "included" } },
+        { id: "W456", type: "works", metadata: { prismaStage: "included" } },
+        { id: "W789", type: "works", metadata: { prismaStage: "excluded" } },
+      ]
+```
+
+**Sample Bibliographies:**
+
+Sample bibliographies are simply CatalogueLists where:
+- `parentEntityId` is an existing OpenAlex review paper
+- `listType` is "bibliography"
+- The list is pre-populated with PRISMA stage metadata
+- `visibility` is "public" for sharing
+
+```typescript
+// Sample bibliography is just a CatalogueList with specific configuration
+const sampleBibliography: CatalogueList = {
+  id: "L-cochrane-ml-2024",
+  type: "catalogues",
+  title: "ML in Medical Diagnosis - Cochrane Review",
+
+  // Parent is the published review paper
+  parentEntityId: "W3187234764",
+  parentEntityType: "works",
+  relationshipLabel: "bibliography",
+
+  listType: "bibliography",
+  literatureReviewId: "lr-cochrane-ml-2024", // Has PRISMA workflow data
+  visibility: "public",
+
+  entities: [
+    { id: "W2741809807", type: "works", metadata: { prismaStage: "included" } },
+    { id: "W2760813866", type: "works", metadata: { prismaStage: "included" } },
+    // ... more works with PRISMA stages
+  ],
+
+  createdAt: "2024-06-15",
+  updatedAt: "2024-06-15",
+  tags: ["machine-learning", "medical-diagnosis", "systematic-review"]
+}
+```
 
 ### LiteratureReview
 
@@ -218,160 +344,46 @@ interface SyncConfiguration {
 }
 ```
 
-### SampleBibliography
+### Sample Catalogue Data (Static Files)
 
-Pre-packaged bibliography from an existing review paper served via the public folder, following the pattern of the OpenAlex static data cache. The source review paper is a first-class OpenAlex entity, enabling navigation to the review itself and leveraging its `referenced_works` relationship.
-
-```typescript
-interface SampleBibliography {
-  id: string // Unique identifier (e.g., "cochrane-ml-diagnosis-2024")
-
-  // Source Review Paper - First-class OpenAlex Entity
-  // The review paper that cites all the works in this bibliography
-  sourceReviewId: string // OpenAlex Work ID: "W2741809807"
-
-  // Fallback metadata for display before entity loads, or if not in OpenAlex
-  sourceReviewMetadata?: {
-    title: string
-    authors: string[]
-    doi?: string
-    publicationYear: number
-    journal?: string
-    url?: string
-    abstract?: string
-  }
-
-  // Classification (may be derived from or supplement OpenAlex data)
-  reviewType: "systematic" | "meta-analysis" | "scoping" | "narrative" | "rapid" | "umbrella"
-  researchDomain: string // e.g., "Machine Learning in Medical Diagnosis"
-  topics: string[] // e.g., ["artificial intelligence", "healthcare", "diagnostics"]
-
-  // PRISMA Flow Data (extends OpenAlex referenced_works with screening metadata)
-  prismaData: {
-    identified: number
-    screened: number
-    eligible: number
-    included: number
-    excludedAtScreening: number
-    excludedAtEligibility: number
-    exclusionReasons?: Record<string, number> // reason -> count
-  }
-
-  // Referenced Works - OpenAlex entities with PRISMA stage annotations
-  // These correspond to the review paper's referenced_works in OpenAlex
-  works: Array<{
-    // OpenAlex Work ID (primary identifier for navigation)
-    id: string // e.g., "W2741809807" - navigable entity
-
-    // Fallback metadata (for display before entity loads, or if not in OpenAlex)
-    metadata?: {
-      title: string
-      authors: string[]
-      publicationYear: number
-      doi?: string
-      journal?: string
-      abstract?: string
-    }
-
-    // PRISMA stage assignment (extends OpenAlex data)
-    prismaStage: "identified" | "screened" | "eligible" | "included" | "excluded"
-    screeningDecision?: {
-      included: boolean
-      reason?: string
-      criteria?: string[]
-    }
-
-    // Optional quality assessment
-    qualityScore?: number
-    biasRisk?: "low" | "medium" | "high"
-  }>
-
-  // Relationship: sourceReviewId -> works[] mirrors OpenAlex's Work.referenced_works
-  // This enables:
-  // 1. Navigate to source review paper entity page
-  // 2. View review's citations as the bibliography
-  // 3. Pull work data from OpenAlex cache or API
-  // 4. Extend with PRISMA screening metadata not in OpenAlex
-
-  // File System Structure (mirrors OpenAlex static cache pattern)
-  // Stored at: apps/web/public/data/sample-bibliographies/{id}/
-  // - index.json (this metadata + PRISMA annotations)
-  // - Source review and works loaded from OpenAlex cache/API
-
-  // Metadata
-  createdAt: string // ISO date
-  updatedAt: string // ISO date
-  version: string // Semantic version for updates
-  contributor?: string // Who contributed this sample
-  license?: string // e.g., "CC-BY-4.0"
-}
-```
-
-**Entity Relationships:**
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ SampleBibliography                                              │
-│   id: "cochrane-ml-diagnosis-2024"                              │
-│   sourceReviewId: "W3187234764" ─────────┐                      │
-│   prismaData: {...}                      │                      │
-│   works: [                               │                      │
-│     { id: "W2741809807", prismaStage },  │                      │
-│     { id: "W2760813866", prismaStage },  │                      │
-│   ]                                      │                      │
-└──────────────────────────────────────────│──────────────────────┘
-                                           │
-                                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ OpenAlex Work (Source Review Paper)                             │
-│   id: "W3187234764"                                             │
-│   title: "Machine Learning in Medical Diagnosis: A Review"      │
-│   referenced_works: ["W2741809807", "W2760813866", ...]         │
-│   type: "review"                                                │
-└─────────────────────────────────────────────────────────────────┘
-         │ referenced_works relationship
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ OpenAlex Works (Cited Papers)                                   │
-│   W2741809807: "Deep Learning for Medical Image Analysis"       │
-│   W2760813866: "Neural Networks in Clinical Decision Support"   │
-│   ... (navigable entity pages)                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+Sample catalogues are pre-packaged `CatalogueList` entities served via the public folder. They use the same data structure as user-created catalogues, just stored as static JSON for demonstration and onboarding purposes.
 
 **File System Structure:**
 ```
-apps/web/public/data/sample-bibliographies/
-├── index.json                           # Master index of all sample bibliographies
-├── cochrane-ml-diagnosis-2024/
-│   └── index.json                       # SampleBibliography (PRISMA annotations only)
-│                                        # Works loaded from OpenAlex cache/API
-├── prisma-climate-adaptation-2023/
-│   └── index.json
-│   ...
+apps/web/public/data/catalogues/
+├── index.json                           # Master index of all sample catalogues
+├── L-cochrane-ml-2024/
+│   ├── catalogue.json                   # CatalogueList entity data
+│   └── literature-review.json           # Optional: LiteratureReview workflow data
+├── L-climate-adaptation-2023/
+│   ├── catalogue.json
+│   └── literature-review.json
+└── ...
 ```
 
 **Master Index Structure:**
 ```typescript
-interface SampleBibliographyIndex {
+interface SampleCatalogueIndex {
   lastUpdated: string // ISO date
-  bibliographies: Array<{
-    id: string
-    sourceReviewId: string // OpenAlex Work ID for the review paper
-    title: string // Denormalized from source review for display
-    reviewType: string
-    researchDomain: string
-    workCount: number
-    $ref: string // Relative path to bibliography folder
+  catalogues: Array<{
+    id: string                    // CatalogueList ID (e.g., "L-cochrane-ml-2024")
+    title: string
+    parentEntityId?: string       // Parent entity (e.g., review paper Work ID)
+    parentEntityType?: EntityType
+    listType: string
+    entityCount: number
+    tags: string[]
+    $ref: string                  // Relative path to catalogue folder
   }>
 }
 ```
 
 **Data Loading Strategy:**
-1. Load sample bibliography index from static JSON
-2. Fetch source review paper from OpenAlex (cache → API fallback)
-3. Use review's `referenced_works` as the base bibliography
-4. Overlay PRISMA stage annotations from sample bibliography data
-5. All entities navigable via existing entity routes (`/works/W2741809807`)
+1. Load sample catalogue index from static JSON
+2. Load specific `CatalogueList` entity data on demand
+3. Fetch parent entity from OpenAlex (cache → API fallback) if specified
+4. Fetch contained entities from OpenAlex as needed
+5. All entities navigable via existing routes (`/works/W123`, `/catalogues/L123`)
 
 ### CitationExportConfiguration
 
