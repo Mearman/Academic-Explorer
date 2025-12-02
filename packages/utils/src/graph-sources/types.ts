@@ -50,6 +50,9 @@ export interface GraphSourceRelationship {
   /** Relationship type */
   relationType: RelationType;
 
+  /** Display label for target entity (extracted from nested data when available) */
+  targetLabel?: string;
+
   // Edge properties (optional - populated from PersistentGraph edge records)
   /** Topic relevance score (0-1) - for TOPIC edges */
   score?: number;
