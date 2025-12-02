@@ -535,19 +535,20 @@ function createRelationshipSection(
     createRelationshipItem(entity, config, direction)
   );
 
-  // Merge with additional loaded items
-  const allItems = additionalState
-    ? [...initialItems, ...additionalState.items]
-    : initialItems;
+  // Use additional state items if available (replaces initial), otherwise use initial
+  // When additionalState exists, it means user has navigated pages and contains the current page's items
+  const allItems = additionalState ? additionalState.items : initialItems;
 
-  const visibleCount = allItems.length;
-  const hasMore = totalCount > visibleCount;
   const currentPage = additionalState?.currentPage ?? page;
+  const effectivePageSize = additionalState?.pageSize ?? perPage;
+  const effectiveTotalCount = additionalState?.totalCount ?? totalCount;
+  const totalPages = Math.ceil(effectiveTotalCount / effectivePageSize);
+  const hasMore = currentPage < totalPages;
 
   const pagination: PaginationState = {
-    pageSize: perPage,
+    pageSize: effectivePageSize,
     currentPage: currentPage - 1, // OpenAlex uses 1-based, we use 0-based
-    totalPages: Math.ceil(totalCount / perPage),
+    totalPages,
     hasNextPage: hasMore,
     hasPreviousPage: currentPage > 1,
   };
@@ -564,8 +565,8 @@ function createRelationshipSection(
     label: config.label,
     items: allItems,
     visibleItems: allItems,
-    totalCount,
-    visibleCount,
+    totalCount: effectiveTotalCount,
+    visibleCount: allItems.length,
     hasMore,
     pagination,
     isPartialData: false, // API queries return complete data
