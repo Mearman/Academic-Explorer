@@ -323,6 +323,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Algorithms
               </Button>
+              <Button
+                component={Link}
+                to="/graph"
+                variant="subtle"
+                size="xs"
+              >
+                Graph
+              </Button>
             </Group>
 
             {/* Mobile navigation - dropdown menu (hidden when search expanded) */}
@@ -387,6 +395,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Algorithms
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/graph"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Graph
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

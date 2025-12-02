@@ -292,6 +292,15 @@ Remove algorithm result truncation to show all results instead of "+N more" text
 
 ---
 
+### spec-033: Entity Graph Page
+**Status**: ✅ Complete | **Completed**: 2025-12-01
+
+Dedicated `/graph` route for visualizing repository entities as an interactive force-directed graph. Displays entities stored in IndexedDB (via repository store) with 2D/3D view toggle, highlight/filter display modes, community detection, pathfinding algorithms, and fit-to-view controls. Reusable hooks (`useRepositoryGraph`, `useGraphVisualization`) extracted from algorithms page for shared state management.
+
+[View Spec](./033-entity-graph-page/)
+
+---
+
 ## Known Issues
 
 ### Spec Numbering Cleanup (2025-11-25)
