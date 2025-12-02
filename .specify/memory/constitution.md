@@ -1,12 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 2.11.0 → 2.11.1 (PATCH: README conciseness improvements and template alignment)
-Modified Sections: README.md (conciseness improvements)
-Added Sections: Constitution version history entry for v2.11.1
+Version: 2.11.1 → 2.12.0 (MINOR: Added Principle XVII - No Magic Numbers/Values)
+Modified Sections: None
+Added Sections: Principle XVII - No Magic Numbers/Values, Version history entry for v2.12.0
 Removed Sections: None
-Templates Requiring Updates: None (all templates already aligned with Principle XVI)
+Templates Requiring Updates:
+  - .specify/templates/plan-template.md: ✅ Updated - item 17 added to Constitution Check
+  - .specify/templates/spec-template.md: ✅ Updated - item 17 added to Constitution Alignment
+  - .specify/templates/tasks-template.md: ✅ Updated - item 17 added to compliance verification
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.11.1: README conciseness improvements and template alignment validation
   - v2.11.0: Added Principle XVI - Presentation/Functionality Decoupling
   - v2.10.0: Added Principle XV - DRY Code & Configuration
   - v2.9.0: Strengthened Principle IX "Pre-existing is not an excuse"
@@ -21,10 +25,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.11.1)
+# BibGraph Constitution (v2.12.0)
 
 ## Version History
 
+- **v2.12.0** (2025-12-02): Added Principle XVII - No Magic Numbers/Values
 - **v2.11.1** (2025-11-30): README conciseness improvements and template alignment validation
 - **v2.11.0** (2025-11-29): Added Principle XVI - Presentation/Functionality Decoupling
 - **v2.10.0**: Added Principle XV - DRY Code & Configuration
@@ -243,6 +248,66 @@ This PhD research project requires maintainable, reliable code for academic repr
 
 **Rationale**: Ensures testability, reusability, maintainability of both presentation and functionality layers.
 
+### XVII. No Magic Numbers/Values (NON-NEGOTIABLE)
+
+**NEVER use unexplained literal values in code**. All meaningful numbers, strings, and configuration values MUST be named constants.
+
+**Definition**: A "magic value" is any literal (number, string, boolean) whose meaning is not immediately obvious from context.
+
+**Requirements**:
+- Extract all non-trivial literals to named constants with descriptive names
+- Constants MUST be defined at appropriate scope (file-level, module-level, or shared config)
+- Names MUST explain the value's purpose, not just its type (e.g., `MAX_RETRY_ATTEMPTS` not `THREE`)
+- Related constants SHOULD be grouped in configuration objects or enums
+
+**Acceptable literals** (do NOT require constants):
+- Array indices 0 and 1 when semantically clear
+- Mathematical identities: 0, 1, -1 in arithmetic contexts
+- Boolean literals `true`/`false`
+- Empty string `""` for initialization
+- Common string literals like `"id"`, `"name"` in object access where context is clear
+
+**Prohibited patterns**:
+```typescript
+// ❌ WRONG: Magic numbers
+if (retries > 3) { ... }
+const delay = 5000;
+const pageSize = 25;
+
+// ❌ WRONG: Magic strings
+if (status === "pending") { ... }
+const endpoint = "/api/v2/users";
+```
+
+**Required patterns**:
+```typescript
+// ✅ CORRECT: Named constants
+const MAX_RETRY_ATTEMPTS = 3;
+const DEFAULT_DELAY_MS = 5000;
+const DEFAULT_PAGE_SIZE = 25;
+
+if (retries > MAX_RETRY_ATTEMPTS) { ... }
+const delay = DEFAULT_DELAY_MS;
+
+// ✅ CORRECT: Enum for related values
+enum Status {
+  Pending = "pending",
+  Active = "active",
+  Complete = "complete"
+}
+
+// ✅ CORRECT: Configuration objects
+const API_CONFIG = {
+  BASE_URL: "/api/v2",
+  ENDPOINTS: {
+    USERS: "/users",
+    WORKS: "/works"
+  }
+} as const;
+```
+
+**Rationale**: Named constants improve code readability, enable single-point-of-change for values used in multiple places, make code self-documenting, and reduce bugs from typos or inconsistent values.
+
 ## Consolidated Patterns
 
 ### Import Patterns
@@ -274,6 +339,27 @@ function WorkCard({ work }: Props) {
   };
   return <Card onClick={handleBookmark}>...</Card>;
 }
+```
+
+### Constants and Configuration
+```typescript
+// ✅ CORRECT: Named constants for configuration
+const CACHE_CONFIG = {
+  MAX_AGE_MS: 5 * 60 * 1000, // 5 minutes
+  MAX_ENTRIES: 1000,
+  STALE_WHILE_REVALIDATE_MS: 30 * 1000
+} as const;
+
+// ✅ CORRECT: Enums for related string values
+enum EntityType {
+  Work = "work",
+  Author = "author",
+  Institution = "institution"
+}
+
+// ❌ WRONG: Inline magic values
+const maxAge = 300000;
+if (type === "work") { ... }
 ```
 
 ### Package Structure
@@ -315,6 +401,12 @@ find . -name "debug-*.png" -o -name "*-FIX-*.md" -o -name "COMPLETE-*.md" | grep
 grep -rh "export function" packages/ | sort | uniq -c | sort -rn | head -10
 ```
 
+### Magic Number Detection
+```bash
+# Check for potential magic numbers (review output manually)
+grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.tsx" packages/ apps/ | grep -v "\.test\." | head -20
+```
+
 ## Principle Relationships
 
 ### Foundational Principles
@@ -331,6 +423,7 @@ grep -rh "export function" packages/ | sort | uniq -c | sort -rn | head -10
 - **Working Files Hygiene (XIV)** → Atomic Commits (VI) → Repository Integrity (IX)
 - **DRY Code (XV)** → Monorepo Architecture (III) → Build Output Isolation (XIII)
 - **Presentation/Functionality Decoupling (XVI)** → Test-First Development (II) → DRY Code (XV)
+- **No Magic Numbers (XVII)** → DRY Code (XV) → Type Safety (I)
 
 ## Development Workflow
 
@@ -376,7 +469,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 16 core principles. Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 17 core principles. Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider
@@ -410,6 +503,7 @@ Every PR MUST verify alignment with all 16 core principles. Feature specs MUST d
 - **Working Files Hygiene**: No debug screenshots, fix documents, or temporary analysis files in commits
 - **DRY Code & Configuration**: No duplicate logic, shared base configurations, proactive cruft cleanup
 - **Presentation/Functionality Decoupling**: No business logic in components, clear container/presentational separation
+- **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized
 
 ### Breaking Changes
 MAJOR.MINOR.PATCH versioning applies. During development, breaking changes acceptable without MAJOR bumps but MUST be documented.

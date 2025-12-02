@@ -177,6 +177,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Working files cleaned up before commit (Working Files Hygiene)
   - [ ] No duplicate logic; shared code extracted; configuration extends base; cruft cleaned (DRY Code & Configuration)
   - [ ] Web app components separate presentation from logic; business logic in hooks/services (Presentation/Functionality Decoupling)
+  - [ ] All meaningful literals extracted to named constants; no magic numbers/strings (No Magic Numbers/Values)
 
 ---
 
