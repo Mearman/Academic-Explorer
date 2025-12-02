@@ -596,7 +596,11 @@ export class OpenAlexBaseClient {
     throw await this.parseError(response);
   }
 
-  private async handleResponseInterception({
+  /**
+   * Handle response interception for caching and logging
+   * Protected to allow subclasses to extend caching behavior
+   */
+  protected async handleResponseInterception({
     interceptedRequest,
     response,
     responseTime,
@@ -631,6 +635,12 @@ export class OpenAlexBaseClient {
           responseData,
           responseTime,
         );
+
+        // Call hook for entity caching (can be overridden by subclasses)
+        await this.cacheResponseEntities({
+          url: interceptedRequest.url,
+          responseData,
+        });
 
         const diskCacheEnabled =
           globalThis.process?.env?.BIBGRAPH_DISK_CACHE_ENABLED !==
@@ -669,6 +679,18 @@ export class OpenAlexBaseClient {
         });
       }
     }
+  }
+
+  /**
+   * Hook for caching entities from response data
+   * Override in subclasses to implement entity-level caching (e.g., IndexedDB, memory)
+   * Called for all successful API responses with parsed JSON data
+   */
+  protected async cacheResponseEntities(_params: {
+    url: string;
+    responseData: unknown;
+  }): Promise<void> {
+    // Base implementation does nothing - override in subclasses
   }
 
   private async makeRequest({
