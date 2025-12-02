@@ -51,15 +51,8 @@ import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
+import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';
-
-/**
- * Minimal graph methods interface for fit-to-view controls
- */
-interface GraphMethods {
-  zoomToFit(duration?: number, padding?: number): void;
-  centerAt?(x: number, y: number, duration?: number): void;
-}
 
 /**
  * Entity Graph Page Component
@@ -118,6 +111,13 @@ function EntityGraphPage() {
   // Graph methods ref for external control (zoomToFit, etc.)
   const graphMethodsRef = useRef<GraphMethods | null>(null);
 
+  // Fit-to-view operations (shared logic for 2D/3D)
+  const { fitToViewAll, fitToViewSelected } = useFitToView({
+    graphMethodsRef,
+    viewMode,
+    highlightedNodes,
+  });
+
   // Handler for when graph methods become available
   const handleGraphReady = useCallback(
     (methods: GraphMethods) => {
@@ -145,28 +145,6 @@ function EntityGraphPage() {
     },
     [handleNodeClick, isExpanded, isExpanding, expandNode, refresh]
   );
-
-  // Fit all nodes to view
-  const fitToViewAll = useCallback(() => {
-    const graph = graphMethodsRef.current;
-    if (!graph?.zoomToFit) return;
-    graph.zoomToFit(400, 50);
-  }, []);
-
-  // Fit selected nodes to view (or all if none selected)
-  const fitToViewSelected = useCallback(() => {
-    const graph = graphMethodsRef.current;
-    if (!graph?.zoomToFit) return;
-
-    if (highlightedNodes.size === 0) {
-      fitToViewAll();
-      return;
-    }
-
-    // For selected nodes, use the same zoomToFit
-    // The graph component will handle focusing on highlighted nodes
-    graph.zoomToFit(400, 50);
-  }, [highlightedNodes.size, fitToViewAll]);
 
   // Node type counts for stats
   const nodeTypeCounts = useMemo(() => {
