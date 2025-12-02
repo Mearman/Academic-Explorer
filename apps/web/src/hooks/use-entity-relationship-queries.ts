@@ -506,6 +506,109 @@ async function executeRelationshipQuery(
     };
   }
 
+  // Handle embedded data with resolution (IDs only, need to fetch display names)
+  if (config.source === 'embedded-with-resolution') {
+    // Fetch the entity data to extract IDs from
+    let entityData: Record<string, unknown>;
+
+    switch (entityType) {
+      case 'institutions': {
+        const response = await getInstitutions({
+          filters: { id: entityId },
+          per_page: 1,
+          page: 1,
+        });
+        if (response.results.length === 0) {
+          throw new Error(`Entity not found: ${entityId}`);
+        }
+        entityData = response.results[0] as Record<string, unknown>;
+        break;
+      }
+      // Add other entity types as needed
+      default:
+        throw new Error(`Unsupported entity type for embedded-with-resolution: ${entityType}`);
+    }
+
+    // Extract IDs that need resolution
+    const itemsNeedingResolution = config.extractIds(entityData);
+
+    if (itemsNeedingResolution.length === 0) {
+      return {
+        results: [],
+        totalCount: 0,
+        page: 1,
+        perPage: 0,
+      };
+    }
+
+    // Batch-fetch entities to resolve display names
+    // Use OR syntax for efficient batch query (up to 100 IDs per request)
+    const idsToFetch = itemsNeedingResolution.map((item) => item.id);
+    const idFilter = idsToFetch.join('|');
+
+    let resolvedEntities: Array<Record<string, unknown>> = [];
+
+    switch (config.targetType) {
+      case 'institutions': {
+        const response = await getInstitutions({
+          filters: { id: idFilter },
+          per_page: Math.min(idsToFetch.length, 100),
+          page: 1,
+          ...(config.resolutionSelect && { select: config.resolutionSelect }),
+        });
+        resolvedEntities = response.results as Array<Record<string, unknown>>;
+        break;
+      }
+      case 'works': {
+        const response = await getWorks({
+          filter: `id:${idFilter}`,
+          per_page: Math.min(idsToFetch.length, 100),
+          page: 1,
+          ...(config.resolutionSelect && { select: config.resolutionSelect }),
+        });
+        resolvedEntities = response.results as Array<Record<string, unknown>>;
+        break;
+      }
+      case 'authors': {
+        const response = await getAuthors({
+          filter: `id:${idFilter}`,
+          per_page: Math.min(idsToFetch.length, 100),
+          page: 1,
+          ...(config.resolutionSelect && { select: config.resolutionSelect }),
+        });
+        resolvedEntities = response.results as Array<Record<string, unknown>>;
+        break;
+      }
+      default:
+        throw new Error(`Unsupported target type for resolution: ${config.targetType}`);
+    }
+
+    // Create a map of ID -> resolved entity for efficient lookup
+    const resolvedMap = new Map<string, Record<string, unknown>>();
+    for (const entity of resolvedEntities) {
+      const id = entity.id as string;
+      resolvedMap.set(id, entity);
+    }
+
+    // Merge extracted metadata with resolved display names
+    const results = itemsNeedingResolution.map((item) => {
+      const resolved = resolvedMap.get(item.id);
+      return {
+        id: item.id,
+        display_name: resolved?.display_name ?? item.id, // Fallback to ID if resolution failed
+        ...resolved, // Include all resolved fields
+        ...item.metadata, // Override with extracted metadata
+      };
+    });
+
+    return {
+      results,
+      totalCount: results.length,
+      page: 1,
+      perPage: results.length,
+    };
+  }
+
   throw new Error('Invalid relationship query configuration: missing source property');
 }
 
