@@ -85,6 +85,13 @@ export interface GraphNodeRecord {
    * @example { cited_by_count: 1247, publication_year: 2018 }
    */
   metadata?: Record<string, unknown>;
+
+  /**
+   * Unix timestamp (ms) when node's relationships were fully expanded.
+   * Undefined means relationships haven't been discovered yet.
+   * Used to determine if click-to-expand should fetch new relationships.
+   */
+  expandedAt?: number;
 }
 
 // ============================================================================

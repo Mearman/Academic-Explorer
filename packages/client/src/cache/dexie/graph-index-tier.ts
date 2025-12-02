@@ -220,6 +220,37 @@ export class GraphIndexTier {
   }
 
   /**
+   * Mark a node as expanded (relationships have been fetched)
+   */
+  async markNodeExpanded(id: string): Promise<void> {
+    if (!(await this.ensureInitialized())) {
+      return;
+    }
+
+    const db = getGraphIndexDB();
+    if (!db) {
+      return;
+    }
+
+    try {
+      const existing = await db.nodes.get(id);
+      if (!existing) {
+        logger.warn(LOG_PREFIX, 'Cannot mark as expanded: node not found', { id });
+        return;
+      }
+
+      await db.nodes.update(id, {
+        expandedAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+
+      logger.debug(LOG_PREFIX, 'Node marked as expanded', { id });
+    } catch (error) {
+      logger.warn(LOG_PREFIX, 'Error marking node as expanded', { id, error });
+    }
+  }
+
+  /**
    * Get all nodes
    */
   async getAllNodes(): Promise<GraphNodeRecord[]> {

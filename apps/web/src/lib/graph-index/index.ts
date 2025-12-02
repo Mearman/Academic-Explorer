@@ -12,3 +12,9 @@ export {
   type UsePersistentGraphResult,
   type HydrationStatus,
 } from './use-persistent-graph';
+
+export {
+  useNodeExpansion,
+  type UseNodeExpansionResult,
+  type NodeExpansionState,
+} from './use-node-expansion';

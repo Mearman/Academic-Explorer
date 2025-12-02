@@ -279,6 +279,35 @@ export class PersistentGraph {
   }
 
   /**
+   * Mark a node as expanded (relationships have been fetched)
+   */
+  async markNodeExpanded(id: string): Promise<void> {
+    await this.ensureHydrated();
+
+    const existing = this.nodeCache.get(id);
+    if (!existing) {
+      return;
+    }
+
+    // Already expanded
+    if (existing.expandedAt !== undefined) {
+      return;
+    }
+
+    // Write to IndexedDB first
+    await this.tier.markNodeExpanded(id);
+
+    // Update in-memory cache
+    const updated: GraphNodeRecord = {
+      ...existing,
+      expandedAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    this.nodeCache.set(id, updated);
+  }
+
+  /**
    * Get node count (synchronous - from memory)
    */
   getNodeCount(): number {

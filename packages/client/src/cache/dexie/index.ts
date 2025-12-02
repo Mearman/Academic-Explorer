@@ -4,6 +4,7 @@
 
 export * from "./dexie-cache-tier";
 export * from "./entity-cache-db";
+export * from "./graph-expansion";
 export * from "./graph-extraction";
 export * from "./graph-index-db";
 export * from "./graph-index-tier";

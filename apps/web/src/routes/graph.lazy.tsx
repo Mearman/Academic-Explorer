@@ -38,6 +38,7 @@ import {
   IconAlertTriangle,
   IconFocusCentered,
   IconFocus2,
+  IconLoader,
 } from '@tabler/icons-react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import React, { useMemo, useCallback, useRef } from 'react';
@@ -50,6 +51,7 @@ import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
+import { useNodeExpansion } from '@/lib/graph-index';
 
 /**
  * Minimal graph methods interface for fit-to-view controls
@@ -79,6 +81,14 @@ function EntityGraphPage() {
     disableAll,
     refresh,
   } = useMultiSourceGraph();
+
+  // Node expansion for click-to-expand
+  const {
+    expandNode,
+    isExpanding,
+    isExpanded,
+    expandingNodeIds,
+  } = useNodeExpansion();
 
   // Visualization state management
   const {
@@ -114,6 +124,26 @@ function EntityGraphPage() {
       graphMethodsRef.current = methods;
     },
     []
+  );
+
+  // Wrapped node click handler - handles visualization + expansion
+  const handleNodeClickWithExpansion = useCallback(
+    (node: Parameters<typeof handleNodeClick>[0]) => {
+      // First, handle the visualization click (path selection, highlighting)
+      handleNodeClick(node);
+
+      // Then trigger expansion if not already expanded
+      // This runs asynchronously - doesn't block the UI
+      if (!isExpanded(node.id) && !isExpanding(node.id)) {
+        void expandNode(node.id).then((result) => {
+          // If expansion added new nodes/edges, refresh to show them
+          if (result.success && (result.nodesAdded > 0 || result.edgesAdded > 0)) {
+            void refresh();
+          }
+        });
+      }
+    },
+    [handleNodeClick, isExpanded, isExpanding, expandNode, refresh]
   );
 
   // Fit all nodes to view
@@ -365,6 +395,18 @@ function EntityGraphPage() {
                       Clear Selection ({highlightedNodes.size})
                     </Button>
                   )}
+
+                  {/* Expanding indicator */}
+                  {expandingNodeIds.length > 0 && (
+                    <Badge
+                      variant="light"
+                      color="blue"
+                      size="sm"
+                      leftSection={<IconLoader size={12} className="animate-spin" />}
+                    >
+                      Expanding {expandingNodeIds.length} node{expandingNodeIds.length !== 1 ? 's' : ''}...
+                    </Badge>
+                  )}
                 </Group>
               </Group>
 
@@ -388,7 +430,7 @@ function EntityGraphPage() {
                     communityColors={communityColors}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
-                    onNodeClick={handleNodeClick}
+                    onNodeClick={handleNodeClickWithExpansion}
                     onBackgroundClick={handleBackgroundClick}
                     onGraphReady={handleGraphReady}
                   />
@@ -402,7 +444,7 @@ function EntityGraphPage() {
                     communityColors={communityColors}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
-                    onNodeClick={handleNodeClick}
+                    onNodeClick={handleNodeClickWithExpansion}
                     onBackgroundClick={handleBackgroundClick}
                     onGraphReady={handleGraphReady}
                   />
