@@ -1,17 +1,18 @@
 /**
- * useRepositoryGraph - Hook for loading repository graph data
+ * useRepositoryGraph - Hook for loading bookmarked entities as graph data
  *
- * Bridges the repository store to graph visualization components.
- * Converts Record<string, T> to T[] and provides loading/empty states.
+ * Bridges the catalogue storage (bookmarks) to graph visualization components.
+ * Converts CatalogueEntity[] to GraphNode[] for visualization.
  *
  * @module hooks/use-repository-graph
  */
 
 import type { GraphNode, GraphEdge } from '@bibgraph/types';
-import { logger } from '@bibgraph/utils/logger';
+import { catalogueEventEmitter, logger } from '@bibgraph/utils';
+import type { CatalogueEntity } from '@bibgraph/utils';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import { repositoryStore } from '@/stores/repository-store';
+import { useStorageProvider } from '@/contexts/storage-provider-context';
 
 /**
  * Return type of the useRepositoryGraph hook
@@ -39,16 +40,32 @@ export interface UseRepositoryGraphResult {
   refresh: () => Promise<void>;
 }
 
-/** Polling interval in milliseconds (1 second as per contract) */
-const POLL_INTERVAL_MS = 1000;
+/**
+ * Convert a CatalogueEntity (bookmark) to a GraphNode for visualization
+ */
+function catalogueEntityToGraphNode(entity: CatalogueEntity): GraphNode {
+  return {
+    id: entity.entityId,
+    entityType: entity.entityType,
+    entityId: entity.entityId,
+    label: entity.entityId, // Use entityId as label (title not stored in CatalogueEntity)
+    x: Math.random() * 800 - 400, // Random initial position
+    y: Math.random() * 600 - 300,
+    externalIds: [],
+    entityData: {
+      notes: entity.notes,
+      addedAt: entity.addedAt,
+    },
+  };
+}
 
 /**
- * Hook that bridges repository store to graph visualization.
+ * Hook that bridges bookmarks to graph visualization.
  *
  * Behavior:
- * - Loads repository state on mount
- * - Polls for changes every 1 second (updates if changed)
- * - Cleans up polling interval on unmount
+ * - Loads bookmarked entities on mount
+ * - Subscribes to catalogue events for reactive updates
+ * - Converts CatalogueEntity to GraphNode format
  * - Handles errors gracefully without crashing
  *
  * @example
@@ -65,80 +82,87 @@ const POLL_INTERVAL_MS = 1000;
  * ```
  */
 export function useRepositoryGraph(): UseRepositoryGraphResult {
+  const storage = useStorageProvider();
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
   // Refs for tracking previous state (to detect changes)
   const prevNodeCountRef = useRef<number>(0);
-  const prevEdgeCountRef = useRef<number>(0);
 
   /**
-   * Load data from repository store
+   * Load bookmarks and convert to graph nodes
    */
   const loadData = useCallback(async () => {
     try {
-      const state = await repositoryStore.getRepositoryState();
+      // Initialize special lists if not already done
+      if (!initialized) {
+        await storage.initializeSpecialLists();
+        setInitialized(true);
+      }
 
-      // Convert Record<string, T> to T[]
-      const nodeArray = Object.values(state.repositoryNodes);
-      const edgeArray = Object.values(state.repositoryEdges);
+      const bookmarks = await storage.getBookmarks();
 
       // Only update state if data actually changed
-      if (
-        nodeArray.length !== prevNodeCountRef.current ||
-        edgeArray.length !== prevEdgeCountRef.current
-      ) {
+      if (bookmarks.length !== prevNodeCountRef.current) {
+        const nodeArray = bookmarks.map(catalogueEntityToGraphNode);
         setNodes(nodeArray);
-        setEdges(edgeArray);
+        setEdges([]); // Bookmarks don't have edges
         setLastUpdated(new Date());
 
-        prevNodeCountRef.current = nodeArray.length;
-        prevEdgeCountRef.current = edgeArray.length;
+        prevNodeCountRef.current = bookmarks.length;
 
-        logger.debug('repository-graph', 'Repository data updated', {
+        logger.debug('repository-graph', 'Bookmarks loaded as graph nodes', {
           nodeCount: nodeArray.length,
-          edgeCount: edgeArray.length,
         });
       }
 
       setError(null);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to load repository data');
-      setError(error);
-      logger.error('repository-graph', 'Failed to load repository data', { error: err });
+      const loadError = err instanceof Error ? err : new Error('Failed to load bookmarks');
+      setError(loadError);
+      logger.error('repository-graph', 'Failed to load bookmarks', { error: err });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [storage, initialized]);
 
   /**
    * Force refresh - exposed for manual refresh triggers
    */
   const refresh = useCallback(async () => {
     setLoading(true);
-    // Reset previous counts to force update
+    // Reset previous count to force update
     prevNodeCountRef.current = -1;
-    prevEdgeCountRef.current = -1;
     await loadData();
   }, [loadData]);
 
-  // Initial load and polling setup
+  // Initial load
   useEffect(() => {
-    // Initial load
     void loadData();
+  }, [loadData]);
 
-    // Set up polling interval
-    const pollInterval = setInterval(() => {
-      void loadData();
-    }, POLL_INTERVAL_MS);
+  // Subscribe to catalogue events for reactive updates
+  useEffect(() => {
+    const unsubscribe = catalogueEventEmitter.subscribe((event) => {
+      // Refresh on bookmark-related events
+      const isBookmarksEvent =
+        event.listId === 'bookmarks-list' ||
+        event.type === 'entity-added' ||
+        event.type === 'entity-removed';
 
-    // Cleanup on unmount
-    return () => {
-      clearInterval(pollInterval);
-    };
+      if (isBookmarksEvent) {
+        logger.debug('repository-graph', 'Catalogue event detected, refreshing', {
+          eventType: event.type,
+        });
+        void loadData();
+      }
+    });
+
+    return unsubscribe;
   }, [loadData]);
 
   // Compute isEmpty from current state

@@ -172,7 +172,7 @@ function EntityGraphPage() {
     );
   }
 
-  // Empty state - guide user to add entities
+  // Empty state - guide user to bookmark entities
   if (isEmpty) {
     return (
       <Container size="xl" py="md">
@@ -182,10 +182,10 @@ function EntityGraphPage() {
             <Title order={2}>Entity Graph</Title>
           </Group>
 
-          <Alert icon={<IconInfoCircle size={16} />} title="No Entities in Repository" color="blue">
+          <Alert icon={<IconInfoCircle size={16} />} title="No Bookmarked Entities" color="blue">
             <Stack gap="md">
               <Text>
-                Your repository is empty. Add entities to visualize them as a graph.
+                You have no bookmarked entities. Bookmark entities to visualize them as a graph.
               </Text>
               <Group>
                 <Button component={Link} to="/browse" variant="light">
@@ -194,8 +194,8 @@ function EntityGraphPage() {
                 <Button component={Link} to="/search" variant="light">
                   Search OpenAlex
                 </Button>
-                <Button component={Link} to="/catalogue" variant="light">
-                  Manage Catalogue
+                <Button component={Link} to="/bookmarks" variant="light">
+                  View Bookmarks
                 </Button>
               </Group>
             </Stack>
