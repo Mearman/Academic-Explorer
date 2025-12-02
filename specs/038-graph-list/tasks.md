@@ -77,10 +77,10 @@
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 > **NAMING**: Tests MUST follow pattern `foo.[type].test.ts[x]` where type = unit/integration/component/e2e
 
-- [ ] T025 [P] [US1] Unit test for getGraphList() in packages/utils/src/storage/dexie-storage-provider.unit.test.ts
-- [ ] T026 [P] [US1] Unit test for addToGraphList() in packages/utils/src/storage/dexie-storage-provider.unit.test.ts
-- [ ] T027 [P] [US1] Unit test for persistence across sessions in packages/utils/src/storage/dexie-storage-provider.integration.test.ts
-- [ ] T028 [P] [US1] Unit test for InMemoryStorageProvider graph list methods in packages/utils/src/storage/in-memory-storage-provider.unit.test.ts
+- [X] T025 [P] [US1] Unit test for getGraphList() in packages/utils/src/storage/dexie-storage-provider.unit.test.ts
+- [X] T026 [P] [US1] Unit test for addToGraphList() in packages/utils/src/storage/dexie-storage-provider.unit.test.ts
+- [X] T027 [P] [US1] Unit test for persistence across sessions in packages/utils/src/storage/dexie-storage-provider.integration.test.ts
+- [X] T028 [P] [US1] Unit test for InMemoryStorageProvider graph list methods in packages/utils/src/storage/in-memory-storage-provider.unit.test.ts
 
 ### Implementation for User Story 1
 
@@ -88,8 +88,8 @@
 - [ ] T030 [US1] Implement optimistic updates for addNode in apps/web/src/hooks/use-graph-list.ts
 - [ ] T031 [US1] Implement node refresh/sync from storage in apps/web/src/hooks/use-graph-list.ts
 - [ ] T032 [US1] Update graph data loading to union graph list with collections in apps/web/src/hooks/use-graph-data.ts
-- [ ] T033 [US1] Add provenance serialization/deserialization logic in packages/utils/src/storage/dexie-storage-provider.ts
-- [ ] T034 [US1] Implement deduplication by entityId in storage provider methods in packages/utils/src/storage/dexie-storage-provider.ts
+- [X] T033 [US1] Add provenance serialization/deserialization logic in packages/utils/src/storage/dexie-storage-provider.ts (COMPLETED IN PHASE 2)
+- [X] T034 [US1] Implement deduplication by entityId in storage provider methods in packages/utils/src/storage/dexie-storage-provider.ts (COMPLETED IN PHASE 2)
 
 **Checkpoint**: At this point, nodes can be added to graph list and persist across browser sessions
 
