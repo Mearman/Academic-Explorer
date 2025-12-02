@@ -2,7 +2,8 @@
 
 **Feature**: 029-literature-review
 **Date**: 2025-11-30
-**Updated**: 2025-12-02 (Terminology refinement)
+**Updated**: 2025-12-02 (Terminology refinement, Graph Index alignment)
+**Related**: [034-persistent-graph-index](../034-persistent-graph-index/data-model.md) - Graph storage for entity relationships
 
 ---
 
@@ -103,14 +104,19 @@ Lists use a **forest model** (multiple roots) with **virtual grouping by origin*
 
 All relationships are **edges** between entities. Lists are first-class entities, so list relationships follow the same pattern as any other entity relationship.
 
+**Integration with Graph Index**: List edges are stored in the persistent graph index (see [spec 034](../034-persistent-graph-index/data-model.md)) alongside OpenAlex entity relationships. This enables unified graph queries across both discovered OpenAlex relationships and user-created list memberships.
+
 ```mermaid
 erDiagram
     Entity ||--o{ Edge : "source"
     Entity ||--o{ Edge : "target"
     Edge {
+        string id
         string source
         string target
-        string relationship
+        string type
+        string direction
+        number discoveredAt
         json metadata
     }
     List ||--o| ReviewWorkflow : "has"
@@ -120,64 +126,129 @@ erDiagram
 
 ### Edge Model
 
+The edge model aligns with `GraphEdgeRecord` from spec 034 to enable unified graph queries.
+
 ```typescript
+import type { RelationType, EdgeDirection } from '@bibgraph/types';
+
 /**
  * All relationships between entities are edges.
- * This includes list containment, list-to-parent associations, and citations.
+ * This aligns with GraphEdgeRecord from spec 034 (persistent-graph-index).
+ *
+ * List-specific relationship types are added to the RelationType union.
  */
 interface Edge {
-  source: string                      // Source entity ID
-  target: string                      // Target entity ID
-  relationship: EdgeRelationship      // Relationship type
-  metadata?: Record<string, unknown>  // Optional edge metadata
+  /**
+   * Unique edge identifier.
+   * Format: `${source}-${target}-${type}` (e.g., "L123-W456-CONTAINS")
+   */
+  id: string;
+
+  /** Source entity ID (OpenAlex ID or List ID) */
+  source: string;
+
+  /** Target entity ID (OpenAlex ID or List ID) */
+  target: string;
+
+  /** Relationship type (extends RelationType from spec 034) */
+  type: RelationType | ListRelationType;
+
+  /**
+   * Direction indicator based on data ownership.
+   * - 'outbound': Source entity contains the relationship data
+   * - 'inbound': Target entity contains the relationship data
+   */
+  direction: EdgeDirection;
+
+  /** Unix timestamp (ms) when edge was discovered/created */
+  discoveredAt: number;
+
+  /** Optional edge metadata (for list-specific properties) */
+  metadata?: Record<string, unknown>;
 }
 
-type EdgeRelationship =
-  | "contains"      // List contains entity (including nested lists)
-  | "belongs_to"    // List is associated with entity (any type)
-  | "cites"         // Work cites another work
-  | "authored_by"   // Work authored by author
-  | "affiliated"    // Author affiliated with institution
-  // ... extensible for other relationship types
+/**
+ * List-specific relationship types (extends RelationType from spec 034)
+ */
+type ListRelationType =
+  | "CONTAINS"      // List contains entity (including nested lists)
+  | "BELONGS_TO"    // List is associated with parent entity
+
+/**
+ * Extended RelationType union including list relationships
+ */
+type ExtendedRelationType = RelationType | ListRelationType;
 ```
 
 ### Edge Examples
 
-| Source | Relationship | Target | Meaning |
-|--------|--------------|--------|---------|
-| L1 | `contains` | W1 | List L1 contains work W1 |
-| L1 | `contains` | W2 | List L1 contains work W2 |
-| L1 | `contains` | L2 | List L1 contains list L2 (nesting) |
-| L1 | `belongs_to` | A123 | List L1 is associated with author A123 |
-| L1 | `belongs_to` | W789 | List L1 is bibliography of work W789 |
-| W1 | `cites` | W2 | Work W1 cites work W2 |
+| Source | Type | Target | Direction | Meaning |
+|--------|------|--------|-----------|---------|
+| L1 | `CONTAINS` | W1 | outbound | List L1 contains work W1 |
+| L1 | `CONTAINS` | W2 | outbound | List L1 contains work W2 |
+| L1 | `CONTAINS` | L2 | outbound | List L1 contains list L2 (nesting) |
+| L1 | `BELONGS_TO` | A123 | outbound | List L1 is associated with author A123 |
+| L1 | `BELONGS_TO` | W789 | outbound | List L1 is bibliography of work W789 |
+| W1 | `REFERENCE` | W2 | outbound | Work W1 cites work W2 (from spec 034) |
+| W1 | `AUTHORSHIP` | A1 | outbound | Work W1 has author A1 (from spec 034) |
 
 ### Edge Metadata
 
-Edges can carry metadata for additional context:
+Edges can carry metadata for additional context. List edges use the same `metadata` field as OpenAlex edges (spec 034), enabling unified graph queries.
 
 ```typescript
 // List entry with PRISMA screening status
-{
+const containsEdge: Edge = {
+  id: "L1-W1-CONTAINS",
   source: "L1",
   target: "W1",
-  relationship: "contains",
+  type: "CONTAINS",
+  direction: "outbound",
+  discoveredAt: 1701500000000,
   metadata: {
     prismaStage: "included",
-    addedAt: 1701500000000,
     notes: "Key methodology paper"
   }
-}
+};
 
 // List association with label
-{
+const belongsToEdge: Edge = {
+  id: "L1-W789-BELONGS_TO",
   source: "L1",
   target: "W789",
-  relationship: "belongs_to",
+  type: "BELONGS_TO",
+  direction: "outbound",
+  discoveredAt: 1701500000000,
   metadata: {
     label: "bibliography"  // Human-readable relationship label
   }
-}
+};
+```
+
+### Graph Index Integration
+
+List edges are stored in the persistent graph index (spec 034) alongside OpenAlex entity relationships. This provides:
+
+1. **Unified Queries**: Query all relationships (OpenAlex + lists) through single graph API
+2. **Traversal**: Navigate from works to containing lists and vice versa
+3. **Persistence**: List memberships survive page refreshes
+4. **Performance**: In-memory graph enables fast neighbor lookups
+
+```typescript
+// Query: Find all lists containing a specific work
+const containingLists = await graphIndex.edges
+  .where('target').equals('W2741809807')
+  .and(edge => edge.type === 'CONTAINS')
+  .toArray();
+
+// Query: Find all works in a list with PRISMA stage = "included"
+const includedWorks = await graphIndex.edges
+  .where('source').equals('L123')
+  .and(edge =>
+    edge.type === 'CONTAINS' &&
+    edge.metadata?.prismaStage === 'included'
+  )
+  .toArray();
 ```
 
 ---
@@ -221,9 +292,9 @@ interface List {
   updatedAt: number   // Unix epoch ms
 
   // Note: No parentEntity or entries fields
-  // All relationships expressed as edges:
-  //   - Contents: edges where source=this.id, relationship="contains"
-  //   - Parent: edges where source=this.id, relationship="belongs_to"
+  // All relationships expressed as edges (stored in graph index per spec 034):
+  //   - Contents: edges where source=this.id, type="CONTAINS"
+  //   - Parent: edges where source=this.id, type="BELONGS_TO"
 }
 
 /**
@@ -231,6 +302,7 @@ interface List {
  * Designed for URL-safe sharing while keeping URLs reasonably short
  *
  * This is a SERIALIZATION FORMAT for the edge-based model.
+ * When decoded, edges are expanded into the graph index (spec 034).
  * Short keys are used for compression efficiency.
  */
 interface EncodedListPayload {
@@ -521,12 +593,12 @@ const sampleBibliography: List = {
   updatedAt: 1718409600000
 }
 
-// Associated edges (conceptual model)
+// Associated edges (stored in graph index per spec 034)
 const edges: Edge[] = [
-  { source: sampleBibliography.id, target: "W3187234764", relationship: "belongs_to", metadata: { label: "bibliography" } },
-  { source: sampleBibliography.id, target: "W2741809807", relationship: "contains", metadata: { prismaStage: "included", qualityScore: 8 } },
-  { source: sampleBibliography.id, target: "W2760813866", relationship: "contains", metadata: { prismaStage: "included", qualityScore: 7 } },
-  { source: sampleBibliography.id, target: "W2893746512", relationship: "contains", metadata: { prismaStage: "excluded", reason: "wrong population" } },
+  { id: `${sampleBibliography.id}-W3187234764-BELONGS_TO`, source: sampleBibliography.id, target: "W3187234764", type: "BELONGS_TO", direction: "outbound", discoveredAt: 1718409600000, metadata: { label: "bibliography" } },
+  { id: `${sampleBibliography.id}-W2741809807-CONTAINS`, source: sampleBibliography.id, target: "W2741809807", type: "CONTAINS", direction: "outbound", discoveredAt: 1718409600000, metadata: { prismaStage: "included", qualityScore: 8 } },
+  { id: `${sampleBibliography.id}-W2760813866-CONTAINS`, source: sampleBibliography.id, target: "W2760813866", type: "CONTAINS", direction: "outbound", discoveredAt: 1718409600000, metadata: { prismaStage: "included", qualityScore: 7 } },
+  { id: `${sampleBibliography.id}-W2893746512-CONTAINS`, source: sampleBibliography.id, target: "W2893746512", type: "CONTAINS", direction: "outbound", discoveredAt: 1718409600000, metadata: { prismaStage: "excluded", reason: "wrong population" } },
 ]
 ```
 
@@ -974,10 +1046,11 @@ interface FileSystemSyncState {
 
 ### Storage Schema Updates
 
-1. **Extend Existing Tables**: Add new columns to existing lists table
-2. **Create New Tables**: ReviewWorkflow, themes, edges, sync configuration
-3. **Index Optimization**: Add indexes for edge queries (source, target, relationship)
-4. **Backward Compatibility**: Existing bookmarks/history lists remain functional
+1. **Graph Index Integration**: List edges stored in graph index (spec 034) - no separate edges table needed
+2. **Extend Existing Tables**: Add new columns to existing lists table
+3. **Create New Tables**: ReviewWorkflow, themes, sync configuration
+4. **Index Optimization**: Graph index provides edge indexes (source, target, type) per spec 034
+5. **Backward Compatibility**: Existing bookmarks/history lists remain functional
 
 ### Default Data Population
 
@@ -993,9 +1066,15 @@ interface FileSystemSyncState {
 This data model establishes:
 
 - **Lists** as the umbrella term with clear subtypes (Collection, Bibliography, Review)
-- **Edge-based relationships** for all containment and association
+- **Edge-based relationships** for all containment and association (aligned with spec 034)
+- **Graph Index Integration**: List edges stored in persistent graph index (spec 034) alongside OpenAlex relationships
 - **ReviewWorkflow** as an attachment to Bibliographies, not a separate entity type
 - **Flexible constraint system** (`any` vs `works-only`) for list content rules
 - **URL-shareable IDs** via pako compression with reconciliation support
+
+The model integrates with the persistent graph index (spec 034) to provide:
+- Unified graph queries across OpenAlex and list relationships
+- Fast traversal between works and containing lists
+- Persistent edge storage with consistent indexing
 
 The model maintains compatibility with existing BibGraph architecture while adding advanced literature review capabilities.

@@ -3,6 +3,7 @@
 **Feature Branch**: `029-literature-review`
 **Created**: 2025-11-30
 **Status**: Draft
+**Depends On**: [034-persistent-graph-index](../034-persistent-graph-index/spec.md) - Graph storage for entity relationships
 **Input**: User description: "Enhance BibGraph catalogue feature to support advanced literature review workflows including PRISMA systematic reviews, semantic analysis, citation export formats (BibTeX/RIS), custom entity support for non-OpenAlex works, and live file system synchronization using browser File System Access API"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -137,12 +138,13 @@ As a researcher, I need catalogues to be first-class entities that can have pare
 
 ### Key Entities
 
-- **CatalogueList**: First-class entity representing a collection of entities with optional parent entity relationship, supporting nested catalogues and mixed entity types
-- **LiteratureReview**: Represents a systematic review project with PRISMA stage tracking, research domain, methodology, and progress metrics
+- **List**: First-class entity representing a collection of entities with optional parent entity relationship, supporting nested lists and mixed entity types. List memberships are stored as edges in the persistent graph index (spec 034).
+- **ReviewWorkflow**: Represents a PRISMA workflow attached to a Bibliography. A Bibliography with a ReviewWorkflow is considered a "Review". Tracks stages, research domain, methodology, and progress metrics.
 - **ScreeningDecision**: Records inclusion/exclusion decisions with criteria, reasoning, reviewer information, and timestamps
 - **Theme**: Represents thematic analysis results with labels, keywords, relevance scores, and associated studies
 - **CustomEntity**: Extends standard entities with local file system integration, verification status, and extracted metadata
 - **SyncConfiguration**: Manages file system synchronization settings, conflict resolution preferences, and sync status
+- **Edge**: Relationship between entities (aligned with GraphEdgeRecord from spec 034). List edges use types `CONTAINS` and `BELONGS_TO`.
 
 ## Success Criteria *(mandatory)*
 
@@ -161,11 +163,11 @@ As a researcher, I need catalogues to be first-class entities that can have pare
 
 ## Constitution Alignment
 
-- **Type Safety**: Feature avoids `any` types; uses `unknown` with type guards where needed
+- **Type Safety**: Feature avoids `any` types; uses `unknown` with type guards where needed. Edge types align with GraphEdgeRecord from spec 034.
 - **Test-First**: User stories include testable acceptance scenarios; implementation will follow Red-Green-Refactor
-- **Monorepo Architecture**: Feature fits within existing apps/ and packages/ structure; packages MUST NOT re-export from other internal packages
-- **Storage Abstraction**: Uses storage provider interface; no direct Dexie/IndexedDB coupling
-- **Performance & Memory**: Success criteria include performance metrics; memory constraints considered
+- **Monorepo Architecture**: Feature fits within existing apps/ and packages/ structure; packages MUST NOT re-export from other internal packages. List edges integrate with graph index from spec 034.
+- **Storage Abstraction**: Uses storage provider interface; list edges stored in graph index (spec 034); no direct Dexie/IndexedDB coupling elsewhere
+- **Performance & Memory**: Success criteria include performance metrics; memory constraints considered. Graph index provides fast edge traversal.
 - **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages; spec files committed after each phase
 - **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development
 - **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes
@@ -175,5 +177,6 @@ As a researcher, I need catalogues to be first-class entities that can have pare
 - **Spec Index Maintenance**: specs/README.md will be updated when spec status changes; committed alongside spec changes
 - **Build Output Isolation**: TypeScript builds to dist/, never alongside source files
 - **Working Files Hygiene**: Debug files and temporary artifacts will be cleaned up before commit
-- **DRY Code & Configuration**: No duplicate logic; shared utilities extracted; configuration extends shared base; cruft cleaned proactively
+- **DRY Code & Configuration**: No duplicate logic; shared utilities extracted; configuration extends shared base; cruft cleaned proactively. Edge model reuses types from spec 034.
 - **Presentation/Functionality Decoupling**: Web app components separate presentation from business logic; logic in hooks/services, rendering in components; both layers independently testable
+- **Canonical Hash Computed Colours**: List and review UI elements use hash-computed colours from shared utilities
