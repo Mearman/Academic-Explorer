@@ -13,5 +13,6 @@ export * from "./LeftRibbon";
 export * from "./LeftSidebarDynamic";
 export * from "./MainLayout";
 export * from "./RightRibbon";
+export * from "./RightSidebarContent";
 export * from "./SidebarFallback";
 export * from "./ThemeDropdown";
