@@ -161,20 +161,7 @@ describe('RelationshipSection', () => {
     expect(hasIcon).toBe(false);
   });
 
-  it('should pass onLoadMore callback to RelationshipList', () => {
-    const section = createMockSection(RelationType.AUTHORSHIP, 100); // More than 50 items
-    const onLoadMore = vi.fn();
-
-    render(
-      <TestWrapper>
-        <RelationshipSection section={section} onLoadMore={onLoadMore} />
-      </TestWrapper>
-    );
-
-    // RelationshipList should have "Load more" button
-    const loadMoreButton = screen.queryByRole('button', { name: /load more/i });
-    expect(loadMoreButton).toBeInTheDocument();
-  });
+  // onLoadMore functionality removed - component now uses pagination via onPageChange
 
   describe('Partial Data Warning', () => {
     it('should not show warning when isPartialData is false', () => {

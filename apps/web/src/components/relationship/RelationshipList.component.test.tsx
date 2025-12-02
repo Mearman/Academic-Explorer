@@ -132,22 +132,7 @@ describe('RelationshipList', () => {
     expect(screen.getByText('Showing 100 of 150')).toBeInTheDocument();
   });
 
-  it('should call onLoadMore callback when "Load more" is clicked', async () => {
-    const section = createMockSection(150);
-    const onLoadMore = vi.fn();
-    const user = userEvent.setup();
-
-    render(
-      <TestWrapper>
-        <RelationshipList section={section} onLoadMore={onLoadMore} />
-      </TestWrapper>
-    );
-
-    const loadMoreButton = screen.getByRole('button', { name: /load more/i });
-    await user.click(loadMoreButton);
-
-    expect(onLoadMore).toHaveBeenCalledOnce();
-  });
+  // onLoadMore functionality removed - component now uses pagination via onPageChange
 
   it('should hide "Load more" button when all items are loaded', async () => {
     const section = createMockSection(75); // 75 items = 2 pages
