@@ -14,6 +14,8 @@ import {
 import { useLocation } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { serializeSearch } from "@/utils/url-decoding";
+
 const USER_INTERACTIONS_LOGGER_CONTEXT = "user-interactions";
 
 export interface UseUserInteractionsOptions {
@@ -241,7 +243,7 @@ export function useUserInteractions(
     if (autoTrackVisits && entityId && entityType) {
       const trackPageVisit = async () => {
         try {
-          const currentUrl = location.pathname + location.search;
+          const currentUrl = location.pathname + serializeSearch(location.search);
 
           await catalogueService.addToHistory({
             entityType: entityType as EntityType,
@@ -347,7 +349,7 @@ export function useUserInteractions(
       }
 
       try {
-        const currentUrl = location.pathname + location.search;
+        const currentUrl = location.pathname + serializeSearch(location.search);
 
         await catalogueService.addBookmark({
           entityType: entityType as EntityType,
@@ -433,7 +435,7 @@ export function useUserInteractions(
         await catalogueService.addBookmark({
           entityType: "works", // Use works as default for search bookmarks
           entityId: searchId,
-          url: `${location.pathname}${location.search}`,
+          url: `${location.pathname}${serializeSearch(location.search)}`,
           title,
           notes: `Search Query: ${searchQuery}\n${filters ? `Filters: ${JSON.stringify(filters, null, 2)}` : ''}${notes ? `\n\nNotes: ${notes}` : ''}${tags ? `\n\nTags: ${tags.join(', ')}` : ''}`,
         });

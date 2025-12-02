@@ -7,7 +7,7 @@ import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useMemo } from "react";
 
 import { useAppActivityStore } from "@/stores/app-activity-store";
-import { decodeEntityId } from "@/utils/url-decoding";
+import { decodeEntityId, serializeSearch } from "@/utils/url-decoding";
 
 // PostHog type for window object
 interface PostHogInstance {
@@ -63,7 +63,7 @@ export function NavigationTracker() {
   }, []);
 
   useEffect(() => {
-    const currentLocation = location.pathname + location.search + location.hash;
+    const currentLocation = location.pathname + serializeSearch(location.search) + location.hash;
 
     // Debounce heavy operations to prevent excessive calls
     const timeoutId = setTimeout(() => {

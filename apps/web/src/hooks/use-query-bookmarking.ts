@@ -7,6 +7,7 @@ import { logger } from "@bibgraph/utils/logger";
 import { useLocation, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
+import { serializeSearch } from "@/utils/url-decoding";
 import {
   extractQueryParameters,
   createQueryBookmarkRequest,
@@ -86,7 +87,7 @@ export function useQueryBookmarking({
   const userInteractions = useUserInteractions({
     entityId,
     entityType,
-    url: location.pathname + location.search,
+    url: location.pathname + serializeSearch(location.search),
     autoTrackVisits: !disabled
   });
 
