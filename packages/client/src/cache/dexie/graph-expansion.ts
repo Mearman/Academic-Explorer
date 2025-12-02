@@ -16,15 +16,18 @@
 import type { EntityType } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
 
-import { cachedOpenAlex } from '../../cached-client';
 import {
   getAuthorById,
+  getAuthors,
   getWorkById,
+  getWorks,
   getConceptById,
   getInstitutionById,
+  getInstitutions,
   getFunderById,
   getPublisherById,
   getSourceById,
+  getSources,
   getTopicById,
   getKeywordById,
 } from '../../helpers';
@@ -68,8 +71,14 @@ function isIdOnlyLabel(label: string): boolean {
 }
 
 /**
+ * Maximum number of IDs to include in a single batch query
+ * OpenAlex supports up to 100 IDs with OR syntax
+ */
+const BATCH_SIZE = 100;
+
+/**
  * Resolve display names for stub nodes that have ID-only labels
- * Uses cachedOpenAlex with minimal field selection for efficiency
+ * Uses batch OR syntax for efficiency (e.g., id:W1|W2|W3)
  *
  * @param stubs - Stub nodes to resolve labels for
  * @returns Map of entity ID to resolved display_name
@@ -86,38 +95,90 @@ async function resolveStubLabels(
     return labelMap;
   }
 
-  logger.debug(LOG_PREFIX, `Resolving labels for ${needsResolution.length} stub nodes`);
+  logger.debug(LOG_PREFIX, `Resolving labels for ${needsResolution.length} stub nodes using batch queries`);
 
-  // Fetch display names in parallel with minimal field selection
-  const results = await Promise.allSettled(
-    needsResolution.map(async (stub) => {
+  // Group stubs by entity type for batch queries
+  const stubsByType = new Map<EntityType, Array<{ id: string; label: string }>>();
+  for (const stub of needsResolution) {
+    const existing = stubsByType.get(stub.entityType) ?? [];
+    existing.push({ id: stub.id, label: stub.label });
+    stubsByType.set(stub.entityType, existing);
+  }
+
+  // Process each entity type with batch queries
+  for (const [entityType, typeStubs] of stubsByType) {
+    // Split into batches of BATCH_SIZE
+    for (let i = 0; i < typeStubs.length; i += BATCH_SIZE) {
+      const batch = typeStubs.slice(i, i + BATCH_SIZE);
+      const idFilter = batch.map((s) => s.id).join('|');
+      const selectFields = ['id', 'display_name', 'title'];
+
       try {
-        const result = await cachedOpenAlex.getById<{ id: string; display_name?: string; title?: string }>({
-          endpoint: stub.entityType,
-          id: stub.id,
-          params: {
-            select: ['id', 'display_name', 'title'],
-          },
-        });
+        // Use batch query with OR syntax - different helpers per entity type
+        let results: Array<{ id: string; display_name?: string; title?: string }> = [];
 
-        // Works use 'title', other entities use 'display_name'
-        const displayName = result?.display_name ?? result?.title;
-        return { id: stub.id, displayName };
-      } catch {
-        // Gracefully handle failures - stub will keep ID as label
-        return { id: stub.id, displayName: undefined };
+        switch (entityType) {
+          case 'works': {
+            const response = await getWorks({
+              filter: `id:${idFilter}`,
+              select: selectFields,
+              per_page: batch.length,
+            });
+            results = response.results as Array<{ id: string; display_name?: string; title?: string }>;
+            break;
+          }
+          case 'authors': {
+            const response = await getAuthors({
+              filter: `id:${idFilter}`,
+              select: selectFields,
+              per_page: batch.length,
+            });
+            results = response.results as Array<{ id: string; display_name?: string; title?: string }>;
+            break;
+          }
+          case 'institutions': {
+            const response = await getInstitutions({
+              filters: { id: idFilter },
+              select: selectFields,
+              per_page: batch.length,
+            });
+            results = response.results as Array<{ id: string; display_name?: string; title?: string }>;
+            break;
+          }
+          case 'sources': {
+            const response = await getSources({
+              filters: { id: idFilter },
+              select: selectFields,
+              per_page: batch.length,
+            });
+            results = response.results as Array<{ id: string; display_name?: string; title?: string }>;
+            break;
+          }
+          default:
+            // For other entity types without batch support, skip batch resolution
+            logger.debug(LOG_PREFIX, `Batch resolution not supported for ${entityType}, skipping ${batch.length} stubs`);
+            continue;
+        }
+
+        // Map resolved entities to their display names
+        for (const entity of results) {
+          const displayName = entity.display_name ?? entity.title;
+          if (displayName && entity.id) {
+            // Normalize ID to short form for consistent lookup
+            const shortId = entity.id.replace('https://openalex.org/', '');
+            labelMap.set(shortId, displayName);
+            // Also store with full URL for compatibility
+            labelMap.set(entity.id, displayName);
+          }
+        }
+      } catch (error) {
+        // Log error but continue with other batches
+        logger.warn(LOG_PREFIX, `Failed to resolve batch of ${entityType}`, { error, batchSize: batch.length });
       }
-    })
-  );
-
-  // Collect successful resolutions
-  for (const result of results) {
-    if (result.status === 'fulfilled' && result.value.displayName) {
-      labelMap.set(result.value.id, result.value.displayName);
     }
   }
 
-  logger.debug(LOG_PREFIX, `Resolved ${labelMap.size} of ${needsResolution.length} stub labels`);
+  logger.debug(LOG_PREFIX, `Resolved ${labelMap.size} of ${needsResolution.length} stub labels via batch queries`);
 
   return labelMap;
 }
