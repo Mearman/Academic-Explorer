@@ -1,0 +1,244 @@
+/**
+ * usePersistentGraph - React hook for loading graph data from PersistentGraph
+ *
+ * Provides fast graph visualization loading by:
+ * - Hydrating from IndexedDB on first access
+ * - Transforming GraphNodeRecord/GraphEdgeRecord to visualization nodes/edges
+ * - Tracking hydration status and statistics
+ *
+ * @module lib/graph-index/use-persistent-graph
+ */
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { GraphNode, GraphEdge, GraphStatistics } from '@bibgraph/types';
+import type { GraphNodeRecord, GraphEdgeRecord } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
+import { getPersistentGraph, PersistentGraph } from '@bibgraph/client';
+
+const LOG_PREFIX = 'use-persistent-graph';
+
+/**
+ * Hydration status for the persistent graph
+ */
+export type HydrationStatus = 'not_started' | 'hydrating' | 'hydrated' | 'error';
+
+/**
+ * Result of the usePersistentGraph hook
+ */
+export interface UsePersistentGraphResult {
+  /** Graph nodes transformed for visualization */
+  nodes: GraphNode[];
+
+  /** Graph edges transformed for visualization */
+  edges: GraphEdge[];
+
+  /** Whether the graph is currently loading/hydrating */
+  loading: boolean;
+
+  /** True when graph has no data */
+  isEmpty: boolean;
+
+  /** Error if loading/hydration failed */
+  error: Error | null;
+
+  /** Current hydration status */
+  hydrationStatus: HydrationStatus;
+
+  /** Graph statistics (node/edge counts by type) */
+  statistics: GraphStatistics | null;
+
+  /** Access to the underlying PersistentGraph instance */
+  graph: PersistentGraph;
+
+  /** Force refresh by re-hydrating from IndexedDB */
+  refresh: () => Promise<void>;
+}
+
+/**
+ * Transform GraphNodeRecord to GraphNode for visualization
+ */
+function nodeRecordToGraphNode(record: GraphNodeRecord): GraphNode {
+  return {
+    id: record.id,
+    entityType: record.entityType,
+    entityId: record.id,
+    label: record.label,
+    // Initialize with random positions - force simulation will reposition
+    x: Math.random() * 800 - 400,
+    y: Math.random() * 600 - 300,
+    externalIds: [],
+    // Pass completeness as metadata for visual distinction
+    entityData: {
+      completeness: record.completeness,
+      cachedAt: record.cachedAt,
+      updatedAt: record.updatedAt,
+      ...record.metadata,
+    },
+  };
+}
+
+/**
+ * Transform GraphEdgeRecord to GraphEdge for visualization
+ */
+function edgeRecordToGraphEdge(record: GraphEdgeRecord): GraphEdge {
+  return {
+    id: record.id,
+    source: record.source,
+    target: record.target,
+    type: record.type,
+    weight: record.score ?? 1,
+    // Include edge properties for filtering/display
+    metadata: {
+      direction: record.direction,
+      authorPosition: record.authorPosition,
+      isCorresponding: record.isCorresponding,
+      isOpenAccess: record.isOpenAccess,
+      version: record.version,
+      score: record.score,
+      years: record.years,
+      awardId: record.awardId,
+      role: record.role,
+      discoveredAt: record.discoveredAt,
+    },
+  };
+}
+
+/**
+ * Hook for loading graph data from the persistent graph index
+ *
+ * Usage:
+ * ```tsx
+ * const { nodes, edges, loading, isEmpty, statistics } = usePersistentGraph();
+ *
+ * if (loading) return <LoadingSpinner />;
+ * if (isEmpty) return <EmptyState />;
+ *
+ * return <GraphVisualization nodes={nodes} edges={edges} />;
+ * ```
+ */
+export function usePersistentGraph(): UsePersistentGraphResult {
+  const [nodes, setNodes] = useState<GraphNode[]>([]);
+  const [edges, setEdges] = useState<GraphEdge[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [hydrationStatus, setHydrationStatus] = useState<HydrationStatus>('not_started');
+  const [statistics, setStatistics] = useState<GraphStatistics | null>(null);
+
+  // Get singleton graph instance
+  const graph = useMemo(() => getPersistentGraph(), []);
+
+  /**
+   * Load graph data and transform for visualization
+   */
+  const loadGraphData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Update hydration status from graph
+      const graphHydrationState = graph.getHydrationState();
+      if (graphHydrationState === 'not_started' || graphHydrationState === 'hydrating') {
+        setHydrationStatus('hydrating');
+      }
+
+      // Initialize/hydrate the graph
+      await graph.initialize();
+      setHydrationStatus('hydrated');
+
+      // Get all nodes and edges
+      const nodeRecords = graph.getAllNodes();
+      const edgeRecords = graph.getAllEdges();
+
+      // Transform to visualization format
+      const graphNodes = nodeRecords.map(nodeRecordToGraphNode);
+      const graphEdges = edgeRecords.map(edgeRecordToGraphEdge);
+
+      setNodes(graphNodes);
+      setEdges(graphEdges);
+
+      // Get statistics
+      const stats = graph.getStatistics();
+      setStatistics(stats);
+
+      logger.debug(LOG_PREFIX, 'Graph data loaded', {
+        nodes: graphNodes.length,
+        edges: graphEdges.length,
+        statistics: stats,
+      });
+    } catch (err) {
+      const loadError = err instanceof Error ? err : new Error('Failed to load persistent graph');
+      setError(loadError);
+      setHydrationStatus('error');
+      logger.error(LOG_PREFIX, 'Failed to load graph', { error: err });
+    } finally {
+      setLoading(false);
+    }
+  }, [graph]);
+
+  /**
+   * Force refresh by re-hydrating from IndexedDB
+   */
+  const refresh = useCallback(async () => {
+    await loadGraphData();
+  }, [loadGraphData]);
+
+  // Initial load
+  useEffect(() => {
+    void loadGraphData();
+  }, [loadGraphData]);
+
+  const isEmpty = useMemo(
+    () => nodes.length === 0 && edges.length === 0,
+    [nodes.length, edges.length]
+  );
+
+  return {
+    nodes,
+    edges,
+    loading,
+    isEmpty,
+    error,
+    hydrationStatus,
+    statistics,
+    graph,
+    refresh,
+  };
+}
+
+/**
+ * Hook for getting graph statistics only (lighter weight)
+ */
+export function usePersistentGraphStatistics(): {
+  statistics: GraphStatistics | null;
+  loading: boolean;
+  error: Error | null;
+  refresh: () => Promise<void>;
+} {
+  const [statistics, setStatistics] = useState<GraphStatistics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const graph = useMemo(() => getPersistentGraph(), []);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await graph.initialize();
+      const stats = graph.getStatistics();
+      setStatistics(stats);
+    } catch (err) {
+      const loadError = err instanceof Error ? err : new Error('Failed to load statistics');
+      setError(loadError);
+    } finally {
+      setLoading(false);
+    }
+  }, [graph]);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  return { statistics, loading, error, refresh };
+}
