@@ -279,6 +279,22 @@ export class PersistentGraph {
   }
 
   /**
+   * Update a node's label only
+   * Convenience method for updating display names without changing completeness
+   */
+  async updateNodeLabel(id: string, label: string): Promise<void> {
+    await this.ensureHydrated();
+
+    const existing = this.nodeCache.get(id);
+    if (!existing || existing.label === label) {
+      return;
+    }
+
+    // Use updateNodeCompleteness with existing completeness to just update the label
+    await this.updateNodeCompleteness(id, existing.completeness, label);
+  }
+
+  /**
    * Mark a node as expanded (relationships have been fetched)
    */
   async markNodeExpanded(id: string): Promise<void> {

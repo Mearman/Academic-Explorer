@@ -16,6 +16,7 @@
 import type { EntityType } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
 
+import { cachedOpenAlex } from '../../cached-client';
 import {
   getAuthorById,
   getWorkById,
@@ -56,6 +57,69 @@ function inferEntityTypeFromId(id: string): EntityType | undefined {
   if (!id || id.length < 2) return undefined;
   const prefix = id.charAt(0).toUpperCase();
   return ID_PREFIX_TO_TYPE[prefix];
+}
+
+/**
+ * Check if a label looks like an ID-only label (no display name resolved)
+ * ID-only labels match the OpenAlex ID pattern: letter followed by digits
+ */
+function isIdOnlyLabel(label: string): boolean {
+  return /^[A-Z]\d+$/i.test(label);
+}
+
+/**
+ * Resolve display names for stub nodes that have ID-only labels
+ * Uses cachedOpenAlex with minimal field selection for efficiency
+ *
+ * @param stubs - Stub nodes to resolve labels for
+ * @returns Map of entity ID to resolved display_name
+ */
+async function resolveStubLabels(
+  stubs: Array<{ id: string; entityType: EntityType; label: string }>
+): Promise<Map<string, string>> {
+  const labelMap = new Map<string, string>();
+
+  // Filter to only stubs with ID-only labels
+  const needsResolution = stubs.filter((stub) => isIdOnlyLabel(stub.label));
+
+  if (needsResolution.length === 0) {
+    return labelMap;
+  }
+
+  logger.debug(LOG_PREFIX, `Resolving labels for ${needsResolution.length} stub nodes`);
+
+  // Fetch display names in parallel with minimal field selection
+  const results = await Promise.allSettled(
+    needsResolution.map(async (stub) => {
+      try {
+        const result = await cachedOpenAlex.getById<{ id: string; display_name?: string; title?: string }>({
+          endpoint: stub.entityType,
+          id: stub.id,
+          params: {
+            select: ['id', 'display_name', 'title'],
+          },
+        });
+
+        // Works use 'title', other entities use 'display_name'
+        const displayName = result?.display_name ?? result?.title;
+        return { id: stub.id, displayName };
+      } catch {
+        // Gracefully handle failures - stub will keep ID as label
+        return { id: stub.id, displayName: undefined };
+      }
+    })
+  );
+
+  // Collect successful resolutions
+  for (const result of results) {
+    if (result.status === 'fulfilled' && result.value.displayName) {
+      labelMap.set(result.value.id, result.value.displayName);
+    }
+  }
+
+  logger.debug(LOG_PREFIX, `Resolved ${labelMap.size} of ${needsResolution.length} stub labels`);
+
+  return labelMap;
 }
 
 /**
@@ -164,7 +228,7 @@ export async function expandNode(
   entityType?: EntityType
 ): Promise<NodeExpansionResult> {
   // Get current node state
-  let node = graph.getNode(nodeId);
+  const node = graph.getNode(nodeId);
 
   // If node doesn't exist in graph, we need to fetch and add it first
   if (!node) {
@@ -210,11 +274,19 @@ export async function expandNode(
     // Mark node as expanded
     await graph.markNodeExpanded(nodeId);
 
-    // Convert extraction result to expansion result format
+    // Resolve labels for stubs that still have ID-only labels
+    const resolvedLabels = await resolveStubLabels(extractionResult.stubNodes);
+
+    // Update graph nodes with resolved labels
+    for (const [id, label] of resolvedLabels) {
+      await graph.updateNodeLabel(id, label);
+    }
+
+    // Convert extraction result to expansion result format (with resolved labels)
     const expansionNodes: ExpansionNode[] = extractionResult.stubNodes.map((stub) => ({
       id: stub.id,
       entityType: stub.entityType,
-      label: stub.label,
+      label: resolvedLabels.get(stub.id) ?? stub.label,
       completeness: stub.completeness,
     }));
 
@@ -288,11 +360,19 @@ export async function expandNode(
   const nodeCountAfter = graph.getStatistics().nodeCount;
   const edgeCountAfter = graph.getStatistics().edgeCount;
 
-  // Convert extraction result to expansion result format
+  // Resolve labels for stubs that still have ID-only labels
+  const resolvedLabels = await resolveStubLabels(extractionResult.stubNodes);
+
+  // Update graph nodes with resolved labels
+  for (const [id, label] of resolvedLabels) {
+    await graph.updateNodeLabel(id, label);
+  }
+
+  // Convert extraction result to expansion result format (with resolved labels)
   const expansionNodes: ExpansionNode[] = extractionResult.stubNodes.map((stub) => ({
     id: stub.id,
     entityType: stub.entityType,
-    label: stub.label,
+    label: resolvedLabels.get(stub.id) ?? stub.label,
     completeness: stub.completeness,
   }));
 
@@ -320,6 +400,7 @@ export async function expandNode(
     edgesAdded: result.edgesAdded,
     relationshipsExtracted: extractionResult.edgesAdded,
     stubsCreated: extractionResult.stubsCreated,
+    labelsResolved: resolvedLabels.size,
   });
 
   return result;
