@@ -25,6 +25,21 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useStorageProvider } from '@/contexts/storage-provider-context';
 
 /**
+ * Normalize an OpenAlex ID by extracting the short ID from a URL if needed.
+ * e.g., "https://openalex.org/A5048491430" -> "A5048491430"
+ */
+function normalizeOpenAlexId(id: string): string {
+  if (!id) return id;
+  // If it's a URL, extract just the ID part
+  const urlMatch = id.match(/openalex\.org\/([WASIPCFTKDQ]\d+)$/i);
+  if (urlMatch) {
+    return urlMatch[1].toUpperCase();
+  }
+  // Already a short ID
+  return id.toUpperCase();
+}
+
+/**
  * Result of fetching a bookmark's entity data and extracting relationships
  */
 interface BookmarkFetchResult {
@@ -49,7 +64,7 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     for (const auth of work.authorships ?? []) {
       if (auth.author?.id) {
         relationships.push({
-          targetId: auth.author.id,
+          targetId: normalizeOpenAlexId(auth.author.id),
           targetType: 'authors',
           relationType: RelationType.AUTHORSHIP,
         });
@@ -59,7 +74,7 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     // Primary location -> Source
     if (work.primary_location?.source?.id) {
       relationships.push({
-        targetId: work.primary_location.source.id,
+        targetId: normalizeOpenAlexId(work.primary_location.source.id),
         targetType: 'sources',
         relationType: RelationType.PUBLICATION,
       });
@@ -68,7 +83,7 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     // Referenced works
     for (const refId of work.referenced_works ?? []) {
       relationships.push({
-        targetId: refId,
+        targetId: normalizeOpenAlexId(refId),
         targetType: 'works',
         relationType: RelationType.REFERENCE,
       });
@@ -78,7 +93,7 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     for (const topic of work.topics ?? []) {
       if (topic.id) {
         relationships.push({
-          targetId: topic.id,
+          targetId: normalizeOpenAlexId(topic.id),
           targetType: 'topics',
           relationType: RelationType.TOPIC,
         });
@@ -89,7 +104,7 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     for (const grant of work.grants ?? []) {
       if (grant.funder) {
         relationships.push({
-          targetId: grant.funder,
+          targetId: normalizeOpenAlexId(grant.funder),
           targetType: 'funders',
           relationType: RelationType.FUNDED_BY,
         });
@@ -119,7 +134,7 @@ async function fetchAuthorBookmark(entityId: string): Promise<BookmarkFetchResul
     for (const aff of author.affiliations ?? []) {
       if (aff.institution?.id) {
         relationships.push({
-          targetId: aff.institution.id,
+          targetId: normalizeOpenAlexId(aff.institution.id),
           targetType: 'institutions',
           relationType: RelationType.AFFILIATION,
         });
@@ -130,7 +145,7 @@ async function fetchAuthorBookmark(entityId: string): Promise<BookmarkFetchResul
     for (const topic of author.topics ?? []) {
       if (topic.id) {
         relationships.push({
-          targetId: topic.id,
+          targetId: normalizeOpenAlexId(topic.id),
           targetType: 'topics',
           relationType: RelationType.AUTHOR_RESEARCHES,
         });
@@ -160,7 +175,7 @@ async function fetchInstitutionBookmark(entityId: string): Promise<BookmarkFetch
     for (const topic of institution.topics ?? []) {
       if (topic.id) {
         relationships.push({
-          targetId: topic.id,
+          targetId: normalizeOpenAlexId(topic.id),
           targetType: 'topics',
           relationType: RelationType.TOPIC,
         });
@@ -171,7 +186,7 @@ async function fetchInstitutionBookmark(entityId: string): Promise<BookmarkFetch
     for (const parentId of institution.lineage ?? []) {
       if (parentId !== institution.id) {
         relationships.push({
-          targetId: parentId,
+          targetId: normalizeOpenAlexId(parentId),
           targetType: 'institutions',
           relationType: RelationType.LINEAGE,
         });
@@ -200,7 +215,7 @@ async function fetchSourceBookmark(entityId: string): Promise<BookmarkFetchResul
     // Host organization -> Publisher
     if (source.host_organization) {
       relationships.push({
-        targetId: source.host_organization,
+        targetId: normalizeOpenAlexId(source.host_organization),
         targetType: 'publishers',
         relationType: RelationType.HOST_ORGANIZATION,
       });
@@ -210,7 +225,7 @@ async function fetchSourceBookmark(entityId: string): Promise<BookmarkFetchResul
     for (const topic of source.topics ?? []) {
       if (topic.id) {
         relationships.push({
-          targetId: topic.id,
+          targetId: normalizeOpenAlexId(topic.id),
           targetType: 'topics',
           relationType: RelationType.TOPIC,
         });
@@ -239,7 +254,7 @@ async function fetchTopicBookmark(entityId: string): Promise<BookmarkFetchResult
     // Field
     if (topic.field?.id) {
       relationships.push({
-        targetId: topic.field.id,
+        targetId: normalizeOpenAlexId(topic.field.id),
         targetType: 'fields',
         relationType: RelationType.TOPIC_PART_OF_FIELD,
       });
@@ -248,7 +263,7 @@ async function fetchTopicBookmark(entityId: string): Promise<BookmarkFetchResult
     // Domain
     if (topic.domain?.id) {
       relationships.push({
-        targetId: topic.domain.id,
+        targetId: normalizeOpenAlexId(topic.domain.id),
         targetType: 'domains',
         relationType: RelationType.FIELD_PART_OF_DOMAIN,
       });
