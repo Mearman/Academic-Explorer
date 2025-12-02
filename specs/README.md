@@ -8,7 +8,7 @@ This directory contains all feature specifications for BibGraph, organized using
 |--------|-------|
 | ✅ Complete | 20 |
 | 🚧 In Progress | 4 |
-| 📝 Draft | 5 |
+| 📝 Draft | 6 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -301,6 +301,15 @@ Dedicated `/graph` route for visualizing repository entities as an interactive f
 
 ---
 
+### spec-034: Persistent Graph Index
+**Status**: 📝 Draft | **Created**: 2025-12-02
+
+Persistent graph index layer for the unified tiered cache system. Stores relationship structure (nodes as entity IDs, edges as relationships) in Dexie/IndexedDB with in-memory Graph class for fast traversal. Graph is derived automatically when entities are cached. Enables graph-native queries (neighbors, paths, subgraphs) and faster visualization without re-extracting edges from entity data.
+
+[View Spec](./034-persistent-graph-index/)
+
+---
+
 ## Known Issues
 
 ### Spec Numbering Cleanup (2025-11-25)
@@ -353,4 +362,4 @@ All specifications must align with the [BibGraph Constitution](../.specify/memor
 
 ---
 
-**Last Updated**: 2025-12-01 | **Total Specs**: 31 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
+**Last Updated**: 2025-12-02 | **Total Specs**: 32 | **Maintained by**: [Constitution Principle XII](../.specify/memory/constitution.md#xii-spec-index-maintenance-non-negotiable)
