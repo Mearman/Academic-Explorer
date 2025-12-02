@@ -7,7 +7,8 @@
  * @module hooks/use-multi-source-graph
  */
 
-import type { GraphNode, GraphEdge } from '@bibgraph/types';
+import { getPersistentGraph } from '@bibgraph/client';
+import type { GraphNode, GraphEdge, RelationType, AuthorPosition } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
 import type {
   GraphDataSource,
@@ -157,6 +158,12 @@ export interface UseMultiSourceGraphResult {
 
   /** Force refresh all data */
   refresh: () => Promise<void>;
+
+  /** Add nodes and edges incrementally (without full refresh) */
+  addNodesAndEdges: (
+    newNodes: Array<{ id: string; entityType: string; label: string; completeness?: string }>,
+    newEdges: Array<{ source: string; target: string; type: string; score?: number; authorPosition?: string; isCorresponding?: boolean; isOpenAccess?: boolean }>
+  ) => void;
 }
 
 /**
@@ -297,12 +304,100 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
       }
     }
 
-    // Build nodes
-    const nodeArray = allEntities.map(sourceEntityToNode);
+    // Build initial nodes from source entities
+    let nodeArray = allEntities.map(sourceEntityToNode);
     const entityIds = new Set(allEntities.map(e => e.entityId));
 
-    // Build edges (cross-source)
-    const edgeArray = buildEdges(allEntities, entityIds);
+    // Build edges from entity relationships
+    const relationshipEdges = buildEdges(allEntities, entityIds);
+
+    // Also fetch edges and connected nodes from persistent graph
+    // This ensures nodes and edges discovered during expansion are included
+    const seenEdgeKeys = new Set(relationshipEdges.map(e => `${e.source}-${e.target}-${e.type}`));
+    const persistentGraphEdges: GraphEdge[] = [];
+    const persistentGraphNodes: GraphNode[] = [];
+
+    try {
+      const graph = getPersistentGraph();
+      await graph.initialize();
+      const graphEdges = graph.getAllEdges();
+      const graphNodes = graph.getAllNodes();
+
+      // Build node map for quick lookup
+      const graphNodeMap = new Map(graphNodes.map(n => [n.id, n]));
+
+      // Find edges where source is in current entity set (edges from expanded nodes)
+      for (const edge of graphEdges) {
+        const sourceInSet = entityIds.has(edge.source);
+        const targetInSet = entityIds.has(edge.target);
+
+        // Include edge if at least one endpoint is in current set
+        if (sourceInSet || targetInSet) {
+          const edgeKey = `${edge.source}-${edge.target}-${edge.type}`;
+          const reverseKey = `${edge.target}-${edge.source}-${edge.type}`;
+
+          if (!seenEdgeKeys.has(edgeKey) && !seenEdgeKeys.has(reverseKey)) {
+            // Add missing target/source nodes from persistent graph
+            if (sourceInSet && !targetInSet) {
+              const targetNode = graphNodeMap.get(edge.target);
+              if (targetNode && !entityIds.has(targetNode.id)) {
+                entityIds.add(targetNode.id);
+                persistentGraphNodes.push({
+                  id: targetNode.id,
+                  entityType: targetNode.entityType,
+                  entityId: targetNode.id,
+                  label: targetNode.label,
+                  x: Math.random() * 800 - 400,
+                  y: Math.random() * 600 - 300,
+                  externalIds: [],
+                  entityData: {
+                    completeness: targetNode.completeness,
+                    ...targetNode.metadata,
+                  },
+                });
+              }
+            } else if (targetInSet && !sourceInSet) {
+              const sourceNode = graphNodeMap.get(edge.source);
+              if (sourceNode && !entityIds.has(sourceNode.id)) {
+                entityIds.add(sourceNode.id);
+                persistentGraphNodes.push({
+                  id: sourceNode.id,
+                  entityType: sourceNode.entityType,
+                  entityId: sourceNode.id,
+                  label: sourceNode.label,
+                  x: Math.random() * 800 - 400,
+                  y: Math.random() * 600 - 300,
+                  externalIds: [],
+                  entityData: {
+                    completeness: sourceNode.completeness,
+                    ...sourceNode.metadata,
+                  },
+                });
+              }
+            }
+
+            seenEdgeKeys.add(edgeKey);
+            persistentGraphEdges.push({
+              id: edgeKey,
+              source: edge.source,
+              target: edge.target,
+              type: edge.type,
+              weight: edge.score ?? 1,
+              score: edge.score,
+              authorPosition: edge.authorPosition,
+              isCorresponding: edge.isCorresponding,
+              isOpenAccess: edge.isOpenAccess,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      logger.debug(LOG_PREFIX, 'Failed to load from persistent graph', { error: err });
+    }
+
+    // Combine nodes and edges from both sources
+    nodeArray = [...nodeArray, ...persistentGraphNodes];
+    const edgeArray = [...relationshipEdges, ...persistentGraphEdges];
 
     setNodes(nodeArray);
     setEdges(edgeArray);
@@ -311,6 +406,9 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
       sources: enabledStates.length,
       nodes: nodeArray.length,
       edges: edgeArray.length,
+      relationshipEdges: relationshipEdges.length,
+      persistentGraphEdges: persistentGraphEdges.length,
+      persistentGraphNodes: persistentGraphNodes.length,
     });
   }, []);
 
@@ -431,6 +529,71 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
 
   const isEmpty = useMemo(() => nodes.length === 0 && edges.length === 0, [nodes, edges]);
 
+  /**
+   * Add nodes and edges incrementally without full refresh
+   * Used after node expansion to add discovered entities
+   */
+  const addNodesAndEdges = useCallback((
+    newNodes: Array<{ id: string; entityType: string; label: string; completeness?: string }>,
+    newEdges: Array<{ source: string; target: string; type: string; score?: number; authorPosition?: string; isCorresponding?: boolean; isOpenAccess?: boolean }>
+  ) => {
+    // Get existing node IDs to avoid duplicates
+    const existingNodeIds = new Set(nodes.map(n => n.id));
+
+    // Convert and filter new nodes (skip duplicates)
+    const nodesToAdd: GraphNode[] = newNodes
+      .filter(n => !existingNodeIds.has(n.id))
+      .map(n => ({
+        id: n.id,
+        entityType: n.entityType as GraphNode['entityType'],
+        entityId: n.id,
+        label: n.label,
+        x: Math.random() * 800 - 400,
+        y: Math.random() * 600 - 300,
+        externalIds: [],
+        entityData: {
+          completeness: n.completeness,
+        },
+      }));
+
+    // Get existing edge keys to avoid duplicates
+    const existingEdgeKeys = new Set(edges.map(e => `${e.source}-${e.target}-${e.type}`));
+
+    // Convert and filter new edges (skip duplicates)
+    const edgesToAdd: GraphEdge[] = newEdges
+      .filter(e => {
+        const key = `${e.source}-${e.target}-${e.type}`;
+        const reverseKey = `${e.target}-${e.source}-${e.type}`;
+        return !existingEdgeKeys.has(key) && !existingEdgeKeys.has(reverseKey);
+      })
+      .map(e => ({
+        id: `${e.source}-${e.target}-${e.type}`,
+        source: e.source,
+        target: e.target,
+        type: e.type as RelationType,
+        weight: e.score ?? 1,
+        score: e.score,
+        authorPosition: e.authorPosition as AuthorPosition | undefined,
+        isCorresponding: e.isCorresponding,
+        isOpenAccess: e.isOpenAccess,
+      }));
+
+    // Only update state if there's something to add
+    if (nodesToAdd.length > 0 || edgesToAdd.length > 0) {
+      logger.debug(LOG_PREFIX, 'Incrementally adding nodes/edges', {
+        newNodes: nodesToAdd.length,
+        newEdges: edgesToAdd.length,
+      });
+
+      if (nodesToAdd.length > 0) {
+        setNodes(prev => [...prev, ...nodesToAdd]);
+      }
+      if (edgesToAdd.length > 0) {
+        setEdges(prev => [...prev, ...edgesToAdd]);
+      }
+    }
+  }, [nodes, edges]);
+
   return {
     nodes,
     edges,
@@ -445,5 +608,6 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
     enableAll,
     disableAll,
     refresh,
+    addNodesAndEdges,
   };
 }
