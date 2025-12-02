@@ -9,7 +9,7 @@ import type {
   Author,
   Concept,
   Funder,
-  Institution,
+  InstitutionEntity,
   Keyword,
   OpenAlexResponse,
   Publisher,
@@ -138,7 +138,7 @@ export async function getConcepts(
 export async function getInstitutionById(
   id: string,
   params: QueryParams = {},
-): Promise<Institution> {
+): Promise<InstitutionEntity> {
   const client = getSharedClient();
   const institutionsApi = new InstitutionsApi(client);
   return institutionsApi.getInstitution(id, params);
@@ -149,7 +149,7 @@ export async function getInstitutionById(
  */
 export async function getInstitutions(
   params: InstitutionSearchOptions = {},
-): Promise<OpenAlexResponse<Institution>> {
+): Promise<OpenAlexResponse<InstitutionEntity>> {
   const client = getSharedClient();
   const institutionsApi = new InstitutionsApi(client);
   return institutionsApi.getInstitutions(params);

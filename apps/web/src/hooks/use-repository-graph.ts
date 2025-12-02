@@ -25,188 +25,304 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useStorageProvider } from '@/contexts/storage-provider-context';
 
 /**
- * Fetch entity data by type and ID using cached client
+ * Result of fetching a bookmark's entity data and extracting relationships
  */
-async function fetchEntityData(
-  entityType: EntityType,
-  entityId: string
-): Promise<Record<string, unknown> | null> {
+interface BookmarkFetchResult {
+  label: string;
+  entityData: Record<string, unknown>;
+  relationships: Array<{
+    targetId: string;
+    targetType: EntityType;
+    relationType: RelationType;
+  }>;
+}
+
+/**
+ * Fetch entity data and extract relationships for a Work bookmark
+ */
+async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
   try {
-    switch (entityType) {
-      case 'works':
-        return (await getWorkById(entityId)) as unknown as Record<string, unknown>;
-      case 'authors':
-        return (await getAuthorById(entityId)) as unknown as Record<string, unknown>;
-      case 'institutions':
-        return (await getInstitutionById(entityId)) as unknown as Record<string, unknown>;
-      case 'sources':
-        return (await getSourceById(entityId)) as unknown as Record<string, unknown>;
-      case 'topics':
-        return (await getTopicById(entityId)) as unknown as Record<string, unknown>;
-      case 'funders':
-        return (await getFunderById(entityId)) as unknown as Record<string, unknown>;
-      case 'publishers':
-        return (await getPublisherById(entityId)) as unknown as Record<string, unknown>;
-      default:
-        return null;
+    const work = await getWorkById(entityId);
+    const relationships: BookmarkFetchResult['relationships'] = [];
+
+    // Authorships -> Authors
+    for (const auth of work.authorships ?? []) {
+      if (auth.author?.id) {
+        relationships.push({
+          targetId: auth.author.id,
+          targetType: 'authors',
+          relationType: RelationType.AUTHORSHIP,
+        });
+      }
     }
+
+    // Primary location -> Source
+    if (work.primary_location?.source?.id) {
+      relationships.push({
+        targetId: work.primary_location.source.id,
+        targetType: 'sources',
+        relationType: RelationType.PUBLICATION,
+      });
+    }
+
+    // Referenced works
+    for (const refId of work.referenced_works ?? []) {
+      relationships.push({
+        targetId: refId,
+        targetType: 'works',
+        relationType: RelationType.REFERENCE,
+      });
+    }
+
+    // Topics
+    for (const topic of work.topics ?? []) {
+      if (topic.id) {
+        relationships.push({
+          targetId: topic.id,
+          targetType: 'topics',
+          relationType: RelationType.TOPIC,
+        });
+      }
+    }
+
+    // Grants -> Funders
+    for (const grant of work.grants ?? []) {
+      if (grant.funder) {
+        relationships.push({
+          targetId: grant.funder,
+          targetType: 'funders',
+          relationType: RelationType.FUNDED_BY,
+        });
+      }
+    }
+
+    return {
+      label: work.title ?? work.display_name ?? entityId,
+      entityData: work,
+      relationships,
+    };
   } catch (error) {
-    logger.debug('repository-graph', 'Failed to fetch entity data', {
-      entityType,
-      entityId,
-      error,
-    });
+    logger.debug('repository-graph', 'Failed to fetch work', { entityId, error });
     return null;
   }
 }
 
 /**
- * Extract related entity IDs from entity data
- * Returns tuples of [targetId, targetType, relationType]
+ * Fetch entity data and extract relationships for an Author bookmark
  */
-function extractRelatedEntityIds(
-  entityData: Record<string, unknown>,
-  entityType: EntityType
-): Array<{ targetId: string; targetType: EntityType; relationType: RelationType }> {
-  const related: Array<{ targetId: string; targetType: EntityType; relationType: RelationType }> = [];
+async function fetchAuthorBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const author = await getAuthorById(entityId);
+    const relationships: BookmarkFetchResult['relationships'] = [];
 
-  switch (entityType) {
-    case 'works': {
-      // Authorships -> Authors
-      const authorships = entityData.authorships as Array<{
-        author?: { id?: string };
-      }> | undefined;
-      if (authorships) {
-        for (const auth of authorships) {
-          if (auth.author?.id) {
-            related.push({ targetId: auth.author.id, targetType: 'authors', relationType: RelationType.AUTHORSHIP });
-          }
-        }
+    // Affiliations -> Institutions
+    for (const aff of author.affiliations ?? []) {
+      if (aff.institution?.id) {
+        relationships.push({
+          targetId: aff.institution.id,
+          targetType: 'institutions',
+          relationType: RelationType.AFFILIATION,
+        });
       }
-
-      // Primary location -> Source
-      const primaryLocation = entityData.primary_location as {
-        source?: { id?: string };
-      } | undefined;
-      if (primaryLocation?.source?.id) {
-        related.push({ targetId: primaryLocation.source.id, targetType: 'sources', relationType: RelationType.PUBLICATION });
-      }
-
-      // Referenced works
-      const referencedWorks = entityData.referenced_works as string[] | undefined;
-      if (referencedWorks) {
-        for (const refId of referencedWorks) {
-          related.push({ targetId: refId, targetType: 'works', relationType: RelationType.REFERENCE });
-        }
-      }
-
-      // Topics
-      const topics = entityData.topics as Array<{ id?: string }> | undefined;
-      if (topics) {
-        for (const topic of topics) {
-          if (topic.id) {
-            related.push({ targetId: topic.id, targetType: 'topics', relationType: RelationType.TOPIC });
-          }
-        }
-      }
-
-      // Grants -> Funders
-      const grants = entityData.grants as Array<{ funder?: string }> | undefined;
-      if (grants) {
-        for (const grant of grants) {
-          if (grant.funder) {
-            related.push({ targetId: grant.funder, targetType: 'funders', relationType: RelationType.FUNDED_BY });
-          }
-        }
-      }
-      break;
     }
 
-    case 'authors': {
-      // Affiliations -> Institutions
-      const affiliations = entityData.affiliations as Array<{
-        institution?: { id?: string };
-      }> | undefined;
-      if (affiliations) {
-        for (const aff of affiliations) {
-          if (aff.institution?.id) {
-            related.push({ targetId: aff.institution.id, targetType: 'institutions', relationType: RelationType.AFFILIATION });
-          }
-        }
+    // Topics
+    for (const topic of author.topics ?? []) {
+      if (topic.id) {
+        relationships.push({
+          targetId: topic.id,
+          targetType: 'topics',
+          relationType: RelationType.AUTHOR_RESEARCHES,
+        });
       }
-
-      // Topics
-      const topics = entityData.topics as Array<{ id?: string }> | undefined;
-      if (topics) {
-        for (const topic of topics) {
-          if (topic.id) {
-            related.push({ targetId: topic.id, targetType: 'topics', relationType: RelationType.AUTHOR_RESEARCHES });
-          }
-        }
-      }
-      break;
     }
 
-    case 'institutions': {
-      // Topics
-      const topics = entityData.topics as Array<{ id?: string }> | undefined;
-      if (topics) {
-        for (const topic of topics) {
-          if (topic.id) {
-            related.push({ targetId: topic.id, targetType: 'topics', relationType: RelationType.TOPIC });
-          }
-        }
-      }
-
-      // Lineage -> Parent institutions
-      const lineage = entityData.lineage as string[] | undefined;
-      const entityId = entityData.id as string;
-      if (lineage) {
-        for (const parentId of lineage) {
-          if (parentId !== entityId) {
-            related.push({ targetId: parentId, targetType: 'institutions', relationType: RelationType.LINEAGE });
-          }
-        }
-      }
-      break;
-    }
-
-    case 'sources': {
-      // Host organization -> Publisher
-      const hostOrg = entityData.host_organization as string | undefined;
-      if (hostOrg) {
-        related.push({ targetId: hostOrg, targetType: 'publishers', relationType: RelationType.HOST_ORGANIZATION });
-      }
-
-      // Topics
-      const topics = entityData.topics as Array<{ id?: string }> | undefined;
-      if (topics) {
-        for (const topic of topics) {
-          if (topic.id) {
-            related.push({ targetId: topic.id, targetType: 'topics', relationType: RelationType.TOPIC });
-          }
-        }
-      }
-      break;
-    }
-
-    case 'topics': {
-      // Field
-      const field = entityData.field as { id?: string } | undefined;
-      if (field?.id) {
-        related.push({ targetId: field.id, targetType: 'fields', relationType: RelationType.TOPIC_PART_OF_FIELD });
-      }
-
-      // Domain
-      const domain = entityData.domain as { id?: string } | undefined;
-      if (domain?.id) {
-        related.push({ targetId: domain.id, targetType: 'domains', relationType: RelationType.FIELD_PART_OF_DOMAIN });
-      }
-      break;
-    }
+    return {
+      label: author.display_name ?? entityId,
+      entityData: author,
+      relationships,
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch author', { entityId, error });
+    return null;
   }
+}
 
-  return related;
+/**
+ * Fetch entity data and extract relationships for an Institution bookmark
+ */
+async function fetchInstitutionBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const institution = await getInstitutionById(entityId);
+    const relationships: BookmarkFetchResult['relationships'] = [];
+
+    // Topics
+    for (const topic of institution.topics ?? []) {
+      if (topic.id) {
+        relationships.push({
+          targetId: topic.id,
+          targetType: 'topics',
+          relationType: RelationType.TOPIC,
+        });
+      }
+    }
+
+    // Lineage -> Parent institutions
+    for (const parentId of institution.lineage ?? []) {
+      if (parentId !== institution.id) {
+        relationships.push({
+          targetId: parentId,
+          targetType: 'institutions',
+          relationType: RelationType.LINEAGE,
+        });
+      }
+    }
+
+    return {
+      label: institution.display_name ?? entityId,
+      entityData: institution,
+      relationships,
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch institution', { entityId, error });
+    return null;
+  }
+}
+
+/**
+ * Fetch entity data and extract relationships for a Source bookmark
+ */
+async function fetchSourceBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const source = await getSourceById(entityId);
+    const relationships: BookmarkFetchResult['relationships'] = [];
+
+    // Host organization -> Publisher
+    if (source.host_organization) {
+      relationships.push({
+        targetId: source.host_organization,
+        targetType: 'publishers',
+        relationType: RelationType.HOST_ORGANIZATION,
+      });
+    }
+
+    // Topics
+    for (const topic of source.topics ?? []) {
+      if (topic.id) {
+        relationships.push({
+          targetId: topic.id,
+          targetType: 'topics',
+          relationType: RelationType.TOPIC,
+        });
+      }
+    }
+
+    return {
+      label: source.display_name ?? entityId,
+      entityData: source,
+      relationships,
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch source', { entityId, error });
+    return null;
+  }
+}
+
+/**
+ * Fetch entity data and extract relationships for a Topic bookmark
+ */
+async function fetchTopicBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const topic = await getTopicById(entityId);
+    const relationships: BookmarkFetchResult['relationships'] = [];
+
+    // Field
+    if (topic.field?.id) {
+      relationships.push({
+        targetId: topic.field.id,
+        targetType: 'fields',
+        relationType: RelationType.TOPIC_PART_OF_FIELD,
+      });
+    }
+
+    // Domain
+    if (topic.domain?.id) {
+      relationships.push({
+        targetId: topic.domain.id,
+        targetType: 'domains',
+        relationType: RelationType.FIELD_PART_OF_DOMAIN,
+      });
+    }
+
+    return {
+      label: topic.display_name ?? entityId,
+      entityData: topic,
+      relationships,
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch topic', { entityId, error });
+    return null;
+  }
+}
+
+/**
+ * Fetch entity data for a Funder bookmark (no relationships extracted)
+ */
+async function fetchFunderBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const funder = await getFunderById(entityId);
+    return {
+      label: funder.display_name ?? entityId,
+      entityData: funder,
+      relationships: [],
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch funder', { entityId, error });
+    return null;
+  }
+}
+
+/**
+ * Fetch entity data for a Publisher bookmark (no relationships extracted)
+ */
+async function fetchPublisherBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+  try {
+    const publisher = await getPublisherById(entityId);
+    return {
+      label: publisher.display_name ?? entityId,
+      entityData: publisher,
+      relationships: [],
+    };
+  } catch (error) {
+    logger.debug('repository-graph', 'Failed to fetch publisher', { entityId, error });
+    return null;
+  }
+}
+
+/**
+ * Fetch entity data and relationships for a bookmark based on entity type
+ */
+async function fetchBookmarkData(
+  bookmark: CatalogueEntity
+): Promise<BookmarkFetchResult | null> {
+  switch (bookmark.entityType) {
+    case 'works':
+      return fetchWorkBookmark(bookmark.entityId);
+    case 'authors':
+      return fetchAuthorBookmark(bookmark.entityId);
+    case 'institutions':
+      return fetchInstitutionBookmark(bookmark.entityId);
+    case 'sources':
+      return fetchSourceBookmark(bookmark.entityId);
+    case 'topics':
+      return fetchTopicBookmark(bookmark.entityId);
+    case 'funders':
+      return fetchFunderBookmark(bookmark.entityId);
+    case 'publishers':
+      return fetchPublisherBookmark(bookmark.entityId);
+    default:
+      return null;
+  }
 }
 
 /**
@@ -237,32 +353,23 @@ export interface UseRepositoryGraphResult {
 
 /**
  * Convert a CatalogueEntity (bookmark) to a GraphNode for visualization
- * Optionally accepts full entity data to extract display name
  */
 function catalogueEntityToGraphNode(
   entity: CatalogueEntity,
-  entityData?: Record<string, unknown> | null
+  fetchResult: BookmarkFetchResult | null
 ): GraphNode {
-  // Extract display name from entity data if available
-  let label = entity.entityId;
-  if (entityData) {
-    const displayName = entityData.display_name as string | undefined;
-    const title = entityData.title as string | undefined;
-    label = displayName || title || entity.entityId;
-  }
-
   return {
     id: entity.entityId,
     entityType: entity.entityType,
     entityId: entity.entityId,
-    label,
-    x: Math.random() * 800 - 400, // Random initial position
+    label: fetchResult?.label ?? entity.entityId,
+    x: Math.random() * 800 - 400,
     y: Math.random() * 600 - 300,
     externalIds: [],
     entityData: {
       notes: entity.notes,
       addedAt: entity.addedAt,
-      ...(entityData || {}),
+      ...(fetchResult?.entityData ?? {}),
     },
   };
 }
@@ -316,35 +423,31 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
 
       // Only update state if data actually changed
       if (bookmarks.length !== prevNodeCountRef.current) {
-        // Fetch entity data for all bookmarks in parallel (should be cached)
-        const entityDataPromises = bookmarks.map((bookmark) =>
-          fetchEntityData(bookmark.entityType, bookmark.entityId)
+        // Fetch entity data and relationships for all bookmarks in parallel
+        const fetchResults = await Promise.all(
+          bookmarks.map((bookmark) => fetchBookmarkData(bookmark))
         );
-        const entityDataResults = await Promise.all(entityDataPromises);
 
         // Create a map of bookmarked entity IDs for quick lookup
         const bookmarkedIds = new Set(bookmarks.map((b) => b.entityId));
 
         // Convert bookmarks to nodes with entity data
         const nodeArray = bookmarks.map((bookmark, index) =>
-          catalogueEntityToGraphNode(bookmark, entityDataResults[index])
+          catalogueEntityToGraphNode(bookmark, fetchResults[index])
         );
 
         // Extract edges from relationships where both endpoints are bookmarked
         const edgeArray: GraphEdge[] = [];
-        const seenEdges = new Set<string>(); // Deduplicate edges
+        const seenEdges = new Set<string>();
 
         for (let i = 0; i < bookmarks.length; i++) {
           const bookmark = bookmarks[i];
-          const entityData = entityDataResults[i];
+          const fetchResult = fetchResults[i];
 
-          if (entityData) {
-            const relationships = extractRelatedEntityIds(entityData, bookmark.entityType);
-
-            for (const rel of relationships) {
+          if (fetchResult) {
+            for (const rel of fetchResult.relationships) {
               // Only create edge if target is also bookmarked
               if (bookmarkedIds.has(rel.targetId)) {
-                // Create unique edge key to avoid duplicates
                 const edgeKey = `${bookmark.entityId}-${rel.targetId}-${rel.relationType}`;
                 const reverseKey = `${rel.targetId}-${bookmark.entityId}-${rel.relationType}`;
 
@@ -390,7 +493,6 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
    */
   const refresh = useCallback(async () => {
     setLoading(true);
-    // Reset previous count to force update
     prevNodeCountRef.current = -1;
     await loadData();
   }, [loadData]);
@@ -403,7 +505,6 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
   // Subscribe to catalogue events for reactive updates
   useEffect(() => {
     const unsubscribe = catalogueEventEmitter.subscribe((event) => {
-      // Refresh on bookmark-related events
       const isBookmarksEvent =
         event.listId === 'bookmarks-list' ||
         event.type === 'entity-added' ||
@@ -420,7 +521,6 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
     return unsubscribe;
   }, [loadData]);
 
-  // Compute isEmpty from current state
   const isEmpty = nodes.length === 0 && edges.length === 0;
 
   return {

@@ -353,6 +353,9 @@ export const sourceSchema = entityWithWorksSchema.extend({
 	issn_l: z.string().optional(),
 	issn: z.array(z.string()).optional(),
 	publisher: z.string().optional(),
+	host_organization: openAlexIdSchema.optional(),
+	host_organization_name: z.string().optional(),
+	host_organization_lineage: z.array(openAlexIdSchema).optional(),
 	is_oa: z.boolean(),
 	is_in_doaj: z.boolean(),
 	ids: z
