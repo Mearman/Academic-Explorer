@@ -33,6 +33,7 @@ import {
   IconEdit,
   IconDatabase,
 } from "@tabler/icons-react";
+import { useNavigate } from "@tanstack/react-router";
 import React, { useState, useEffect } from "react";
 
 import { CacheTierLists } from "@/components/catalogue/CacheTierLists";
@@ -64,6 +65,8 @@ export function CatalogueManager({ onNavigate, shareData, initialListId }: Catal
     importFromShareUrl,
     getListStats,
   } = useCatalogueContext();
+
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<string | null>("lists");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -411,11 +414,11 @@ export function CatalogueManager({ onNavigate, shareData, initialListId }: Catal
         {selectedList && (
           <CatalogueEntities
             onNavigate={(entityType, entityId) => {
-              const url = `/#/${entityType}/${entityId}`;
+              const url = `/${entityType}/${entityId}`;
               if (onNavigate) {
                 onNavigate(url);
               } else {
-                window.location.hash = `/${entityType}/${entityId}`;
+                navigate({ to: url });
               }
             }}
           />
