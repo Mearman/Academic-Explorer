@@ -1,11 +1,11 @@
 /**
  * Algorithm Tabs Container
- * Organizes graph algorithms into discoverable category tabs
+ * Organizes graph algorithms into collapsible sections
  *
  * @module components/algorithms/AlgorithmTabs
  */
 
-import { Alert, Stack, Tabs, Text } from '@mantine/core';
+import { Alert, Accordion, Stack, Text, Group } from '@mantine/core';
 import {
   IconUsers,
   IconRoute,
@@ -13,7 +13,6 @@ import {
   IconSearch,
   IconAlertCircle,
 } from '@tabler/icons-react';
-import { useState } from 'react';
 
 import {
   CommunitiesTab,
@@ -24,38 +23,8 @@ import {
 import type { AlgorithmTabsProps } from './types';
 
 /**
- * Tab configuration with discoverable labels
- */
-const TAB_CONFIG = [
-  {
-    value: 'communities',
-    label: 'Find Communities',
-    subtitle: 'Clusters, cores, community structure',
-    icon: IconUsers,
-  },
-  {
-    value: 'paths',
-    label: 'Navigate Paths',
-    subtitle: 'Routing, traversal, neighborhoods',
-    icon: IconRoute,
-  },
-  {
-    value: 'structure',
-    label: 'Analyze Structure',
-    subtitle: 'Connectivity, components, ordering',
-    icon: IconNetwork,
-  },
-  {
-    value: 'patterns',
-    label: 'Find Patterns',
-    subtitle: 'Motifs, triangles, citation patterns',
-    icon: IconSearch,
-  },
-] as const;
-
-/**
- * Main algorithm tabs container component
- * Provides categorized access to all graph algorithms
+ * Main algorithm accordion container component
+ * Provides categorized access to all graph algorithms via collapsible sections
  */
 export function AlgorithmTabs({
   nodes,
@@ -69,8 +38,6 @@ export function AlgorithmTabs({
   onPathSourceChange,
   onPathTargetChange,
 }: AlgorithmTabsProps) {
-  const [activeTab, setActiveTab] = useState<string>('communities');
-
   if (nodes.length === 0) {
     return (
       <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
@@ -80,63 +47,94 @@ export function AlgorithmTabs({
   }
 
   return (
-    <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'communities')}>
-      <Tabs.List mb="md">
-        {TAB_CONFIG.map((tab) => (
-          <Tabs.Tab
-            key={tab.value}
-            value={tab.value}
-            leftSection={<tab.icon size={16} />}
-          >
-            <Stack gap={0}>
-              <Text size="sm" fw={500}>{tab.label}</Text>
-              <Text size="xs" c="dimmed">{tab.subtitle}</Text>
-            </Stack>
-          </Tabs.Tab>
-        ))}
-      </Tabs.List>
+    <Accordion
+      multiple
+      variant="separated"
+      defaultValue={['communities']}
+      styles={{
+        item: {
+          borderRadius: 'var(--mantine-radius-sm)',
+          border: '1px solid var(--mantine-color-gray-3)',
+        },
+      }}
+    >
+      {/* Communities Section */}
+      <Accordion.Item value="communities">
+        <Accordion.Control icon={<IconUsers size={16} />}>
+          <Stack gap={0}>
+            <Text size="sm" fw={500}>Find Communities</Text>
+            <Text size="xs" c="dimmed">Clusters, cores, community structure</Text>
+          </Stack>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <CommunitiesTab
+            nodes={nodes}
+            edges={edges}
+            onHighlightNodes={onHighlightNodes}
+            onHighlightPath={onHighlightPath}
+            onSelectCommunity={onSelectCommunity}
+            onCommunitiesDetected={onCommunitiesDetected}
+          />
+        </Accordion.Panel>
+      </Accordion.Item>
 
-      <Tabs.Panel value="communities">
-        <CommunitiesTab
-          nodes={nodes}
-          edges={edges}
-          onHighlightNodes={onHighlightNodes}
-          onHighlightPath={onHighlightPath}
-          onSelectCommunity={onSelectCommunity}
-          onCommunitiesDetected={onCommunitiesDetected}
-        />
-      </Tabs.Panel>
+      {/* Pathfinding Section */}
+      <Accordion.Item value="paths">
+        <Accordion.Control icon={<IconRoute size={16} />}>
+          <Stack gap={0}>
+            <Text size="sm" fw={500}>Navigate Paths</Text>
+            <Text size="xs" c="dimmed">Routing, traversal, neighborhoods</Text>
+          </Stack>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <PathfindingTab
+            nodes={nodes}
+            edges={edges}
+            onHighlightNodes={onHighlightNodes}
+            onHighlightPath={onHighlightPath}
+            pathSource={pathSource}
+            pathTarget={pathTarget}
+            onPathSourceChange={onPathSourceChange}
+            onPathTargetChange={onPathTargetChange}
+          />
+        </Accordion.Panel>
+      </Accordion.Item>
 
-      <Tabs.Panel value="paths">
-        <PathfindingTab
-          nodes={nodes}
-          edges={edges}
-          onHighlightNodes={onHighlightNodes}
-          onHighlightPath={onHighlightPath}
-          pathSource={pathSource}
-          pathTarget={pathTarget}
-          onPathSourceChange={onPathSourceChange}
-          onPathTargetChange={onPathTargetChange}
-        />
-      </Tabs.Panel>
+      {/* Structure Section */}
+      <Accordion.Item value="structure">
+        <Accordion.Control icon={<IconNetwork size={16} />}>
+          <Stack gap={0}>
+            <Text size="sm" fw={500}>Analyze Structure</Text>
+            <Text size="xs" c="dimmed">Connectivity, components, ordering</Text>
+          </Stack>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <StructureTab
+            nodes={nodes}
+            edges={edges}
+            onHighlightNodes={onHighlightNodes}
+            onHighlightPath={onHighlightPath}
+          />
+        </Accordion.Panel>
+      </Accordion.Item>
 
-      <Tabs.Panel value="structure">
-        <StructureTab
-          nodes={nodes}
-          edges={edges}
-          onHighlightNodes={onHighlightNodes}
-          onHighlightPath={onHighlightPath}
-        />
-      </Tabs.Panel>
-
-      <Tabs.Panel value="patterns">
-        <PatternsTab
-          nodes={nodes}
-          edges={edges}
-          onHighlightNodes={onHighlightNodes}
-          onHighlightPath={onHighlightPath}
-        />
-      </Tabs.Panel>
-    </Tabs>
+      {/* Patterns Section */}
+      <Accordion.Item value="patterns">
+        <Accordion.Control icon={<IconSearch size={16} />}>
+          <Stack gap={0}>
+            <Text size="sm" fw={500}>Find Patterns</Text>
+            <Text size="xs" c="dimmed">Motifs, triangles, citation patterns</Text>
+          </Stack>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <PatternsTab
+            nodes={nodes}
+            edges={edges}
+            onHighlightNodes={onHighlightNodes}
+            onHighlightPath={onHighlightPath}
+          />
+        </Accordion.Panel>
+      </Accordion.Item>
+    </Accordion>
   );
 }
