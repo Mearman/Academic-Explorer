@@ -84,10 +84,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T029 [US1] Create useGraphList hook in apps/web/src/hooks/use-graph-list.ts
-- [ ] T030 [US1] Implement optimistic updates for addNode in apps/web/src/hooks/use-graph-list.ts
-- [ ] T031 [US1] Implement node refresh/sync from storage in apps/web/src/hooks/use-graph-list.ts
-- [ ] T032 [US1] Update graph data loading to union graph list with collections in apps/web/src/hooks/use-graph-data.ts
+- [X] T029 [US1] Create useGraphList hook in apps/web/src/hooks/useGraphList.ts
+- [X] T030 [US1] Implement optimistic updates for addNode in apps/web/src/hooks/useGraphList.ts
+- [X] T031 [US1] Implement node refresh/sync from storage in apps/web/src/hooks/useGraphList.ts
+- [X] T032 [US1] Update graph data loading to union graph list with collections via createGraphListSource in apps/web/src/lib/graph-sources/catalogue-list-source.ts and apps/web/src/hooks/use-multi-source-graph.ts
 - [X] T033 [US1] Add provenance serialization/deserialization logic in packages/utils/src/storage/dexie-storage-provider.ts (COMPLETED IN PHASE 2)
 - [X] T034 [US1] Implement deduplication by entityId in storage provider methods in packages/utils/src/storage/dexie-storage-provider.ts (COMPLETED IN PHASE 2)
 

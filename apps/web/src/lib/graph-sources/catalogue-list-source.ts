@@ -241,3 +241,73 @@ export function createHistorySource(storage: CatalogueStorageProvider): GraphDat
     },
   };
 }
+
+/**
+ * Create a graph data source specifically for graph list (persistent working set)
+ * T032: Graph list as a graph data source
+ */
+export function createGraphListSource(storage: CatalogueStorageProvider): GraphDataSource {
+  return {
+    id: 'catalogue:graph-list',
+    label: 'Graph List',
+    category: 'catalogue' as GraphSourceCategory,
+    description: 'Persistent graph working set with provenance tracking',
+
+    async getEntities(): Promise<GraphSourceEntity[]> {
+      const graphNodes = await storage.getGraphList();
+      const results: GraphSourceEntity[] = [];
+
+      const fetchPromises = graphNodes.map(async (node) => {
+        // Fetch full entity data to extract relationships
+        const entityData = await fetchEntityData(node.entityType, node.entityId);
+        if (!entityData) {
+          // If fetch fails, still return node with basic info but no relationships
+          return {
+            entityType: node.entityType,
+            entityId: normalizeOpenAlexId(node.entityId),
+            label: node.label,
+            entityData: {
+              _graphListProvenance: node.provenance,
+              _graphListAddedAt: node.addedAt,
+            },
+            sourceId: 'catalogue:graph-list',
+            relationships: [],
+          } satisfies GraphSourceEntity;
+        }
+
+        const normalizedId = normalizeOpenAlexId(node.entityId);
+        const label = extractEntityLabel(node.entityType, normalizedId, entityData);
+        const relationships = extractRelationships(node.entityType, entityData);
+
+        return {
+          entityType: node.entityType,
+          entityId: normalizedId,
+          label,
+          entityData: {
+            ...entityData,
+            // Include graph list metadata
+            _graphListProvenance: node.provenance,
+            _graphListAddedAt: node.addedAt,
+          },
+          sourceId: 'catalogue:graph-list',
+          relationships,
+        } satisfies GraphSourceEntity;
+      });
+
+      const fetched = await Promise.all(fetchPromises);
+      for (const result of fetched) {
+        if (result) results.push(result);
+      }
+
+      return results;
+    },
+
+    async getEntityCount(): Promise<number> {
+      return await storage.getGraphListSize();
+    },
+
+    async isAvailable(): Promise<boolean> {
+      return true; // Graph list is always available
+    },
+  };
+}

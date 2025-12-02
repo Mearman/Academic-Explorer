@@ -21,6 +21,7 @@ import { useStorageProvider } from '@/contexts/storage-provider-context';
 import {
   createBookmarksSource,
   createHistorySource,
+  createGraphListSource,
   createCatalogueListSource,
   createIndexedDBCacheSource,
   createMemoryCacheSource,
@@ -197,20 +198,22 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
 
   /**
    * Discover all available sources
+   * T032: Graph list source integrated into multi-source graph
    */
   const discoverSources = useCallback(async (): Promise<GraphDataSource[]> => {
     const discovered: GraphDataSource[] = [];
 
-    // Always add bookmarks and history
+    // Always add bookmarks, history, and graph list (system special lists)
     discovered.push(createBookmarksSource(storage));
     discovered.push(createHistorySource(storage));
+    discovered.push(createGraphListSource(storage)); // T032: Graph list as persistent working set
 
     // Add user-created catalogue lists
     try {
       const lists = await storage.getAllLists();
       for (const list of lists) {
-        // Skip system lists (bookmarks, history) - they're added above
-        if (list.id === 'bookmarks-list' || list.id === 'history-list') continue;
+        // Skip system lists (bookmarks, history, graph list) - they're added above
+        if (list.id === 'bookmarks-list' || list.id === 'history-list' || list.id === 'graph-list') continue;
         if (list.id) {
           discovered.push(createCatalogueListSource(storage, list.id, list));
         }
