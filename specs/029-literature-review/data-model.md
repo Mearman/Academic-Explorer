@@ -35,7 +35,10 @@ type EntityType =
   | "lists"  // NEW: Lists are first-class entities
 
 interface CatalogueList {
-  id: string              // e.g., "L123456789" (L prefix for lists)
+  // ID is pako-compressed, base64url-encoded payload with "L" prefix
+  // Format: "L" + base64url(pako.deflate(JSON.stringify(EncodedListPayload)))
+  // This makes lists shareable via URL alone - the entire state is in the ID
+  id: string
   type: "lists"
   title: string
   description?: string
@@ -69,6 +72,59 @@ interface CatalogueList {
   createdBy?: string
   tags?: string[]
 }
+
+/**
+ * Payload encoded in the list ID using pako compression
+ * Designed for URL-safe sharing while keeping URLs reasonably short
+ */
+interface EncodedListPayload {
+  // UUID for uniqueness (even if contents are identical)
+  uuid: string  // e.g., "550e8400-e29b-41d4-a716-446655440000"
+
+  // Core metadata (kept minimal for compression)
+  t: string                    // title
+  d?: string                   // description (optional)
+
+  // Parent relationship (optional)
+  p?: {
+    id: string                 // parentEntityId
+    type: EntityType           // parentEntityType
+    label?: string             // relationshipLabel
+  }
+
+  // Entity IDs only (types inferred from ID prefix)
+  // e.g., ["W123", "W456", "A789"] - entity type derivable from prefix
+  e: string[]
+
+  // Per-entity metadata keyed by entity ID (only if present)
+  // e.g., { "W123": { prismaStage: "included" } }
+  m?: Record<string, Record<string, unknown>>
+
+  // List type (single char for compression)
+  // g=general, b=bibliography, c=collaborators, o=outputs, k=bookmarks, h=history
+  lt: "g" | "b" | "c" | "o" | "k" | "h"
+
+  // Timestamps (Unix epoch for compression)
+  ca: number  // createdAt
+  ua: number  // updatedAt
+}
+
+/**
+ * ID Encoding/Decoding utilities
+ *
+ * Encode: CatalogueList → pako.deflate → base64url → "L" prefix
+ * Decode: Remove "L" → base64url decode → pako.inflate → CatalogueList
+ *
+ * Example encoded ID (hypothetical):
+ * "LeJyrVspLz0nNBQA" (very short lists)
+ * "LeNqtk81qwzAQhF9F6By7cuw4..." (typical bibliography)
+ *
+ * URL length considerations:
+ * - Safe limit: ~2000 characters
+ * - Typical work ID: 10-12 chars (e.g., "W2741809807")
+ * - With pako compression: ~100-150 entities fit in safe URL length
+ * - For larger lists: Use stored reference ID with lazy loading
+ */
 ```
 
 **Use Cases:**
@@ -91,58 +147,87 @@ interface CatalogueList {
 
 ```
 CatalogueList: "My Systematic Reviews"
-  ├── parentEntityId: "A5017898742" (Author - me)
-  ├── parentEntityType: "authors"
-  └── entities: [
-        { id: "L001", type: "catalogues" },  // Review 1 bibliography
-        { id: "L002", type: "catalogues" },  // Review 2 bibliography
-        { id: "L003", type: "catalogues" },  // Review 3 bibliography
-      ]
+  ├── id: "LeNqtk81qwzAQhF9F..." (pako-encoded payload)
+  ├── decoded payload: {
+  │     uuid: "550e8400-e29b-41d4-a716-446655440000",
+  │     t: "My Systematic Reviews",
+  │     p: { id: "A5017898742", type: "authors" },
+  │     e: ["LeJyrVspLz0nNBQA...", "LeKx2jVspMz1nOCR...", "LeMz3kWtqNz2oPDS..."],
+  │     lt: "g",
+  │     ca: 1719792000, ua: 1719792000
+  │   }
+  └── contains nested list IDs (each also pako-encoded)
 
-CatalogueList: "L001" (Review 1 Bibliography)
-  ├── parentEntityId: "W3187234764" (the review paper)
-  ├── parentEntityType: "works"
-  ├── literatureReviewId: "lr-001" (PRISMA workflow)
-  └── entities: [
-        { id: "W123", type: "works", metadata: { prismaStage: "included" } },
-        { id: "W456", type: "works", metadata: { prismaStage: "included" } },
-        { id: "W789", type: "works", metadata: { prismaStage: "excluded" } },
-      ]
+CatalogueList: "Review 1 Bibliography"
+  ├── id: "LeJyrVspLz0nNBQA..." (pako-encoded payload)
+  ├── decoded payload: {
+  │     uuid: "660f9500-f3ac-52e5-b827-557766551111",
+  │     t: "Review 1 Bibliography",
+  │     p: { id: "W3187234764", type: "works", label: "bibliography" },
+  │     e: ["W2741809807", "W2760813866", "W2893746512"],
+  │     m: {
+  │       "W2741809807": { prismaStage: "included" },
+  │       "W2760813866": { prismaStage: "included" },
+  │       "W2893746512": { prismaStage: "excluded" }
+  │     },
+  │     lt: "b",
+  │     ca: 1719792000, ua: 1719792000
+  │   }
+  └── entities hydrated from OpenAlex using IDs in payload
 ```
 
 **Sample Bibliographies:**
 
 Sample bibliographies are simply CatalogueLists where:
-- `parentEntityId` is an existing OpenAlex review paper
-- `listType` is "bibliography"
-- The list is pre-populated with PRISMA stage metadata
-- `visibility` is "public" for sharing
+- The pako-encoded ID contains the full list state
+- `parentEntityId` references an existing OpenAlex review paper
+- `listType` is "bibliography" (`lt: "b"`)
+- Entity metadata includes PRISMA stage assignments
+- Lists are shareable via URL: `/lists/LeNqtk81qwzAQhF9F...`
 
 ```typescript
-// Sample bibliography is just a CatalogueList with specific configuration
-const sampleBibliography: CatalogueList = {
-  id: "L-cochrane-ml-2024",
-  type: "catalogues",
-  title: "ML in Medical Diagnosis - Cochrane Review",
+// Sample bibliography payload (before pako encoding)
+const samplePayload: EncodedListPayload = {
+  uuid: "cochrane-ml-2024-550e8400",  // Can use semantic UUID for samples
+  t: "ML in Medical Diagnosis - Cochrane Review",
+  d: "Bibliography from Cochrane systematic review on ML diagnostics",
+  p: {
+    id: "W3187234764",    // Parent: the published review paper
+    type: "works",
+    label: "bibliography"
+  },
+  e: ["W2741809807", "W2760813866", "W2893746512"],  // Entity IDs
+  m: {
+    "W2741809807": { prismaStage: "included", qualityScore: 8 },
+    "W2760813866": { prismaStage: "included", qualityScore: 7 },
+    "W2893746512": { prismaStage: "excluded", reason: "wrong population" }
+  },
+  lt: "b",  // bibliography
+  ca: 1718409600,  // 2024-06-15 as Unix timestamp
+  ua: 1718409600
+}
 
-  // Parent is the published review paper
+// Encoded ID: "L" + base64url(pako.deflate(JSON.stringify(samplePayload)))
+// Result: "LeNqtk81qwzAQhF9F6By7cuw4sRMnJNBDpUqlXnLoIbfKWq..."
+
+// Decoded CatalogueList (hydrated from payload + OpenAlex data)
+const sampleBibliography: CatalogueList = {
+  id: "LeNqtk81qwzAQhF9F6By7cuw4sRMnJNBDpUqlXnLoIbfKWq...",
+  type: "lists",
+  title: "ML in Medical Diagnosis - Cochrane Review",
+  description: "Bibliography from Cochrane systematic review on ML diagnostics",
   parentEntityId: "W3187234764",
   parentEntityType: "works",
   relationshipLabel: "bibliography",
-
   listType: "bibliography",
-  literatureReviewId: "lr-cochrane-ml-2024", // Has PRISMA workflow data
   visibility: "public",
-
   entities: [
-    { id: "W2741809807", type: "works", metadata: { prismaStage: "included" } },
-    { id: "W2760813866", type: "works", metadata: { prismaStage: "included" } },
-    // ... more works with PRISMA stages
+    { id: "W2741809807", type: "works", metadata: { prismaStage: "included", qualityScore: 8 } },
+    { id: "W2760813866", type: "works", metadata: { prismaStage: "included", qualityScore: 7 } },
+    { id: "W2893746512", type: "works", metadata: { prismaStage: "excluded", reason: "wrong population" } }
   ],
-
-  createdAt: "2024-06-15",
-  updatedAt: "2024-06-15",
-  tags: ["machine-learning", "medical-diagnosis", "systematic-review"]
+  createdAt: "2024-06-15T00:00:00.000Z",
+  updatedAt: "2024-06-15T00:00:00.000Z"
 }
 ```
 
