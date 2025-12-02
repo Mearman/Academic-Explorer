@@ -77,27 +77,35 @@ const MASONRY_CONFIG = {
   GAP: 24,
 } as const;
 
-/** Masonry grid component with horizontal-first item placement */
+/** Masonry grid component with automatic content-based sizing */
 interface MasonryGridProps {
   children: React.ReactNode[];
+  /** Minimum column width in pixels (default: 350) */
+  minColumnWidth?: number;
+  /** Gap between items in pixels (default: 24) */
+  gap?: number;
 }
 
-function MasonryGrid({ children }: MasonryGridProps) {
+function MasonryGrid({
+  children,
+  minColumnWidth = MASONRY_CONFIG.MIN_COLUMN_WIDTH,
+  gap = MASONRY_CONFIG.GAP,
+}: MasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [positions, setPositions] = useState<{ x: number; y: number; width: number }[]>([]);
   const [containerHeight, setContainerHeight] = useState(0);
-  const [isReady, setIsReady] = useState(false);
+  const [measurePass, setMeasurePass] = useState(0);
 
   const calculateLayout = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const containerWidth = container.offsetWidth;
-    if (containerWidth === 0) return; // Not yet laid out
+    if (containerWidth === 0) return;
 
-    const columnCount = Math.max(1, Math.floor((containerWidth + MASONRY_CONFIG.GAP) / (MASONRY_CONFIG.MIN_COLUMN_WIDTH + MASONRY_CONFIG.GAP)));
-    const columnWidth = (containerWidth - (columnCount - 1) * MASONRY_CONFIG.GAP) / columnCount;
+    const columnCount = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+    const columnWidth = (containerWidth - (columnCount - 1) * gap) / columnCount;
 
     // Track height of each column
     const columnHeights = new Array(columnCount).fill(0);
@@ -105,32 +113,49 @@ function MasonryGrid({ children }: MasonryGridProps) {
 
     for (let i = 0; i < children.length; i++) {
       const itemEl = itemRefs.current[i];
-      const itemHeight = itemEl?.offsetHeight ?? 200; // Estimate if not measured
 
-      // Find shortest column
-      const shortestCol = columnHeights.indexOf(Math.min(...columnHeights));
+      // Measure natural content width and height
+      const naturalWidth = itemEl?.scrollWidth ?? minColumnWidth;
+      const itemHeight = itemEl?.scrollHeight ?? 200;
 
-      // Calculate position
+      // Calculate span based on content width relative to column width
+      const naturalSpan = Math.ceil(naturalWidth / columnWidth);
+      const span = Math.min(Math.max(1, naturalSpan), columnCount);
+
+      // Find best starting column for this span
+      let bestCol = 0;
+      let bestHeight = Infinity;
+
+      for (let col = 0; col <= columnCount - span; col++) {
+        const maxHeightInSpan = Math.max(...columnHeights.slice(col, col + span));
+        if (maxHeightInSpan < bestHeight) {
+          bestHeight = maxHeightInSpan;
+          bestCol = col;
+        }
+      }
+
+      // Calculate position and width for spanning item
+      const itemWidth = columnWidth * span + gap * (span - 1);
+
       newPositions[i] = {
-        x: shortestCol * (columnWidth + MASONRY_CONFIG.GAP),
-        y: columnHeights[shortestCol],
-        width: columnWidth,
+        x: bestCol * (columnWidth + gap),
+        y: bestHeight,
+        width: itemWidth,
       };
 
-      // Update column height
-      columnHeights[shortestCol] += itemHeight + MASONRY_CONFIG.GAP;
+      // Update heights for all columns in the span
+      const newHeight = bestHeight + itemHeight + gap;
+      for (let col = bestCol; col < bestCol + span; col++) {
+        columnHeights[col] = newHeight;
+      }
     }
 
     setPositions(newPositions);
-    setContainerHeight(Math.max(...columnHeights, 0) - MASONRY_CONFIG.GAP);
-    setIsReady(true);
-  }, [children.length]);
+    setContainerHeight(Math.max(...columnHeights, 0) - gap);
+  }, [children.length, minColumnWidth, gap]);
 
-  // Initial layout after mount and on resize
+  // Initial layout and resize handling
   useEffect(() => {
-    // Delay initial calculation to ensure DOM is ready
-    const timeoutId = setTimeout(calculateLayout, 0);
-
     const resizeObserver = new ResizeObserver(() => {
       calculateLayout();
     });
@@ -139,20 +164,24 @@ function MasonryGrid({ children }: MasonryGridProps) {
       resizeObserver.observe(containerRef.current);
     }
 
-    return () => {
-      clearTimeout(timeoutId);
-      resizeObserver.disconnect();
-    };
+    // Initial measure pass
+    requestAnimationFrame(() => {
+      setMeasurePass(1);
+    });
+
+    return () => resizeObserver.disconnect();
   }, [calculateLayout]);
 
-  // Recalculate after items render (to get accurate heights)
+  // Two-pass layout: first render naturally to measure, then position
   useEffect(() => {
-    if (isReady) {
-      // Recalculate once more after positions are set to get accurate item heights
-      const timeoutId = setTimeout(calculateLayout, 50);
-      return () => clearTimeout(timeoutId);
+    if (measurePass > 0) {
+      calculateLayout();
+      // Second pass to refine after positioning
+      if (measurePass === 1) {
+        requestAnimationFrame(() => setMeasurePass(2));
+      }
     }
-  }, [isReady, calculateLayout]);
+  }, [measurePass, calculateLayout]);
 
   return (
     <Box
@@ -161,18 +190,19 @@ function MasonryGrid({ children }: MasonryGridProps) {
         position: "relative",
         width: "100%",
         height: containerHeight > 0 ? containerHeight : "auto",
-        minHeight: 100,
+        minHeight: 50,
       }}
     >
       {React.Children.map(children, (child, index) => (
         <Box
           ref={(el) => { itemRefs.current[index] = el; }}
           style={{
-            position: positions[index] ? "absolute" : "relative",
+            position: measurePass > 0 && positions[index] ? "absolute" : "relative",
             left: positions[index]?.x ?? 0,
             top: positions[index]?.y ?? 0,
-            width: positions[index]?.width ?? "100%",
-            visibility: positions[index] ? "visible" : "hidden",
+            width: measurePass > 0 && positions[index] ? positions[index].width : "auto",
+            maxWidth: "100%",
+            visibility: measurePass > 0 && positions[index] ? "visible" : "hidden",
           }}
         >
           {child}
@@ -313,26 +343,29 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
       );
     }
 
-    // For object arrays, show each item
+    // For object arrays, show each item in auto-sizing grid
     return (
-      <Stack gap="md" mt="xs">
-        {value.map((item, index) => (
-          <Card key={index} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
-            <Group gap="sm">
-              <Badge
-                circle
-                size="lg"
-                color="blue"
-              >
-                {index + 1}
-              </Badge>
-              <Box miw={0} style={{ flex: 1 }}>
-                {renderValue(item, depth + 1, colors)}
-              </Box>
-            </Group>
-          </Card>
-        ))}
-      </Stack>
+      <Box mt="xs">
+        <MasonryGrid minColumnWidth={120} gap={8}>
+          {value.map((item, index) => (
+            <Card
+              key={index}
+              style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+              p="sm"
+              bg={colors?.background.primary}
+            >
+              <Group gap="sm" align="flex-start">
+                <Badge circle size="md" color="blue">
+                  {index + 1}
+                </Badge>
+                <Box miw={0} style={{ flex: 1 }}>
+                  {renderValue(item, depth + 1, colors)}
+                </Box>
+              </Group>
+            </Card>
+          ))}
+        </MasonryGrid>
+      </Box>
     );
   }
 
@@ -475,20 +508,25 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
       </CardSection>
 
       <CardSection p="lg">
-        <Stack gap="md">
+        <MasonryGrid minColumnWidth={150} gap={12}>
           {Object.entries(groupData).map(([key, value]) => (
-            <Card key={key} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
+            <Card
+              key={key}
+              style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+              p="md"
+              bg={colors?.background.primary}
+            >
               <Stack gap="xs">
                 <Text size="md" fw={600} c="blue.6">
                   {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                 </Text>
-                <Box ml="xs" mt={2}>
+                <Box mt={2}>
                   {renderValue(value, 0, colors)}
                 </Box>
               </Stack>
             </Card>
           ))}
-        </Stack>
+        </MasonryGrid>
       </CardSection>
     </Card>
   );
@@ -511,7 +549,7 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
           />
         )}
 
-        {/* Tiled layout uses custom masonry with horizontal-first placement */}
+        {/* Tiled layout uses auto-sizing masonry grid */}
         {layout === "tiled" ? (
           <MasonryGrid>
             {sortedEntries.map(([groupName, groupData]) => (
