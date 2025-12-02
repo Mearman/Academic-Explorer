@@ -2,7 +2,7 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import type { QueryParams , OpenAlexEntity } from "@bibgraph/types";
+import type { QueryParams , OpenAlexEntity, OpenAlexResponse } from "@bibgraph/types";
 import { isOpenAlexEntity } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
 import { z } from "zod";
@@ -399,6 +399,98 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
       // Re-throw the original API error if nothing else works
       throw apiError;
+    }
+  }
+
+  /**
+   * Enhanced getResponse that caches individual entities from list results
+   * This ensures entities fetched via list/search endpoints are available in the cache
+   */
+  public async getResponse<T>(
+    endpoint: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<T>> {
+    // Call parent implementation to get the response
+    const response = await super.getResponse<T>(endpoint, params);
+
+    // Cache individual entities from results if static cache is enabled
+    if (this.staticCacheEnabled && response.results && Array.isArray(response.results)) {
+      // Determine entity type from endpoint (e.g., "works", "authors")
+      // Handle endpoints like "works", "authors/A123/works", etc.
+      const endpointEntityType = this.detectEntityTypeFromEndpoint(endpoint);
+
+      if (endpointEntityType) {
+        // Cache each entity in the background (don't await to avoid blocking)
+        void this.cacheEntitiesFromResults(response.results, endpointEntityType);
+      }
+    }
+
+    return response;
+  }
+
+  /**
+   * Detect entity type from endpoint path
+   * Handles both direct endpoints ("works") and nested endpoints ("authors/A123/works")
+   */
+  private detectEntityTypeFromEndpoint(endpoint: string): string | null {
+    // Get the last segment of the endpoint path
+    const segments = endpoint.split('/').filter(Boolean);
+    if (segments.length === 0) return null;
+
+    // For simple endpoints like "works", "authors"
+    const lastSegment = segments[segments.length - 1];
+
+    // Valid entity types
+    const validTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts', 'keywords'];
+
+    if (validTypes.includes(lastSegment)) {
+      return lastSegment;
+    }
+
+    // For direct endpoints, check the first segment
+    if (validTypes.includes(segments[0])) {
+      return segments[0];
+    }
+
+    return null;
+  }
+
+  /**
+   * Cache multiple entities from list results
+   * Runs in background to avoid blocking the response
+   */
+  private async cacheEntitiesFromResults(
+    results: unknown[],
+    entityType: string,
+  ): Promise<void> {
+    let cachedCount = 0;
+
+    for (const result of results) {
+      // Check if result is an OpenAlex entity with an id
+      if (isOpenAlexEntity(result)) {
+        const id = result.id;
+        if (typeof id === 'string') {
+          const cleanId = cleanOpenAlexId(id);
+          try {
+            await this.cacheEntityResult({
+              entityType,
+              id: cleanId,
+              data: result,
+            });
+            cachedCount++;
+          } catch {
+            // Silently ignore individual cache failures
+          }
+        }
+      }
+    }
+
+    if (cachedCount > 0) {
+      logger.debug("client", "Cached entities from list response", {
+        entityType,
+        count: cachedCount,
+        total: results.length,
+      });
     }
   }
 
