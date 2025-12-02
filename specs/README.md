@@ -6,9 +6,9 @@ This directory contains all feature specifications for BibGraph, organized using
 
 | Status | Count |
 |--------|-------|
-| ✅ Complete | 20 |
+| ✅ Complete | 21 |
 | 🚧 In Progress | 4 |
-| 📝 Draft | 6 |
+| 📝 Draft | 5 |
 | ⚠️ Archived | 2 |
 
 ## Specifications
@@ -302,9 +302,9 @@ Dedicated `/graph` route for visualizing repository entities as an interactive f
 ---
 
 ### spec-034: Persistent Graph Index
-**Status**: 📝 Draft | **Created**: 2025-12-02
+**Status**: ✅ Complete | **Completed**: 2025-12-02
 
-Persistent graph index layer for the unified tiered cache system. Stores relationship structure (nodes as entity IDs, edges as relationships) in Dexie/IndexedDB with in-memory Graph class for fast traversal. Graph is derived automatically when entities are cached. Enables graph-native queries (neighbors, paths, subgraphs) and faster visualization without re-extracting edges from entity data.
+Persistent graph index layer for the unified tiered cache system. Stores relationship structure (nodes as entity IDs, edges as relationships) in Dexie/IndexedDB with in-memory Graph class for fast traversal. Graph is derived automatically when entities are cached. Enables graph-native queries (neighbors, paths, subgraphs), interactive node expansion (click-to-expand), and faster visualization loading without re-extracting edges from entity data. Integrated as toggleable data source on /graph page.
 
 [View Spec](./034-persistent-graph-index/)
 
