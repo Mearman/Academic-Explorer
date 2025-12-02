@@ -1,15 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 2.11.1 → 2.12.0 (MINOR: Added Principle XVII - No Magic Numbers/Values)
+Version: 2.12.1 → 2.13.0 (MINOR: Added Principle XVIII - Agent Embed Link Format)
 Modified Sections: None
-Added Sections: Principle XVII - No Magic Numbers/Values, Version history entry for v2.12.0
+Added Sections: Principle XVIII - Agent Embed Link Format
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated - item 17 added to Constitution Check
-  - .specify/templates/spec-template.md: ✅ Updated - item 17 added to Constitution Alignment
-  - .specify/templates/tasks-template.md: ✅ Updated - item 17 added to compliance verification
+  - .specify/templates/plan-template.md: ✅ Updated - item 18 added to Constitution Check
+  - .specify/templates/spec-template.md: ✅ Updated - item 18 added to Constitution Alignment
+  - .specify/templates/tasks-template.md: ✅ Updated - item 18 added to compliance verification
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.12.1: Added Project-Specific Gotchas section (DRY refactor from README)
+  - v2.12.0: Added Principle XVII - No Magic Numbers/Values
   - v2.11.1: README conciseness improvements and template alignment validation
   - v2.11.0: Added Principle XVI - Presentation/Functionality Decoupling
   - v2.10.0: Added Principle XV - DRY Code & Configuration
@@ -25,10 +27,12 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.12.0)
+# BibGraph Constitution (v2.13.0)
 
 ## Version History
 
+- **v2.13.0** (2025-12-02): Added Principle XVIII - Agent Embed Link Format
+- **v2.12.1** (2025-12-02): Added Project-Specific Gotchas section (DRY refactor from README)
 - **v2.12.0** (2025-12-02): Added Principle XVII - No Magic Numbers/Values
 - **v2.11.1** (2025-11-30): README conciseness improvements and template alignment validation
 - **v2.11.0** (2025-11-29): Added Principle XVI - Presentation/Functionality Decoupling
@@ -308,6 +312,42 @@ const API_CONFIG = {
 
 **Rationale**: Named constants improve code readability, enable single-point-of-change for values used in multiple places, make code self-documenting, and reduce bugs from typos or inconsistent values.
 
+### XVIII. Agent Embed Link Format (NON-NEGOTIABLE)
+
+**Markdown links intended for AI agent embedding MUST use the `@` prefix format**.
+
+**Definition**: An "agent embed link" is a markdown link in AGENTS.md, CLAUDE.md, or similar agent instruction files that references another document to be included in the agent's context.
+
+**Required format**:
+```markdown
+> [@path/to/file.md](path/to/file.md)
+```
+
+**Requirements**:
+- Link text MUST start with `@` followed by the file path
+- Link URL MUST be the same path (relative or absolute as appropriate)
+- MUST be placed in a blockquote (`>`) for embed semantics
+- Path in link text and URL MUST match exactly
+
+**Examples**:
+```markdown
+// ✅ CORRECT: Agent embed format
+> [@.specify/memory/constitution.md](.specify/memory/constitution.md)
+> [@README.md](README.md)
+> [@docs/architecture.md](docs/architecture.md)
+
+// ❌ WRONG: Missing @ prefix
+> [.specify/memory/constitution.md](.specify/memory/constitution.md)
+
+// ❌ WRONG: Mismatched paths
+> [@constitution.md](.specify/memory/constitution.md)
+
+// ❌ WRONG: Not in blockquote (won't trigger embed)
+[@.specify/memory/constitution.md](.specify/memory/constitution.md)
+```
+
+**Rationale**: The `@` prefix format is recognized by Claude Code as a document embed directive. Using consistent formatting ensures agents receive the intended context and enables tooling to detect and validate embed references.
+
 ## Consolidated Patterns
 
 ### Import Patterns
@@ -424,6 +464,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - **DRY Code (XV)** → Monorepo Architecture (III) → Build Output Isolation (XIII)
 - **Presentation/Functionality Decoupling (XVI)** → Test-First Development (II) → DRY Code (XV)
 - **No Magic Numbers (XVII)** → DRY Code (XV) → Type Safety (I)
+- **Agent Embed Link Format (XVIII)** → DRY Code (XV) → Working Files Hygiene (XIV)
 
 ## Development Workflow
 
@@ -469,7 +510,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 17 core principles. Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 18 core principles. Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider
@@ -504,9 +545,37 @@ Every PR MUST verify alignment with all 17 core principles. Feature specs MUST d
 - **DRY Code & Configuration**: No duplicate logic, shared base configurations, proactive cruft cleanup
 - **Presentation/Functionality Decoupling**: No business logic in components, clear container/presentational separation
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized
+- **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for embeds
 
 ### Breaking Changes
 MAJOR.MINOR.PATCH versioning applies. During development, breaking changes acceptable without MAJOR bumps but MUST be documented.
+
+## Project-Specific Gotchas
+
+### OpenAlex API Quirks
+- **Comma encoding**: `select` parameter must NOT URL-encode commas
+- **Rate limiting**: Honor `Retry-After` headers (exponential backoff)
+- **Dev proxy**: `/api/openalex` routes to OpenAlex API in dev mode
+
+### Nx Daemon Issues
+Daemon can hang or consume excessive memory. Use `NX_DAEMON=false` in CI and `pnpm kill-nx` scripts locally.
+
+### React 19 Hook Violations
+MainLayout and related stores refactored for stable method references (avoid creating new functions in render).
+
+### Test Environment Detection
+Client uses multiple checks (NODE_ENV, __DEV__, hostname) to determine dev vs prod mode. Always mock carefully in tests.
+
+### Storage Provider Initialization
+```typescript
+const provider = new DexieStorageProvider(logger);
+await provider.initializeSpecialLists(); // ALWAYS call before operations
+```
+
+### E2E Testing Patterns
+- Page objects: `apps/web/src/test/page-objects/` (BasePageObject → BaseSPAPageObject → BaseEntityPageObject)
+- Wait helpers: `waitForAppReady`, `waitForEntityData`, `waitForSearchResults`, `waitForGraphReady`
+- Test categories: `@entity`, `@utility`, `@workflow`, `@error`
 
 ## Governance
 

@@ -138,3 +138,4 @@
 - **DRY Code & Configuration**: No duplicate logic; shared utilities extracted to packages; configuration extends shared base; cruft cleaned proactively
 - **Presentation/Functionality Decoupling**: Web app components separate presentation from business logic; logic in hooks/services, rendering in components; both layers independently testable
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration values centralized
+- **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for document embeds
