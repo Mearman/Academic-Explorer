@@ -4,12 +4,11 @@
  */
 
 import { useLocation } from '@tanstack/react-router';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { RepositoryAlgorithmsPanel } from '@/components/algorithms/RepositoryAlgorithmsPanel';
-import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
+import { GraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
 
 /**
  * Context-aware right sidebar content
@@ -19,24 +18,26 @@ export function RightSidebarContent() {
   const location = useLocation();
   const isGraphPage = location.pathname === '/graph';
 
-  // Graph page hooks - only used when on graph page
-  const graphData = useMultiSourceGraph();
-  const graphViz = useGraphVisualization();
+  // Try to get shared state from context (only available on graph page)
+  // This will be null when outside the provider (non-graph pages)
+  const context = useContext(GraphVisualizationContext);
 
   // If we're on the graph page, show the AlgorithmTabs
-  if (isGraphPage) {
+  if (isGraphPage && context) {
+    const { graphData, visualization } = context;
+
     return (
       <AlgorithmTabs
         nodes={graphData.nodes}
         edges={graphData.edges}
-        onHighlightNodes={graphViz.highlightNodes}
-        onHighlightPath={graphViz.highlightPath}
-        onSelectCommunity={graphViz.selectCommunity}
-        onCommunitiesDetected={graphViz.setCommunitiesResult}
-        pathSource={graphViz.pathSource}
-        pathTarget={graphViz.pathTarget}
-        onPathSourceChange={graphViz.setPathSource}
-        onPathTargetChange={graphViz.setPathTarget}
+        onHighlightNodes={visualization.highlightNodes}
+        onHighlightPath={visualization.highlightPath}
+        onSelectCommunity={visualization.selectCommunity}
+        onCommunitiesDetected={visualization.setCommunitiesResult}
+        pathSource={visualization.pathSource}
+        pathTarget={visualization.pathTarget}
+        onPathSourceChange={visualization.setPathSource}
+        onPathTargetChange={visualization.setPathTarget}
       />
     );
   }

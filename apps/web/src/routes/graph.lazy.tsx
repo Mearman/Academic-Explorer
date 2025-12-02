@@ -53,18 +53,30 @@ import {
 } from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
+import {
+  GraphVisualizationProvider,
+  useGraphVisualizationContext,
+} from '@/contexts/GraphVisualizationContext';
 import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';
 
 /**
- * Entity Graph Page Component
+ * Entity Graph Page Component (Inner)
  *
  * Displays entities from multiple sources as an interactive force-directed graph
  */
-function EntityGraphPage() {
-  // Multi-source graph data
+function EntityGraphPageInner() {
+  // Get shared state from context
+  const context = useGraphVisualizationContext();
+
+  // This component should only be rendered within the provider, so context should never be null
+  if (!context) {
+    throw new Error('EntityGraphPageInner must be used within GraphVisualizationProvider');
+  }
+
+  const { graphData, visualization } = context;
+
+  // Destructure graph data
   const {
     nodes,
     edges,
@@ -78,7 +90,7 @@ function EntityGraphPage() {
     disableAll,
     refresh,
     addNodesAndEdges,
-  } = useMultiSourceGraph();
+  } = graphData;
 
   // Node expansion for click-to-expand
   const {
@@ -88,7 +100,7 @@ function EntityGraphPage() {
     expandingNodeIds,
   } = useNodeExpansion();
 
-  // Visualization state management
+  // Destructure visualization state
   const {
     highlightedNodes,
     highlightedPath,
@@ -111,7 +123,7 @@ function EntityGraphPage() {
     selectCommunity,
     setPathSource,
     setPathTarget,
-  } = useGraphVisualization();
+  } = visualization;
 
   // Graph methods ref for external control (zoomToFit, etc.)
   const graphMethodsRef = useRef<GraphMethods | null>(null);
@@ -493,6 +505,20 @@ function EntityGraphPage() {
         </Stack>
       </Box>
     </Box>
+  );
+}
+
+/**
+ * Entity Graph Page Component (Wrapper)
+ *
+ * Wraps the inner component with GraphVisualizationProvider to share state
+ * between the graph visualization and the right sidebar
+ */
+function EntityGraphPage() {
+  return (
+    <GraphVisualizationProvider>
+      <EntityGraphPageInner />
+    </GraphVisualizationProvider>
   );
 }
 
