@@ -24,6 +24,7 @@ import {
   createIndexedDBCacheSource,
   createMemoryCacheSource,
   createStaticCacheSource,
+  createPersistentGraphSource,
 } from '@/lib/graph-sources';
 
 const STORAGE_KEY = 'bibgraph:graph-source-toggles';
@@ -194,6 +195,12 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
       }
     } catch (err) {
       logger.debug(LOG_PREFIX, 'Failed to load catalogue lists', { error: err });
+    }
+
+    // Add persistent graph source (primary source for relationship data)
+    const persistentGraphSource = createPersistentGraphSource();
+    if (await persistentGraphSource.isAvailable()) {
+      discovered.push(persistentGraphSource);
     }
 
     // Add cache sources

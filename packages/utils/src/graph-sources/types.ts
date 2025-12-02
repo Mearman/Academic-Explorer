@@ -12,7 +12,7 @@ import type { EntityType, GraphNode, GraphEdge, RelationType } from '@bibgraph/t
 /**
  * Source category for grouping in UI
  */
-export type GraphSourceCategory = 'catalogue' | 'cache';
+export type GraphSourceCategory = 'catalogue' | 'cache' | 'graph';
 
 /**
  * Entity with source tracking and relationship data

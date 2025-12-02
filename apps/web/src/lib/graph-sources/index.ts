@@ -6,3 +6,4 @@
 
 export * from './catalogue-list-source';
 export * from './cache-source';
+export * from './persistent-graph-source';
