@@ -71,7 +71,10 @@ function sourceEntityToNode(entity: GraphSourceEntity): GraphNode {
     x: Math.random() * 800 - 400,
     y: Math.random() * 600 - 300,
     externalIds: [],
-    entityData: entity.entityData,
+    entityData: {
+      ...entity.entityData,
+      sourceId: entity.sourceId, // Track which source provided this node
+    },
   };
 }
 

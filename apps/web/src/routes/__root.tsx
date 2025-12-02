@@ -20,17 +20,19 @@ function RootLayout() {
     <div className={shadcnLightTheme}>
       <UrlFixer />
       <NavigationTracker />
-      <MainLayout>
-        {/* Conditionally wrap Outlet with GraphVisualizationProvider on graph page */}
-        {/* This allows the sidebar (in MainLayout) to access the context */}
-        {isGraphPage ? (
-          <GraphVisualizationProvider>
+      {/* Conditionally wrap MainLayout and Outlet with GraphVisualizationProvider on graph page */}
+      {/* This allows the sidebar (in MainLayout) to access the context */}
+      {isGraphPage ? (
+        <GraphVisualizationProvider>
+          <MainLayout>
             <Outlet />
-          </GraphVisualizationProvider>
-        ) : (
+          </MainLayout>
+        </GraphVisualizationProvider>
+      ) : (
+        <MainLayout>
           <Outlet />
-        )}
-      </MainLayout>
+        </MainLayout>
+      )}
     </div>
   );
 }
