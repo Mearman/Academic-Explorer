@@ -7,5 +7,6 @@ export * from "./OutgoingRelationships";
 export * from "./RelationshipCounts";
 export * from "./RelationshipItem";
 export * from "./RelationshipList";
+export * from "./RelationshipPagination";
 export * from "./RelationshipSection";
 export * from "./RelationshipTypeFilter";

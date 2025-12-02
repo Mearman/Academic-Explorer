@@ -67,7 +67,8 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
     outgoing: apiOutgoing,
     loading: apiLoading,
     error: apiError,
-    loadMore,
+    goToPage,
+    setPageSize,
     isLoadingMore,
   } = useEntityRelationshipQueries(entityId, entityType);
 
@@ -159,8 +160,9 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
         <RelationshipSection
           key={section.id}
           section={section}
-          onLoadMore={hasApiData ? () => loadMore(section.id) : undefined}
-          isLoadingMore={hasApiData ? isLoadingMore(section.id) : false}
+          onPageChange={hasApiData ? (page) => goToPage(section.id, page) : undefined}
+          onPageSizeChange={hasApiData ? (size) => setPageSize(section.id, size) : undefined}
+          isLoading={hasApiData ? isLoadingMore(section.id) : false}
         />
       ))}
     </Stack>

@@ -43,6 +43,7 @@ function isOpenAlexIdUrl(displayName: string): boolean {
 interface SectionLoadState {
   items: RelationshipItem[];
   currentPage: number;
+  pageSize: number;
   totalCount: number;
   loading: boolean;
 }
@@ -66,10 +67,16 @@ export interface UseEntityRelationshipQueriesResult {
   /** Error from any failed query */
   error?: Error;
 
-  /** Load more items for a specific section */
+  /** Load more items for a specific section (appends to existing) */
   loadMore: (sectionId: string) => Promise<void>;
 
-  /** Check if a section is currently loading more */
+  /** Navigate to a specific page for a section (replaces items) */
+  goToPage: (sectionId: string, page: number) => Promise<void>;
+
+  /** Change page size for a section (resets to page 0) */
+  setPageSize: (sectionId: string, pageSize: number) => Promise<void>;
+
+  /** Check if a section is currently loading */
   isLoadingMore: (sectionId: string) => boolean;
 }
 
@@ -208,9 +215,11 @@ export function useEntityRelationshipQueries(
       setSectionStates(prev => {
         const newMap = new Map(prev);
         const existing = prev.get(sectionId);
+        const configPageSize = config.source === 'api' ? config.pageSize : undefined;
         newMap.set(sectionId, {
           items: [...(existing?.items ?? []), ...newItems],
           currentPage: nextPage,
+          pageSize: existing?.pageSize ?? configPageSize ?? DEFAULT_PAGE_SIZE,
           totalCount: result.totalCount,
           loading: false,
         });
@@ -228,6 +237,89 @@ export function useEntityRelationshipQueries(
   const isLoadingMore = useCallback((sectionId: string) => {
     return loadingMoreRef.current.has(sectionId);
   }, []);
+
+  // Navigate to a specific page (0-indexed)
+  const goToPage = useCallback(async (sectionId: string, page: number) => {
+    if (!entityId) return;
+    if (loadingMoreRef.current.has(sectionId)) return;
+
+    const [type, direction] = sectionId.split('-') as [string, 'inbound' | 'outbound'];
+    const configs = direction === 'inbound' ? inboundConfigs : outboundConfigs;
+    const config = configs.find(c => c.type === type);
+    if (!config) return;
+
+    const currentState = sectionStates.get(sectionId);
+    const configPageSize = config.source === 'api' ? config.pageSize : undefined;
+    const pageSize = currentState?.pageSize ?? configPageSize ?? DEFAULT_PAGE_SIZE;
+    // Convert 0-indexed to 1-indexed for API
+    const apiPage = page + 1;
+
+    loadingMoreRef.current.add(sectionId);
+    forceUpdate({});
+
+    try {
+      const result = await executeRelationshipQuery(entityId, entityType, config, apiPage, pageSize);
+      const items = result.results.map((entity) =>
+        createRelationshipItem(entity, config, direction)
+      );
+
+      setSectionStates(prev => {
+        const newMap = new Map(prev);
+        newMap.set(sectionId, {
+          items,
+          currentPage: apiPage,
+          pageSize,
+          totalCount: result.totalCount,
+          loading: false,
+        });
+        return newMap;
+      });
+    } catch (err) {
+      console.error(`Failed to go to page ${page} for section ${sectionId}:`, err);
+    } finally {
+      loadingMoreRef.current.delete(sectionId);
+      forceUpdate({});
+    }
+  }, [entityId, entityType, inboundConfigs, outboundConfigs, sectionStates]);
+
+  // Change page size (resets to page 0)
+  const setPageSize = useCallback(async (sectionId: string, newPageSize: number) => {
+    if (!entityId) return;
+    if (loadingMoreRef.current.has(sectionId)) return;
+
+    const [type, direction] = sectionId.split('-') as [string, 'inbound' | 'outbound'];
+    const configs = direction === 'inbound' ? inboundConfigs : outboundConfigs;
+    const config = configs.find(c => c.type === type);
+    if (!config) return;
+
+    loadingMoreRef.current.add(sectionId);
+    forceUpdate({});
+
+    try {
+      // Reset to page 1 (API is 1-indexed)
+      const result = await executeRelationshipQuery(entityId, entityType, config, 1, newPageSize);
+      const items = result.results.map((entity) =>
+        createRelationshipItem(entity, config, direction)
+      );
+
+      setSectionStates(prev => {
+        const newMap = new Map(prev);
+        newMap.set(sectionId, {
+          items,
+          currentPage: 1,
+          pageSize: newPageSize,
+          totalCount: result.totalCount,
+          loading: false,
+        });
+        return newMap;
+      });
+    } catch (err) {
+      console.error(`Failed to set page size for section ${sectionId}:`, err);
+    } finally {
+      loadingMoreRef.current.delete(sectionId);
+      forceUpdate({});
+    }
+  }, [entityId, entityType, inboundConfigs, outboundConfigs]);
 
   // Reset section states when entity changes
   useEffect(() => {
@@ -263,6 +355,8 @@ export function useEntityRelationshipQueries(
     loading,
     error,
     loadMore,
+    goToPage,
+    setPageSize,
     isLoadingMore,
   };
 }
@@ -274,12 +368,13 @@ async function executeRelationshipQuery(
   entityId: string,
   entityType: EntityType,
   config: RelationshipQueryConfig,
-  page: number = 1
+  page: number = 1,
+  customPageSize?: number
 ): Promise<RelationshipQueryResult> {
   // Handle API-based queries
   if (config.source === 'api') {
     const filter = config.buildFilter(entityId);
-    const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
+    const pageSize = customPageSize ?? config.pageSize ?? DEFAULT_PAGE_SIZE;
 
     // Choose the appropriate API function based on target type
     let response;

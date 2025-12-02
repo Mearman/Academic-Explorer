@@ -20,11 +20,14 @@ export interface RelationshipSectionProps {
   /** The relationship section data to display */
   section: RelationshipSectionType;
 
-  /** Optional callback when "Load more" is clicked */
-  onLoadMore?: () => void;
+  /** Callback when page changes (0-indexed page number) */
+  onPageChange?: (page: number) => void;
 
-  /** Whether more items are currently being loaded */
-  isLoadingMore?: boolean;
+  /** Callback when page size changes */
+  onPageSizeChange?: (pageSize: number) => void;
+
+  /** Whether pagination is currently loading */
+  isLoading?: boolean;
 }
 
 /**
@@ -33,8 +36,9 @@ export interface RelationshipSectionProps {
  */
 export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
   section,
-  onLoadMore,
-  isLoadingMore,
+  onPageChange,
+  onPageSizeChange,
+  isLoading,
 }) => {
   const testId = `relationship-section-${section.type}-${section.direction}`;
 
@@ -76,7 +80,12 @@ export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
         )}
 
         {/* Relationship list */}
-        <RelationshipList section={section} onLoadMore={onLoadMore} isLoadingMore={isLoadingMore} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={isLoading}
+        />
       </Stack>
     </Paper>
   );
