@@ -77,6 +77,15 @@ const MASONRY_CONFIG = {
   GAP: 24,
 } as const;
 
+/** Measured item data for bin-packing */
+interface MeasuredItem {
+  index: number;
+  naturalWidth: number;
+  naturalHeight: number;
+  columnSpan: number;
+  area: number;
+}
+
 /** Position data for placed items */
 interface ItemPosition {
   x: number;
@@ -85,10 +94,11 @@ interface ItemPosition {
 }
 
 /**
- * 2D Bin-packing masonry grid that:
- * - Measures content sizes synchronously before paint
- * - Calculates optimal placement using skyline algorithm
- * - Single render pass - no hidden measurement container
+ * 2D Bin-packing masonry grid using First Fit Decreasing algorithm:
+ * - Measures natural content sizes (both width and height)
+ * - Sorts items by area (largest first) for optimal packing
+ * - Uses skyline algorithm to find best position for each item
+ * - Items can span multiple columns based on natural width
  */
 interface MasonryGridProps {
   children: React.ReactNode[];
@@ -98,132 +108,199 @@ interface MasonryGridProps {
   gap?: number;
 }
 
+/** Layout phases for the two-pass measurement approach */
+type LayoutPhase = "measuring" | "placing" | "ready";
+
 function MasonryGrid({
   children,
   minColumnWidth = MASONRY_CONFIG.MIN_COLUMN_WIDTH,
   gap = MASONRY_CONFIG.GAP,
 }: MasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const measureContainerRef = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState<LayoutPhase>("measuring");
   const [layout, setLayout] = useState<{
     positions: ItemPosition[];
     height: number;
-    ready: boolean;
-  }>({ positions: [], height: 0, ready: false });
-  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+    sortOrder: number[];
+  }>({ positions: [], height: 0, sortOrder: [] });
   const rafIdRef = useRef<number>(0);
+  const lastContainerWidth = useRef<number>(0);
 
   const childArray = React.Children.toArray(children);
 
-  // Synchronous layout calculation before paint
+  // Phase 1: Measure natural sizes
+  useLayoutEffect(() => {
+    if (phase !== "measuring") return;
+
+    const container = containerRef.current;
+    const measureContainer = measureContainerRef.current;
+    if (!container || !measureContainer) return;
+
+    const containerWidth = container.offsetWidth;
+    if (containerWidth === 0) return;
+
+    lastContainerWidth.current = containerWidth;
+
+    // Calculate grid parameters
+    const numColumns = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+    const columnUnitWidth = (containerWidth - (numColumns - 1) * gap) / numColumns;
+
+    // Measure all items from the measurement container
+    const measureItems = measureContainer.children;
+    const measured: MeasuredItem[] = [];
+
+    for (let i = 0; i < measureItems.length; i++) {
+      const item = measureItems[i] as HTMLElement;
+      const naturalWidth = item.scrollWidth;
+      const naturalHeight = item.scrollHeight;
+
+      // Calculate column span based on natural width
+      const columnsNeeded = Math.max(1, Math.ceil(naturalWidth / columnUnitWidth));
+      const columnSpan = Math.min(columnsNeeded, numColumns);
+
+      measured.push({
+        index: i,
+        naturalWidth,
+        naturalHeight,
+        columnSpan,
+        area: naturalWidth * naturalHeight,
+      });
+    }
+
+    // First Fit Decreasing: sort by area (largest first)
+    const sorted = [...measured].sort((a, b) => b.area - a.area);
+
+    // Skyline algorithm - track height at each column
+    const skyline = new Array(numColumns).fill(0);
+    const positions: ItemPosition[] = new Array(childArray.length);
+
+    // Place each item using First Fit Decreasing
+    for (const item of sorted) {
+      const { index, naturalHeight, columnSpan } = item;
+      const itemWidth = columnSpan * columnUnitWidth + (columnSpan - 1) * gap;
+
+      // Find the best position: lowest y where this item fits
+      let bestColumn = 0;
+      let bestY = Infinity;
+
+      for (let startCol = 0; startCol <= numColumns - columnSpan; startCol++) {
+        // Find max height across the columns this item would span
+        let maxHeight = 0;
+        for (let col = startCol; col < startCol + columnSpan; col++) {
+          maxHeight = Math.max(maxHeight, skyline[col]);
+        }
+
+        // First Fit: take the first position that's at the lowest level
+        if (maxHeight < bestY) {
+          bestY = maxHeight;
+          bestColumn = startCol;
+        }
+      }
+
+      const x = bestColumn * (columnUnitWidth + gap);
+      const y = bestY;
+
+      positions[index] = { x, y, width: itemWidth };
+
+      // Update skyline for all columns this item spans
+      const newHeight = y + naturalHeight + gap;
+      for (let col = bestColumn; col < bestColumn + columnSpan; col++) {
+        skyline[col] = newHeight;
+      }
+    }
+
+    const maxHeight = Math.max(...skyline, 0);
+    setLayout({
+      positions,
+      height: maxHeight > gap ? maxHeight - gap : 0,
+      sortOrder: sorted.map(item => item.index),
+    });
+    setPhase("ready");
+  }, [phase, childArray.length, gap, minColumnWidth]);
+
+  // Observe container for resize - trigger remeasure
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const calculateLayout = () => {
-      const containerWidth = container.offsetWidth;
-      if (containerWidth === 0) return;
-
-      // Calculate grid unit size
-      const numColumns = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
-      const columnUnitWidth = (containerWidth - (numColumns - 1) * gap) / numColumns;
-
-      // Skyline tracks height at each column
-      const skyline = new Array(numColumns).fill(0);
-      const newPositions: ItemPosition[] = [];
-
-      // Measure each item and place it
-      for (let i = 0; i < childArray.length; i++) {
-        const itemEl = itemRefs.current.get(i);
-        if (!itemEl) {
-          newPositions.push({ x: 0, y: 0, width: columnUnitWidth });
-          continue;
-        }
-
-        // Measure natural height (width is constrained by column)
-        const itemHeight = itemEl.scrollHeight;
-
-        // All items span 1 column for predictable layout
-        const itemWidth = columnUnitWidth;
-
-        // Find the shortest column
-        let bestColumn = 0;
-        let bestY = skyline[0];
-        for (let col = 1; col < numColumns; col++) {
-          if (skyline[col] < bestY) {
-            bestY = skyline[col];
-            bestColumn = col;
-          }
-        }
-
-        const x = bestColumn * (columnUnitWidth + gap);
-        const y = bestY;
-
-        newPositions.push({ x, y, width: itemWidth });
-
-        // Update skyline
-        skyline[bestColumn] = y + itemHeight + gap;
+    const resizeObserver = new ResizeObserver((entries) => {
+      const newWidth = entries[0]?.contentRect.width ?? 0;
+      // Only remeasure if width actually changed
+      if (Math.abs(newWidth - lastContainerWidth.current) > 1) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = requestAnimationFrame(() => {
+          setPhase("measuring");
+        });
       }
-
-      const maxHeight = Math.max(...skyline, 0);
-      setLayout({
-        positions: newPositions,
-        height: maxHeight > gap ? maxHeight - gap : 0,
-        ready: true,
-      });
-    };
-
-    // Initial calculation
-    calculateLayout();
-
-    // Observe container for width changes
-    const resizeObserver = new ResizeObserver(() => {
-      // Cancel pending recalculation
-      cancelAnimationFrame(rafIdRef.current);
-      // Debounce with RAF
-      rafIdRef.current = requestAnimationFrame(calculateLayout);
     });
     resizeObserver.observe(container);
-
-    // Also observe each item for height changes (nested content)
-    itemRefs.current.forEach((el) => {
-      resizeObserver.observe(el);
-    });
 
     return () => {
       resizeObserver.disconnect();
       cancelAnimationFrame(rafIdRef.current);
     };
-  }, [childArray.length, gap, minColumnWidth]);
+  }, []);
+
+  // Remeasure when children change
+  useLayoutEffect(() => {
+    setPhase("measuring");
+  }, [childArray.length]);
 
   return (
-    <Box
-      ref={containerRef}
-      style={{
-        position: "relative",
-        width: "100%",
-        height: layout.ready ? layout.height : "auto",
-      }}
-    >
-      {childArray.map((child, index) => (
+    <Box ref={containerRef} style={{ position: "relative", width: "100%" }}>
+      {/* Measurement container - items at natural size */}
+      <Box
+        ref={measureContainerRef}
+        style={{
+          position: phase === "measuring" ? "relative" : "absolute",
+          visibility: phase === "measuring" ? "visible" : "hidden",
+          display: "flex",
+          flexWrap: "wrap",
+          gap,
+          width: "100%",
+          pointerEvents: phase === "measuring" ? "auto" : "none",
+        }}
+        aria-hidden={phase !== "measuring"}
+      >
+        {childArray.map((child, index) => (
+          <Box
+            key={`measure-${index}`}
+            style={{
+              width: "max-content",
+              maxWidth: "100%",
+              flexShrink: 0,
+            }}
+          >
+            {child}
+          </Box>
+        ))}
+      </Box>
+
+      {/* Positioned container - shown after measurement */}
+      {phase === "ready" && (
         <Box
-          key={index}
-          ref={(el) => {
-            if (el) {
-              itemRefs.current.set(index, el);
-            } else {
-              itemRefs.current.delete(index);
-            }
-          }}
           style={{
-            position: layout.ready ? "absolute" : "relative",
-            left: layout.positions[index]?.x ?? 0,
-            top: layout.positions[index]?.y ?? 0,
-            width: layout.positions[index]?.width ?? "100%",
+            position: "relative",
+            width: "100%",
+            height: layout.height,
           }}
         >
-          {child}
+          {childArray.map((child, index) => (
+            <Box
+              key={index}
+              style={{
+                position: "absolute",
+                left: layout.positions[index]?.x ?? 0,
+                top: layout.positions[index]?.y ?? 0,
+                width: layout.positions[index]?.width ?? "100%",
+              }}
+            >
+              {child}
+            </Box>
+          ))}
         </Box>
-      ))}
+      )}
     </Box>
   );
 }
