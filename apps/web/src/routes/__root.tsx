@@ -1,15 +1,18 @@
 import { logger } from "@bibgraph/utils/logger";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router";
 
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { NavigationTracker } from "@/components/NavigationTracker";
 import { UrlFixer } from "@/components/UrlFixer";
+import { GraphVisualizationProvider } from "@/contexts/GraphVisualizationContext";
 
 import { shadcnLightTheme } from "../styles/shadcn-theme.css";
 
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
+  const location = useLocation();
+  const isGraphPage = location.pathname === '/graph';
 
   // MainLayout re-enabled after fixing React 19 hook violations
   // The layout-store was refactored to ensure stable method references
@@ -18,7 +21,15 @@ function RootLayout() {
       <UrlFixer />
       <NavigationTracker />
       <MainLayout>
-        <Outlet />
+        {/* Conditionally wrap Outlet with GraphVisualizationProvider on graph page */}
+        {/* This allows the sidebar (in MainLayout) to access the context */}
+        {isGraphPage ? (
+          <GraphVisualizationProvider>
+            <Outlet />
+          </GraphVisualizationProvider>
+        ) : (
+          <Outlet />
+        )}
       </MainLayout>
     </div>
   );

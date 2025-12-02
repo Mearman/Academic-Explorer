@@ -53,25 +53,22 @@ import {
 } from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import {
-  GraphVisualizationProvider,
-  useGraphVisualizationContext,
-} from '@/contexts/GraphVisualizationContext';
+import { useGraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
 import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';
 
 /**
- * Entity Graph Page Component (Inner)
+ * Entity Graph Page Component
  *
  * Displays entities from multiple sources as an interactive force-directed graph
  */
-function EntityGraphPageInner() {
-  // Get shared state from context
+function EntityGraphPage() {
+  // Get shared state from context (provided by RootLayout for graph page)
   const context = useGraphVisualizationContext();
 
   // This component should only be rendered within the provider, so context should never be null
   if (!context) {
-    throw new Error('EntityGraphPageInner must be used within GraphVisualizationProvider');
+    throw new Error('EntityGraphPage must be used within GraphVisualizationProvider');
   }
 
   const { graphData, visualization } = context;
@@ -505,20 +502,6 @@ function EntityGraphPageInner() {
         </Stack>
       </Box>
     </Box>
-  );
-}
-
-/**
- * Entity Graph Page Component (Wrapper)
- *
- * Wraps the inner component with GraphVisualizationProvider to share state
- * between the graph visualization and the right sidebar
- */
-function EntityGraphPage() {
-  return (
-    <GraphVisualizationProvider>
-      <EntityGraphPageInner />
-    </GraphVisualizationProvider>
   );
 }
 
