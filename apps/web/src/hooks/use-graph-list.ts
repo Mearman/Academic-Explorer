@@ -15,14 +15,8 @@ import { useStorageProvider } from '@/contexts/storage-provider-context';
 
 const LOG_PREFIX = 'use-graph-list';
 
-/**
- * Hook state node type
- * Uses GraphListNode from types (includes storage id which we don't use in UI)
- */
-export type GraphListStateNode = GraphListNode;
-
 export interface UseGraphListReturn {
-	nodes: GraphListStateNode[];
+	nodes: GraphListNode[];
 	loading: boolean;
 	error: Error | null;
 	addNode: (node: GraphNode, provenance: GraphProvenance) => Promise<void>;
@@ -36,7 +30,7 @@ export interface UseGraphListReturn {
  */
 export function useGraphList(): UseGraphListReturn {
 	const storage = useStorageProvider();
-	const [nodes, setNodes] = useState<GraphListStateNode[]>([]);
+	const [nodes, setNodes] = useState<GraphListNode[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
 
@@ -81,7 +75,7 @@ export function useGraphList(): UseGraphListReturn {
 	 */
 	const addNode = useCallback(
 		async (node: GraphNode, provenance: GraphProvenance): Promise<void> => {
-			const newEntry: GraphListStateNode = {
+			const newEntry: GraphListNode = {
 				id: node.entityId, // Use entityId as temporary id for optimistic update
 				entityId: node.entityId,
 				entityType: node.entityType,

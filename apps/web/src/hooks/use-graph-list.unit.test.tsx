@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { GraphNode } from '@bibgraph/types';
+import type { GraphNode, GraphListNode } from '@bibgraph/types';
 import { InMemoryStorageProvider, logger } from '@bibgraph/utils';
 
 import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
@@ -114,8 +114,9 @@ describe('Graph List Management Hook (T042-T044)', () => {
 
 			// Verify node is present in state (optimistic update)
 			expect(result.current.nodes).toHaveLength(1);
-			expect(result.current.nodes[0].entityId).toBe('W1');
-			expect(result.current.nodes[0].provenance).toBe('user');
+			const listNode = result.current.nodes[0] as GraphListNode;
+			expect(listNode.entityId).toBe('W1');
+			expect(listNode.provenance).toBe('user');
 
 			// Now allow storage to complete
 			resolveAdd!();
@@ -123,7 +124,8 @@ describe('Graph List Management Hook (T042-T044)', () => {
 
 			// Verify final state (should be same as optimistic state)
 			expect(result.current.nodes).toHaveLength(1);
-			expect(result.current.nodes[0].provenance).toBe('user');
+			const finalNode = result.current.nodes[0] as GraphListNode;
+			expect(finalNode.provenance).toBe('user');
 		});
 
 		it('should handle errors gracefully and rollback optimistic updates', async () => {

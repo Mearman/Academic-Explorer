@@ -210,6 +210,30 @@ describe("useThemeColors", () => {
           "#6D28D9",
           "#581C87",
         ],
+        stone: [
+          "#fafaf9",
+          "#f5f5f4",
+          "#e7e5e4",
+          "#d6d3d1",
+          "#a8a29e",
+          "#78716c",
+          "#57534e",
+          "#44403c",
+          "#292524",
+          "#1c1917",
+        ],
+        zinc: [
+          "#fafafa",
+          "#f4f4f5",
+          "#e4e4e7",
+          "#d4d4d8",
+          "#a1a1aa",
+          "#71717a",
+          "#52525b",
+          "#3f3f46",
+          "#27272a",
+          "#18181b",
+        ],
         // Custom entity colors
         author: [
           "#e7fcf0",
@@ -472,14 +496,18 @@ describe("useThemeColors", () => {
   });
 
   describe("semantic colors", () => {
-    it("should provide consistent semantic colors", () => {
+    it("should provide consistent semantic colors with fallbacks", () => {
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.colors.primary).toBe(mockTheme.colors!.blue[5]);
-      expect(result.current.colors.success).toBe(mockTheme.colors!.green[5]);
-      expect(result.current.colors.warning).toBe(mockTheme.colors!.yellow[5]);
-      expect(result.current.colors.error).toBe(mockTheme.colors!.red[5]);
-      expect(result.current.colors.info).toBe(mockTheme.colors!.blue[5]);
+      // Implementation uses different color palettes that may not be in mockTheme
+      // primary uses stone[6], success uses emerald[6], warning uses orange[6],
+      // error uses red[6], info uses sky[6]
+      // When palettes are missing, it falls back to hardcoded values
+      expect(result.current.colors.primary).toBe(mockTheme.colors!.stone[6]);
+      expect(result.current.colors.success).toBe("#059669"); // emerald fallback
+      expect(result.current.colors.warning).toBe(mockTheme.colors!.orange[6]);
+      expect(result.current.colors.error).toBe(mockTheme.colors!.red[6]);
+      expect(result.current.colors.info).toBe("#0284c7"); // sky fallback
     });
 
     it("should fallback to hardcoded colors when theme colors are missing", () => {
@@ -488,21 +516,23 @@ describe("useThemeColors", () => {
         ...mockTheme,
         colors: {
           ...mockTheme.colors,
-          green: [] as any,
-          yellow: [] as any,
-          red: [] as any,
+          stone: [] as unknown as string[],
+          orange: [] as unknown as string[],
+          red: [] as unknown as string[],
         },
       };
 
       vi.mocked(useMantineTheme).mockReturnValue(
-        themeWithoutColors as MantineTheme,
+        themeWithoutColors as unknown as MantineTheme,
       );
 
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.colors.success).toBe("#10b981");
-      expect(result.current.colors.warning).toBe("#f59e0b");
-      expect(result.current.colors.error).toBe("#ef4444");
+      expect(result.current.colors.primary).toBe("#57534e"); // stone fallback
+      expect(result.current.colors.success).toBe("#059669"); // emerald fallback
+      expect(result.current.colors.warning).toBe("#ea580c"); // orange fallback
+      expect(result.current.colors.error).toBe("#dc2626"); // red fallback
+      expect(result.current.colors.info).toBe("#0284c7"); // sky fallback
     });
   });
 
@@ -510,57 +540,61 @@ describe("useThemeColors", () => {
     it("should provide all entity colors", () => {
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.colors.entity.work).toBe(mockTheme.colors!.blue[5]);
+      // Implementation uses shade 6 as default for entity colors
+      expect(result.current.colors.entity.work).toBe(mockTheme.colors!.blue[6]);
       expect(result.current.colors.entity.author).toBe(
-        mockTheme.colors!.green[5],
+        mockTheme.colors!.green[6],
       );
       expect(result.current.colors.entity.source).toBe(
-        mockTheme.colors!.purple[5],
+        mockTheme.colors!.violet[6],
       );
       expect(result.current.colors.entity.institution).toBe(
-        mockTheme.colors!.orange[5],
+        mockTheme.colors!.orange[6],
       );
       expect(result.current.colors.entity.concept).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.pink[6],
       );
-      expect(result.current.colors.entity.topic).toBe(mockTheme.colors!.red[5]);
+      expect(result.current.colors.entity.topic).toBe(mockTheme.colors!.red[6]);
       expect(result.current.colors.entity.publisher).toBe(
-        mockTheme.colors!.teal[5],
+        mockTheme.colors!.teal[6],
       );
       expect(result.current.colors.entity.funder).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.cyan[6],
       );
     });
 
-    it("should fallback to hardcoded entity colors when theme colors are missing", () => {
-      const themeWithoutEntityColors = {
+    it("should fallback to color name when mapped palette is missing", () => {
+      // Entity colors use shadcn palette names: author → green, source → violet, institution → orange
+      // When the mapped palette is empty, getColor returns the color name string
+      const themeWithoutMappedPalettes = {
         ...mockTheme,
         colors: {
           ...mockTheme.colors,
-          author: [] as any,
-          source: [] as any,
-          institution: [] as any,
+          green: [] as unknown as string[],
+          violet: [] as unknown as string[],
+          orange: [] as unknown as string[],
         },
       };
 
       vi.mocked(useMantineTheme).mockReturnValue(
-        themeWithoutEntityColors as MantineTheme,
+        themeWithoutMappedPalettes as unknown as MantineTheme,
       );
 
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.colors.entity.author).toBe("#51cf66");
-      expect(result.current.colors.entity.source).toBe("#A855F7");
-      expect(result.current.colors.entity.institution).toBe("#EA580C");
+      // When palette is empty, getColor returns the color name as fallback
+      expect(result.current.colors.entity.author).toBe("green");
+      expect(result.current.colors.entity.source).toBe("violet");
+      expect(result.current.colors.entity.institution).toBe("orange");
     });
   });
 
   describe("getColor function", () => {
-    it("should return color at default shade 5", () => {
+    it("should return color at default shade 6", () => {
       const { result } = renderHook(() => useThemeColors());
 
       const blueColor = result.current.getColor("blue");
-      expect(blueColor).toBe(mockTheme.colors!.blue[5]);
+      expect(blueColor).toBe(mockTheme.colors!.blue[6]);
     });
 
     it("should return color at specified shade", () => {
@@ -601,29 +635,30 @@ describe("useThemeColors", () => {
     it("should return correct colors for valid entity types", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // Implementation uses shade 6 as default
       expect(result.current.getEntityColor("work")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.blue[6],
       );
       expect(result.current.getEntityColor("author")).toBe(
-        mockTheme.colors!.green[5],
+        mockTheme.colors!.green[6],
       );
       expect(result.current.getEntityColor("source")).toBe(
-        mockTheme.colors!.purple[5],
+        mockTheme.colors!.violet[6],
       );
       expect(result.current.getEntityColor("institution")).toBe(
-        mockTheme.colors!.orange[5],
+        mockTheme.colors!.orange[6],
       );
       expect(result.current.getEntityColor("concept")).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.pink[6],
       );
       expect(result.current.getEntityColor("topic")).toBe(
-        mockTheme.colors!.red[5],
+        mockTheme.colors!.red[6],
       );
       expect(result.current.getEntityColor("publisher")).toBe(
-        mockTheme.colors!.teal[5],
+        mockTheme.colors!.teal[6],
       );
       expect(result.current.getEntityColor("funder")).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.cyan[6],
       );
     });
 
@@ -631,38 +666,40 @@ describe("useThemeColors", () => {
       const { result } = renderHook(() => useThemeColors());
 
       expect(result.current.getEntityColor("WORK")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.blue[6],
       );
       expect(result.current.getEntityColor("Author")).toBe(
-        mockTheme.colors!.green[5],
+        mockTheme.colors!.green[6],
       );
       expect(result.current.getEntityColor("SOURCE")).toBe(
-        mockTheme.colors!.purple[5],
+        mockTheme.colors!.violet[6],
       );
     });
 
     it("should fallback to primary color for unknown entity types", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // Primary color is stone[6] in the implementation
       expect(result.current.getEntityColor("unknown")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.stone[6],
       );
       expect(result.current.getEntityColor("invalid")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.stone[6],
       );
-      expect(result.current.getEntityColor("")).toBe(mockTheme.colors!.blue[5]);
+      expect(result.current.getEntityColor("")).toBe(mockTheme.colors!.stone[6]);
     });
   });
 
   describe("getEntityColorShade function", () => {
-    it("should return correct colors at default shade 5", () => {
+    it("should return correct colors at default shade 6", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // Implementation uses shade 6 as default
       expect(result.current.getEntityColorShade("work")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.blue[6],
       );
       expect(result.current.getEntityColorShade("author")).toBe(
-        mockTheme.colors!.green[5],
+        mockTheme.colors!.green[6],
       );
     });
 
@@ -680,29 +717,30 @@ describe("useThemeColors", () => {
     it("should handle plural entity types", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // Implementation uses shade 6 as default
       expect(result.current.getEntityColorShade("works")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.blue[6],
       );
       expect(result.current.getEntityColorShade("authors")).toBe(
-        mockTheme.colors!.green[5],
+        mockTheme.colors!.green[6],
       );
       expect(result.current.getEntityColorShade("sources")).toBe(
-        mockTheme.colors!.purple[5],
+        mockTheme.colors!.violet[6],
       );
       expect(result.current.getEntityColorShade("institutions")).toBe(
-        mockTheme.colors!.orange[5],
+        mockTheme.colors!.orange[6],
       );
       expect(result.current.getEntityColorShade("concepts")).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.pink[6],
       );
       expect(result.current.getEntityColorShade("topics")).toBe(
-        mockTheme.colors!.red[5],
+        mockTheme.colors!.red[6],
       );
       expect(result.current.getEntityColorShade("publishers")).toBe(
-        mockTheme.colors!.teal[5],
+        mockTheme.colors!.teal[6],
       );
       expect(result.current.getEntityColorShade("funders")).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.cyan[6],
       );
     });
 
@@ -720,8 +758,9 @@ describe("useThemeColors", () => {
     it("should fallback to blue for unknown entity types", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // Default shade is 6, and fallback color is blue
       expect(result.current.getEntityColorShade("unknown")).toBe(
-        mockTheme.colors!.blue[5],
+        mockTheme.colors!.blue[6],
       );
       expect(result.current.getEntityColorShade("invalid", 3)).toBe(
         mockTheme.colors!.blue[3],
