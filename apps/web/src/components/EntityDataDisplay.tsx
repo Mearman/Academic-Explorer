@@ -22,7 +22,6 @@ import {
   TableTbody,
   TableTr,
   TableTd,
-  Container,
   Title,
   Box
 } from "@mantine/core";
@@ -41,7 +40,7 @@ import {
   IconFile,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
@@ -57,9 +56,137 @@ interface ThemeColors {
   };
 }
 
+type LayoutMode = "stacked" | "tiled";
+
+/** Section priority for tiled layout (lower = renders first = top-left) */
+const SECTION_PRIORITY: Record<string, number> = {
+  Identifiers: 1,
+  "Basic Information": 2,
+  Metrics: 3,
+  Dates: 4,
+  "Locations & Geo": 5,
+  Relationships: 6,
+  Other: 7,
+};
+
+/** Masonry layout configuration */
+const MASONRY_CONFIG = {
+  /** Minimum column width */
+  MIN_COLUMN_WIDTH: 350,
+  /** Gap between items in pixels */
+  GAP: 24,
+} as const;
+
+/** Masonry grid component with horizontal-first item placement */
+interface MasonryGridProps {
+  children: React.ReactNode[];
+}
+
+function MasonryGrid({ children }: MasonryGridProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [positions, setPositions] = useState<{ x: number; y: number; width: number }[]>([]);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+
+  const calculateLayout = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const containerWidth = container.offsetWidth;
+    if (containerWidth === 0) return; // Not yet laid out
+
+    const columnCount = Math.max(1, Math.floor((containerWidth + MASONRY_CONFIG.GAP) / (MASONRY_CONFIG.MIN_COLUMN_WIDTH + MASONRY_CONFIG.GAP)));
+    const columnWidth = (containerWidth - (columnCount - 1) * MASONRY_CONFIG.GAP) / columnCount;
+
+    // Track height of each column
+    const columnHeights = new Array(columnCount).fill(0);
+    const newPositions: { x: number; y: number; width: number }[] = [];
+
+    for (let i = 0; i < children.length; i++) {
+      const itemEl = itemRefs.current[i];
+      const itemHeight = itemEl?.offsetHeight ?? 200; // Estimate if not measured
+
+      // Find shortest column
+      const shortestCol = columnHeights.indexOf(Math.min(...columnHeights));
+
+      // Calculate position
+      newPositions[i] = {
+        x: shortestCol * (columnWidth + MASONRY_CONFIG.GAP),
+        y: columnHeights[shortestCol],
+        width: columnWidth,
+      };
+
+      // Update column height
+      columnHeights[shortestCol] += itemHeight + MASONRY_CONFIG.GAP;
+    }
+
+    setPositions(newPositions);
+    setContainerHeight(Math.max(...columnHeights, 0) - MASONRY_CONFIG.GAP);
+    setIsReady(true);
+  }, [children.length]);
+
+  // Initial layout after mount and on resize
+  useEffect(() => {
+    // Delay initial calculation to ensure DOM is ready
+    const timeoutId = setTimeout(calculateLayout, 0);
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateLayout();
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      resizeObserver.disconnect();
+    };
+  }, [calculateLayout]);
+
+  // Recalculate after items render (to get accurate heights)
+  useEffect(() => {
+    if (isReady) {
+      // Recalculate once more after positions are set to get accurate item heights
+      const timeoutId = setTimeout(calculateLayout, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isReady, calculateLayout]);
+
+  return (
+    <Box
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: containerHeight > 0 ? containerHeight : "auto",
+        minHeight: 100,
+      }}
+    >
+      {React.Children.map(children, (child, index) => (
+        <Box
+          ref={(el) => { itemRefs.current[index] = el; }}
+          style={{
+            position: positions[index] ? "absolute" : "relative",
+            left: positions[index]?.x ?? 0,
+            top: positions[index]?.y ?? 0,
+            width: positions[index]?.width ?? "100%",
+            visibility: positions[index] ? "visible" : "hidden",
+          }}
+        >
+          {child}
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
   title?: string;
+  /** Layout mode: "stacked" (default) or "tiled" for grid layout */
+  layout?: LayoutMode;
 }
 
 /**
@@ -302,7 +429,7 @@ const sectionIcons: Record<string, React.ReactNode> = {
   "Other": <IconClipboard size={20} />,
 };
 
-export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
+export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDataDisplayProps) {
   const { colors } = useThemeColors();
   const groups = groupFields(data);
 
@@ -313,8 +440,61 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const shouldShowComparison = Boolean(workId && isDataVersionSelectorVisible());
   const { comparison } = useVersionComparison(workId, shouldShowComparison);
 
+  // Sort sections by priority for tiled layout (Identifiers + Basic Info first)
+  const sortedEntries = Object.entries(groups).sort(([a], [b]) => {
+    const priorityA = SECTION_PRIORITY[a] ?? 99;
+    const priorityB = SECTION_PRIORITY[b] ?? 99;
+    return priorityA - priorityB;
+  });
+
+  // Render a single section card
+  const renderSectionCard = ([groupName, groupData]: [string, Record<string, unknown>]) => (
+    <Card key={groupName} style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm">
+      <CardSection
+        p="md"
+        bg={colors?.background.primary}
+        style={{ borderBottom: `1px solid ${colors?.border.secondary}` }}
+      >
+        <Group gap="sm" justify="space-between">
+          <Group gap="sm">
+            <Box c="blue.6">
+              {sectionIcons[groupName] || <IconFile size={20} />}
+            </Box>
+            <Text size="xl" fw={600}>
+              {groupName}
+            </Text>
+          </Group>
+          <Badge
+            variant="light"
+            color="gray"
+            size="sm"
+          >
+            {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
+          </Badge>
+        </Group>
+      </CardSection>
+
+      <CardSection p="lg">
+        <Stack gap="md">
+          {Object.entries(groupData).map(([key, value]) => (
+            <Card key={key} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
+              <Stack gap="xs">
+                <Text size="md" fw={600} c="blue.6">
+                  {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                </Text>
+                <Box ml="xs" mt={2}>
+                  {renderValue(value, 0, colors)}
+                </Box>
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      </CardSection>
+    </Card>
+  );
+
   return (
-    <Container size="100%" p={0}>
+    <Box w="100%">
       <Stack gap="xl">
         {title && (
           <Title order={1} size="h1" fw={700} mb="md">
@@ -331,51 +511,20 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
           />
         )}
 
-        {Object.entries(groups).map(([groupName, groupData]) => (
-          <Card key={groupName} style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm">
-            <CardSection
-              p="md"
-              bg={colors?.background.primary}
-              style={{ borderBottom: `1px solid ${colors?.border.secondary}` }}
-            >
-              <Group gap="sm" justify="space-between">
-                <Group gap="sm">
-                  <Box c="blue.6">
-                    {sectionIcons[groupName] || <IconFile size={20} />}
-                  </Box>
-                  <Text size="xl" fw={600}>
-                    {groupName}
-                  </Text>
-                </Group>
-                <Badge
-                  variant="light"
-                  color="gray"
-                  size="sm"
-                >
-                  {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
-                </Badge>
-              </Group>
-            </CardSection>
-
-            <CardSection p="lg">
-              <Stack gap="md">
-                {Object.entries(groupData).map(([key, value]) => (
-                  <Card key={key} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg={colors?.background.primary}>
-                    <Stack gap="xs">
-                      <Text size="md" fw={600} c="blue.6">
-                        {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                      </Text>
-                      <Box ml="xs" mt={2}>
-                        {renderValue(value, 0, colors)}
-                      </Box>
-                    </Stack>
-                  </Card>
-                ))}
-              </Stack>
-            </CardSection>
-          </Card>
-        ))}
+        {/* Tiled layout uses custom masonry with horizontal-first placement */}
+        {layout === "tiled" ? (
+          <MasonryGrid>
+            {sortedEntries.map(([groupName, groupData]) => (
+              <Box key={groupName}>
+                {renderSectionCard([groupName, groupData])}
+              </Box>
+            ))}
+          </MasonryGrid>
+        ) : (
+          // Stacked layout uses vertical Stack
+          sortedEntries.map(renderSectionCard)
+        )}
       </Stack>
-    </Container>
+    </Box>
   );
 }

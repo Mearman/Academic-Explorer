@@ -1,6 +1,6 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
-import { Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
+import { Text, Code, Badge, Paper, Stack, Group, Box, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
 import { IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
 
@@ -111,7 +111,7 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={{ minHeight: '100vh' }} data-testid="entity-detail-layout">
+    <Box p="xl" bg="var(--mantine-color-body)" style={{ minHeight: '100vh' }} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
         <Paper p="xl" radius="xl">
@@ -254,7 +254,9 @@ export function EntityDetailLayout({
           </Paper>
         ) : (
           <>
-            <EntityDataDisplay data={data} />
+            {/* Tiled grid layout for entity data sections */}
+            <EntityDataDisplay data={data} layout="tiled" />
+            {/* Relationship sections in dedicated row */}
             {children}
           </>
         )}
@@ -274,6 +276,6 @@ export function EntityDetailLayout({
           onClose={() => setShowAddToListModal(false)}
         />
       </Modal>
-    </Container>
+    </Box>
   );
 }
