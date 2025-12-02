@@ -7,6 +7,13 @@
 
 Enhance BibGraph catalogue feature to support advanced literature review workflows including PRISMA systematic reviews, semantic analysis, citation export formats (BibTeX/RIS), custom entity support for non-OpenAlex works, and live file system synchronization using browser File System Access API. Implementation leverages existing BibGraph architecture while adding sophisticated academic research capabilities.
 
+**Key Architectural Changes:**
+- Catalogues promoted to first-class entities with pako-encoded URL-shareable IDs
+- Three reconciliation approaches for collaborative list editing (all implemented for UX experimentation):
+  1. **Same-UUID Detection + Diff UI** - Manual merge with side-by-side comparison
+  2. **Base Reference Chain (3-Way Merge)** - Git-style merge using common ancestor
+  3. **CRDT Operations (OR-Set)** - Automatic conflict-free merge with Lamport timestamps
+
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (strict mode)
@@ -78,7 +85,14 @@ apps/web/src/
 ├── hooks/
 │   ├── use-literature-review.ts          # NEW: Literature review state management
 │   ├── use-file-system-sync.ts           # NEW: File sync state management
-│   └── use-topic-modeling.ts            # NEW: Topic modeling state
+│   ├── use-topic-modeling.ts             # NEW: Topic modeling state
+│   └── use-list-reconciliation.ts        # NEW: List reconciliation state
+├── components/lists/
+│   ├── ListDiffViewer.tsx                # NEW: Side-by-side diff UI (Approach 1)
+│   ├── ManualMergeDialog.tsx             # NEW: Manual merge selection UI
+│   ├── ThreeWayMergeDialog.tsx           # NEW: 3-way merge conflict resolution (Approach 2)
+│   ├── ReconciliationStrategySelector.tsx # NEW: Strategy picker in settings
+│   └── MergePreview.tsx                  # NEW: Preview merged result
 └── workers/
     ├── file-processor.worker.ts        # NEW: File processing worker
     ├── topic-modeling.worker.ts        # NEW: Topic modeling worker
@@ -92,14 +106,29 @@ packages/utils/src/
 │   ├── bibtex-generator.ts              # NEW: BibTeX generation
 │   ├── ris-generator.ts                 # NEW: RIS generation
 │   └── citation-key-generator.ts      # NEW: Citation key algorithms
-└── topic-modeling/
-    ├── topic-extractor.ts              # NEW: Topic extraction logic
-    └── theme-manager.ts                # NEW: Theme management
+├── topic-modeling/
+│   ├── topic-extractor.ts              # NEW: Topic extraction logic
+│   └── theme-manager.ts                # NEW: Theme management
+├── list-encoding/
+│   ├── pako-encoder.ts                 # NEW: Pako compression for list IDs
+│   ├── payload-codec.ts                # NEW: EncodedListPayload encode/decode
+│   └── url-safe-base64.ts              # NEW: URL-safe base64 utilities
+└── list-reconciliation/
+    ├── uuid-diff.ts                    # NEW: Same-UUID detection (Approach 1)
+    ├── diff-algorithm.ts               # NEW: Entity diff computation
+    ├── base-chain-resolver.ts          # NEW: Base reference chain (Approach 2)
+    ├── three-way-merge.ts              # NEW: 3-way merge algorithm
+    ├── crdt-operations.ts              # NEW: OR-Set CRDT (Approach 3)
+    ├── lamport-clock.ts                # NEW: Lamport timestamp generation
+    ├── operation-compaction.ts         # NEW: CRDT operation log compaction
+    └── reconciliation-service.ts       # NEW: Unified reconciliation orchestrator
 
 packages/types/src/
 ├── literature-review.ts                 # NEW: Literature review types
 ├── citation-export.ts                  # NEW: Citation export types
-└── file-system-sync.ts                 # NEW: File sync types
+├── file-system-sync.ts                 # NEW: File sync types
+├── list-encoding.ts                    # NEW: EncodedListPayload, ListOperation types
+└── list-reconciliation.ts              # NEW: Reconciliation strategy types
 
 packages/algorithms/src/
 ├── semantic-prisma/                     # NEW: PRISMA-semantic analysis algorithms
@@ -114,24 +143,38 @@ No constitutional violations requiring justification. Implementation extends exi
 
 ## Implementation Strategy
 
-### Phase 1: Foundation (Weeks 1-2)
+### Phase 1: Foundation
 - Setup project structure and dependencies
 - Create type definitions and interfaces
 - Extend storage provider for new entities
 - Implement basic citation export functionality
 
-### Phase 2: Core Features (Weeks 3-6)
+### Phase 2: List Encoding & Sharing
+- Implement pako compression for list IDs
+- Create EncodedListPayload encode/decode utilities
+- Build URL-safe base64 conversion
+- Implement list routes with encoded IDs
+
+### Phase 3: List Reconciliation (UX Experimentation)
+Three approaches implemented side-by-side for user testing:
+- **Approach 1**: Same-UUID detection + diff UI (manual merge)
+- **Approach 2**: Base reference chain + 3-way merge (git-style)
+- **Approach 3**: CRDT operations with OR-Set semantics (automatic merge)
+- Reconciliation strategy selector in settings
+- Integration tests for all approaches
+
+### Phase 4: Core Features
 - Implement PRISMA systematic review management
 - Add custom entity support with metadata extraction
 - Build file system synchronization with progressive enhancement
 
-### Phase 3: Advanced Features (Weeks 7-10)
+### Phase 5: Advanced Features
 - Implement topic modeling and semantic analysis
 - Add advanced visualization and reporting
 - Optimize performance for large datasets
 
-### Phase 4: Integration & Polish (Weeks 11-12)
-- Comprehensive testing and quality assurance
+### Phase 6: Integration & Polish
+- Testing and quality assurance
 - Documentation and deployment preparation
 - User experience optimization
 
