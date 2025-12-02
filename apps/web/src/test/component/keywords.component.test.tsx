@@ -39,28 +39,45 @@ vi.mock('@/hooks/use-entity-relationship-queries', () => ({
       {
         id: 'authorship',
         type: 'authorship',
-        displayName: 'Authorship',
+        label: 'Authorship',
         description: 'Authors who created works with this keyword',
         items: [],
         totalCount: 5,
         isPartialData: false,
+        direction: 'incoming',
+        pagination: {
+          currentPage: 0,
+          pageSize: 25,
+          totalPages: 1,
+        },
       },
     ],
     outgoing: [
       {
         id: 'work_has_keyword',
         type: 'work_has_keyword',
-        displayName: 'Has Keyword',
+        label: 'Has Keyword',
         description: 'Works tagged with this keyword',
         items: [],
         totalCount: 10,
         isPartialData: false,
+        direction: 'outgoing',
+        pagination: {
+          currentPage: 0,
+          pageSize: 25,
+          totalPages: 1,
+        },
       },
     ],
     incomingCount: 5,
     outgoingCount: 10,
     loading: false,
     error: undefined,
+    // Pagination controls
+    loadMore: vi.fn(),
+    goToPage: vi.fn(),
+    setPageSize: vi.fn(),
+    isLoadingMore: vi.fn(() => false),
   })),
 }));
 
