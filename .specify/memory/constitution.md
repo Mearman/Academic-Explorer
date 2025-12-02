@@ -1,17 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 2.15.0 → 2.15.1 (PATCH: Strengthened spec commit requirements after SpecKit commands)
+Version: 2.15.1 → 2.16.0 (MINOR: Added type coercion prohibition to Type Safety principle)
 Modified Sections:
-  - Spec File Discipline (Development Workflow): Added explicit requirement to commit after each SpecKit command
-  - Atomic Conventional Commits (Principle VI): Added SpecKit command commit requirement
+  - Type Safety (Principle I): Added explicit prohibition of type coercions (`as Type`, `<Type>value`) except in test files
 Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Already aligned (item 6 mentions spec commits after phases)
-  - .specify/templates/spec-template.md: ✅ Already aligned (item 129 mentions spec commits)
-  - .specify/templates/tasks-template.md: ✅ Already aligned (item 170 mentions spec commits)
+  - .specify/templates/plan-template.md: ✅ Updated (item 1 - Type Safety now includes no type coercions)
+  - .specify/templates/spec-template.md: ✅ Updated (Type Safety constitution alignment)
+  - .specify/templates/tasks-template.md: ✅ Updated (constitution compliance verification)
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.15.1: Strengthened spec commit requirements - MUST commit after each SpecKit command
   - v2.15.0: Added Principle XX - Canonical Hash Computed Colours
   - v2.14.0: Added Principle XIX - Documentation Token Efficiency
   - v2.13.1: Add git commit -a to prohibited commands
@@ -33,10 +33,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.15.1)
+# BibGraph Constitution (v2.16.0)
 
 ## Version History
 
+- **v2.16.0** (2025-12-02): Added type coercion prohibition to Type Safety (Principle I) - no `as Type` or `<Type>value` except in test files
 - **v2.15.1** (2025-12-02): Strengthened spec commit requirements - MUST commit after each SpecKit command
 - **v2.15.0** (2025-12-02): Added Principle XX - Canonical Hash Computed Colours
 - **v2.14.0** (2025-12-02): Added Principle XIX - Documentation Token Efficiency
@@ -66,9 +67,35 @@ This PhD research project requires maintainable, reliable code for academic repr
 
 ### I. Type Safety (NON-NEGOTIABLE)
 
-**NEVER use `any` types**. Use `unknown` with type guards instead. TypeScript assertions are discouraged; prefer type narrowing through runtime checks. All code must pass strict TypeScript validation without errors or suppressions.
+**NEVER use `any` types**. Use `unknown` with type guards instead. **NEVER use type coercions** (`as Type`, `<Type>value`) in production code—use type narrowing through runtime checks instead. All code must pass strict TypeScript validation without errors or suppressions.
 
-**Rationale**: Ensures research reproducibility by catching type errors at compile time (see Shared Rationale).
+**Type coercion exception**: Type coercions (`as`, `<Type>`) are ONLY permitted in test files (`*.test.ts`, `*.test.tsx`) where they simplify test setup and mock creation.
+
+**Prohibited patterns**:
+```typescript
+// ❌ WRONG: Type coercion in production code
+const user = response.data as User;
+const element = <HTMLInputElement>document.getElementById("input");
+const config = {} as Config;
+
+// ✅ CORRECT: Type narrowing with runtime checks
+function isUser(value: unknown): value is User {
+  return typeof value === "object" && value !== null && "id" in value;
+}
+const data: unknown = response.data;
+if (isUser(data)) {
+  const user = data; // TypeScript knows this is User
+}
+```
+
+**Permitted in tests only**:
+```typescript
+// ✅ CORRECT: Type coercion in test file (e.g., foo.unit.test.ts)
+const mockUser = { id: "123" } as User;
+const mockStorage = {} as jest.Mocked<StorageProvider>;
+```
+
+**Rationale**: Type coercions bypass TypeScript's type checking, hiding potential runtime errors. They create a false sense of type safety while allowing incorrect types to flow through the codebase. In production code, runtime type guards ensure actual type correctness. Tests are excepted because mock objects often intentionally provide partial implementations.
 
 ### II. Test-First Development (NON-NEGOTIABLE)
 
@@ -600,7 +627,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 20 core principles. Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 20 core principles (including type coercion prohibition in Principle I). Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider

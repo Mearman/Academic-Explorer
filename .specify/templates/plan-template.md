@@ -33,7 +33,7 @@
 
 Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 
-1. **Type Safety**: No `any` types planned; use `unknown` with type guards
+1. **Type Safety**: No `any` types planned; no type coercions (`as`, `<Type>`) except in test files; use `unknown` with type guards
 2. **Test-First Development**: Tests written and failing before implementation begins
 3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/); packages MUST NOT re-export exports from other internal packages
 4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)

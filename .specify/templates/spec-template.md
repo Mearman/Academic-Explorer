@@ -121,7 +121,7 @@
   See `.specify/memory/constitution.md` for full details.
 -->
 
-- **Type Safety**: Feature avoids `any` types; uses `unknown` with type guards where needed
+- **Type Safety**: Feature avoids `any` types; no type coercions (`as`, `<Type>`) except in test files; uses `unknown` with type guards where needed
 - **Test-First**: User stories include testable acceptance scenarios; implementation will follow Red-Green-Refactor
 - **Monorepo Architecture**: Feature fits within existing apps/ or packages/ structure (specify which); packages MUST NOT re-export exports from other internal packages
 - **Storage Abstraction**: If feature involves persistence, uses storage provider interface (no direct Dexie/IndexedDB)

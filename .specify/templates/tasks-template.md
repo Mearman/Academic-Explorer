@@ -162,7 +162,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 - [ ] TXXX Constitution compliance verification:
-  - [ ] No `any` types in implementation (Type Safety)
+  - [ ] No `any` types in implementation; no type coercions (`as`, `<Type>`) except in test files (Type Safety)
   - [ ] All tests written before implementation (Test-First)
   - [ ] Proper Nx workspace structure used (Monorepo Architecture)
   - [ ] Storage operations use provider interface (Storage Abstraction)
