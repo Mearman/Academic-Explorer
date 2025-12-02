@@ -1,12 +1,15 @@
 /**
- * Entity Graph Page - Visualizes repository entities as an interactive graph
+ * Entity Graph Page - Visualizes entities from multiple sources as an interactive graph
  *
- * This page provides real-time visualization of entities stored in the
- * repository (IndexedDB), with support for:
+ * This page provides real-time visualization of entities from:
+ * - Catalogue lists (bookmarks, history, custom lists)
+ * - Caches (IndexedDB, memory, static)
+ *
+ * Features:
  * - 2D/3D force-directed layouts
  * - Community detection and pathfinding algorithms
  * - Interactive node exploration
- * - Entity type filtering
+ * - Toggleable data sources
  *
  * @module routes/graph
  */
@@ -25,6 +28,7 @@ import {
   SegmentedControl,
   ActionIcon,
   Tooltip,
+  Box,
 } from '@mantine/core';
 import {
   IconGraph,
@@ -41,10 +45,11 @@ import React, { useMemo, useCallback, useRef } from 'react';
 import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
+import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import { useRepositoryGraph } from '@/hooks/use-repository-graph';
+import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
 
 /**
  * Minimal graph methods interface for fit-to-view controls
@@ -57,19 +62,23 @@ interface GraphMethods {
 /**
  * Entity Graph Page Component
  *
- * Displays repository entities as an interactive force-directed graph
+ * Displays entities from multiple sources as an interactive force-directed graph
  */
 function EntityGraphPage() {
-  // Repository data - real entities from IndexedDB
+  // Multi-source graph data
   const {
     nodes,
     edges,
     loading,
     isEmpty,
     error,
+    sources,
+    enabledSourceIds,
+    toggleSource,
+    enableAll,
+    disableAll,
     refresh,
-    lastUpdated,
-  } = useRepositoryGraph();
+  } = useMultiSourceGraph();
 
   // Visualization state management
   const {
@@ -138,13 +147,16 @@ function EntityGraphPage() {
     return counts;
   }, [nodes]);
 
+  // Count enabled sources with entities
+  const enabledSourceCount = sources.filter(s => enabledSourceIds.has(s.source.id)).length;
+
   // Loading state
-  if (loading) {
+  if (loading && sources.length === 0) {
     return (
       <Container size="xl" py="md">
         <Stack align="center" justify="center" h="50vh" gap="md">
           <Loader size="xl" />
-          <Text c="dimmed">Loading repository data...</Text>
+          <Text c="dimmed">Loading data sources...</Text>
         </Stack>
       </Container>
     );
@@ -172,207 +184,273 @@ function EntityGraphPage() {
     );
   }
 
-  // Empty state - guide user to bookmark entities
+  // Empty state - no sources enabled or no entities
+  if (isEmpty && enabledSourceCount === 0) {
+    return (
+      <Box style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
+        {/* Source Panel */}
+        <GraphSourcePanel
+          sources={sources}
+          enabledSourceIds={enabledSourceIds}
+          onToggleSource={toggleSource}
+          onEnableAll={enableAll}
+          onDisableAll={disableAll}
+          onRefresh={refresh}
+          loading={loading}
+        />
+
+        {/* Empty state content */}
+        <Container size="md" py="xl" style={{ flex: 1 }}>
+          <Stack gap="lg">
+            <Group>
+              <IconGraph size={28} />
+              <Title order={2}>Entity Graph</Title>
+            </Group>
+
+            <Alert icon={<IconInfoCircle size={16} />} title="No Data Sources Enabled" color="blue">
+              <Stack gap="md">
+                <Text>
+                  Enable one or more data sources from the left panel to visualize entities.
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Available sources include your bookmarks, browsing history, custom lists, and cached entities.
+                </Text>
+              </Stack>
+            </Alert>
+          </Stack>
+        </Container>
+      </Box>
+    );
+  }
+
+  // Empty state with sources enabled but no entities
   if (isEmpty) {
     return (
-      <Container size="xl" py="md">
-        <Stack gap="lg">
-          <Group>
-            <IconGraph size={28} />
-            <Title order={2}>Entity Graph</Title>
-          </Group>
+      <Box style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
+        {/* Source Panel */}
+        <GraphSourcePanel
+          sources={sources}
+          enabledSourceIds={enabledSourceIds}
+          onToggleSource={toggleSource}
+          onEnableAll={enableAll}
+          onDisableAll={disableAll}
+          onRefresh={refresh}
+          loading={loading}
+        />
 
-          <Alert icon={<IconInfoCircle size={16} />} title="No Bookmarked Entities" color="blue">
-            <Stack gap="md">
-              <Text>
-                You have no bookmarked entities. Bookmark entities to visualize them as a graph.
-              </Text>
-              <Group>
-                <Button component={Link} to="/browse" variant="light">
-                  Browse Entities
-                </Button>
-                <Button component={Link} to="/search" variant="light">
-                  Search OpenAlex
-                </Button>
-                <Button component={Link} to="/bookmarks" variant="light">
-                  View Bookmarks
-                </Button>
-              </Group>
-            </Stack>
-          </Alert>
-        </Stack>
-      </Container>
+        {/* Empty state content */}
+        <Container size="md" py="xl" style={{ flex: 1 }}>
+          <Stack gap="lg">
+            <Group>
+              <IconGraph size={28} />
+              <Title order={2}>Entity Graph</Title>
+            </Group>
+
+            <Alert icon={<IconInfoCircle size={16} />} title="No Entities Found" color="blue">
+              <Stack gap="md">
+                <Text>
+                  The enabled data sources contain no entities. Try enabling more sources or add some bookmarks.
+                </Text>
+                <Group>
+                  <Button component={Link} to="/browse" variant="light">
+                    Browse Entities
+                  </Button>
+                  <Button component={Link} to="/search" variant="light">
+                    Search OpenAlex
+                  </Button>
+                  <Button component={Link} to="/bookmarks" variant="light">
+                    View Bookmarks
+                  </Button>
+                </Group>
+              </Stack>
+            </Alert>
+          </Stack>
+        </Container>
+      </Box>
     );
   }
 
   return (
-    <Container size="xl" py="md">
-      <Stack gap="lg">
-        {/* Page Header */}
-        <Group justify="space-between" align="flex-start">
-          <Group>
-            <IconGraph size={28} />
-            <Stack gap={0}>
-              <Title order={2}>Entity Graph</Title>
-              <Text c="dimmed" size="sm">
-                {nodes.length} nodes, {edges.length} edges
-                {lastUpdated && ` • Updated ${lastUpdated.toLocaleTimeString()}`}
-              </Text>
-            </Stack>
-          </Group>
-          <Group>
-            <Tooltip label="Refresh data">
-              <ActionIcon variant="light" onClick={refresh}>
-                <IconRefresh size={16} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
-        </Group>
+    <Box style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
+      {/* Source Panel */}
+      <GraphSourcePanel
+        sources={sources}
+        enabledSourceIds={enabledSourceIds}
+        onToggleSource={toggleSource}
+        onEnableAll={enableAll}
+        onDisableAll={disableAll}
+        onRefresh={refresh}
+        loading={loading}
+      />
 
-        {/* Graph Visualization Card */}
-        <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
-          <Stack gap="md">
-            {/* Controls Row */}
-            <Group justify="space-between">
-              <Group gap="xs">
-                <ViewModeToggle value={viewMode} onChange={setViewMode} />
-
-                <SegmentedControl
-                  size="xs"
-                  value={displayMode}
-                  onChange={(value) => setDisplayMode(value as DisplayMode)}
-                  data={[
-                    { label: 'Highlight', value: 'highlight' },
-                    { label: 'Filter', value: 'filter' },
-                  ]}
-                />
-              </Group>
-
-              <Group gap="xs">
-                {/* Fit to view controls */}
-                <Tooltip label="Fit all nodes to view">
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    onClick={fitToViewAll}
-                    aria-label="Fit all to view"
-                  >
-                    <IconFocusCentered size={16} />
-                  </ActionIcon>
-                </Tooltip>
-                <Tooltip label={highlightedNodes.size > 0 ? "Fit selected nodes to view" : "Fit all to view (no selection)"}>
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    onClick={fitToViewSelected}
-                    aria-label="Fit selected to view"
-                    disabled={highlightedNodes.size === 0}
-                  >
-                    <IconFocus2 size={16} />
-                  </ActionIcon>
-                </Tooltip>
-
-                {/* Simulation toggle */}
-                <Tooltip label={enableSimulation ? 'Pause simulation' : 'Resume simulation'}>
-                  <ActionIcon
-                    variant={enableSimulation ? 'filled' : 'light'}
-                    onClick={() => setEnableSimulation(!enableSimulation)}
-                  >
-                    <IconEye size={16} />
-                  </ActionIcon>
-                </Tooltip>
-
-                {/* Clear highlights */}
-                {highlightedNodes.size > 0 && (
-                  <Button variant="subtle" size="xs" onClick={clearHighlights}>
-                    Clear Selection ({highlightedNodes.size})
-                  </Button>
-                )}
-              </Group>
+      {/* Main Content */}
+      <Box style={{ flex: 1, overflow: 'auto', padding: 'var(--mantine-spacing-md)' }}>
+        <Stack gap="lg">
+          {/* Page Header */}
+          <Group justify="space-between" align="flex-start">
+            <Group>
+              <IconGraph size={28} />
+              <Stack gap={0}>
+                <Title order={2}>Entity Graph</Title>
+                <Text c="dimmed" size="sm">
+                  {nodes.length} nodes, {edges.length} edges from {enabledSourceCount} source{enabledSourceCount !== 1 ? 's' : ''}
+                </Text>
+              </Stack>
             </Group>
+            <Group>
+              <Tooltip label="Refresh data">
+                <ActionIcon variant="light" onClick={refresh} loading={loading}>
+                  <IconRefresh size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          </Group>
 
-            {/* Graph Container */}
-            <div
-              style={{
-                height: '60vh',
-                minHeight: '400px',
-                border: '1px solid var(--mantine-color-gray-2)',
-                borderRadius: 'var(--mantine-radius-md)',
-                overflow: 'hidden',
-              }}
-            >
-              {viewMode === '2D' ? (
-                <ForceGraphVisualization
-                  nodes={nodes}
-                  edges={edges}
-                  highlightedNodeIds={highlightedNodes}
-                  highlightedPath={highlightedPath}
-                  communityAssignments={communityAssignments}
-                  communityColors={communityColors}
-                  displayMode={displayMode}
-                  enableSimulation={enableSimulation}
-                  onNodeClick={handleNodeClick}
-                  onBackgroundClick={handleBackgroundClick}
-                  onGraphReady={handleGraphReady}
-                />
-              ) : (
-                <ForceGraph3DVisualization
-                  nodes={nodes}
-                  edges={edges}
-                  highlightedNodeIds={highlightedNodes}
-                  highlightedPath={highlightedPath}
-                  communityAssignments={communityAssignments}
-                  communityColors={communityColors}
-                  displayMode={displayMode}
-                  enableSimulation={enableSimulation}
-                  onNodeClick={handleNodeClick}
-                  onBackgroundClick={handleBackgroundClick}
-                  onGraphReady={handleGraphReady}
-                />
-              )}
-            </div>
-          </Stack>
-        </Card>
+          {/* Graph Visualization Card */}
+          <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
+            <Stack gap="md">
+              {/* Controls Row */}
+              <Group justify="space-between">
+                <Group gap="xs">
+                  <ViewModeToggle value={viewMode} onChange={setViewMode} />
 
-        {/* Stats Summary */}
-        <Group gap="md">
-          {Object.entries(nodeTypeCounts).map(([type, count]) => (
-            <Badge key={type} variant="light" size="lg">
-              {type}: {count}
-            </Badge>
-          ))}
-        </Group>
+                  <SegmentedControl
+                    size="xs"
+                    value={displayMode}
+                    onChange={(value) => setDisplayMode(value as DisplayMode)}
+                    data={[
+                      { label: 'Highlight', value: 'highlight' },
+                      { label: 'Filter', value: 'filter' },
+                    ]}
+                  />
+                </Group>
 
-        {/* Path selection info */}
-        {(pathSource || pathTarget) && (
-          <Alert icon={<IconInfoCircle size={16} />} color="blue" title="Path Selection">
-            <Text size="sm">
-              {pathSource && !pathTarget && `Source selected: ${pathSource}. Click another node to set target.`}
-              {pathSource && pathTarget && `Source: ${pathSource} → Target: ${pathTarget}`}
-            </Text>
-          </Alert>
-        )}
+                <Group gap="xs">
+                  {/* Fit to view controls */}
+                  <Tooltip label="Fit all nodes to view">
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={fitToViewAll}
+                      aria-label="Fit all to view"
+                    >
+                      <IconFocusCentered size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label={highlightedNodes.size > 0 ? "Fit selected nodes to view" : "Fit all to view (no selection)"}>
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={fitToViewSelected}
+                      aria-label="Fit selected to view"
+                      disabled={highlightedNodes.size === 0}
+                    >
+                      <IconFocus2 size={16} />
+                    </ActionIcon>
+                  </Tooltip>
 
-        {/* Graph Algorithms */}
-        <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
-          <Stack gap="md">
-            <Title order={4}>Graph Algorithms</Title>
-            <AlgorithmTabs
-              nodes={nodes}
-              edges={edges}
-              onHighlightNodes={highlightNodes}
-              onHighlightPath={highlightPath}
-              onSelectCommunity={selectCommunity}
-              onCommunitiesDetected={setCommunitiesResult}
-              pathSource={pathSource}
-              pathTarget={pathTarget}
-              onPathSourceChange={setPathSource}
-              onPathTargetChange={setPathTarget}
-            />
-          </Stack>
-        </Card>
-      </Stack>
-    </Container>
+                  {/* Simulation toggle */}
+                  <Tooltip label={enableSimulation ? 'Pause simulation' : 'Resume simulation'}>
+                    <ActionIcon
+                      variant={enableSimulation ? 'filled' : 'light'}
+                      onClick={() => setEnableSimulation(!enableSimulation)}
+                    >
+                      <IconEye size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+
+                  {/* Clear highlights */}
+                  {highlightedNodes.size > 0 && (
+                    <Button variant="subtle" size="xs" onClick={clearHighlights}>
+                      Clear Selection ({highlightedNodes.size})
+                    </Button>
+                  )}
+                </Group>
+              </Group>
+
+              {/* Graph Container */}
+              <div
+                style={{
+                  height: '55vh',
+                  minHeight: '350px',
+                  border: '1px solid var(--mantine-color-gray-2)',
+                  borderRadius: 'var(--mantine-radius-md)',
+                  overflow: 'hidden',
+                }}
+              >
+                {viewMode === '2D' ? (
+                  <ForceGraphVisualization
+                    nodes={nodes}
+                    edges={edges}
+                    highlightedNodeIds={highlightedNodes}
+                    highlightedPath={highlightedPath}
+                    communityAssignments={communityAssignments}
+                    communityColors={communityColors}
+                    displayMode={displayMode}
+                    enableSimulation={enableSimulation}
+                    onNodeClick={handleNodeClick}
+                    onBackgroundClick={handleBackgroundClick}
+                    onGraphReady={handleGraphReady}
+                  />
+                ) : (
+                  <ForceGraph3DVisualization
+                    nodes={nodes}
+                    edges={edges}
+                    highlightedNodeIds={highlightedNodes}
+                    highlightedPath={highlightedPath}
+                    communityAssignments={communityAssignments}
+                    communityColors={communityColors}
+                    displayMode={displayMode}
+                    enableSimulation={enableSimulation}
+                    onNodeClick={handleNodeClick}
+                    onBackgroundClick={handleBackgroundClick}
+                    onGraphReady={handleGraphReady}
+                  />
+                )}
+              </div>
+            </Stack>
+          </Card>
+
+          {/* Stats Summary */}
+          <Group gap="md">
+            {Object.entries(nodeTypeCounts).map(([type, count]) => (
+              <Badge key={type} variant="light" size="lg">
+                {type}: {count}
+              </Badge>
+            ))}
+          </Group>
+
+          {/* Path selection info */}
+          {(pathSource || pathTarget) && (
+            <Alert icon={<IconInfoCircle size={16} />} color="blue" title="Path Selection">
+              <Text size="sm">
+                {pathSource && !pathTarget && `Source selected: ${pathSource}. Click another node to set target.`}
+                {pathSource && pathTarget && `Source: ${pathSource} → Target: ${pathTarget}`}
+              </Text>
+            </Alert>
+          )}
+
+          {/* Graph Algorithms */}
+          <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
+            <Stack gap="md">
+              <Title order={4}>Graph Algorithms</Title>
+              <AlgorithmTabs
+                nodes={nodes}
+                edges={edges}
+                onHighlightNodes={highlightNodes}
+                onHighlightPath={highlightPath}
+                onSelectCommunity={selectCommunity}
+                onCommunitiesDetected={setCommunitiesResult}
+                pathSource={pathSource}
+                pathTarget={pathTarget}
+                onPathSourceChange={setPathSource}
+                onPathTargetChange={setPathTarget}
+              />
+            </Stack>
+          </Card>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 
