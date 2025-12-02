@@ -2,11 +2,13 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import type { QueryParams, OpenAlexEntity } from "@bibgraph/types";
+import type { QueryParams, OpenAlexEntity, EntityType } from "@bibgraph/types";
 import { isOpenAlexEntity } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
 import { z } from "zod";
 
+import { extractAndIndexRelationships } from "./cache/dexie/graph-extraction";
+import { getPersistentGraph } from "./cache/dexie/persistent-graph";
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
@@ -406,6 +408,11 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Cache entities from API response data
    * Handles both single entity responses and list responses with results array
    * Part of the unified tiered cache system
+   *
+   * Also indexes entity relationships in the persistent graph for:
+   * - Fast relationship queries without loading full entity JSON
+   * - Persistence across browser sessions
+   * - Interactive node expansion in graph visualization
    */
   protected override async cacheResponseEntities({
     url,
@@ -431,6 +438,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         // Cache each entity from the results array
         const results = (responseData as { results: unknown[] }).results;
         await this.cacheEntitiesFromResults(results, entityType);
+
+        // Index relationships in persistent graph
+        await this.indexEntitiesInGraph(results, entityType);
       } else if (isOpenAlexEntity(responseData)) {
         // Single entity response - cache it directly
         const id = responseData.id;
@@ -441,6 +451,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
             id: cleanId,
             data: responseData,
           });
+
+          // Index relationships in persistent graph
+          await this.indexEntityInGraph(cleanId, entityType, responseData);
         }
       }
     } catch (error: unknown) {
@@ -545,6 +558,102 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       logger.debug("client", "Failed to cache partial entity", {
         entityType,
         id,
+        error,
+      });
+    }
+  }
+
+  // ===========================================================================
+  // Persistent Graph Integration
+  // ===========================================================================
+
+  /**
+   * Index a single entity in the persistent graph
+   * Extracts relationships and stores nodes/edges for fast graph queries
+   */
+  private async indexEntityInGraph(
+    entityId: string,
+    entityType: string,
+    entityData: OpenAlexEntity,
+  ): Promise<void> {
+    try {
+      const graph = getPersistentGraph();
+      await graph.initialize();
+
+      const result = await extractAndIndexRelationships(
+        graph,
+        entityType as EntityType,
+        entityId,
+        entityData as Record<string, unknown>,
+      );
+
+      if (result.edgesAdded > 0 || result.stubsCreated > 0) {
+        logger.debug("client", "Indexed entity in graph", {
+          entityId,
+          entityType,
+          nodesProcessed: result.nodesProcessed,
+          edgesAdded: result.edgesAdded,
+          stubsCreated: result.stubsCreated,
+        });
+      }
+    } catch (error: unknown) {
+      // Log but don't throw - graph indexing is a non-critical enhancement
+      logger.debug("client", "Failed to index entity in graph", {
+        entityId,
+        entityType,
+        error,
+      });
+    }
+  }
+
+  /**
+   * Index multiple entities in the persistent graph
+   * Used for batch indexing from list responses
+   */
+  private async indexEntitiesInGraph(
+    results: unknown[],
+    entityType: string,
+  ): Promise<void> {
+    try {
+      const graph = getPersistentGraph();
+      await graph.initialize();
+
+      let totalNodes = 0;
+      let totalEdges = 0;
+      let totalStubs = 0;
+
+      for (const result of results) {
+        if (this.hasValidOpenAlexId(result)) {
+          const cleanId = cleanOpenAlexId(result.id);
+          try {
+            const extractResult = await extractAndIndexRelationships(
+              graph,
+              entityType as EntityType,
+              cleanId,
+              result as Record<string, unknown>,
+            );
+            totalNodes += extractResult.nodesProcessed;
+            totalEdges += extractResult.edgesAdded;
+            totalStubs += extractResult.stubsCreated;
+          } catch {
+            // Silently ignore individual indexing failures
+          }
+        }
+      }
+
+      if (totalEdges > 0 || totalStubs > 0) {
+        logger.debug("client", "Indexed entities in graph from list response", {
+          entityType,
+          count: results.length,
+          nodesProcessed: totalNodes,
+          edgesAdded: totalEdges,
+          stubsCreated: totalStubs,
+        });
+      }
+    } catch (error: unknown) {
+      // Log but don't throw - graph indexing is a non-critical enhancement
+      logger.debug("client", "Failed to index entities in graph", {
+        entityType,
         error,
       });
     }
