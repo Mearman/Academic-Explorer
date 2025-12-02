@@ -107,7 +107,140 @@ interface EncodedListPayload {
   // Timestamps (Unix epoch for compression)
   ca: number  // createdAt
   ua: number  // updatedAt
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RECONCILIATION SUPPORT
+  // Three approaches implemented for UX experimentation:
+  // 1. Same-UUID detection + diff UI (uses uuid field above)
+  // 2. Base reference chain (baseUuid field)
+  // 3. CRDT operations (ops array)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // [Approach 2] Base reference chain for 3-way merge
+  // Points to the UUID of the list this was derived from
+  // Enables git-style 3-way merge: find common ancestor, compute diffs
+  bu?: string  // baseUuid - UUID of parent version
+
+  // [Approach 3] CRDT operation log for automatic merge
+  // OR-Set (Observed-Remove Set) semantics: entity is present if max(add) > max(remove)
+  // Operations are commutative, idempotent, and associative
+  ops?: ListOperation[]
 }
+
+/**
+ * CRDT operation for list membership changes
+ * Uses Lamport timestamps for ordering across distributed edits
+ */
+interface ListOperation {
+  // Operation type
+  op: "add" | "remove" | "meta"  // add entity, remove entity, update metadata
+
+  // Target entity
+  eid: string  // entity ID (e.g., "W2741809807")
+
+  // Lamport timestamp: [unix_ms, node_id_hash]
+  // Ensures total ordering even with clock skew
+  ts: [number, string]  // e.g., [1718409600000, "a3f2"]
+
+  // For "meta" operations: the metadata being set
+  md?: Record<string, unknown>
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * RECONCILIATION APPROACHES - Detailed Documentation
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * SCENARIO: User A shares list with User B. Both make independent changes.
+ *           A shares updated URL to B, B shares theirs to A.
+ *
+ * ───────────────────────────────────────────────────────────────────────────
+ * APPROACH 1: Same-UUID Detection + Diff UI
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * How it works:
+ * - When user opens a list URL, check if local storage has a list with same UUID
+ * - If found and contents differ, show diff UI for manual merge
+ *
+ * Detection:
+ *   incoming.uuid === stored.uuid && incoming.ua !== stored.ua
+ *
+ * UI Flow:
+ *   "You have a different version of this list. Compare changes?"
+ *   → Side-by-side diff showing added/removed/modified entities
+ *   → User manually selects which changes to keep
+ *   → Creates new list with merged state (new UUID or preserve original)
+ *
+ * Pros: Simple, user has full control, no extra payload size
+ * Cons: Manual effort, doesn't scale for frequent collaboration
+ *
+ * ───────────────────────────────────────────────────────────────────────────
+ * APPROACH 2: Base Reference Chain (3-Way Merge)
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * How it works:
+ * - Each derived list stores `bu` (baseUuid) pointing to its parent version
+ * - When merging, find common ancestor and compute 3-way diff
+ * - Similar to git merge: base → A changes, base → B changes
+ *
+ * Chain structure:
+ *   Original (uuid: "aaa", bu: null)
+ *       ├── A's edit (uuid: "bbb", bu: "aaa")
+ *       └── B's edit (uuid: "ccc", bu: "aaa")
+ *
+ * Merge algorithm:
+ *   1. Find common ancestor (bu chain intersection)
+ *   2. Compute diff: ancestor → version A
+ *   3. Compute diff: ancestor → version B
+ *   4. Apply non-conflicting changes automatically
+ *   5. Present conflicts for manual resolution
+ *
+ * Pros: Smarter auto-merge, familiar git-like model
+ * Cons: Requires storing/fetching ancestor versions, chain can get long
+ *
+ * ───────────────────────────────────────────────────────────────────────────
+ * APPROACH 3: CRDT Operations (Automatic Merge)
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * How it works:
+ * - Instead of storing final state, store operations that produced it
+ * - OR-Set semantics: entity present if latest op is "add"
+ * - Operations from any source can be merged without conflicts
+ *
+ * OR-Set membership rule:
+ *   isPresent(entityId) = max(addTimestamps) > max(removeTimestamps)
+ *
+ * Example merge:
+ *   A's ops: [{ op: "add", eid: "W1", ts: [1000, "a"] }]
+ *   B's ops: [{ op: "add", eid: "W2", ts: [1001, "b"] },
+ *             { op: "remove", eid: "W3", ts: [1002, "b"] }]
+ *
+ *   Merged: All ops combined → W1 present, W2 present, W3 removed
+ *
+ * Compaction:
+ * - Periodically compact ops: keep only latest op per entity
+ * - Reset ops array when sharing (include current state in `e` array)
+ *
+ * Pros: True conflict-free merge, works offline, scales to many collaborators
+ * Cons: Larger payload, more complex implementation, semantic conflicts possible
+ *       (e.g., both users add same entity with different metadata)
+ *
+ * ───────────────────────────────────────────────────────────────────────────
+ * IMPLEMENTATION STRATEGY
+ * ───────────────────────────────────────────────────────────────────────────
+ *
+ * All three approaches coexist:
+ * - Approach 1 always active (uuid comparison is trivial)
+ * - Approach 2 enabled when `bu` field present
+ * - Approach 3 enabled when `ops` array present
+ *
+ * User can choose reconciliation strategy in settings:
+ * - "Manual diff" (Approach 1)
+ * - "Smart merge" (Approach 2)
+ * - "Auto merge" (Approach 3)
+ *
+ * Fallback chain: If CRDT fails → try 3-way → fall back to manual diff
+ */
 
 /**
  * ID Encoding/Decoding utilities
