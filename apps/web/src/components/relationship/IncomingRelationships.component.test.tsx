@@ -64,6 +64,10 @@ describe('IncomingRelationships', () => {
       outgoingCount: 0,
       loading: false,
       error: undefined,
+      loadMore: vi.fn(),
+      goToPage: vi.fn(),
+      setPageSize: vi.fn(),
+      isLoadingMore: vi.fn(() => false),
     });
 
     vi.mocked(useEntityRelationshipsFromData).mockReturnValue({
@@ -89,6 +93,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Network error occurred'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -105,6 +113,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Network error'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -126,6 +138,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Failed to load relationships'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -146,6 +162,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Failed to load relationships'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -164,6 +184,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: true,
         error: undefined,
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -182,6 +206,10 @@ describe('IncomingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: undefined,
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<IncomingRelationships entityId={mockEntityId} entityType={mockEntityType} />);

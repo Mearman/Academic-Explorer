@@ -63,6 +63,10 @@ describe('OutgoingRelationships', () => {
       outgoingCount: 0,
       loading: false,
       error: undefined,
+      loadMore: vi.fn(),
+      goToPage: vi.fn(),
+      setPageSize: vi.fn(),
+      isLoadingMore: vi.fn(() => false),
     });
 
     vi.mocked(useEntityRelationshipsFromData).mockReturnValue({
@@ -88,6 +92,10 @@ describe('OutgoingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Network error occurred'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<OutgoingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -104,6 +112,10 @@ describe('OutgoingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: new Error('Network error occurred'),
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<OutgoingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -123,6 +135,10 @@ describe('OutgoingRelationships', () => {
         outgoingCount: 0,
         loading: true,
         error: undefined,
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<OutgoingRelationships entityId={mockEntityId} entityType={mockEntityType} />);
@@ -141,6 +157,10 @@ describe('OutgoingRelationships', () => {
         outgoingCount: 0,
         loading: false,
         error: undefined,
+        loadMore: vi.fn(),
+        goToPage: vi.fn(),
+        setPageSize: vi.fn(),
+        isLoadingMore: vi.fn(() => false),
       });
 
       renderWithProvider(<OutgoingRelationships entityId={mockEntityId} entityType={mockEntityType} />);

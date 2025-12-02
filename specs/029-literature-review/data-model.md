@@ -2,80 +2,236 @@
 
 **Feature**: 029-literature-review
 **Date**: 2025-11-30
+**Updated**: 2025-12-02 (Terminology refinement)
+
+---
+
+## Terminology Model
+
+### Hierarchy
+
+**Lists** is the umbrella term for the feature. All groupings of entities are types of lists.
+
+```
+LISTS (feature/umbrella term)
+│
+├── Collections (user-created, origin: "created")
+│   ├── [Generic] - constraint: "any", can contain any entities including lists
+│   └── Bibliography - constraint: "works-only", works only
+│       └── Can become a Review when workflow is attached
+│
+├── Built-in (origin: "built-in")
+│   ├── Bookmarks - quick-save, any entities
+│   └── History - auto-tracked visits
+│
+├── Samples (origin: "sample", static/bundled)
+│   ├── Sample Bibliographies
+│   └── Sample Reviews
+│
+└── Indexes (origin: "index", computed, read-only)
+    ├── Memory Cache Index
+    ├── Local Cache Index
+    └── Static Cache Index
+```
+
+### Term Definitions
+
+| Term | Definition | Origin |
+|------|------------|--------|
+| **List** | Umbrella term for the feature and any grouping of entities | N/A |
+| **Collection** | User-created list of entities | `created` |
+| **Bibliography** | Collection constrained to works only | `created` |
+| **Review** | Bibliography with active PRISMA workflow attached | `created` |
+| **Bookmarks** | Built-in quick-save list | `built-in` |
+| **History** | Built-in visit tracking list | `built-in` |
+| **Sample** | Pre-packaged example list | `sample` |
+| **Index** | Computed view of cached entities | `index` |
+
+### Key Insight: Review is a State, Not a Type
+
+A Review is NOT a separate entity type. It is a Bibliography with a PRISMA workflow attached:
+
+```
+Bibliography ──[start review]──► Bibliography + ReviewWorkflow
+                                 (still a Bibliography, now with PRISMA)
+```
+
+### Differentiating Properties
+
+| Property | Values | Purpose |
+|----------|--------|---------|
+| **origin** | `created` \| `built-in` \| `sample` \| `index` | How it came to exist |
+| **constraint** | `any` \| `works-only` | What entities allowed |
+| **workflow** | `ReviewWorkflow \| null` | Has PRISMA workflow |
+| **mutability** | `full` \| `entries` \| `readonly` | What can be changed |
+| **storage** | `local` \| `static` \| `computed` | Where data lives |
+| **shareable** | `boolean` | Can be URL-encoded and shared |
+
+### Property Matrix
+
+| List Type | origin | constraint | workflow | mutability | storage | shareable |
+|-----------|--------|------------|----------|------------|---------|-----------|
+| Collection | created | any | none | full | local | ✓ |
+| Bibliography | created | works-only | none | full | local | ✓ |
+| Review | created | works-only | review | full | local | ✓ |
+| Bookmarks | built-in | any | none | entries | local | ✓ |
+| History | built-in | any | none | entries | local | ✗ |
+| Sample Bib | sample | works-only | none | readonly | static | ✓ |
+| Sample Review | sample | works-only | review | readonly | static | ✓ |
+| Cache Index | index | any | none | readonly | computed | ✗ |
+
+### Nesting Rules (via Edges)
+
+Lists can contain other lists. The `constraint` property determines what a list can contain:
+
+| Constraint | Can contain lists? | Can contain works? | Can contain other entities? |
+|------------|-------------------|--------------------|-----------------------------|
+| `any` | ✓ Yes | ✓ Yes | ✓ Yes |
+| `works-only` | ✗ No | ✓ Yes | ✗ No |
+
+### Structure: Forest with Virtual Grouping
+
+Lists use a **forest model** (multiple roots) with **virtual grouping by origin**:
+
+- Lists with no `belongs_to` edge are top-level within their origin group
+- UI groups lists by `origin` property for display
+- No artificial root entity required
+
+---
 
 ## Entity Relationships
 
+All relationships are **edges** between entities. Lists are first-class entities, so list relationships follow the same pattern as any other entity relationship.
+
 ```mermaid
 erDiagram
-    CatalogueList ||--o| parentOf |o-- Entity
-    CatalogueList ||--|{ contains }|| Entity
-    CatalogueList ||--o| hasWorkflow |o-- LiteratureReview
-    LiteratureReview ||--||{ has } ScreeningDecision
-    LiteratureReview ||--o{ tracks }|| PRISMAStage
-    ScreeningDecision ||--|{ evaluates }|| Entity
-    LiteratureReview ||--o{ analyzes }|| Theme
-    Theme ||--|{ contains }|| Entity
-    Entity }|--||{ stored in }|| SyncConfiguration
-    CustomEntity }|--||{ extends }|| Entity
-    Entity ||--o{ includes }|| Excerpt
-    CustomEntity }|--o|| FileInfo
+    Entity ||--o{ Edge : "source"
+    Entity ||--o{ Edge : "target"
+    Edge {
+        string source
+        string target
+        string relationship
+        json metadata
+    }
+    List ||--o| ReviewWorkflow : "has"
+    ReviewWorkflow ||--|{ ScreeningDecision : "contains"
+    ReviewWorkflow ||--o{ Theme : "analyzes"
 ```
+
+### Edge Model
+
+```typescript
+/**
+ * All relationships between entities are edges.
+ * This includes list containment, list-to-parent associations, and citations.
+ */
+interface Edge {
+  source: string                      // Source entity ID
+  target: string                      // Target entity ID
+  relationship: EdgeRelationship      // Relationship type
+  metadata?: Record<string, unknown>  // Optional edge metadata
+}
+
+type EdgeRelationship =
+  | "contains"      // List contains entity (including nested lists)
+  | "belongs_to"    // List is associated with entity (any type)
+  | "cites"         // Work cites another work
+  | "authored_by"   // Work authored by author
+  | "affiliated"    // Author affiliated with institution
+  // ... extensible for other relationship types
+```
+
+### Edge Examples
+
+| Source | Relationship | Target | Meaning |
+|--------|--------------|--------|---------|
+| L1 | `contains` | W1 | List L1 contains work W1 |
+| L1 | `contains` | W2 | List L1 contains work W2 |
+| L1 | `contains` | L2 | List L1 contains list L2 (nesting) |
+| L1 | `belongs_to` | A123 | List L1 is associated with author A123 |
+| L1 | `belongs_to` | W789 | List L1 is bibliography of work W789 |
+| W1 | `cites` | W2 | Work W1 cites work W2 |
+
+### Edge Metadata
+
+Edges can carry metadata for additional context:
+
+```typescript
+// List entry with PRISMA screening status
+{
+  source: "L1",
+  target: "W1",
+  relationship: "contains",
+  metadata: {
+    prismaStage: "included",
+    addedAt: 1701500000000,
+    notes: "Key methodology paper"
+  }
+}
+
+// List association with label
+{
+  source: "L1",
+  target: "W789",
+  relationship: "belongs_to",
+  metadata: {
+    label: "bibliography"  // Human-readable relationship label
+  }
+}
+```
+
+---
 
 ## Core Entities
 
-### CatalogueList (First-Class Entity)
+### List (First-Class Entity)
 
-Catalogues are promoted to first-class entity status, enabling them to participate in the same relationship patterns as other entities. A catalogue list can have a parent entity (the entity it "belongs to") and contains other entities.
+Lists are first-class entities with type `"lists"` and ID prefix `L`. All containment and association relationships are expressed as edges.
 
 ```typescript
-// Catalogue as a first-class entity type
+// Lists as a first-class entity type
 type EntityType =
   | "works" | "authors" | "institutions" | "sources"
   | "publishers" | "funders" | "topics" | "concepts"
-  | "lists"  // NEW: Lists are first-class entities
+  | "keywords" | "domains" | "fields" | "subfields"
+  | "lists"  // First-class entity type
 
-interface CatalogueList {
-  // ID is pako-compressed, base64url-encoded payload with "L" prefix
-  // Format: "L" + base64url(pako.deflate(JSON.stringify(EncodedListPayload)))
-  // This makes lists shareable via URL alone - the entire state is in the ID
+interface List {
+  // ID: pako-compressed base64url payload with "L" prefix for shareable lists
+  // Or: "L" + UUID for locally-stored lists
   id: string
   type: "lists"
+
+  // Core metadata
   title: string
   description?: string
 
-  // Generic parent entity relationship
-  // "This list belongs to / is derived from this entity"
-  parentEntityId?: string      // Any entity ID (Work, Author, Institution, Catalogue, etc.)
-  parentEntityType?: EntityType // The type of the parent entity
-  relationshipLabel?: string   // Human-readable: "bibliography", "collaborators", "outputs"
+  // Classification (differentiating properties)
+  origin: "created" | "built-in" | "sample" | "index"
+  constraint: "any" | "works-only"
+  workflow: ReviewWorkflow | null
 
-  // List contents - can contain ANY entity types, including other catalogues
-  entities: Array<{
-    id: string
-    type: EntityType
-    // Optional per-entity metadata (e.g., PRISMA stage, notes)
-    metadata?: Record<string, unknown>
-  }>
+  // Capabilities (derived from origin)
+  mutability: "full" | "entries" | "readonly"
+  storage: "local" | "static" | "computed"
+  shareable: boolean
 
-  // List categorization
-  listType: "general" | "bibliography" | "collaborators" | "outputs" | "bookmarks" | "history"
+  // Timestamps
+  createdAt: number   // Unix epoch ms
+  updatedAt: number   // Unix epoch ms
 
-  // Optional workflow attachment
-  literatureReviewId?: string  // If this list has PRISMA workflow tracking
-
-  // Visibility and sharing
-  visibility: "private" | "shared" | "public"
-
-  // Metadata
-  createdAt: string
-  updatedAt: string
-  createdBy?: string
-  tags?: string[]
+  // Note: No parentEntity or entries fields
+  // All relationships expressed as edges:
+  //   - Contents: edges where source=this.id, relationship="contains"
+  //   - Parent: edges where source=this.id, relationship="belongs_to"
 }
 
 /**
  * Payload encoded in the list ID using pako compression
  * Designed for URL-safe sharing while keeping URLs reasonably short
+ *
+ * This is a SERIALIZATION FORMAT for the edge-based model.
+ * Short keys are used for compression efficiency.
  */
 interface EncodedListPayload {
   // UUID for uniqueness (even if contents are identical)
@@ -85,24 +241,30 @@ interface EncodedListPayload {
   t: string                    // title
   d?: string                   // description (optional)
 
-  // Parent relationship (optional)
-  p?: {
-    id: string                 // parentEntityId
-    type: EntityType           // parentEntityType
-    label?: string             // relationshipLabel
+  // Classification
+  o: "c" | "b" | "s" | "i"     // origin: created, built-in, sample, index
+  cn: "a" | "w"                // constraint: any, works-only
+
+  // ─────────────────────────────────────────────────────────────────────
+  // EDGES (serialized)
+  // Edges are the canonical model; these are compact serializations
+  // ─────────────────────────────────────────────────────────────────────
+
+  // "belongs_to" edge (optional) - associates list with parent entity
+  // Serialized: { target, relationship: "belongs_to", metadata: { label } }
+  bt?: {
+    id: string                 // target entity ID
+    l?: string                 // label (e.g., "bibliography", "collaborators")
   }
 
-  // Entity IDs only (types inferred from ID prefix)
-  // e.g., ["W123", "W456", "A789"] - entity type derivable from prefix
+  // "contains" edges - entity IDs this list contains
+  // Serialized: { source: this.id, target: entityId, relationship: "contains" }
+  // Entity types inferred from ID prefix (W=works, A=authors, L=lists, etc.)
   e: string[]
 
-  // Per-entity metadata keyed by entity ID (only if present)
-  // e.g., { "W123": { prismaStage: "included" } }
-  m?: Record<string, Record<string, unknown>>
-
-  // List type (single char for compression)
-  // g=general, b=bibliography, c=collaborators, o=outputs, k=bookmarks, h=history
-  lt: "g" | "b" | "c" | "o" | "k" | "h"
+  // Edge metadata for "contains" edges, keyed by entity ID
+  // e.g., { "W123": { prismaStage: "included", addedAt: 1701500000000 } }
+  em?: Record<string, Record<string, unknown>>
 
   // Timestamps (Unix epoch for compression)
   ca: number  // createdAt
@@ -245,8 +407,8 @@ interface ListOperation {
 /**
  * ID Encoding/Decoding utilities
  *
- * Encode: CatalogueList → pako.deflate → base64url → "L" prefix
- * Decode: Remove "L" → base64url decode → pako.inflate → CatalogueList
+ * Encode: List → pako.deflate → base64url → "L" prefix
+ * Decode: Remove "L" → base64url decode → pako.inflate → List
  *
  * Example encoded ID (hypothetical):
  * "LeJyrVspLz0nNBQA" (very short lists)
@@ -260,50 +422,50 @@ interface ListOperation {
  */
 ```
 
-**Use Cases:**
+**Use Cases (belongs_to edges):**
 
-| Parent Entity | List Type | Contents | Example |
-|---------------|-----------|----------|---------|
+| belongs_to Target | List Type | Contains | Example |
+|-------------------|-----------|----------|---------|
 | Work (review paper) | bibliography | Works | Papers cited by a systematic review |
 | Work (draft) | bibliography | Works | User's paper being written |
-| Author | collaborators | Authors | Co-author network |
-| Author | outputs | Works | Curated publication list |
-| Institution | outputs | Works | Research outputs |
-| Institution | members | Authors | Faculty/researchers |
-| Source (journal) | contents | Works | Issue table of contents |
-| Topic | key_papers | Works | Seminal papers in field |
-| Funder | funded | Works | Grant-funded research |
-| Catalogue | subcollection | Catalogues | Nested list (list of lists) |
-| `undefined` | bookmarks | Mixed | User's general bookmarks |
+| Author | collection | Authors | Co-author network |
+| Author | collection | Works | Curated publication list |
+| Institution | collection | Works | Research outputs |
+| Institution | collection | Authors | Faculty/researchers |
+| Source (journal) | collection | Works | Issue table of contents |
+| Topic | bibliography | Works | Seminal papers in field |
+| Funder | collection | Works | Grant-funded research |
+| List | collection | Lists | Nested list (list of lists) |
+| (none) | collection | Mixed | User's general collection |
 
-**Recursive Relationships:**
+**Nesting Example:**
 
 ```
-CatalogueList: "My Systematic Reviews"
+List: "My Systematic Reviews" (Collection)
   ├── id: "LeNqtk81qwzAQhF9F..." (pako-encoded payload)
   ├── decoded payload: {
   │     uuid: "550e8400-e29b-41d4-a716-446655440000",
   │     t: "My Systematic Reviews",
-  │     p: { id: "A5017898742", type: "authors" },
-  │     e: ["LeJyrVspLz0nNBQA...", "LeKx2jVspMz1nOCR...", "LeMz3kWtqNz2oPDS..."],
-  │     lt: "g",
+  │     o: "c", cn: "a",  // origin: created, constraint: any
+  │     bt: { id: "A5017898742", l: "research" },  // belongs_to author
+  │     e: ["LeJyrVspLz0nNBQA...", "LeKx2jVspMz1nOCR..."],  // nested lists
   │     ca: 1719792000, ua: 1719792000
   │   }
-  └── contains nested list IDs (each also pako-encoded)
+  └── contains edges to nested list IDs
 
-CatalogueList: "Review 1 Bibliography"
+List: "Review 1 Bibliography" (Bibliography with Review workflow)
   ├── id: "LeJyrVspLz0nNBQA..." (pako-encoded payload)
   ├── decoded payload: {
   │     uuid: "660f9500-f3ac-52e5-b827-557766551111",
   │     t: "Review 1 Bibliography",
-  │     p: { id: "W3187234764", type: "works", label: "bibliography" },
-  │     e: ["W2741809807", "W2760813866", "W2893746512"],
-  │     m: {
+  │     o: "c", cn: "w",  // origin: created, constraint: works-only
+  │     bt: { id: "W3187234764", l: "bibliography" },  // belongs_to work
+  │     e: ["W2741809807", "W2760813866", "W2893746512"],  // contains works
+  │     em: {
   │       "W2741809807": { prismaStage: "included" },
   │       "W2760813866": { prismaStage: "included" },
   │       "W2893746512": { prismaStage: "excluded" }
   │     },
-  │     lt: "b",
   │     ca: 1719792000, ua: 1719792000
   │   }
   └── entities hydrated from OpenAlex using IDs in payload
@@ -311,11 +473,11 @@ CatalogueList: "Review 1 Bibliography"
 
 **Sample Bibliographies:**
 
-Sample bibliographies are simply CatalogueLists where:
+Sample bibliographies are Lists with `origin: "sample"` where:
 - The pako-encoded ID contains the full list state
-- `parentEntityId` references an existing OpenAlex review paper
-- `listType` is "bibliography" (`lt: "b"`)
-- Entity metadata includes PRISMA stage assignments
+- `belongs_to` edge references an existing OpenAlex review paper
+- `constraint` is "works-only" (bibliography)
+- Edge metadata includes PRISMA stage assignments
 - Lists are shareable via URL: `/lists/LeNqtk81qwzAQhF9F...`
 
 ```typescript
@@ -324,18 +486,18 @@ const samplePayload: EncodedListPayload = {
   uuid: "cochrane-ml-2024-550e8400",  // Can use semantic UUID for samples
   t: "ML in Medical Diagnosis - Cochrane Review",
   d: "Bibliography from Cochrane systematic review on ML diagnostics",
-  p: {
-    id: "W3187234764",    // Parent: the published review paper
-    type: "works",
-    label: "bibliography"
+  o: "s",   // origin: sample
+  cn: "w",  // constraint: works-only
+  bt: {
+    id: "W3187234764",    // belongs_to: the published review paper
+    l: "bibliography"     // relationship label
   },
-  e: ["W2741809807", "W2760813866", "W2893746512"],  // Entity IDs
-  m: {
+  e: ["W2741809807", "W2760813866", "W2893746512"],  // contains edges
+  em: {
     "W2741809807": { prismaStage: "included", qualityScore: 8 },
     "W2760813866": { prismaStage: "included", qualityScore: 7 },
     "W2893746512": { prismaStage: "excluded", reason: "wrong population" }
   },
-  lt: "b",  // bibliography
   ca: 1718409600,  // 2024-06-15 as Unix timestamp
   ua: 1718409600
 }
@@ -343,37 +505,47 @@ const samplePayload: EncodedListPayload = {
 // Encoded ID: "L" + base64url(pako.deflate(JSON.stringify(samplePayload)))
 // Result: "LeNqtk81qwzAQhF9F6By7cuw4sRMnJNBDpUqlXnLoIbfKWq..."
 
-// Decoded CatalogueList (hydrated from payload + OpenAlex data)
-const sampleBibliography: CatalogueList = {
+// Hydrated List (after decoding payload + fetching OpenAlex data)
+const sampleBibliography: List = {
   id: "LeNqtk81qwzAQhF9F6By7cuw4sRMnJNBDpUqlXnLoIbfKWq...",
   type: "lists",
   title: "ML in Medical Diagnosis - Cochrane Review",
   description: "Bibliography from Cochrane systematic review on ML diagnostics",
-  parentEntityId: "W3187234764",
-  parentEntityType: "works",
-  relationshipLabel: "bibliography",
-  listType: "bibliography",
-  visibility: "public",
-  entities: [
-    { id: "W2741809807", type: "works", metadata: { prismaStage: "included", qualityScore: 8 } },
-    { id: "W2760813866", type: "works", metadata: { prismaStage: "included", qualityScore: 7 } },
-    { id: "W2893746512", type: "works", metadata: { prismaStage: "excluded", reason: "wrong population" } }
-  ],
-  createdAt: "2024-06-15T00:00:00.000Z",
-  updatedAt: "2024-06-15T00:00:00.000Z"
+  origin: "sample",
+  constraint: "works-only",
+  workflow: null,  // Could have ReviewWorkflow attached
+  mutability: "readonly",
+  storage: "static",
+  shareable: true,
+  createdAt: 1718409600000,
+  updatedAt: 1718409600000
 }
+
+// Associated edges (conceptual model)
+const edges: Edge[] = [
+  { source: sampleBibliography.id, target: "W3187234764", relationship: "belongs_to", metadata: { label: "bibliography" } },
+  { source: sampleBibliography.id, target: "W2741809807", relationship: "contains", metadata: { prismaStage: "included", qualityScore: 8 } },
+  { source: sampleBibliography.id, target: "W2760813866", relationship: "contains", metadata: { prismaStage: "included", qualityScore: 7 } },
+  { source: sampleBibliography.id, target: "W2893746512", relationship: "contains", metadata: { prismaStage: "excluded", reason: "wrong population" } },
+]
 ```
 
-### LiteratureReview
+### ReviewWorkflow
 
-Represents a systematic review project with PRISMA 2020 compliant workflow tracking.
+Represents a PRISMA 2020 compliant workflow attached to a Bibliography. A Bibliography becomes a "Review" when it has a ReviewWorkflow attached.
 
 ```typescript
-interface LiteratureReview {
+/**
+ * ReviewWorkflow is attached to a Bibliography (List with constraint: "works-only")
+ * to enable systematic review functionality.
+ *
+ * A Bibliography with workflow !== null is considered a "Review"
+ */
+interface ReviewWorkflow {
   id: string
-  title: string
-  description?: string
-  type: "systematic" | "narrative" | "scoping" | "meta-analysis" | "rapid" | "prisma-semantic"
+
+  // Review methodology type
+  reviewType: "systematic" | "narrative" | "scoping" | "meta-analysis" | "rapid"
   researchDomain?: string
   methodology?: string
 
@@ -409,10 +581,8 @@ interface LiteratureReview {
   }>
 
   // Metadata
-  createdAt: Date
-  updatedAt: Date
-  createdBy?: string
-  tags?: string[]
+  createdAt: number   // Unix epoch ms
+  updatedAt: number
 }
 ```
 
@@ -423,7 +593,7 @@ Records inclusion/exclusion decisions with structured criteria and audit trail.
 ```typescript
 interface ScreeningDecision {
   id: string
-  literatureReviewId: string
+  reviewWorkflowId: string  // ID of the ReviewWorkflow this decision belongs to
   entityId: string
 
   // Decision
@@ -457,7 +627,7 @@ Represents thematic analysis results with manual editing capabilities.
 ```typescript
 interface Theme {
   id: string
-  literatureReviewId?: string
+  reviewWorkflowId?: string  // Associated ReviewWorkflow (if part of a review)
   label: string
   description?: string
   color: string // Hex color for visualization
@@ -485,10 +655,14 @@ interface Theme {
 
 ### CustomEntity
 
-Extends standard catalog entities for non-OpenAlex works with file system integration.
+Extends standard entities for non-OpenAlex works with file system integration. Custom entities are locally-created entities that don't exist in OpenAlex.
 
 ```typescript
-interface CustomEntity extends CatalogueEntity {
+interface CustomEntity {
+  // Standard entity fields
+  id: string              // "X" prefix for custom entities (e.g., "X550e8400-e29b...")
+  type: EntityType        // Usually "works" for custom papers
+  display_name: string
   // Custom Entity Identification
   isCustomEntity: true
   localEntityId: string // For entities not in OpenAlex
@@ -562,46 +736,46 @@ interface SyncConfiguration {
 }
 ```
 
-### Sample Catalogue Data (Static Files)
+### Sample Lists (Static Files)
 
-Sample catalogues are pre-packaged `CatalogueList` entities served via the public folder. They use the same data structure as user-created catalogues, just stored as static JSON for demonstration and onboarding purposes.
+Sample lists are pre-packaged `List` entities served via the public folder. They use the same data structure as user-created lists, just stored as static JSON for demonstration and onboarding purposes.
 
 **File System Structure:**
 ```
-apps/web/public/data/catalogues/
-├── index.json                           # Master index of all sample catalogues
+apps/web/public/data/lists/
+├── index.json                           # Master index of all sample lists
 ├── L-cochrane-ml-2024/
-│   ├── catalogue.json                   # CatalogueList entity data
-│   └── literature-review.json           # Optional: LiteratureReview workflow data
+│   ├── list.json                        # List entity data
+│   └── review-workflow.json             # Optional: ReviewWorkflow data
 ├── L-climate-adaptation-2023/
-│   ├── catalogue.json
-│   └── literature-review.json
+│   ├── list.json
+│   └── review-workflow.json
 └── ...
 ```
 
 **Master Index Structure:**
 ```typescript
-interface SampleCatalogueIndex {
+interface SampleListIndex {
   lastUpdated: string // ISO date
-  catalogues: Array<{
-    id: string                    // CatalogueList ID (e.g., "L-cochrane-ml-2024")
+  lists: Array<{
+    id: string                    // List ID (e.g., "L-cochrane-ml-2024")
     title: string
-    parentEntityId?: string       // Parent entity (e.g., review paper Work ID)
-    parentEntityType?: EntityType
-    listType: string
+    belongsTo?: string            // Parent entity ID (e.g., review paper Work ID)
+    constraint: "any" | "works-only"
     entityCount: number
+    hasWorkflow: boolean          // Whether ReviewWorkflow is attached
     tags: string[]
-    $ref: string                  // Relative path to catalogue folder
+    $ref: string                  // Relative path to list folder
   }>
 }
 ```
 
 **Data Loading Strategy:**
-1. Load sample catalogue index from static JSON
-2. Load specific `CatalogueList` entity data on demand
-3. Fetch parent entity from OpenAlex (cache → API fallback) if specified
+1. Load sample list index from static JSON
+2. Load specific `List` entity data on demand
+3. Fetch parent entity from OpenAlex (cache → API fallback) if `belongsTo` specified
 4. Fetch contained entities from OpenAlex as needed
-5. All entities navigable via existing routes (`/works/W123`, `/catalogues/L123`)
+5. All entities navigable via existing routes (`/works/W123`, `/lists/L123`)
 
 ### CitationExportConfiguration
 
@@ -648,26 +822,32 @@ interface CitationExportConfiguration {
 }
 ```
 
-## Extended Catalogue Entity Interface
+## Extended Entity Metadata
 
-### EnhancedCatalogueEntity
+### ListEntityMetadata (Edge Metadata)
 
-Enhances the existing CatalogueEntity with literature review capabilities.
+Additional metadata stored on edges when entities are added to lists. This is stored in the `em` (edge metadata) field of `EncodedListPayload` and provides review workflow integration.
 
 ```typescript
-interface EnhancedCatalogueEntity extends CatalogueEntity {
+/**
+ * Metadata stored on "contains" edges when entities are added to lists.
+ * This enables review workflow tracking without modifying the entities themselves.
+ */
+interface ListEntityMetadata {
+  // Timestamps
+  addedAt: number          // When entity was added to list
+
   // Citation Management
   citationKey?: string
   citationStyle?: "apa" | "mla" | "chicago" | "harvard" | "ieee"
 
-  // Literature Review Integration
-  screeningStatus?: "pending" | "included" | "excluded" | "maybe"
-  literatureReviewId?: string
+  // Review Workflow Integration (for Bibliographies with ReviewWorkflow)
+  prismaStage?: "identified" | "screened" | "eligible" | "included" | "excluded"
+  screeningDecision?: "pending" | "included" | "excluded" | "maybe"
 
   // Thematic Analysis
-  themes?: string[]
-  concepts?: string[]
-  relevanceScore?: number // 1-5 relevance rating
+  themes?: string[]        // Theme IDs assigned to this entity in this list
+  relevanceScore?: number  // 1-5 relevance rating
 
   // Writing Integration
   excerpts?: Array<{
@@ -678,49 +858,36 @@ interface EnhancedCatalogueEntity extends CatalogueEntity {
   }>
 
   // Quality Assessment Metadata
-  reviewMetadata?: {
-    qualityScore?: number // 1-10 methodological quality
-    biasRisk?: "low" | "medium" | "high"
-    sampleSize?: number
-    effectSize?: number
-  }
+  qualityScore?: number    // 1-10 methodological quality
+  biasRisk?: "low" | "medium" | "high"
 
-  // Custom Entity Extension (overridden for custom entities)
-  isCustomEntity?: boolean
-  localEntityId?: string
-  sourceType?: "manual" | "file_import" | "doi_lookup" | "user_input" | "local_file_sync"
-  verificationStatus?: "verified" | "unverified" | "pending"
-  fileInfo?: {
-    localPath?: string
-    fileName?: string
-    fileSize?: number
-    fileType?: string
-    lastModified?: Date
-    syncStatus: "synced" | "pending" | "conflict" | "error"
-    extractedMetadata?: {
-      title?: string
-      authors?: string[]
-      abstract?: string
-      publicationYear?: number
-      doi?: string
-      pages?: string
-    }
-  }
+  // Notes
+  notes?: string
 }
 ```
 
+**Note**: This metadata is stored per list-entity relationship (on the edge), not on the entity itself. The same work can have different metadata in different lists.
+
 ## State Management Patterns
 
-### Literature Review State
+### Lists Feature State
 
 ```typescript
-interface LiteratureReviewState {
-  currentReview: LiteratureReview | null
-  reviews: Map<string, LiteratureReview>
+interface ListsFeatureState {
+  // Current list being viewed/edited
+  currentList: List | null
+  currentWorkflow: ReviewWorkflow | null  // If current list has a workflow
+
+  // All loaded lists (by ID)
+  lists: Map<string, List>
+  workflows: Map<string, ReviewWorkflow>  // Keyed by list ID
+
+  // Selected entities within current list
   selectedEntities: string[]
 
   // UI State
-  activeTab: "identification" | "screening" | "eligibility" | "analysis"
+  activeTab: "contents" | "settings" | "workflow"  // General list tabs
+  workflowTab?: "identification" | "screening" | "eligibility" | "analysis"  // When in workflow
   exportFormat: "bibtex" | "ris" | "csv"
 
   // Loading States
@@ -784,15 +951,16 @@ interface FileSystemSyncState {
 2. **Metadata Completeness**: Required fields based on entity type
 3. **File Format Validation**: Supported academic file formats
 4. **DOI Validation**: Proper DOI format and accessibility
-5. **Citation Key Uniqueness**: No duplicate citation keys within same literature review
+5. **Citation Key Uniqueness**: No duplicate citation keys within same list
 
-### Literature Review Validation
+### Review Workflow Validation
 
 1. **PRISMA Compliance**: Required fields for each review type
 2. **Screening Criteria**: Inclusion/exclusion criteria must be specified
 3. **Progress Tracking**: All stage counts must be consistent
 4. **Quality Assessment**: Standardized scoring when enabled
 5. **Thematic Coherence**: Themes must have meaningful labels and keywords
+6. **Bibliography Constraint**: Workflows can only be attached to lists with `constraint: "works-only"`
 
 ### File System Validation
 
@@ -804,18 +972,30 @@ interface FileSystemSyncState {
 
 ## Migration Strategy
 
-### Database Schema Updates
+### Storage Schema Updates
 
-1. **Extend Existing Tables**: Add new columns to existing catalogue tables
-2. **Create New Tables**: Literature review, themes, sync configuration
-3. **Index Optimization**: Add indexes for performance-critical queries
-4. **Backward Compatibility**: Existing entities remain functional
+1. **Extend Existing Tables**: Add new columns to existing lists table
+2. **Create New Tables**: ReviewWorkflow, themes, edges, sync configuration
+3. **Index Optimization**: Add indexes for edge queries (source, target, relationship)
+4. **Backward Compatibility**: Existing bookmarks/history lists remain functional
 
 ### Default Data Population
 
 1. **PRISMA Templates**: Pre-configured review types with standard workflows
 2. **Theme Presets**: Common academic themes and keyword patterns
 3. **Export Templates**: Standard citation format configurations
-4. **Sync Templates**: Common file system organization patterns
+4. **Sample Lists**: Pre-packaged bibliographies and reviews for demonstration
 
-This data model provides a comprehensive foundation for implementing advanced literature review workflows while maintaining compatibility with existing BibGraph architecture.
+---
+
+## Summary
+
+This data model establishes:
+
+- **Lists** as the umbrella term with clear subtypes (Collection, Bibliography, Review)
+- **Edge-based relationships** for all containment and association
+- **ReviewWorkflow** as an attachment to Bibliographies, not a separate entity type
+- **Flexible constraint system** (`any` vs `works-only`) for list content rules
+- **URL-shareable IDs** via pako compression with reconciliation support
+
+The model maintains compatibility with existing BibGraph architecture while adding advanced literature review capabilities.
