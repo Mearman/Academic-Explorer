@@ -14,7 +14,7 @@
  * @module hooks/use-graph-auto-population
  */
 
-import { getWorks, getAuthors, getInstitutions, getSources } from '@bibgraph/client';
+import { getWorks, getAuthors, getInstitutions, getSources, getTopicById } from '@bibgraph/client';
 import type { EntityType, GraphNode, GraphEdge } from '@bibgraph/types';
 import { RelationType, getEntityRelationshipQueries } from '@bibgraph/types';
 import type { RelationshipQueryConfig } from '@bibgraph/types';
@@ -288,33 +288,81 @@ export function useGraphAutoPopulation({
         const queries = getEntityRelationshipQueries(entityType);
 
         // Process inbound queries (results → batch nodes)
-        const inboundApiQueries = queries.inbound.filter((q) => q.source === 'api');
-        for (const query of inboundApiQueries) {
-          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for inbound ${query.type}`);
-          const discoveredEdges = await discoverRelationshipsForQuery(
-            nodes,
-            query,
-            allNodeIds,
-            existingEdgeKeys,
-            'inbound',
-            signal
-          );
-          newEdges.push(...discoveredEdges);
+        for (const query of queries.inbound) {
+          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for inbound ${query.type} (${query.source})`);
+
+          if (query.source === 'api') {
+            const discoveredEdges = await discoverRelationshipsForQuery(
+              nodes,
+              query,
+              allNodeIds,
+              existingEdgeKeys,
+              'inbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          } else if (query.source === 'embedded') {
+            const discoveredEdges = await discoverEmbeddedRelationships(
+              nodes,
+              query,
+              entityType,
+              allNodeIds,
+              existingEdgeKeys,
+              'inbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          } else if (query.source === 'embedded-with-resolution') {
+            const discoveredEdges = await discoverEmbeddedWithResolutionRelationships(
+              nodes,
+              query,
+              entityType,
+              allNodeIds,
+              existingEdgeKeys,
+              'inbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          }
         }
 
         // Process outbound queries (batch nodes → results)
-        const outboundApiQueries = queries.outbound.filter((q) => q.source === 'api');
-        for (const query of outboundApiQueries) {
-          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for outbound ${query.type}`);
-          const discoveredEdges = await discoverRelationshipsForQuery(
-            nodes,
-            query,
-            allNodeIds,
-            existingEdgeKeys,
-            'outbound',
-            signal
-          );
-          newEdges.push(...discoveredEdges);
+        for (const query of queries.outbound) {
+          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for outbound ${query.type} (${query.source})`);
+
+          if (query.source === 'api') {
+            const discoveredEdges = await discoverRelationshipsForQuery(
+              nodes,
+              query,
+              allNodeIds,
+              existingEdgeKeys,
+              'outbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          } else if (query.source === 'embedded') {
+            const discoveredEdges = await discoverEmbeddedRelationships(
+              nodes,
+              query,
+              entityType,
+              allNodeIds,
+              existingEdgeKeys,
+              'outbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          } else if (query.source === 'embedded-with-resolution') {
+            const discoveredEdges = await discoverEmbeddedWithResolutionRelationships(
+              nodes,
+              query,
+              entityType,
+              allNodeIds,
+              existingEdgeKeys,
+              'outbound',
+              signal
+            );
+            newEdges.push(...discoveredEdges);
+          }
         }
       }
 
@@ -464,6 +512,261 @@ export function useGraphAutoPopulation({
     }
 
     logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} ${query.type} edges`);
+    return newEdges;
+  };
+
+  /**
+   * Discover relationships from embedded data in entity objects
+   * Fetches entity data if needed, extracts embedded relationships, creates edges for targets in graph
+   */
+  const discoverEmbeddedRelationships = async (
+    sourceNodes: GraphNode[],
+    query: RelationshipQueryConfig & { source: 'embedded' },
+    sourceEntityType: EntityType,
+    allNodeIds: Set<string>,
+    existingEdgeKeys: Set<string>,
+    direction: 'inbound' | 'outbound',
+    signal?: AbortSignal
+  ): Promise<GraphEdge[]> => {
+    const newEdges: GraphEdge[] = [];
+
+    // Create batches for processing
+    const batches: GraphNode[][] = [];
+    for (let i = 0; i < sourceNodes.length; i += BATCH_SIZE) {
+      batches.push(sourceNodes.slice(i, i + BATCH_SIZE));
+    }
+
+    // Process batches using background executor
+    const result = await executor.processBatch(
+      batches,
+      async (batch) => {
+        const discoveredEdges: GraphEdge[] = [];
+
+        for (const node of batch) {
+          try {
+            // Fetch entity data
+            let entityData: Record<string, unknown>;
+
+            switch (sourceEntityType) {
+              case 'works': {
+                const response = await getWorks({
+                  filter: `openalex_id:${node.id}`,
+                  per_page: 1,
+                });
+                if (response.results.length === 0) continue;
+                entityData = response.results[0] as Record<string, unknown>;
+                break;
+              }
+              case 'authors': {
+                const response = await getAuthors({
+                  filter: `openalex_id:${node.id}`,
+                  per_page: 1,
+                });
+                if (response.results.length === 0) continue;
+                entityData = response.results[0] as Record<string, unknown>;
+                break;
+              }
+              case 'institutions': {
+                const response = await getInstitutions({
+                  filters: { id: node.id },
+                  per_page: 1,
+                });
+                if (response.results.length === 0) continue;
+                entityData = response.results[0] as Record<string, unknown>;
+                break;
+              }
+              case 'sources': {
+                const response = await getSources({
+                  filters: { id: node.id },
+                  per_page: 1,
+                });
+                if (response.results.length === 0) continue;
+                entityData = response.results[0] as Record<string, unknown>;
+                break;
+              }
+              case 'topics': {
+                const topic = await getTopicById(node.id);
+                entityData = topic as Record<string, unknown>;
+                break;
+              }
+              default:
+                continue;
+            }
+
+            // Extract embedded relationships using the query's extraction function
+            const embeddedItems = query.extractEmbedded(entityData);
+
+            // Create edges for items that exist in the graph
+            for (const item of embeddedItems) {
+              const targetId = normalizeId(item.id);
+
+              // Only create edge if target is in our graph
+              if (!allNodeIds.has(targetId)) continue;
+
+              const sourceId = normalizeId(node.id);
+
+              // Determine edge endpoints based on direction
+              let edgeSource: string, edgeTarget: string;
+              if (direction === 'inbound') {
+                edgeSource = targetId;
+                edgeTarget = sourceId;
+              } else {
+                edgeSource = sourceId;
+                edgeTarget = targetId;
+              }
+
+              const edgeKey = `${edgeSource}-${edgeTarget}-${query.type}`;
+              const pairKey = `${edgeSource}-${edgeTarget}`;
+
+              // Skip if edge exists or pair already processed
+              if (existingEdgeKeys.has(edgeKey) || processedEdgePairsRef.current.has(pairKey)) {
+                continue;
+              }
+
+              processedEdgePairsRef.current.add(pairKey);
+
+              discoveredEdges.push({
+                id: edgeKey,
+                source: edgeSource,
+                target: edgeTarget,
+                type: query.type as RelationType,
+                weight: 1,
+              });
+            }
+          } catch (err) {
+            logger.warn(LOG_PREFIX, `Failed to discover embedded ${query.type} for ${node.id}`, { error: err });
+          }
+        }
+
+        return discoveredEdges;
+      },
+      {
+        signal,
+        chunkSize: PROCESSING_CHUNK_SIZE,
+      }
+    );
+
+    // Flatten results
+    if (result.success && result.data) {
+      for (const batchEdges of result.data) {
+        newEdges.push(...batchEdges);
+      }
+    }
+
+    logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} embedded ${query.type} edges`);
+    return newEdges;
+  };
+
+  /**
+   * Discover relationships from embedded IDs with batch resolution
+   * Fetches entity data, extracts IDs, batch-fetches display names, creates edges for targets in graph
+   */
+  const discoverEmbeddedWithResolutionRelationships = async (
+    sourceNodes: GraphNode[],
+    query: RelationshipQueryConfig & { source: 'embedded-with-resolution' },
+    sourceEntityType: EntityType,
+    allNodeIds: Set<string>,
+    existingEdgeKeys: Set<string>,
+    direction: 'inbound' | 'outbound',
+    signal?: AbortSignal
+  ): Promise<GraphEdge[]> => {
+    const newEdges: GraphEdge[] = [];
+
+    // Create batches for processing
+    const batches: GraphNode[][] = [];
+    for (let i = 0; i < sourceNodes.length; i += BATCH_SIZE) {
+      batches.push(sourceNodes.slice(i, i + BATCH_SIZE));
+    }
+
+    // Process batches using background executor
+    const result = await executor.processBatch(
+      batches,
+      async (batch) => {
+        const discoveredEdges: GraphEdge[] = [];
+
+        for (const node of batch) {
+          try {
+            // Fetch entity data
+            let entityData: Record<string, unknown>;
+
+            switch (sourceEntityType) {
+              case 'institutions': {
+                const response = await getInstitutions({
+                  filters: { id: node.id },
+                  per_page: 1,
+                });
+                if (response.results.length === 0) continue;
+                entityData = response.results[0] as Record<string, unknown>;
+                break;
+              }
+              // Add other entity types as needed
+              default:
+                continue;
+            }
+
+            // Extract IDs that need resolution
+            const itemsNeedingResolution = query.extractIds(entityData);
+
+            // Create edges for items that exist in the graph (no need to fetch display names for discovery)
+            for (const item of itemsNeedingResolution) {
+              const targetId = normalizeId(item.id);
+
+              // Only create edge if target is in our graph
+              if (!allNodeIds.has(targetId)) continue;
+
+              const sourceId = normalizeId(node.id);
+
+              // Determine edge endpoints based on direction
+              let edgeSource: string, edgeTarget: string;
+              if (direction === 'inbound') {
+                edgeSource = targetId;
+                edgeTarget = sourceId;
+              } else {
+                edgeSource = sourceId;
+                edgeTarget = targetId;
+              }
+
+              const edgeKey = `${edgeSource}-${edgeTarget}-${query.type}`;
+              const pairKey = `${edgeSource}-${edgeTarget}`;
+
+              // Skip if edge exists or pair already processed
+              if (existingEdgeKeys.has(edgeKey) || processedEdgePairsRef.current.has(pairKey)) {
+                continue;
+              }
+
+              processedEdgePairsRef.current.add(pairKey);
+
+              discoveredEdges.push({
+                id: edgeKey,
+                source: edgeSource,
+                target: edgeTarget,
+                type: query.type as RelationType,
+                weight: 1,
+              });
+            }
+          } catch (err) {
+            logger.warn(LOG_PREFIX, `Failed to discover embedded-with-resolution ${query.type} for ${node.id}`, {
+              error: err,
+            });
+          }
+        }
+
+        return discoveredEdges;
+      },
+      {
+        signal,
+        chunkSize: PROCESSING_CHUNK_SIZE,
+      }
+    );
+
+    // Flatten results
+    if (result.success && result.data) {
+      for (const batchEdges of result.data) {
+        newEdges.push(...batchEdges);
+      }
+    }
+
+    logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} embedded-with-resolution ${query.type} edges`);
     return newEdges;
   };
 
