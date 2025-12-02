@@ -52,28 +52,34 @@ export function extractWorkRelationships(
   const relationships: GraphSourceRelationship[] = [];
 
   // Authorships -> Authors
-  const authorships = data.authorships as Array<{ author?: { id?: string } }> | undefined;
+  const authorships = data.authorships as
+    | Array<{ author?: { id?: string; display_name?: string } }>
+    | undefined;
   for (const auth of authorships ?? []) {
     if (auth.author?.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(auth.author.id),
         targetType: 'authors',
         relationType: RT.AUTHORSHIP,
+        targetLabel: auth.author.display_name,
       });
     }
   }
 
   // Primary location -> Source
-  const primaryLocation = data.primary_location as { source?: { id?: string } } | undefined;
+  const primaryLocation = data.primary_location as
+    | { source?: { id?: string; display_name?: string } }
+    | undefined;
   if (primaryLocation?.source?.id) {
     relationships.push({
       targetId: normalizeOpenAlexId(primaryLocation.source.id),
       targetType: 'sources',
       relationType: RT.PUBLICATION,
+      targetLabel: primaryLocation.source.display_name,
     });
   }
 
-  // Referenced works
+  // Referenced works (only have IDs, no display_name available)
   const referencedWorks = data.referenced_works as string[] | undefined;
   for (const refId of referencedWorks ?? []) {
     relationships.push({
@@ -84,25 +90,29 @@ export function extractWorkRelationships(
   }
 
   // Topics
-  const topics = data.topics as Array<{ id?: string }> | undefined;
+  const topics = data.topics as Array<{ id?: string; display_name?: string }> | undefined;
   for (const topic of topics ?? []) {
     if (topic.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(topic.id),
         targetType: 'topics',
         relationType: RT.TOPIC,
+        targetLabel: topic.display_name,
       });
     }
   }
 
   // Grants -> Funders
-  const grants = data.grants as Array<{ funder?: string }> | undefined;
+  const grants = data.grants as
+    | Array<{ funder?: string; funder_display_name?: string }>
+    | undefined;
   for (const grant of grants ?? []) {
     if (grant.funder) {
       relationships.push({
         targetId: normalizeOpenAlexId(grant.funder),
         targetType: 'funders',
         relationType: RT.FUNDED_BY,
+        targetLabel: grant.funder_display_name,
       });
     }
   }
@@ -119,25 +129,29 @@ export function extractAuthorRelationships(
   const relationships: GraphSourceRelationship[] = [];
 
   // Affiliations -> Institutions
-  const affiliations = data.affiliations as Array<{ institution?: { id?: string } }> | undefined;
+  const affiliations = data.affiliations as
+    | Array<{ institution?: { id?: string; display_name?: string } }>
+    | undefined;
   for (const aff of affiliations ?? []) {
     if (aff.institution?.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(aff.institution.id),
         targetType: 'institutions',
         relationType: RT.AFFILIATION,
+        targetLabel: aff.institution.display_name,
       });
     }
   }
 
   // Topics
-  const topics = data.topics as Array<{ id?: string }> | undefined;
+  const topics = data.topics as Array<{ id?: string; display_name?: string }> | undefined;
   for (const topic of topics ?? []) {
     if (topic.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(topic.id),
         targetType: 'topics',
         relationType: RT.AUTHOR_RESEARCHES,
+        targetLabel: topic.display_name,
       });
     }
   }
@@ -155,18 +169,19 @@ export function extractInstitutionRelationships(
   const institutionId = normalizeOpenAlexId((data.id as string) ?? '');
 
   // Topics
-  const topics = data.topics as Array<{ id?: string }> | undefined;
+  const topics = data.topics as Array<{ id?: string; display_name?: string }> | undefined;
   for (const topic of topics ?? []) {
     if (topic.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(topic.id),
         targetType: 'topics',
         relationType: RT.TOPIC,
+        targetLabel: topic.display_name,
       });
     }
   }
 
-  // Lineage -> Parent institutions
+  // Lineage -> Parent institutions (only IDs available, no display_name)
   const lineage = data.lineage as string[] | undefined;
   for (const parentId of lineage ?? []) {
     if (parentId !== institutionId && parentId !== data.id) {
@@ -190,23 +205,27 @@ export function extractSourceRelationships(
   const relationships: GraphSourceRelationship[] = [];
 
   // Host organization -> Publisher
+  // OpenAlex provides host_organization (ID) and host_organization_name (display name)
   const hostOrg = data.host_organization as string | undefined;
+  const hostOrgName = data.host_organization_name as string | undefined;
   if (hostOrg) {
     relationships.push({
       targetId: normalizeOpenAlexId(hostOrg),
       targetType: 'publishers',
       relationType: RT.HOST_ORGANIZATION,
+      targetLabel: hostOrgName,
     });
   }
 
   // Topics
-  const topics = data.topics as Array<{ id?: string }> | undefined;
+  const topics = data.topics as Array<{ id?: string; display_name?: string }> | undefined;
   for (const topic of topics ?? []) {
     if (topic.id) {
       relationships.push({
         targetId: normalizeOpenAlexId(topic.id),
         targetType: 'topics',
         relationType: RT.TOPIC,
+        targetLabel: topic.display_name,
       });
     }
   }
@@ -223,22 +242,24 @@ export function extractTopicRelationships(
   const relationships: GraphSourceRelationship[] = [];
 
   // Field
-  const field = data.field as { id?: string } | undefined;
+  const field = data.field as { id?: string; display_name?: string } | undefined;
   if (field?.id) {
     relationships.push({
       targetId: normalizeOpenAlexId(field.id),
       targetType: 'fields',
       relationType: RT.TOPIC_PART_OF_FIELD,
+      targetLabel: field.display_name,
     });
   }
 
   // Domain
-  const domain = data.domain as { id?: string } | undefined;
+  const domain = data.domain as { id?: string; display_name?: string } | undefined;
   if (domain?.id) {
     relationships.push({
       targetId: normalizeOpenAlexId(domain.id),
       targetType: 'domains',
       relationType: RT.FIELD_PART_OF_DOMAIN,
+      targetLabel: domain.display_name,
     });
   }
 
