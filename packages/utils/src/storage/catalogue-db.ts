@@ -52,6 +52,7 @@ const DB_VERSION = 1;
 export const SPECIAL_LIST_IDS = {
   BOOKMARKS: "bookmarks-list",
   HISTORY: "history-list",
+  GRAPH: "graph-list",
 } as const;
 
 export const SPECIAL_LIST_TYPES = {

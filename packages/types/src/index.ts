@@ -16,3 +16,4 @@ export * from "./topics";
 export * from "./traversal-types";
 export * from "./entities/index";
 export * from "./errors/index";
+export * from "./graph/index";

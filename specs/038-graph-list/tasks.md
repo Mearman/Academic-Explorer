@@ -28,11 +28,11 @@
 
 **Purpose**: Initialize constants and type definitions required across all user stories
 
-- [ ] T001 [P] Add GRAPH special list ID constant to packages/utils/src/storage/catalogue-db.ts
-- [ ] T002 [P] Create GraphProvenance type in packages/types/src/graph/graph-list.ts
-- [ ] T003 [P] Create GraphListNode interface in packages/types/src/graph/graph-list.ts
-- [ ] T004 [P] Create GRAPH_LIST_CONFIG constants in packages/types/src/graph/graph-list.ts
-- [ ] T005 [P] Export graph list types from packages/types/src/graph/index.ts
+- [X] T001 [P] Add GRAPH special list ID constant to packages/utils/src/storage/catalogue-db.ts
+- [X] T002 [P] Create GraphProvenance type in packages/types/src/graph/graph-list.ts
+- [X] T003 [P] Create GraphListNode interface in packages/types/src/graph/graph-list.ts
+- [X] T004 [P] Create GRAPH_LIST_CONFIG constants in packages/types/src/graph/graph-list.ts
+- [X] T005 [P] Export graph list types from packages/types/src/graph/index.ts
 
 ---
 
