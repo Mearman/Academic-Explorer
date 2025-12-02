@@ -19,6 +19,7 @@ import type {
   Work,
 } from "@bibgraph/types";
 
+import { cachedOpenAlex } from "./cached-client";
 import { OpenAlexBaseClient } from "./client";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
@@ -34,13 +35,15 @@ import { TopicsApi, TopicSearchOptions } from "./entities/topics";
 import { WorksApi } from "./entities/works";
 
 // Shared client instance for helper functions
+// Uses CachedOpenAlexClient by default for IndexedDB caching support
 let _sharedClient: OpenAlexBaseClient | null = null;
 
 /**
  * Get or create the shared client instance
+ * Uses the cached client singleton by default for IndexedDB caching
  */
 function getSharedClient(): OpenAlexBaseClient {
-  _sharedClient ??= new OpenAlexBaseClient();
+  _sharedClient ??= cachedOpenAlex;
   return _sharedClient;
 }
 
