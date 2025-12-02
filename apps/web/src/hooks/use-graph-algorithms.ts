@@ -49,7 +49,13 @@ import {
   type BibliographicCouplingResult,
   type KTrussResult,
   type ClusterQualityResult,
+  type WeightedPathOptions,
+  type WeightConfig,
+  type EdgePropertyFilter,
 } from '@/services/graph-algorithms';
+
+// Re-export types for consumer convenience
+export type { WeightedPathOptions, WeightConfig, EdgePropertyFilter };
 
 /**
  * Options for community detection
@@ -115,18 +121,156 @@ export function useCommunityDetection(
 
 /**
  * Hook for finding shortest path between two nodes
+ *
+ * @param nodes - Graph nodes
+ * @param edges - Graph edges
+ * @param sourceId - Source node ID (null to disable)
+ * @param targetId - Target node ID (null to disable)
+ * @param options - Weighted path options or boolean for directed flag
+ *
+ * @example
+ * ```typescript
+ * // Simple unweighted path
+ * const path = useShortestPath(nodes, edges, 'A', 'B');
+ *
+ * // Weighted by score (inverted for "strongest connection" path)
+ * const path = useShortestPath(nodes, edges, 'A', 'B', {
+ *   weight: { property: 'score', invert: true },
+ * });
+ *
+ * // Path through authors only with score filter
+ * const path = useShortestPath(nodes, edges, 'A', 'B', {
+ *   nodeTypes: ['author'],
+ *   edgeFilter: { scoreMin: 0.5 },
+ * });
+ * ```
  */
 export function useShortestPath(
   nodes: GraphNode[],
   edges: GraphEdge[],
   sourceId: string | null,
   targetId: string | null,
-  directed: boolean = true
+  options?: WeightedPathOptions | boolean
 ): PathResult | null {
   return useMemo(() => {
     if (!sourceId || !targetId || nodes.length === 0) return null;
-    return findShortestPath(nodes, edges, sourceId, targetId, directed);
-  }, [nodes, edges, sourceId, targetId, directed]);
+    return findShortestPath(nodes, edges, sourceId, targetId, options);
+  }, [nodes, edges, sourceId, targetId, options]);
+}
+
+/**
+ * Hook for finding weighted shortest path with full configuration
+ *
+ * More explicit API for weighted pathfinding with state management for
+ * source/target selection and weight configuration.
+ *
+ * @example
+ * ```typescript
+ * const {
+ *   path,
+ *   sourceId,
+ *   targetId,
+ *   setSource,
+ *   setTarget,
+ *   weightConfig,
+ *   setWeightConfig,
+ *   edgeFilter,
+ *   setEdgeFilter,
+ *   nodeTypes,
+ *   setNodeTypes,
+ * } = useWeightedPath(nodes, edges);
+ *
+ * // Configure weight to use topic score (inverted)
+ * setWeightConfig({ property: 'score', invert: true });
+ *
+ * // Only traverse through authors
+ * setNodeTypes(['author']);
+ *
+ * // Select endpoints
+ * setSource('A123');
+ * setTarget('B456');
+ * ```
+ */
+export function useWeightedPath(
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+): {
+  /** Computed path result */
+  path: PathResult | null;
+  /** Source node ID */
+  sourceId: string | null;
+  /** Target node ID */
+  targetId: string | null;
+  /** Set source node */
+  setSource: (id: string | null) => void;
+  /** Set target node */
+  setTarget: (id: string | null) => void;
+  /** Current weight configuration */
+  weightConfig: WeightConfig | undefined;
+  /** Set weight configuration */
+  setWeightConfig: (config: WeightConfig | undefined) => void;
+  /** Current edge filter */
+  edgeFilter: EdgePropertyFilter | undefined;
+  /** Set edge filter */
+  setEdgeFilter: (filter: EdgePropertyFilter | undefined) => void;
+  /** Current node type filter */
+  nodeTypes: EntityType[] | undefined;
+  /** Set node type filter */
+  setNodeTypes: (types: EntityType[] | undefined) => void;
+  /** Whether graph is treated as directed */
+  directed: boolean;
+  /** Set directed mode */
+  setDirected: (directed: boolean) => void;
+  /** Clear all selections and filters */
+  reset: () => void;
+} {
+  const [sourceId, setSource] = useState<string | null>(null);
+  const [targetId, setTarget] = useState<string | null>(null);
+  const [weightConfig, setWeightConfig] = useState<WeightConfig | undefined>(undefined);
+  const [edgeFilter, setEdgeFilter] = useState<EdgePropertyFilter | undefined>(undefined);
+  const [nodeTypes, setNodeTypes] = useState<EntityType[] | undefined>(undefined);
+  const [directed, setDirected] = useState(true);
+
+  const options = useMemo(
+    (): WeightedPathOptions => ({
+      weight: weightConfig,
+      edgeFilter,
+      nodeTypes,
+      directed,
+    }),
+    [weightConfig, edgeFilter, nodeTypes, directed]
+  );
+
+  const path = useMemo(() => {
+    if (!sourceId || !targetId || nodes.length === 0) return null;
+    return findShortestPath(nodes, edges, sourceId, targetId, options);
+  }, [nodes, edges, sourceId, targetId, options]);
+
+  const reset = useCallback(() => {
+    setSource(null);
+    setTarget(null);
+    setWeightConfig(undefined);
+    setEdgeFilter(undefined);
+    setNodeTypes(undefined);
+    setDirected(true);
+  }, []);
+
+  return {
+    path,
+    sourceId,
+    targetId,
+    setSource,
+    setTarget,
+    weightConfig,
+    setWeightConfig,
+    edgeFilter,
+    setEdgeFilter,
+    nodeTypes,
+    setNodeTypes,
+    directed,
+    setDirected,
+    reset,
+  };
 }
 
 /**
