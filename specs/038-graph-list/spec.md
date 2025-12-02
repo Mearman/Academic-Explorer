@@ -5,6 +5,12 @@
 **Status**: Draft
 **Input**: User description: "Introduce a 'Graph' list alongside history and bookmarks which persists the currently visible nodes"
 
+## Clarifications
+
+### Session 2025-12-02
+
+- Q: How should the Graph List functionality and Data Source functionality be organized within the left panel? → A: Stacked sections - Graph List on top, Data Sources below with collapsible headers
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Persist Graph Working Set (Priority: P1)
@@ -75,18 +81,19 @@ Users need to remove unwanted nodes from their graph working set. This includes 
 
 ### User Story 5 - View and Manage Graph List (Priority: P2)
 
-Users need visibility into their graph list working set through a dedicated UI section. This should show all nodes currently in the list, their provenance, and provide management actions (remove individual, clear all). Users should understand what's in their working set at a glance.
+Users need visibility into their graph list working set through a dedicated UI section in the left panel. The left panel contains two stacked sections with collapsible headers: Graph List (top) and Data Sources (below). This layout allows users to manage their graph working set and data sources in a unified panel. The Graph List section shows all nodes currently in the list, their provenance, and provides management actions (remove individual, clear all).
 
 **Why this priority**: This provides transparency and discoverability of the graph list feature. Lower priority than P1 because the feature can work without explicit UI (nodes just appear), but UI significantly improves usability.
 
-**Independent Test**: Can be fully tested by adding nodes via different methods and verifying the graph list sidebar correctly displays all nodes with accurate provenance indicators.
+**Independent Test**: Can be fully tested by adding nodes via different methods and verifying the graph list section correctly displays all nodes with accurate provenance indicators, and that the collapsible header functions properly.
 
 **Acceptance Scenarios**:
 
-1. **Given** graph list contains 12 nodes added via different methods, **When** user views graph list sidebar, **Then** all 12 nodes are listed with their provenance (user, expansion, auto-population, collection-load)
+1. **Given** graph list contains 12 nodes added via different methods, **When** user views left panel with Graph List section expanded, **Then** all 12 nodes are listed with their provenance (user, expansion, auto-population, collection-load)
 2. **Given** graph list contains 20 nodes, **When** user hovers over a provenance indicator, **Then** tooltip explains how that node was added (e.g., "Added via bookmark load on 2025-12-02")
-3. **Given** user views graph list sidebar, **When** user clicks on a node in the list, **Then** graph centers and highlights that node
-4. **Given** graph list is empty, **When** user views graph list sidebar, **Then** helpful empty state message appears: "Your graph is empty. Add nodes by searching, loading bookmarks, or expanding nodes."
+3. **Given** user views left panel, **When** user clicks on a node in the Graph List section, **Then** graph centers and highlights that node
+4. **Given** graph list is empty, **When** user views Graph List section, **Then** helpful empty state message appears: "Your graph is empty. Add nodes by searching, loading bookmarks, or expanding nodes."
+5. **Given** user views left panel, **When** user clicks Graph List section header, **Then** section collapses/expands, and collapsed state persists across browser sessions
 
 ---
 
@@ -131,7 +138,8 @@ Users with large graphs need the system to manage graph list size to prevent per
 - **FR-009**: Users MUST be able to remove individual nodes from graph list via UI control
 - **FR-010**: Users MUST be able to clear all nodes from graph list via "Clear graph" action
 - **FR-011**: System MUST remove all connected edges when a node is removed from graph list
-- **FR-012**: System MUST display graph list contents in a dedicated sidebar UI section
+- **FR-012**: System MUST display graph list contents in the left panel as a collapsible section stacked above the Data Sources section
+- **FR-012a**: System MUST persist the collapsed/expanded state of the Graph List section across browser sessions
 - **FR-013**: System MUST show provenance indicator for each node in graph list UI
 - **FR-014**: System MUST update graph list UI in real-time as nodes are added or removed
 - **FR-015**: System MUST combine graph list nodes and collection nodes (filtered by type) using union logic: `visible = graph_list ∪ (collections ∩ entity_types)`

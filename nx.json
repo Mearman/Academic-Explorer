@@ -338,7 +338,8 @@
       ]
     },
     "serve": {
-      "cache": false
+      "cache": false,
+      "continuous": true
     },
     "preview": {
       "cache": false,
