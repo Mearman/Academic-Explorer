@@ -73,19 +73,23 @@ As a user opening the graph visualization page, I want to see all previously dis
 
 ---
 
-### User Story 5 - Stub Nodes for Undiscovered Entities (Priority: P3)
+### User Story 5 - Interactive Node Expansion (Priority: P3)
 
-As a user exploring the graph, when I see references to entities I haven't fully loaded yet (e.g., a cited work), I want those to appear as "stub" nodes that I can click to fetch full details.
+As a user exploring the graph, when I click on any node, I want the system to automatically fetch and display all its inbound and outbound relationships, expanding the graph with newly discovered entities.
 
-**Why this priority**: Enhances the exploration experience but is not essential for core functionality. The graph can work without distinguishing stub vs. full nodes.
+**Why this priority**: Enables organic graph exploration - the primary interaction model for discovering academic networks. Builds on the persistent graph infrastructure.
 
-**Independent Test**: Can be tested by caching an entity that references other entities, verifying stub nodes are created, then "expanding" a stub and verifying it upgrades to full status.
+**Independent Test**: Can be tested by clicking a node in the visualization, verifying API calls are made for the entity's relationships, and confirming new nodes/edges appear in the graph.
 
 **Acceptance Scenarios**:
 
 1. **Given** a Work cites Work W999 which has never been fetched, **When** the Work is cached, **Then** W999 exists in the graph as a stub node with completeness "stub".
-2. **Given** a stub node W999 exists in the graph, **When** the user requests to expand/fetch W999, **Then** the full entity is fetched, cached, and the node upgrades to completeness "full".
+2. **Given** a stub node W999 exists in the graph, **When** the user clicks on W999, **Then** the full entity is fetched, cached, and the node upgrades to completeness "full".
 3. **Given** a stub node with only an ID, **When** rendering in the visualization, **Then** it displays as a placeholder with the ID visible and a visual indicator that it's not fully loaded.
+4. **Given** a full node W1 exists in the graph with 5 known edges, **When** the user clicks on W1, **Then** the system fetches W1's full relationships from the API and adds any newly discovered edges/nodes to the graph.
+5. **Given** the user clicks on Author A who has 50 works, **When** the expansion completes, **Then** all 50 works appear as nodes (stubs or full) with authorship edges connecting them to Author A.
+6. **Given** the user clicks a node that is already fully expanded (all relationships in graph), **When** the expansion completes, **Then** no new nodes/edges are added and the user sees feedback that the node is fully expanded.
+7. **Given** the user clicks a node, **When** the expansion is in progress, **Then** a loading indicator appears on the node until expansion completes.
 
 ---
 
@@ -117,6 +121,9 @@ As a user exploring the graph, when I see references to entities I haven't fully
 - **FR-013**: System MUST extract edges for all known relationship types in OpenAlex entities (authorships, citations, affiliations, topics, etc.).
 - **FR-014**: System MUST extract and index commonly-queried edge properties (author position, score, open access status) as first-class fields.
 - **FR-015**: System MUST support filtering edges by indexed properties (e.g., "get authorship edges where authorPosition = 'first'").
+- **FR-016**: System MUST support expanding a node by fetching its full entity data and all inbound/outbound relationships from the API.
+- **FR-017**: Clicking a node in the graph visualization MUST trigger automatic expansion of all its relationships.
+- **FR-018**: System MUST provide visual feedback (loading indicator) during node expansion and indicate when a node is fully expanded.
 
 ### Key Entities
 
@@ -152,6 +159,7 @@ Additional metadata remains in optional `metadata?: Record<string, unknown>` fie
 - **SC-005**: Graph storage overhead is less than 50% of equivalent entity data storage (graph stores structure, not full JSON).
 - **SC-006**: 100% of relationship types present in cached entities are extracted to the graph (no data loss).
 - **SC-007**: Users can traverse 3 levels of connections (node to neighbors to neighbors' neighbors) without any API calls if data was previously cached.
+- **SC-008**: Node expansion (click to fetch all relationships) completes and renders new nodes within 3 seconds for entities with up to 100 relationships.
 
 ## Constitution Alignment *(recommended)*
 
@@ -184,7 +192,8 @@ Additional metadata remains in optional `metadata?: Record<string, unknown>` fie
 ## Out of Scope
 
 - Graph algorithms beyond basic traversal (clustering, community detection, pathfinding) - these exist in algorithms package and can be used separately.
-- Graph visualization changes - this spec covers the data layer only; visualization will read from the graph.
+- Graph visualization layout or styling changes - this spec adds click-to-expand interaction but does not change visual appearance.
 - Server-side graph storage - graph is browser-local only.
 - Real-time sync of graph across browser tabs - single-tab operation assumed.
 - Graph data export/import functionality.
+- Selective relationship type expansion (e.g., "only expand citations") - all relationships expand together.

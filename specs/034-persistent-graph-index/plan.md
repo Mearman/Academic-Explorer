@@ -270,10 +270,16 @@ interface PersistentGraph {
 - [ ] Add loading state during hydration
 - [ ] Implement performance benchmarks
 
-### Phase 5: Stub Node Enhancement (P3 User Story 5)
+### Phase 5: Interactive Node Expansion (P3 User Story 5)
 - [ ] Add visual indicators for stub nodes in graph
-- [ ] Implement "expand" action to fetch full entity
-- [ ] Update stub → full on entity fetch
+- [ ] Implement `expandNode()` method to fetch entity and all relationships
+- [ ] Add expansion state tracking (isExpanding, isExpanded) to nodes
+- [ ] Implement relationship fetching for all entity types
+- [ ] Add `isFullyExpanded` check (all relationships already in graph)
+- [ ] Wire node click handler to trigger automatic expansion
+- [ ] Add loading indicator on node during expansion
+- [ ] Add visual indicator for fully-expanded nodes
+- [ ] Create `useNodeExpansion()` hook for managing expansion state
 - [ ] Handle circular reference edge cases
 
 ## Risk Mitigation
@@ -303,3 +309,4 @@ interface PersistentGraph {
 | SC-005: <50% storage overhead | Compare graph index size vs. entity cache |
 | SC-006: 100% relationship extraction | Integration test with all entity types |
 | SC-007: 3-level traversal without API | E2E test with pre-cached graph |
+| SC-008: <3s node expansion | E2E test clicking node with 100 relationships |

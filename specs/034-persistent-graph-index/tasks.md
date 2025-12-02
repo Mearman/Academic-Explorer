@@ -157,26 +157,35 @@
 
 ---
 
-## Phase 6: User Story 5 - Stub Nodes for Undiscovered Entities (Priority: P3)
+## Phase 6: User Story 5 - Interactive Node Expansion (Priority: P3)
 
-**Goal**: Referenced entities appear as expandable stub nodes
+**Goal**: Clicking any node automatically fetches and displays all its inbound/outbound relationships
 
-**Independent Test**: Cache entity with references, verify stub nodes created, expand stub, verify upgrades to full
+**Independent Test**: Click a node in graph view, verify API calls for entity relationships, confirm new nodes/edges appear
 
 ### Tests for User Story 5
 
 - [ ] T053 [P] [US5] Unit test for stub node creation during edge addition in `packages/client/src/cache/dexie/persistent-graph.unit.test.ts`
 - [ ] T054 [P] [US5] Unit test for stub → full upgrade on entity fetch in `packages/client/src/cache/dexie/persistent-graph.unit.test.ts`
+- [ ] T054a [P] [US5] Unit test for expandNode() fetching all relationships in `packages/client/src/cache/dexie/persistent-graph.unit.test.ts`
+- [ ] T054b [P] [US5] Unit test for expansion state tracking (expanding, expanded) in `packages/client/src/cache/dexie/persistent-graph.unit.test.ts`
+- [ ] T054c [P] [US5] Integration test for click-to-expand adding new nodes/edges in `apps/web/src/routes/graph/route.integration.test.ts`
 
 ### Implementation for User Story 5
 
 - [ ] T055 [US5] Implement automatic stub node creation when adding edges with unknown targets in `packages/client/src/cache/dexie/persistent-graph.ts`
 - [ ] T056 [US5] Implement stub node upgrade logic when entity is fetched in `packages/client/src/cache/dexie/graph-extraction.ts`
-- [ ] T057 [US5] Add expandStubNode() method to fetch and upgrade stub in `packages/client/src/cache/dexie/persistent-graph.ts`
+- [ ] T057 [US5] Add expandNode() method to fetch entity and all its relationships in `packages/client/src/cache/dexie/persistent-graph.ts`
+- [ ] T057a [US5] Add expansion state tracking (isExpanding, isExpanded) to GraphNodeRecord in `packages/types/src/graph-index-types.ts`
+- [ ] T057b [US5] Implement relationship fetching for all entity types (works, authors, institutions, etc.) in `packages/client/src/cache/dexie/graph-expansion.ts`
+- [ ] T057c [US5] Add isFullyExpanded check (all known relationships already in graph) in `packages/client/src/cache/dexie/persistent-graph.ts`
 - [ ] T058 [US5] Add visual indicator for stub nodes (CSS/styling) in visualization in `apps/web/src/routes/graph/route.tsx`
-- [ ] T059 [US5] Add click-to-expand interaction for stub nodes in visualization in `apps/web/src/routes/graph/route.tsx`
+- [ ] T058a [US5] Add loading indicator on node during expansion in `apps/web/src/routes/graph/route.tsx`
+- [ ] T058b [US5] Add visual indicator for fully-expanded nodes in `apps/web/src/routes/graph/route.tsx`
+- [ ] T059 [US5] Wire node click handler to trigger expandNode() for any node in `apps/web/src/routes/graph/route.tsx`
+- [ ] T059a [US5] Add useNodeExpansion() hook for managing expansion state in `apps/web/src/lib/graph-index/use-node-expansion.ts`
 
-**Checkpoint**: Stub nodes display as expandable placeholders
+**Checkpoint**: Clicking any node expands all its relationships into the graph
 
 ---
 
@@ -314,8 +323,9 @@ With multiple developers:
 | Phase 3 | US1 & US2 (MVP) | 25 | 5 |
 | Phase 4 | US3 | 18 | 7 |
 | Phase 5 | US4 | 8 | 2 |
-| Phase 6 | US5 | 7 | 2 |
+| Phase 6 | US5 (Node Expansion) | 16 | 5 |
 | Phase 7 | Polish | 6 | 3 |
-| **Total** | | **79** | **27** |
+| **Total** | | **88** | **30** |
 
 **MVP Scope**: Phases 1-3 (40 tasks) - automatic graph building + persistence + indexed edge properties
+**Full Scope**: All phases (88 tasks) - includes click-to-expand node interaction
