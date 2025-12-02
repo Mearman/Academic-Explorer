@@ -31,7 +31,6 @@ import {
 import { Link } from "@tanstack/react-router";
 import React, { useState, useCallback, useRef } from "react";
 
-import { RepositoryAlgorithmsPanel } from "@/components/algorithms/RepositoryAlgorithmsPanel";
 import { useLayoutStore } from "@/stores/layout-store";
 
 import { sprinkles } from "@/styles/sprinkles";
@@ -42,6 +41,7 @@ import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
+import { RightSidebarContent } from "./RightSidebarContent";
 // import { ThemeDropdown } from "./ThemeDropdown";
 // import { ThemeSettings } from "@/components/ThemeSettings";
 
@@ -625,7 +625,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     overflow: "auto",
                   }}
                 >
-                  <RepositoryAlgorithmsPanel />
+                  <RightSidebarContent />
                 </Box>
               </Box>
             </>

@@ -43,7 +43,6 @@ import {
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import React, { useMemo, useCallback, useRef, useState } from 'react';
 
-import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
@@ -305,7 +304,7 @@ function EntityGraphPage() {
 
   return (
     <Box style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
-      {/* Source Panel */}
+      {/* Left: Source Panel */}
       <GraphSourcePanel
         sources={sources}
         enabledSourceIds={enabledSourceIds}
@@ -316,7 +315,7 @@ function EntityGraphPage() {
         loading={loading}
       />
 
-      {/* Main Content */}
+      {/* Center: Main Content */}
       <Box style={{ flex: 1, overflow: 'auto', padding: 'var(--mantine-spacing-md)' }}>
         <Stack gap="lg">
           {/* Page Header */}
@@ -491,25 +490,6 @@ function EntityGraphPage() {
               </Text>
             </Alert>
           )}
-
-          {/* Graph Algorithms */}
-          <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
-            <Stack gap="md">
-              <Title order={4}>Graph Algorithms</Title>
-              <AlgorithmTabs
-                nodes={nodes}
-                edges={edges}
-                onHighlightNodes={highlightNodes}
-                onHighlightPath={highlightPath}
-                onSelectCommunity={selectCommunity}
-                onCommunitiesDetected={setCommunitiesResult}
-                pathSource={pathSource}
-                pathTarget={pathTarget}
-                onPathSourceChange={setPathSource}
-                onPathTargetChange={setPathTarget}
-              />
-            </Stack>
-          </Card>
         </Stack>
       </Box>
     </Box>
