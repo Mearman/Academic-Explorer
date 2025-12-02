@@ -74,6 +74,33 @@ export interface EmbeddedRelationshipQuery {
 }
 
 /**
+ * Item extracted from embedded data that needs resolution (ID only, no display name)
+ */
+export interface EmbeddedItemNeedingResolution {
+  /** Entity ID (e.g., "https://openalex.org/I123") */
+  id: string;
+  /** Additional metadata from embedded data */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Embedded data with resolution - extracts IDs from embedded data, then batch-fetches display names
+ * Use this when embedded data contains only IDs without display names (e.g., institution lineage)
+ */
+export interface EmbeddedWithResolutionQuery {
+  /** Query source type */
+  source: 'embedded-with-resolution';
+  /**
+   * Extract entity IDs from embedded data (display names will be fetched separately)
+   * @param entityData - The source entity's data
+   * @returns Array of items with IDs that need display name resolution
+   */
+  extractIds: (entityData: Record<string, unknown>) => EmbeddedItemNeedingResolution[];
+  /** Fields to select when fetching entities for resolution */
+  resolutionSelect?: string[];
+}
+
+/**
  * Configuration for a single relationship query
  *
  * @template SourceType - The type of the source entity (the entity we're querying from)
@@ -90,7 +117,7 @@ export type RelationshipQueryConfig<
 
   /** Human-readable label for this relationship */
   label: string;
-} & (ApiRelationshipQuery | EmbeddedRelationshipQuery);
+} & (ApiRelationshipQuery | EmbeddedRelationshipQuery | EmbeddedWithResolutionQuery);
 
 /**
  * Complete relationship query configuration for an entity type
@@ -358,28 +385,23 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         },
       },
       {
-        source: 'embedded',
+        source: 'embedded-with-resolution',
         type: 'LINEAGE',
         targetType: 'institutions',
-        label: 'Parent Institution',
-        extractEmbedded: (entityData) => {
+        label: 'Parent Institutions',
+        extractIds: (entityData) => {
           const lineage = entityData.lineage as string[] | undefined;
           if (!lineage || !Array.isArray(lineage) || lineage.length === 0) return [];
 
-          // First item in lineage is the immediate parent
-          const parentId = lineage[0];
-          if (!parentId) return [];
-
-          // Note: We only have the ID, not the display name
-          // Consuming code will need to fetch the full entity if needed
-          return [{
-            id: parentId,
-            displayName: parentId, // Fallback to ID until full data fetched
+          // Return all parent institutions in lineage (immediate parent first)
+          return lineage.map((id, index) => ({
+            id,
             metadata: {
-              lineage_position: 0,
+              lineage_position: index,
             },
-          }];
+          }));
         },
+        resolutionSelect: ['id', 'display_name', 'country_code', 'type'],
       },
     ],
   },
