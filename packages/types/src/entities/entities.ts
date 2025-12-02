@@ -221,19 +221,27 @@ export type OpenAlexEntity =
 	| Field
 	| Subfield
 
-export type EntityType =
-	| "works"
-	| "authors"
-	| "sources"
-	| "institutions"
-	| "topics"
-	| "concepts"
-	| "publishers"
-	| "funders"
-	| "keywords"
-	| "domains"
-	| "fields"
-	| "subfields"
+/**
+ * All entity types as a typed readonly array - SINGLE SOURCE OF TRUTH
+ * EntityType is derived from this array
+ */
+export const ENTITY_TYPES = [
+	"works",
+	"authors",
+	"sources",
+	"institutions",
+	"topics",
+	"concepts",
+	"publishers",
+	"funders",
+	"keywords",
+	"domains",
+	"fields",
+	"subfields",
+] as const
+
+/** Entity type union - derived from ENTITY_TYPES */
+export type EntityType = (typeof ENTITY_TYPES)[number]
 
 // Mapping from entity type to entity interface
 export type EntityTypeMap = {
