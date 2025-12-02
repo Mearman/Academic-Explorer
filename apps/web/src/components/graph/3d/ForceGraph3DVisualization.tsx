@@ -84,6 +84,8 @@ export interface ForceGraph3DVisualizationProps {
   communityAssignments?: Map<string, number>;
   /** Community colors: communityId -> color */
   communityColors?: Map<number, string>;
+  /** Node IDs currently being expanded (loading relationships) */
+  expandingNodeIds?: Set<string>;
   /** Loading state */
   loading?: boolean;
   /** Custom node style override */
@@ -174,6 +176,7 @@ export function ForceGraph3DVisualization({
   highlightedPath = [],
   communityAssignments,
   communityColors,
+  expandingNodeIds = new Set(),
   loading = false,
   getNodeStyle,
   getLinkStyle,
@@ -323,10 +326,20 @@ export function ForceGraph3DVisualization({
     // Always use deterministic seeding for reproducible layouts
     const random = seededRandom(seed ?? DEFAULT_SEED);
 
+    // Deduplicate nodes by ID (safety net - upstream should already deduplicate)
+    const seenNodeIds = new Set<string>();
+    const deduplicatedNodes = nodes.filter(n => {
+      if (seenNodeIds.has(n.id)) {
+        return false;
+      }
+      seenNodeIds.add(n.id);
+      return true;
+    });
+
     // Filter nodes if in filter mode
     const filteredNodes = filterNodeIds && filterNodeIds.size > 0
-      ? nodes.filter(n => filterNodeIds.has(n.id))
-      : nodes;
+      ? deduplicatedNodes.filter(n => filterNodeIds.has(n.id))
+      : deduplicatedNodes;
 
     const nodeIdSet = new Set(filteredNodes.map(n => n.id));
 
@@ -381,6 +394,7 @@ export function ForceGraph3DVisualization({
   // Uses LOD (Level of Detail) to adjust quality based on camera distance
   const nodeThreeObject = useCallback((node: ForceGraphNode) => {
     const isHighlighted = isNodeHighlighted(node.id);
+    const isExpanding = expandingNodeIds.has(node.id);
     const communityId = communityAssignments?.get(node.id);
 
     // Get style from custom function or defaults
@@ -439,7 +453,7 @@ export function ForceGraph3DVisualization({
     const sphere = new THREE.Mesh(geometry, material);
 
     // Add subtle ring for highlighted nodes (only at high LOD)
-    if (isHighlighted && lodSettings.useRing) {
+    if (isHighlighted && lodSettings.useRing && !isExpanding) {
       const ringGeometry = new THREE.RingGeometry(baseSize * 1.2, baseSize * 1.4, lodSettings.segments * 2);
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffff,
@@ -450,6 +464,34 @@ export function ForceGraph3DVisualization({
       const ring = new THREE.Mesh(ringGeometry, ringMaterial);
       ring.rotation.x = Math.PI / 2; // Face camera
       group.add(ring);
+    }
+
+    // Add spinning ring for expanding nodes (loading indicator)
+    if (isExpanding) {
+      const spinningRingGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.15, 8, 32);
+      const spinningRingMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00bfff, // Deep sky blue - loading indicator color
+        transparent: true,
+        opacity: 0.8,
+      });
+      const spinningRing = new THREE.Mesh(spinningRingGeometry, spinningRingMaterial);
+      spinningRing.rotation.x = Math.PI / 2; // Start horizontal
+      // Tag for animation loop to find and rotate
+      spinningRing.userData.isSpinningRing = true;
+      group.add(spinningRing);
+
+      // Add a second partial ring for visual interest (loading arc effect)
+      const arcGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.1, 8, 16, Math.PI);
+      const arcMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.6,
+      });
+      const arc = new THREE.Mesh(arcGeometry, arcMaterial);
+      arc.rotation.x = Math.PI / 2;
+      arc.userData.isSpinningRing = true;
+      arc.userData.spinSpeed = 2; // Spin faster than main ring
+      group.add(arc);
     }
 
     group.add(sphere);
@@ -467,7 +509,7 @@ export function ForceGraph3DVisualization({
     }
 
     return group;
-  }, [isNodeHighlighted, communityAssignments, communityColors, getNodeStyle, lodManager]);
+  }, [isNodeHighlighted, expandingNodeIds, communityAssignments, communityColors, getNodeStyle, lodManager]);
 
   // Link color based on highlighting
   const linkColor = useCallback((link: ForceGraphLink) => {
@@ -653,6 +695,17 @@ export function ForceGraph3DVisualization({
         frameEnd();
         frameStart();
         updateVisibleCounts(graphData.nodes.length, graphData.links.length);
+      }
+
+      // Rotate spinning rings for expanding nodes
+      const scene = graph.scene?.();
+      if (scene) {
+        scene.traverse((object: THREE.Object3D) => {
+          if (object.userData.isSpinningRing) {
+            const spinSpeed = object.userData.spinSpeed ?? 1;
+            object.rotation.z += 0.03 * spinSpeed; // Rotate around Z axis
+          }
+        });
       }
     };
 

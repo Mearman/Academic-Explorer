@@ -68,6 +68,8 @@ export interface ForceGraphVisualizationProps {
   communityAssignments?: Map<string, number>;
   /** Community colors: communityId -> color */
   communityColors?: Map<number, string>;
+  /** Node IDs currently being expanded (loading relationships) */
+  expandingNodeIds?: Set<string>;
   /** Loading state */
   loading?: boolean;
   /** Custom node style override */
@@ -113,6 +115,7 @@ export function ForceGraphVisualization({
   highlightedPath = [],
   communityAssignments,
   communityColors,
+  expandingNodeIds = new Set(),
   loading = false,
   getNodeStyle,
   getLinkStyle,
@@ -178,10 +181,20 @@ export function ForceGraphVisualization({
     // Always use deterministic seeding for reproducible layouts
     const random = seededRandom(seed ?? DEFAULT_SEED);
 
+    // Deduplicate nodes by ID (safety net - upstream should already deduplicate)
+    const seenNodeIds = new Set<string>();
+    const deduplicatedNodes = nodes.filter(n => {
+      if (seenNodeIds.has(n.id)) {
+        return false;
+      }
+      seenNodeIds.add(n.id);
+      return true;
+    });
+
     // Filter nodes if in filter mode
     const filteredNodes = filterNodeIds && filterNodeIds.size > 0
-      ? nodes.filter(n => filterNodeIds.has(n.id))
-      : nodes;
+      ? deduplicatedNodes.filter(n => filterNodeIds.has(n.id))
+      : deduplicatedNodes;
 
     const nodeIdSet = new Set(filteredNodes.map(n => n.id));
 
@@ -240,6 +253,7 @@ export function ForceGraphVisualization({
   const nodeCanvasObject = useCallback((node: NodeObject, ctx: CanvasRenderingContext2D, globalScale: number) => {
     const forceNode = node as ForceGraphNode;
     const isHighlighted = isNodeHighlighted(forceNode.id);
+    const isExpanding = expandingNodeIds.has(forceNode.id);
     const communityId = communityAssignments?.get(forceNode.id);
 
     // Get style from custom function or defaults
@@ -267,6 +281,34 @@ export function ForceGraphVisualization({
       ctx.stroke();
     }
 
+    // Draw spinning ring for expanding nodes (loading indicator)
+    if (isExpanding) {
+      const ringRadius = size * 1.5;
+      const ringWidth = size * 0.3;
+      // Time-based rotation (full rotation every 1.5 seconds)
+      const rotation = (Date.now() / 1500) * Math.PI * 2;
+
+      ctx.globalAlpha = 0.8;
+
+      // Main spinning arc (deep sky blue)
+      ctx.beginPath();
+      ctx.arc(x, y, ringRadius, rotation, rotation + Math.PI * 1.5);
+      ctx.strokeStyle = '#00bfff';
+      ctx.lineWidth = ringWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Secondary faster arc (white, for visual interest)
+      const fastRotation = (Date.now() / 750) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(x, y, ringRadius, fastRotation, fastRotation + Math.PI * 0.5);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = ringWidth * 0.6;
+      ctx.stroke();
+
+      ctx.lineCap = 'butt'; // Reset
+    }
+
     // Draw label when zoomed in
     if (globalScale > 1.5) {
       const label = forceNode.label || forceNode.id;
@@ -279,7 +321,7 @@ export function ForceGraphVisualization({
     }
 
     ctx.globalAlpha = 1;
-  }, [isNodeHighlighted, communityAssignments, communityColors, getNodeStyle]);
+  }, [isNodeHighlighted, expandingNodeIds, communityAssignments, communityColors, getNodeStyle]);
 
   // Link canvas rendering
   const linkCanvasObject = useCallback((link: LinkObject, ctx: CanvasRenderingContext2D, globalScale: number) => {
