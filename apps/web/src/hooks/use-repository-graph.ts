@@ -88,10 +88,10 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [initialized, setInitialized] = useState(false);
 
-  // Refs for tracking previous state (to detect changes)
+  // Refs for tracking state without causing re-renders
   const prevNodeCountRef = useRef<number>(0);
+  const initializedRef = useRef(false);
 
   /**
    * Load bookmarks and convert to graph nodes
@@ -99,9 +99,9 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
   const loadData = useCallback(async () => {
     try {
       // Initialize special lists if not already done
-      if (!initialized) {
+      if (!initializedRef.current) {
         await storage.initializeSpecialLists();
-        setInitialized(true);
+        initializedRef.current = true;
       }
 
       const bookmarks = await storage.getBookmarks();
@@ -128,7 +128,7 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
     } finally {
       setLoading(false);
     }
-  }, [storage, initialized]);
+  }, [storage]);
 
   /**
    * Force refresh - exposed for manual refresh triggers
