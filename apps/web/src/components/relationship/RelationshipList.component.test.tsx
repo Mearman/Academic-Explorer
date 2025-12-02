@@ -33,24 +33,30 @@ describe('RelationshipList', () => {
     }));
   };
 
-  const createMockSection = (itemCount: number): RelationshipSection => ({
-    id: 'section-1',
-    type: RelationType.AUTHORSHIP,
-    direction: 'outbound',
-    label: 'Authors',
-    items: createMockItems(itemCount),
-    visibleItems: createMockItems(Math.min(itemCount, 50)),
-    totalCount: itemCount,
-    visibleCount: Math.min(itemCount, 50),
-    hasMore: itemCount > 50,
-    pagination: {
-      pageSize: 50,
-      currentPage: 0,
-      totalPages: Math.ceil(itemCount / 50),
-      hasNextPage: itemCount > 50,
-      hasPreviousPage: false,
-    },
-  });
+  const createMockSection = (itemCount: number, currentPage: number = 0, pageSize: number = 50): RelationshipSection => {
+    const startIndex = currentPage * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, itemCount);
+    const pageItemCount = endIndex - startIndex;
+
+    return {
+      id: 'section-1',
+      type: RelationType.AUTHORSHIP,
+      direction: 'outbound',
+      label: 'Authors',
+      items: createMockItems(pageItemCount), // Only items for current page
+      visibleItems: createMockItems(pageItemCount),
+      totalCount: itemCount,
+      visibleCount: pageItemCount,
+      hasMore: endIndex < itemCount,
+      pagination: {
+        pageSize,
+        currentPage,
+        totalPages: Math.ceil(itemCount / pageSize),
+        hasNextPage: endIndex < itemCount,
+        hasPreviousPage: currentPage > 0,
+      },
+    };
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -86,7 +92,7 @@ describe('RelationshipList', () => {
     expect(screen.getByText('Showing 10 of 10')).toBeInTheDocument();
   });
 
-  it('should display "Load more" button when hasMore is true', () => {
+  it('should display pagination controls when total items > 10', () => {
     const section = createMockSection(150);
 
     render(
@@ -95,11 +101,11 @@ describe('RelationshipList', () => {
       </TestWrapper>
     );
 
-    const loadMoreButton = screen.getByRole('button', { name: /load more/i });
-    expect(loadMoreButton).toBeInTheDocument();
+    // Should show pagination text with range format
+    expect(screen.getByText('Showing 1 to 50 of 150')).toBeInTheDocument();
   });
 
-  it('should not display "Load more" button when all items are visible', () => {
+  it('should not display pagination controls when total items <= 10', () => {
     const section = createMockSection(10);
 
     render(
@@ -108,52 +114,55 @@ describe('RelationshipList', () => {
       </TestWrapper>
     );
 
-    expect(screen.queryByRole('button', { name: /load more/i })).not.toBeInTheDocument();
+    // Should show simple count text
+    expect(screen.getByText('Showing 10 of 10')).toBeInTheDocument();
   });
 
-  it('should load more items when "Load more" is clicked', async () => {
+  it('should call onPageChange when page navigation is used', async () => {
     const section = createMockSection(150);
+    const onPageChange = vi.fn();
     const user = userEvent.setup();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList section={section} onPageChange={onPageChange} />
       </TestWrapper>
     );
 
-    // Initially shows 50 items
-    expect(screen.getByText('Showing 50 of 150')).toBeInTheDocument();
+    // Initially shows page 1 (items 1-50)
+    expect(screen.getByText('Showing 1 to 50 of 150')).toBeInTheDocument();
 
-    // Click "Load more"
-    const loadMoreButton = screen.getByRole('button', { name: /load more/i });
-    await user.click(loadMoreButton);
+    // Find and click the next page button (page 2)
+    const pageButtons = screen.getAllByRole('button');
+    const nextButton = pageButtons.find(btn => btn.getAttribute('data-page') === '2');
 
-    // Should now show 100 items
-    expect(screen.getByText('Showing 100 of 150')).toBeInTheDocument();
+    if (nextButton) {
+      await user.click(nextButton);
+      expect(onPageChange).toHaveBeenCalledWith(1); // 0-indexed page
+    }
   });
 
-  // onLoadMore functionality removed - component now uses pagination via onPageChange
-
-  it('should hide "Load more" button when all items are loaded', async () => {
-    const section = createMockSection(75); // 75 items = 2 pages
+  it('should call onPageSizeChange when page size selector is used', async () => {
+    const section = createMockSection(150);
+    const onPageSizeChange = vi.fn();
     const user = userEvent.setup();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList section={section} onPageSizeChange={onPageSizeChange} />
       </TestWrapper>
     );
 
-    // Initially shows 50 items with "Load more" button
-    expect(screen.getByRole('button', { name: /load more/i })).toBeInTheDocument();
+    // Find the page size selector
+    const pageSizeSelect = screen.getByLabelText('Items per page');
+    expect(pageSizeSelect).toBeInTheDocument();
 
-    // Click "Load more"
-    const loadMoreButton = screen.getByRole('button', { name: /load more/i });
-    await user.click(loadMoreButton);
+    // Change page size to 100
+    await user.click(pageSizeSelect);
+    const option100 = screen.getByText('100 per page');
+    await user.click(option100);
 
-    // Should now show all 75 items without "Load more" button
-    expect(screen.getByText('Showing 75 of 75')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /load more/i })).not.toBeInTheDocument();
+    expect(onPageSizeChange).toHaveBeenCalledWith(100);
   });
 
   it('should handle edge case with exactly 50 items', () => {
@@ -165,9 +174,8 @@ describe('RelationshipList', () => {
       </TestWrapper>
     );
 
-    // Should show all 50 items without "Load more" button
-    expect(screen.getByText('Showing 50 of 50')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /load more/i })).not.toBeInTheDocument();
+    // Should show pagination text for items > 10
+    expect(screen.getByText('Showing 1 to 50 of 50')).toBeInTheDocument();
   });
 
   it('should handle edge case with 51 items', () => {
@@ -179,8 +187,7 @@ describe('RelationshipList', () => {
       </TestWrapper>
     );
 
-    // Should show 50 items with "Load more" button
-    expect(screen.getByText('Showing 50 of 51')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /load more/i })).toBeInTheDocument();
+    // Should show first page of 50 items
+    expect(screen.getByText('Showing 1 to 50 of 51')).toBeInTheDocument();
   });
 });

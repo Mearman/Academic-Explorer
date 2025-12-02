@@ -390,48 +390,57 @@ describe("useThemeColors", () => {
     it("should provide correct text colors for light mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // text.primary uses stone[9] from mockTheme
       expect(result.current.colors.text.primary).toBe(
-        "var(--mantine-color-text)",
+        mockTheme.colors!.stone[9],
       );
+      // text.secondary uses zinc[5] from mockTheme
       expect(result.current.colors.text.secondary).toBe(
-        mockTheme.colors!.gray[6],
+        mockTheme.colors!.zinc[5],
       );
+      // text.tertiary uses zinc[4] from mockTheme
       expect(result.current.colors.text.tertiary).toBe(
-        mockTheme.colors!.gray[5],
+        mockTheme.colors!.zinc[4],
       );
+      // text.inverse uses stone[0] from mockTheme
       expect(result.current.colors.text.inverse).toBe(
-        mockTheme.colors!.gray[0],
+        mockTheme.colors!.stone[0],
       );
     });
 
     it("should provide correct background colors for light mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // background.primary uses slate[0] fallback (no slate in mockTheme)
       expect(result.current.colors.background.primary).toBe(
-        "var(--mantine-color-body)",
+        "#f8fafc",
       );
+      // background.secondary uses slate[1] fallback (no slate in mockTheme)
       expect(result.current.colors.background.secondary).toBe(
-        mockTheme.colors!.gray[0],
+        "#f1f5f9",
       );
+      // background.tertiary uses slate[2] fallback (no slate in mockTheme)
       expect(result.current.colors.background.tertiary).toBe(
-        mockTheme.colors!.gray[1],
+        "#e2e8f0",
       );
       expect(result.current.colors.background.overlay).toBe(
-        "rgba(255, 255, 255, 0.95)",
+        "rgba(248, 250, 252, 0.95)",
       );
       expect(result.current.colors.background.blur).toBe(
-        "rgba(255, 255, 255, 0.95)",
+        "rgba(241, 245, 249, 0.95)",
       );
     });
 
     it("should provide correct border colors for light mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // border.primary uses zinc[2] from mockTheme
       expect(result.current.colors.border.primary).toBe(
-        "var(--mantine-color-default-border)",
+        mockTheme.colors!.zinc[2],
       );
+      // border.secondary uses zinc[3] from mockTheme
       expect(result.current.colors.border.secondary).toBe(
-        mockTheme.colors!.gray[3],
+        mockTheme.colors!.zinc[3],
       );
     });
   });
@@ -449,48 +458,57 @@ describe("useThemeColors", () => {
     it("should provide correct text colors for dark mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // text.primary uses stone[0] from mockTheme
       expect(result.current.colors.text.primary).toBe(
-        "var(--mantine-color-text)",
+        mockTheme.colors!.stone[0],
       );
+      // text.secondary uses zinc[4] from mockTheme
       expect(result.current.colors.text.secondary).toBe(
-        mockTheme.colors!.gray[3],
+        mockTheme.colors!.zinc[4],
       );
+      // text.tertiary uses zinc[5] from mockTheme
       expect(result.current.colors.text.tertiary).toBe(
-        mockTheme.colors!.gray[4],
+        mockTheme.colors!.zinc[5],
       );
+      // text.inverse uses stone[9] from mockTheme
       expect(result.current.colors.text.inverse).toBe(
-        mockTheme.colors!.gray[9],
+        mockTheme.colors!.stone[9],
       );
     });
 
     it("should provide correct background colors for dark mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // background.primary uses slate[10] fallback (no slate in mockTheme)
       expect(result.current.colors.background.primary).toBe(
-        "var(--mantine-color-body)",
+        "#020617",
       );
+      // background.secondary uses slate[9] fallback (no slate in mockTheme)
       expect(result.current.colors.background.secondary).toBe(
-        mockTheme.colors!.gray[8],
+        "#0f172a",
       );
+      // background.tertiary uses slate[8] fallback (no slate in mockTheme)
       expect(result.current.colors.background.tertiary).toBe(
-        mockTheme.colors!.gray[7],
+        "#1e293b",
       );
       expect(result.current.colors.background.overlay).toBe(
-        "rgba(0, 0, 0, 0.8)",
+        "rgba(2, 6, 23, 0.8)",
       );
       expect(result.current.colors.background.blur).toBe(
-        "rgba(31, 41, 55, 0.95)",
+        "rgba(15, 23, 42, 0.95)",
       );
     });
 
     it("should provide correct border colors for dark mode", () => {
       const { result } = renderHook(() => useThemeColors());
 
+      // border.primary uses zinc[8] from mockTheme
       expect(result.current.colors.border.primary).toBe(
-        "var(--mantine-color-default-border)",
+        mockTheme.colors!.zinc[8],
       );
+      // border.secondary uses zinc[7] from mockTheme
       expect(result.current.colors.border.secondary).toBe(
-        mockTheme.colors!.gray[6],
+        mockTheme.colors!.zinc[7],
       );
     });
   });
@@ -781,11 +799,12 @@ describe("useThemeColors", () => {
     it("should handle empty entity type strings", () => {
       const { result } = renderHook(() => useThemeColors());
 
-      // Hash-based color system generates deterministic colors from strings
-      // Empty string should produce a valid hex color
+      // Empty string returns primary color from getEntityColor
       const emptyColor = result.current.getEntityColor("");
-      expect(emptyColor).toMatch(/^#[0-9a-fA-F]{6}$/); // Valid hex color
-      expect(result.current.getEntityColorShade("")).toBe(emptyColor);
+      expect(emptyColor).toBe(mockTheme.colors!.stone[6]); // Primary color
+
+      // Empty string returns blue[6] from getEntityColorShade (fallback)
+      expect(result.current.getEntityColorShade("")).toBe(mockTheme.colors!.blue[6]);
     });
 
     it("should handle missing matchMedia gracefully", () => {

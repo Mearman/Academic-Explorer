@@ -1,6 +1,7 @@
 /**
  * Unit tests for WebGL detection utility
  *
+ * @vitest-environment jsdom
  * @module webgl-detection.unit.test
  */
 
