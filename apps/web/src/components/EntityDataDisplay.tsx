@@ -40,7 +40,7 @@ import {
   IconFile,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
@@ -77,8 +77,8 @@ const MASONRY_CONFIG = {
   GAP: 24,
 } as const;
 
-/** Masonry grid component with automatic content-based sizing */
-interface MasonryGridProps {
+/** Auto-grid component that fills space efficiently using CSS Grid */
+interface AutoGridProps {
   children: React.ReactNode[];
   /** Minimum column width in pixels (default: 350) */
   minColumnWidth?: number;
@@ -86,125 +86,23 @@ interface MasonryGridProps {
   gap?: number;
 }
 
-function MasonryGrid({
+function AutoGrid({
   children,
   minColumnWidth = MASONRY_CONFIG.MIN_COLUMN_WIDTH,
   gap = MASONRY_CONFIG.GAP,
-}: MasonryGridProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [positions, setPositions] = useState<{ x: number; y: number; width: number }[]>([]);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const [measurePass, setMeasurePass] = useState(0);
-
-  const calculateLayout = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const containerWidth = container.offsetWidth;
-    if (containerWidth === 0) return;
-
-    const columnCount = Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
-    const columnWidth = (containerWidth - (columnCount - 1) * gap) / columnCount;
-
-    // Track height of each column
-    const columnHeights = new Array(columnCount).fill(0);
-    const newPositions: { x: number; y: number; width: number }[] = [];
-
-    for (let i = 0; i < children.length; i++) {
-      const itemEl = itemRefs.current[i];
-
-      // Measure natural content width and height
-      const naturalWidth = itemEl?.scrollWidth ?? minColumnWidth;
-      const itemHeight = itemEl?.scrollHeight ?? 200;
-
-      // Calculate span based on content width relative to column width
-      const naturalSpan = Math.ceil(naturalWidth / columnWidth);
-      const span = Math.min(Math.max(1, naturalSpan), columnCount);
-
-      // Find best starting column for this span
-      let bestCol = 0;
-      let bestHeight = Infinity;
-
-      for (let col = 0; col <= columnCount - span; col++) {
-        const maxHeightInSpan = Math.max(...columnHeights.slice(col, col + span));
-        if (maxHeightInSpan < bestHeight) {
-          bestHeight = maxHeightInSpan;
-          bestCol = col;
-        }
-      }
-
-      // Calculate position and width for spanning item
-      const itemWidth = columnWidth * span + gap * (span - 1);
-
-      newPositions[i] = {
-        x: bestCol * (columnWidth + gap),
-        y: bestHeight,
-        width: itemWidth,
-      };
-
-      // Update heights for all columns in the span
-      const newHeight = bestHeight + itemHeight + gap;
-      for (let col = bestCol; col < bestCol + span; col++) {
-        columnHeights[col] = newHeight;
-      }
-    }
-
-    setPositions(newPositions);
-    setContainerHeight(Math.max(...columnHeights, 0) - gap);
-  }, [children.length, minColumnWidth, gap]);
-
-  // Initial layout and resize handling
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(() => {
-      calculateLayout();
-    });
-
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-
-    // Initial measure pass
-    requestAnimationFrame(() => {
-      setMeasurePass(1);
-    });
-
-    return () => resizeObserver.disconnect();
-  }, [calculateLayout]);
-
-  // Two-pass layout: first render naturally to measure, then position
-  useEffect(() => {
-    if (measurePass > 0) {
-      calculateLayout();
-      // Second pass to refine after positioning
-      if (measurePass === 1) {
-        requestAnimationFrame(() => setMeasurePass(2));
-      }
-    }
-  }, [measurePass, calculateLayout]);
-
+}: AutoGridProps) {
   return (
     <Box
-      ref={containerRef}
       style={{
-        position: "relative",
+        display: "grid",
+        gridTemplateColumns: `repeat(auto-fill, minmax(${minColumnWidth}px, 1fr))`,
+        gridAutoFlow: "dense",
+        gap,
         width: "100%",
-        height: containerHeight > 0 ? containerHeight : "auto",
-        minHeight: 50,
       }}
     >
-      {React.Children.map(children, (child, index) => (
-        <Box
-          ref={(el) => { itemRefs.current[index] = el; }}
-          style={{
-            position: measurePass > 0 && positions[index] ? "absolute" : "relative",
-            left: positions[index]?.x ?? 0,
-            top: positions[index]?.y ?? 0,
-            width: measurePass > 0 && positions[index] ? positions[index].width : "auto",
-            maxWidth: "100%",
-            visibility: measurePass > 0 && positions[index] ? "visible" : "hidden",
-          }}
-        >
+      {React.Children.map(children, (child) => (
+        <Box style={{ minWidth: 0 }}>
           {child}
         </Box>
       ))}
@@ -346,7 +244,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
     // For object arrays, show each item in auto-sizing grid
     return (
       <Box mt="xs">
-        <MasonryGrid minColumnWidth={120} gap={8}>
+        <AutoGrid minColumnWidth={120} gap={8}>
           {value.map((item, index) => (
             <Card
               key={index}
@@ -364,7 +262,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): R
               </Group>
             </Card>
           ))}
-        </MasonryGrid>
+        </AutoGrid>
       </Box>
     );
   }
@@ -508,7 +406,7 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
       </CardSection>
 
       <CardSection p="lg">
-        <MasonryGrid minColumnWidth={150} gap={12}>
+        <AutoGrid minColumnWidth={150} gap={12}>
           {Object.entries(groupData).map(([key, value]) => (
             <Card
               key={key}
@@ -526,7 +424,7 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
               </Stack>
             </Card>
           ))}
-        </MasonryGrid>
+        </AutoGrid>
       </CardSection>
     </Card>
   );
@@ -551,13 +449,13 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
 
         {/* Tiled layout uses auto-sizing masonry grid */}
         {layout === "tiled" ? (
-          <MasonryGrid>
+          <AutoGrid>
             {sortedEntries.map(([groupName, groupData]) => (
               <Box key={groupName}>
                 {renderSectionCard([groupName, groupData])}
               </Box>
             ))}
-          </MasonryGrid>
+          </AutoGrid>
         ) : (
           // Stacked layout uses vertical Stack
           sortedEntries.map(renderSectionCard)
