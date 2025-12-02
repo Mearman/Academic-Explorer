@@ -41,12 +41,17 @@ import {
   IconLoader,
 } from '@tabler/icons-react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
-import React, { useMemo, useCallback, useRef } from 'react';
+import React, { useMemo, useCallback, useRef, useState } from 'react';
 
 import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
+import {
+  NodeContextMenu,
+  INITIAL_CONTEXT_MENU_STATE,
+  type ContextMenuState,
+} from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
@@ -112,6 +117,9 @@ function EntityGraphPage() {
   // Graph methods ref for external control (zoomToFit, etc.)
   const graphMethodsRef = useRef<GraphMethods | null>(null);
 
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(INITIAL_CONTEXT_MENU_STATE);
+
   // Fit-to-view operations (shared logic for 2D/3D)
   const { fitToViewAll, fitToViewSelected } = useFitToView({
     graphMethodsRef,
@@ -127,27 +135,37 @@ function EntityGraphPage() {
     []
   );
 
-  // Wrapped node click handler - handles visualization + expansion
-  const handleNodeClickWithExpansion = useCallback(
-    (node: Parameters<typeof handleNodeClick>[0]) => {
-      // First, handle the visualization click (path selection, highlighting)
-      handleNodeClick(node);
+  // Handle node right-click - show context menu
+  const handleNodeRightClick = useCallback(
+    (node: Parameters<typeof handleNodeClick>[0], event: MouseEvent) => {
+      // Close any existing menu and open at new position
+      setContextMenu({
+        opened: true,
+        x: event.clientX,
+        y: event.clientY,
+        node,
+      });
+    },
+    []
+  );
 
-      // Then trigger expansion if not already expanded
-      // This runs asynchronously - doesn't block the UI
+  // Close context menu
+  const handleCloseContextMenu = useCallback(() => {
+    setContextMenu(INITIAL_CONTEXT_MENU_STATE);
+  }, []);
+
+  // Handle expand from context menu
+  const handleExpandFromMenu = useCallback(
+    (node: Parameters<typeof handleNodeClick>[0]) => {
       if (!isExpanded(node.id) && !isExpanding(node.id)) {
-        // Pass entityType explicitly for reliable type resolution
-        // (avoids relying solely on ID prefix inference)
         void expandNode(node.id, node.entityType).then((result) => {
-          // If expansion added new nodes/edges, add them incrementally
-          // (no full graph refresh needed)
           if (result.success && (result.nodes.length > 0 || result.edges.length > 0)) {
             addNodesAndEdges(result.nodes, result.edges);
           }
         });
       }
     },
-    [handleNodeClick, isExpanded, isExpanding, expandNode, addNodesAndEdges]
+    [isExpanded, isExpanding, expandNode, addNodesAndEdges]
   );
 
   // Node type counts for stats
@@ -416,7 +434,8 @@ function EntityGraphPage() {
                     expandingNodeIds={expandingNodeIdsSet}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
-                    onNodeClick={handleNodeClickWithExpansion}
+                    onNodeClick={handleNodeClick}
+                    onNodeRightClick={handleNodeRightClick}
                     onBackgroundClick={handleBackgroundClick}
                     onGraphReady={handleGraphReady}
                   />
@@ -431,11 +450,25 @@ function EntityGraphPage() {
                     expandingNodeIds={expandingNodeIdsSet}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
-                    onNodeClick={handleNodeClickWithExpansion}
+                    onNodeClick={handleNodeClick}
+                    onNodeRightClick={handleNodeRightClick}
                     onBackgroundClick={handleBackgroundClick}
                     onGraphReady={handleGraphReady}
                   />
                 )}
+
+                {/* Node Context Menu */}
+                <NodeContextMenu
+                  state={contextMenu}
+                  onClose={handleCloseContextMenu}
+                  onExpand={handleExpandFromMenu}
+                  onSetPathSource={setPathSource}
+                  onSetPathTarget={setPathTarget}
+                  isExpanding={isExpanding}
+                  isExpanded={isExpanded}
+                  pathSource={pathSource}
+                  pathTarget={pathTarget}
+                />
               </div>
             </Stack>
           </Card>

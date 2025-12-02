@@ -4,6 +4,7 @@
 
 export * from "./ForceGraphVisualization";
 export * from "./GraphSourcePanel";
+export * from "./NodeContextMenu";
 export * from "./animated-layout-context";
 export * from "./edge-renderer";
 export * from "./edge-styles";

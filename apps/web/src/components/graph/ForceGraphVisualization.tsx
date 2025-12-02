@@ -78,6 +78,8 @@ export interface ForceGraphVisualizationProps {
   getLinkStyle?: (edge: GraphEdge, isHighlighted: boolean) => LinkStyle;
   /** Node click handler */
   onNodeClick?: (node: GraphNode) => void;
+  /** Node right-click handler (for context menu) */
+  onNodeRightClick?: (node: GraphNode, event: MouseEvent) => void;
   /** Node hover handler */
   onNodeHover?: (node: GraphNode | null) => void;
   /** Background click handler */
@@ -120,6 +122,7 @@ export function ForceGraphVisualization({
   getNodeStyle,
   getLinkStyle,
   onNodeClick,
+  onNodeRightClick,
   onNodeHover,
   onBackgroundClick,
   enableSimulation = true,
@@ -395,6 +398,13 @@ export function ForceGraphVisualization({
     onNodeClick?.(forceNode.originalNode);
   }, [onNodeClick]);
 
+  // Handle node right-click (context menu)
+  const handleNodeRightClick = useCallback((node: NodeObject, event: MouseEvent) => {
+    event.preventDefault();
+    const forceNode = node as ForceGraphNode;
+    onNodeRightClick?.(forceNode.originalNode, event);
+  }, [onNodeRightClick]);
+
   // Handle node hover
   const handleNodeHover = useCallback((node: NodeObject | null) => {
     if (node) {
@@ -457,6 +467,7 @@ export function ForceGraphVisualization({
         nodeCanvasObject={nodeCanvasObject}
         linkCanvasObject={linkCanvasObject}
         onNodeClick={handleNodeClick}
+        onNodeRightClick={handleNodeRightClick}
         onNodeHover={handleNodeHover}
         onBackgroundClick={handleBackgroundClick}
         enableNodeDrag={true}

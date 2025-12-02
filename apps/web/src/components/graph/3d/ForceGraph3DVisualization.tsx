@@ -94,6 +94,8 @@ export interface ForceGraph3DVisualizationProps {
   getLinkStyle?: (edge: GraphEdge, isHighlighted: boolean) => LinkStyle;
   /** Node click handler */
   onNodeClick?: (node: GraphNode) => void;
+  /** Node right-click handler (for context menu) */
+  onNodeRightClick?: (node: GraphNode, event: MouseEvent) => void;
   /** Node hover handler */
   onNodeHover?: (node: GraphNode | null) => void;
   /** Background click handler */
@@ -181,6 +183,7 @@ export function ForceGraph3DVisualization({
   getNodeStyle,
   getLinkStyle,
   onNodeClick,
+  onNodeRightClick,
   onNodeHover,
   onBackgroundClick,
   enableSimulation = true,
@@ -545,6 +548,14 @@ export function ForceGraph3DVisualization({
     }
   }, [onNodeClick]);
 
+  // Handle node right-click (context menu)
+  const handleNodeRightClick = useCallback((node: ForceGraphNode | null, event: MouseEvent) => {
+    if (node) {
+      event.preventDefault();
+      onNodeRightClick?.(node.originalNode, event);
+    }
+  }, [onNodeRightClick]);
+
   // Handle node hover
   const handleNodeHover = useCallback((node: ForceGraphNode | null) => {
     if (node) {
@@ -807,6 +818,7 @@ export function ForceGraph3DVisualization({
         linkWidth={linkWidth}
         linkOpacity={0.6}
         onNodeClick={handleNodeClick}
+        onNodeRightClick={handleNodeRightClick}
         onNodeHover={handleNodeHover}
         onBackgroundClick={handleBackgroundClick}
         enableNodeDrag={true}
