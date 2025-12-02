@@ -36,6 +36,15 @@ const getDB = (): SettingsDB => {
   return dbInstance;
 };
 
+// Background strategy type (matches @bibgraph/utils BackgroundStrategy)
+type BackgroundStrategy = 'idle' | 'scheduler' | 'worker' | 'sync';
+
+const VALID_BACKGROUND_STRATEGIES: readonly BackgroundStrategy[] = ['idle', 'scheduler', 'worker', 'sync'];
+
+function isBackgroundStrategy(value: unknown): value is BackgroundStrategy {
+  return typeof value === 'string' && VALID_BACKGROUND_STRATEGIES.includes(value as BackgroundStrategy);
+}
+
 // Settings state interface
 interface SettingsState {
   /** Email for OpenAlex polite pool */
@@ -48,6 +57,8 @@ interface SettingsState {
   dataVersion: '1' | '2' | undefined;
   /** Show system catalogues (bookmarks, history) in catalogue list */
   showSystemCatalogues: boolean;
+  /** Background processing strategy for auto-population */
+  backgroundStrategy: BackgroundStrategy;
 }
 
 // Default values
@@ -57,6 +68,7 @@ const DEFAULT_SETTINGS: SettingsState = {
   includeXpac: true,
   dataVersion: undefined,
   showSystemCatalogues: false,
+  backgroundStrategy: 'idle',
 };
 
 // Email validation regex
@@ -69,6 +81,7 @@ const SETTINGS_KEYS = {
   INCLUDE_XPAC: "includeXpac",
   DATA_VERSION: "dataVersion",
   SHOW_SYSTEM_CATALOGUES: "showSystemCatalogues",
+  BACKGROUND_STRATEGY: "backgroundStrategy",
 } as const;
 
 /**
@@ -106,6 +119,11 @@ class SettingsStore {
         }
         if (record.key === SETTINGS_KEYS.SHOW_SYSTEM_CATALOGUES) {
           settings.showSystemCatalogues = record.value === "true";
+        }
+        if (record.key === SETTINGS_KEYS.BACKGROUND_STRATEGY) {
+          if (isBackgroundStrategy(record.value)) {
+            settings.backgroundStrategy = record.value;
+          }
         }
       }
 
@@ -224,6 +242,35 @@ class SettingsStore {
       });
       throw error;
     }
+  }
+
+  /**
+   * Update background processing strategy
+   */
+  async setBackgroundStrategy(value: BackgroundStrategy): Promise<void> {
+    try {
+      await this.db.settings.put({
+        key: SETTINGS_KEYS.BACKGROUND_STRATEGY,
+        value,
+        updatedAt: new Date(),
+      });
+
+      this.logger.debug("settings", "Updated background strategy", { value });
+    } catch (error) {
+      this.logger?.error("settings", "Failed to update background strategy", {
+        value,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get current background processing strategy
+   */
+  async getBackgroundStrategy(): Promise<BackgroundStrategy> {
+    const settings = await this.getSettings();
+    return settings.backgroundStrategy;
   }
 
   /**
@@ -370,7 +417,12 @@ export const settingsActions = {
   hasValidEmail: () => dexieStore.hasValidEmail(),
   setShowSystemCatalogues: (value: boolean) => dexieStore.setShowSystemCatalogues(value),
   getShowSystemCatalogues: () => dexieStore.getShowSystemCatalogues(),
+  setBackgroundStrategy: (value: BackgroundStrategy) => dexieStore.setBackgroundStrategy(value),
+  getBackgroundStrategy: () => dexieStore.getBackgroundStrategy(),
 };
+
+// Export the BackgroundStrategy type for consumers
+export type { BackgroundStrategy };
 
 // Zustand-style compatibility - simple selector pattern
 export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string }) => T): T => {

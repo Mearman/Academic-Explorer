@@ -3,7 +3,7 @@
  */
 
 import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@bibgraph/client";
-import { XpacToggle, DataVersionSelector } from "@bibgraph/ui";
+import { XpacToggle, DataVersionSelector, BackgroundStrategySelector } from "@bibgraph/ui";
 import { isDataVersionSelectorVisible } from "@bibgraph/utils";
 import { clearAllCacheLayers , clearAppMetadata } from "@bibgraph/utils/cache";
 import { logger } from "@bibgraph/utils/logger";
@@ -32,7 +32,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance } from "@/stores/settings-store";
+import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance, type BackgroundStrategy } from "@/stores/settings-store";
 
 
 interface ResetState {
@@ -61,6 +61,9 @@ export const SettingsSection: React.FC = () => {
   // Local state for API key
   const [apiKey, setApiKeyState] = React.useState<string | undefined>(undefined);
 
+  // Local state for background strategy
+  const [backgroundStrategy, setBackgroundStrategyState] = React.useState<BackgroundStrategy>('idle');
+
   // Load settings from store on mount
   React.useEffect(() => {
     const loadSettings = async () => {
@@ -68,6 +71,7 @@ export const SettingsSection: React.FC = () => {
       setIncludeXpac(settings.includeXpac);
       setDataVersion(settings.dataVersion);
       setApiKeyState(settings.apiKey);
+      setBackgroundStrategyState(settings.backgroundStrategy);
     };
     void loadSettings();
   }, []);
@@ -247,6 +251,25 @@ export const SettingsSection: React.FC = () => {
     notifications.show({
       title: "Data Version Updated",
       message: `OpenAlex data version set to ${versionLabel}`,
+      color: "blue",
+      icon: <IconCheck size={16} />,
+    });
+  }, []);
+
+  const handleBackgroundStrategyChange = React.useCallback(async (value: BackgroundStrategy) => {
+    setBackgroundStrategyState(value);
+    await settingsStoreInstance.setBackgroundStrategy(value);
+    logger.debug("settings", "Background strategy setting updated", { backgroundStrategy: value });
+
+    const strategyLabels: Record<BackgroundStrategy, string> = {
+      idle: "Idle Callback",
+      scheduler: "Scheduler API",
+      worker: "Web Worker",
+      sync: "Synchronous",
+    };
+    notifications.show({
+      title: "Strategy Updated",
+      message: `Background processing strategy set to ${strategyLabels[value]}`,
       color: "blue",
       icon: <IconCheck size={16} />,
     });
@@ -615,6 +638,15 @@ export const SettingsSection: React.FC = () => {
       <XpacToggle
         value={includeXpac}
         onChange={handleXpacToggle}
+        showDescription={true}
+      />
+
+      <Divider />
+
+      {/* Background Strategy Selector */}
+      <BackgroundStrategySelector
+        value={backgroundStrategy}
+        onChange={handleBackgroundStrategyChange}
         showDescription={true}
       />
 
