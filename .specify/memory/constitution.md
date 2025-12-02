@@ -1,15 +1,18 @@
 <!--
 Sync Impact Report:
-Version: 2.14.0 → 2.15.0 (MINOR: Added Principle XX - Canonical Hash Computed Colours)
-Modified Sections: None
-Added Sections: Principle XX - Canonical Hash Computed Colours
+Version: 2.15.0 → 2.15.1 (PATCH: Strengthened spec commit requirements after SpecKit commands)
+Modified Sections:
+  - Spec File Discipline (Development Workflow): Added explicit requirement to commit after each SpecKit command
+  - Atomic Conventional Commits (Principle VI): Added SpecKit command commit requirement
+Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated - item 20 added to Constitution Check
-  - .specify/templates/spec-template.md: ✅ Updated - item 20 added to Constitution Alignment
-  - .specify/templates/tasks-template.md: ✅ Updated - item 20 added to compliance verification
+  - .specify/templates/plan-template.md: ✅ Already aligned (item 6 mentions spec commits after phases)
+  - .specify/templates/spec-template.md: ✅ Already aligned (item 129 mentions spec commits)
+  - .specify/templates/tasks-template.md: ✅ Already aligned (item 170 mentions spec commits)
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.15.0: Added Principle XX - Canonical Hash Computed Colours
   - v2.14.0: Added Principle XIX - Documentation Token Efficiency
   - v2.13.1: Add git commit -a to prohibited commands
   - v2.13.0: Added Principle XVIII - Agent Embed Link Format
@@ -30,10 +33,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.15.0)
+# BibGraph Constitution (v2.15.1)
 
 ## Version History
 
+- **v2.15.1** (2025-12-02): Strengthened spec commit requirements - MUST commit after each SpecKit command
 - **v2.15.0** (2025-12-02): Added Principle XX - Canonical Hash Computed Colours
 - **v2.14.0** (2025-12-02): Added Principle XIX - Documentation Token Efficiency
 - **v2.13.1** (2025-12-02): Add `git commit -a` to prohibited commands (alongside `git add .` and `git add -A`)
@@ -125,7 +129,9 @@ This PhD research project requires maintainable, reliable code for academic repr
 - MUST commit after each atomic task
 - NEVER use `git add .`, `git add -A`, or `git commit -a` - use explicit file paths
 
-**Spec file requirements**: Commit `./specs/` changes after each phase completion using `docs(spec-###):` prefix.
+**Spec file requirements**:
+- Commit `./specs/` changes after each phase completion using `docs(spec-###):` prefix
+- **MUST commit spec updates immediately after each SpecKit command** (`/speckit.specify`, `/speckit.clarify`, `/speckit.plan`, `/speckit.tasks`, etc.)
 
 **Rationale**: Enables bisect debugging, selective reversion, and clear research documentation.
 
@@ -553,12 +559,23 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - Session complete ONLY when repo is in better state than found
 
 ### Spec File Discipline
-After completing each phase:
-1. Update task statuses in `tasks.md`
-2. Update relevant artifacts (plan.md, data-model.md, contracts/)
-3. Stage spec directory files: `git add specs/###-feature-name/`
-4. Commit: `git commit -m "docs(spec-###): complete Phase X - <description>"`
-5. Continue to next phase without pausing
+
+**CRITICAL**: MUST commit spec updates immediately after each SpecKit workflow command.
+
+**SpecKit commands requiring immediate commit**:
+- `/speckit.specify` → Commit: `docs(spec-###): initialize specification`
+- `/speckit.clarify` → Commit: `docs(spec-###): clarify requirements`
+- `/speckit.plan` → Commit: `docs(spec-###): complete implementation plan`
+- `/speckit.tasks` → Commit: `docs(spec-###): generate task list`
+- `/speckit.implement` (per phase) → Commit: `docs(spec-###): complete Phase X`
+
+**Commit workflow after each SpecKit command**:
+1. Stage spec directory files: `git add specs/###-feature-name/`
+2. Stage specs/README.md if status changed: `git add specs/README.md`
+3. Commit with appropriate message: `git commit -m "docs(spec-###): <action>"`
+4. Continue to next command or phase
+
+**Rationale**: Immediate commits after each SpecKit command ensure work is preserved, enable rollback to specific workflow stages, and provide clear audit trail of specification evolution.
 
 ### Spec Index Maintenance
 After completing spec or status change:
@@ -596,7 +613,7 @@ Every PR MUST verify alignment with all 20 core principles. Feature specs MUST d
 - MUST represent single logical change
 - MUST pass quality pipeline before pushing
 - NEVER use `git add .`, `git add -A`, or `git commit -a`
-- Spec file changes committed after each phase
+- Spec file changes committed after each SpecKit command and phase
 
 ### Repository Integrity Gates
 - MUST leave repository in fully working state
