@@ -17,7 +17,6 @@ import {
   type PublicationVersion,
   RelationType as RT,
 } from '@bibgraph/types';
-
 import {
   extractRelationships,
   extractEntityLabel,

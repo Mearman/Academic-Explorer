@@ -9,11 +9,10 @@
  * @module lib/graph-index/use-persistent-graph
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { GraphNode, GraphEdge, GraphStatistics } from '@bibgraph/types';
-import type { GraphNodeRecord, GraphEdgeRecord } from '@bibgraph/types';
-import { logger } from '@bibgraph/utils';
 import { getPersistentGraph, PersistentGraph } from '@bibgraph/client';
+import type { GraphNode, GraphEdge, GraphStatistics , GraphNodeRecord, GraphEdgeRecord } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const LOG_PREFIX = 'use-persistent-graph';
 

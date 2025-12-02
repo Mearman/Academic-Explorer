@@ -6,8 +6,6 @@
  * wraps this with in-memory caching for fast traversal.
  */
 
-import { logger } from '@bibgraph/utils';
-
 import {
   type GraphNodeRecord,
   type GraphEdgeRecord,
@@ -17,6 +15,8 @@ import {
   type RelationType,
   type EdgePropertyFilter,
 } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
+
 
 import {
   generateEdgeId,

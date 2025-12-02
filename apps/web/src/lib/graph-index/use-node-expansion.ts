@@ -9,10 +9,10 @@
  * @module lib/graph-index/use-node-expansion
  */
 
-import { useState, useCallback, useMemo } from 'react';
 import type { NodeExpansionResult } from '@bibgraph/client';
 import { getPersistentGraph, expandNode as expandNodeFromGraph } from '@bibgraph/client';
 import { logger } from '@bibgraph/utils';
+import { useState, useCallback, useMemo } from 'react';
 
 const LOG_PREFIX = 'use-node-expansion';
 

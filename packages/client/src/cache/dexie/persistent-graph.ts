@@ -8,8 +8,6 @@
  * @module cache/dexie/persistent-graph
  */
 
-import { logger } from '@bibgraph/utils';
-
 import {
   type GraphNodeRecord,
   type GraphEdgeRecord,
@@ -24,9 +22,11 @@ import {
   type GraphStatistics,
   type EntityType,
 } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
 
-import { getGraphIndexTier, type GraphIndexTier } from './graph-index-tier';
+
 import { generateEdgeId } from './graph-index-db';
+import { getGraphIndexTier, type GraphIndexTier } from './graph-index-tier';
 
 const LOG_PREFIX = 'persistent-graph';
 

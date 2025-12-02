@@ -13,8 +13,8 @@
  * @module cache/dexie/graph-expansion
  */
 
-import { logger } from '@bibgraph/utils';
 import type { EntityType } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
 
 import {
   getAuthorById,
@@ -27,6 +27,7 @@ import {
   getTopicById,
   getKeywordById,
 } from '../../helpers';
+
 import { extractAndIndexRelationships } from './graph-extraction';
 import type { PersistentGraph } from './persistent-graph';
 

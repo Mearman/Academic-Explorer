@@ -3,8 +3,6 @@
  * Provides persistent browser storage for graph nodes and edges
  */
 
-import Dexie from 'dexie';
-
 import {
   GRAPH_INDEX_DB_NAME,
   GRAPH_INDEX_DB_VERSION,
@@ -13,6 +11,8 @@ import {
   type GraphNodeRecord,
   type GraphEdgeRecord,
 } from '@bibgraph/types';
+import Dexie from 'dexie';
+
 
 /**
  * Dexie database class for graph index storage

@@ -12,12 +12,12 @@
  */
 
 import { getPersistentGraph } from '@bibgraph/client';
+import type { GraphEdgeRecord, GraphNodeRecord } from '@bibgraph/types';
 import type {
   GraphDataSource,
   GraphSourceEntity,
   GraphSourceRelationship,
 } from '@bibgraph/utils';
-import type { GraphEdgeRecord, GraphNodeRecord } from '@bibgraph/types';
 
 const SOURCE_ID = 'graph:persistent';
 
