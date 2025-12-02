@@ -38,6 +38,7 @@ import {
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import React, { useMemo, useCallback, useRef } from 'react';
 
+import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
@@ -87,6 +88,12 @@ function EntityGraphPage() {
     handleNodeClick,
     handleBackgroundClick,
     clearHighlights,
+    highlightNodes,
+    highlightPath,
+    setCommunitiesResult,
+    selectCommunity,
+    setPathSource,
+    setPathTarget,
   } = useGraphVisualization();
 
   // Graph methods ref for external control (zoomToFit, etc.)
@@ -345,6 +352,25 @@ function EntityGraphPage() {
             </Text>
           </Alert>
         )}
+
+        {/* Graph Algorithms */}
+        <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
+          <Stack gap="md">
+            <Title order={4}>Graph Algorithms</Title>
+            <AlgorithmTabs
+              nodes={nodes}
+              edges={edges}
+              onHighlightNodes={highlightNodes}
+              onHighlightPath={highlightPath}
+              onSelectCommunity={selectCommunity}
+              onCommunitiesDetected={setCommunitiesResult}
+              pathSource={pathSource}
+              pathTarget={pathTarget}
+              onPathSourceChange={setPathSource}
+              onPathTargetChange={setPathTarget}
+            />
+          </Stack>
+        </Card>
       </Stack>
     </Container>
   );
