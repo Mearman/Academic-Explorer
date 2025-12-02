@@ -13,5 +13,6 @@ export * from "./relationships";
 export * from "./repositories";
 export * from "./roles";
 export * from "./topics";
+export * from "./traversal-types";
 export * from "./entities/index";
 export * from "./errors/index";

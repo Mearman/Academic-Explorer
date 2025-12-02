@@ -4,6 +4,7 @@
  */
 
 import type { EntityType } from "./entities"
+import type { AuthorPosition } from "./graph-index-types"
 import type { RelationType } from "./relationships"
 
 export interface Position {
@@ -57,6 +58,16 @@ export interface GraphEdge {
 	label?: string
 	weight?: number
 	metadata?: Record<string, unknown> // Relationship-specific data from OpenAlex
+
+	// Indexed edge properties (promoted from GraphEdgeRecord for weighted traversal)
+	/** Topic relevance score (0-1) - for TOPIC edges */
+	score?: number
+	/** Author position in authorship list - for AUTHORSHIP edges */
+	authorPosition?: AuthorPosition
+	/** Whether this is the corresponding author - for AUTHORSHIP edges */
+	isCorresponding?: boolean
+	/** Whether the publication is open access - for PUBLICATION edges */
+	isOpenAccess?: boolean
 }
 
 export interface GraphLayout {
