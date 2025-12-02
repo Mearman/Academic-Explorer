@@ -16,8 +16,8 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconExternalLink, IconTrash } from "@tabler/icons-react";
-import { useNavigate } from "@tanstack/react-router";
+import { IconTrash } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
 
 import { useEntityDisplayName } from "@/hooks/use-entity-display-name";
 
@@ -30,8 +30,6 @@ interface BookmarkCardProps {
 }
 
 export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps) {
-  const navigate = useNavigate();
-
   // Check if this is a special ID (search or list)
   const isSpecialId = bookmark.entityId.startsWith("search-") || bookmark.entityId.startsWith("list-");
 
@@ -63,29 +61,28 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
     title = `${bookmark.entityType}: ${bookmark.entityId}`;
   }
 
-  const handleNavigate = () => {
-    let url = "";
-
-    // Try to extract URL from notes
+  // Compute link URL - for special IDs, try to extract from notes; otherwise use entity path
+  const getLinkUrl = (): string => {
+    // Try to extract URL from notes first
     const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
     if (urlMatch) {
-      url = urlMatch[1];
-    } else if (bookmark.entityId.startsWith("search-") || bookmark.entityId.startsWith("list-")) {
-      const urlFromNotes = bookmark.notes?.match(/URL: ([^\n]+)/);
-      url = urlFromNotes?.[1] || "";
-    } else {
-      url = `/${bookmark.entityType}/${bookmark.entityId}`;
+      const url = urlMatch[1];
+      // Convert OpenAlex API URLs to internal paths
+      if (url.startsWith("https://api.openalex.org")) {
+        return url.replace("https://api.openalex.org", "");
+      }
+      // Return internal paths as-is
+      if (url.startsWith("/")) {
+        return url;
+      }
     }
+    // Default to entity path
+    return `/${String(bookmark.entityType)}/${String(bookmark.entityId)}`;
+  };
 
-    if (url.startsWith("/")) {
-      navigate({ to: url });
-    } else if (url.startsWith("https://api.openalex.org")) {
-      const internalPath = url.replace("https://api.openalex.org", "");
-      navigate({ to: internalPath });
-    } else if (url) {
-      window.location.href = url;
-    }
+  const linkUrl = getLinkUrl();
 
+  const handleClick = () => {
     if (onClose) {
       onClose();
     }
@@ -123,11 +120,13 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
 
   return (
     <Card
-      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      component={Link}
+      to={linkUrl}
+      style={{ border: "1px solid var(--mantine-color-gray-3)", textDecoration: "none" }}
       padding="xs"
       shadow="none"
       className={styles.bookmarkCard}
-      onClick={handleNavigate}
+      onClick={handleClick}
     >
       <Group justify="space-between" align="flex-start" gap="xs">
         <Stack gap="xs" style={{ flex: 1 }}>
@@ -151,37 +150,23 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
             {new Date(bookmark.addedAt).toLocaleDateString()}
           </Text>
         </Stack>
-        <Group gap="xs">
-          <Tooltip label="Open bookmark">
+        {bookmark.id && (
+          <Tooltip label="Delete bookmark">
             <ActionIcon
               size="sm"
               variant="subtle"
+              color="red"
               className={styles.actionButton}
               onClick={(e) => {
                 e.stopPropagation();
-                handleNavigate();
+                e.preventDefault();
+                handleDelete();
               }}
             >
-              <IconExternalLink size={12} />
+              <IconTrash size={12} />
             </ActionIcon>
           </Tooltip>
-          {bookmark.id && (
-            <Tooltip label="Delete bookmark">
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="red"
-                className={styles.actionButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete();
-                }}
-              >
-                <IconTrash size={12} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
+        )}
       </Group>
     </Card>
   );

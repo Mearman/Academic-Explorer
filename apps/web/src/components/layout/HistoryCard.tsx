@@ -15,8 +15,8 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconExternalLink, IconTrash } from "@tabler/icons-react";
-import { useNavigate } from "@tanstack/react-router";
+import { IconTrash } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
 
 import { useEntityDisplayName } from "@/hooks/use-entity-display-name";
 
@@ -29,8 +29,6 @@ interface HistoryCardProps {
 }
 
 export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
-  const navigate = useNavigate();
-
   // Check if this is a special ID (search or list)
   const isSpecialId = entry.entityId.startsWith("search-") || entry.entityId.startsWith("list-");
 
@@ -62,26 +60,28 @@ export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
     title = `${entry.entityType}: ${entry.entityId}`;
   }
 
-  const handleNavigate = () => {
-    let url = "";
-
-    // Try to extract URL from notes
+  // Compute link URL - for special IDs, try to extract from notes; otherwise use entity path
+  const getLinkUrl = (): string => {
+    // Try to extract URL from notes first
     const urlMatch = entry.notes?.match(/URL: ([^\n]+)/);
     if (urlMatch) {
-      url = urlMatch[1];
-    } else if (entry.entityId.startsWith("search-") || entry.entityId.startsWith("list-")) {
-      const urlFromNotes = entry.notes?.match(/URL: ([^\n]+)/);
-      url = urlFromNotes?.[1] || "";
-    } else {
-      url = `/${entry.entityType}/${entry.entityId}`;
+      const url = urlMatch[1];
+      // Convert OpenAlex API URLs to internal paths
+      if (url.startsWith("https://api.openalex.org")) {
+        return url.replace("https://api.openalex.org", "");
+      }
+      // Return internal paths as-is
+      if (url.startsWith("/")) {
+        return url;
+      }
     }
+    // Default to entity path
+    return `/${String(entry.entityType)}/${String(entry.entityId)}`;
+  };
 
-    if (url.startsWith("/")) {
-      navigate({ to: url });
-    } else if (url) {
-      window.location.href = url;
-    }
+  const linkUrl = getLinkUrl();
 
+  const handleClick = () => {
     if (onClose) {
       onClose();
     }
@@ -118,11 +118,13 @@ export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
 
   return (
     <Card
-      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      component={Link}
+      to={linkUrl}
+      style={{ border: "1px solid var(--mantine-color-gray-3)", textDecoration: "none" }}
       padding="xs"
       shadow="none"
       className={styles.historyCard}
-      onClick={handleNavigate}
+      onClick={handleClick}
     >
       <Group justify="space-between" align="flex-start" gap="xs">
         <Stack gap="xs" style={{ flex: 1 }}>
@@ -143,39 +145,24 @@ export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
             {formatDate(new Date(entry.addedAt))}
           </Text>
         </Stack>
-        <Group gap="xs">
-          <Tooltip label="Navigate to this entry">
+        {entry.id && (
+          <Tooltip label="Delete history entry">
             <ActionIcon
               size="sm"
               variant="subtle"
-              className={styles.navigationButton}
-              aria-label={`Navigate to ${title}`}
+              color="red"
+              className={styles.actionButton}
+              aria-label={`Delete ${title} from history`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleNavigate();
+                e.preventDefault();
+                handleDelete();
               }}
             >
-              <IconExternalLink size={12} />
+              <IconTrash size={12} />
             </ActionIcon>
           </Tooltip>
-          {entry.id && (
-            <Tooltip label="Delete history entry">
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="red"
-                className={styles.actionButton}
-                aria-label={`Delete ${title} from history`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete();
-                }}
-              >
-                <IconTrash size={12} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
+        )}
       </Group>
     </Card>
   );
