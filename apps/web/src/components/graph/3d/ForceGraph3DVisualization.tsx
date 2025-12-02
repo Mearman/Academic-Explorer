@@ -28,6 +28,7 @@ import {
 } from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
 import { getEdgeStyle } from '../edge-styles';
+import { useCursorCenteredZoom } from './useCursorCenteredZoom';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
 const ENTITY_TYPE_COLORS: Record<EntityType, string> = HASH_BASED_ENTITY_COLORS;
@@ -118,6 +119,8 @@ export interface ForceGraph3DVisualizationProps {
   /** Callback when graph methods become available (for external control like zoomToFit) */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGraphReady?: (methods: any) => void;
+  /** Enable cursor-centered zoom (zoom toward cursor position instead of orbit center) */
+  enableCursorCenteredZoom?: boolean;
 }
 
 /** Default seed for deterministic layouts */
@@ -188,6 +191,7 @@ export function ForceGraph3DVisualization({
   enableAdaptiveLOD = false,
   onPerformanceDrop,
   onGraphReady,
+  enableCursorCenteredZoom = true,
 }: ForceGraph3DVisualizationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Use any for the ref type to avoid complex generic type issues with react-force-graph-3d
@@ -248,6 +252,41 @@ export function ForceGraph3DVisualization({
 
   // Track camera position for LOD calculations
   const cameraPositionRef = useRef({ x: 0, y: 0, z: 500 });
+
+  // Accessor functions for cursor-centered zoom
+  const getCamera = useCallback(() => {
+    return graphRef.current?.camera?.() ?? null;
+  }, []);
+
+  const getControls = useCallback(() => {
+    return graphRef.current?.controls?.() ?? null;
+  }, []);
+
+  const getScene = useCallback(() => {
+    return graphRef.current?.scene?.() ?? null;
+  }, []);
+
+  // Cursor-centered zoom hook
+  const { isZooming } = useCursorCenteredZoom({
+    containerRef,
+    getCamera,
+    getControls,
+    getScene,
+    enabled: enableCursorCenteredZoom,
+    onZoomChange: (distance, position, target) => {
+      // Update camera position ref for LOD calculations
+      cameraPositionRef.current = { x: position.x, y: position.y, z: position.z };
+
+      // Integrate with camera persistence
+      if (enableCameraPersistence) {
+        updateCameraState({
+          position: { x: position.x, y: position.y, z: position.z },
+          lookAt: { x: target.x, y: target.y, z: target.z },
+          zoom: distance,
+        });
+      }
+    },
+  });
 
   // Check WebGL availability on mount
   useEffect(() => {
