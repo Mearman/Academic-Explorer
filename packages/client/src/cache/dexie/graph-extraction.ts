@@ -23,7 +23,9 @@ import {
   normalizeOpenAlexId,
 } from '@bibgraph/utils';
 
+import { generateCacheKey, getEntityCacheDB } from './entity-cache-db';
 import { type PersistentGraph } from './persistent-graph';
+import type { StaticEntityType } from '../../internal/static-data-utils';
 
 // ============================================================================
 // Constants
@@ -218,6 +220,88 @@ export function extractAwardId(
 }
 
 // ============================================================================
+// Cache Label Lookup
+// ============================================================================
+
+/**
+ * Entity types that are cached in the entity cache
+ */
+const STATIC_ENTITY_TYPES = new Set<string>([
+  'authors',
+  'works',
+  'sources',
+  'institutions',
+  'topics',
+  'publishers',
+  'funders',
+  'concepts',
+]);
+
+/**
+ * Check if an entity type is cacheable
+ */
+function isStaticEntityType(entityType: string): entityType is StaticEntityType {
+  return STATIC_ENTITY_TYPES.has(entityType);
+}
+
+/**
+ * Look up entity labels from the IndexedDB entity cache
+ * Returns a map of entityId -> display_name for entities found in cache
+ */
+async function lookupLabelsFromCache(
+  entities: Array<{ id: string; entityType: EntityType }>
+): Promise<Map<string, string>> {
+  const labelMap = new Map<string, string>();
+
+  const db = getEntityCacheDB();
+  if (!db) {
+    return labelMap;
+  }
+
+  try {
+    // Filter to only cacheable entity types and build lookup list
+    const lookups = entities
+      .filter((e) => isStaticEntityType(e.entityType))
+      .map((e) => ({
+        id: e.id,
+        cacheKey: generateCacheKey(e.entityType as StaticEntityType, e.id),
+      }));
+
+    if (lookups.length === 0) {
+      return labelMap;
+    }
+
+    // Query the cache for all entities in parallel
+    const records = await Promise.all(
+      lookups.map(async (lookup) => {
+        const record = await db.entities.get(lookup.cacheKey);
+        return { id: lookup.id, record };
+      })
+    );
+
+    // Extract display_name from cached entity data
+    for (const { id, record } of records) {
+      if (record?.data) {
+        try {
+          const entityData = JSON.parse(record.data) as Record<string, unknown>;
+          const displayName =
+            (entityData.display_name as string) ?? (entityData.title as string);
+          if (displayName) {
+            labelMap.set(id, displayName);
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    }
+  } catch {
+    // Ignore cache lookup errors - gracefully degrade to using IDs as labels
+  }
+
+  return labelMap;
+}
+
+// ============================================================================
 // Main Extraction Functions
 // ============================================================================
 
@@ -285,6 +369,21 @@ export async function extractAndIndexRelationships(
   // Extract relationships using shared extractor
   const relationships = extractRelationships(entityType, entityData);
 
+  // Identify new nodes that need to be created
+  const newNodeRels = relationships
+    .map((rel) => ({ ...rel, targetId: normalizeOpenAlexId(rel.targetId) }))
+    .filter((rel) => !graph.hasNode(rel.targetId));
+
+  // Look up labels from cache for entities missing targetLabel
+  const entitiesNeedingLabels = newNodeRels
+    .filter((rel) => !rel.targetLabel)
+    .map((rel) => ({ id: rel.targetId, entityType: rel.targetType }));
+
+  const cachedLabels =
+    entitiesNeedingLabels.length > 0
+      ? await lookupLabelsFromCache(entitiesNeedingLabels)
+      : new Map<string, string>();
+
   // Process each relationship with indexed edge properties
   const edgeInputs: GraphEdgeInput[] = [];
   const stubInputs: GraphNodeInput[] = [];
@@ -294,10 +393,12 @@ export async function extractAndIndexRelationships(
 
     // Create stub node for target if it doesn't exist
     if (!graph.hasNode(targetId)) {
+      // Priority: targetLabel from nested data > cached label > ID fallback
+      const label = rel.targetLabel ?? cachedLabels.get(targetId) ?? targetId;
       stubInputs.push({
         id: targetId,
         entityType: rel.targetType,
-        label: targetId, // Will be updated when entity is fetched
+        label,
         completeness: 'stub',
       });
       result.stubsCreated++;
