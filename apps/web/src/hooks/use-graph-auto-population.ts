@@ -16,7 +16,8 @@
 
 import { getWorks, getAuthors, getInstitutions, getSources } from '@bibgraph/client';
 import type { EntityType, GraphNode, GraphEdge } from '@bibgraph/types';
-import { RelationType } from '@bibgraph/types';
+import { RelationType, getEntityRelationshipQueries } from '@bibgraph/types';
+import type { RelationshipQueryConfig } from '@bibgraph/types';
 import {
   logger,
   getBackgroundTaskExecutor,
@@ -249,14 +250,14 @@ export function useGraphAutoPopulation({
   );
 
   /**
-   * Discover citation relationships between works in the graph
+   * Discover relationships between all nodes in the graph using the relationship registry
    * Uses background task execution to avoid blocking UI
    */
-  const discoverWorkCitations = useCallback(
-    async (workNodes: GraphNode[], existingEdges: GraphEdge[], signal?: AbortSignal): Promise<GraphEdge[]> => {
+  const discoverRelationships = useCallback(
+    async (allNodes: GraphNode[], existingEdges: GraphEdge[], signal?: AbortSignal): Promise<GraphEdge[]> => {
       const newEdges: GraphEdge[] = [];
 
-      if (workNodes.length < 2) {
+      if (allNodes.length < 2) {
         return newEdges;
       }
 
@@ -265,90 +266,206 @@ export function useGraphAutoPopulation({
         existingEdges.map((e) => `${normalizeId(e.source)}-${normalizeId(e.target)}-${e.type}`)
       );
 
-      // Get work IDs
-      const workIds = workNodes.map((n) => n.id);
-      const workIdSet = new Set(workIds.map(normalizeId));
+      // Create a map of all node IDs for quick existence checks
+      const allNodeIds = new Set(allNodes.map((n) => normalizeId(n.id)));
 
-      logger.debug(LOG_PREFIX, `Discovering citations between ${workNodes.length} works using ${executor.currentStrategy} strategy`);
-
-      // Create batches for processing
-      const batches: string[][] = [];
-      for (let i = 0; i < workIds.length; i += BATCH_SIZE) {
-        batches.push(workIds.slice(i, i + BATCH_SIZE));
+      // Group nodes by entity type
+      const nodesByType = new Map<EntityType, GraphNode[]>();
+      for (const node of allNodes) {
+        const existing = nodesByType.get(node.entityType) ?? [];
+        existing.push(node);
+        nodesByType.set(node.entityType, existing);
       }
 
-      // Process batches using background executor
-      const result = await executor.processBatch(
-        batches,
-        async (batch) => {
-          const citesFilter = batch.join('|');
-          const discoveredEdges: GraphEdge[] = [];
-
-          try {
-            // Find works in our graph that cite other works in our graph
-            const response = await getWorks({
-              filter: `cites:${citesFilter}`,
-              per_page: 100,
-              select: ['id', 'referenced_works'],
-            });
-
-            for (const work of response.results) {
-              const sourceId = normalizeId(work.id);
-
-              // Only process if source is in our graph
-              if (!workIdSet.has(sourceId)) continue;
-
-              // Check referenced_works for targets in our graph
-              const refs = (work as unknown as { referenced_works?: string[] }).referenced_works ?? [];
-              for (const refId of refs) {
-                const targetId = normalizeId(refId);
-
-                // Only create edge if target is in our graph
-                if (!workIdSet.has(targetId)) continue;
-
-                const edgeKey = `${sourceId}-${targetId}-${RelationType.REFERENCE}`;
-                const pairKey = `${sourceId}-${targetId}`;
-
-                // Skip if edge exists or pair already processed
-                if (existingEdgeKeys.has(edgeKey) || processedEdgePairsRef.current.has(pairKey)) {
-                  continue;
-                }
-
-                processedEdgePairsRef.current.add(pairKey);
-
-                discoveredEdges.push({
-                  id: edgeKey,
-                  source: sourceId,
-                  target: targetId,
-                  type: RelationType.REFERENCE,
-                  weight: 1,
-                });
-              }
-            }
-          } catch (err) {
-            logger.warn(LOG_PREFIX, 'Failed to discover work citations', { error: err });
-          }
-
-          return discoveredEdges;
-        },
-        {
-          signal,
-          chunkSize: PROCESSING_CHUNK_SIZE,
-        }
+      logger.debug(
+        LOG_PREFIX,
+        `Discovering relationships between ${allNodes.length} nodes across ${nodesByType.size} entity types using ${executor.currentStrategy} strategy`
       );
 
-      // Flatten results
-      if (result.success && result.data) {
-        for (const batchEdges of result.data) {
-          newEdges.push(...batchEdges);
+      // Process each entity type
+      for (const [entityType, nodes] of nodesByType) {
+        // Get relationship query configurations for this entity type
+        const queries = getEntityRelationshipQueries(entityType);
+
+        // Process inbound queries (results → batch nodes)
+        const inboundApiQueries = queries.inbound.filter((q) => q.source === 'api');
+        for (const query of inboundApiQueries) {
+          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for inbound ${query.type}`);
+          const discoveredEdges = await discoverRelationshipsForQuery(
+            nodes,
+            query,
+            allNodeIds,
+            existingEdgeKeys,
+            'inbound',
+            signal
+          );
+          newEdges.push(...discoveredEdges);
+        }
+
+        // Process outbound queries (batch nodes → results)
+        const outboundApiQueries = queries.outbound.filter((q) => q.source === 'api');
+        for (const query of outboundApiQueries) {
+          logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for outbound ${query.type}`);
+          const discoveredEdges = await discoverRelationshipsForQuery(
+            nodes,
+            query,
+            allNodeIds,
+            existingEdgeKeys,
+            'outbound',
+            signal
+          );
+          newEdges.push(...discoveredEdges);
         }
       }
 
-      logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} citation edges`);
+      logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} total edges across all entity types`);
       return newEdges;
     },
     [executor]
   );
+
+  /**
+   * Discover relationships for a specific query configuration
+   * Creates edges only when both endpoints exist in the graph
+   *
+   * @param direction - 'inbound' means results point TO batch nodes, 'outbound' means batch nodes point TO results
+   */
+  const discoverRelationshipsForQuery = async (
+    sourceNodes: GraphNode[],
+    query: RelationshipQueryConfig & { source: 'api' },
+    allNodeIds: Set<string>,
+    existingEdgeKeys: Set<string>,
+    direction: 'inbound' | 'outbound',
+    signal?: AbortSignal
+  ): Promise<GraphEdge[]> => {
+    const newEdges: GraphEdge[] = [];
+    const sourceIds = sourceNodes.map((n) => n.id);
+
+    // Create batches for processing
+    const batches: string[][] = [];
+    for (let i = 0; i < sourceIds.length; i += BATCH_SIZE) {
+      batches.push(sourceIds.slice(i, i + BATCH_SIZE));
+    }
+
+    // Process batches using background executor
+    const result = await executor.processBatch(
+      batches,
+      async (batch) => {
+        const discoveredEdges: GraphEdge[] = [];
+
+        try {
+          // Build filter string using the query's buildFilter function
+          const filterValue = batch.join('|');
+          const filter = query.buildFilter(filterValue);
+
+          // Execute query using appropriate API function based on target type
+          let response: { results: unknown[] };
+          switch (query.targetType) {
+            case 'works':
+              response = await getWorks({
+                filter,
+                per_page: 100,
+                select: query.select ?? ['id'],
+              });
+              break;
+            case 'authors':
+              response = await getAuthors({
+                filter,
+                per_page: 100,
+                select: query.select ?? ['id'],
+              });
+              break;
+            case 'institutions':
+              response = await getInstitutions({
+                filters: { id: filter },
+                per_page: 100,
+                select: query.select ?? ['id'],
+              });
+              break;
+            case 'sources':
+              response = await getSources({
+                filters: { id: filter },
+                per_page: 100,
+                select: query.select ?? ['id'],
+              });
+              break;
+            default:
+              logger.warn(LOG_PREFIX, `Unsupported target type ${query.targetType} for discovery, skipping`);
+              return discoveredEdges;
+          }
+
+          // Process results to create edges
+          for (const result of response.results) {
+            const entity = result as { id: string; [key: string]: unknown };
+            const entityId = normalizeId(entity.id);
+
+            // Only create edge if target entity is in our graph
+            if (!allNodeIds.has(entityId)) continue;
+
+            // Determine edge direction based on query type
+            // Inbound queries: result is source, batch nodes are targets
+            // Outbound queries: batch nodes are sources, result is target
+            for (const batchId of batch) {
+              const normalizedBatchId = normalizeId(batchId);
+
+              // Skip if batch node not in graph (shouldn't happen, but safety check)
+              if (!allNodeIds.has(normalizedBatchId)) continue;
+
+              // Determine source and target based on query direction
+              // Inbound: result entity → batch entity (result.id is source, batchId is target)
+              // Outbound: batch entity → result entity (batchId is source, result.id is target)
+              let sourceId: string, targetId: string;
+              if (direction === 'inbound') {
+                // Result entity points to batch entity
+                sourceId = entityId;
+                targetId = normalizedBatchId;
+              } else {
+                // Batch entity points to result entity
+                sourceId = normalizedBatchId;
+                targetId = entityId;
+              }
+
+              const edgeKey = `${sourceId}-${targetId}-${query.type}`;
+              const pairKey = `${sourceId}-${targetId}`;
+
+              // Skip if edge exists or pair already processed
+              if (existingEdgeKeys.has(edgeKey) || processedEdgePairsRef.current.has(pairKey)) {
+                continue;
+              }
+
+              processedEdgePairsRef.current.add(pairKey);
+
+              discoveredEdges.push({
+                id: edgeKey,
+                source: sourceId,
+                target: targetId,
+                type: query.type as RelationType,
+                weight: 1,
+              });
+            }
+          }
+        } catch (err) {
+          logger.warn(LOG_PREFIX, `Failed to discover ${query.type} relationships`, { error: err });
+        }
+
+        return discoveredEdges;
+      },
+      {
+        signal,
+        chunkSize: PROCESSING_CHUNK_SIZE,
+      }
+    );
+
+    // Flatten results
+    if (result.success && result.data) {
+      for (const batchEdges of result.data) {
+        newEdges.push(...batchEdges);
+      }
+    }
+
+    logger.debug(LOG_PREFIX, `Discovered ${newEdges.length} ${query.type} edges`);
+    return newEdges;
+  };
 
   /**
    * Main population function
@@ -389,8 +506,7 @@ export function useGraphAutoPopulation({
       }
 
       // 2. Discover relationships between existing nodes (only primary source nodes)
-      const workNodes = primaryNodes.filter((n) => n.entityType === 'works');
-      const discoveredEdges = await discoverWorkCitations(workNodes, edges, signal);
+      const discoveredEdges = await discoverRelationships(primaryNodes, edges, signal);
 
       if (signal.aborted) return;
 
@@ -409,7 +525,7 @@ export function useGraphAutoPopulation({
     } finally {
       setIsPopulating(false);
     }
-  }, [enabled, nodes, edges, resolveLabels, discoverWorkCitations, onLabelsResolved, onEdgesDiscovered]);
+  }, [enabled, nodes, edges, resolveLabels, discoverRelationships, onLabelsResolved, onEdgesDiscovered]);
 
   // Debounced effect to trigger population when nodes change
   useEffect(() => {
