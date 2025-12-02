@@ -6,15 +6,16 @@
 
 Enhance BibGraph catalogue feature to support advanced literature review workflows including PRISMA systematic reviews, semantic analysis, citation export formats (BibTeX/RIS), custom entity support for non-OpenAlex works, and live file system synchronization using browser File System Access API.
 
-**Total Tasks**: 127
-**MVP Scope (User Stories 1-2)**: 58 tasks
-**Parallel Development Opportunities**: 72 tasks (56.7%)
-**Estimated Implementation Timeline**: 8-12 weeks
+**Total Tasks**: 150
+**MVP Scope (User Stories 1-2, 6)**: 68 tasks (Phases 1-5)
+**Parallel Development Opportunities**: 85 tasks (56.7%)
+**Estimated Implementation Timeline**: 10-14 weeks
 
 ## User Story Priorities
 
 - **P1**: User Story 1 - Citation Export and Reference Management
 - **P1**: User Story 2 - Systematic Review Management
+- **P1**: User Story 6 - Sample Bibliographies from Existing Review Papers
 - **P2**: User Story 3 - Thematic and Semantic Analysis
 - **P2**: User Story 4 - Custom Entity Management
 - **P2**: User Story 5 - Live File System Synchronization
@@ -91,125 +92,149 @@ Enhance BibGraph catalogue feature to support advanced literature review workflo
 - [ ] T049 Create use-literature-review hook in apps/web/src/hooks/use-literature-review.ts
 - [ ] T050 Implement PRISMA flow diagram export functionality
 
-## Phase 5: Thematic and Semantic Analysis (User Story 3 - P2)
+## Phase 5: Sample Bibliographies (User Story 6 - P1)
+
+**Goal**: Implement sample bibliography loading from public folder with full PRISMA workflow support
+**Independent Test**: Load sample bibliography, verify all works display, check PRISMA diagram accuracy, test exports
+
+- [ ] T051 Create sample bibliography types in packages/types/src/sample-bibliography.ts
+- [ ] T052 [P] Implement sample bibliography provider following static data cache pattern in packages/client/src/internal/sample-bibliography-provider.ts
+- [ ] T053 Create public folder structure for sample bibliographies at apps/web/public/data/sample-bibliographies/
+- [ ] T054 [P] Implement sample bibliography index loader service in apps/web/src/services/sample-bibliography.service.ts
+- [ ] T055 Create SampleBibliographyBrowser component in apps/web/src/components/catalogue/SampleBibliographyBrowser.tsx
+- [ ] T056 [P] Implement sample bibliography detail view with source attribution
+- [ ] T057 Create sample bibliography loading into catalogue state
+- [ ] T058 [P] Integrate sample bibliography works with PRISMA flow diagram
+- [ ] T059 Add sample bibliography export functionality (BibTeX/RIS/CSV)
+- [ ] T060 [P] Create use-sample-bibliographies hook in apps/web/src/hooks/use-sample-bibliographies.ts
+- [ ] T061 Implement sample bibliography filtering (by topic, review type, study count)
+- [ ] T062 Add sample bibliography route in apps/web/src/routes/sample-bibliographies.tsx
+- [ ] T063 [P] Create initial sample bibliographies (minimum 5 covering different review types)
+- [ ] T064 Implement sample bibliography contribution workflow (validation, metadata requirements)
+- [ ] T065 Add sample bibliography section to literature review onboarding flow
+- [ ] T066 [P] Write unit tests for sample bibliography loading and transformation
+- [ ] T067 Write E2E tests for sample bibliography browser workflow
+- [ ] T068 Add sample bibliography data validation using Zod schemas
+
+## Phase 6: Thematic and Semantic Analysis (User Story 3 - P2)
 
 **Goal**: Implement topic modeling and thematic analysis with manual editing capabilities
 **Independent Test**: Upload abstracts, verify topic modeling generates meaningful themes
 
-- [ ] T051 Create topic modeling worker in apps/web/src/workers/topic-modeling.worker.ts
-- [ ] T052 [P] Implement transformers.js integration for embeddings generation
-- [ ] T053 Create UMAP dimensionality reduction for topic visualization
-- [ ] T054 Implement HDBSCAN clustering for topic discovery
-- [ ] T055 [P] Create topic extraction logic in packages/utils/src/topic-modeling/topic-extractor.ts
-- [ ] T056 Create theme management system in packages/utils/src/topic-modeling/theme-manager.ts
-- [ ] T057 Implement topic modeling service in apps/web/src/services/topic-modeling.service.ts
-- [ ] T058 [P] Create semantic-prisma integration component in apps/web/src/components/catalogue/SemanticPrismaIntegration.tsx
-- [ ] T059 Implement manual theme editing interface
-- [ ] T060 Create topic visualization with force-directed graph
-- [ ] T061 Implement export to QDA software formats (NVivo, Atlas.ti)
-- [ ] T062 Add topic modeling to literature review workflow
-- [ ] T063 Create use-topic-modeling hook in apps/web/src/hooks/use-topic-modeling.ts
-- [ ] T064 Implement PRISMA stage-specific topic analysis
-- [ ] T065 Add performance optimization for large abstract collections
+- [ ] T069 Create topic modeling worker in apps/web/src/workers/topic-modeling.worker.ts
+- [ ] T070 [P] Implement transformers.js integration for embeddings generation
+- [ ] T071 Create UMAP dimensionality reduction for topic visualization
+- [ ] T072 Implement HDBSCAN clustering for topic discovery
+- [ ] T073 [P] Create topic extraction logic in packages/utils/src/topic-modeling/topic-extractor.ts
+- [ ] T074 Create theme management system in packages/utils/src/topic-modeling/theme-manager.ts
+- [ ] T075 Implement topic modeling service in apps/web/src/services/topic-modeling.service.ts
+- [ ] T076 [P] Create semantic-prisma integration component in apps/web/src/components/catalogue/SemanticPrismaIntegration.tsx
+- [ ] T077 Implement manual theme editing interface
+- [ ] T078 Create topic visualization with force-directed graph
+- [ ] T079 Implement export to QDA software formats (NVivo, Atlas.ti)
+- [ ] T080 Add topic modeling to literature review workflow
+- [ ] T081 Create use-topic-modeling hook in apps/web/src/hooks/use-topic-modeling.ts
+- [ ] T082 Implement PRISMA stage-specific topic analysis
+- [ ] T083 Add performance optimization for large abstract collections
 
-## Phase 6: Custom Entity Management (User Story 4 - P2)
+## Phase 7: Custom Entity Management (User Story 4 - P2)
 
 **Goal**: Support adding works not in OpenAlex with metadata extraction and file integration
 **Independent Test**: Create custom entities, upload PDFs, verify seamless integration
 
-- [ ] T066 Create custom entity types extending standard catalogue entities
-- [ ] T067 [P] Implement custom entity manager in packages/utils/src/storage/custom-entity.manager.ts
-- [ ] T068 Create PDF metadata extraction service in apps/web/src/services/pdf-metadata-extractor.ts
-- [ ] T069 Implement file metadata extractor for EPUB and DOCX formats
-- [ ] T070 [P] Create CustomEntityManager component in apps/web/src/components/catalogue/CustomEntityManager.tsx
-- [ ] T071 Implement manual entity creation interface
-- [ ] T072 Create file upload and metadata extraction workflow
-- [ ] T073 Implement duplicate detection between custom and OpenAlex entities
-- [ ] T074 Add DOI lookup functionality for metadata validation
-- [ ] T075 [P] Implement custom entity validation rules
-- [ ] T076 Create entity import/export functionality
-- [ ] T077 Add custom entities to existing catalogue search and filtering
-- [ ] T078 Implement custom entity integration with citation export
+- [ ] T084 Create custom entity types extending standard catalogue entities
+- [ ] T085 [P] Implement custom entity manager in packages/utils/src/storage/custom-entity.manager.ts
+- [ ] T086 Create PDF metadata extraction service in apps/web/src/services/pdf-metadata-extractor.ts
+- [ ] T087 Implement file metadata extractor for EPUB and DOCX formats
+- [ ] T088 [P] Create CustomEntityManager component in apps/web/src/components/catalogue/CustomEntityManager.tsx
+- [ ] T089 Implement manual entity creation interface
+- [ ] T090 Create file upload and metadata extraction workflow
+- [ ] T091 Implement duplicate detection between custom and OpenAlex entities
+- [ ] T092 Add DOI lookup functionality for metadata validation
+- [ ] T093 [P] Implement custom entity validation rules
+- [ ] T094 Create entity import/export functionality
+- [ ] T095 Add custom entities to existing catalogue search and filtering
+- [ ] T096 Implement custom entity integration with citation export
 
-## Phase 7: Live File System Synchronization (User Story 5 - P2)
+## Phase 8: Live File System Synchronization (User Story 5 - P2)
 
 **Goal**: Implement bidirectional sync with local file system using File System Access API
 **Independent Test**: Grant folder access, add files locally, verify sync to BibGraph and vice versa
 
-- [ ] T079 Check File System Access API availability and capabilities
-- [ ] T080 [P] Implement file system sync provider in packages/utils/src/storage/file-system-sync.provider.ts
-- [ ] T081 Create file system sync service in apps/web/src/services/file-system-sync.service.ts
-- [ ] T082 Implement file change detection and conflict resolution
-- [ ] T083 [P] Create file processor worker in apps/web/src/workers/file-processor.worker.ts
-- [ ] T084 Create FileSystemSync component in apps/web/src/components/catalogue/FileSystemSync.tsx
-- [ ] T085 Implement sync configuration interface with conflict strategies
-- [ ] T086 Create bidirectional sync workflow with progress tracking
-- [ ] T087 Implement conflict resolution UI with change previews
-- [ ] T088 Add file system sync to settings and configuration
-- [ ] T089 [P] Create progressive enhancement fallback for unsupported browsers
-- [ ] T090 Implement batch processing for large file collections
-- [ ] T091 Add sync status indicators and error handling
-- [ ] T092 Create use-file-system-sync hook in apps/web/src/hooks/use-file-system-sync.ts
+- [ ] T097 Check File System Access API availability and capabilities
+- [ ] T098 [P] Implement file system sync provider in packages/utils/src/storage/file-system-sync.provider.ts
+- [ ] T099 Create file system sync service in apps/web/src/services/file-system-sync.service.ts
+- [ ] T100 Implement file change detection and conflict resolution
+- [ ] T101 [P] Create file processor worker in apps/web/src/workers/file-processor.worker.ts
+- [ ] T102 Create FileSystemSync component in apps/web/src/components/catalogue/FileSystemSync.tsx
+- [ ] T103 Implement sync configuration interface with conflict strategies
+- [ ] T104 Create bidirectional sync workflow with progress tracking
+- [ ] T105 Implement conflict resolution UI with change previews
+- [ ] T106 Add file system sync to settings and configuration
+- [ ] T107 [P] Create progressive enhancement fallback for unsupported browsers
+- [ ] T108 Implement batch processing for large file collections
+- [ ] T109 Add sync status indicators and error handling
+- [ ] T110 Create use-file-system-sync hook in apps/web/src/hooks/use-file-system-sync.ts
 
-## Phase 8: Advanced Algorithms and Processing
+## Phase 9: Advanced Algorithms and Processing
 
 **Goal**: Implement sophisticated algorithms for semantic analysis and data processing
 
-- [ ] T093 Create semantic-prisma analysis algorithms in packages/algorithms/src/semantic-prisma/
-- [ ] T094 [P] Implement advanced topic modeling with BERTopic-style pipeline
-- [ ] T095 Create document similarity algorithms for duplicate detection
-- [ ] T096 Implement citation network analysis for literature reviews
-- [ ] T097 Create quality assessment algorithms for different study types
-- [ ] T098 [P] Implement effect size calculation algorithms
-- [ ] T099 Create PRISMA flow optimization algorithms
-- [ ] T100 Implement data compression for large literature reviews
-- [ ] T101 Create caching algorithms for frequently accessed data
+- [ ] T111 Create semantic-prisma analysis algorithms in packages/algorithms/src/semantic-prisma/
+- [ ] T112 [P] Implement advanced topic modeling with BERTopic-style pipeline
+- [ ] T113 Create document similarity algorithms for duplicate detection
+- [ ] T114 Implement citation network analysis for literature reviews
+- [ ] T115 Create quality assessment algorithms for different study types
+- [ ] T116 [P] Implement effect size calculation algorithms
+- [ ] T117 Create PRISMA flow optimization algorithms
+- [ ] T118 Implement data compression for large literature reviews
+- [ ] T119 Create caching algorithms for frequently accessed data
 
-## Phase 9: Integration and Polish
+## Phase 10: Integration and Polish
 
 **Goal**: Integrate all components, add polish, and ensure seamless user experience
 
-- [ ] T102 [P] Update main catalogue interface to include new literature review features
-- [ ] T103 Add keyboard shortcuts and accessibility improvements
-- [ ] T104 Implement comprehensive error handling and user feedback
-- [ ] T105 [P] Add performance monitoring and optimization
-- [ ] T106 Create comprehensive help documentation and tooltips
-- [ ] T107 Implement data migration and backup functionality
-- [ ] T108 Add dark mode support for new components
-- [ ] T109 [P] Implement responsive design for mobile and tablet devices
-- [ ] T110 Add internationalization support for new features
-- [ ] T111 Create advanced search and filtering capabilities
-- [ ] T112 Implement user preference management
-- [ ] T113 Add data visualization dashboards and analytics
+- [ ] T120 [P] Update main catalogue interface to include new literature review features
+- [ ] T121 Add keyboard shortcuts and accessibility improvements
+- [ ] T122 Implement error handling and user feedback
+- [ ] T123 [P] Add performance monitoring and optimization
+- [ ] T124 Create help documentation and tooltips
+- [ ] T125 Implement data migration and backup functionality
+- [ ] T126 Add dark mode support for new components
+- [ ] T127 [P] Implement responsive design for mobile and tablet devices
+- [ ] T128 Add internationalization support for new features
+- [ ] T129 Create advanced search and filtering capabilities
+- [ ] T130 Implement user preference management
+- [ ] T131 Add data visualization dashboards and analytics
 
-## Phase 10: Testing and Quality Assurance
+## Phase 11: Testing and Quality Assurance
 
-**Goal**: Ensure comprehensive test coverage and quality validation
+**Goal**: Ensure test coverage and quality validation
 
-- [ ] T114 Write unit tests for citation export functionality
-- [ ] T115 [P] Write unit tests for literature review management
-- [ ] T116 Write unit tests for topic modeling algorithms
-- [ ] T117 Write unit tests for custom entity management
-- [ ] T118 Write unit tests for file system synchronization
-- [ ] T119 [P] Write integration tests for end-to-end workflows
-- [ ] T120 Write performance tests for large datasets
-- [ ] T121 Write accessibility tests for new UI components
-- [ ] T122 Write security tests for file system access
-- [ ] T123 [P] Write E2E tests for all user stories
-- [ ] T124 Create test fixtures and sample data
-- [ ] T125 Write browser compatibility tests for File System Access API
+- [ ] T132 Write unit tests for citation export functionality
+- [ ] T133 [P] Write unit tests for literature review management
+- [ ] T134 Write unit tests for topic modeling algorithms
+- [ ] T135 Write unit tests for custom entity management
+- [ ] T136 Write unit tests for file system synchronization
+- [ ] T137 [P] Write integration tests for end-to-end workflows
+- [ ] T138 Write performance tests for large datasets
+- [ ] T139 Write accessibility tests for new UI components
+- [ ] T140 Write security tests for file system access
+- [ ] T141 [P] Write E2E tests for all user stories
+- [ ] T142 Create test fixtures and sample data
+- [ ] T143 Write browser compatibility tests for File System Access API
 
-## Phase 11: Documentation and Deployment
+## Phase 12: Documentation and Deployment
 
 **Goal**: Complete documentation and prepare for deployment
 
-- [ ] T126 Update API documentation with new endpoints and services
-- [ ] T127 [P] Create user documentation for all new features
-- [ ] T128 Update developer documentation with architecture changes
-- [ ] T129 Create migration guide for existing users
-- [ ] T130 [P] Update deployment configuration for new dependencies
-- [ ] T131 Create performance benchmarks and monitoring
-- [ ] T132 Update change log and release notes
+- [ ] T144 Update API documentation with new endpoints and services
+- [ ] T145 [P] Create user documentation for all new features
+- [ ] T146 Update developer documentation with architecture changes
+- [ ] T147 Create migration guide for existing users
+- [ ] T148 [P] Update deployment configuration for new dependencies
+- [ ] T149 Create performance benchmarks and monitoring
+- [ ] T150 Update change log and release notes
 
 ## Dependencies
 
@@ -218,46 +243,51 @@ Enhance BibGraph catalogue feature to support advanced literature review workflo
 - User Story 3 depends on User Story 2 (thematic analysis works on screened studies)
 - User Story 4 independent (can be developed in parallel with Stories 1-2)
 - User Story 5 independent (can be developed in parallel with Stories 1-3)
+- User Story 6 depends on User Story 2 (sample bibliographies demonstrate PRISMA workflows)
 
 ### Technical Dependencies
 - Web Workers must be implemented before heavy processing tasks
 - Storage provider extensions must be completed before entity operations
 - Type definitions must be created before implementation components
+- Sample bibliographies require PRISMA flow diagram implementation (Phase 4)
 
 ## Parallel Execution Opportunities
 
 ### Maximum Parallelism (Up to 10 concurrent teams)
 **Phase 1-2**: 12 parallel tasks available
-**Phase 3-4**: 23 parallel tasks available (MVP foundation)
-**Phase 5-7**: 25 parallel tasks available (advanced features)
-**Phase 8-11**: 12 parallel tasks available
+**Phase 3-5**: 32 parallel tasks available (MVP foundation + sample bibliographies)
+**Phase 6-8**: 27 parallel tasks available (advanced features)
+**Phase 9-12**: 14 parallel tasks available
 
 ### Recommended Parallel Development Strategy
 
 **Team 1 (Foundation)**: T001-T024 → T025-T036 → T037-T050 → Integration
-**Team 2 (Data Processing)**: T051-T065 → T093-T101 → Testing
-**Team 3 (File Management)**: T066-T092 → Integration
-**Team 4 (UI/UX)**: T102-T113 → T126-T132
-**Team 5 (Testing)**: T114-T125 (can run parallel with implementation)
+**Team 2 (Sample Bibliographies)**: T051-T068 → Integration with PRISMA
+**Team 3 (Semantic Analysis)**: T069-T083 → T111-T119 → Testing
+**Team 4 (File Management)**: T084-T110 → Integration
+**Team 5 (UI/UX)**: T120-T131 → T144-T150
+**Team 6 (Testing)**: T132-T143 (can run parallel with implementation)
 
 ## Implementation Strategy
 
 ### MVP First Approach
 1. **Week 1-4**: Complete User Stories 1-2 (Citation Export + Systematic Review)
-2. **Week 5-8**: Complete User Stories 3-5 (Advanced Features)
-3. **Week 9-10**: Integration, testing, and polish
-4. **Week 11-12**: Documentation, deployment preparation
+2. **Week 5-6**: Complete User Story 6 (Sample Bibliographies)
+3. **Week 7-10**: Complete User Stories 3-5 (Advanced Features)
+4. **Week 11-12**: Integration, testing, and polish
+5. **Week 13-14**: Documentation, deployment preparation
 
 ### Risk Mitigation
 - File System Access API compatibility: Implement progressive enhancement early
 - Performance with large datasets: Implement batch processing and streaming from start
 - Memory constraints: Use Web Workers for all heavy processing
 - Browser compatibility: Test across supported browsers throughout development
+- Sample bibliography data: Source bibliographies from open-access review papers with CC licenses
 
 ### Quality Gates
 - All new code must pass TypeScript strict validation
 - All components must meet WCAG 2.1 AA accessibility standards
-- All performance targets must be met (export <5s, PRISMA <1s, topic modeling <30s)
+- All performance targets must be met (export <5s, PRISMA <1s, topic modeling <30s, sample load <2s)
 - All user stories must pass independent testing criteria
 
 ## Success Criteria Validation
@@ -265,11 +295,12 @@ Enhance BibGraph catalogue feature to support advanced literature review workflo
 ### Performance Targets
 - T030: Implement streaming export for 1000+ citations in <5s
 - T041: Implement PRISMA operations with <1s response times
-- T054: Implement topic modeling for 1000 abstracts in <30s
-- T090: Implement file sync for 1000+ files with conflict detection
+- T057: Load sample bibliography within 2s including work metadata
+- T072: Implement topic modeling for 1000 abstracts in <30s
+- T108: Implement file sync for 1000+ files with conflict detection
 
 ### Feature Completeness
-- All 14 functional requirements implemented
-- All 8 measurable success criteria met
-- All 5 user stories independently testable
+- All 19 functional requirements implemented
+- All 10 measurable success criteria met
+- All 6 user stories independently testable
 - Constitution compliance maintained throughout

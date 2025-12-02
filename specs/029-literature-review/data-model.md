@@ -218,6 +218,113 @@ interface SyncConfiguration {
 }
 ```
 
+### SampleBibliography
+
+Pre-packaged bibliography from an existing review paper served via the public folder, following the pattern of the OpenAlex static data cache.
+
+```typescript
+interface SampleBibliography {
+  id: string // Unique identifier (e.g., "cochrane-ml-diagnosis-2024")
+
+  // Source Review Paper Attribution
+  sourceReview: {
+    title: string
+    authors: string[]
+    doi?: string
+    publicationYear: number
+    journal?: string
+    url?: string
+    abstract?: string
+  }
+
+  // Classification
+  reviewType: "systematic" | "meta-analysis" | "scoping" | "narrative" | "rapid" | "umbrella"
+  researchDomain: string // e.g., "Machine Learning in Medical Diagnosis"
+  topics: string[] // e.g., ["artificial intelligence", "healthcare", "diagnostics"]
+
+  // PRISMA Flow Data
+  prismaData: {
+    identified: number
+    screened: number
+    eligible: number
+    included: number
+    excludedAtScreening: number
+    excludedAtEligibility: number
+    exclusionReasons?: Record<string, number> // reason -> count
+  }
+
+  // Referenced Works
+  works: Array<{
+    // OpenAlex ID if available, otherwise custom identifier
+    id: string
+    openAlexId?: string // e.g., "W2741809807"
+
+    // Core metadata
+    title: string
+    authors: string[]
+    publicationYear: number
+    doi?: string
+    journal?: string
+    abstract?: string
+
+    // PRISMA stage assignment
+    prismaStage: "identified" | "screened" | "eligible" | "included" | "excluded"
+    screeningDecision?: {
+      included: boolean
+      reason?: string
+      criteria?: string[]
+    }
+
+    // Optional quality assessment
+    qualityScore?: number
+    biasRisk?: "low" | "medium" | "high"
+  }>
+
+  // File System Structure (mirrors OpenAlex static cache pattern)
+  // Stored at: apps/web/public/data/sample-bibliographies/{id}/
+  // - index.json (this metadata)
+  // - works/ (individual work JSON files)
+
+  // Metadata
+  createdAt: string // ISO date
+  updatedAt: string // ISO date
+  version: string // Semantic version for updates
+  contributor?: string // Who contributed this sample
+  license?: string // e.g., "CC-BY-4.0"
+}
+```
+
+**File System Structure:**
+```
+apps/web/public/data/sample-bibliographies/
+├── index.json                           # List of all available sample bibliographies
+├── cochrane-ml-diagnosis-2024/
+│   ├── index.json                       # SampleBibliography metadata
+│   └── works/
+│       ├── index.json                   # Work list index
+│       ├── W2741809807.json            # Individual work data (if from OpenAlex)
+│       └── custom-001.json             # Custom work data (if not in OpenAlex)
+├── prisma-climate-adaptation-2023/
+│   ├── index.json
+│   └── works/
+│       └── ...
+```
+
+**Master Index Structure:**
+```typescript
+interface SampleBibliographyIndex {
+  lastUpdated: string // ISO date
+  bibliographies: Array<{
+    id: string
+    title: string
+    reviewType: string
+    researchDomain: string
+    workCount: number
+    $ref: string // Relative path to bibliography folder
+  }>
+}
+```
+
 ### CitationExportConfiguration
 
 Configuration for citation export formats and custom fields.
