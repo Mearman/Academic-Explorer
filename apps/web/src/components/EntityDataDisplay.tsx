@@ -978,15 +978,21 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
     const items: FlatGridItem[] = [];
     let itemIdCounter = 0;
 
-    // Process each section
-    for (const section of sections) {
+    // Separate Relationships section to place it at the bottom
+    const relationshipsSection = sections.find(s => s.name === "Relationships");
+    const otherSections = sections.filter(s => s.name !== "Relationships");
+
+    // Helper function to process a section
+    const processSection = (section: SectionData, forceFullWidth: boolean = false) => {
       // Estimate section size
-      const sectionColSpan = Math.min(cols, Math.max(2, Math.ceil(section.fields.length / 2)));
+      const sectionColSpan = forceFullWidth
+        ? cols
+        : Math.min(cols, Math.max(2, Math.ceil(section.fields.length / 2)));
       const headerRows = 2; // Section header height
 
       // Find space for section (start with just header)
       const headerPos = occupancy.findFirstFit(sectionColSpan, headerRows);
-      if (!headerPos) continue;
+      if (!headerPos) return;
 
       const sectionBounds = {
         colStart: headerPos.colStart,
@@ -1097,6 +1103,16 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
         borderColor: "var(--mantine-color-gray-3)",
         depth: 0,
       });
+    };
+
+    // Process non-relationship sections first (they get bin-packed)
+    for (const section of otherSections) {
+      processSection(section, false);
+    }
+
+    // Process Relationships section last, spanning full width at the bottom
+    if (relationshipsSection) {
+      processSection(relationshipsSection, true);
     }
 
     // Calculate total rows
