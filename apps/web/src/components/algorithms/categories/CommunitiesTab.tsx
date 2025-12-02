@@ -13,7 +13,7 @@ import {
   IconFocusCentered,
   IconChartBar,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 import {
   CommunityDetectionItem,
@@ -34,13 +34,15 @@ export function CommunitiesTab({
   // Track communities for cluster quality metrics
   const [communities, setCommunities] = useState<CommunityResult[]>([]);
 
-  const handleCommunitiesDetected = (
-    detectedCommunities: CommunityResult[],
-    colors: Map<number, string>
-  ) => {
-    setCommunities(detectedCommunities);
-    onCommunitiesDetected?.(detectedCommunities, colors);
-  };
+  // Memoize callback to prevent infinite re-render loop
+  // This is passed to CommunityDetectionItem which has a useEffect depending on it
+  const handleCommunitiesDetected = useCallback(
+    (detectedCommunities: CommunityResult[], colors: Map<number, string>) => {
+      setCommunities(detectedCommunities);
+      onCommunitiesDetected?.(detectedCommunities, colors);
+    },
+    [onCommunitiesDetected]
+  );
 
   return (
     <Accordion multiple defaultValue={['community-detection']}>
