@@ -118,8 +118,42 @@ interface FlatGridItem {
 }
 
 // ============================================================================
-// 2D Occupancy Grid for Bin Packing
+// 2D Occupancy Grid for Bin Packing with Orientation Optimization
 // ============================================================================
+
+/** Item flexibility for orientation optimization */
+interface ItemFlexibility {
+  /** Preferred column span */
+  preferredCols: number;
+  /** Preferred row span */
+  preferredRows: number;
+  /** Whether this item can be rotated (swap cols/rows) */
+  canRotate: boolean;
+  /** Minimum columns needed for content legibility */
+  minCols: number;
+  /** Minimum rows needed for content */
+  minRows: number;
+  /** Maximum aspect ratio allowed (e.g., 4 means max 4:1 or 1:4) */
+  maxAspectRatio: number;
+}
+
+/** Scoring weights for placement optimization */
+const PLACEMENT_WEIGHTS = {
+  /** Bonus per adjacent filled cell (gap filling) */
+  ADJACENCY_BONUS: 15,
+  /** Penalty per row away from top */
+  ROW_PENALTY: 2,
+  /** Penalty per column away from left */
+  COLUMN_PENALTY: 1,
+  /** Bonus for filling a complete row slice */
+  ROW_COMPLETION_BONUS: 25,
+  /** Bonus for aligning with existing edges */
+  EDGE_ALIGNMENT_BONUS: 10,
+  /** Penalty for creating isolated single-cell gaps */
+  ISOLATED_GAP_PENALTY: 20,
+  /** Bonus for compact aspect ratios (closer to square) */
+  SQUARE_BONUS: 5,
+} as const;
 
 class OccupancyGrid {
   private grid: boolean[][] = [];
@@ -168,6 +202,307 @@ class OccupancyGrid {
     if (col < bounds.colStart || col + colSpan > bounds.colEnd) return false;
     if (row < bounds.rowStart) return false;
     return this.canPlace(col, row, colSpan, rowSpan);
+  }
+
+  /** Count occupied cells adjacent to a placement (measures gap-filling) */
+  countAdjacentOccupied(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
+    let count = 0;
+
+    // Check cells above
+    if (rowStart > 0) {
+      for (let c = colStart; c < colStart + colSpan; c++) {
+        if (this.isOccupied(c, rowStart - 1)) count++;
+      }
+    }
+
+    // Check cells below
+    for (let c = colStart; c < colStart + colSpan; c++) {
+      if (this.isOccupied(c, rowStart + rowSpan)) count++;
+    }
+
+    // Check cells to the left
+    if (colStart > 0) {
+      for (let r = rowStart; r < rowStart + rowSpan; r++) {
+        if (this.isOccupied(colStart - 1, r)) count++;
+      }
+    }
+
+    // Check cells to the right
+    if (colStart + colSpan < this.numCols) {
+      for (let r = rowStart; r < rowStart + rowSpan; r++) {
+        if (this.isOccupied(colStart + colSpan, r)) count++;
+      }
+    }
+
+    return count;
+  }
+
+  /** Check if placing here would create isolated single-cell gaps */
+  countIsolatedGapsCreated(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
+    let isolatedGaps = 0;
+
+    // Check cells around the placement for potential isolation
+    const checkPoints = [
+      // Corners around the placement
+      { col: colStart - 1, row: rowStart - 1 },
+      { col: colStart + colSpan, row: rowStart - 1 },
+      { col: colStart - 1, row: rowStart + rowSpan },
+      { col: colStart + colSpan, row: rowStart + rowSpan },
+    ];
+
+    for (const point of checkPoints) {
+      if (point.col < 0 || point.col >= this.numCols || point.row < 0) continue;
+      if (this.isOccupied(point.col, point.row)) continue;
+
+      // Count how many neighbors this empty cell would have after placement
+      let neighbors = 0;
+      const directions = [
+        { dc: -1, dr: 0 }, { dc: 1, dr: 0 },
+        { dc: 0, dr: -1 }, { dc: 0, dr: 1 },
+      ];
+
+      for (const dir of directions) {
+        const nc = point.col + dir.dc;
+        const nr = point.row + dir.dr;
+        if (nc < 0 || nc >= this.numCols || nr < 0) {
+          neighbors++; // Boundary counts as blocked
+          continue;
+        }
+
+        // Check if this neighbor would be occupied after placement
+        const inPlacement = nc >= colStart && nc < colStart + colSpan &&
+                          nr >= rowStart && nr < rowStart + rowSpan;
+        if (this.isOccupied(nc, nr) || inPlacement) {
+          neighbors++;
+        }
+      }
+
+      // If all 4 neighbors would be blocked, this creates an isolated gap
+      if (neighbors >= 4) {
+        isolatedGaps++;
+      }
+    }
+
+    return isolatedGaps;
+  }
+
+  /** Check if placement completes any row slices within bounds */
+  checkRowCompletion(
+    colStart: number,
+    rowStart: number,
+    colSpan: number,
+    rowSpan: number,
+    bounds: { colStart: number; colEnd: number; rowStart: number }
+  ): number {
+    let completedRows = 0;
+
+    for (let r = rowStart; r < rowStart + rowSpan; r++) {
+      let rowComplete = true;
+      for (let c = bounds.colStart; c < bounds.colEnd; c++) {
+        const inPlacement = c >= colStart && c < colStart + colSpan;
+        if (!inPlacement && !this.isOccupied(c, r)) {
+          rowComplete = false;
+          break;
+        }
+      }
+      if (rowComplete) completedRows++;
+    }
+
+    return completedRows;
+  }
+
+  /** Check for edge alignment with existing items */
+  countEdgeAlignments(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
+    let alignments = 0;
+
+    // Check if left edge aligns with something ending at our left
+    if (colStart > 0) {
+      for (let r = Math.max(0, rowStart - 1); r < rowStart + rowSpan + 1; r++) {
+        if (this.isOccupied(colStart - 1, r) && !this.isOccupied(colStart - 1, r - 1)) {
+          alignments++;
+          break;
+        }
+      }
+    }
+
+    // Check if right edge aligns
+    if (colStart + colSpan < this.numCols) {
+      for (let r = Math.max(0, rowStart - 1); r < rowStart + rowSpan + 1; r++) {
+        if (this.isOccupied(colStart + colSpan, r) && !this.isOccupied(colStart + colSpan, r - 1)) {
+          alignments++;
+          break;
+        }
+      }
+    }
+
+    // Check if top edge aligns
+    if (rowStart > 0) {
+      for (let c = Math.max(0, colStart - 1); c < colStart + colSpan + 1; c++) {
+        if (this.isOccupied(c, rowStart - 1) && (c === 0 || !this.isOccupied(c - 1, rowStart - 1))) {
+          alignments++;
+          break;
+        }
+      }
+    }
+
+    return alignments;
+  }
+
+  /** Score a placement candidate */
+  scorePlacement(
+    position: GridPosition,
+    bounds: { colStart: number; colEnd: number; rowStart: number }
+  ): number {
+    const { colStart, rowStart, colSpan, rowSpan } = position;
+    let score = 0;
+
+    // Adjacency bonus (gap filling)
+    const adjacentFilled = this.countAdjacentOccupied(colStart, rowStart, colSpan, rowSpan);
+    score += adjacentFilled * PLACEMENT_WEIGHTS.ADJACENCY_BONUS;
+
+    // Position penalty (prefer top-left for compactness)
+    score -= (rowStart - bounds.rowStart) * PLACEMENT_WEIGHTS.ROW_PENALTY;
+    score -= (colStart - bounds.colStart) * PLACEMENT_WEIGHTS.COLUMN_PENALTY;
+
+    // Row completion bonus
+    const completedRows = this.checkRowCompletion(colStart, rowStart, colSpan, rowSpan, bounds);
+    score += completedRows * PLACEMENT_WEIGHTS.ROW_COMPLETION_BONUS;
+
+    // Edge alignment bonus
+    const alignments = this.countEdgeAlignments(colStart, rowStart, colSpan, rowSpan);
+    score += alignments * PLACEMENT_WEIGHTS.EDGE_ALIGNMENT_BONUS;
+
+    // Isolated gap penalty
+    const isolatedGaps = this.countIsolatedGapsCreated(colStart, rowStart, colSpan, rowSpan);
+    score -= isolatedGaps * PLACEMENT_WEIGHTS.ISOLATED_GAP_PENALTY;
+
+    // Squareness bonus (prefer aspect ratios closer to 1:1)
+    const aspectRatio = Math.max(colSpan, rowSpan) / Math.min(colSpan, rowSpan);
+    const squarenessScore = Math.max(0, PLACEMENT_WEIGHTS.SQUARE_BONUS - (aspectRatio - 1) * 2);
+    score += squarenessScore;
+
+    return score;
+  }
+
+  /** Generate valid orientations for an item */
+  generateOrientations(flex: ItemFlexibility, maxCols: number): Array<{ cols: number; rows: number }> {
+    const orientations: Array<{ cols: number; rows: number }> = [];
+    const area = flex.preferredCols * flex.preferredRows;
+
+    // Original orientation (if it fits)
+    if (flex.preferredCols <= maxCols && flex.preferredCols >= flex.minCols) {
+      orientations.push({ cols: flex.preferredCols, rows: flex.preferredRows });
+    }
+
+    // Rotated orientation (if allowed and fits)
+    if (flex.canRotate && flex.preferredCols !== flex.preferredRows) {
+      const rotatedCols = flex.preferredRows;
+      const rotatedRows = flex.preferredCols;
+
+      if (rotatedCols <= maxCols &&
+          rotatedCols >= flex.minCols &&
+          rotatedRows >= flex.minRows) {
+        const aspectRatio = Math.max(rotatedCols, rotatedRows) / Math.min(rotatedCols, rotatedRows);
+        if (aspectRatio <= flex.maxAspectRatio) {
+          orientations.push({ cols: rotatedCols, rows: rotatedRows });
+        }
+      }
+    }
+
+    // If nothing fits yet, try to find a valid configuration by adjusting
+    if (orientations.length === 0 && flex.canRotate) {
+      // Try wider and shorter
+      for (let cols = maxCols; cols >= flex.minCols; cols--) {
+        const rows = Math.ceil(area / cols);
+        if (rows >= flex.minRows) {
+          const aspectRatio = Math.max(cols, rows) / Math.min(cols, rows);
+          if (aspectRatio <= flex.maxAspectRatio) {
+            orientations.push({ cols, rows });
+            break;
+          }
+        }
+      }
+
+      // Try taller and narrower
+      if (orientations.length === 0) {
+        for (let cols = flex.minCols; cols <= maxCols; cols++) {
+          const rows = Math.ceil(area / cols);
+          if (rows >= flex.minRows) {
+            const aspectRatio = Math.max(cols, rows) / Math.min(cols, rows);
+            if (aspectRatio <= flex.maxAspectRatio) {
+              orientations.push({ cols, rows });
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback: use minimum viable size
+    if (orientations.length === 0) {
+      orientations.push({
+        cols: Math.min(flex.minCols, maxCols),
+        rows: flex.minRows
+      });
+    }
+
+    return orientations;
+  }
+
+  /** Find the best placement for an item with orientation optimization */
+  findBestFitWithin(
+    flex: ItemFlexibility,
+    bounds: { colStart: number; colEnd: number; rowStart: number },
+    maxRow: number = 1000
+  ): GridPosition | null {
+    const availableCols = bounds.colEnd - bounds.colStart;
+    const orientations = this.generateOrientations(flex, availableCols);
+
+    let bestPosition: GridPosition | null = null;
+    let bestScore = -Infinity;
+
+    for (const orientation of orientations) {
+      const effectiveColSpan = Math.min(orientation.cols, availableCols);
+      const effectiveRowSpan = orientation.rows;
+
+      // Search for valid positions with this orientation
+      for (let row = bounds.rowStart; row < maxRow; row++) {
+        for (let col = bounds.colStart; col <= bounds.colEnd - effectiveColSpan; col++) {
+          if (this.canPlaceWithin(col, row, effectiveColSpan, effectiveRowSpan, bounds)) {
+            const position: GridPosition = {
+              colStart: col,
+              colSpan: effectiveColSpan,
+              rowStart: row,
+              rowSpan: effectiveRowSpan,
+            };
+
+            const score = this.scorePlacement(position, bounds);
+
+            if (score > bestScore) {
+              bestScore = score;
+              bestPosition = position;
+            }
+          }
+        }
+
+        // Early termination: if we found a good placement in earlier rows,
+        // don't search too many more rows (diminishing returns)
+        if (bestPosition !== null && row > bestPosition.rowStart + 5) {
+          break;
+        }
+      }
+    }
+
+    return bestPosition;
+  }
+
+  /** Find the best fit globally (not within bounds) */
+  findBestFit(flex: ItemFlexibility, maxRow: number = 1000): GridPosition | null {
+    return this.findBestFitWithin(
+      flex,
+      { colStart: 0, colEnd: this.numCols, rowStart: 0 },
+      maxRow
+    );
   }
 
   findFirstFit(colSpan: number, rowSpan: number, maxRow: number = 1000): GridPosition | null {
@@ -299,8 +634,8 @@ function renderPrimitiveValue(value: unknown): React.ReactNode {
 interface FieldData {
   key: string;
   value: unknown;
-  estimatedRows: number;
-  estimatedCols: number;
+  /** Flexibility info for orientation optimization */
+  flexibility: ItemFlexibility;
 }
 
 interface SectionData {
@@ -310,34 +645,154 @@ interface SectionData {
   color: string;
 }
 
-function estimateValueSize(value: unknown): { rows: number; cols: number } {
-  if (value === null || value === undefined) return { rows: 1, cols: 1 };
-  if (typeof value === "boolean") return { rows: 1, cols: 1 };
-  if (typeof value === "number") return { rows: 1, cols: 1 };
+/** Size estimation result with flexibility info */
+interface SizeEstimate {
+  /** Preferred row span */
+  rows: number;
+  /** Preferred column span */
+  cols: number;
+  /** Whether this item can be rotated */
+  canRotate: boolean;
+  /** Minimum columns needed */
+  minCols: number;
+  /** Minimum rows needed */
+  minRows: number;
+  /** Maximum acceptable aspect ratio */
+  maxAspectRatio: number;
+}
+
+function estimateValueSize(value: unknown): SizeEstimate {
+  // Default flexibility settings
+  const baseFlexibility = {
+    canRotate: true,
+    minCols: 1,
+    minRows: 2,
+    maxAspectRatio: 4,
+  };
+
+  if (value === null || value === undefined) {
+    return { rows: 2, cols: 1, ...baseFlexibility };
+  }
+
+  if (typeof value === "boolean") {
+    return { rows: 2, cols: 1, ...baseFlexibility };
+  }
+
+  if (typeof value === "number") {
+    return { rows: 2, cols: 1, ...baseFlexibility };
+  }
+
   if (typeof value === "string") {
-    const lineCount = Math.ceil(value.length / 40);
-    return { rows: Math.max(1, lineCount), cols: value.length > 80 ? 2 : 1 };
-  }
-  if (Array.isArray(value)) {
-    if (value.length === 0) return { rows: 1, cols: 1 };
-    if (value.every(item => typeof item !== "object" || item === null)) {
-      return { rows: Math.ceil(value.length / 4), cols: 2 };
+    const length = value.length;
+    // Short strings: compact
+    if (length <= 30) {
+      return { rows: 2, cols: 1, ...baseFlexibility };
     }
-    // Object array - each item needs multiple rows
-    const itemRows = value.reduce((sum, item) => {
-      const size = estimateValueSize(item);
-      return sum + size.rows + 1; // +1 for spacing
-    }, 0);
-    return { rows: Math.max(3, itemRows), cols: 2 };
+    // Medium strings: flexible
+    if (length <= 100) {
+      return {
+        rows: 3,
+        cols: 1,
+        canRotate: true,
+        minCols: 1,
+        minRows: 2,
+        maxAspectRatio: 4,
+      };
+    }
+    // Long strings: prefer wider for readability
+    const lineCount = Math.ceil(length / 50);
+    return {
+      rows: Math.min(8, Math.max(3, lineCount + 1)),
+      cols: 2,
+      canRotate: true,
+      minCols: 1,
+      minRows: 2,
+      maxAspectRatio: 5,
+    };
   }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return { rows: 2, cols: 1, ...baseFlexibility };
+    }
+
+    // Primitive arrays - flexible, can flow horizontally or vertically
+    if (value.every(item => typeof item !== "object" || item === null)) {
+      const itemCount = value.length;
+      if (itemCount <= 4) {
+        return {
+          rows: 2,
+          cols: 1,
+          canRotate: true,
+          minCols: 1,
+          minRows: 2,
+          maxAspectRatio: 3,
+        };
+      }
+      // More items: can be wider or taller
+      return {
+        rows: Math.ceil(itemCount / 3) + 1,
+        cols: 2,
+        canRotate: true,
+        minCols: 1,
+        minRows: 2,
+        maxAspectRatio: 4,
+      };
+    }
+
+    // Object arrays - generally prefer vertical layout but can flex
+    const itemCount = value.length;
+    const avgItemSize = value.reduce((sum, item) => {
+      const size = estimateValueSize(item);
+      return sum + size.rows;
+    }, 0) / itemCount;
+
+    return {
+      rows: Math.min(15, Math.max(4, Math.ceil(itemCount * (avgItemSize * 0.7)))),
+      cols: 2,
+      canRotate: true, // Can show fewer items per row but wider
+      minCols: 1,
+      minRows: 3,
+      maxAspectRatio: 5,
+    };
+  }
+
   if (typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>);
+    if (entries.length === 0) {
+      return { rows: 2, cols: 1, ...baseFlexibility };
+    }
+
+    // Small objects: compact and flexible
+    if (entries.length <= 3) {
+      const totalRows = entries.reduce((sum, [, val]) => {
+        return sum + Math.max(1, estimateValueSize(val).rows - 1);
+      }, 1);
+      return {
+        rows: Math.max(3, totalRows),
+        cols: 1,
+        canRotate: true,
+        minCols: 1,
+        minRows: 2,
+        maxAspectRatio: 4,
+      };
+    }
+
+    // Larger objects: may need more space
     const totalRows = entries.reduce((sum, [, val]) => {
-      return sum + estimateValueSize(val).rows;
-    }, 0);
-    return { rows: Math.max(2, totalRows), cols: 2 };
+      return sum + Math.max(1, estimateValueSize(val).rows - 1);
+    }, 1);
+    return {
+      rows: Math.min(12, Math.max(4, totalRows)),
+      cols: 2,
+      canRotate: true,
+      minCols: 1,
+      minRows: 3,
+      maxAspectRatio: 4,
+    };
   }
-  return { rows: 1, cols: 1 };
+
+  return { rows: 2, cols: 1, ...baseFlexibility };
 }
 
 function groupFields(data: Record<string, unknown>): SectionData[] {
@@ -390,8 +845,14 @@ function groupFields(data: Record<string, unknown>): SectionData[] {
         return {
           key,
           value,
-          estimatedRows: size.rows + 2, // +2 for label and padding
-          estimatedCols: size.cols,
+          flexibility: {
+            preferredCols: size.cols,
+            preferredRows: size.rows + 2, // +2 for label and padding
+            canRotate: size.canRotate,
+            minCols: size.minCols,
+            minRows: Math.max(size.minRows, 2), // Ensure minimum for label + content
+            maxAspectRatio: size.maxAspectRatio,
+          },
         };
       }),
     }));
@@ -554,7 +1015,7 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
       // Reserve header space
       occupancy.occupyArea(headerPos.colStart, headerPos.rowStart, headerPos.colSpan, headerRows);
 
-      // Layout fields within section bounds
+      // Layout fields within section bounds using orientation-optimized placement
       let sectionMaxRow = headerPos.rowStart + headerRows;
       const fieldBounds = {
         colStart: sectionBounds.colStart,
@@ -563,16 +1024,15 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
       };
 
       for (const field of section.fields) {
-        const fieldColSpan = Math.min(fieldBounds.colEnd - fieldBounds.colStart, field.estimatedCols);
-        const fieldRowSpan = Math.max(2, Math.min(20, field.estimatedRows));
+        // Use optimized best-fit with orientation consideration
+        const fieldPos = occupancy.findBestFitWithin(field.flexibility, fieldBounds);
 
-        const fieldPos = occupancy.findFirstFitWithin(fieldColSpan, fieldRowSpan, fieldBounds);
         if (!fieldPos) {
-          // Expand section bounds vertically
-          const newPos = occupancy.findFirstFit(fieldColSpan, fieldRowSpan);
-          if (newPos) {
-            occupancy.occupyArea(newPos.colStart, newPos.rowStart, newPos.colSpan, newPos.rowSpan);
-            sectionMaxRow = Math.max(sectionMaxRow, newPos.rowStart + newPos.rowSpan);
+          // Fallback: try global placement if section bounds are too constrained
+          const globalPos = occupancy.findBestFit(field.flexibility);
+          if (globalPos) {
+            occupancy.occupyArea(globalPos.colStart, globalPos.rowStart, globalPos.colSpan, globalPos.rowSpan);
+            sectionMaxRow = Math.max(sectionMaxRow, globalPos.rowStart + globalPos.rowSpan);
 
             items.push({
               id: `field-${itemIdCounter++}`,
@@ -587,7 +1047,7 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
                   </Box>
                 </Box>
               ),
-              position: newPos,
+              position: globalPos,
               zIndex: 2,
               borderColor: "var(--mantine-color-gray-3)",
               depth: 1,
