@@ -220,14 +220,18 @@ interface SyncConfiguration {
 
 ### SampleBibliography
 
-Pre-packaged bibliography from an existing review paper served via the public folder, following the pattern of the OpenAlex static data cache.
+Pre-packaged bibliography from an existing review paper served via the public folder, following the pattern of the OpenAlex static data cache. The source review paper is a first-class OpenAlex entity, enabling navigation to the review itself and leveraging its `referenced_works` relationship.
 
 ```typescript
 interface SampleBibliography {
   id: string // Unique identifier (e.g., "cochrane-ml-diagnosis-2024")
 
-  // Source Review Paper Attribution
-  sourceReview: {
+  // Source Review Paper - First-class OpenAlex Entity
+  // The review paper that cites all the works in this bibliography
+  sourceReviewId: string // OpenAlex Work ID: "W2741809807"
+
+  // Fallback metadata for display before entity loads, or if not in OpenAlex
+  sourceReviewMetadata?: {
     title: string
     authors: string[]
     doi?: string
@@ -237,12 +241,12 @@ interface SampleBibliography {
     abstract?: string
   }
 
-  // Classification
+  // Classification (may be derived from or supplement OpenAlex data)
   reviewType: "systematic" | "meta-analysis" | "scoping" | "narrative" | "rapid" | "umbrella"
   researchDomain: string // e.g., "Machine Learning in Medical Diagnosis"
   topics: string[] // e.g., ["artificial intelligence", "healthcare", "diagnostics"]
 
-  // PRISMA Flow Data
+  // PRISMA Flow Data (extends OpenAlex referenced_works with screening metadata)
   prismaData: {
     identified: number
     screened: number
@@ -253,21 +257,23 @@ interface SampleBibliography {
     exclusionReasons?: Record<string, number> // reason -> count
   }
 
-  // Referenced Works
+  // Referenced Works - OpenAlex entities with PRISMA stage annotations
+  // These correspond to the review paper's referenced_works in OpenAlex
   works: Array<{
-    // OpenAlex ID if available, otherwise custom identifier
-    id: string
-    openAlexId?: string // e.g., "W2741809807"
+    // OpenAlex Work ID (primary identifier for navigation)
+    id: string // e.g., "W2741809807" - navigable entity
 
-    // Core metadata
-    title: string
-    authors: string[]
-    publicationYear: number
-    doi?: string
-    journal?: string
-    abstract?: string
+    // Fallback metadata (for display before entity loads, or if not in OpenAlex)
+    metadata?: {
+      title: string
+      authors: string[]
+      publicationYear: number
+      doi?: string
+      journal?: string
+      abstract?: string
+    }
 
-    // PRISMA stage assignment
+    // PRISMA stage assignment (extends OpenAlex data)
     prismaStage: "identified" | "screened" | "eligible" | "included" | "excluded"
     screeningDecision?: {
       included: boolean
@@ -280,10 +286,17 @@ interface SampleBibliography {
     biasRisk?: "low" | "medium" | "high"
   }>
 
+  // Relationship: sourceReviewId -> works[] mirrors OpenAlex's Work.referenced_works
+  // This enables:
+  // 1. Navigate to source review paper entity page
+  // 2. View review's citations as the bibliography
+  // 3. Pull work data from OpenAlex cache or API
+  // 4. Extend with PRISMA screening metadata not in OpenAlex
+
   // File System Structure (mirrors OpenAlex static cache pattern)
   // Stored at: apps/web/public/data/sample-bibliographies/{id}/
-  // - index.json (this metadata)
-  // - works/ (individual work JSON files)
+  // - index.json (this metadata + PRISMA annotations)
+  // - Source review and works loaded from OpenAlex cache/API
 
   // Metadata
   createdAt: string // ISO date
@@ -294,20 +307,47 @@ interface SampleBibliography {
 }
 ```
 
+**Entity Relationships:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ SampleBibliography                                              │
+│   id: "cochrane-ml-diagnosis-2024"                              │
+│   sourceReviewId: "W3187234764" ─────────┐                      │
+│   prismaData: {...}                      │                      │
+│   works: [                               │                      │
+│     { id: "W2741809807", prismaStage },  │                      │
+│     { id: "W2760813866", prismaStage },  │                      │
+│   ]                                      │                      │
+└──────────────────────────────────────────│──────────────────────┘
+                                           │
+                                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ OpenAlex Work (Source Review Paper)                             │
+│   id: "W3187234764"                                             │
+│   title: "Machine Learning in Medical Diagnosis: A Review"      │
+│   referenced_works: ["W2741809807", "W2760813866", ...]         │
+│   type: "review"                                                │
+└─────────────────────────────────────────────────────────────────┘
+         │ referenced_works relationship
+         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ OpenAlex Works (Cited Papers)                                   │
+│   W2741809807: "Deep Learning for Medical Image Analysis"       │
+│   W2760813866: "Neural Networks in Clinical Decision Support"   │
+│   ... (navigable entity pages)                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 **File System Structure:**
 ```
 apps/web/public/data/sample-bibliographies/
-├── index.json                           # List of all available sample bibliographies
+├── index.json                           # Master index of all sample bibliographies
 ├── cochrane-ml-diagnosis-2024/
-│   ├── index.json                       # SampleBibliography metadata
-│   └── works/
-│       ├── index.json                   # Work list index
-│       ├── W2741809807.json            # Individual work data (if from OpenAlex)
-│       └── custom-001.json             # Custom work data (if not in OpenAlex)
+│   └── index.json                       # SampleBibliography (PRISMA annotations only)
+│                                        # Works loaded from OpenAlex cache/API
 ├── prisma-climate-adaptation-2023/
-│   ├── index.json
-│   └── works/
-│       └── ...
+│   └── index.json
+│   ...
 ```
 
 **Master Index Structure:**
@@ -316,7 +356,8 @@ interface SampleBibliographyIndex {
   lastUpdated: string // ISO date
   bibliographies: Array<{
     id: string
-    title: string
+    sourceReviewId: string // OpenAlex Work ID for the review paper
+    title: string // Denormalized from source review for display
     reviewType: string
     researchDomain: string
     workCount: number
@@ -324,6 +365,13 @@ interface SampleBibliographyIndex {
   }>
 }
 ```
+
+**Data Loading Strategy:**
+1. Load sample bibliography index from static JSON
+2. Fetch source review paper from OpenAlex (cache → API fallback)
+3. Use review's `referenced_works` as the base bibliography
+4. Overlay PRISMA stage annotations from sample bibliography data
+5. All entities navigable via existing entity routes (`/works/W2741809807`)
 
 ### CitationExportConfiguration
 
