@@ -34,6 +34,54 @@ import type { PersistentGraph } from './persistent-graph';
 const LOG_PREFIX = 'graph-expansion';
 
 /**
+ * OpenAlex ID prefix to entity type mapping
+ */
+const ID_PREFIX_TO_TYPE: Record<string, EntityType> = {
+  W: 'works',
+  A: 'authors',
+  I: 'institutions',
+  S: 'sources',
+  C: 'concepts',
+  T: 'topics',
+  F: 'funders',
+  P: 'publishers',
+  K: 'keywords',
+};
+
+/**
+ * Infer entity type from OpenAlex ID prefix
+ * e.g., "W123456" -> "works", "A789012" -> "authors"
+ */
+function inferEntityTypeFromId(id: string): EntityType | undefined {
+  if (!id || id.length < 2) return undefined;
+  const prefix = id.charAt(0).toUpperCase();
+  return ID_PREFIX_TO_TYPE[prefix];
+}
+
+/**
+ * Node data returned from expansion (for incremental UI updates)
+ */
+export interface ExpansionNode {
+  id: string;
+  entityType: EntityType;
+  label: string;
+  completeness: 'stub' | 'partial' | 'full';
+}
+
+/**
+ * Edge data returned from expansion (for incremental UI updates)
+ */
+export interface ExpansionEdge {
+  source: string;
+  target: string;
+  type: string;
+  score?: number;
+  authorPosition?: string;
+  isCorresponding?: boolean;
+  isOpenAccess?: boolean;
+}
+
+/**
  * Result of expanding a node
  */
 export interface NodeExpansionResult {
@@ -51,6 +99,12 @@ export interface NodeExpansionResult {
 
   /** Whether the entity was already fully expanded */
   alreadyExpanded: boolean;
+
+  /** Actual nodes that were added (for incremental UI updates) */
+  nodes: ExpansionNode[];
+
+  /** Actual edges that were added (for incremental UI updates) */
+  edges: ExpansionEdge[];
 }
 
 /**
@@ -106,18 +160,81 @@ async function fetchEntityData(
  */
 export async function expandNode(
   graph: PersistentGraph,
-  nodeId: string
+  nodeId: string,
+  entityType?: EntityType
 ): Promise<NodeExpansionResult> {
   // Get current node state
-  const node = graph.getNode(nodeId);
+  let node = graph.getNode(nodeId);
 
+  // If node doesn't exist in graph, we need to fetch and add it first
   if (!node) {
+    // If no entity type provided, try to infer from ID prefix
+    const inferredType = entityType ?? inferEntityTypeFromId(nodeId);
+    if (!inferredType) {
+      return {
+        success: false,
+        nodesAdded: 0,
+        edgesAdded: 0,
+        error: `Node ${nodeId} not found in graph and entity type could not be determined`,
+        alreadyExpanded: false,
+        nodes: [],
+        edges: [],
+      };
+    }
+
+    logger.debug(LOG_PREFIX, `Node ${nodeId} not in graph, fetching and adding...`);
+
+    // Fetch the entity data to create the node
+    const entityData = await fetchEntityData(inferredType, nodeId);
+    if (!entityData) {
+      return {
+        success: false,
+        nodesAdded: 0,
+        edgesAdded: 0,
+        error: `Failed to fetch entity data for ${nodeId}`,
+        alreadyExpanded: false,
+        nodes: [],
+        edges: [],
+      };
+    }
+
+    // Add the node to the graph using extractAndIndexRelationships
+    // This will create the node and extract its relationships
+    const extractionResult = await extractAndIndexRelationships(
+      graph,
+      inferredType,
+      nodeId,
+      entityData
+    );
+
+    // Mark node as expanded
+    await graph.markNodeExpanded(nodeId);
+
+    // Convert extraction result to expansion result format
+    const expansionNodes: ExpansionNode[] = extractionResult.stubNodes.map((stub) => ({
+      id: stub.id,
+      entityType: stub.entityType,
+      label: stub.label,
+      completeness: stub.completeness,
+    }));
+
+    const expansionEdges: ExpansionEdge[] = extractionResult.edgeInputs.map((edge) => ({
+      source: edge.source,
+      target: edge.target,
+      type: edge.type,
+      score: edge.score,
+      authorPosition: edge.authorPosition,
+      isCorresponding: edge.isCorresponding,
+      isOpenAccess: edge.isOpenAccess,
+    }));
+
     return {
-      success: false,
-      nodesAdded: 0,
-      edgesAdded: 0,
-      error: `Node ${nodeId} not found in graph`,
+      success: true,
+      nodesAdded: extractionResult.nodesProcessed + extractionResult.stubsCreated,
+      edgesAdded: extractionResult.edgesAdded,
       alreadyExpanded: false,
+      nodes: expansionNodes,
+      edges: expansionEdges,
     };
   }
 
@@ -131,6 +248,8 @@ export async function expandNode(
       nodesAdded: 0,
       edgesAdded: 0,
       alreadyExpanded: true,
+      nodes: [],
+      edges: [],
     };
   }
 
@@ -149,6 +268,8 @@ export async function expandNode(
       edgesAdded: 0,
       error: `Failed to fetch entity data for ${nodeId}`,
       alreadyExpanded: false,
+      nodes: [],
+      edges: [],
     };
   }
 
@@ -167,11 +288,31 @@ export async function expandNode(
   const nodeCountAfter = graph.getStatistics().nodeCount;
   const edgeCountAfter = graph.getStatistics().edgeCount;
 
+  // Convert extraction result to expansion result format
+  const expansionNodes: ExpansionNode[] = extractionResult.stubNodes.map((stub) => ({
+    id: stub.id,
+    entityType: stub.entityType,
+    label: stub.label,
+    completeness: stub.completeness,
+  }));
+
+  const expansionEdges: ExpansionEdge[] = extractionResult.edgeInputs.map((edge) => ({
+    source: edge.source,
+    target: edge.target,
+    type: edge.type,
+    score: edge.score,
+    authorPosition: edge.authorPosition,
+    isCorresponding: edge.isCorresponding,
+    isOpenAccess: edge.isOpenAccess,
+  }));
+
   const result: NodeExpansionResult = {
     success: true,
     nodesAdded: nodeCountAfter - nodeCountBefore,
     edgesAdded: edgeCountAfter - edgeCountBefore,
     alreadyExpanded: false,
+    nodes: expansionNodes,
+    edges: expansionEdges,
   };
 
   logger.debug(LOG_PREFIX, `Expanded node ${nodeId}`, {
