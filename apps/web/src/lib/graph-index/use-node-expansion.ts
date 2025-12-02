@@ -11,6 +11,7 @@
 
 import type { NodeExpansionResult } from '@bibgraph/client';
 import { getPersistentGraph, expandNode as expandNodeFromGraph } from '@bibgraph/client';
+import type { EntityType } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
 import { useState, useCallback, useMemo } from 'react';
 
@@ -46,9 +47,10 @@ export interface UseNodeExpansionResult {
   /**
    * Expand a node by ID - fetches relationships and adds discovered entities
    * @param nodeId - The ID of the node to expand
+   * @param entityType - Optional entity type (if not provided, inferred from ID prefix)
    * @returns Promise resolving to expansion result
    */
-  expandNode: (nodeId: string) => Promise<NodeExpansionResult>;
+  expandNode: (nodeId: string, entityType?: EntityType) => Promise<NodeExpansionResult>;
 
   /**
    * Check if a node is currently being expanded
@@ -119,7 +121,7 @@ export function useNodeExpansion(): UseNodeExpansionResult {
    * Expand a node and update state
    */
   const expandNode = useCallback(
-    async (nodeId: string): Promise<NodeExpansionResult> => {
+    async (nodeId: string, entityType?: EntityType): Promise<NodeExpansionResult> => {
       // Check if already expanding
       const currentState = expansionStates.get(nodeId);
       if (currentState?.loading) {
@@ -152,8 +154,8 @@ export function useNodeExpansion(): UseNodeExpansionResult {
         // Ensure graph is initialized
         await graph.initialize();
 
-        // Perform expansion
-        const result = await expandNodeFromGraph(graph, nodeId);
+        // Perform expansion - pass entityType if provided for reliable type resolution
+        const result = await expandNodeFromGraph(graph, nodeId, entityType);
 
         // Update state with result
         const completedAt = Date.now();
