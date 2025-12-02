@@ -73,6 +73,7 @@ function EntityGraphPage() {
     enableAll,
     disableAll,
     refresh,
+    addNodesAndEdges,
   } = useMultiSourceGraph();
 
   // Node expansion for click-to-expand
@@ -135,15 +136,18 @@ function EntityGraphPage() {
       // Then trigger expansion if not already expanded
       // This runs asynchronously - doesn't block the UI
       if (!isExpanded(node.id) && !isExpanding(node.id)) {
-        void expandNode(node.id).then((result) => {
-          // If expansion added new nodes/edges, refresh to show them
-          if (result.success && (result.nodesAdded > 0 || result.edgesAdded > 0)) {
-            void refresh();
+        // Pass entityType explicitly for reliable type resolution
+        // (avoids relying solely on ID prefix inference)
+        void expandNode(node.id, node.entityType).then((result) => {
+          // If expansion added new nodes/edges, add them incrementally
+          // (no full graph refresh needed)
+          if (result.success && (result.nodes.length > 0 || result.edges.length > 0)) {
+            addNodesAndEdges(result.nodes, result.edges);
           }
         });
       }
     },
-    [handleNodeClick, isExpanded, isExpanding, expandNode, refresh]
+    [handleNodeClick, isExpanded, isExpanding, expandNode, addNodesAndEdges]
   );
 
   // Node type counts for stats
@@ -154,6 +158,9 @@ function EntityGraphPage() {
     });
     return counts;
   }, [nodes]);
+
+  // Convert expandingNodeIds array to Set for visualization components
+  const expandingNodeIdsSet = useMemo(() => new Set(expandingNodeIds), [expandingNodeIds]);
 
   // Count enabled sources with entities
   const enabledSourceCount = sources.filter(s => enabledSourceIds.has(s.source.id)).length;
@@ -406,6 +413,7 @@ function EntityGraphPage() {
                     highlightedPath={highlightedPath}
                     communityAssignments={communityAssignments}
                     communityColors={communityColors}
+                    expandingNodeIds={expandingNodeIdsSet}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
                     onNodeClick={handleNodeClickWithExpansion}
@@ -420,6 +428,7 @@ function EntityGraphPage() {
                     highlightedPath={highlightedPath}
                     communityAssignments={communityAssignments}
                     communityColors={communityColors}
+                    expandingNodeIds={expandingNodeIdsSet}
                     displayMode={displayMode}
                     enableSimulation={enableSimulation}
                     onNodeClick={handleNodeClickWithExpansion}
