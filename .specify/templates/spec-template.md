@@ -126,7 +126,7 @@
 - **Monorepo Architecture**: Feature fits within existing apps/ or packages/ structure (specify which); packages MUST NOT re-export exports from other internal packages
 - **Storage Abstraction**: If feature involves persistence, uses storage provider interface (no direct Dexie/IndexedDB)
 - **Performance & Memory**: Success criteria include performance metrics; memory constraints considered
-- **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages; spec files committed after each phase
+- **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages; spec files committed after each phase; NEVER use `git add .`, `git add -A`, or `git commit -a`—use explicit file paths
 - **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development
 - **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes
 - **Repository Integrity**: ALL issues (tests, lint, build, audit, errors, warnings) MUST be resolved—"pre-existing" is not an excuse; entire monorepo must be deployable

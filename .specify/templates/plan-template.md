@@ -38,7 +38,7 @@ Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/); packages MUST NOT re-export exports from other internal packages
 4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
 5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
-6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase
+6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase; NEVER use `git add .`, `git add -A`, or `git commit -a`—use explicit file paths
 7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
 9. **Repository Integrity**: ALL issues (tests, lint, build, audit, errors, warnings) MUST be resolved—"pre-existing" is not an excuse

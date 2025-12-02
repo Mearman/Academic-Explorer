@@ -1,15 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 2.12.1 → 2.13.0 (MINOR: Added Principle XVIII - Agent Embed Link Format)
-Modified Sections: None
-Added Sections: Principle XVIII - Agent Embed Link Format
+Version: 2.13.0 → 2.13.1 (PATCH: Add git commit -a to prohibited commands)
+Modified Sections: Principle VI, Commit Quality Gates - added `git commit -a` to prohibition
+Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated - item 18 added to Constitution Check
-  - .specify/templates/spec-template.md: ✅ Updated - item 18 added to Constitution Alignment
-  - .specify/templates/tasks-template.md: ✅ Updated - item 18 added to compliance verification
+  - .specify/templates/plan-template.md: ✅ Updated - full git prohibition added to item 6
+  - .specify/templates/spec-template.md: ✅ Updated - full git prohibition added to Atomic Conventional Commits
+  - .specify/templates/tasks-template.md: ✅ Updated - full git prohibition added to compliance checklist
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.13.0: Added Principle XVIII - Agent Embed Link Format
   - v2.12.1: Added Project-Specific Gotchas section (DRY refactor from README)
   - v2.12.0: Added Principle XVII - No Magic Numbers/Values
   - v2.11.1: README conciseness improvements and template alignment validation
@@ -27,10 +28,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.13.0)
+# BibGraph Constitution (v2.13.1)
 
 ## Version History
 
+- **v2.13.1** (2025-12-02): Add `git commit -a` to prohibited commands (alongside `git add .` and `git add -A`)
 - **v2.13.0** (2025-12-02): Added Principle XVIII - Agent Embed Link Format
 - **v2.12.1** (2025-12-02): Added Project-Specific Gotchas section (DRY refactor from README)
 - **v2.12.0** (2025-12-02): Added Principle XVII - No Magic Numbers/Values
@@ -117,7 +119,7 @@ This PhD research project requires maintainable, reliable code for academic repr
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`, `revert`
 - MUST pass all quality gates
 - MUST commit after each atomic task
-- NEVER use `git add .` or `git add -A` - use explicit file paths
+- NEVER use `git add .`, `git add -A`, or `git commit -a` - use explicit file paths
 
 **Spec file requirements**: Commit `./specs/` changes after each phase completion using `docs(spec-###):` prefix.
 
@@ -522,7 +524,7 @@ Every PR MUST verify alignment with all 18 core principles. Feature specs MUST d
 - MUST follow Conventional Commits format
 - MUST represent single logical change
 - MUST pass quality pipeline before pushing
-- NEVER use `git add .` or `git add -A`
+- NEVER use `git add .`, `git add -A`, or `git commit -a`
 - Spec file changes committed after each phase
 
 ### Repository Integrity Gates

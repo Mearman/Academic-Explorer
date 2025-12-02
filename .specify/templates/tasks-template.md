@@ -167,7 +167,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Proper Nx workspace structure used (Monorepo Architecture)
   - [ ] Storage operations use provider interface (Storage Abstraction)
   - [ ] Performance requirements met; memory constraints respected (Performance & Memory)
-  - [ ] Atomic conventional commits created after each task (Atomic Conventional Commits)
+  - [ ] Atomic conventional commits created after each task; explicit file paths used (NEVER `git add .`, `git add -A`, or `git commit -a`) (Atomic Conventional Commits)
   - [ ] Breaking changes documented; no backwards compatibility obligations (Development-Stage Pragmatism)
   - [ ] Bug regression tests written before fixes (Test-First Bug Fixes)
   - [ ] ALL issues resolved (tests, lint, build, audit, errors, warnings)—"pre-existing" is not an excuse (Repository Integrity)
