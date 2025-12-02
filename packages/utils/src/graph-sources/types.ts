@@ -7,7 +7,7 @@
  * @module graph-sources/types
  */
 
-import type { EntityType, GraphNode, GraphEdge, RelationType } from '@bibgraph/types';
+import type { AuthorPosition, EntityType, GraphEdge, GraphNode, RelationType } from '@bibgraph/types';
 
 /**
  * Source category for grouping in UI
@@ -49,6 +49,16 @@ export interface GraphSourceRelationship {
 
   /** Relationship type */
   relationType: RelationType;
+
+  // Edge properties (optional - populated from PersistentGraph edge records)
+  /** Topic relevance score (0-1) - for TOPIC edges */
+  score?: number;
+  /** Author position in authorship list - for AUTHORSHIP edges */
+  authorPosition?: AuthorPosition;
+  /** Whether this is the corresponding author - for AUTHORSHIP edges */
+  isCorresponding?: boolean;
+  /** Whether the publication is open access - for PUBLICATION edges */
+  isOpenAccess?: boolean;
 }
 
 /**

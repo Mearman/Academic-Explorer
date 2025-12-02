@@ -77,6 +77,7 @@ function sourceEntityToNode(entity: GraphSourceEntity): GraphNode {
 /**
  * Build edges from entity relationships
  * Only creates edges where both endpoints exist in the entity map
+ * Preserves edge properties (score, authorPosition, etc.) for weighted traversal
  */
 function buildEdges(
   entities: GraphSourceEntity[],
@@ -99,7 +100,12 @@ function buildEdges(
             source: entity.entityId,
             target: rel.targetId,
             type: rel.relationType,
-            weight: 1,
+            weight: rel.score ?? 1,
+            // Include edge properties for weighted traversal
+            score: rel.score,
+            authorPosition: rel.authorPosition,
+            isCorresponding: rel.isCorresponding,
+            isOpenAccess: rel.isOpenAccess,
           });
         }
       }

@@ -72,6 +72,11 @@ export function createPersistentGraphSource(): GraphDataSource {
               targetId: edge.target,
               targetType: targetNode.entityType,
               relationType: edge.type,
+              // Include indexed edge properties for weighted traversal
+              score: edge.score,
+              authorPosition: edge.authorPosition,
+              isCorresponding: edge.isCorresponding,
+              isOpenAccess: edge.isOpenAccess,
             };
           })
           .filter((rel): rel is GraphSourceRelationship => rel !== null);
