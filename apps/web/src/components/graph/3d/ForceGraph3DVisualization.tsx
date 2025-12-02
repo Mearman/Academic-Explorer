@@ -28,7 +28,6 @@ import {
 } from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
 import { getEdgeStyle } from '../edge-styles';
-import { useCursorCenteredZoom } from './useCursorCenteredZoom';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
 const ENTITY_TYPE_COLORS: Record<EntityType, string> = HASH_BASED_ENTITY_COLORS;
@@ -253,40 +252,30 @@ export function ForceGraph3DVisualization({
   // Track camera position for LOD calculations
   const cameraPositionRef = useRef({ x: 0, y: 0, z: 500 });
 
-  // Accessor functions for cursor-centered zoom
-  const getCamera = useCallback(() => {
-    return graphRef.current?.camera?.() ?? null;
-  }, []);
+  // Enable cursor-centered zoom on OrbitControls (built-in Three.js feature)
+  // Requires controlType="orbit" on ForceGraph3D component
+  useEffect(() => {
+    if (!enableCursorCenteredZoom) return;
 
-  const getControls = useCallback(() => {
-    return graphRef.current?.controls?.() ?? null;
-  }, []);
-
-  const getScene = useCallback(() => {
-    return graphRef.current?.scene?.() ?? null;
-  }, []);
-
-  // Cursor-centered zoom hook
-  const { isZooming } = useCursorCenteredZoom({
-    containerRef,
-    getCamera,
-    getControls,
-    getScene,
-    enabled: enableCursorCenteredZoom,
-    onZoomChange: (distance, position, target) => {
-      // Update camera position ref for LOD calculations
-      cameraPositionRef.current = { x: position.x, y: position.y, z: position.z };
-
-      // Integrate with camera persistence
-      if (enableCameraPersistence) {
-        updateCameraState({
-          position: { x: position.x, y: position.y, z: position.z },
-          lookAt: { x: target.x, y: target.y, z: target.z },
-          zoom: distance,
-        });
+    const enableZoomToCursor = () => {
+      const controls = graphRef.current?.controls?.();
+      if (controls && 'zoomToCursor' in controls) {
+        controls.zoomToCursor = true;
       }
-    },
-  });
+    };
+
+    // Try immediately and after a short delay (for initial mount)
+    enableZoomToCursor();
+    const timeoutId = setTimeout(enableZoomToCursor, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      const controls = graphRef.current?.controls?.();
+      if (controls && 'zoomToCursor' in controls) {
+        controls.zoomToCursor = false;
+      }
+    };
+  }, [enableCursorCenteredZoom]);
 
   // Check WebGL availability on mount
   useEffect(() => {
@@ -780,6 +769,8 @@ export function ForceGraph3DVisualization({
         numDimensions={3}
         // Reduce physics complexity for large graphs
         d3AlphaMin={graphData.nodes.length > 500 ? 0.01 : 0.001}
+        // Use OrbitControls instead of TrackballControls for zoomToCursor support
+        controlType="orbit"
       />
 
       {/* Performance Overlay */}

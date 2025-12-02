@@ -3,5 +3,3 @@
  */
 
 export * from "./ForceGraph3DVisualization";
-export * from "./useCursorCenteredZoom";
-export * from "./zoom-config";
