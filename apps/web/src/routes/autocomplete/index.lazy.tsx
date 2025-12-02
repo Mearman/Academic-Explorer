@@ -27,7 +27,7 @@ import {
   EntityTypeFilter,
 } from "@/components/EntityTypeFilter";
 import { BaseTable } from "@/components/tables/BaseTable";
-import { ViewModeToggle, type TableViewMode } from "@/components/ViewModeToggle";
+import { TableViewModeToggle, type TableViewMode } from "@/components/TableViewModeToggle";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
@@ -409,7 +409,7 @@ function AutocompleteGeneralRoute() {
               <Text size="sm" c="dimmed">
                 Found {results.length} suggestion{results.length !== 1 ? "s" : ""}
               </Text>
-              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              <TableViewModeToggle value={viewMode} onChange={setViewMode} />
             </Group>
 
             {viewMode === "table" && (

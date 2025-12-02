@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
-import type { TableViewMode } from "@/components/ViewModeToggle";
+import type { TableViewMode } from "@/components/TableViewModeToggle";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 

@@ -27,7 +27,7 @@ import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
 import type { ColumnConfig as BaseColumnConfig } from "./types";
-import { ViewModeToggle, type TableViewMode } from "./ViewModeToggle";
+import { TableViewModeToggle, type TableViewMode } from "./TableViewModeToggle";
 
 type Entity =
   | Funder
@@ -295,7 +295,7 @@ export function EntityList({
                 {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
               </h1>
               {onViewModeChange && (
-                <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
+                <TableViewModeToggle value={viewMode} onChange={handleViewModeChange} />
               )}
             </Group>
             {viewMode === "table" && (
