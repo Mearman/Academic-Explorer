@@ -474,7 +474,22 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   }
 
   /**
+   * Check if an object has a valid OpenAlex ID
+   * Uses a loose check (just valid ID pattern) rather than full schema validation
+   * This allows caching partial entities from list responses
+   */
+  private hasValidOpenAlexId(obj: unknown): obj is { id: string } {
+    if (!obj || typeof obj !== 'object') return false;
+    const maybeEntity = obj as Record<string, unknown>;
+    const id = maybeEntity.id;
+    if (typeof id !== 'string') return false;
+    // Check for valid OpenAlex ID pattern: https://openalex.org/[A-Z]\d+ or just [A-Z]\d+
+    return /^(https:\/\/openalex\.org\/)?[A-Z]\d+$/.test(id);
+  }
+
+  /**
    * Cache multiple entities from list results
+   * Uses loose ID validation to allow caching partial entities
    */
   private async cacheEntitiesFromResults(
     results: unknown[],
@@ -483,20 +498,19 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     let cachedCount = 0;
 
     for (const result of results) {
-      if (isOpenAlexEntity(result)) {
-        const id = result.id;
-        if (typeof id === 'string') {
-          const cleanId = cleanOpenAlexId(id);
-          try {
-            await this.cacheEntityResult({
-              entityType,
-              id: cleanId,
-              data: result,
-            });
-            cachedCount++;
-          } catch {
-            // Silently ignore individual cache failures
-          }
+      // Use loose check - just verify it has a valid OpenAlex ID
+      // List responses may return partial entities that fail strict schema validation
+      if (this.hasValidOpenAlexId(result)) {
+        const cleanId = cleanOpenAlexId(result.id);
+        try {
+          await this.cachePartialEntity({
+            entityType,
+            id: cleanId,
+            data: result,
+          });
+          cachedCount++;
+        } catch {
+          // Silently ignore individual cache failures
         }
       }
     }
@@ -506,6 +520,32 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         entityType,
         count: cachedCount,
         total: results.length,
+      });
+    }
+  }
+
+  /**
+   * Cache a partial entity result (from list responses)
+   * Unlike cacheEntityResult, this accepts any object with a valid OpenAlex ID
+   */
+  private async cachePartialEntity({
+    entityType,
+    id,
+    data,
+  }: {
+    entityType: string;
+    id: string;
+    data: unknown;
+  }): Promise<void> {
+    try {
+      const staticEntityType = toStaticEntityType(entityType);
+      await staticDataProvider.setStaticData(staticEntityType, id, data);
+      logger.debug("client", "Cached partial entity", { entityType, id });
+    } catch (error: unknown) {
+      logger.debug("client", "Failed to cache partial entity", {
+        entityType,
+        id,
+        error,
       });
     }
   }
