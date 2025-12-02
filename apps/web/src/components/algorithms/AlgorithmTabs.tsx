@@ -56,13 +56,17 @@ export function AlgorithmTabs({
           borderRadius: 'var(--mantine-radius-sm)',
           border: '1px solid var(--mantine-color-gray-3)',
         },
+        control: {
+          paddingTop: 'var(--mantine-spacing-xs)',
+          paddingBottom: 'var(--mantine-spacing-xs)',
+        },
       }}
     >
       {/* Communities Section */}
       <Accordion.Item value="communities">
-        <Accordion.Control icon={<IconUsers size={16} />}>
+        <Accordion.Control icon={<IconUsers size={14} />}>
           <Stack gap={0}>
-            <Text size="sm" fw={500}>Find Communities</Text>
+            <Text size="xs" fw={500}>Find Communities</Text>
             <Text size="xs" c="dimmed">Clusters, cores, community structure</Text>
           </Stack>
         </Accordion.Control>
@@ -80,9 +84,9 @@ export function AlgorithmTabs({
 
       {/* Pathfinding Section */}
       <Accordion.Item value="paths">
-        <Accordion.Control icon={<IconRoute size={16} />}>
+        <Accordion.Control icon={<IconRoute size={14} />}>
           <Stack gap={0}>
-            <Text size="sm" fw={500}>Navigate Paths</Text>
+            <Text size="xs" fw={500}>Navigate Paths</Text>
             <Text size="xs" c="dimmed">Routing, traversal, neighborhoods</Text>
           </Stack>
         </Accordion.Control>
@@ -102,9 +106,9 @@ export function AlgorithmTabs({
 
       {/* Structure Section */}
       <Accordion.Item value="structure">
-        <Accordion.Control icon={<IconNetwork size={16} />}>
+        <Accordion.Control icon={<IconNetwork size={14} />}>
           <Stack gap={0}>
-            <Text size="sm" fw={500}>Analyze Structure</Text>
+            <Text size="xs" fw={500}>Analyze Structure</Text>
             <Text size="xs" c="dimmed">Connectivity, components, ordering</Text>
           </Stack>
         </Accordion.Control>
@@ -120,9 +124,9 @@ export function AlgorithmTabs({
 
       {/* Patterns Section */}
       <Accordion.Item value="patterns">
-        <Accordion.Control icon={<IconSearch size={16} />}>
+        <Accordion.Control icon={<IconSearch size={14} />}>
           <Stack gap={0}>
-            <Text size="sm" fw={500}>Find Patterns</Text>
+            <Text size="xs" fw={500}>Find Patterns</Text>
             <Text size="xs" c="dimmed">Motifs, triangles, citation patterns</Text>
           </Stack>
         </Accordion.Control>
