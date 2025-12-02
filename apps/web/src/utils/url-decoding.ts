@@ -63,3 +63,45 @@ export function decodeEntityIdOrDefault(
 ): string {
   return decodeEntityId(encodedId) ?? fallback;
 }
+
+/**
+ * Serialize TanStack Router's parsed search object to a URL query string
+ *
+ * TanStack Router parses query strings into objects (e.g., { q: "test", page: 1 }).
+ * This function converts them back to URL query strings for storage or display.
+ *
+ * @param search - The parsed search object from TanStack Router's useLocation()
+ * @returns URL query string with leading "?" or empty string if no params
+ *
+ * @example
+ * ```typescript
+ * const location = useLocation();
+ * // location.search = { q: "test", page: 1 }
+ * const queryString = serializeSearch(location.search);
+ * // Returns: "?q=test&page=1"
+ *
+ * const fullUrl = location.pathname + serializeSearch(location.search);
+ * // Returns: "/authors?q=test&page=1"
+ * ```
+ */
+export function serializeSearch(search: Record<string, unknown> | string): string {
+  // Handle case where search is already a string (fallback/test environments)
+  if (typeof search === 'string') {
+    return search.startsWith('?') ? search : (search ? `?${search}` : '');
+  }
+
+  // Handle empty or undefined search object
+  if (!search || Object.keys(search).length === 0) {
+    return '';
+  }
+
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(search)) {
+    if (value !== undefined && value !== null && value !== '') {
+      params.set(key, String(value));
+    }
+  }
+
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : '';
+}
