@@ -63,26 +63,32 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
   }, [selectedTypes, storageKey]);
 
   // Query for API-based relationships (works, citing works, etc.)
-  const apiRelationships = useEntityRelationshipQueries(entityId, entityType);
+  const {
+    incoming: apiIncoming,
+    loading: apiLoading,
+    error: apiError,
+    loadMore,
+    isLoadingMore,
+  } = useEntityRelationshipQueries(entityId, entityType);
 
   // Fall back to embedded data-based relationships if API has no data
   const dataRelationships = useEntityRelationshipsFromData(entityData, entityType);
 
   // Choose which source to use with priority: API queries > embedded data
-  const hasApiData = apiRelationships.incoming.length > 0 || apiRelationships.loading;
+  const hasApiData = apiIncoming.length > 0 || apiLoading;
 
   let incoming, loading, error;
 
   if (hasApiData) {
     // Priority 1: API-queried relationships (e.g., works by author)
-    incoming = apiRelationships.incoming;
-    loading = apiRelationships.loading;
-    error = apiRelationships.error;
+    incoming = apiIncoming;
+    loading = apiLoading;
+    error = apiError;
   } else {
     // Priority 2: Embedded data relationships (fallback)
     incoming = dataRelationships.incoming;
     loading = false;
-    error = apiRelationships.error;
+    error = apiError;
   }
 
   // Show loading skeleton while fetching
@@ -150,7 +156,12 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
       />
 
       {incoming.map((section) => (
-        <RelationshipSection key={section.id} section={section} />
+        <RelationshipSection
+          key={section.id}
+          section={section}
+          onLoadMore={hasApiData ? () => loadMore(section.id) : undefined}
+          isLoadingMore={hasApiData ? isLoadingMore(section.id) : false}
+        />
       ))}
     </Stack>
   );

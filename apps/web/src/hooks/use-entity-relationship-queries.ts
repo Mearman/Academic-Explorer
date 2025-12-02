@@ -9,7 +9,7 @@ import { getWorks, getAuthors, getSources, getInstitutions, getTopicById } from 
 import { RelationType, getInboundQueries, getOutboundQueries } from '@bibgraph/types';
 import type { EntityType , RelationshipQueryConfig } from '@bibgraph/types';
 import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import React from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 import type {
   RelationshipSection,
@@ -37,6 +37,15 @@ function isOpenAlexIdUrl(displayName: string): boolean {
   return displayName.startsWith('https://openalex.org/');
 }
 
+/**
+ * State for tracking loaded items per section
+ */
+interface SectionLoadState {
+  items: RelationshipItem[];
+  currentPage: number;
+  totalCount: number;
+  loading: boolean;
+}
 
 export interface UseEntityRelationshipQueriesResult {
   /** Incoming relationship sections from API queries */
@@ -56,6 +65,12 @@ export interface UseEntityRelationshipQueriesResult {
 
   /** Error from any failed query */
   error?: Error;
+
+  /** Load more items for a specific section */
+  loadMore: (sectionId: string) => Promise<void>;
+
+  /** Check if a section is currently loading more */
+  isLoadingMore: (sectionId: string) => boolean;
 }
 
 /**
@@ -72,6 +87,13 @@ export function useEntityRelationshipQueries(
 ): UseEntityRelationshipQueriesResult {
   const queryClient = useQueryClient();
 
+  // Track additional loaded items per section (beyond initial query)
+  const [sectionStates, setSectionStates] = useState<Map<string, SectionLoadState>>(new Map());
+
+  // Track which sections are currently loading more
+  const loadingMoreRef = useRef<Set<string>>(new Set());
+  const [, forceUpdate] = useState({});
+
   // Get query configurations from registry
   const inboundConfigs = getInboundQueries(entityType);
   const outboundConfigs = getOutboundQueries(entityType);
@@ -86,7 +108,7 @@ export function useEntityRelationshipQueries(
           if (!entityId) {
             throw new Error('Entity ID is required');
           }
-          return executeRelationshipQuery(entityId, entityType, config);
+          return executeRelationshipQuery(entityId, entityType, config, 1);
         },
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
@@ -98,7 +120,7 @@ export function useEntityRelationshipQueries(
           if (!entityId) {
             throw new Error('Entity ID is required');
           }
-          return executeRelationshipQuery(entityId, entityType, config);
+          return executeRelationshipQuery(entityId, entityType, config, 1);
         },
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
@@ -110,14 +132,22 @@ export function useEntityRelationshipQueries(
   const inboundResults = queryResults.slice(0, inboundConfigs.length);
   const outboundResults = queryResults.slice(inboundConfigs.length);
 
-  // Transform query results into RelationshipSections
+  // Create section ID helper
+  const getSectionId = (config: RelationshipQueryConfig, direction: 'inbound' | 'outbound') =>
+    `${config.type}-${direction}`;
+
+  // Transform query results into RelationshipSections, merging with additional loaded items
   const incoming: RelationshipSection[] = inboundResults
     .map((result, index) => {
       if (!result.data) return null;
+      const config = inboundConfigs[index];
+      const sectionId = getSectionId(config, 'inbound');
+      const additionalState = sectionStates.get(sectionId);
       return createRelationshipSection(
-        inboundConfigs[index],
+        config,
         result.data,
-        'inbound'
+        'inbound',
+        additionalState
       );
     })
     .filter((section): section is RelationshipSection => section !== null);
@@ -125,10 +155,14 @@ export function useEntityRelationshipQueries(
   const outgoing: RelationshipSection[] = outboundResults
     .map((result, index) => {
       if (!result.data) return null;
+      const config = outboundConfigs[index];
+      const sectionId = getSectionId(config, 'outbound');
+      const additionalState = sectionStates.get(sectionId);
       return createRelationshipSection(
-        outboundConfigs[index],
+        config,
         result.data,
-        'outbound'
+        'outbound',
+        additionalState
       );
     })
     .filter((section): section is RelationshipSection => section !== null);
@@ -140,6 +174,65 @@ export function useEntityRelationshipQueries(
   // Determine loading and error states
   const loading = queryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error)?.error as Error | undefined;
+
+  // Load more items for a specific section
+  const loadMore = useCallback(async (sectionId: string) => {
+    if (!entityId) return;
+    if (loadingMoreRef.current.has(sectionId)) return; // Already loading
+
+    // Find the config for this section
+    const [type, direction] = sectionId.split('-') as [string, 'inbound' | 'outbound'];
+    const configs = direction === 'inbound' ? inboundConfigs : outboundConfigs;
+    const config = configs.find(c => c.type === type);
+    if (!config) return;
+
+    // Get current state
+    const currentState = sectionStates.get(sectionId);
+    const currentPage = currentState?.currentPage ?? 1;
+    const nextPage = currentPage + 1;
+
+    // Mark as loading
+    loadingMoreRef.current.add(sectionId);
+    forceUpdate({});
+
+    try {
+      // Fetch next page
+      const result = await executeRelationshipQuery(entityId, entityType, config, nextPage);
+
+      // Transform new items
+      const newItems = result.results.map((entity) =>
+        createRelationshipItem(entity, config, direction)
+      );
+
+      // Merge with existing items
+      setSectionStates(prev => {
+        const newMap = new Map(prev);
+        const existing = prev.get(sectionId);
+        newMap.set(sectionId, {
+          items: [...(existing?.items ?? []), ...newItems],
+          currentPage: nextPage,
+          totalCount: result.totalCount,
+          loading: false,
+        });
+        return newMap;
+      });
+    } catch (err) {
+      console.error(`Failed to load more for section ${sectionId}:`, err);
+    } finally {
+      loadingMoreRef.current.delete(sectionId);
+      forceUpdate({});
+    }
+  }, [entityId, entityType, inboundConfigs, outboundConfigs, sectionStates]);
+
+  // Check if a section is loading more
+  const isLoadingMore = useCallback((sectionId: string) => {
+    return loadingMoreRef.current.has(sectionId);
+  }, []);
+
+  // Reset section states when entity changes
+  useEffect(() => {
+    setSectionStates(new Map());
+  }, [entityId, entityType]);
 
   // Background prefetch for ID-only relationships (displayName is OpenAlex ID URL)
   // This happens asynchronously without blocking the UI
@@ -169,6 +262,8 @@ export function useEntityRelationshipQueries(
     outgoingCount,
     loading,
     error,
+    loadMore,
+    isLoadingMore,
   };
 }
 
@@ -178,7 +273,8 @@ export function useEntityRelationshipQueries(
 async function executeRelationshipQuery(
   entityId: string,
   entityType: EntityType,
-  config: RelationshipQueryConfig
+  config: RelationshipQueryConfig,
+  page: number = 1
 ): Promise<RelationshipQueryResult> {
   // Handle API-based queries
   if (config.source === 'api') {
@@ -192,7 +288,7 @@ async function executeRelationshipQuery(
         response = await getWorks({
           filter,
           per_page: pageSize,
-          page: 1,
+          page,
           ...(config.select && { select: config.select }),
         });
         break;
@@ -200,7 +296,7 @@ async function executeRelationshipQuery(
         response = await getAuthors({
           filter,
           per_page: pageSize,
-          page: 1,
+          page,
           ...(config.select && { select: config.select }),
         });
         break;
@@ -208,7 +304,7 @@ async function executeRelationshipQuery(
         response = await getSources({
           filters: { id: filter }, // getSources uses 'filters' object, not 'filter' string
           per_page: pageSize,
-          page: 1,
+          page,
           ...(config.select && { select: config.select }),
         });
         break;
@@ -216,7 +312,7 @@ async function executeRelationshipQuery(
         response = await getInstitutions({
           filters: { id: filter }, // getInstitutions uses 'filters' object, not 'filter' string
           per_page: pageSize,
-          page: 1,
+          page,
           ...(config.select && { select: config.select }),
         });
         break;
@@ -228,7 +324,7 @@ async function executeRelationshipQuery(
     return {
       results: response.results,
       totalCount: response.meta.count,
-      page: response.meta.page || 1,
+      page: response.meta.page || page,
       perPage: response.meta.per_page,
     };
   }
@@ -334,25 +430,31 @@ interface RelationshipQueryResult {
 function createRelationshipSection(
   config: RelationshipQueryConfig,
   queryResult: RelationshipQueryResult,
-  direction: 'inbound' | 'outbound'
+  direction: 'inbound' | 'outbound',
+  additionalState?: SectionLoadState
 ): RelationshipSection {
   const { results, totalCount, page, perPage } = queryResult;
 
-  // Transform results into RelationshipItems
-  const items: RelationshipItem[] = results.map((entity) =>
+  // Transform initial results into RelationshipItems
+  const initialItems: RelationshipItem[] = results.map((entity) =>
     createRelationshipItem(entity, config, direction)
   );
 
-  
-  const visibleCount = items.length;
+  // Merge with additional loaded items
+  const allItems = additionalState
+    ? [...initialItems, ...additionalState.items]
+    : initialItems;
+
+  const visibleCount = allItems.length;
   const hasMore = totalCount > visibleCount;
+  const currentPage = additionalState?.currentPage ?? page;
 
   const pagination: PaginationState = {
     pageSize: perPage,
-    currentPage: page - 1, // OpenAlex uses 1-based, we use 0-based
+    currentPage: currentPage - 1, // OpenAlex uses 1-based, we use 0-based
     totalPages: Math.ceil(totalCount / perPage),
     hasNextPage: hasMore,
-    hasPreviousPage: page > 1,
+    hasPreviousPage: currentPage > 1,
   };
 
   // Use type guard to safely narrow RelationshipTypeString to RelationType
@@ -365,8 +467,8 @@ function createRelationshipSection(
     type: config.type, // Type is narrowed to RelationType by the guard
     direction,
     label: config.label,
-    items,
-    visibleItems: items,
+    items: allItems,
+    visibleItems: allItems,
     totalCount,
     visibleCount,
     hasMore,

@@ -21,6 +21,9 @@ export interface RelationshipListProps {
 
   /** Optional callback when "Load more" is clicked */
   onLoadMore?: () => void;
+
+  /** Whether more items are currently being loaded */
+  isLoadingMore?: boolean;
 }
 
 /**
@@ -30,6 +33,7 @@ export interface RelationshipListProps {
 export const RelationshipList: React.FC<RelationshipListProps> = ({
   section,
   onLoadMore,
+  isLoadingMore,
 }) => {
   const [visibleCount, setVisibleCount] = useState(
     Math.min(section.items.length, DEFAULT_PAGE_SIZE)
@@ -59,8 +63,8 @@ export const RelationshipList: React.FC<RelationshipListProps> = ({
       </Stack>
 
       {hasMore && (
-        <Button variant="light" onClick={handleLoadMore}>
-          Load more
+        <Button variant="light" onClick={handleLoadMore} loading={isLoadingMore}>
+          {isLoadingMore ? 'Loading...' : 'Load more'}
         </Button>
       )}
 

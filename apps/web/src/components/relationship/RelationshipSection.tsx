@@ -22,6 +22,9 @@ export interface RelationshipSectionProps {
 
   /** Optional callback when "Load more" is clicked */
   onLoadMore?: () => void;
+
+  /** Whether more items are currently being loaded */
+  isLoadingMore?: boolean;
 }
 
 /**
@@ -31,6 +34,7 @@ export interface RelationshipSectionProps {
 export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
   section,
   onLoadMore,
+  isLoadingMore,
 }) => {
   const testId = `relationship-section-${section.type}-${section.direction}`;
 
@@ -72,7 +76,7 @@ export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
         )}
 
         {/* Relationship list */}
-        <RelationshipList section={section} onLoadMore={onLoadMore} />
+        <RelationshipList section={section} onLoadMore={onLoadMore} isLoadingMore={isLoadingMore} />
       </Stack>
     </Paper>
   );
