@@ -1050,7 +1050,6 @@ interface FileSystemSyncState {
 2. **Extend Existing Tables**: Add new columns to existing lists table
 3. **Create New Tables**: ReviewWorkflow, themes, sync configuration
 4. **Index Optimization**: Graph index provides edge indexes (source, target, type) per spec 034
-5. **Backward Compatibility**: Existing bookmarks/history lists remain functional
 
 ### Default Data Population
 
