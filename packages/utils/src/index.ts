@@ -25,6 +25,7 @@ export * from "./url-compression";
 export * from "./url-parser";
 export * from "./validation";
 export * from "./webgl-detection";
+export * from "./background-tasks/index";
 export * from "./cache/index";
 export * from "./cache-browser/index";
 export * from "./environment/index";
