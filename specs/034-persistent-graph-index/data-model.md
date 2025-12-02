@@ -22,7 +22,24 @@ class GraphIndexDatabase extends Dexie {
     super('bibgraph-graph-index');
     this.version(1).stores({
       nodes: 'id, entityType, completeness, cachedAt, updatedAt',
-      edges: 'id, source, target, type, direction, [source+type], [target+type], [source+target+type], discoveredAt'
+      edges: [
+        'id',
+        'source',
+        'target',
+        'type',
+        'direction',
+        '[source+type]',
+        '[target+type]',
+        '[source+target+type]',
+        'discoveredAt',
+        // Indexed edge properties
+        'authorPosition',
+        'isCorresponding',
+        'isOpenAccess',
+        'score',
+        '[source+type+authorPosition]',
+        '[source+type+isOpenAccess]'
+      ].join(', ')
     });
   }
 }
@@ -111,8 +128,61 @@ interface GraphEdgeRecord {
   /** Unix timestamp (ms) when edge was discovered */
   discoveredAt: number;
 
-  /** Optional edge metadata (e.g., author position, citation context) */
+  // =========================================================================
+  // Indexed Edge Properties (commonly-queried metadata promoted to fields)
+  // =========================================================================
+
+  /** Author position in authorship list (AUTHORSHIP edges only) */
+  authorPosition?: 'first' | 'middle' | 'last';
+
+  /** Whether this is the corresponding author (AUTHORSHIP edges only) */
+  isCorresponding?: boolean;
+
+  /** Whether the publication is open access (PUBLICATION edges only) */
+  isOpenAccess?: boolean;
+
+  /** Publication version stage (PUBLICATION edges only) */
+  version?: 'accepted' | 'submitted' | 'published';
+
+  /** Topic relevance score 0-1 (TOPIC edges only) */
+  score?: number;
+
+  /** Years of affiliation (AFFILIATION edges only) */
+  years?: number[];
+
+  /** Grant/award identifier (FUNDED_BY edges only) */
+  awardId?: string;
+
+  /** Entity role type (HAS_ROLE edges only) */
+  role?: string;
+
+  // =========================================================================
+
+  /** Optional additional metadata not covered by indexed fields */
   metadata?: Record<string, unknown>;
+}
+```
+
+### Indexed Edge Property Types
+
+```typescript
+/** Author position in authorship list */
+type AuthorPosition = 'first' | 'middle' | 'last';
+
+/** Publication version stage */
+type PublicationVersion = 'accepted' | 'submitted' | 'published';
+
+/** Edge property filter for queries */
+interface EdgePropertyFilter {
+  authorPosition?: AuthorPosition;
+  isCorresponding?: boolean;
+  isOpenAccess?: boolean;
+  version?: PublicationVersion;
+  scoreMin?: number;
+  scoreMax?: number;
+  yearsInclude?: number[];  // Filter affiliations that include any of these years
+  awardId?: string;
+  role?: string;
 }
 ```
 
@@ -141,6 +211,12 @@ interface GraphEdgeRecord {
 | Compound | `[target+type]` | Get edges to node by type |
 | Compound | `[source+target+type]` | Check edge existence (dedup) |
 | Secondary | `discoveredAt` | Age-based queries |
+| Secondary | `authorPosition` | Filter by author position |
+| Secondary | `isCorresponding` | Filter corresponding authors |
+| Secondary | `isOpenAccess` | Filter OA publications |
+| Secondary | `score` | Filter by topic relevance |
+| Compound | `[source+type+authorPosition]` | First authors of a work |
+| Compound | `[source+type+isOpenAccess]` | OA publications from source |
 
 ## Entity-to-Node Mapping
 
@@ -251,7 +327,7 @@ const stubNode: GraphNodeRecord = {
 ### GraphEdgeRecord Examples
 
 ```typescript
-// Authorship edge (outbound from work)
+// Authorship edge (outbound from work) - with indexed properties
 const authorshipEdge: GraphEdgeRecord = {
   id: 'W2741809807-A5023888391-AUTHORSHIP',
   source: 'W2741809807',
@@ -259,12 +335,41 @@ const authorshipEdge: GraphEdgeRecord = {
   type: 'AUTHORSHIP',
   direction: 'outbound',
   discoveredAt: 1701475200000,
+  // Indexed properties
+  authorPosition: 'first',
+  isCorresponding: true,
+  // Additional metadata
   metadata: {
-    author_position: 'first'
+    raw_affiliation_string: 'Indiana University, Bloomington'
   }
 };
 
-// Citation edge (outbound from citing work)
+// Publication edge (outbound from work) - with OA status
+const publicationEdge: GraphEdgeRecord = {
+  id: 'W2741809807-S1234567890-PUBLICATION',
+  source: 'W2741809807',
+  target: 'S1234567890',
+  type: 'PUBLICATION',
+  direction: 'outbound',
+  discoveredAt: 1701475200000,
+  // Indexed properties
+  isOpenAccess: true,
+  version: 'published'
+};
+
+// Topic edge (outbound from work) - with relevance score
+const topicEdge: GraphEdgeRecord = {
+  id: 'W2741809807-T12345-TOPIC',
+  source: 'W2741809807',
+  target: 'T12345',
+  type: 'TOPIC',
+  direction: 'outbound',
+  discoveredAt: 1701475200000,
+  // Indexed properties
+  score: 0.87
+};
+
+// Citation edge (outbound from citing work) - no special properties
 const citationEdge: GraphEdgeRecord = {
   id: 'W2741809807-W1234567890-REFERENCE',
   source: 'W2741809807',
@@ -274,14 +379,28 @@ const citationEdge: GraphEdgeRecord = {
   discoveredAt: 1701475200000
 };
 
-// Affiliation edge (outbound from author)
+// Affiliation edge (outbound from author) - with years
 const affiliationEdge: GraphEdgeRecord = {
   id: 'A5023888391-I205783295-AFFILIATION',
   source: 'A5023888391',
   target: 'I205783295',
   type: 'AFFILIATION',
   direction: 'outbound',
-  discoveredAt: 1701475200000
+  discoveredAt: 1701475200000,
+  // Indexed properties
+  years: [2015, 2016, 2017, 2018]
+};
+
+// Funding edge (outbound from work) - with award ID
+const fundingEdge: GraphEdgeRecord = {
+  id: 'W2741809807-F123456-FUNDED_BY',
+  source: 'W2741809807',
+  target: 'F123456',
+  type: 'FUNDED_BY',
+  direction: 'outbound',
+  discoveredAt: 1701475200000,
+  // Indexed properties
+  awardId: 'NSF-1234567'
 };
 ```
 
@@ -323,6 +442,50 @@ async function getStubNodes(): Promise<GraphNodeRecord[]> {
   return db.nodes
     .where('completeness')
     .equals('stub')
+    .toArray();
+}
+```
+
+### Filter by Edge Properties
+
+```typescript
+// Get first authors of a work
+async function getFirstAuthors(workId: string): Promise<GraphEdgeRecord[]> {
+  return db.edges
+    .where('[source+type+authorPosition]')
+    .equals([workId, 'AUTHORSHIP', 'first'])
+    .toArray();
+}
+
+// Get corresponding authors
+async function getCorrespondingAuthors(workId: string): Promise<GraphEdgeRecord[]> {
+  return db.edges
+    .where('source').equals(workId)
+    .and(edge => edge.type === 'AUTHORSHIP' && edge.isCorresponding === true)
+    .toArray();
+}
+
+// Get high-relevance topics (score >= threshold)
+async function getHighRelevanceTopics(entityId: string, threshold: number = 0.5): Promise<GraphEdgeRecord[]> {
+  return db.edges
+    .where('source').equals(entityId)
+    .and(edge => edge.type === 'TOPIC' && (edge.score ?? 0) >= threshold)
+    .toArray();
+}
+
+// Get open access publications
+async function getOpenAccessPublications(workId: string): Promise<GraphEdgeRecord[]> {
+  return db.edges
+    .where('[source+type+isOpenAccess]')
+    .equals([workId, 'PUBLICATION', 1]) // Dexie stores booleans as 0/1
+    .toArray();
+}
+
+// Get affiliations during a specific year
+async function getAffiliationsInYear(authorId: string, year: number): Promise<GraphEdgeRecord[]> {
+  return db.edges
+    .where('source').equals(authorId)
+    .and(edge => edge.type === 'AFFILIATION' && (edge.years ?? []).includes(year))
     .toArray();
 }
 ```

@@ -154,13 +154,24 @@ interface GraphEdgeRecord {
   type: RelationType;            // Relationship type
   direction: EdgeDirection;      // 'outbound' | 'inbound'
   discoveredAt: number;          // Timestamp when edge was discovered
-  metadata?: Record<string, unknown>;
+
+  // Indexed edge properties (commonly-queried metadata promoted to fields)
+  authorPosition?: 'first' | 'middle' | 'last';  // AUTHORSHIP
+  isCorresponding?: boolean;                      // AUTHORSHIP
+  isOpenAccess?: boolean;                         // PUBLICATION
+  version?: 'accepted' | 'submitted' | 'published'; // PUBLICATION
+  score?: number;                                 // TOPIC (0-1)
+  years?: number[];                               // AFFILIATION
+  awardId?: string;                               // FUNDED_BY
+  role?: string;                                  // HAS_ROLE
+
+  metadata?: Record<string, unknown>;             // Additional unindexed properties
 }
 ```
 
 **Indexes**:
 - `nodes`: `id`, `entityType`, `completeness`, `cachedAt`
-- `edges`: `id`, `source`, `target`, `type`, `[source+type]`, `[target+type]`, `[source+target+type]`
+- `edges`: `id`, `source`, `target`, `type`, `[source+type]`, `[target+type]`, `[source+target+type]`, `authorPosition`, `isCorresponding`, `isOpenAccess`, `score`, `[source+type+authorPosition]`, `[source+type+isOpenAccess]`
 
 ### Contracts
 
@@ -182,12 +193,13 @@ interface PersistentGraph {
 
   // Edge operations
   addEdge(edge: Omit<GraphEdgeRecord, 'id' | 'discoveredAt'>): Promise<void>;
-  getEdgesFrom(nodeId: string, type?: RelationType): GraphEdgeRecord[];
-  getEdgesTo(nodeId: string, type?: RelationType): GraphEdgeRecord[];
+  getEdgesFrom(nodeId: string, type?: RelationType, filter?: EdgePropertyFilter): GraphEdgeRecord[];
+  getEdgesTo(nodeId: string, type?: RelationType, filter?: EdgePropertyFilter): GraphEdgeRecord[];
   hasEdge(source: string, target: string, type: RelationType): boolean;
 
   // Query operations
   getNeighbors(nodeId: string, direction?: 'outbound' | 'inbound' | 'both'): string[];
+  getEdgesByProperty(filter: EdgePropertyFilter): GraphEdgeRecord[];
   getSubgraph(nodeIds: string[]): { nodes: GraphNodeRecord[]; edges: GraphEdgeRecord[] };
 
   // Statistics
@@ -227,6 +239,13 @@ interface PersistentGraph {
 ### Phase 2: Edge Extraction Integration (P1 User Story 1)
 - [ ] Modify `cacheResponseEntities()` to call graph index
 - [ ] Create `extractAndIndexRelationships()` helper
+- [ ] Extract indexed edge properties during relationship extraction:
+  - [ ] Author position from authorships array index
+  - [ ] Corresponding author flag from authorship data
+  - [ ] Open access status from publication data
+  - [ ] Topic score from topic associations
+  - [ ] Affiliation years from affiliation data
+  - [ ] Award ID from funding data
 - [ ] Handle stub node creation for referenced entities
 - [ ] Handle node completeness updates (stub → partial → full)
 - [ ] Add deduplication checks for edges
@@ -234,6 +253,13 @@ interface PersistentGraph {
 ### Phase 3: Query API (P2 User Stories 3-4)
 - [ ] Implement `getNeighbors()` with direction filtering
 - [ ] Implement `getEdgesFrom()` and `getEdgesTo()` with type filtering
+- [ ] Implement edge property filtering:
+  - [ ] Filter by authorPosition (first/middle/last)
+  - [ ] Filter by isCorresponding
+  - [ ] Filter by isOpenAccess
+  - [ ] Filter by score threshold (min/max)
+  - [ ] Filter by years (include any of)
+- [ ] Implement `getEdgesByProperty()` for cross-source queries
 - [ ] Implement `getSubgraph()` for subset extraction
 - [ ] Create `usePersistentGraph()` React hook
 - [ ] Export from `@bibgraph/client`

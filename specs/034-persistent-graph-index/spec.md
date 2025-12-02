@@ -53,6 +53,8 @@ As a user viewing an entity's detail page, I want to query for connected entitie
 1. **Given** a graph with Author A connected to Works W1, W2, W3, **When** I query for neighbors of Author A, **Then** I receive [W1, W2, W3] without accessing the entity cache.
 2. **Given** edges of multiple types exist from a Work, **When** I query for edges filtered by type "authorship", **Then** only authorship edges are returned.
 3. **Given** a Work W1 with outgoing "cites" edges and incoming "cited_by" edges, **When** I query for incoming edges only, **Then** only the "cited_by" edges are returned.
+4. **Given** a Work with 5 authorship edges (positions: first, middle, middle, middle, last), **When** I query for authorship edges where `authorPosition = 'first'`, **Then** only the first author edge is returned.
+5. **Given** multiple topic edges with varying scores (0.9, 0.6, 0.3), **When** I query for topic edges where `score >= 0.5`, **Then** only edges with score 0.9 and 0.6 are returned.
 
 ---
 
@@ -113,12 +115,31 @@ As a user exploring the graph, when I see references to entities I haven't fully
 - **FR-011**: System MUST provide indexes for efficient traversal queries: by source, by target, by type, and compound indexes.
 - **FR-012**: Graph operations MUST NOT require fetching from the OpenAlex API - the graph only contains derived data.
 - **FR-013**: System MUST extract edges for all known relationship types in OpenAlex entities (authorships, citations, affiliations, topics, etc.).
+- **FR-014**: System MUST extract and index commonly-queried edge properties (author position, score, open access status) as first-class fields.
+- **FR-015**: System MUST support filtering edges by indexed properties (e.g., "get authorship edges where authorPosition = 'first'").
 
 ### Key Entities
 
 - **GraphNode**: Represents an OpenAlex entity in the graph. Key attributes: ID (OpenAlex ID), entity type, display label, completeness status (full/partial/stub), cached timestamp.
-- **GraphEdge**: Represents a relationship between two entities. Key attributes: unique edge ID, source node ID, target node ID, relationship type, direction (who owns the data), optional metadata (position, weight), discovered timestamp.
+- **GraphEdge**: Represents a relationship between two entities. Key attributes: unique edge ID, source node ID, target node ID, relationship type, direction (who owns the data), indexed properties (author position, score, open access status), optional metadata, discovered timestamp.
 - **PersistentGraph**: Wrapper combining in-memory Graph class with Dexie persistence. Provides unified API for queries and mutations with automatic sync.
+
+### Indexed Edge Properties
+
+Commonly-queried relationship metadata is promoted to indexed fields for efficient filtering:
+
+| Property | Relationships | Type | Use Case |
+|----------|---------------|------|----------|
+| `authorPosition` | AUTHORSHIP | 'first' \| 'middle' \| 'last' | Filter/sort by author order |
+| `isCorresponding` | AUTHORSHIP | boolean | Identify corresponding authors |
+| `isOpenAccess` | PUBLICATION | boolean | Filter OA publications |
+| `version` | PUBLICATION | 'accepted' \| 'submitted' \| 'published' | Filter by publication stage |
+| `score` | TOPIC | number (0-1) | Filter by relevance threshold |
+| `years` | AFFILIATION | number[] | Filter by affiliation period |
+| `awardId` | FUNDED_BY | string | Filter by specific grants |
+| `role` | HAS_ROLE | string | Filter by entity role type |
+
+Additional metadata remains in optional `metadata?: Record<string, unknown>` field.
 
 ## Success Criteria *(mandatory)*
 

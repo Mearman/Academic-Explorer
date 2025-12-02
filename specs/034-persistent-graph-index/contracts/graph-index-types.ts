@@ -86,6 +86,20 @@ export interface GraphNodeRecord {
 }
 
 // ============================================================================
+// Indexed Edge Property Types
+// ============================================================================
+
+/**
+ * Author position in authorship list.
+ */
+export type AuthorPosition = 'first' | 'middle' | 'last';
+
+/**
+ * Publication version stage.
+ */
+export type PublicationVersion = 'accepted' | 'submitted' | 'published';
+
+// ============================================================================
 // Graph Edge Record
 // ============================================================================
 
@@ -94,6 +108,8 @@ export interface GraphNodeRecord {
  *
  * Stored in IndexedDB `edges` table. Captures a single relationship
  * between two entities. Edge ID format ensures deduplication.
+ *
+ * Commonly-queried metadata is promoted to indexed fields for efficient filtering.
  */
 export interface GraphEdgeRecord {
   /**
@@ -130,9 +146,62 @@ export interface GraphEdgeRecord {
    */
   discoveredAt: number;
 
+  // ==========================================================================
+  // Indexed Edge Properties (commonly-queried metadata promoted to fields)
+  // ==========================================================================
+
   /**
-   * Optional edge metadata.
-   * @example { author_position: 'first', is_corresponding: true }
+   * Author position in authorship list.
+   * Only set for AUTHORSHIP edges.
+   */
+  authorPosition?: AuthorPosition;
+
+  /**
+   * Whether this is the corresponding author.
+   * Only set for AUTHORSHIP edges.
+   */
+  isCorresponding?: boolean;
+
+  /**
+   * Whether the publication is open access.
+   * Only set for PUBLICATION edges.
+   */
+  isOpenAccess?: boolean;
+
+  /**
+   * Publication version stage.
+   * Only set for PUBLICATION edges.
+   */
+  version?: PublicationVersion;
+
+  /**
+   * Topic relevance score (0-1).
+   * Only set for TOPIC edges.
+   */
+  score?: number;
+
+  /**
+   * Years of affiliation.
+   * Only set for AFFILIATION edges.
+   */
+  years?: number[];
+
+  /**
+   * Grant/award identifier.
+   * Only set for FUNDED_BY edges.
+   */
+  awardId?: string;
+
+  /**
+   * Entity role type (funder, publisher, etc.).
+   * Only set for HAS_ROLE edges.
+   */
+  role?: string;
+
+  // ==========================================================================
+
+  /**
+   * Optional additional metadata not covered by indexed fields.
    */
   metadata?: Record<string, unknown>;
 }
@@ -162,7 +231,42 @@ export interface GraphEdgeInput {
   target: string;
   type: RelationType;
   direction: EdgeDirection;
+
+  // Optional indexed properties (extracted from entity data)
+  authorPosition?: AuthorPosition;
+  isCorresponding?: boolean;
+  isOpenAccess?: boolean;
+  version?: PublicationVersion;
+  score?: number;
+  years?: number[];
+  awardId?: string;
+  role?: string;
+
   metadata?: Record<string, unknown>;
+}
+
+/**
+ * Filter options for querying edges by indexed properties.
+ */
+export interface EdgePropertyFilter {
+  /** Filter by author position */
+  authorPosition?: AuthorPosition;
+  /** Filter by corresponding author status */
+  isCorresponding?: boolean;
+  /** Filter by open access status */
+  isOpenAccess?: boolean;
+  /** Filter by publication version */
+  version?: PublicationVersion;
+  /** Minimum topic relevance score (inclusive) */
+  scoreMin?: number;
+  /** Maximum topic relevance score (inclusive) */
+  scoreMax?: number;
+  /** Filter affiliations that include any of these years */
+  yearsInclude?: number[];
+  /** Filter by grant/award ID */
+  awardId?: string;
+  /** Filter by entity role */
+  role?: string;
 }
 
 // ============================================================================
