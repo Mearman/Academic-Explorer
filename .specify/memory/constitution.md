@@ -1,15 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 2.13.1 → 2.14.0 (MINOR: Added Principle XIX - Documentation Token Efficiency)
+Version: 2.14.0 → 2.15.0 (MINOR: Added Principle XX - Canonical Hash Computed Colours)
 Modified Sections: None
-Added Sections: Principle XIX - Documentation Token Efficiency
+Added Sections: Principle XX - Canonical Hash Computed Colours
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated - item 19 added to Constitution Check
-  - .specify/templates/spec-template.md: ✅ Updated - item 19 added to Constitution Alignment
-  - .specify/templates/tasks-template.md: ✅ Updated - item 19 added to compliance verification
+  - .specify/templates/plan-template.md: ✅ Updated - item 20 added to Constitution Check
+  - .specify/templates/spec-template.md: ✅ Updated - item 20 added to Constitution Alignment
+  - .specify/templates/tasks-template.md: ✅ Updated - item 20 added to compliance verification
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.14.0: Added Principle XIX - Documentation Token Efficiency
   - v2.13.1: Add git commit -a to prohibited commands
   - v2.13.0: Added Principle XVIII - Agent Embed Link Format
   - v2.12.1: Added Project-Specific Gotchas section (DRY refactor from README)
@@ -29,10 +30,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.14.0)
+# BibGraph Constitution (v2.15.0)
 
 ## Version History
 
+- **v2.15.0** (2025-12-02): Added Principle XX - Canonical Hash Computed Colours
 - **v2.14.0** (2025-12-02): Added Principle XIX - Documentation Token Efficiency
 - **v2.13.1** (2025-12-02): Add `git commit -a` to prohibited commands (alongside `git add .` and `git add -A`)
 - **v2.13.0** (2025-12-02): Added Principle XVIII - Agent Embed Link Format
@@ -377,6 +379,46 @@ const API_CONFIG = {
 
 **Rationale**: Token efficiency directly impacts AI agent performance, cost, and reliability. Keeping documentation DRY ensures agents receive necessary context without waste.
 
+### XX. Canonical Hash Computed Colours (NON-NEGOTIABLE)
+
+**UI elements referencing graph nodes or edges MUST use canonical hash-computed colours**.
+
+**Definition**: A "canonical hash-computed colour" is a deterministic colour value derived from an entity's stable identifier (e.g., OpenAlex ID) using the project's colour utility functions.
+
+**Requirements**:
+- Labels, badges, buttons, chips, and other UI elements that reference a specific graph node or edge MUST use that entity's computed colour
+- Colour MUST be derived from entity's canonical ID using shared colour utility (e.g., `getEntityColor()`, `hashStringToColor()`)
+- NEVER hardcode colours for entity-specific UI elements
+- NEVER use arbitrary colours for elements that represent identifiable entities
+- Visual consistency MUST be maintained across all views showing the same entity
+
+**Applicable UI elements**:
+- Entity type badges/chips (Authors, Works, Institutions, etc.)
+- Graph node labels and selection indicators
+- Relationship type indicators
+- List item markers for entity references
+- Navigation breadcrumbs referencing entities
+- Action buttons scoped to specific entities
+
+**Examples**:
+```typescript
+// ✅ CORRECT: Colour derived from entity ID
+const authorColor = getEntityColor(author.id);
+<Badge color={authorColor}>{author.display_name}</Badge>
+
+// ✅ CORRECT: Consistent colour for entity type
+const typeColor = getEntityTypeColor('authors');
+<Chip color={typeColor}>Author</Chip>
+
+// ❌ WRONG: Hardcoded arbitrary colour
+<Badge color="blue">{author.display_name}</Badge>
+
+// ❌ WRONG: Random or index-based colour
+<Badge color={COLORS[index]}>{author.display_name}</Badge>
+```
+
+**Rationale**: Consistent hash-computed colours create visual identity for entities, allowing users to recognize the same entity across different views and contexts. This improves navigation, reduces cognitive load, and maintains professional visual coherence in the graph exploration experience.
+
 ## Consolidated Patterns
 
 ### Import Patterns
@@ -495,6 +537,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - **No Magic Numbers (XVII)** → DRY Code (XV) → Type Safety (I)
 - **Agent Embed Link Format (XVIII)** → DRY Code (XV) → Working Files Hygiene (XIV)
 - **Documentation Token Efficiency (XIX)** → DRY Code (XV) → Agent Embed Link Format (XVIII)
+- **Canonical Hash Computed Colours (XX)** → No Magic Numbers (XVII) → DRY Code (XV)
 
 ## Development Workflow
 
@@ -540,7 +583,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 19 core principles. Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 20 core principles. Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider
@@ -577,6 +620,7 @@ Every PR MUST verify alignment with all 19 core principles. Feature specs MUST d
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized
 - **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for embeds
 - **Documentation Token Efficiency**: AGENTS.md, README.md, constitution are deduplicated and concise; hierarchical embedding preferred
+- **Canonical Hash Computed Colours**: UI elements referencing entities use hash-computed colours from shared utilities; no hardcoded entity colours
 
 ### Breaking Changes
 MAJOR.MINOR.PATCH versioning applies. During development, breaking changes acceptable without MAJOR bumps but MUST be documented.

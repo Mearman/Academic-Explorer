@@ -140,3 +140,4 @@
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration values centralized
 - **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for document embeds
 - **Documentation Token Efficiency**: AGENTS.md, README.md, and constitution are kept deduplicated and concise; hierarchical embedding preferred
+- **Canonical Hash Computed Colours**: UI elements referencing entities use hash-computed colours from shared utilities; no hardcoded entity colours

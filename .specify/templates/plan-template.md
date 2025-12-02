@@ -52,6 +52,7 @@ Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 17. **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized in objects or enums
 18. **Agent Embed Link Format**: Agent instruction files (AGENTS.md, CLAUDE.md) use `[@path](path)` format in blockquotes for document embeds
 19. **Documentation Token Efficiency**: AGENTS.md, README.md, and constitution are deduplicated and concise; hierarchical embedding preferred over duplication
+20. **Canonical Hash Computed Colours**: UI elements referencing graph nodes/edges use hash-computed colours from shared utilities; no hardcoded entity colours
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure
