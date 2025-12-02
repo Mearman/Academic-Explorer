@@ -14,7 +14,7 @@
 
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
 import { detectWebGLCapabilities, GraphLODManager, LODLevel } from '@bibgraph/utils';
-import { Box, LoadingOverlay, Text, Badge, Group, Stack } from '@mantine/core';
+import { Box, LoadingOverlay, Text, Badge, Group, Stack, useComputedColorScheme } from '@mantine/core';
 import { IconAlertTriangle, IconActivity } from '@tabler/icons-react';
 import React, { useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
@@ -203,6 +203,7 @@ export function ForceGraph3DVisualization({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(undefined);
   const [webglStatus, setWebglStatus] = useState<{ available: boolean; reason?: string } | null>(null);
+  const colorScheme = useComputedColorScheme('light');
 
   // Notify parent when graph methods become available
   useEffect(() => {
@@ -757,10 +758,10 @@ export function ForceGraph3DVisualization({
         style={{
           width: width ?? '100%',
           height,
-          border: '1px solid var(--mantine-color-gray-3)',
+          border: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'}`,
           borderRadius: 'var(--mantine-radius-md)',
           overflow: 'hidden',
-          backgroundColor: 'var(--mantine-color-gray-0)',
+          backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)',
         }}
       >
         <LoadingOverlay visible />
@@ -777,10 +778,10 @@ export function ForceGraph3DVisualization({
         style={{
           width: width ?? '100%',
           height,
-          border: '1px solid var(--mantine-color-gray-3)',
+          border: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'}`,
           borderRadius: 'var(--mantine-radius-md)',
           overflow: 'hidden',
-          backgroundColor: 'var(--mantine-color-gray-0)',
+          backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)',
         }}
       >
         <WebGLUnavailable reason={webglStatus.reason ?? 'WebGL not available'} />
@@ -799,10 +800,10 @@ export function ForceGraph3DVisualization({
       style={{
         width: width ?? '100%',
         height,
-        border: '1px solid var(--mantine-color-gray-3)',
+        border: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'}`,
         borderRadius: 'var(--mantine-radius-md)',
         overflow: 'hidden',
-        backgroundColor: 'var(--mantine-color-gray-0)',
+        backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)',
         outline: 'none',
       }}
     >

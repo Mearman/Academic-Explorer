@@ -7,7 +7,7 @@
  */
 
 import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
-import { Box, LoadingOverlay } from '@mantine/core';
+import { Box, LoadingOverlay, useComputedColorScheme } from '@mantine/core';
 import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject } from 'react-force-graph-2d';
 
@@ -131,6 +131,7 @@ export function ForceGraphVisualization({
 }: ForceGraphVisualizationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphMethods | undefined>(undefined);
+  const colorScheme = useComputedColorScheme('light');
 
   // Notify parent when graph methods become available
   useEffect(() => {
@@ -452,10 +453,10 @@ export function ForceGraphVisualization({
       style={{
         width: width ?? '100%',
         height,
-        border: '1px solid var(--mantine-color-gray-3)',
+        border: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'}`,
         borderRadius: 'var(--mantine-radius-md)',
         overflow: 'hidden',
-        backgroundColor: 'var(--mantine-color-gray-0)',
+        backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)',
       }}
     >
       <LoadingOverlay visible={loading} />
