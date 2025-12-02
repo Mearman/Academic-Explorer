@@ -139,3 +139,4 @@
 - **Presentation/Functionality Decoupling**: Web app components separate presentation from business logic; logic in hooks/services, rendering in components; both layers independently testable
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration values centralized
 - **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for document embeds
+- **Documentation Token Efficiency**: AGENTS.md, README.md, and constitution are kept deduplicated and concise; hierarchical embedding preferred

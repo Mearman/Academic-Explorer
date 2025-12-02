@@ -179,6 +179,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Web app components separate presentation from logic; business logic in hooks/services (Presentation/Functionality Decoupling)
   - [ ] All meaningful literals extracted to named constants; no magic numbers/strings (No Magic Numbers/Values)
   - [ ] Agent instruction files use `[@path](path)` format in blockquotes for embeds (Agent Embed Link Format)
+  - [ ] AGENTS.md, README.md, constitution are deduplicated and concise (Documentation Token Efficiency)
 
 ---
 

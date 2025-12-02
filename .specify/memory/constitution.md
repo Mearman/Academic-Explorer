@@ -1,15 +1,16 @@
 <!--
 Sync Impact Report:
-Version: 2.13.0 → 2.13.1 (PATCH: Add git commit -a to prohibited commands)
-Modified Sections: Principle VI, Commit Quality Gates - added `git commit -a` to prohibition
-Added Sections: None
+Version: 2.13.1 → 2.14.0 (MINOR: Added Principle XIX - Documentation Token Efficiency)
+Modified Sections: None
+Added Sections: Principle XIX - Documentation Token Efficiency
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated - full git prohibition added to item 6
-  - .specify/templates/spec-template.md: ✅ Updated - full git prohibition added to Atomic Conventional Commits
-  - .specify/templates/tasks-template.md: ✅ Updated - full git prohibition added to compliance checklist
+  - .specify/templates/plan-template.md: ✅ Updated - item 19 added to Constitution Check
+  - .specify/templates/spec-template.md: ✅ Updated - item 19 added to Constitution Alignment
+  - .specify/templates/tasks-template.md: ✅ Updated - item 19 added to compliance verification
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.13.1: Add git commit -a to prohibited commands
   - v2.13.0: Added Principle XVIII - Agent Embed Link Format
   - v2.12.1: Added Project-Specific Gotchas section (DRY refactor from README)
   - v2.12.0: Added Principle XVII - No Magic Numbers/Values
@@ -28,10 +29,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.13.1)
+# BibGraph Constitution (v2.14.0)
 
 ## Version History
 
+- **v2.14.0** (2025-12-02): Added Principle XIX - Documentation Token Efficiency
 - **v2.13.1** (2025-12-02): Add `git commit -a` to prohibited commands (alongside `git add .` and `git add -A`)
 - **v2.13.0** (2025-12-02): Added Principle XVIII - Agent Embed Link Format
 - **v2.12.1** (2025-12-02): Added Project-Specific Gotchas section (DRY refactor from README)
@@ -350,6 +352,31 @@ const API_CONFIG = {
 
 **Rationale**: The `@` prefix format is recognized by Claude Code as a document embed directive. Using consistent formatting ensures agents receive the intended context and enables tooling to detect and validate embed references.
 
+### XIX. Documentation Token Efficiency (NON-NEGOTIABLE)
+
+**Proactively maintain AGENTS.md, README.md, and constitution to be deduplicated and concise**.
+
+**Definition**: AI agents consume these files as context. Redundant or verbose content wastes tokens, increases latency, and risks context window overflow.
+
+**Requirements**:
+- AGENTS.md MUST embed other docs via `@` links rather than duplicating content
+- README.md is for humans; keep it concise and avoid AI-specific implementation details
+- Constitution contains principles and patterns; avoid duplicating content already in README.md
+- When updating any of these files, check for and eliminate redundancy across all three
+- Prefer hierarchical embedding (AGENTS.md → README.md → constitution) over flat duplication
+
+**File responsibilities**:
+- `AGENTS.md`: Entry point for AI agents; embeds README.md and constitution
+- `README.md`: Human-readable project overview, commands, structure
+- `constitution.md`: Development principles, patterns, gotchas for AI consumption
+
+**Proactive maintenance triggers**:
+- After adding new content to any file, verify no duplication exists
+- After completing a feature, review if documentation can be condensed
+- Periodically audit total line counts and eliminate bloat
+
+**Rationale**: Token efficiency directly impacts AI agent performance, cost, and reliability. Keeping documentation DRY ensures agents receive necessary context without waste.
+
 ## Consolidated Patterns
 
 ### Import Patterns
@@ -467,6 +494,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - **Presentation/Functionality Decoupling (XVI)** → Test-First Development (II) → DRY Code (XV)
 - **No Magic Numbers (XVII)** → DRY Code (XV) → Type Safety (I)
 - **Agent Embed Link Format (XVIII)** → DRY Code (XV) → Working Files Hygiene (XIV)
+- **Documentation Token Efficiency (XIX)** → DRY Code (XV) → Agent Embed Link Format (XVIII)
 
 ## Development Workflow
 
@@ -512,7 +540,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 18 core principles. Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 19 core principles. Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider
@@ -548,6 +576,7 @@ Every PR MUST verify alignment with all 18 core principles. Feature specs MUST d
 - **Presentation/Functionality Decoupling**: No business logic in components, clear container/presentational separation
 - **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized
 - **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for embeds
+- **Documentation Token Efficiency**: AGENTS.md, README.md, constitution are deduplicated and concise; hierarchical embedding preferred
 
 ### Breaking Changes
 MAJOR.MINOR.PATCH versioning applies. During development, breaking changes acceptable without MAJOR bumps but MUST be documented.

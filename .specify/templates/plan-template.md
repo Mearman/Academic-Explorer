@@ -51,6 +51,7 @@ Verify alignment with BibGraph Constitution (`.specify/memory/constitution.md`):
 16. **Presentation/Functionality Decoupling**: Web app components separate presentation from logic; business logic in hooks/services, rendering in components; testable layers
 17. **No Magic Numbers/Values**: All meaningful literals extracted to named constants; configuration centralized in objects or enums
 18. **Agent Embed Link Format**: Agent instruction files (AGENTS.md, CLAUDE.md) use `[@path](path)` format in blockquotes for document embeds
+19. **Documentation Token Efficiency**: AGENTS.md, README.md, and constitution are deduplicated and concise; hierarchical embedding preferred over duplication
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure
