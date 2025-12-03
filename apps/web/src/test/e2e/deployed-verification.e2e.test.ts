@@ -24,14 +24,14 @@ test.describe('Deployed Site - Critical Verification', () => {
     await page.locator('main').waitFor({ timeout: 15_000 });
 
     const mainText = page.locator('main');
-    const text = await mainText.textContent();
-    expect(text).toBeTruthy();
+    await expect(mainText).not.toBeEmpty();
 
     // Should show author content, not error
-    expect(text).not.toContain('Not Found');
-    expect(text).not.toContain('Error loading');
+    await expect(mainText).not.toContainText('Not Found');
+    await expect(mainText).not.toContainText('Error loading');
 
     // Should show some author data
+    const text = await mainText.textContent();
     const hasAuthorData =
       text!.includes('works') ||
       text!.includes('citations') ||
@@ -47,13 +47,12 @@ test.describe('Deployed Site - Critical Verification', () => {
     await page.locator('main').waitFor({ timeout: 15_000 });
 
     const mainText = page.locator('main');
-    const text = await mainText.textContent();
-    expect(text).toBeTruthy();
+    await expect(mainText).not.toBeEmpty();
 
     // Should not show error
-    expect(text).not.toContain('Not Found');
-    expect(text).not.toContain('Error');
-    expect(text).not.toContain('Invalid');
+    await expect(mainText).not.toContainText('Not Found');
+    await expect(mainText).not.toContainText('Error');
+    await expect(mainText).not.toContainText('Invalid');
   });
 
   test('should handle ROR external ID - ror:00cvxb145', async ({ page }) => {
@@ -64,12 +63,11 @@ test.describe('Deployed Site - Critical Verification', () => {
     await page.locator('main').waitFor({ timeout: 15_000 });
 
     const mainText = page.locator('main');
-    const text = await mainText.textContent();
-    expect(text).toBeTruthy();
+    await expect(mainText).not.toBeEmpty();
 
     // Should not show error
-    expect(text).not.toContain('Not Found');
-    expect(text).not.toContain('Error');
+    await expect(mainText).not.toContainText('Not Found');
+    await expect(mainText).not.toContainText('Error');
   });
 
   test('should display bioplastics search results with all data', async ({
@@ -82,10 +80,10 @@ test.describe('Deployed Site - Critical Verification', () => {
     await page.locator('main').waitFor({ timeout: 15_000 });
 
     const mainText = page.locator('main');
-    const text = await mainText.textContent();
-    expect(text).toBeTruthy();
+    await expect(mainText).not.toBeEmpty();
 
     // Should show bioplastics-related content
+    const text = await mainText.textContent();
     expect(text!.toLowerCase()).toContain('bioplastic');
 
     // Should show pagination or results info
@@ -96,8 +94,8 @@ test.describe('Deployed Site - Critical Verification', () => {
     expect(hasResults).toBeTruthy();
 
     // Should not be empty or error
-    expect(text).not.toContain('No results');
-    expect(text).not.toContain('Error');
+    await expect(mainText).not.toContainText('No results');
+    await expect(mainText).not.toContainText('Error');
   });
 
   test.describe('All Entity Types', () => {
@@ -122,12 +120,11 @@ test.describe('Deployed Site - Critical Verification', () => {
         await page.locator('main').waitFor({ timeout: 15_000 });
 
         const mainText = page.locator('main');
-        const text = await mainText.textContent();
-        expect(text).toBeTruthy();
+        await expect(mainText).not.toBeEmpty();
 
         // Should not show error
-        expect(text).not.toContain('Not Found');
-        expect(text).not.toContain('Error loading');
+        await expect(mainText).not.toContainText('Not Found');
+        await expect(mainText).not.toContainText('Error loading');
       });
     });
   });
@@ -145,14 +142,15 @@ test.describe('Deployed Site - Critical Verification', () => {
     const mainText = page.locator('main');
 
     // Check that we have content (either results or loading state)
-    const text = await mainText.textContent();
-    expect(text).toBeTruthy();
-    expect(text!.length).toBeGreaterThan(0);
+    await expect(mainText).not.toBeEmpty();
 
     // Should not show error states
-    expect(text).not.toContain('Error loading');
-    expect(text).not.toContain('Failed to load');
-    expect(text).not.toContain('An error occurred');
+    await expect(mainText).not.toContainText('Error loading');
+    await expect(mainText).not.toContainText('Failed to load');
+    await expect(mainText).not.toContainText('An error occurred');
+
+    // Get text for remaining checks
+    const text = await mainText.textContent();
 
     // If we have loaded content, check for bioplastic or loading indicators
     const lowerMainText = text!.toLowerCase();

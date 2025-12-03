@@ -81,8 +81,8 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		// Get the actual entity title for verification
 		const entityTitle = page.locator('h1').first();
-		const titleText = await entityTitle.textContent();
-		expect(titleText).toBeTruthy();
+		const titleText = entityTitle;
+		await expect(titleText).toHaveText();
 
 		// 2. Verify bookmark button is not bookmarked initially
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
@@ -155,8 +155,8 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		// Get entity title
 		const entityTitle = page.locator('h1').first();
-		const titleText = await entityTitle.textContent();
-		expect(titleText).toBeTruthy();
+		const titleText = entityTitle;
+		await expect(titleText).toHaveText();
 
 		// Click bookmark button
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');

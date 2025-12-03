@@ -321,8 +321,8 @@ test.describe('Xpac Toggle Functionality', () => {
     }
 
     // Verify page is still responsive and no errors
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     const hasError = bodyText?.toLowerCase().includes('error') &&
                      !bodyText?.toLowerCase().includes('0 errors');

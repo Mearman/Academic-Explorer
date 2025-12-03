@@ -38,8 +38,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
     expect(bodyText!.length).toBeGreaterThan(100);
 
     // Verify API requests were made (or check for page content indicating success)
@@ -86,8 +86,8 @@ test.describe('xpac Works Default Inclusion', () => {
     });
 
     // Verify page loaded successfully
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for xpac-specific field: is_xpac
     if (apiResponses.length > 0) {
@@ -147,8 +147,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Verify API requests were made (or page loaded with content)
     if (apiRequests.length > 0) {
@@ -194,8 +194,8 @@ test.describe('xpac Works Default Inclusion', () => {
     });
 
     // Verify page loaded successfully
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for xpac work types (dataset, software, specimen, other)
     if (apiResponses.length > 0) {
@@ -239,8 +239,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page renders without errors
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for no error messages
     const hasError = bodyText?.toLowerCase().includes('error') &&
