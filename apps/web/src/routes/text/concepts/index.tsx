@@ -19,8 +19,8 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 const textConceptsSearchSchema = z.object({
-  title: z.string().optional().catch(),
-  abstract: z.string().optional().catch(),
+  title: z.string().optional().catch(undefined),
+  abstract: z.string().optional().catch(undefined),
 });
 
 

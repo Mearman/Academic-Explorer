@@ -5,9 +5,9 @@ import { AutocompletePage } from "@/components/AutocompletePage";
 import { useEntityAutocomplete } from "@/hooks/use-entity-autocomplete";
 
 const searchSchema = z.object({
-  filter: z.string().optional().catch(),
-  search: z.string().optional().catch(),
-  q: z.string().optional().catch(),
+  filter: z.string().optional().catch(undefined),
+  search: z.string().optional().catch(undefined),
+  q: z.string().optional().catch(undefined),
 });
 
 const AutocompleteConceptsRoute = () => {
