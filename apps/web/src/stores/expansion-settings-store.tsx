@@ -12,7 +12,7 @@ import type {
 } from "@bibgraph/types";
 import { getDefaultSettingsForTarget , RelationType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
-import React, { createContext, type ReactNode,use, useCallback, useReducer } from "react";
+import React, { createContext, type ReactNode, use, useCallback, useMemo, useReducer } from "react";
 
 interface ExpansionSettingsState {
   /** Settings per target type */
@@ -394,9 +394,10 @@ const ExpansionSettingsContext = createContext<{
 export const ExpansionSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(expansionSettingsReducer, getInitialState());
 
-  const value = { state, dispatch };
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
   return (
-    <ExpansionSettingsContext value={value}>
+    <ExpansionSettingsContext value={contextValue}>
       {children}
     </ExpansionSettingsContext>
   );

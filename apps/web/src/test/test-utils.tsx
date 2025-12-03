@@ -25,11 +25,14 @@ export const createTestQueryClient = () =>
     },
   });
 
+// Default QueryClient instance to prevent infinite render loops
+const DEFAULT_QUERY_CLIENT = createTestQueryClient();
+
 // Test wrapper component with QueryClient
 export const TestWrapper: React.FC<{
   children: React.ReactNode;
   queryClient?: QueryClient;
-}> = ({ children, queryClient = createTestQueryClient() }) => (
+}> = ({ children, queryClient = DEFAULT_QUERY_CLIENT }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 

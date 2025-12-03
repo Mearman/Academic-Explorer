@@ -83,7 +83,7 @@ if (typeof window !== "undefined") {
 
     // Check for collapsed protocol slashes in the (potentially updated) hash
     if (!needsUpdate) {
-      const collapsedPattern = /(?:https?:\/)(?:[^/])/;
+      const collapsedPattern = /https?:\/[^/]/;
       if (collapsedPattern.test(fixedHash)) {
         // Fix collapsed patterns in the hash portion only
         fixedHash = fixedHash
@@ -148,7 +148,7 @@ if (typeof window !== "undefined") {
     }
 
     // Fix collapsed protocol slashes
-    const collapsedPattern = /(?:^|\/)https?:\/(?:[^/])/;
+    const collapsedPattern = /(?:^|\/)https?:\/[^/]/;
     if (collapsedPattern.test(fixedHash)) {
       fixedHash = fixedHash.replace(/(^|\/)https?:\/([^/])/, '$1https://$2');
       needsUpdate = true;

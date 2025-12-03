@@ -293,9 +293,10 @@ const NetworkActivityContext = createContext<{
 export const NetworkActivityProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(networkActivityReducer, getInitialState());
 
-  const value = { state, dispatch };
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
   return (
-    <NetworkActivityContext value={value}>
+    <NetworkActivityContext value={contextValue}>
       {children}
     </NetworkActivityContext>
   );

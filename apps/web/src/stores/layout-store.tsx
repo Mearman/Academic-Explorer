@@ -6,7 +6,7 @@
 import type { ProviderType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
-import React, { createContext, type ReactNode,use, useEffect, useReducer } from "react";
+import React, { createContext, type ReactNode, use, useEffect, useMemo, useReducer } from "react";
 
 // Database schema for layout persistence
 interface LayoutRecord {
@@ -432,9 +432,10 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     state.autoPinOnLayoutStabilization,
   ]);
 
-  const value = { state, dispatch };
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
   return (
-    <LayoutContext value={value}>
+    <LayoutContext value={contextValue}>
       {children}
     </LayoutContext>
   );

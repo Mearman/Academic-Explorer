@@ -5,7 +5,7 @@
 
 import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
-import React, { createContext, ReactNode,use, useCallback, useReducer } from "react";
+import React, { createContext, ReactNode, use, useCallback, useMemo, useReducer } from "react";
 
 // Dexie database for persistent app activity storage
 interface StoredAppActivityEvent extends Omit<AppActivityEvent, "id"> {
@@ -895,29 +895,54 @@ export const AppActivityProvider: React.FC<AppActivityProviderProps> = ({
     dispatch({ type: "CLEAR_FILTERS" });
   }, []);
 
-  const contextValue: AppActivityContextType = {
-    state,
-    addEvent,
-    updateEvent,
-    removeEvent,
-    clearOldEvents,
-    clearAllEvents,
-    loadEvents,
-    logUserInteraction,
-    logNavigation,
-    logComponentMount,
-    logComponentUnmount,
-    logPerformanceMetric,
-    logError,
-    logWarning,
-    logApiCall,
-    setTypeFilter,
-    setCategoryFilter,
-    setSeverityFilter,
-    setSearchTerm,
-    setTimeRange,
-    clearFilters,
-  };
+  const contextValue: AppActivityContextType = useMemo(
+    () => ({
+      state,
+      addEvent,
+      updateEvent,
+      removeEvent,
+      clearOldEvents,
+      clearAllEvents,
+      loadEvents,
+      logUserInteraction,
+      logNavigation,
+      logComponentMount,
+      logComponentUnmount,
+      logPerformanceMetric,
+      logError,
+      logWarning,
+      logApiCall,
+      setTypeFilter,
+      setCategoryFilter,
+      setSeverityFilter,
+      setSearchTerm,
+      setTimeRange,
+      clearFilters,
+    }),
+    [
+      state,
+      addEvent,
+      updateEvent,
+      removeEvent,
+      clearOldEvents,
+      clearAllEvents,
+      loadEvents,
+      logUserInteraction,
+      logNavigation,
+      logComponentMount,
+      logComponentUnmount,
+      logPerformanceMetric,
+      logError,
+      logWarning,
+      logApiCall,
+      setTypeFilter,
+      setCategoryFilter,
+      setSeverityFilter,
+      setSearchTerm,
+      setTimeRange,
+      clearFilters,
+    ]
+  );
 
   return (
     <AppActivityContext value={contextValue}>

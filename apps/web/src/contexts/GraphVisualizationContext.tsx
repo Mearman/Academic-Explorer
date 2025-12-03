@@ -9,7 +9,7 @@
 
 import type { GraphEdge } from '@bibgraph/types';
 import type { ReactNode } from 'react';
-import { createContext, use, useCallback, useEffect,useState } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useGraphAutoPopulation } from '@/hooks/use-graph-auto-population';
 import type { GraphVisualizationState } from '@/hooks/use-graph-visualization';
@@ -76,8 +76,10 @@ export const GraphVisualizationProvider = ({ children }: { children: ReactNode }
     strategy: backgroundStrategy,
   });
 
+  const contextValue = useMemo(() => ({ graphData, visualization }), [graphData, visualization]);
+
   return (
-    <GraphVisualizationContext value={{ graphData, visualization }}>
+    <GraphVisualizationContext value={contextValue}>
       {children}
     </GraphVisualizationContext>
   );

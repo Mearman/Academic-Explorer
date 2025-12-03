@@ -32,6 +32,11 @@ import { getEdgeStyle } from '../edge-styles';
 // Entity type colors using hash-based generation for deterministic, consistent coloring
 const ENTITY_TYPE_COLORS: Record<EntityType, string> = HASH_BASED_ENTITY_COLORS;
 
+// Default prop values extracted as constants to prevent infinite render loops
+const DEFAULT_HIGHLIGHTED_NODE_IDS = new Set<string>();
+const DEFAULT_HIGHLIGHTED_PATH: string[] = [];
+const DEFAULT_EXPANDING_NODE_IDS = new Set<string>();
+
 // Node for the force graph (extends NodeObject)
 interface ForceGraphNode {
   id: string;
@@ -170,11 +175,11 @@ export const ForceGraph3DVisualization = ({
   width,
   height = 500,
   displayMode = 'highlight',
-  highlightedNodeIds = new Set(),
-  highlightedPath = [],
+  highlightedNodeIds = DEFAULT_HIGHLIGHTED_NODE_IDS,
+  highlightedPath = DEFAULT_HIGHLIGHTED_PATH,
   communityAssignments,
   communityColors,
-  expandingNodeIds = new Set(),
+  expandingNodeIds = DEFAULT_EXPANDING_NODE_IDS,
   loading = false,
   getNodeStyle,
   getLinkStyle,

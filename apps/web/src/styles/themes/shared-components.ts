@@ -40,7 +40,6 @@ export const sharedComponents = {
             if (variant === 'white') {
               return isNeutralColor ? 'var(--mantine-color-black)' : undefined
             }
-            return
           })(),
         },
       }
@@ -293,7 +292,6 @@ export const sharedComponents = {
             if (variant === "white") {
               return isNeutralColor ? "var(--mantine-color-black)" : undefined
             }
-            return
           })(),
         },
       }

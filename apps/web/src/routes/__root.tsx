@@ -51,7 +51,7 @@ export const Route = createRootRoute({
 
     // Check if pathname starts with /https:// or /http:// followed by api.openalex.org
     // Need to match /https://api.openalex.org/ or /http://api.openalex.org/
-    const openAlexPattern = /^\/(?:https?:\/\/api\.openalex\.org)\//;
+    const openAlexPattern = /^\/https?:\/\/api\.openalex\.org\//;
 
     if (openAlexPattern.test(pathname)) {
       // Strip the protocol and api.openalex.org from the pathname
@@ -135,8 +135,8 @@ export const Route = createRootRoute({
 
       if (sourceToFix) {
         // Look for collapsed protocol patterns
-        const collapsedHttpsPattern = /(?:^|\/)https?:\/(?:[^/])/;
-        const collapsedRorPattern = /(?:^|\/)ror:\/(?:[^/])/;
+        const collapsedHttpsPattern = /(?:^|\/)https?:\/[^/]/;
+        const collapsedRorPattern = /(?:^|\/)ror:\/[^/]/;
 
         let fixedSource = sourceToFix;
 

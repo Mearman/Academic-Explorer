@@ -99,7 +99,6 @@ export const useDocumentTitle = (
         }
       };
     }
-    return;
   }, [restoreOnUnmount]);
 };
 

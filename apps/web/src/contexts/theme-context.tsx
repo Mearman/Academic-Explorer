@@ -1,6 +1,6 @@
 import { createTheme, MantineProvider, type MantineTheme } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
-import React, { createContext, use } from "react";
+import React, { createContext, use, useMemo } from "react";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
 import { mantineTheme, radixTheme,shadcnTheme } from "@/styles/themes";
@@ -116,14 +116,17 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }) as MantineTheme;
   };
 
-  const contextValue: ThemeContextType = {
-    config,
-    setComponentLibrary,
-    setColorScheme,
-    setColorMode,
-    setBorderRadius,
-    resetTheme,
-  };
+  const contextValue: ThemeContextType = useMemo(
+    () => ({
+      config,
+      setComponentLibrary,
+      setColorScheme,
+      setColorMode,
+      setBorderRadius,
+      resetTheme,
+    }),
+    [config, setComponentLibrary, setColorScheme, setColorMode, setBorderRadius, resetTheme]
+  );
 
   const currentMantineTheme = generateMantineTheme();
 

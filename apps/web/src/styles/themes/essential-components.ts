@@ -43,7 +43,6 @@ export const essentialComponents = {
             if (variant === 'white') {
               return isNeutralColor ? 'var(--mantine-color-black)' : undefined
             }
-            return
           })(),
         },
       }
@@ -186,7 +185,6 @@ export const essentialComponents = {
             if (variant === "white") {
               return isNeutralColor ? "var(--mantine-color-black)" : undefined
             }
-            return
           })(),
         },
       }
