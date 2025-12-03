@@ -323,6 +323,7 @@ export default tseslint.config([
             "playwright/no-networkidle": "off", // networkidle is valid for some tests
             "playwright/no-wait-for-timeout": "off", // Legitimate for animations, async operations, and network timing in E2E tests
             "playwright/prefer-web-first-assertions": "off", // Auto-fix is broken and creates invalid TypeScript code
+            "playwright/expect-expect": "off", // Many E2E tests use implicit "no crash" assertions or custom helpers
             "unicorn/no-await-expression-member": "off", // Common in Playwright: await page.goto().then(...)
             "sonarjs/no-nested-functions": "off", // Test helpers often nest functions
             "promise/always-return": "off", // Not all promise chains need returns in tests
