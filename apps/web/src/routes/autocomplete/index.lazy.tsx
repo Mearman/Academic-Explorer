@@ -217,7 +217,7 @@ const AutocompleteGeneralRoute = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["autocomplete", "general", query, selectedTypes],
+    queryKey: ["autocomplete", "general", query, selectedTypes, allTypesSelected],
     queryFn: async () => {
       if (!query.trim()) return [];
 
