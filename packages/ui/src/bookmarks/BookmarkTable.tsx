@@ -1,16 +1,16 @@
 import type { Bookmark, EntityType } from "@bibgraph/types";
-import { Table, Pagination, Group, Text, Box, Badge, ActionIcon, Tooltip, Center, Loader, Select } from "@mantine/core";
-import { IconTrash, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
+import { ActionIcon, Badge, Box, Center, Group, Loader, Pagination, Select,Table, Text, Tooltip } from "@mantine/core";
+import { IconSortAscending, IconSortDescending,IconTrash } from "@tabler/icons-react";
 import {
-	useReactTable,
-	getCoreRowModel,
-	getSortedRowModel,
-	getPaginationRowModel,
-	flexRender,
-	type SortingState,
 	type ColumnDef,
+	flexRender,
+	getCoreRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	type SortingState,
+	useReactTable,
 } from "@tanstack/react-table";
-import { useState, useMemo } from "react";
+import { useMemo,useState } from "react";
 
 import { TagList } from "./TagBadge";
 
@@ -50,15 +50,15 @@ export interface BookmarkTableProps {
 
 /**
  * Get a display-friendly label for entity type
+ * @param entityType
  */
-function getEntityTypeLabel(entityType: EntityType): string {
-	return entityType.charAt(0).toUpperCase() + entityType.slice(1);
-}
+const getEntityTypeLabel = (entityType: EntityType): string => entityType.charAt(0).toUpperCase() + entityType.slice(1);
 
 /**
  * Get a color for entity type badges
+ * @param entityType
  */
-function getEntityTypeColor(entityType: EntityType): string {
+const getEntityTypeColor = (entityType: EntityType): string => {
 	const colorMap: Record<EntityType, string> = {
 		works: "blue",
 		authors: "green",
@@ -74,12 +74,13 @@ function getEntityTypeColor(entityType: EntityType): string {
 		subfields: "violet",
 	};
 	return colorMap[entityType] || "gray";
-}
+};
 
 /**
  * Format a date as relative time
+ * @param date
  */
-function formatRelativeTime(date: Date): string {
+const formatRelativeTime = (date: Date): string => {
 	if (!date || isNaN(date.getTime())) {
 		return "Invalid date";
 	}
@@ -127,19 +128,25 @@ function formatRelativeTime(date: Date): string {
 	}
 	const years = Math.floor(diffMs / YEAR);
 	return `${years}y ago`;
-}
+};
 
 /**
  * Table view for displaying bookmarks with sortable columns and pagination
+ * @param root0
+ * @param root0.bookmarks
+ * @param root0.onDeleteBookmark
+ * @param root0.onNavigate
+ * @param root0.loading
+ * @param root0.emptyMessage
  */
-export function BookmarkTable({
+export const BookmarkTable = ({
 	bookmarks,
 	onDeleteBookmark,
 	onNavigate,
 	loading = false,
 	emptyMessage = "No bookmarks yet",
 	...restProps
-}: BookmarkTableProps) {
+}: BookmarkTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([{ id: "addedAt", desc: true }]);
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
@@ -356,4 +363,4 @@ export function BookmarkTable({
 			)}
 		</Box>
 	);
-}
+};

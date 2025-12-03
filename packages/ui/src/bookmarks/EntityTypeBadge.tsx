@@ -10,18 +10,21 @@ export interface EntityTypeBadgeProps {
 
 /**
  * Badge component for displaying entity types with color-coding
- *
+ * @param root0
+ * @param root0.entityType
+ * @param root0.size
+ * @param root0.variant
  * @example
  * ```tsx
  * <EntityTypeBadge entityType="works" />
  * <EntityTypeBadge entityType="authors" size="md" variant="filled" />
  * ```
  */
-export function EntityTypeBadge({
+export const EntityTypeBadge = ({
 	entityType,
 	size = "sm",
 	variant = "light",
-}: EntityTypeBadgeProps) {
+}: EntityTypeBadgeProps) => {
 	const metadata = ENTITY_METADATA[entityType];
 
 	return (
@@ -29,4 +32,4 @@ export function EntityTypeBadge({
 			{metadata.displayName}
 		</Badge>
 	);
-}
+};

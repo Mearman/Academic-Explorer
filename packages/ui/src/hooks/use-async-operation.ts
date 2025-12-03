@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useCallback,useState } from "react"
 
 export interface AsyncOperationState<T = unknown> {
   data: T | null
@@ -18,9 +18,7 @@ export interface UseAsyncOperationOptions {
   onSuccess?: (data: unknown) => void
 }
 
-export function useAsyncOperation<T = unknown>(
-  options: UseAsyncOperationOptions = {}
-): AsyncOperationResult<T> {
+export const useAsyncOperation = <T = unknown>(options: UseAsyncOperationOptions = {}): AsyncOperationResult<T> => {
   const { retryCount = 0, retryDelay = 0, onError, onSuccess } = options
 
   const [state, setState] = useState<AsyncOperationState<T>>({
@@ -67,4 +65,4 @@ export function useAsyncOperation<T = unknown>(
     execute,
     reset,
   }
-}
+};

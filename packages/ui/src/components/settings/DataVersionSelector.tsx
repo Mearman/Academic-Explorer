@@ -56,7 +56,12 @@ export interface DataVersionSelectorProps {
  * - Customizable label text
  * - Accessible Select component from Mantine
  * - Proper handling of undefined/null values
- *
+ * @param root0
+ * @param root0.value
+ * @param root0.onChange
+ * @param root0.label
+ * @param root0.showDescription
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // Basic usage

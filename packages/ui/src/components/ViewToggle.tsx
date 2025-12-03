@@ -1,5 +1,5 @@
 import { Button, Group } from "@mantine/core";
-import { IconList, IconLayoutGrid, IconCode } from "@tabler/icons-react";
+import { IconCode,IconLayoutGrid, IconList } from "@tabler/icons-react";
 
 export type ViewMode = "compact" | "detailed" | "raw";
 
@@ -11,15 +11,13 @@ export interface ViewToggleProps {
 	variant?: "outline" | "filled" | "light";
 }
 
-export function ViewToggle({
+export const ViewToggle = ({
 	viewMode,
 	onViewModeChange,
 	disabled = false,
 	size = "sm",
 	variant = "outline",
-}: ViewToggleProps) {
-	return (
-		<Group gap="xs">
+}: ViewToggleProps) => <Group gap="xs">
 			<Button
 				size={size}
 				variant={viewMode === "compact" ? "filled" : variant}
@@ -47,6 +45,4 @@ export function ViewToggle({
 			>
 				Raw
 			</Button>
-		</Group>
-	);
-}
+		</Group>;

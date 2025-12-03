@@ -1,15 +1,15 @@
-import { Table, Pagination, Group, TextInput, Select, Text, Box } from '@mantine/core';
+import { Box,Group, Pagination, Select, Table, Text, TextInput } from '@mantine/core';
 import { IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import {
-  useReactTable,
+  type ColumnDef,
+  type ColumnFiltersState,
+  flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  flexRender,
+  getSortedRowModel,
   type SortingState,
-  type ColumnFiltersState,
-  type ColumnDef,
+  useReactTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
@@ -23,7 +23,7 @@ export interface BaseTableProps<T> {
   onRowClick?: (row: T) => void;
 }
 
-export function BaseTable<T>({
+export const BaseTable = <T,>({
   data,
   columns,
   isLoading = false,
@@ -31,7 +31,7 @@ export function BaseTable<T>({
   searchable = true,
   searchPlaceholder = 'Search...',
   onRowClick,
-}: BaseTableProps<T>) {
+}: BaseTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -191,4 +191,4 @@ export function BaseTable<T>({
       )}
     </Box>
   );
-}
+};

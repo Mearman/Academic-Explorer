@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest"
+
 import { vi } from "vitest"
 
 // Fix lru-cache ES module compatibility issue
@@ -58,9 +59,7 @@ interface LruCacheModule {
   default?: typeof CompatibleLRUCache;
 }
 
-function isLruCacheModule(value: unknown): value is LruCacheModule {
-  return typeof value === 'object' && value !== null;
-}
+const isLruCacheModule = (value: unknown): value is LruCacheModule => typeof value === 'object' && value !== null;
 
 // Patch the lru-cache module globally before any tests run
 if (isLruCacheModule(originalLruCache)) {

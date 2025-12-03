@@ -1,6 +1,6 @@
 import type { Bookmark, EntityType } from "@bibgraph/types";
-import { SimpleGrid, Card, Text, Badge, Group, Stack, ActionIcon, Tooltip, Center, Loader } from "@mantine/core";
-import { IconTrash, IconBookmarkOff } from "@tabler/icons-react";
+import { ActionIcon, Badge, Card, Center, Group, Loader,SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
+import { IconBookmarkOff,IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 
 import { TagList } from "./TagBadge";
@@ -53,15 +53,15 @@ export interface BookmarkGridProps {
 
 /**
  * Get a display-friendly label for entity type
+ * @param entityType
  */
-function getEntityTypeLabel(entityType: EntityType): string {
-	return entityType.charAt(0).toUpperCase() + entityType.slice(1);
-}
+const getEntityTypeLabel = (entityType: EntityType): string => entityType.charAt(0).toUpperCase() + entityType.slice(1);
 
 /**
  * Get a color for entity type badges
+ * @param entityType
  */
-function getEntityTypeColor(entityType: EntityType): string {
+const getEntityTypeColor = (entityType: EntityType): string => {
 	const colorMap: Record<EntityType, string> = {
 		works: "blue",
 		authors: "green",
@@ -77,12 +77,13 @@ function getEntityTypeColor(entityType: EntityType): string {
 		subfields: "violet",
 	};
 	return colorMap[entityType] || "gray";
-}
+};
 
 /**
  * Format a date as relative time
+ * @param date
  */
-function formatRelativeTime(date: Date): string {
+const formatRelativeTime = (date: Date): string => {
 	if (!date || isNaN(date.getTime())) {
 		return "Invalid date";
 	}
@@ -130,7 +131,7 @@ function formatRelativeTime(date: Date): string {
 	}
 	const years = Math.floor(diffMs / YEAR);
 	return `${years} ${years === 1 ? "year" : "years"} ago`;
-}
+};
 
 interface BookmarkCardProps {
 	bookmark: Bookmark;
@@ -138,7 +139,7 @@ interface BookmarkCardProps {
 	onNavigate: (url: string) => void;
 }
 
-function BookmarkCard({ bookmark, onDelete, onNavigate }: BookmarkCardProps) {
+const BookmarkCard = ({ bookmark, onDelete, onNavigate }: BookmarkCardProps) => {
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async (event: React.MouseEvent) => {
@@ -221,12 +222,20 @@ function BookmarkCard({ bookmark, onDelete, onNavigate }: BookmarkCardProps) {
 			</Stack>
 		</Card>
 	);
-}
+};
 
 /**
  * Grid view for displaying bookmarks as cards in a responsive grid layout
+ * @param root0
+ * @param root0.bookmarks
+ * @param root0.onDeleteBookmark
+ * @param root0.onNavigate
+ * @param root0.cols
+ * @param root0.spacing
+ * @param root0.loading
+ * @param root0.emptyMessage
  */
-export function BookmarkGrid({
+export const BookmarkGrid = ({
 	bookmarks,
 	onDeleteBookmark,
 	onNavigate,
@@ -235,7 +244,7 @@ export function BookmarkGrid({
 	loading = false,
 	emptyMessage = "No bookmarks yet",
 	...restProps
-}: BookmarkGridProps) {
+}: BookmarkGridProps) => {
 	// Loading state
 	if (loading) {
 		return (
@@ -275,4 +284,4 @@ export function BookmarkGrid({
 			))}
 		</SimpleGrid>
 	);
-}
+};

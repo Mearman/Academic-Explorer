@@ -8,14 +8,12 @@ export interface BookmarkIconProps {
 	className?: string;
 }
 
-export function BookmarkIcon({
+export const BookmarkIcon = ({
 	active,
 	size = 20,
 	color,
 	className,
-}: BookmarkIconProps) {
-	return (
-		<div
+}: BookmarkIconProps) => <div
 			style={{
 				position: "relative",
 				display: "inline-flex",
@@ -50,6 +48,4 @@ export function BookmarkIcon({
 					</div>
 				)}
 			</Transition>
-		</div>
-	);
-}
+		</div>;

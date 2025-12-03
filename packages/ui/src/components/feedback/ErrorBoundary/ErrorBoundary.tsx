@@ -1,31 +1,31 @@
 /// <reference types="vite/client" />
 import {
-	Container,
-	Stack,
-	Title,
-	Text,
+	ActionIcon,
+	Alert,
 	Button,
 	Card,
-	Group,
-	Alert,
 	Code,
-	ScrollArea,
+	Container,
 	Divider,
-	ActionIcon,
+	Group,
+	ScrollArea,
+	Stack,
+	Text,
+	Title,
 	Tooltip,
 } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import {
 	IconAlertTriangle,
-	IconRefresh,
-	IconCopy,
-	IconCheck,
 	IconBug,
+	IconCheck,
+	IconCopy,
 	IconExternalLink,
+	IconRefresh,
 } from "@tabler/icons-react"
+import type { ErrorInfo, ReactNode } from "react"
 import { Component } from "react";
 import * as React from "react";
-import type { ErrorInfo, ReactNode } from "react"
 
 export type ErrorBoundaryProps = {
 	children: ReactNode
@@ -65,7 +65,6 @@ type DebugInfo = {
 /**
  * A robust error boundary component that catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI instead of the component tree that crashed.
- *
  * @example
  * ```tsx
  * <ErrorBoundary

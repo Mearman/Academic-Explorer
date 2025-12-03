@@ -1,11 +1,11 @@
-import { Group, Button, Checkbox, Text, ActionIcon, Tooltip, Menu } from "@mantine/core"
+import { ActionIcon, Button, Checkbox, Group, Menu,Text, Tooltip } from "@mantine/core"
 import {
 	IconEye,
 	IconEyeOff,
-	IconSelect,
+	IconFocusCentered,
 	IconGraph,
 	IconNetwork,
-	IconFocusCentered,
+	IconSelect,
 	IconZoomIn,
 	IconZoomOut,
 } from "@tabler/icons-react"
@@ -41,7 +41,21 @@ export type BulkActionToolbarProps = {
 /**
  * A toolbar component for bulk actions including selection, visibility toggles, and graph operations.
  * Provides controls for managing selected items and performing graph-related operations.
- *
+ * @param root0
+ * @param root0.totalItems
+ * @param root0.selectedItems
+ * @param root0.onSelectAll
+ * @param root0.onClearSelection
+ * @param root0.showVisible
+ * @param root0.showHidden
+ * @param root0.onToggleVisible
+ * @param root0.onToggleHidden
+ * @param root0.onFocusSelection
+ * @param root0.onZoomToSelection
+ * @param root0.onCreateSubgraph
+ * @param root0.onExpandSelection
+ * @param root0.additionalActions
+ * @param root0.className
  * @example
  * ```tsx
  * <BulkActionToolbar
@@ -59,7 +73,7 @@ export type BulkActionToolbarProps = {
  * />
  * ```
  */
-export function BulkActionToolbar({
+export const BulkActionToolbar = ({
 	totalItems,
 	selectedItems,
 	onSelectAll,
@@ -75,7 +89,7 @@ export function BulkActionToolbar({
 	additionalActions,
 	className,
 	...restProps
-}: BulkActionToolbarProps) {
+}: BulkActionToolbarProps) => {
 	const selectedCount = selectedItems.length
 	const isAllSelected = selectedCount === totalItems && totalItems > 0
 	const isIndeterminate = selectedCount > 0 && selectedCount < totalItems
@@ -196,4 +210,4 @@ export function BulkActionToolbar({
 			</Group>
 		</Group>
 	)
-}
+};

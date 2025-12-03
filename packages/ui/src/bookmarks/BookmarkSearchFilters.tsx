@@ -105,7 +105,19 @@ const ENTITY_TYPE_OPTIONS: { value: EntityType | "all"; label: string }[] = [
  * - Clear all filters button
  * - Result count display
  * - AND/OR logic toggle for tags
- *
+ * @param root0
+ * @param root0.searchQuery
+ * @param root0.onSearchChange
+ * @param root0.entityTypeFilter
+ * @param root0.onEntityTypeChange
+ * @param root0.tagFilters
+ * @param root0.onTagFiltersChange
+ * @param root0.availableTags
+ * @param root0.resultCount
+ * @param root0.totalCount
+ * @param root0.matchAllTags
+ * @param root0.onMatchAllTagsChange
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * <BookmarkSearchFilters
@@ -123,7 +135,7 @@ const ENTITY_TYPE_OPTIONS: { value: EntityType | "all"; label: string }[] = [
  * />
  * ```
  */
-export function BookmarkSearchFilters({
+export const BookmarkSearchFilters = ({
 	searchQuery,
 	onSearchChange,
 	entityTypeFilter,
@@ -136,7 +148,7 @@ export function BookmarkSearchFilters({
 	matchAllTags,
 	onMatchAllTagsChange,
 	"data-testid": dataTestId = "bookmark-search-filters",
-}: BookmarkSearchFiltersProps) {
+}: BookmarkSearchFiltersProps) => {
 	const [showFilters, setShowFilters] = useState(false);
 
 	// Handle clear all filters
@@ -308,4 +320,4 @@ export function BookmarkSearchFilters({
 			)}
 		</Stack>
 	);
-}
+};

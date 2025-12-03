@@ -4,8 +4,8 @@
  */
 
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import type { FC,ReactNode } from "react";
 import { useState } from "react";
-import type { ReactNode, FC } from "react";
 
 export type CollapsibleSectionProps = {
 	title: string;

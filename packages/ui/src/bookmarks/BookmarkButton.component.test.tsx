@@ -1,14 +1,13 @@
 import "@testing-library/jest-dom/vitest"
+
 import { MantineProvider } from "@mantine/core"
-import { render, screen, fireEvent, cleanup } from "@testing-library/react"
-import { afterEach, describe, it, expect, vi } from "vitest"
+import { cleanup,fireEvent, render, screen } from "@testing-library/react"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { BookmarkButton } from "./BookmarkButton"
 
 // Wrapper with Mantine provider
-function TestWrapper({ children }: { children: React.ReactNode }) {
-	return <MantineProvider>{children}</MantineProvider>
-}
+const TestWrapper = ({ children }: { children: React.ReactNode }) => <MantineProvider>{children}</MantineProvider>;
 
 describe("BookmarkButton", () => {
 	afterEach(() => {

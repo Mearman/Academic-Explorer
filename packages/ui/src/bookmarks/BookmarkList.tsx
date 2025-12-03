@@ -1,5 +1,5 @@
 import type { Bookmark, EntityType } from "@bibgraph/types";
-import { Stack, Text, Group, Divider, Box, Center, Loader } from "@mantine/core";
+import { Box, Center, Divider, Group, Loader,Stack, Text } from "@mantine/core";
 import { IconBookmarkOff } from "@tabler/icons-react";
 import { useMemo } from "react";
 
@@ -72,7 +72,17 @@ export interface BookmarkListProps {
 /**
  * Main bookmark list component for displaying all bookmarks.
  * Supports grouping by entity type, sorting, and empty states.
- *
+ * @param root0
+ * @param root0.bookmarks
+ * @param root0.groupByType
+ * @param root0.sortBy
+ * @param root0.sortOrder
+ * @param root0.onDeleteBookmark
+ * @param root0.onNavigate
+ * @param root0.onUpdateTags
+ * @param root0.loading
+ * @param root0.emptyMessage
+ * @param root0.className
  * @example
  * ```tsx
  * <BookmarkList
@@ -87,7 +97,7 @@ export interface BookmarkListProps {
  * />
  * ```
  */
-export function BookmarkList({
+export const BookmarkList = ({
 	bookmarks,
 	groupByType = false,
 	sortBy = "date",
@@ -99,7 +109,7 @@ export function BookmarkList({
 	emptyMessage = "No bookmarks yet",
 	className,
 	...restProps
-}: BookmarkListProps) {
+}: BookmarkListProps) => {
 	// Sort bookmarks based on sortBy and sortOrder
 	const sortedBookmarks = useMemo(() => {
 		const sorted = [...bookmarks];
@@ -213,4 +223,4 @@ export function BookmarkList({
 			))}
 		</Stack>
 	);
-}
+};

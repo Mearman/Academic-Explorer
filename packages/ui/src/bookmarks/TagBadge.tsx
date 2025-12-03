@@ -67,7 +67,16 @@ export interface TagBadgeProps {
  * - Optional click handler for filtering
  * - Customizable color, size, and variant
  * - Hover effects for interactivity
- *
+ * @param root0
+ * @param root0.tag
+ * @param root0.onRemove
+ * @param root0.onClick
+ * @param root0.color
+ * @param root0.size
+ * @param root0.variant
+ * @param root0.clickable
+ * @param root0.removable
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // Basic tag badge
@@ -88,7 +97,7 @@ export interface TagBadgeProps {
  * />
  * ```
  */
-export function TagBadge({
+export const TagBadge = ({
 	tag,
 	onRemove,
 	onClick,
@@ -98,7 +107,7 @@ export function TagBadge({
 	clickable = false,
 	removable = false,
 	"data-testid": dataTestId = `tag-badge`,
-}: TagBadgeProps) {
+}: TagBadgeProps) => {
 	const handleClick = (event: React.MouseEvent) => {
 		if (clickable && onClick) {
 			event.stopPropagation();
@@ -158,13 +167,12 @@ export function TagBadge({
 			{tag}
 		</Badge>
 	);
-}
+};
 
 /**
  * Tag List Component
  *
  * Display a list of tags with optional remove functionality
- *
  * @example
  * ```tsx
  * <TagList
@@ -231,7 +239,7 @@ export interface TagListProps {
 	"data-testid"?: string;
 }
 
-export function TagList({
+export const TagList = ({
 	tags,
 	onRemove,
 	onClick,
@@ -243,7 +251,7 @@ export function TagList({
 	maxVisible,
 	gap = "xs",
 	"data-testid": dataTestId = "tag-list",
-}: TagListProps) {
+}: TagListProps) => {
 	// Determine which tags to display
 	const visibleTags = maxVisible ? tags.slice(0, maxVisible) : tags;
 	const hiddenCount = maxVisible ? Math.max(0, tags.length - maxVisible) : 0;
@@ -271,4 +279,4 @@ export function TagList({
 			)}
 		</Group>
 	);
-}
+};

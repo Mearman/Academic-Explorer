@@ -7,7 +7,7 @@ export interface EntityMatcher {
 	component: ComponentType<{ entity: OpenAlexEntity }>;
 }
 
-export function createMatcher(pattern: string | RegExp | ((entity: OpenAlexEntity) => boolean)): EntityMatcher {
+export const createMatcher = (pattern: string | RegExp | ((entity: OpenAlexEntity) => boolean)): EntityMatcher => {
 	const test = typeof pattern === "string"
 		? (entity: OpenAlexEntity) => entity.display_name?.includes(pattern)
 		: pattern instanceof RegExp
@@ -18,7 +18,7 @@ export function createMatcher(pattern: string | RegExp | ((entity: OpenAlexEntit
 		test,
 		component: () => null, // Placeholder
 	};
-}
+};
 
 export const defaultMatchers: EntityMatcher[] = [
 	createMatcher(/author/i),
@@ -33,8 +33,8 @@ export const defaultMatchers: EntityMatcher[] = [
  * @param urlOrId - Either a full OpenAlex URL (https://openalex.org/A123) or just an ID (A123)
  * @returns A hash-based relative URL (e.g., #/A123)
  */
-export function convertToRelativeUrl(urlOrId: string): string {
+export const convertToRelativeUrl = (urlOrId: string): string => {
 	// Extract just the ID part if it's a full URL
 	const id = urlOrId.replace(/^https?:\/\/[^/]+\//, '');
 	return `#/${id}`;
-}
+};

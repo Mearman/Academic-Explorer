@@ -15,20 +15,8 @@ export interface EntityCardProps {
   onNavigate?: (path: string) => void;
 }
 
-export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
-  (
-    {
-      id,
-      displayName,
-      entityType,
-      worksCount,
-      citedByCount,
-      description,
-      tags,
-      onClick,
-      onNavigate,
-    },
-    ref
+export const EntityCard = (
+    { ref, id, displayName, entityType, worksCount, citedByCount, description, tags, onClick, onNavigate }: EntityCardProps & { ref?: React.RefObject<HTMLDivElement | null> }
   ) => {
     // Generate the navigation path (entityType is already plural, e.g., "works", "authors")
     const entityPath = `/${entityType}/${id}`;
@@ -135,7 +123,6 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
         </Stack>
       </Card>
     );
-  }
-);
+  };
 
 EntityCard.displayName = "EntityCard";

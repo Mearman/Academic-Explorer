@@ -44,7 +44,13 @@ export interface BookmarkButtonProps {
 /**
  * A button component for toggling bookmark state on entities.
  * Uses Mantine ActionIcon with visual feedback for bookmark state.
- *
+ * @param root0
+ * @param root0.isBookmarked
+ * @param root0.loading
+ * @param root0.onToggle
+ * @param root0.size
+ * @param root0.variant
+ * @param root0.className
  * @example
  * ```tsx
  * <BookmarkButton
@@ -56,7 +62,7 @@ export interface BookmarkButtonProps {
  * />
  * ```
  */
-export function BookmarkButton({
+export const BookmarkButton = ({
 	isBookmarked,
 	loading = false,
 	onToggle,
@@ -64,7 +70,7 @@ export function BookmarkButton({
 	variant = "subtle",
 	className,
 	...restProps
-}: BookmarkButtonProps) {
+}: BookmarkButtonProps) => {
 	// Determine icon size based on button size
 	const iconSize = {
 		xs: 14,
@@ -103,4 +109,4 @@ export function BookmarkButton({
 			</ActionIcon>
 		</Tooltip>
 	)
-}
+};

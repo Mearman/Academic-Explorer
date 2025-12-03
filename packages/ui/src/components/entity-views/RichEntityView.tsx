@@ -12,7 +12,7 @@ export interface RichEntityViewProps {
 	children?: ReactNode;
 }
 
-export function RichEntityView({
+export const RichEntityView = ({
 	entity,
 	entityType,
 	fields,
@@ -21,7 +21,7 @@ export function RichEntityView({
 	error = null,
 	className,
 	children,
-}: RichEntityViewProps) {
+}: RichEntityViewProps) => {
 	if (loading) {
 		return <div className={`rich-entity-view loading ${className || ""}`}>Loading...</div>;
 	}
@@ -70,4 +70,4 @@ export function RichEntityView({
 			{children}
 		</div>
 	);
-}
+};

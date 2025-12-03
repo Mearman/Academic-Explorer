@@ -52,7 +52,12 @@ export interface XpacToggleProps {
  * - Customizable label text
  * - Optional description display
  * - Accessible Switch component from Mantine
- *
+ * @param root0
+ * @param root0.value
+ * @param root0.onChange
+ * @param root0.label
+ * @param root0.showDescription
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // Basic usage
@@ -76,15 +81,13 @@ export interface XpacToggleProps {
  * />
  * ```
  */
-export function XpacToggle({
+export const XpacToggle = ({
 	value,
 	onChange,
 	label = "Include extended research outputs (xpac)",
 	showDescription = true,
 	"data-testid": dataTestId = "xpac-toggle",
-}: XpacToggleProps) {
-	return (
-		<Stack gap="xs">
+}: XpacToggleProps) => <Stack gap="xs">
 			<Switch
 				checked={value}
 				onChange={(event) => onChange(event.currentTarget.checked)}
@@ -96,6 +99,4 @@ export function XpacToggle({
 					Include 190M additional works (datasets, software, specimens)
 				</Text>
 			)}
-		</Stack>
-	);
-}
+		</Stack>;

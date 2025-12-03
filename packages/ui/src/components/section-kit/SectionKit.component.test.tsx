@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom/vitest"
-import { render, screen, cleanup } from "@testing-library/react"
-import { afterEach, describe, it, expect } from "vitest"
+
+import { cleanup,render, screen } from "@testing-library/react"
+import { afterEach, describe, expect,it } from "vitest"
 
 import { SectionKit } from "./SectionKit"
 

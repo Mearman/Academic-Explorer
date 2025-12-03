@@ -78,7 +78,12 @@ const STRATEGY_OPTIONS: StrategyOption[] = [
  *
  * A select dropdown for choosing the background processing strategy used for
  * auto-population tasks like label resolution and relationship discovery.
- *
+ * @param root0
+ * @param root0.value
+ * @param root0.onChange
+ * @param root0.label
+ * @param root0.showDescription
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // Basic usage
@@ -95,13 +100,13 @@ const STRATEGY_OPTIONS: StrategyOption[] = [
  * />
  * ```
  */
-export function BackgroundStrategySelector({
+export const BackgroundStrategySelector = ({
 	value,
 	onChange,
 	label = "Background Processing Strategy",
 	showDescription = true,
 	"data-testid": dataTestId = "background-strategy-selector",
-}: BackgroundStrategySelectorProps) {
+}: BackgroundStrategySelectorProps) => {
 	const handleChange = (newValue: string | null) => {
 		if (newValue && isBackgroundStrategy(newValue)) {
 			onChange(newValue);
@@ -129,8 +134,6 @@ export function BackgroundStrategySelector({
 			)}
 		</Stack>
 	);
-}
+};
 
-function isBackgroundStrategy(value: string): value is BackgroundStrategy {
-	return ['idle', 'scheduler', 'worker', 'sync'].includes(value);
-}
+const isBackgroundStrategy = (value: string): value is BackgroundStrategy => ['idle', 'scheduler', 'worker', 'sync'].includes(value);

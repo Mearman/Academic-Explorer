@@ -1,8 +1,9 @@
 import "@testing-library/jest-dom/vitest"
+
 import { MantineProvider } from "@mantine/core"
-import { render, screen, fireEvent, cleanup } from "@testing-library/react"
+import { cleanup,fireEvent, render, screen } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { afterEach, describe, it, expect, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { SectionFrame } from "./SectionFrame";
 

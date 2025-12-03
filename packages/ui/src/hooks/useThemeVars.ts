@@ -3,17 +3,15 @@
  * Provides typed access to theme colors and ensures consistency
  */
 
-import { useMantineTheme } from '@mantine/core';
-
 /**
  * Hook to access shadcn theme variables with type safety
  * Returns functions to get theme-aware color values
  */
-export function useThemeVars() {
-  const theme = useMantineTheme();
+export const useThemeVars = () => {
 
   /**
    * Get a shadcn theme variable value
+   * @param variableName
    */
   const getThemeVar = (variableName: string): string => {
     return `var(--shadcn-${variableName})`;
@@ -21,6 +19,7 @@ export function useThemeVars() {
 
   /**
    * Get academic entity color mapping
+   * @param entityType
    */
   const getEntityColor = (entityType: string): string => {
     const entityColors: Record<string, string> = {
@@ -40,6 +39,7 @@ export function useThemeVars() {
 
   /**
    * Get semantic color with fallback
+   * @param colorType
    */
   const getSemanticColor = (colorType: 'primary' | 'secondary' | 'muted' | 'destructive' | 'success' | 'warning'): string => {
     return getThemeVar(colorType);
@@ -73,4 +73,4 @@ export function useThemeVars() {
     funder: getEntityColor('funders'),
     keyword: getEntityColor('keywords'),
   };
-}
+};

@@ -14,7 +14,7 @@ export interface DataStateProps<T = unknown> {
   EmptyComponent?: ComponentType<{ message?: string }>
 }
 
-export function DataState<T = unknown>({
+export const DataState = <T,>({
   loading,
   error,
   data,
@@ -26,7 +26,7 @@ export function DataState<T = unknown>({
   LoadingComponent,
   ErrorComponent,
   EmptyComponent,
-}: DataStateProps<T>) {
+}: DataStateProps<T>) => {
   if (loading) {
     if (LoadingComponent) {
       return <LoadingComponent message={loadingMessage} />
@@ -70,4 +70,4 @@ export function DataState<T = unknown>({
   }
 
   return <>{children(data)}</>
-}
+};

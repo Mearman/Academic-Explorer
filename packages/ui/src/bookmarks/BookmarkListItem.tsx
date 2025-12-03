@@ -1,6 +1,6 @@
 import type { Bookmark, EntityType } from "@bibgraph/types";
-import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip, Button } from "@mantine/core";
-import { IconTrash, IconEdit, IconCheck, IconX } from "@tabler/icons-react";
+import { ActionIcon, Badge, Button,Card, Group, Stack, Text, Tooltip } from "@mantine/core";
+import { IconCheck, IconEdit, IconTrash, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
 import { FieldSelectionPreview } from "./FieldSelectionPreview";
@@ -43,16 +43,15 @@ export interface BookmarkListItemProps {
 
 /**
  * Get a display-friendly label for entity type
+ * @param entityType
  */
-function getEntityTypeLabel(entityType: EntityType): string {
-	// Capitalize first letter and return
-	return entityType.charAt(0).toUpperCase() + entityType.slice(1);
-}
+const getEntityTypeLabel = (entityType: EntityType): string => entityType.charAt(0).toUpperCase() + entityType.slice(1);
 
 /**
  * Get a color for entity type badges
+ * @param entityType
  */
-function getEntityTypeColor(entityType: EntityType): string {
+const getEntityTypeColor = (entityType: EntityType): string => {
 	const colorMap: Record<EntityType, string> = {
 		works: "blue",
 		authors: "green",
@@ -68,12 +67,13 @@ function getEntityTypeColor(entityType: EntityType): string {
 		subfields: "violet",
 	};
 	return colorMap[entityType] || "gray";
-}
+};
 
 /**
  * Format a date as relative time (e.g., "2 hours ago", "3 days ago")
+ * @param date
  */
-function formatRelativeTime(date: Date): string {
+const formatRelativeTime = (date: Date): string => {
 	// Handle invalid dates
 	if (!date || isNaN(date.getTime())) {
 		return "Invalid date";
@@ -140,7 +140,7 @@ function formatRelativeTime(date: Date): string {
 	// Years
 	const years = Math.floor(diffMs / YEAR);
 	return `${years} ${years === 1 ? "year" : "years"} ago`;
-}
+};
 
 /**
  * Component for displaying individual bookmarks in a list
@@ -152,7 +152,11 @@ function formatRelativeTime(date: Date): string {
  * - Delete button with confirmation tooltip
  * - Clickable card to navigate to bookmarked page
  * - Hover effects for interactivity
- *
+ * @param root0
+ * @param root0.bookmark
+ * @param root0.onDelete
+ * @param root0.onNavigate
+ * @param root0.onUpdateTags
  * @example
  * ```tsx
  * <BookmarkListItem
@@ -162,13 +166,13 @@ function formatRelativeTime(date: Date): string {
  * />
  * ```
  */
-export function BookmarkListItem({
+export const BookmarkListItem = ({
 	bookmark,
 	onDelete,
 	onNavigate,
 	onUpdateTags,
 	...restProps
-}: BookmarkListItemProps) {
+}: BookmarkListItemProps) => {
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isEditingTags, setIsEditingTags] = useState(false);
 	const [editedTags, setEditedTags] = useState<string[]>(bookmark.metadata.tags || []);
@@ -365,4 +369,4 @@ export function BookmarkListItem({
 			</Stack>
 		</Card>
 	);
-}
+};

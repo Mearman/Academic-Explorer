@@ -1,7 +1,7 @@
-import { Paper, Title, Text, Box, Group, Button, Collapse } from "@mantine/core"
+import { Box, Button, Collapse,Group, Paper, Text, Title } from "@mantine/core"
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
+import type { FC,ReactNode } from "react"
 import { useState } from "react"
-import type { ReactNode, FC } from "react"
 
 export type SectionFrameProps = {
 	children: ReactNode
@@ -22,7 +22,19 @@ export type SectionFrameProps = {
 /**
  * A framed section component that provides a structured container for content
  * with optional title, subtitle, icon, actions, and collapsible functionality.
- *
+ * @param root0
+ * @param root0.children
+ * @param root0.title
+ * @param root0.subtitle
+ * @param root0.icon
+ * @param root0.actions
+ * @param root0.defaultExpanded
+ * @param root0.storageKey
+ * @param root0.onToggle
+ * @param root0.withShadow
+ * @param root0.withBorder
+ * @param root0.padding
+ * @param root0.className
  * @example
  * ```tsx
  * <SectionFrame
