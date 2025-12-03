@@ -1,7 +1,12 @@
-import { ScrollArea, TextInput, Group, Chip, Stack, Text, Box, Center, Loader } from "@mantine/core"
+import { Box, Center, Chip, Group, Loader,ScrollArea, Stack, Text, TextInput } from "@mantine/core"
 import { IconSearch, IconX } from "@tabler/icons-react"
-import { useState, useMemo, useEffect } from "react";
 import type { ReactNode } from "react"
+import { useEffect,useMemo, useState } from "react";
+
+// Stable default values to prevent infinite render loops
+const EMPTY_SEARCH_KEYS: Array<string> = [];
+const EMPTY_FILTERS: FilterChip[] = [];
+const EMPTY_ACTIVE_FILTERS: string[] = [];
 
 export type FilterChip = {
 	label: string
@@ -29,7 +34,7 @@ export type EntityCollectionListProps<T = Record<string, unknown>> = {
 }
 
 // Simple debounce hook
-function useDebounce<T>({ value, delay }: { value: T; delay: number }): T {
+const useDebounce = <T,>({ value, delay }: { value: T; delay: number }): T => {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
 	useEffect(() => {
@@ -43,12 +48,23 @@ function useDebounce<T>({ value, delay }: { value: T; delay: number }): T {
 	}, [value, delay])
 
 	return debouncedValue
-}
+};
 
 /**
  * A collection list component with search, filtering, and empty states.
  * Handles ScrollArea, search functionality, filter chips, and customizable empty states.
- *
+ * @param root0
+ * @param root0.items
+ * @param root0.renderItem
+ * @param root0.searchPlaceholder
+ * @param root0.searchKeys
+ * @param root0.filters
+ * @param root0.activeFilters
+ * @param root0.onFiltersChange
+ * @param root0.emptyState
+ * @param root0.loading
+ * @param root0.height
+ * @param root0.className
  * @example
  * ```tsx
  * <EntityCollectionList
@@ -68,20 +84,20 @@ function useDebounce<T>({ value, delay }: { value: T; delay: number }): T {
  * />
  * ```
  */
-export function EntityCollectionList<T = Record<string, unknown>>({
+export const EntityCollectionList = <T,>({
 	items,
 	renderItem,
 	searchPlaceholder = "Search...",
-	searchKeys = [],
-	filters = [],
-	activeFilters = [],
+	searchKeys = EMPTY_SEARCH_KEYS as Array<keyof T>,
+	filters = EMPTY_FILTERS,
+	activeFilters = EMPTY_ACTIVE_FILTERS,
 	onFiltersChange,
 	emptyState,
 	loading = false,
 	height = 400,
 	className,
 	...restProps
-}: EntityCollectionListProps<T>) {
+}: EntityCollectionListProps<T>) => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const debouncedSearchQuery = useDebounce({ value: searchQuery, delay: 300 })
 
@@ -222,4 +238,4 @@ export function EntityCollectionList<T = Record<string, unknown>>({
 			</Box>
 		</Stack>
 	)
-}
+};

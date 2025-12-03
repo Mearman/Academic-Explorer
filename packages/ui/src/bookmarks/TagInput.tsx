@@ -11,6 +11,9 @@
 import { Combobox, Pill, PillsInput, useCombobox } from "@mantine/core";
 import { useState } from "react";
 
+// Stable default values to prevent infinite render loops
+const EMPTY_SUGGESTIONS: string[] = [];
+
 export interface TagInputProps {
 	/**
 	 * Current tags
@@ -64,7 +67,15 @@ export interface TagInputProps {
  * - Case-insensitive tag matching
  * - Maximum tag limit
  * - Empty tag validation
- *
+ * @param root0
+ * @param root0.value
+ * @param root0.onChange
+ * @param root0.placeholder
+ * @param root0.maxTags
+ * @param root0.suggestions
+ * @param root0.disabled
+ * @param root0.error
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * <TagInput
@@ -76,16 +87,16 @@ export interface TagInputProps {
  * />
  * ```
  */
-export function TagInput({
+export const TagInput = ({
 	value,
 	onChange,
 	placeholder = "Add tags...",
 	maxTags,
-	suggestions = [],
+	suggestions = EMPTY_SUGGESTIONS,
 	disabled = false,
 	error,
 	"data-testid": dataTestId = "tag-input",
-}: TagInputProps) {
+}: TagInputProps) => {
 	const combobox = useCombobox({
 		onDropdownClose: () => combobox.resetSelectedOption(),
 		onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
@@ -102,6 +113,7 @@ export function TagInput({
 
 	/**
 	 * Handle tag addition
+	 * @param tag
 	 */
 	const handleAddTag = (tag: string) => {
 		const trimmedTag = tag.trim();
@@ -129,6 +141,7 @@ export function TagInput({
 
 	/**
 	 * Handle tag removal
+	 * @param tagToRemove
 	 */
 	const handleRemoveTag = (tagToRemove: string) => {
 		onChange(value.filter((tag) => tag !== tagToRemove));
@@ -136,6 +149,7 @@ export function TagInput({
 
 	/**
 	 * Handle key down events
+	 * @param event
 	 */
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter" && search.trim()) {
@@ -149,6 +163,7 @@ export function TagInput({
 
 	/**
 	 * Handle suggestion selection
+	 * @param suggestion
 	 */
 	const handleSuggestionSelect = (suggestion: string) => {
 		handleAddTag(suggestion);
@@ -213,4 +228,4 @@ export function TagInput({
 			)}
 		</Combobox>
 	);
-}
+};

@@ -15,8 +15,11 @@ import {
 	generateFieldListPreview,
 	generateSmartFieldSummary,
 } from "@bibgraph/utils";
-import { Badge, Group, Text, Tooltip, Stack } from "@mantine/core";
+import { Badge, Group, Stack,Text, Tooltip } from "@mantine/core";
 import { IconListDetails } from "@tabler/icons-react";
+
+// Stable default values to prevent infinite render loops
+const EMPTY_SELECT_FIELDS: string[] = [];
 
 export interface FieldSelectionPreviewProps {
 	/**
@@ -58,7 +61,13 @@ export interface FieldSelectionPreviewProps {
  * FieldSelectionPreview Component
  *
  * Displays a visual preview of custom field selections for bookmarks.
- *
+ * @param root0
+ * @param root0.selectFields
+ * @param root0.variant
+ * @param root0.size
+ * @param root0.showTooltip
+ * @param root0.maxFieldsToShow
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // Badge variant (default)
@@ -77,14 +86,14 @@ export interface FieldSelectionPreviewProps {
  * />
  * ```
  */
-export function FieldSelectionPreview({
-	selectFields = [],
+export const FieldSelectionPreview = ({
+	selectFields = EMPTY_SELECT_FIELDS,
 	variant = "badge",
 	size = "sm",
 	showTooltip = true,
 	maxFieldsToShow = 3,
 	"data-testid": dataTestId = "field-selection-preview",
-}: FieldSelectionPreviewProps) {
+}: FieldSelectionPreviewProps) => {
 	// If no fields or empty array, show "default fields"
 	if (!selectFields || selectFields.length === 0) {
 		return (
@@ -208,28 +217,30 @@ export function FieldSelectionPreview({
 	}
 
 	return smartContent;
-}
+};
 
 /**
  * Compact Field Badge Component
  *
  * A compact badge-only variant for displaying field count.
  * Useful for space-constrained UIs.
- *
+ * @param root0
+ * @param root0.selectFields
+ * @param root0.size
  * @example
  * ```tsx
  * <CompactFieldBadge selectFields={['id', 'title', 'doi']} />
  * ```
  */
-export function CompactFieldBadge({
-	selectFields = [],
+export const CompactFieldBadge = ({
+	selectFields = EMPTY_SELECT_FIELDS,
 	size = "xs",
 	"data-testid": dataTestId = "compact-field-badge",
 }: {
 	selectFields?: string[];
 	size?: "xs" | "sm" | "md";
 	"data-testid"?: string;
-}) {
+}) => {
 	const summary = generateCompactFieldSummary(selectFields);
 	const tooltipLabel = selectFields.length > 0 ? generateFieldListPreview(selectFields, 100) : null;
 
@@ -253,4 +264,4 @@ export function CompactFieldBadge({
 	}
 
 	return badge;
-}
+};
