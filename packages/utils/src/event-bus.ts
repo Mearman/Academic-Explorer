@@ -266,24 +266,19 @@ export interface QueueCoordinatorOptions {
 }
 
 // Stub implementations for missing factories
-export const createTaskQueue = (_bus: EventBus, _options: { maxConcurrency?: number } = {}): TaskQueue => {
-	void _options // Explicitly mark as unused
+export const createTaskQueue = (): TaskQueue => {
 	throw new Error(
 		"TaskQueue implementation not available in graph package - use from application layer"
 	)
 };
 
-export const createWorkerPool = (_bus: EventBus, _options: WorkerPoolOptions): WorkerPool => {
-	void _bus // Explicitly mark as unused
-	void _options // Explicitly mark as unused
+export const createWorkerPool = (): WorkerPool => {
 	throw new Error(
 		"WorkerPool implementation not available in graph package - use from application layer"
 	)
 };
 
-export const createQueuedResourceCoordinator = (_bus: EventBus, _options: QueueCoordinatorOptions): QueuedResourceCoordinator => {
-	void _bus // Explicitly mark as unused
-	void _options // Explicitly mark as unused
+export const createQueuedResourceCoordinator = (): QueuedResourceCoordinator => {
 	throw new Error(
 		"QueuedResourceCoordinator implementation not available in graph package - use from application layer"
 	)

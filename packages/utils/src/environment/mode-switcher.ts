@@ -297,9 +297,7 @@ export class ModeSwitcher {
 		context: BuildContext
 		options: ModeOptions
 	}): CacheConfig {
-		let config: CacheConfig
-
-		config = options.useCase ? CacheConfigFactory.createOptimizedConfig({
+		const config: CacheConfig = options.useCase ? CacheConfigFactory.createOptimizedConfig({
 				useCase: options.useCase,
 				context,
 			}) : CacheConfigFactory.createCacheConfig(context);

@@ -9,6 +9,17 @@ import { SPECIAL_LIST_IDS } from './catalogue-db.js';
 import type { CatalogueStorageProvider } from './catalogue-storage-provider.js';
 import { InMemoryStorageProvider } from './in-memory-storage-provider.js';
 
+// Helper function for delays in tests
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Helper function to create work nodes for testing
+const createWorkNode = (_: unknown, i: number) => ({
+	entityId: `W${i}`,
+	entityType: 'works' as const,
+	label: `Work ${i}`,
+	provenance: 'user' as const,
+});
+
 describe('Bookmark Storage Operations', () => {
 	let provider: CatalogueStorageProvider;
 
@@ -624,10 +635,15 @@ describe('Bookmark Storage Operations', () => {
 				const nodes = await provider.getGraphList();
 
 				expect(nodes).toHaveLength(4);
-				expect(nodes.find((n) => n.entityId === 'W1')?.provenance).toBe('user');
-				expect(nodes.find((n) => n.entityId === 'W2')?.provenance).toBe('collection-load');
-				expect(nodes.find((n) => n.entityId === 'W3')?.provenance).toBe('expansion');
-				expect(nodes.find((n) => n.entityId === 'W4')?.provenance).toBe('auto-population');
+
+				 
+				const toMapEntry = (n: typeof nodes[0]) => [n.entityId, n] as const;
+				const nodeMap = new Map(nodes.map(toMapEntry));
+
+				expect(nodeMap.get('W1')?.provenance).toBe('user');
+				expect(nodeMap.get('W2')?.provenance).toBe('collection-load');
+				expect(nodeMap.get('W3')?.provenance).toBe('expansion');
+				expect(nodeMap.get('W4')?.provenance).toBe('auto-population');
 			});
 
 			it('should extract labels correctly from serialized format', async () => {
@@ -702,7 +718,7 @@ describe('Bookmark Storage Operations', () => {
 				const initialTimestamp = nodesInitial[0].addedAt;
 
 				// Wait to ensure timestamp difference
-				await new Promise((resolve) => setTimeout(resolve, 10));
+				await delay(10);
 
 				// Add same node with different provenance
 				await provider.addToGraphList({
@@ -901,12 +917,7 @@ describe('Bookmark Storage Operations', () => {
 				await provider.initializeSpecialLists();
 
 				// Fill graph list to 998 nodes
-				const initialBatch = Array.from({ length: 998 }, (_, i) => ({
-					entityId: `W${i}`,
-					entityType: 'works' as const,
-					label: `Work ${i}`,
-					provenance: 'user' as const,
-				}));
+				const initialBatch = Array.from({ length: 998 }, createWorkNode);
 				await provider.batchAddToGraphList(initialBatch);
 
 				// Try to add 5 more (should only add 2 to reach 1000 limit)

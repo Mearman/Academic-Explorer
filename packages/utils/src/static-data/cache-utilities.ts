@@ -521,7 +521,7 @@ const generateEntityFilePath = ({
 
 	if (pathSegments.length > 2) {
 		// For nested paths: /authors/A123/works → authors/A123/works.json
-		const fileName = pathSegments.at(-1)
+		const fileName = pathSegments[pathSegments.length - 1]
 		const dirPath = pathSegments.slice(0, -1).join("/")
 		return `${staticDataRoot}/${dirPath}/${fileName}.json`
 	}
@@ -541,7 +541,7 @@ const generateBaseCollectionPath = ({
 	}
 
 	// For nested paths without meaningful query params
-	const fileName = pathSegments.at(-1)
+	const fileName = pathSegments[pathSegments.length - 1]
 	const dirPath = pathSegments.slice(0, -1).join("/")
 	return `${staticDataRoot}/${dirPath}/${fileName}.json`
 };

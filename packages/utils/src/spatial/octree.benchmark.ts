@@ -85,7 +85,7 @@ const runBenchmarks = async () => {
       },
       nodeCount > 1000 ? 10 : 100
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Create octree for queries
     octree = createOctreeFromItems(items);
@@ -100,7 +100,7 @@ const runBenchmarks = async () => {
       },
       nodeCount > 1000 ? 10 : 100
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Range query (small region)
     const smallQuery: BoundingBox3D = {
@@ -114,7 +114,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Range query (large region)
     const largeQuery: BoundingBox3D = {
@@ -128,7 +128,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Sphere query
     results.push(benchmark(
@@ -138,7 +138,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Find nearest
     results.push(benchmark(
@@ -148,7 +148,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
     // Find k-nearest (k=10)
     results.push(benchmark(
@@ -158,7 +158,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
   }
 
   console.log('\n' + '='.repeat(70));

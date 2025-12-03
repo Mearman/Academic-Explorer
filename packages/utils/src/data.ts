@@ -382,11 +382,11 @@ export const sample = <T>({ array, count }: { array: T[]; count: number }): T[] 
 };
 
 /**
- * Deep clone an object/array using JSON methods
- * Note: This only works with JSON-serializable data
+ * Deep clone an object/array using structuredClone
+ * Note: This only works with structuredClone-compatible data
  * @param obj
  */
-export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj)) as T;
+export const deepClone = <T>(obj: T): T => structuredClone(obj);
 
 /**
  * Merge arrays and remove duplicates
@@ -436,7 +436,7 @@ export const maxBy = <T>({
 }): T | undefined => {
 	if (array.length === 0) return undefined
 
-	return array.reduce((max, current) => (selector(current) > selector(max) ? current : max))
+	return array.reduce((max, current) => (selector(current) > selector(max) ? current : max), array[0])
 };
 
 /**
@@ -454,7 +454,7 @@ export const minBy = <T>({
 }): T | undefined => {
 	if (array.length === 0) return undefined
 
-	return array.reduce((min, current) => (selector(current) < selector(min) ? current : min))
+	return array.reduce((min, current) => (selector(current) < selector(min) ? current : min), array[0])
 };
 
 /**

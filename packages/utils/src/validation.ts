@@ -127,7 +127,7 @@ export const isString = (value: unknown): value is string => typeof value === "s
  * Type guard to check if value is a number
  * @param value
  */
-export const isNumber = (value: unknown): value is number => typeof value === "number" && !isNaN(value);
+export const isNumber = (value: unknown): value is number => typeof value === "number" && !Number.isNaN(value);
 
 /**
  * Type guard to check if value is a boolean

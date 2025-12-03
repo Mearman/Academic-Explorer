@@ -67,7 +67,7 @@ export interface BookmarkRecord {
 
 /**
  * Normalized OpenAlex request stored with visit
- * This matches the structure from @bibgraph/client
+ * This matches the structure from \@bibgraph/client
  */
 export interface StoredNormalizedRequest {
 	/** Cache key for lookups - now stores full API URL */
@@ -250,7 +250,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Record a page visit with normalized OpenAlex request
-	 * @param request - The normalized request from @bibgraph/client
+	 * @param request - The normalized request from \@bibgraph/client
 	 * @param request.request
 	 * @param request.metadata
 	 * @param request.metadata.sessionId
@@ -855,7 +855,6 @@ export class UserInteractionsService {
 
 				// Collect successfully deleted bookmark IDs for event emission
 		const successfullyDeletedIds: number[] = [];
-		const allDeletedIds: number[] = [];
 
 		// Use a transaction for bulk deletion
 		await this.db.transaction("rw", this.db.bookmarks, async () => {
@@ -865,7 +864,6 @@ export class UserInteractionsService {
 					await this.db.bookmarks.delete(bookmarkId)
 					this.logger?.debug(LOG_CATEGORY, "Successfully deleted bookmark ID:", bookmarkId);
 					successfullyDeletedIds.push(bookmarkId);
-					allDeletedIds.push(bookmarkId);
 				} catch (error) {
 					this.logger?.error(LOG_CATEGORY, "Failed to delete bookmark ID:", { bookmarkId, error });
 					failed++

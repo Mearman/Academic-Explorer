@@ -73,7 +73,7 @@ const runBenchmarks = async () => {
     },
     100_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   results.push(benchmark(
     'getEffectiveLOD (single)',
@@ -82,7 +82,7 @@ const runBenchmarks = async () => {
     },
     100_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   results.push(benchmark(
     'getNodeRenderSettings',
@@ -91,7 +91,7 @@ const runBenchmarks = async () => {
     },
     100_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   results.push(benchmark(
     'getEdgeRenderSettings',
@@ -100,7 +100,7 @@ const runBenchmarks = async () => {
     },
     100_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   results.push(benchmark(
     'recordFrameTime',
@@ -109,7 +109,7 @@ const runBenchmarks = async () => {
     },
     10_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   // Batch operations with different node counts
   console.log('\n--- Batch LOD Calculations ---');
@@ -124,7 +124,7 @@ const runBenchmarks = async () => {
       },
       1000
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
   }
 
   // Frustum culling
@@ -146,7 +146,7 @@ const runBenchmarks = async () => {
     },
     100_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   // Batch frustum culling
   for (const nodeCount of [100, 500, 1000, 5000]) {
@@ -161,7 +161,7 @@ const runBenchmarks = async () => {
       },
       100
     ));
-    console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+    console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
   }
 
   // Matrix operations
@@ -181,7 +181,7 @@ const runBenchmarks = async () => {
     },
     10_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   results.push(benchmark(
     'createFrustumBounds',
@@ -197,7 +197,7 @@ const runBenchmarks = async () => {
     },
     10_000
   ));
-  console.log(formatResult(results.at(-1) ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
+  console.log(formatResult(results[results.length - 1] ?? { name: "unknown", iterations: 0, totalTimeMs: 0, avgTimeMs: 0, opsPerSecond: 0 }));
 
   // Summary
   console.log('\n' + '='.repeat(75));
