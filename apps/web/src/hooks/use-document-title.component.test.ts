@@ -52,7 +52,7 @@ describe("useDocumentTitle", () => {
 
   it("should reset to base title when title is undefined", () => {
     renderHook(() => {
-      useDocumentTitle();
+      useDocumentTitle(undefined);
     });
 
     expect(document.title).toBe("BibGraph");
@@ -137,7 +137,7 @@ describe("useEntityDocumentTitle", () => {
 
   it("should handle undefined entity", () => {
     renderHook(() => {
-      useEntityDocumentTitle();
+      useEntityDocumentTitle(undefined);
     });
 
     expect(document.title).toBe("BibGraph");

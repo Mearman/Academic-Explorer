@@ -338,7 +338,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
                     const card = lists.find(l => l.id === selectedList.id);
                     if (card) {
                       // Trigger edit via the list component
-                       
+                      // eslint-disable-next-line custom/no-deprecated -- querySelectorAll is not deprecated, false positive
                       const buttons = document.querySelectorAll<HTMLElement>('[data-testid^="edit-list-"]');
                       const editButton = [...buttons].find(button =>
                         button.dataset.testid === `edit-list-${selectedList.id}`

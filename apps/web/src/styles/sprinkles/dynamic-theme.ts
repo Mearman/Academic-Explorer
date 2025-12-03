@@ -71,7 +71,7 @@ if (typeof document !== 'undefined') {
   `;
   style.replaceSync(cssText);
   // adoptedStyleSheets may not be iterable in test environments (JSDOM)
-  if (document.adoptedStyleSheets && Symbol.iterator in new Object(document.adoptedStyleSheets)) {
+  if (document.adoptedStyleSheets && Symbol.iterator in Object(document.adoptedStyleSheets)) {
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
   } else {
     // Fallback for test environments: initialize with single stylesheet

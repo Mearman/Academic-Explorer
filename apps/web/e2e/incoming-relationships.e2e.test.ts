@@ -71,8 +71,8 @@ test.describe('Incoming Relationships - Work Citations', () => {
     const citationLink = firstCitation.locator('a').first();
 
     // Get the link text before clicking
-    const citationTitle = citationLink;
-    await expect(citationTitle).toHaveText();
+    const citationTitle = await citationLink.textContent();
+    expect(citationTitle).toBeTruthy();
 
     // Click the citation link
     await citationLink.click();

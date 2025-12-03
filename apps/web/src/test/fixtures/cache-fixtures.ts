@@ -28,6 +28,7 @@ const HAR_CACHE_DIR = path.join(__dirname, "../../test-results/har-cache");
  * - No sensitive data: Only test metadata (test titles) are hashed
  * - No security requirements: Cache keys are used for file naming, not authentication
  * - Determinism required: MD5 provides stable, short identifiers across test runs
+ *
  * @param testTitle - The test title to generate a cache key from
  * @returns An 8-character hexadecimal cache key
  */

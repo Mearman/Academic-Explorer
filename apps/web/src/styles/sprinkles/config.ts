@@ -11,7 +11,7 @@
  * This is a fallback implementation while Vanilla Extract configuration is resolved.
  * @param _styles
  */
- 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const sprinkles = (_styles: Record<string, unknown>): string => {
   // Return empty string for className compatibility
   return '';

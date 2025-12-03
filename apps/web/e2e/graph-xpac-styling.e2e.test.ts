@@ -127,7 +127,7 @@ test.describe('Graph XPAC Styling', () => {
       const firstNode = graphNodes.first();
       const label = await firstNode.getAttribute('aria-label').catch(() => null);
       const title = await firstNode.getAttribute('title').catch(() => null);
-      const dataAttribute = await firstNode.dataset.nodeType.catch(() => null);
+      const dataAttribute = await firstNode.getAttribute('data-node-type').catch(() => null);
 
       const hasAccessibleLabel = label || title || dataAttribute;
       expect(hasAccessibleLabel).toBeTruthy(); // Graph nodes should have accessible labels
@@ -163,7 +163,7 @@ test.describe('Graph XPAC Styling', () => {
       // Sample a few nodes to check for XPAC indicators
       for (let i = 0; i < Math.min(xpacDataCount, 5); i++) {
         const node = xpacDataNodes.nth(i);
-        const workType = await node.dataset.workType.catch(() => null);
+        const workType = await node.getAttribute('data-work-type').catch(() => null);
 
         if (workType && ['dataset', 'software', 'specimen', 'other'].includes(workType)) {
           xpacFound = true;
