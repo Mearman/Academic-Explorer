@@ -11,8 +11,10 @@ export default defineConfig({
   // Test directory - using src and e2e for all tests
   testDir: "./",
 
-  // Test files pattern for E2E tests - run all tests
+  // Test files pattern for E2E tests - run all tests except manual ones in CI
   testMatch: ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"],
+  // Exclude manual tests from CI runs (they're too slow and comprehensive)
+  testIgnore: process.env.CI ? ["**/manual/**"] : [],
 
   // Run tests in parallel - E2E tests are browser-isolated
   // With 4 shards in CI, each shard handles ~19 tests, so 3 workers per shard is efficient
