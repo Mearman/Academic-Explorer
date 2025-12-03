@@ -315,7 +315,7 @@ export class KeywordsApi {
     };
 
     const params: StrictKeywordsQueryParams =
-      select !== undefined ? { ...baseParams, select } : baseParams;
+      select === undefined ? baseParams : { ...baseParams, select };
 
     return this.getKeywords(params);
   }

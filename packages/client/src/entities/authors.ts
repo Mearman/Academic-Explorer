@@ -241,12 +241,12 @@ export class AuthorsApi {
     const params: QueryParams = {
       search: query,
       sort: options.sort
-        ? options.sort.includes(":")
+        ? (options.sort.includes(":")
           ? options.sort
-          : `${options.sort}:desc`
-        : query.trim()
+          : `${options.sort}:desc`)
+        : (query.trim()
           ? "relevance_score:desc"
-          : "works_count",
+          : "works_count"),
     };
 
     if (options.page !== undefined) params.page = options.page;
@@ -568,7 +568,7 @@ export class AuthorsApi {
 
     // Filter by minimum works if specified
     const minWorks = filters.min_works ?? 1;
-    const filteredCollaborators = Array.from(collaboratorStats.entries())
+    const filteredCollaborators = [...collaboratorStats.entries()]
       .filter(([, stats]) => stats.count >= minWorks)
       .sort(([, a], [, b]) => b.count - a.count);
 
@@ -645,7 +645,7 @@ export class AuthorsApi {
     return this.getAuthors({
       ...params,
       sample: sampleSize,
-      seed: Math.floor(Math.random() * 1000000), // Random seed for variety
+      seed: Math.floor(Math.random() * 1_000_000), // Random seed for variety
     });
   }
 

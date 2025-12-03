@@ -497,8 +497,8 @@ export class StatisticsApi {
 
 			const yearData = yearGrouping.group_by;
 			if (yearData) {
-				const years = yearData.map((group) => parseInt(group.key)).filter(y => y > 1900);
-				const yearCounts = yearData.map((group) => ({ year: parseInt(group.key), count: group.count }));
+				const years = yearData.map((group) => Number.parseInt(group.key)).filter(y => y > 1900);
+				const yearCounts = yearData.map((group) => ({ year: Number.parseInt(group.key), count: group.count }));
 
 				// Find peak years (top 3 by publication count)
 				const peakYears = yearCounts
@@ -548,11 +548,11 @@ export class StatisticsApi {
 		}
 
 		return {
-			"United States": 50000,
-			"China": 40000,
-			"United Kingdom": 25000,
-			"Germany": 20000,
-			"Other": 100000,
+			"United States": 50_000,
+			"China": 40_000,
+			"United Kingdom": 25_000,
+			"Germany": 20_000,
+			"Other": 100_000,
 		};
 	}
 
@@ -568,8 +568,8 @@ export class StatisticsApi {
 			activity_distribution: {
 				very_active: 1000,
 				moderately_active: 5000,
-				low_activity: 20000,
-				inactive: 10000,
+				low_activity: 20_000,
+				inactive: 10_000,
 			},
 		};
 	}
@@ -579,9 +579,9 @@ export class StatisticsApi {
 		return {
 			recent_growth: 15.5,
 			publication_trends: [
-				{ year: 2020, count: 100000, cumulative_count: 1000000 },
-				{ year: 2021, count: 110000, cumulative_count: 1110000 },
-				{ year: 2022, count: 120000, cumulative_count: 1230000 },
+				{ year: 2020, count: 100_000, cumulative_count: 1_000_000 },
+				{ year: 2021, count: 110_000, cumulative_count: 1_110_000 },
+				{ year: 2022, count: 120_000, cumulative_count: 1_230_000 },
 			],
 		};
 	}
@@ -609,8 +609,8 @@ export class StatisticsApi {
 		return {
 			avg_field_citation_ratio: 1.2,
 			top_fields_by_impact: [
-				{ field: "Computer Science", avg_citations: 25, total_works: 100000 },
-				{ field: "Medicine", avg_citations: 30, total_works: 150000 },
+				{ field: "Computer Science", avg_citations: 25, total_works: 100_000 },
+				{ field: "Medicine", avg_citations: 30, total_works: 150_000 },
 			],
 		};
 	}

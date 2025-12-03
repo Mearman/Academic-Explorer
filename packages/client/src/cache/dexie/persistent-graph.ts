@@ -342,7 +342,7 @@ export class PersistentGraph {
    * Get all nodes (synchronous - from memory)
    */
   getAllNodes(): GraphNodeRecord[] {
-    return Array.from(this.nodeCache.values());
+    return [...this.nodeCache.values()];
   }
 
   /**
@@ -350,7 +350,7 @@ export class PersistentGraph {
    * @param status
    */
   getNodesByCompleteness(status: CompletenessStatus): GraphNodeRecord[] {
-    return Array.from(this.nodeCache.values()).filter((n) => n.completeness === status);
+    return [...this.nodeCache.values()].filter((n) => n.completeness === status);
   }
 
   /**
@@ -358,7 +358,7 @@ export class PersistentGraph {
    * @param entityType
    */
   getNodesByType(entityType: EntityType): GraphNodeRecord[] {
-    return Array.from(this.nodeCache.values()).filter((n) => n.entityType === entityType);
+    return [...this.nodeCache.values()].filter((n) => n.entityType === entityType);
   }
 
   // ===========================================================================
@@ -446,7 +446,7 @@ export class PersistentGraph {
    * Get all edges (synchronous - from memory)
    */
   getAllEdges(): GraphEdgeRecord[] {
-    return Array.from(this.edgeCache.values());
+    return [...this.edgeCache.values()];
   }
 
   /**
@@ -465,7 +465,7 @@ export class PersistentGraph {
       return [];
     }
 
-    let edges = Array.from(edgeIds)
+    let edges = [...edgeIds]
       .map((id) => this.edgeCache.get(id))
       .filter((e): e is GraphEdgeRecord => e !== undefined);
 
@@ -496,7 +496,7 @@ export class PersistentGraph {
       return [];
     }
 
-    let edges = Array.from(edgeIds)
+    let edges = [...edgeIds]
       .map((id) => this.edgeCache.get(id))
       .filter((e): e is GraphEdgeRecord => e !== undefined);
 
@@ -553,7 +553,7 @@ export class PersistentGraph {
       }
     }
 
-    let result = Array.from(neighbors);
+    let result = [...neighbors];
 
     if (limit && limit > 0) {
       result = result.slice(0, limit);
@@ -593,7 +593,7 @@ export class PersistentGraph {
    * @param filter
    */
   getEdgesByProperty(filter: EdgePropertyFilter): GraphEdgeRecord[] {
-    return this.applyEdgeFilter(Array.from(this.edgeCache.values()), filter);
+    return this.applyEdgeFilter([...this.edgeCache.values()], filter);
   }
 
   /**
@@ -822,11 +822,9 @@ export class PersistentGraph {
       if (filter.scoreMax !== undefined && (edge.score === undefined || edge.score > filter.scoreMax)) {
         return false;
       }
-      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0) {
-        if (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year))) {
+      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0 && (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year)))) {
           return false;
         }
-      }
       if (filter.awardId !== undefined && edge.awardId !== filter.awardId) {
         return false;
       }

@@ -178,7 +178,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       githubPagesSize: 0,
       entries: [],
     });
-    mockedStaticDataProvider.clearCache.mockResolvedValue(undefined);
+    mockedStaticDataProvider.clearCache.mockResolvedValue();
     mockedStaticDataProvider.getEnvironmentInfo.mockReturnValue({
       isDevelopment: false,
       isProduction: true,

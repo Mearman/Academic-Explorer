@@ -325,10 +325,10 @@ export class SamplingApi {
     ];
 
     // Shuffle using seed if provided
-    if (seed !== undefined) {
-      this.shuffleArray(combinedResults, seed);
-    } else {
+    if (seed === undefined) {
       this.shuffleArray(combinedResults);
+    } else {
+      this.shuffleArray(combinedResults, seed);
     }
 
     return {
@@ -450,7 +450,7 @@ export class SamplingApi {
   private seededRandom(seed: number): () => number {
     let state = seed;
     return () => {
-      state = (state * 1664525 + 1013904223) % Math.pow(2, 32);
+      state = (state * 1_664_525 + 1_013_904_223) % Math.pow(2, 32);
       return state / Math.pow(2, 32);
     };
   }

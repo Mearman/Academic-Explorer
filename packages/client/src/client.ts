@@ -187,9 +187,9 @@ export class OpenAlexBaseClient {
       dataVersion: undefined,
       rateLimit: {
         requestsPerSecond: 10, // Conservative default
-        requestsPerDay: 100000, // OpenAlex limit
+        requestsPerDay: 100_000, // OpenAlex limit
       },
-      timeout: 30000, // 30 seconds
+      timeout: 30_000, // 30 seconds
       retries: 3,
       retryDelay: 1000, // 1 second
       headers: {},
@@ -423,22 +423,18 @@ export class OpenAlexBaseClient {
     try {
       const errorData: unknown = await response.json();
 
-      if (isOpenAlexError(errorData)) {
-        return new OpenAlexApiError({
+      return isOpenAlexError(errorData) ? new OpenAlexApiError({
           message:
             errorData.message ||
             errorData.error ||
             `HTTP ${response.status.toString()}`,
           statusCode: response.status,
           response,
-        });
-      } else {
-        return new OpenAlexApiError({
+        }) : new OpenAlexApiError({
           message: `HTTP ${response.status.toString()} ${response.statusText}`,
           statusCode: response.status,
           response,
         });
-      }
     } catch {
       return new OpenAlexApiError({
         message: `HTTP ${response.status.toString()} ${response.statusText}`,
@@ -475,7 +471,7 @@ export class OpenAlexBaseClient {
         "client",
         "Making real OpenAlex API call in test environment",
         {
-          url: url.substring(0, 100), // Truncate for readability
+          url: url.slice(0, 100), // Truncate for readability
           method: options.method ?? "GET",
           retryCount,
         },
@@ -486,13 +482,13 @@ export class OpenAlexBaseClient {
   private getMaxRetries(): { server: number; network: number } {
     return {
       server:
-        this.config.retries !== 3
-          ? this.config.retries
-          : RETRY_CONFIG.server.maxAttempts,
+        this.config.retries === 3
+          ? RETRY_CONFIG.server.maxAttempts
+          : this.config.retries,
       network:
-        this.config.retries !== 3
-          ? this.config.retries
-          : RETRY_CONFIG.network.maxAttempts,
+        this.config.retries === 3
+          ? RETRY_CONFIG.network.maxAttempts
+          : this.config.retries,
     };
   }
 
@@ -567,7 +563,7 @@ export class OpenAlexBaseClient {
       if (retryAfterMs) {
         hostCooldowns.set(host, Date.now() + retryAfterMs);
       } else {
-        hostCooldowns.set(host, Date.now() + 10000);
+        hostCooldowns.set(host, Date.now() + 10_000);
       }
     } catch {
       // ignore URL parsing failures
@@ -588,9 +584,9 @@ export class OpenAlexBaseClient {
   ): Promise<Response> {
     if (response.status >= 500 && retryCount < maxServerRetries) {
       const waitTime =
-        this.config.retries !== 3
-          ? this.config.retryDelay * Math.pow(2, retryCount)
-          : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
+        this.config.retries === 3
+          ? calculateRetryDelay(retryCount, RETRY_CONFIG.server)
+          : this.config.retryDelay * Math.pow(2, retryCount);
       await this.sleep(waitTime);
       // Create clean options without signal for retry to prevent AbortSignal issues
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -815,9 +811,9 @@ export class OpenAlexBaseClient {
 
       if (retryCount < maxNetworkRetries) {
         const waitTime =
-          this.config.retries !== 3
-            ? this.config.retryDelay * Math.pow(2, retryCount)
-            : calculateRetryDelay(retryCount, RETRY_CONFIG.network);
+          this.config.retries === 3
+            ? calculateRetryDelay(retryCount, RETRY_CONFIG.network)
+            : this.config.retryDelay * Math.pow(2, retryCount);
         await this.sleep(waitTime);
         // Create clean options without signal for retry to prevent AbortSignal issues
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -851,7 +847,7 @@ export class OpenAlexBaseClient {
     if (!contentType?.includes("application/json")) {
       const text = await response.text();
       throw new OpenAlexApiError({
-        message: `Expected JSON response but got ${contentType ?? "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+        message: `Expected JSON response but got ${contentType ?? "unknown content-type"}. Response: ${text.slice(0, 200)}...`,
         statusCode: response.status,
       });
     }
@@ -1036,7 +1032,7 @@ const parseRetryAfterToMs = (value: string | null | undefined): number | undefin
   const parsed = Date.parse(value);
   if (!Number.isNaN(parsed)) {
     const diff = parsed - Date.now();
-    return diff > 0 ? diff : 0;
+    return Math.max(diff, 0);
   }
 
   return undefined;

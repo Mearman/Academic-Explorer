@@ -450,11 +450,7 @@ export class GraphIndexTier {
     try {
       let edges: GraphEdgeRecord[];
 
-      if (type) {
-        edges = await db.edges.where('[source+type]').equals([nodeId, type]).toArray();
-      } else {
-        edges = await db.edges.where('source').equals(nodeId).toArray();
-      }
+      edges = await (type ? db.edges.where('[source+type]').equals([nodeId, type]).toArray() : db.edges.where('source').equals(nodeId).toArray());
 
       if (filter) {
         edges = this.applyEdgeFilter(edges, filter);
@@ -490,11 +486,7 @@ export class GraphIndexTier {
     try {
       let edges: GraphEdgeRecord[];
 
-      if (type) {
-        edges = await db.edges.where('[target+type]').equals([nodeId, type]).toArray();
-      } else {
-        edges = await db.edges.where('target').equals(nodeId).toArray();
-      }
+      edges = await (type ? db.edges.where('[target+type]').equals([nodeId, type]).toArray() : db.edges.where('target').equals(nodeId).toArray());
 
       if (filter) {
         edges = this.applyEdgeFilter(edges, filter);
@@ -779,11 +771,9 @@ export class GraphIndexTier {
       if (filter.scoreMax !== undefined && (edge.score === undefined || edge.score > filter.scoreMax)) {
         return false;
       }
-      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0) {
-        if (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year))) {
+      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0 && (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year)))) {
           return false;
         }
-      }
       if (filter.awardId !== undefined && edge.awardId !== filter.awardId) {
         return false;
       }

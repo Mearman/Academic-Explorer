@@ -333,11 +333,9 @@ export class PersistentGraphAdapter {
       if (filter.scoreMax !== undefined && (edge.score === undefined || edge.score > filter.scoreMax)) {
         return false;
       }
-      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0) {
-        if (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year))) {
+      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0 && (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year)))) {
           return false;
         }
-      }
       if (filter.awardId !== undefined && edge.awardId !== filter.awardId) {
         return false;
       }

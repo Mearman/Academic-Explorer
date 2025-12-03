@@ -251,7 +251,7 @@ export class GroupingApi {
         });
 
         const temporalData = temporalBreakdown.groups.map((yearGroup) => ({
-          year: parseInt(yearGroup.key),
+          year: Number.parseInt(yearGroup.key),
           count: yearGroup.count,
           percentage_of_group: (yearGroup.count / group.count) * 100,
         }));
@@ -293,7 +293,7 @@ export class GroupingApi {
 
     const overallTrend = overallTemporal.groups
       .map((group) => ({
-        year: parseInt(group.key),
+        year: Number.parseInt(group.key),
         total_count: group.count,
       }))
       .sort((a, b) => a.year - b.year);
@@ -687,7 +687,7 @@ export class GroupingApi {
     const weight = index - lower;
 
     if (upper >= sortedArray.length)
-      return sortedArray[sortedArray.length - 1] ?? 0;
+      return sortedArray.at(-1) ?? 0;
     if (lower < 0) return sortedArray[0] ?? 0;
 
     const lowerValue = sortedArray[lower] ?? 0;

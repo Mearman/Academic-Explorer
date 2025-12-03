@@ -416,7 +416,7 @@ export class InstitutionsApi {
       {
         ...options,
         sample: Math.min(count, 200), // OpenAlex limits sample to 200
-        seed: seed ?? Math.floor(Math.random() * 1000000),
+        seed: seed ?? Math.floor(Math.random() * 1_000_000),
       };
 
     return this.getInstitutions(params);

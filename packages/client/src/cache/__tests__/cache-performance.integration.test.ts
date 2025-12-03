@@ -274,7 +274,7 @@ class MockHighPerformanceCache {
     let totalSize = 0;
 
     try {
-      const entriesArray = Array.from(entries.entries());
+      const entriesArray = [...entries.entries()];
       const chunks = this.chunkArray(entriesArray, this.config.batchSize);
 
       for (const chunk of chunks) {
@@ -385,7 +385,7 @@ class MockHighPerformanceCache {
   }
 
   getCurrentMemoryUsage(): number {
-    return Array.from(this.cache.values()).reduce(
+    return [...this.cache.values()].reduce(
       (total, entry) => total + entry.size,
       0,
     );
@@ -402,7 +402,7 @@ class MockHighPerformanceCache {
         this.cache.size > 0
           ? this.getCurrentMemoryUsage() / this.cache.size
           : 0,
-      totalAccesses: Array.from(this.cache.values()).reduce(
+      totalAccesses: [...this.cache.values()].reduce(
         (sum, entry) => sum + entry.accessCount,
         0,
       ),
@@ -419,7 +419,7 @@ class MockHighPerformanceCache {
   }
 
   private async evictLeastRecentlyUsed(): Promise<void> {
-    const entries = Array.from(this.cache.entries());
+    const entries = [...this.cache.entries()];
     entries.sort(([, a], [, b]) => a.lastAccessed - b.lastAccessed);
 
     // Remove 10% of entries
@@ -488,8 +488,8 @@ const generateTestData = (sizeKB: number) => {
   const repetitions = Math.ceil(targetSize / 1000);
 
   return {
-    id: `test-${Math.random().toString(36).substr(2, 9)}`,
-    content: baseString.repeat(repetitions).substr(0, targetSize),
+    id: `test-${Math.random().toString(36).slice(2, 11)}`,
+    content: baseString.repeat(repetitions).slice(0, Math.max(0, targetSize)),
     metadata: {
       generated: Date.now(),
       size: targetSize,
@@ -588,7 +588,7 @@ describe("Cache Performance Tests", () => {
       await performanceCache.writeBatch(dataset);
 
       // Read the entire dataset
-      const keys = Array.from(dataset.keys());
+      const keys = [...dataset.keys()];
       const startTime = Date.now();
       const results = await performanceCache.readBatch(keys);
       const duration = Date.now() - startTime;
@@ -702,7 +702,7 @@ describe("Cache Performance Tests", () => {
       const dataset = generateLargeDataset(100, 5);
       await performanceCache.writeBatch(dataset);
 
-      const keys = Array.from(dataset.keys());
+      const keys = [...dataset.keys()];
       const concurrentReads = 50;
 
       // Create concurrent read operations
@@ -719,7 +719,7 @@ describe("Cache Performance Tests", () => {
       expect(duration).toBeLessThan(500); // 500ms for 50 concurrent reads
 
       const metrics = performanceCache.getAggregatedMetrics();
-      expect(metrics.read.cacheHitRate).toBe(1.0); // 100% hit rate
+      expect(metrics.read.cacheHitRate).toBe(1); // 100% hit rate
     });
 
     it("should maintain read performance during concurrent writes", async () => {
@@ -727,7 +727,7 @@ describe("Cache Performance Tests", () => {
       const readDataset = generateLargeDataset(50, 5);
       await performanceCache.writeBatch(readDataset);
 
-      const readKeys = Array.from(readDataset.keys());
+      const readKeys = [...readDataset.keys()];
       const writeDataset = generateLargeDataset(50, 5);
 
       // Perform concurrent reads and writes
@@ -827,7 +827,7 @@ describe("Cache Performance Tests", () => {
 
       // Cache should still be functional
       await recoveryCache.read(
-        Array.from(massiveDataset.keys())[0],
+        [...massiveDataset.keys()][0],
       );
       // Should either have the data or return null, but not throw
 
@@ -842,7 +842,7 @@ describe("Cache Performance Tests", () => {
       // Perform various operations
       await performanceCache.writeBatch(dataset);
 
-      const keys = Array.from(dataset.keys()).slice(0, 25);
+      const keys = [...dataset.keys()].slice(0, 25);
       await performanceCache.readBatch(keys);
 
       // Some individual operations
@@ -860,7 +860,7 @@ describe("Cache Performance Tests", () => {
       expect(aggregatedMetrics.batch.avgDuration).toBeGreaterThan(0);
       expect(aggregatedMetrics.batch.cacheHitRate).toBeGreaterThan(0);
 
-      expect(aggregatedMetrics.read.cacheHitRate).toBe(1.0); // Should be 100% for existing data
+      expect(aggregatedMetrics.read.cacheHitRate).toBe(1); // Should be 100% for existing data
       expect(aggregatedMetrics.write.count).toBeGreaterThan(0);
     });
 

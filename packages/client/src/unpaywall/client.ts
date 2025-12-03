@@ -37,7 +37,7 @@ export class UnpaywallClient {
 
     this.email = options.email;
     this.baseUrl = options.baseUrl ?? 'https://api.unpaywall.org/v2';
-    this.timeout = options.timeout ?? 10000;
+    this.timeout = options.timeout ?? 10_000;
   }
 
   /**

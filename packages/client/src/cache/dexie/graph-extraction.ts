@@ -494,7 +494,7 @@ const extractAuthorshipProperties = (edgeInput: GraphEdgeInput, entityData: Reco
     return normalizeOpenAlexId(author.id as string) === normalizedAuthorId;
   });
 
-  if (authorshipIndex >= 0) {
+  if (authorshipIndex !== -1) {
     const authorship = authorships[authorshipIndex];
 
     // Extract author position

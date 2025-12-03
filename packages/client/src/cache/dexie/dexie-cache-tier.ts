@@ -70,7 +70,7 @@ export class DexieCacheTier {
 
   constructor(config: DexieCacheTierConfig = {}) {
     this.config = {
-      maxEntries: config.maxEntries ?? 10000,
+      maxEntries: config.maxEntries ?? 10_000,
       defaultTtl: config.defaultTtl ?? 24 * 60 * 60 * 1000, // 24 hours
       enableLruEviction: config.enableLruEviction ?? true,
       evictionBatchSize: config.evictionBatchSize ?? 100,

@@ -490,11 +490,11 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       const pathSegments = urlObj.pathname.split('/').filter(Boolean);
 
       // Valid entity types
-      const validTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts', 'keywords'];
+      const validTypes = new Set(['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts', 'keywords']);
 
       // Check last segment first (handles nested endpoints like /authors/A123/works)
       for (let i = pathSegments.length - 1; i >= 0; i--) {
-        if (validTypes.includes(pathSegments[i])) {
+        if (validTypes.has(pathSegments[i])) {
           return pathSegments[i];
         }
       }

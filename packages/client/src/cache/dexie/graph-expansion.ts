@@ -30,7 +30,6 @@ import {
   getWorkById,
   getWorks,
 } from '../../helpers';
-
 import { extractAndIndexRelationships } from './graph-extraction';
 import type { PersistentGraph } from './persistent-graph';
 

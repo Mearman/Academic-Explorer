@@ -233,7 +233,7 @@ export class WorksApi {
     }
 
     // Registrant code validation (after "10.")
-    const registrantPart = parts[0].substring(3); // Remove "10."
+    const registrantPart = parts[0].slice(3); // Remove "10."
     if (registrantPart.length < 4 || !/^\d+$/.test(registrantPart)) {
       return false;
     }
@@ -575,7 +575,7 @@ export class WorksApi {
     count: number,
     params: WorksQueryParams = {},
   ): Promise<Work[]> {
-    if (count > 10000) {
+    if (count > 10_000) {
       throw new Error("Maximum sample size is 10,000 works");
     }
 
@@ -584,7 +584,7 @@ export class WorksApi {
     const queryParams: QueryParams = {
       ...otherParams,
       sample: count,
-      seed: Math.floor(Math.random() * 1000000), // Random seed for reproducibility within session
+      seed: Math.floor(Math.random() * 1_000_000), // Random seed for reproducibility within session
     };
 
     // Convert filters if provided
@@ -872,7 +872,7 @@ export class WorksApi {
   ): Promise<AutocompleteResult[]> {
     // Validate query parameter
     if (typeof query !== "string") {
-      throw new Error("Query must be a string");
+      throw new TypeError("Query must be a string");
     }
 
     const trimmedQuery = query.trim();

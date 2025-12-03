@@ -296,9 +296,9 @@ export class FilterBuilder {
     } else if (value === "false") {
       return false;
     } else if (/^\d+$/.test(value)) {
-      return parseInt(value, 10);
+      return Number.parseInt(value, 10);
     } else if (/^\d*\.\d+$/.test(value)) {
-      return parseFloat(value);
+      return Number.parseFloat(value);
     } else {
       return value;
     }
@@ -314,8 +314,8 @@ export class FilterBuilder {
     const colonIndex = trimmedPart.indexOf(":");
     if (colonIndex === -1) return null;
 
-    const field = trimmedPart.substring(0, colonIndex).trim();
-    const value = trimmedPart.substring(colonIndex + 1).trim();
+    const field = trimmedPart.slice(0, Math.max(0, colonIndex)).trim();
+    const value = trimmedPart.slice(Math.max(0, colonIndex + 1)).trim();
 
     if (!field || !value) return null;
 

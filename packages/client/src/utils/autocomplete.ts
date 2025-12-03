@@ -59,7 +59,7 @@ export class BaseAutocompleteApi {
   protected client: OpenAlexBaseClient;
   private debounceCache: DebouncedPromiseCache = {};
   protected readonly DEBOUNCE_DELAY = 300; // milliseconds
-  protected readonly CACHE_TTL = 30000; // 30 seconds
+  protected readonly CACHE_TTL = 30_000; // 30 seconds
 
   constructor(client: OpenAlexBaseClient) {
     this.client = client;
@@ -665,7 +665,7 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
       }
     }
 
-    return entityTypes.size > 0 ? Array.from(entityTypes) : allTypes;
+    return entityTypes.size > 0 ? [...entityTypes] : allTypes;
   }
 
   /**

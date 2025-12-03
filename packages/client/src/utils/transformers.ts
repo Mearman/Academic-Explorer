@@ -240,7 +240,7 @@ const STOP_WORDS = new Set([
  */
 const extractWordsFromAbstract = (abstract: string, minLength: number, excludeCommon: boolean): string[] => abstract
     .toLowerCase()
-    .replace(/[^\s\w-]/g, " ") // Keep hyphens for compound terms
+    .replaceAll(/[^\s\w-]/g, " ") // Keep hyphens for compound terms
     .split(/\s+/)
     .filter(
       (word) =>
@@ -328,7 +328,7 @@ export const extractKeywords = (abstract: string | null, options: {
   // Combine and sort by frequency
   const allTerms = new Map([...wordCount, ...compounds]);
 
-  return Array.from(allTerms.entries())
+  return [...allTerms.entries()]
     .sort((a, b) => b[1] - a[1]) // Sort by frequency
     .slice(0, maxKeywords)
     .map(([term]) => term);
@@ -377,8 +377,7 @@ const formatAPACitation = (authors: string[], display_name: string, year: string
   }
 
   // Year
-  if (year) citation += ` (${year}).`;
-  else citation += " (n.d.).";
+  citation += year ? ` (${year}).` : " (n.d.).";
 
   // Title
   citation += ` ${display_name}.`;
@@ -425,7 +424,7 @@ const formatMLAAuthors = (authors: string[]): string => {
 const formatMLASingleAuthor = (author: string): string => {
   const nameParts = author.split(" ");
   if (nameParts.length > 1) {
-    const lastName = nameParts[nameParts.length - 1];
+    const lastName = nameParts.at(-1);
     const firstNames = nameParts.slice(0, -1).join(" ");
     return `${lastName}, ${firstNames}`;
   }

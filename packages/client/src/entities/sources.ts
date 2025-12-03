@@ -161,7 +161,7 @@ export class SourcesApi {
       .toLowerCase()
       .replace(/^(issn[\s:]*|eissn[\s:]*)/i, "")
       .trim()
-      .replace(/[^\d\-x]/gi, "")
+      .replaceAll(/[^\d\-x]/gi, "")
       .toUpperCase();
 
     // Add hyphen if missing (bare 8-digit format)
@@ -194,16 +194,16 @@ export class SourcesApi {
     // Calculate checksum for first 7 digits
     let sum = 0;
     for (let i = 0; i < 7; i++) {
-      sum += parseInt(digits[i]) * (8 - i);
+      sum += Number.parseInt(digits[i]) * (8 - i);
     }
 
     const remainder = sum % 11;
     const expectedCheckDigit =
       remainder === 0
         ? "0"
-        : remainder === 1
+        : (remainder === 1
           ? "X"
-          : (11 - remainder).toString();
+          : (11 - remainder).toString());
 
     const actualCheckDigit = digits[7];
     return actualCheckDigit === expectedCheckDigit;
@@ -484,7 +484,7 @@ export class SourcesApi {
     params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
   ): Promise<OpenAlexResponse<Source>> {
     const filters: SourcesFilters = {
-      ...(params.filter ?? {}),
+      ...params.filter,
       country_code: countryCode,
     };
 
@@ -584,7 +584,7 @@ export class SourcesApi {
     filters: SourcesFilters = {},
     seed?: number,
   ): Promise<OpenAlexResponse<Source>> {
-    if (count > 10000) {
+    if (count > 10_000) {
       throw new Error("Random sample size cannot exceed 10,000");
     }
 

@@ -112,7 +112,7 @@ export class IdResolver {
 
         // Remove doi: prefix
         if (doi.toLowerCase().startsWith("doi:")) {
-          doi = doi.substring(4);
+          doi = doi.slice(4);
         }
 
         // Extract from URL
@@ -323,7 +323,7 @@ export class IdResolver {
         }
 
         // Convert to number and back to ensure valid
-        const pmidNum = parseInt(pmid, 10);
+        const pmidNum = Number.parseInt(pmid, 10);
         if (pmidNum <= 0) {
           return null;
         }
@@ -739,7 +739,7 @@ export class IdResolver {
    */
   private static validateOrcidChecksum(orcid: string): boolean {
     // Remove hyphens for calculation
-    const digits = orcid.replace(/-/g, "");
+    const digits = orcid.replaceAll('-', "");
 
     // Extract check digit (last character)
     const checkDigit = digits.slice(-1);
@@ -748,7 +748,7 @@ export class IdResolver {
     // Calculate checksum using mod-11-2 algorithm
     let total = 0;
     for (const digit of baseDigits) {
-      total = (total + parseInt(digit, 10)) * 2;
+      total = (total + Number.parseInt(digit, 10)) * 2;
     }
 
     const remainder = total % 11;
@@ -764,7 +764,7 @@ export class IdResolver {
    */
   private static validateIssnChecksum(issn: string): boolean {
     // Remove hyphen for calculation
-    const digits = issn.replace(/-/g, "");
+    const digits = issn.replaceAll('-', "");
 
     // Extract check digit (last character)
     const checkDigit = digits.slice(-1);
@@ -772,8 +772,8 @@ export class IdResolver {
 
     // Calculate checksum using mod-11 algorithm
     let total = 0;
-    for (let i = 0; i < baseDigits.length; i++) {
-      total += parseInt(baseDigits[i], 10) * (8 - i);
+    for (const [i, baseDigit] of [...baseDigits].entries()) {
+      total += Number.parseInt(baseDigit, 10) * (8 - i);
     }
 
     const remainder = total % 11;

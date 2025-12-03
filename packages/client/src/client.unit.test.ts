@@ -37,7 +37,7 @@ describe("OpenAlexBaseClient", () => {
         meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
       },
     ) =>
-      new Response(JSON.stringify(data), {
+      Response.json(data, {
         status: 200,
         statusText: "OK",
         headers: new Headers({
@@ -59,7 +59,7 @@ describe("OpenAlexBaseClient", () => {
       const rateLimitStatus = defaultClient.getRateLimitStatus();
 
       expect(rateLimitStatus.requestsToday).toBe(0);
-      expect(rateLimitStatus.requestsRemaining).toBe(100000);
+      expect(rateLimitStatus.requestsRemaining).toBe(100_000);
       expect(rateLimitStatus.dailyResetTime).toBeInstanceOf(Date);
     });
 
@@ -71,7 +71,7 @@ describe("OpenAlexBaseClient", () => {
           requestsPerSecond: 5,
           requestsPerDay: 5000,
         },
-        timeout: 15000,
+        timeout: 15_000,
         retries: 5,
         retryDelay: 2000,
       };
@@ -106,7 +106,7 @@ describe("OpenAlexBaseClient", () => {
       const customClient = new OpenAlexBaseClient(config);
       const status = customClient.getRateLimitStatus();
 
-      expect(status.requestsRemaining).toBe(100000); // Uses default requestsPerDay
+      expect(status.requestsRemaining).toBe(100_000); // Uses default requestsPerDay
     });
 
     it("should update configuration dynamically", async () => {
@@ -208,7 +208,7 @@ describe("OpenAlexBaseClient", () => {
     it("should return accurate initial rate limit status", () => {
       const status = client.getRateLimitStatus();
       expect(status.requestsToday).toBe(0);
-      expect(status.requestsRemaining).toBe(100000);
+      expect(status.requestsRemaining).toBe(100_000);
       expect(status.dailyResetTime).toBeInstanceOf(Date);
     });
 
@@ -217,14 +217,14 @@ describe("OpenAlexBaseClient", () => {
 
       const status = client.getRateLimitStatus();
       expect(status.requestsToday).toBe(1);
-      expect(status.requestsRemaining).toBe(99999);
+      expect(status.requestsRemaining).toBe(99_999);
     });
   });
 
   describe("Error Handling", () => {
     it("should handle HTTP 404 errors without retries", async () => {
-      const errorResponse = new Response(
-        JSON.stringify({ error: "Not found", message: "Work not found" }),
+      const errorResponse = Response.json(
+        { error: "Not found", message: "Work not found" },
         { status: 404, statusText: "Not Found" },
       );
       mockFetch.mockResolvedValueOnce(errorResponse);
@@ -236,8 +236,8 @@ describe("OpenAlexBaseClient", () => {
 
       // Reset mock and test the error message
       mockFetch.mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({ error: "Not found", message: "Work not found" }),
+        Response.json(
+          { error: "Not found", message: "Work not found" },
           { status: 404, statusText: "Not Found" },
         ),
       );
@@ -248,8 +248,8 @@ describe("OpenAlexBaseClient", () => {
     });
 
     it("should handle HTTP 500 errors with retries", async () => {
-      const errorResponse = new Response(
-        JSON.stringify({ error: "Internal Server Error" }),
+      const errorResponse = Response.json(
+        { error: "Internal Server Error" },
         { status: 500, statusText: "Internal Server Error" },
       );
 
@@ -267,11 +267,11 @@ describe("OpenAlexBaseClient", () => {
 
       expect(mockFetch).toHaveBeenCalledTimes(3); // Original + 2 retries
       expect(result).toBeDefined();
-    }, 10000); // 10 second timeout
+    }, 10_000); // 10 second timeout
 
     it("should throw OpenAlexApiError after max retries for server errors", async () => {
-      const errorResponse = new Response(
-        JSON.stringify({ error: "Internal Server Error" }),
+      const errorResponse = Response.json(
+        { error: "Internal Server Error" },
         { status: 500, statusText: "Internal Server Error" },
       );
 
@@ -282,7 +282,7 @@ describe("OpenAlexBaseClient", () => {
 
       await expect(client.get("works")).rejects.toThrow(OpenAlexApiError);
       expect(mockFetch).toHaveBeenCalledTimes(2); // Original + 1 retry
-    }, 10000); // 10 second timeout
+    }, 10_000); // 10 second timeout
 
     it("should handle network errors with retries", async () => {
       const networkError = new Error("Network error");
@@ -310,7 +310,7 @@ describe("OpenAlexBaseClient", () => {
       mockFetch.mockRejectedValue(networkError);
       await expect(client.get("works")).rejects.toThrow(/Network error/);
       expect(mockFetch).toHaveBeenCalledTimes(6); // Another 3 calls
-    }, 10000); // 10 second timeout for this test
+    }, 10_000); // 10 second timeout for this test
 
     it("should handle timeout errors", async () => {
       // Mock AbortError which is thrown on timeout
@@ -330,11 +330,11 @@ describe("OpenAlexBaseClient", () => {
     });
 
     it("should parse error response JSON when available", async () => {
-      const errorResponse = new Response(
-        JSON.stringify({
+      const errorResponse = Response.json(
+        {
           error: "Bad Request",
           message: "Invalid filter parameter",
-        }),
+        },
         { status: 400, statusText: "Bad Request" },
       );
       mockFetch.mockResolvedValueOnce(errorResponse);
@@ -373,8 +373,8 @@ describe("OpenAlexBaseClient", () => {
 
   describe("Retry Mechanisms", () => {
     it("should not retry on client errors (4xx)", async () => {
-      const clientError = new Response(
-        JSON.stringify({ error: "Bad Request" }),
+      const clientError = Response.json(
+        { error: "Bad Request" },
         { status: 400, statusText: "Bad Request" },
       );
       mockFetch.mockResolvedValueOnce(clientError);
@@ -400,7 +400,7 @@ describe("OpenAlexBaseClient", () => {
         results: [{ id: "W123", display_name: "Test Work" }],
         meta: { count: 1 },
       };
-      const jsonResponse = new Response(JSON.stringify(testData), {
+      const jsonResponse = Response.json(testData, {
         status: 200,
         headers: new Headers({ "content-type": "application/json" }),
       });
@@ -454,7 +454,7 @@ describe("OpenAlexBaseClient", () => {
       };
 
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(responseData), {
+        Response.json(responseData, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -466,7 +466,7 @@ describe("OpenAlexBaseClient", () => {
     it("should make GET requests with getById method", async () => {
       const workData = { id: "W123", display_name: "Test Work" };
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(workData), {
+        Response.json(workData, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -487,7 +487,7 @@ describe("OpenAlexBaseClient", () => {
 
     it("should properly encode IDs in getById method", async () => {
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify({}), {
+        Response.json({}, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -508,7 +508,7 @@ describe("OpenAlexBaseClient", () => {
 
       // Since extractCursorFromResponse returns undefined, streaming will only fetch one batch
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(batch1), {
+        Response.json(batch1, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -533,7 +533,7 @@ describe("OpenAlexBaseClient", () => {
       // Since streaming stops after first batch (cursor extraction not implemented),
       // getAll will only get the first batch results
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(batch1), {
+        Response.json(batch1, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -553,7 +553,7 @@ describe("OpenAlexBaseClient", () => {
 
       // Since streaming stops after first batch (cursor extraction not implemented)
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(batch1), {
+        Response.json(batch1, {
           headers: { "content-type": "application/json" },
         }),
       );
@@ -597,11 +597,11 @@ describe("OpenAlexBaseClient", () => {
       );
 
       mockFetch.mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
+        Response.json(
+          {
             error: "Invalid select parameter",
             message: "Too many fields in select parameter",
-          }),
+          },
           {
             status: 400,
             statusText: "Bad Request",
@@ -627,12 +627,12 @@ describe("OpenAlexBaseClient", () => {
   describe("Edge Cases and Error Conditions", () => {
     it("should reject responses with no content-type header", async () => {
       mockFetch.mockReset();
-      const responseWithoutContentType = new Response(
-        JSON.stringify({ results: [], meta: { count: 0 } }),
+      const responseWithoutContentType = Response.json(
+        { results: [], meta: { count: 0 } },
         { status: 200 },
       );
-      const responseWithoutContentType2 = new Response(
-        JSON.stringify({ results: [], meta: { count: 0 } }),
+      const responseWithoutContentType2 = Response.json(
+        { results: [], meta: { count: 0 } },
         { status: 200 },
       );
       mockFetch.mockResolvedValueOnce(responseWithoutContentType);

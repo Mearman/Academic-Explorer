@@ -100,14 +100,14 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
     }
 
     // Handle different operators for numeric and string values
-    if (operator !== "=") {
+    if (operator === "=") {
+      // Use safe assignment method instead of type assertion
+      this.safelyAssignToField(field, value);
+    } else {
       const operatorSymbol = operator === "!=" ? "!" : operator;
       const formattedValue = `${operatorSymbol}${String(value)}`;
       // Use safe assignment method instead of type assertion
       this.safelyAssignToField(field, formattedValue);
-    } else {
-      // Use safe assignment method instead of type assertion
-      this.safelyAssignToField(field, value);
     }
 
     return this;
@@ -552,7 +552,7 @@ export const validateDateRange = (from: string | null | undefined, to: string | 
       const isoString = date.toISOString().split("T")[0];
 
       // For strict validation, check if year-only inputs are acceptable
-      if (trimmed.match(/^\d{4}$/)) {
+      if (/^\d{4}$/.test(trimmed)) {
         return undefined; // Reject year-only dates as incomplete
       }
 
@@ -621,7 +621,7 @@ export const escapeFilterValue = (value: string): string => {
 
   if (needsQuoting) {
     // Escape existing quotes
-    escaped = escaped.replace(/"/g, '\\"');
+    escaped = escaped.replaceAll('"', String.raw`\"`);
     // Wrap in quotes
     escaped = `"${escaped}"`;
   }

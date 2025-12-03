@@ -11,7 +11,7 @@ import { isRecord } from "@bibgraph/types";
  * @param str
  */
 const simpleHash = (str: string): string => {
-  let hash = 2166136261; // FNV offset basis
+  let hash = 2_166_136_261; // FNV offset basis
 
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i);
@@ -64,7 +64,7 @@ const normalizeObject = (obj: Record<string, unknown>): Record<string, unknown> 
 
       if (Array.isArray(value)) {
         // Sort array elements for consistent ordering
-        acc[key] = value.slice().sort();
+        acc[key] = [...value].sort();
       } else if (isRecord(value)) {
         acc[key] = normalizeObject(value);
       } else {

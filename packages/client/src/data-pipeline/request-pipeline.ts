@@ -144,13 +144,13 @@ const DEFAULT_OPTIONS: Required<PipelineOptions> = {
     const url = new URL(context.url);
     const params = new URLSearchParams(url.search);
     // Sort params for consistent keys
-    const sortedParams = Array.from(params.entries()).sort(([a], [b]) =>
+    const sortedParams = [...params.entries()].sort(([a], [b]) =>
       a.localeCompare(b),
     );
     const paramString = sortedParams.map(([k, v]) => `${k}=${v}`).join("&");
     return `${context.method}:${url.origin}${url.pathname}?${paramString}`;
   },
-  errorClassifier: classifyError,
+  errorClassifier: (error: Error, response?: Response) => classifyError(error, response),
 };
 
 /**
@@ -172,7 +172,7 @@ export class RequestPipeline {
    */
   async execute(url: string, options: RequestInit = {}): Promise<Response> {
     const context: RequestContext = {
-      requestId: `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      requestId: `req_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       url,
       method: options.method ?? "GET",
       options,
@@ -232,7 +232,7 @@ export class RequestPipeline {
     logger.debug("pipeline", "Request started", {
       requestId: context.requestId,
       method: context.method,
-      url: context.url.substring(0, 100),
+      url: context.url.slice(0, 100),
     });
 
     const result = await next();
@@ -333,8 +333,8 @@ export class RequestPipeline {
       });
 
       // Return a synthetic response indicating deduplication
-      const dedupeResponse = new Response(
-        JSON.stringify({ message: "Request deduplicated", deduplicated: true }),
+      const dedupeResponse = Response.json(
+        { message: "Request deduplicated", deduplicated: true },
         {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -503,13 +503,13 @@ export class RequestPipeline {
       logger.debug("pipeline", "Executing request", {
         requestId: context.requestId,
         method: context.method,
-        url: context.url.substring(0, 100),
+        url: context.url.slice(0, 100),
       });
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-      }, 30000); // 30 second timeout
+      }, 30_000); // 30 second timeout
 
       const response = await fetch(context.url, {
         ...context.options,
@@ -624,7 +624,7 @@ export const classifyError = (error: Error, response?: Response): ErrorClassific
   // Rate limit errors
   if (response?.status === 429) {
     const retryAfter = response.headers.get("Retry-After");
-    const retryDelay = retryAfter ? parseInt(retryAfter, 10) * 1000 : undefined;
+    const retryDelay = retryAfter ? Number.parseInt(retryAfter, 10) * 1000 : undefined;
 
     return {
       type: ErrorType.RATE_LIMIT,

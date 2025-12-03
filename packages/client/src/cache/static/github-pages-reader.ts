@@ -89,7 +89,7 @@ export class GitHubPagesReader {
     // Set up configuration with defaults
     this.config = {
       baseUrl: config.baseUrl,
-      timeout: config.timeout ?? 10000, // 10 seconds
+      timeout: config.timeout ?? 10_000, // 10 seconds
       maxRetries: config.maxRetries ?? 3,
       initialRetryDelay: config.initialRetryDelay ?? 1000, // 1 second
       maxRetryDelay: config.maxRetryDelay ?? 8000, // 8 seconds
@@ -549,7 +549,7 @@ export class GitHubPagesReader {
  */
 export const defaultGitHubPagesConfig: GitHubPagesReaderConfig = {
   baseUrl: "https://mearman.github.io/BibGraph/data",
-  timeout: 10000,
+  timeout: 10_000,
   maxRetries: 3,
   initialRetryDelay: 1000,
   maxRetryDelay: 8000,

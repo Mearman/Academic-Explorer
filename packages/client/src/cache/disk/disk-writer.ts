@@ -99,12 +99,12 @@ const indexContentEquals = (oldIndex: DirectoryIndex, newIndex: DirectoryIndex):
     return false;
   }
 
-  for (let i = 0; i < oldFileKeys.length; i++) {
-    if (oldFileKeys[i] !== newFileKeys[i]) {
+  for (const [i, oldFileKey] of oldFileKeys.entries()) {
+    if (oldFileKey !== newFileKeys[i]) {
       return false;
     }
 
-    const oldFile = oldFiles[oldFileKeys[i]] as FileEntry;
+    const oldFile = oldFiles[oldFileKey] as FileEntry;
     const newFile = newFiles[newFileKeys[i]] as FileEntry;
 
     // Compare all FileEntry fields
@@ -129,12 +129,12 @@ const indexContentEquals = (oldIndex: DirectoryIndex, newIndex: DirectoryIndex):
     return false;
   }
 
-  for (let i = 0; i < oldDirKeys.length; i++) {
-    if (oldDirKeys[i] !== newDirKeys[i]) {
+  for (const [i, oldDirKey] of oldDirKeys.entries()) {
+    if (oldDirKey !== newDirKeys[i]) {
       return false;
     }
 
-    const oldDir = oldDirs[oldDirKeys[i]];
+    const oldDir = oldDirs[oldDirKey];
     const newDir = newDirs[newDirKeys[i]];
 
     // Compare directory entry fields
@@ -564,7 +564,7 @@ export class DiskCacheWriter {
       const urlHash = await generateContentHash(data.url);
       return {
         entityType: "works", // Default entity type
-        entityId: `unknown_${urlHash.substring(0, 8)}`,
+        entityId: `unknown_${urlHash.slice(0, 8)}`,
       };
     } catch (error) {
       logError(logger, "Failed to extract entity info", error);
@@ -594,7 +594,7 @@ export class DiskCacheWriter {
         : sanitizedQuery; // Remove leading '?'
 
       // Check for autocomplete endpoint first
-      if (pathParts.length >= 1 && pathParts[0] === "autocomplete") {
+      if (pathParts.length > 0 && pathParts[0] === "autocomplete") {
         // Autocomplete can be /autocomplete?q=query or /autocomplete/entity_type?q=query
         if (pathParts.length === 1) {
           // General autocomplete: /autocomplete?q=query
@@ -630,7 +630,7 @@ export class DiskCacheWriter {
       ];
 
       // OpenAlex API URL pattern: /entity_type/entity_id or /entity_type?params
-      if (pathParts.length >= 1) {
+      if (pathParts.length > 0) {
         const entityType = pathParts[0];
 
         const typedEntityType = validEntityTypes.find(
@@ -844,7 +844,7 @@ export class DiskCacheWriter {
         const urlHash = await generateContentHash(entityInfo.entityId);
         const [, subdirectory] = entityInfo.entityId.split("/");
         directoryPath = path.join(basePath, "autocomplete", subdirectory);
-        filename = urlHash.substring(0, 8);
+        filename = urlHash.slice(0, 8);
       }
     } else if (entityInfo.isQueryResponse && entityInfo.queryParams) {
       // Query/filter response: works/queries/filter=author.id:A123&select=display_name.json
@@ -899,11 +899,11 @@ export class DiskCacheWriter {
           // Determine entity type from the external ID
           let entityType: EntityType = "works"; // default
 
-          if (potentialId.includes("orcid.org/") || potentialId.match(/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i)) {
+          if (potentialId.includes("orcid.org/") || /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i.test(potentialId)) {
             entityType = "authors";
-          } else if (potentialId.includes("ror.org/") || potentialId.match(/^[0-9a-z]{9}$/i)) {
+          } else if (potentialId.includes("ror.org/") || /^[0-9a-z]{9}$/i.test(potentialId)) {
             entityType = "institutions";
-          } else if (potentialId.includes("doi.org/") || potentialId.match(/^10\.\d+\/\S+$/)) {
+          } else if (potentialId.includes("doi.org/") || /^10\.\d+\/\S+$/.test(potentialId)) {
             entityType = "works";
           }
 
@@ -926,17 +926,17 @@ export class DiskCacheWriter {
    */
   private isExternalCanonicalId(id: string): boolean {
     // DOI patterns
-    if (id.includes("doi.org/") || id.match(/^10\.\d+\/\S+$/)) {
+    if (id.includes("doi.org/") || /^10\.\d+\/\S+$/.test(id)) {
       return true;
     }
 
     // ORCID patterns
-    if (id.includes("orcid.org/") || id.match(/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i)) {
+    if (id.includes("orcid.org/") || /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i.test(id)) {
       return true;
     }
 
     // ROR patterns
-    if (id.includes("ror.org/") || id.match(/^[0-9a-z]{9}$/i)) {
+    if (id.includes("ror.org/") || /^[0-9a-z]{9}$/i.test(id)) {
       return true;
     }
 
@@ -950,10 +950,10 @@ export class DiskCacheWriter {
    */
   private sanitizeFilename(filename: string): string {
     const sanitized = filename
-      .replace(/["*/:<>?\\|]/g, "_") // Replace invalid characters
-      .replace(/\s+/g, "_") // Replace spaces with underscores
-      .replace(/_{2,}/g, "_") // Replace multiple underscores with single
-      .replace(/^_|_$/g, ""); // Remove leading/trailing underscores
+      .replaceAll(/["*/:<>?\\|]/g, "_") // Replace invalid characters
+      .replaceAll(/\s+/g, "_") // Replace spaces with underscores
+      .replaceAll(/_{2,}/g, "_") // Replace multiple underscores with single
+      .replaceAll(/^_|_$/g, ""); // Remove leading/trailing underscores
 
     // If filename is too long, use a hash to ensure it fits filesystem limits
     // Keep it under 100 chars to leave room for directory path and .json extension
@@ -967,7 +967,7 @@ export class DiskCacheWriter {
       }
       const hashStr = Math.abs(hash).toString(36);
       // Return first 50 chars + hash to make it somewhat readable
-      return `${sanitized.substring(0, 50)}_${hashStr}`;
+      return `${sanitized.slice(0, 50)}_${hashStr}`;
     }
 
     return sanitized;
@@ -1319,7 +1319,7 @@ export class DiskCacheWriter {
     const basePath = path.resolve(this.config.basePath);
     const relativePath = path
       .relative(basePath, directoryPath)
-      .replace(/\\/g, "/");
+      .replaceAll('\\', "/");
     const displayPath = relativePath ? `/${relativePath}` : "/";
 
     try {
@@ -1372,11 +1372,7 @@ export class DiskCacheWriter {
         };
 
         // Only update lastUpdated if content has actually changed
-        if (oldIndexData && indexContentEquals(oldIndexData, indexData)) {
-          indexData.lastUpdated = oldIndexData.lastUpdated;
-        } else {
-          indexData.lastUpdated = new Date().toISOString();
-        }
+        indexData.lastUpdated = oldIndexData && indexContentEquals(oldIndexData, indexData) ? oldIndexData.lastUpdated : new Date().toISOString();
 
         await this.writeFileAtomic({
           filePath: indexPath,

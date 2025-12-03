@@ -217,7 +217,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
   private getFilePath(entityType: StaticEntityType, id: string): string {
     // Sanitize ID for filesystem
-    const sanitizedId = id.replace(/[^\w-]/g, "_");
+    const sanitizedId = id.replaceAll(/[^\w-]/g, "_");
     return `${this.cacheDir}/${entityType}/${sanitizedId}.json`;
   }
 
@@ -237,13 +237,13 @@ class LocalDiskCacheTier implements CacheTierInterface {
       const filePath = this.getFilePath(entityType, id);
 
       // Dynamic import for Node.js fs module
-      const fs = await import("fs");
+      const fs = await import("node:fs");
 
       if (!fs.existsSync(filePath)) {
         return { found: false };
       }
 
-      const parsedData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      const parsedData = JSON.parse(fs.readFileSync(filePath, "utf8"));
       // Validate that parsedData is a valid value (not null/undefined for our use case)
       if (parsedData === null || parsedData === undefined) {
         throw new Error(`Invalid JSON data in file: ${filePath}`);
@@ -278,7 +278,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
       }
 
       const filePath = this.getFilePath(entityType, id);
-      const fs = await import("fs");
+      const fs = await import("node:fs");
       return fs.existsSync(filePath);
     } catch {
       return false;
@@ -296,8 +296,8 @@ class LocalDiskCacheTier implements CacheTierInterface {
       }
 
       const filePath = this.getFilePath(entityType, id);
-      const fs = await import("fs");
-      const path = await import("path");
+      const fs = await import("node:fs");
+      const path = await import("node:path");
 
       // Ensure directory exists
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -319,7 +319,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
         return;
       }
 
-      const fs = await import("fs");
+      const fs = await import("node:fs");
       if (fs.existsSync(this.cacheDir)) {
         fs.rmSync(this.cacheDir, { recursive: true, force: true });
       }
@@ -351,7 +351,7 @@ class IndexedDBCacheTier implements CacheTierInterface {
 
   constructor() {
     this.dexieTier = new DexieCacheTier({
-      maxEntries: 10000,
+      maxEntries: 10_000,
       defaultTtl: 7 * 24 * 60 * 60 * 1000, // 7 days default TTL
       enableLruEviction: true,
       evictionBatchSize: 100,
@@ -532,7 +532,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
     return {
       maxAttempts: 3,
       baseDelayMs: isTest ? 50 : 1000,
-      maxDelayMs: isTest ? 200 : 10000,
+      maxDelayMs: isTest ? 200 : 10_000,
       jitterMs: isTest ? 0 : 500,
       cooldownMs: isTest ? 1000 : 30_000, // shorter cooldown in tests
     };
@@ -698,7 +698,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           const errorObj = error as Record<string, unknown>;
           const retryAfter = errorObj.retryAfter;
           if (typeof retryAfter === "string") {
-            retryAfterSec = parseInt(retryAfter);
+            retryAfterSec = Number.parseInt(retryAfter);
           }
         }
 
@@ -715,7 +715,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => {
           controller.abort();
-        }, 10000); // 10 second timeout
+        }, 10_000); // 10 second timeout
 
         const response = await fetch(url, {
           method: "GET",
@@ -928,7 +928,7 @@ class StaticDataProvider {
 
     // Estimate bandwidth saved (approximate 50KB per entity)
     if (hit) {
-      this.globalStats.bandwidthSaved += 50000;
+      this.globalStats.bandwidthSaved += 50_000;
     }
   }
 

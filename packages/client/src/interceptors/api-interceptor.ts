@@ -281,7 +281,7 @@ export class ApiInterceptor {
         key === "seed"
       ) {
         // Handle numeric parameters
-        const numValue = parseInt(value, 10);
+        const numValue = Number.parseInt(value, 10);
         if (!isNaN(numValue)) {
           params[key] = numValue;
         }
@@ -433,7 +433,7 @@ export class ApiInterceptor {
         requestId,
         entityType,
         entityId,
-        url: url.substring(0, 100) + (url.length > 100 ? "..." : ""),
+        url: url.slice(0, 100) + (url.length > 100 ? "..." : ""),
       });
 
       return interceptedRequest;
@@ -528,7 +528,7 @@ export class ApiInterceptor {
       if (this.shouldDeduplicate(cacheKey)) {
         logger.debug("Request deduplicated", {
           requestId: request.requestId,
-          cacheKey: cacheKey.substring(0, 50) + "...",
+          cacheKey: cacheKey.slice(0, 50) + "...",
         });
         return null;
       }

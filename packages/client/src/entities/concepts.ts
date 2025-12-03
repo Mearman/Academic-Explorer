@@ -280,7 +280,7 @@ export class ConceptsApi {
     };
 
     const params: ConceptsQueryParams =
-      select !== undefined ? { ...baseParams, select } : baseParams;
+      select === undefined ? baseParams : { ...baseParams, select };
 
     return this.getConcepts(params);
   }
