@@ -247,7 +247,7 @@ describe('Entity Type Filter with Graph List Bypass (T035)', () => {
       const visible1 = applyEntityTypeFilter(allNodes, null);
       expect(visible1).toHaveLength(allNodes.length); // null = show all
 
-      const visible2 = applyEntityTypeFilter(allNodes);
+      const visible2 = applyEntityTypeFilter(allNodes, undefined);
       expect(visible2).toHaveLength(allNodes.length); // undefined = show all
     });
   });

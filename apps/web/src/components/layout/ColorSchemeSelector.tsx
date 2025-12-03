@@ -48,7 +48,7 @@ export const ColorSchemeSelector = () => {
         return false;
       }
       // Check if the value exists in the palette names array
-      return shadcnPaletteNames.includes(value);
+      return shadcnPaletteNames.some(name => name === value);
     };
 
     if (isValidPalette(scheme)) {
