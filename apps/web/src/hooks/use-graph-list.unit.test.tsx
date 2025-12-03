@@ -67,17 +67,21 @@ describe('Graph List Management Hook (T042-T044)', () => {
 				resolveAdd = resolve;
 			});
 
-			const slowStorage = {
-				...storage,
-				addToGraphList: vi.fn().mockImplementation(async (...args: unknown[]) => {
-					// Wait for our promise before completing
-					await addPromise;
-					// Then call the real implementation
-					return storage.addToGraphList(
-						args[0] as Parameters<typeof storage.addToGraphList>[0]
-					);
-				}),
-			} as unknown as InMemoryStorageProvider;
+			// Create a proper proxy that preserves prototype methods
+			const slowStorage = Object.create(
+				Object.getPrototypeOf(storage),
+				Object.getOwnPropertyDescriptors(storage)
+			) as InMemoryStorageProvider;
+
+			// Override only the addToGraphList method
+			slowStorage.addToGraphList = vi.fn().mockImplementation(async (...args: unknown[]) => {
+				// Wait for our promise before completing
+				await addPromise;
+				// Then call the real implementation
+				return storage.addToGraphList(
+					args[0] as Parameters<typeof storage.addToGraphList>[0]
+				);
+			});
 
 			const slowWrapper = ({ children }: { children: ReactNode }) => (
 				<StorageProviderWrapper provider={slowStorage}>{children}</StorageProviderWrapper>
@@ -129,10 +133,13 @@ describe('Graph List Management Hook (T042-T044)', () => {
 
 		it('should handle errors gracefully and rollback optimistic updates', async () => {
 			// Create a storage provider that will fail
-			const failingStorage = {
-				...storage,
-				addToGraphList: vi.fn().mockRejectedValue(new Error('Storage error')),
-			} as unknown as InMemoryStorageProvider;
+			const failingStorage = Object.create(
+				Object.getPrototypeOf(storage),
+				Object.getOwnPropertyDescriptors(storage)
+			) as InMemoryStorageProvider;
+
+			// Override only the addToGraphList method to fail
+			failingStorage.addToGraphList = vi.fn().mockRejectedValue(new Error('Storage error'));
 
 			const failingWrapper = ({ children }: { children: ReactNode }) => (
 				<StorageProviderWrapper provider={failingStorage}>
