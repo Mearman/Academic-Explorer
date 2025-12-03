@@ -318,6 +318,7 @@ export default tseslint.config([
             ...playwrightPlugin.configs["flat/recommended"].rules,
             // Disable rules that conflict with Playwright patterns
             "playwright/no-networkidle": "off", // networkidle is valid for some tests
+            "playwright/prefer-web-first-assertions": "off", // Auto-fix is broken and creates invalid TypeScript code
             "unicorn/no-await-expression-member": "off", // Common in Playwright: await page.goto().then(...)
             "sonarjs/no-nested-functions": "off", // Test helpers often nest functions
             "promise/always-return": "off", // Not all promise chains need returns in tests
