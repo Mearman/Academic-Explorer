@@ -36,7 +36,7 @@ const FunderRoute = () => {
 
   // Fetch funder data
   const { data: funder, isLoading, error } = useQuery({
-    queryKey: ["funder", funderId, selectParam],
+    queryKey: ["funder", funderId, selectParam, selectFields],
     queryFn: async () => {
       if (!funderId) {
         throw new Error("Funder ID is required");

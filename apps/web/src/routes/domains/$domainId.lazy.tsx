@@ -36,7 +36,7 @@ const DomainRoute = () => {
 
   // Fetch domain data - domains use the domains endpoint
   const { data: domain, isLoading, error } = useQuery({
-    queryKey: ["domain", domainId, selectParam],
+    queryKey: ["domain", domainId, selectParam, selectFields],
     queryFn: async () => {
       if (!domainId) {
         throw new Error("Domain ID is required");

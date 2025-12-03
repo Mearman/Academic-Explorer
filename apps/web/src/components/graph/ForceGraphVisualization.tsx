@@ -240,17 +240,17 @@ export const ForceGraphVisualization = ({
 
   // Determine if an edge is highlighted
   const isEdgeHighlighted = useCallback((edge: GraphEdge): boolean => {
+    // Extract source and target IDs (always strings in our implementation)
+    const sourceId = typeof edge.source === 'string' ? edge.source : (edge.source as unknown as string);
+    const targetId = typeof edge.target === 'string' ? edge.target : (edge.target as unknown as string);
+
     if (highlightedPath.length > 0) {
-      const sourceId = typeof edge.source === 'string' ? edge.source : edge.source;
-      const targetId = typeof edge.target === 'string' ? edge.target : edge.target;
       return highlightedPathEdges.has(`${sourceId}-${targetId}`);
     }
     if (highlightedNodeIds.size === 0) {
       return true; // No highlighting active
     }
     // Highlight edge if both endpoints are highlighted
-    const sourceId = typeof edge.source === 'string' ? edge.source : edge.source;
-    const targetId = typeof edge.target === 'string' ? edge.target : edge.target;
     return highlightedNodeIds.has(sourceId) && highlightedNodeIds.has(targetId);
   }, [highlightedNodeIds, highlightedPath, highlightedPathEdges]);
 

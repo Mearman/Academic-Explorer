@@ -45,7 +45,7 @@ const InstitutionRoute = () => {
 
   // Fetch institution data
   const { data: institution, isLoading, error } = useQuery({
-    queryKey: ["institution", decodedInstitutionId, selectParam],
+    queryKey: ["institution", decodedInstitutionId, selectParam, selectFields],
     queryFn: async () => {
       if (!decodedInstitutionId) {
         throw new Error("Institution ID is required");

@@ -48,7 +48,7 @@ export interface AutocompleteEntityFilterProps {
 /**
  * Entity types that have dedicated autocomplete routes
  */
-const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
+const ENTITY_AUTOCOMPLETE_ROUTES = new Set<EntityType>([
   "works",
   "authors",
   "sources",
@@ -56,7 +56,7 @@ const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
   "concepts",
   "publishers",
   "funders",
-];
+]);
 
 /**
  * Autocomplete entity filter with integrated navigation
@@ -106,7 +106,7 @@ export const AutocompleteEntityFilter = ({
       // If single type selected and it has a dedicated route, navigate there
       if (
         types.length === 1 &&
-        ENTITY_AUTOCOMPLETE_ROUTES.includes(types[0])
+        ENTITY_AUTOCOMPLETE_ROUTES.has(types[0])
       ) {
         const entityType = types[0];
         const params = new URLSearchParams();

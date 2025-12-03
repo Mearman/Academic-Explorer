@@ -165,7 +165,7 @@ const createSeededRandom = (seed: number): () => number => {
   let state = seed;
   return () => {
     state = Math.trunc(state);
-    state = (state + 0x6D_2B_79_F5) | 0;
+    state = Math.trunc(state + 0x6D_2B_79_F5);
     let t = Math.imul(state ^ (state >>> 15), 1 | state);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4_294_967_296;

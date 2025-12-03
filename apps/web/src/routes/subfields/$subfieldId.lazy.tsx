@@ -36,7 +36,7 @@ const SubfieldRoute = () => {
 
   // Fetch subfield data - subfields use the subfields endpoint
   const { data: subfield, isLoading, error } = useQuery({
-    queryKey: ["subfield", subfieldId, selectParam],
+    queryKey: ["subfield", subfieldId, selectParam, selectFields],
     queryFn: async () => {
       if (!subfieldId) {
         throw new Error("Subfield ID is required");

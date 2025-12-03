@@ -28,7 +28,7 @@ const SourceRoute = () => {
 
   // Fetch source data
   const { data: source, isLoading, error } = useQuery({
-    queryKey: ["source", sourceId, selectParam],
+    queryKey: ["source", sourceId, selectParam, selectFields],
     queryFn: async () => {
       if (!sourceId) {
         throw new Error("Source ID is required");

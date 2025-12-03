@@ -51,7 +51,7 @@ export interface IndexGenerationOptions {
   validate?: boolean;
 }
 
-const VALID_ENTITY_TYPES: StaticEntityType[] = [
+const VALID_ENTITY_TYPES = new Set<StaticEntityType>([
   "work",
   "author",
   "source",
@@ -59,7 +59,7 @@ const VALID_ENTITY_TYPES: StaticEntityType[] = [
   "topic",
   "publisher",
   "funder",
-];
+]);
 
 const INDEX_FILENAME = "index.json";
 
@@ -82,7 +82,7 @@ export const generateAllIndexes = async (staticDataDir: string, options: IndexGe
       .filter(
         (entry) =>
           entry.isDirectory() &&
-          VALID_ENTITY_TYPES.includes(entry.name as StaticEntityType),
+          VALID_ENTITY_TYPES.has(entry.name as StaticEntityType),
       )
       .map((entry) => entry.name as StaticEntityType);
 
@@ -623,7 +623,7 @@ export const getEntityTypeFromPath = (dirPath: string): StaticEntityType | null 
   // Use simple string operations to avoid sync Node.js imports
   const dirName =
     dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
-  return VALID_ENTITY_TYPES.includes(dirName as StaticEntityType)
+  return VALID_ENTITY_TYPES.has(dirName as StaticEntityType)
     ? (dirName as StaticEntityType)
     : null;
 };

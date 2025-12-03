@@ -610,6 +610,8 @@ export const ForceGraph3DVisualization = ({
         event.preventDefault();
         break;
       case 'Home':
+      case 'r':
+      case 'R':
         // Reset camera to fit graph
         graph.zoomToFit(400, 50);
         event.preventDefault();
@@ -624,12 +626,6 @@ export const ForceGraph3DVisualization = ({
       case '_':
         // Zoom out
         graph.cameraPosition({ z: cameraPosition.z + 100 });
-        event.preventDefault();
-        break;
-      case 'r':
-      case 'R':
-        // Reset view
-        graph.zoomToFit(400, 50);
         event.preventDefault();
         break;
       default:

@@ -77,7 +77,7 @@ export const useRawEntityData = ({
   const queryParamsKey = JSON.stringify(queryParams);
 
   const query = useQuery({
-    queryKey: ["raw-entity", entityType, detectedEntityId, queryParamsKey],
+    queryKey: ["raw-entity", entityType, detectedEntityId, queryParamsKey, queryParams],
     queryFn: async () => {
       if (!entityType || !detectedEntityId) {
         throw new Error("Entity type and ID required for fetching");

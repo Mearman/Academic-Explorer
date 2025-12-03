@@ -36,7 +36,7 @@ const FieldRoute = () => {
 
   // Fetch field data - fields use the fields endpoint
   const { data: field, isLoading, error } = useQuery({
-    queryKey: ["field", fieldId, selectParam],
+    queryKey: ["field", fieldId, selectParam, selectFields],
     queryFn: async () => {
       if (!fieldId) {
         throw new Error("Field ID is required");

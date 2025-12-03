@@ -149,7 +149,7 @@ export const useUserInteractions = (options: UseUserInteractionsOptions = {}): U
     setIsLoadingStats(true);
 
     // Add timeout to prevent infinite loading in test environments
-    const timeoutPromise = new Promise((_, reject) => {
+    const timeoutPromise = new Promise((_resolve, reject) => {
       setTimeout(() => {
         reject(new Error('User interactions data loading timed out after 10 seconds'));
       }, 10_000); // 10 second timeout

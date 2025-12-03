@@ -45,7 +45,7 @@ const AuthorRoute = () => {
 
   // Fetch author data
   const { data: author, isLoading, error } = useQuery({
-    queryKey: ["author", decodedAuthorId, selectParam],
+    queryKey: ["author", decodedAuthorId, selectParam, selectFields],
     queryFn: async () => {
       if (!decodedAuthorId) {
         throw new Error("Author ID is required");

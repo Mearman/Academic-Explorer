@@ -105,7 +105,7 @@ export const useEntityAutocomplete = ({
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["autocomplete", entityType, query],
+    queryKey: ["autocomplete", entityType, query, metadata.displayName],
     queryFn: async () => {
       if (!query.trim()) return [];
 

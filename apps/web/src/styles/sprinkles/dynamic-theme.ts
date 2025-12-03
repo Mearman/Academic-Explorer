@@ -50,8 +50,8 @@ export interface ButtonProps {
 
 // Inject theme CSS variables for interactive states
 if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = `
+  const style = new CSSStyleSheet();
+  const cssText = `
     :root {
       --text-primary: var(--mantine-color-gray-9);
       --text-secondary: var(--mantine-color-gray-6);
@@ -69,7 +69,8 @@ if (typeof document !== 'undefined') {
       --border-primary: var(--mantine-color-dark-4);
     }
   `;
-  document.head.append(style);
+  style.replaceSync(cssText);
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 }
 
 /**

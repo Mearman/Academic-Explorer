@@ -1,6 +1,5 @@
 import { ActionIcon, Button, Group, GroupProps, Menu } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
-import { forwardRef } from 'react'
 
 import { useTheme } from '@/contexts/theme-context'
 

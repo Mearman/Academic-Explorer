@@ -539,7 +539,7 @@ export const useMultiSourceGraph = (): UseMultiSourceGraphResult => {
 
       // Reload graph data
       setLoading(true);
-      loadGraphData(updatedStates)
+      void loadGraphData(updatedStates)
         .catch(err => {
           logger.error(LOG_PREFIX, 'Failed to reload graph', { error: err });
         })

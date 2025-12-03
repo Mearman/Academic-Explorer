@@ -36,7 +36,7 @@ const PublisherRoute = () => {
 
   // Fetch publisher data
   const { data: publisher, isLoading, error } = useQuery({
-    queryKey: ["publisher", publisherId, selectParam],
+    queryKey: ["publisher", publisherId, selectParam, selectFields],
     queryFn: async () => {
       if (!publisherId) {
         throw new Error("Publisher ID is required");

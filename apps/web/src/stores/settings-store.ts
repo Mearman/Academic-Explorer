@@ -39,20 +39,20 @@ const getDB = (): SettingsDB => {
 // Background strategy type (matches @bibgraph/utils BackgroundStrategy)
 type BackgroundStrategy = 'idle' | 'scheduler' | 'worker' | 'sync';
 
-const VALID_BACKGROUND_STRATEGIES: readonly BackgroundStrategy[] = ['idle', 'scheduler', 'worker', 'sync'];
+const VALID_BACKGROUND_STRATEGIES = new Set<BackgroundStrategy>(['idle', 'scheduler', 'worker', 'sync']);
 
-const isBackgroundStrategy = (value: unknown): value is BackgroundStrategy => typeof value === 'string' && VALID_BACKGROUND_STRATEGIES.includes(value as BackgroundStrategy);
+const isBackgroundStrategy = (value: unknown): value is BackgroundStrategy => typeof value === 'string' && VALID_BACKGROUND_STRATEGIES.has(value as BackgroundStrategy);
 
 // Settings state interface
 interface SettingsState {
   /** Email for OpenAlex polite pool */
   politePoolEmail: string;
   /** API key for OpenAlex requests (optional) */
-  apiKey: string | undefined;
+  apiKey?: string;
   /** Include Walden-related research data */
   includeXpac: boolean;
   /** Data format version */
-  dataVersion: '1' | '2' | undefined;
+  dataVersion?: '1' | '2';
   /** Show system catalogues (bookmarks, history) in catalogue list */
   showSystemCatalogues: boolean;
   /** Background processing strategy for auto-population */
@@ -62,9 +62,7 @@ interface SettingsState {
 // Default values
 const DEFAULT_SETTINGS: SettingsState = {
   politePoolEmail: "",
-  apiKey: undefined,
   includeXpac: true,
-  dataVersion: undefined,
   showSystemCatalogues: false,
   backgroundStrategy: 'idle',
 };
@@ -134,7 +132,7 @@ class SettingsStore {
    * Update polite pool email
    * @param email
    */
-  async setPolitePoolEmail(email: string | undefined): Promise<void> {
+  async setPolitePoolEmail(email?: string): Promise<void> {
     try {
       const emailValue = email === undefined ? "" : email;
       await this.db.settings.put({
@@ -160,7 +158,7 @@ class SettingsStore {
    * Update OpenAlex API key
    * @param apiKey
    */
-  async setApiKey(apiKey: string | undefined): Promise<void> {
+  async setApiKey(apiKey?: string): Promise<void> {
     try {
       await this.db.settings.put({
         key: SETTINGS_KEYS.API_KEY,

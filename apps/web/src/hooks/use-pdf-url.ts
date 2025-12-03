@@ -189,7 +189,7 @@ export const usePdfUrl = (work: WorkData | null | undefined, options: {
 
   // Fetch from Unpaywall if needed
   const unpaywallQuery = useQuery<UnpaywallResult | null>({
-    queryKey: ["unpaywall-pdf", doi],
+    queryKey: ["unpaywall-pdf", doi, unpaywallClientRef.current],
     queryFn: async (): Promise<UnpaywallResult | null> => {
       if (!doi || !unpaywallClientRef.current) {
         return null;

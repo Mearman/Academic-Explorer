@@ -29,7 +29,7 @@ const KeywordRoute = () => {
 
   // Fetch keyword data
   const { data: keyword, isLoading, error} = useQuery({
-    queryKey: ["keyword", keywordId, selectParam],
+    queryKey: ["keyword", keywordId, selectParam, selectFields],
     queryFn: async () => {
       if (!keywordId) {
         throw new Error("Keyword ID is required");

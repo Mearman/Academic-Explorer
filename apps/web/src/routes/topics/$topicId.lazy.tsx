@@ -33,7 +33,7 @@ const TopicRoute = () => {
 
   // Fetch topic data
   const { data: topic, isLoading, error } = useQuery({
-    queryKey: ["topic", topicId, selectParam],
+    queryKey: ["topic", topicId, selectParam, selectFields],
     queryFn: async () => {
       if (!topicId) {
         throw new Error("Topic ID is required");

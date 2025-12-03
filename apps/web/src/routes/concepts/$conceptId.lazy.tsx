@@ -31,7 +31,7 @@ const ConceptRoute = () => {
 
   // Fetch concept data
   const { data: concept, isLoading, error } = useQuery({
-    queryKey: ["concept", conceptId, selectParam],
+    queryKey: ["concept", conceptId, selectParam, selectFields],
     queryFn: async () => {
       if (!conceptId) {
         throw new Error("Concept ID is required");

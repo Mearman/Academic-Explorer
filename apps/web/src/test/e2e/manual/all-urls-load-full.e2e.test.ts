@@ -88,10 +88,11 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // Removed: waitForTimeout - use locator assertions instead
           // Get page content
           const mainContent = page.locator('main');
-          const mainText = await mainContent.textContent();
 
           // Basic checks
-          expect(mainText).toBeTruthy();
+          await expect(mainContent).not.toBeEmpty();
+
+          const mainText = await mainContent.textContent();
 
           // Adaptive content threshold based on URL type
           // Pages with ?select= parameters or list pages may have minimal content

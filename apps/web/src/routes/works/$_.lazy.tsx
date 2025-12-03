@@ -110,7 +110,7 @@ const WorkRoute = () => {
 
   // Fetch work data using normalized ID
   const { data: work, isLoading, error } = useQuery({
-    queryKey: ["work", normalizedWorkId, selectParam],
+    queryKey: ["work", normalizedWorkId, selectParam, selectFields],
     queryFn: async () => {
       if (!normalizedWorkId) {
         throw new Error("Work ID is required");
