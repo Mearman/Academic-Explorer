@@ -5,7 +5,7 @@
  * @module components/algorithms/AlgorithmTabs
  */
 
-import { Alert, Accordion, Stack, Text, Group } from '@mantine/core';
+import { Alert, Accordion, Stack, Text } from '@mantine/core';
 import {
   IconUsers,
   IconRoute,

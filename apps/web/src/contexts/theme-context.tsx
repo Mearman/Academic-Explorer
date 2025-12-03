@@ -1,9 +1,9 @@
 import { MantineProvider, createTheme, type MantineTheme } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
-import { createRuntimeThemeOverrides, radiusValues } from "@/styles/theme-context-utils";
+import { createRuntimeThemeOverrides } from "@/styles/theme-context-utils";
 import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
@@ -89,9 +89,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     ["mod+K", () => setColorMode(config.colorMode === "light" ? "dark" : "light")],
     ["mod+Shift+K", () => setColorMode("auto")],
   ]);
-
-  // Runtime theme overrides for global border radius
-  const runtimeThemeOverrides = createRuntimeThemeOverrides(config.borderRadius);
 
   // Get base theme based on component library selection
   const getBaseTheme = () => {

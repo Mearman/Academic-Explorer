@@ -37,7 +37,6 @@ import {
   useSelectedBookmarks,
 } from "@/contexts/bookmark-selection-context";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { sprinkles } from "@/styles/sprinkles";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;

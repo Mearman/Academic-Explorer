@@ -1,4 +1,4 @@
-import { Menu, Badge, Box, Group, Text, useMantineTheme, ActionIcon } from '@mantine/core'
+import { Menu, Box, Group, Text, useMantineTheme, ActionIcon } from '@mantine/core'
 import {
   IconSun,
   IconMoon,
@@ -16,7 +16,7 @@ import { sprinkles } from '@/styles/sprinkles'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 
-interface ColorSchemeSelectorProps {
+interface ColorSchemeSelectorProps extends Record<string, never> {
   // No props needed - uses theme context
 }
 

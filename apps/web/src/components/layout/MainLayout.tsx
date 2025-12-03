@@ -10,7 +10,6 @@ import {
   Group,
   Text,
   ActionIcon,
-  useMantineColorScheme,
   Stack,
   Title,
   Box,
@@ -56,8 +55,6 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const { colorScheme, setColorScheme } = useMantineColorScheme();
-
   // Layout store for sidebar state management
   const layoutStore = useLayoutStore();
 

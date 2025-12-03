@@ -29,7 +29,6 @@ import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { useState, useRef, useEffect } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
-import { BORDER_GRAY_LIGHT } from "@/constants/styles";
 import { sprinkles } from "@/styles/sprinkles";
 
 interface BaseTableProps<T> {
@@ -221,36 +220,6 @@ export function BaseTable<T>({
       </Table.Td>
     </Table.Tr>
   );
-
-  // Helper function to get virtual row style
-  const getVirtualRowStyle = (
-    virtualRow: VirtualItem,
-    hasOnRowClick: boolean,
-  ) => ({
-    position: "absolute" as const,
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: `${virtualRow.size}px`,
-    transform: `translateY(${virtualRow.start}px)`,
-    borderBottom: BORDER_GRAY_LIGHT,
-    backgroundColor:
-      virtualRow.index % 2 === 0
-        ? "var(--mantine-color-gray-0)"
-        : "transparent",
-    display: "flex",
-    alignItems: "center",
-    padding: "8px 12px",
-    ...(hasOnRowClick ? { cursor: "pointer" } : {}),
-  });
-
-  // Helper function to get cell style
-  const getCellStyle = (cellIndex: number, totalCells: number) => ({
-    flex: cellIndex === 1 ? "1" : "0 0 auto",
-    padding: "0 8px",
-    borderRight: cellIndex < totalCells - 1 ? BORDER_GRAY_LIGHT : "none",
-    minWidth: getMinWidthForCell(cellIndex),
-  });
 
   // Helper function to get minimum width for cell
   const getMinWidthForCell = (cellIndex: number): string => {

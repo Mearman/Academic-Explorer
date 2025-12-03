@@ -53,11 +53,8 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     // Or if preference is set, it should be respected
     if (!viewModePreference) {
       // 2D mode should be active (no 3D canvas visible)
-      const canvas3D = page.locator("canvas").first();
       // In 2D mode, there might be an SVG or canvas but not the Three.js canvas
       // The 2D ForceGraph uses canvas too, so we check for the specific component
-      const forceGraph3D = page.locator('[class*="force-graph-3d"]');
-
       // If no 3D-specific elements visible, we're in 2D mode (expected default)
       // This is a soft check since both modes use canvas
     }
@@ -182,7 +179,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     await expect(page.getByRole("heading", { name: "Graph Visualization" })).toBeVisible();
   });
 
-  test("should show WebGL unavailable message gracefully", async ({ page, context }) => {
+  test("should show WebGL unavailable message gracefully", async ({ page }) => {
     // Note: This test simulates WebGL unavailability by checking error handling
     // In a real WebGL-disabled browser, the 3D button would be disabled
 

@@ -1,11 +1,10 @@
-import { MantineProvider } from '@mantine/core'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 import { ThemeProvider } from '@/contexts/theme-context'
 
 import { ColorSchemeSelector } from './ColorSchemeSelector'
 
-const renderColorSchemeSelector = (initialColorScheme = 'light') => {
+const renderColorSchemeSelector = () => {
   return render(
     <ThemeProvider>
       <ColorSchemeSelector />
@@ -19,14 +18,14 @@ describe('ColorSchemeSelector', () => {
   })
 
   it('renders with initial color scheme', () => {
-    renderColorSchemeSelector('light')
+    renderColorSchemeSelector()
     // Should render two buttons: main button and dropdown arrow
     const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(2)
   })
 
   it('cycles through color schemes on main button click', () => {
-    renderColorSchemeSelector('auto')
+    renderColorSchemeSelector()
 
     const buttons = screen.getAllByRole('button')
     const mainButton = buttons[0] // First button is the main theme cycling button
@@ -37,7 +36,7 @@ describe('ColorSchemeSelector', () => {
   })
 
   it('opens menu when dropdown arrow is clicked', () => {
-    renderColorSchemeSelector('light')
+    renderColorSchemeSelector()
 
     const buttons = screen.getAllByRole('button')
     const dropdownButton = buttons[1] // Second button is the dropdown
@@ -49,18 +48,18 @@ describe('ColorSchemeSelector', () => {
   })
 
   it('shows correct titles for main and dropdown buttons', () => {
-    renderColorSchemeSelector('dark')
+    renderColorSchemeSelector()
 
     const buttons = screen.getAllByRole('button')
     const mainButton = buttons[0]
     const dropdownButton = buttons[1]
 
-    expect(mainButton).toHaveAttribute('title', 'Theme: Dark (Click to cycle)')
+    expect(mainButton).toHaveAttribute('title', 'Theme: Auto (Click to cycle)')
     expect(dropdownButton).toHaveAttribute('title', 'Palette: blue (Click for options)')
   })
 
   it('displays current theme mode and palette indicator', () => {
-    renderColorSchemeSelector('auto')
+    renderColorSchemeSelector()
 
     const buttons = screen.getAllByRole('button')
     const mainButton = buttons[0]

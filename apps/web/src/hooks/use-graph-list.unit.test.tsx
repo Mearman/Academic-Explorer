@@ -11,7 +11,7 @@
  */
 
 import type { GraphNode, GraphListNode } from '@bibgraph/types';
-import { InMemoryStorageProvider, logger } from '@bibgraph/utils';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -128,8 +128,6 @@ describe('Graph List Management Hook (T042-T044)', () => {
 		});
 
 		it('should handle errors gracefully and rollback optimistic updates', async () => {
-			const { result } = renderHook(() => useGraphList(), { wrapper });
-
 			// Create a storage provider that will fail
 			const failingStorage = {
 				...storage,
