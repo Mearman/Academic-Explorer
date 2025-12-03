@@ -785,6 +785,7 @@
   "cli": {
     "packageManager": "pnpm"
   },
+  "parallel": 3,
   "cacheDirectory": ".nx/cache",
   "maxCacheSize": "15GB",
   "compression": true,
