@@ -38,8 +38,8 @@ test.describe('Data Version 2 Default Behavior', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
     expect(bodyText!.length).toBeGreaterThan(100);
 
     // Verify API requests were made
@@ -186,8 +186,8 @@ test.describe('Data Version 2 Default Behavior', () => {
     await page.waitForLoadState('load');
 
     // Verify page renders without errors regardless of is_xpac value
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Check for no error messages
     const hasError = bodyText?.toLowerCase().includes('error') &&

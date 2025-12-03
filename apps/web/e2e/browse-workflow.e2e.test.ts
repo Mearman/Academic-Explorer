@@ -53,8 +53,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstWorkLink = page.locator('a[href*="/works/W"]').first();
 		await expect(firstWorkLink).toBeVisible();
 
-		const workTitle = firstWorkLink;
-		await expect(workTitle).toHaveText();
+		const workTitle = await firstWorkLink.textContent();
+		expect(workTitle).toBeTruthy();
 
 		await firstWorkLink.click();
 
@@ -68,8 +68,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify work title is displayed
-		const displayedTitle = entityTitle;
-		await expect(displayedTitle).toHaveText();
+		const displayedTitle = await entityTitle.textContent();
+		expect(displayedTitle).toBeTruthy();
 	});
 
 	test('should complete full workflow: browse → authors index → author detail', async ({ page }) => {
@@ -99,8 +99,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstAuthorLink = page.locator('a[href*="/authors/A"]').first();
 		await expect(firstAuthorLink).toBeVisible();
 
-		const authorName = firstAuthorLink;
-		await expect(authorName).toHaveText();
+		const authorName = await firstAuthorLink.textContent();
+		expect(authorName).toBeTruthy();
 
 		await firstAuthorLink.click();
 
@@ -114,8 +114,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify author name is displayed
-		const displayedName = entityTitle;
-		await expect(displayedName).toHaveText();
+		const displayedName = await entityTitle.textContent();
+		expect(displayedName).toBeTruthy();
 	});
 
 	test('should complete full workflow: browse → institutions index → institution detail', async ({ page }) => {
@@ -145,8 +145,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstInstitutionLink = page.locator('a[href*="/institutions/I"]').first();
 		await expect(firstInstitutionLink).toBeVisible();
 
-		const institutionName = firstInstitutionLink;
-		await expect(institutionName).toHaveText();
+		const institutionName = await firstInstitutionLink.textContent();
+		expect(institutionName).toBeTruthy();
 
 		await firstInstitutionLink.click();
 
@@ -160,8 +160,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify institution name is displayed
-		const displayedName = entityTitle;
-		await expect(displayedName).toHaveText();
+		const displayedName = await entityTitle.textContent();
+		expect(displayedName).toBeTruthy();
 	});
 
 	test('should support browser back navigation from detail to index', async ({ page }) => {
@@ -303,9 +303,10 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify each link has text content
 		for (let i = 0; i < Math.min(5, workCount); i++) {
-			const linkText = workLinks.nth(i);
-			await expect(linkText).toHaveText();
-			expect(linkText?.trim().length).toBeGreaterThan(0);
+			const linkLocator = workLinks.nth(i);
+			const text = await linkLocator.textContent();
+			expect(text).toBeTruthy();
+			expect(text?.trim().length).toBeGreaterThan(0);
 		}
 	});
 

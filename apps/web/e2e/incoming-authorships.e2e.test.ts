@@ -70,8 +70,8 @@ test.describe('Incoming Relationships - Author Authorships', () => {
     const metadata = firstItem.locator('[data-testid="relationship-metadata"]');
     if (await metadata.count() > 0) {
       // Metadata should contain position or corresponding indicator
-      const metadataText = metadata;
-      await expect(metadataText).toHaveText();
+      const metadataText = await metadata.textContent();
+      expect(metadataText).toBeTruthy();
     }
   });
 });

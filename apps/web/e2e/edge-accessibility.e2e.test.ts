@@ -87,10 +87,11 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
     if (inboundCount > 0) {
       const firstInbound = inboundEdges.first();
-      const dashArray = firstInbound;
+      const dashArray = await firstInbound.getAttribute('stroke-dasharray');
 
       // Dashed line: dasharray is set (e.g., '8,4')
-      await expect(dashArray).toHaveAttribute('stroke-dasharray', );
+      expect(dashArray).not.toBe(null);
+      expect(dashArray).not.toBe('');
       expect(dashArray).not.toBe('none');
       expect(dashArray).toContain(','); // Should have comma-separated values
     }
@@ -110,11 +111,11 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
     const referenceCount = await referenceEdges.count();
 
     if (authorshipCount > 0 && referenceCount > 0) {
-      const authorshipColor = authorshipEdges.first();
+      const authorshipColor = await authorshipEdges.first().getAttribute('stroke');
       const referenceColor = await referenceEdges.first().getAttribute('stroke');
 
       // Different relationship types should have different colors
-      await expect(authorshipColor).not.toHaveAttribute('stroke', referenceColor);
+      expect(authorshipColor).not.toBe(referenceColor);
 
       // Colors should be valid hex colors
       expect(authorshipColor).toMatch(/^#[0-9A-F]{6}$/i);
@@ -131,10 +132,10 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
     if (outboundCount > 0) {
       const firstOutbound = outboundEdges.first();
-      const markerEnd = firstOutbound;
+      const markerEnd = await firstOutbound.getAttribute('marker-end');
 
       // Should have arrow marker
-      await expect(markerEnd).toHaveAttribute('marker-end', );
+      expect(markerEnd).not.toBe(null);
       expect(markerEnd).toContain('arrow');
     }
 
@@ -144,10 +145,10 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
     if (inboundCount > 0) {
       const firstInbound = inboundEdges.first();
-      const markerEnd = firstInbound;
+      const markerEnd = await firstInbound.getAttribute('marker-end');
 
       // Should have arrow marker (potentially different style than outbound)
-      await expect(markerEnd).toHaveAttribute('marker-end', );
+      expect(markerEnd).not.toBe(null);
       expect(markerEnd).toContain('arrow');
     }
   });
@@ -221,16 +222,16 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
       expect(strokeColor).toMatch(/^#[0-9A-F]{6}$/i);
 
       // Channel 3: Arrow marker (marker-end)
-      const markerEnd = edge;
-      await expect(markerEnd).toHaveAttribute('marker-end', );
+      const markerEnd = await edge.getAttribute('marker-end');
+      expect(markerEnd).not.toBe(null);
 
       // Should have direction data attribute
       const direction = await edge.getAttribute('data-direction');
       expect(direction).toMatch(/^(inbound|outbound)$/);
 
       // Should have relation type data attribute
-      const relationType = edge;
-      await expect(relationType).toHaveAttribute('data-relation-type', );
+      const relationType = await edge.getAttribute('data-relation-type');
+      expect(relationType).not.toBe(null);
       expect(relationType!.length).toBeGreaterThan(0);
     }
   });

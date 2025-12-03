@@ -309,11 +309,11 @@ test.describe('Version Metadata Comparison Display', () => {
       const helperTextExists = await helperText.isVisible({ timeout: 2000 }).catch(() => false);
 
       if (helperTextExists) {
-        const text = helperText;
+        const text = await helperText.textContent();
         console.log(`Helper text: "${text}"`);
 
         // Should guide users on what the comparison means
-        await expect(text).toHaveText();
+        expect(text).toBeTruthy();
         console.log('✅ Helper text displayed');
       } else {
         console.log('ℹ️ Helper text not visible');

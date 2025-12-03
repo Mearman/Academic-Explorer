@@ -71,8 +71,8 @@ test.describe('Incoming Relationships - Work Citations', () => {
     const citationLink = firstCitation.locator('a').first();
 
     // Get the link text before clicking
-    const citationTitle = citationLink;
-    await expect(citationTitle).toHaveText();
+    const citationTitle = await citationLink.textContent();
+    expect(citationTitle).toBeTruthy();
 
     // Click the citation link
     await citationLink.click();
@@ -81,7 +81,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await expect(page).toHaveURL(/\/works\/W\d+/);
 
     // New page should display the citation title
-    await expect(page.locator('h1')).toContainText(citationTitle as string);
+    await expect(page.locator('h1')).toContainText(citationTitle!);
   });
 
   test('should display "Showing X of Y" count when citations exceed page size', async ({ page }) => {

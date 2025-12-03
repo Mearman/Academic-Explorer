@@ -155,10 +155,10 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 		await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 		const mainText = page.locator('main');
-		await expect(mainText).toHaveText();
+		const mainTextContent3 = await mainText.textContent();
 
 		// Verify first concept is displayed
-		expect(mainText).toContain(firstConcept.display_name);
+		expect(mainTextContent3).toContain(firstConcept.display_name);
 
 		// Verify we show similar number of results
 		const resultCount = await page
@@ -199,12 +199,12 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 		await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 		const mainText = page.locator('main');
-		await expect(mainText).toHaveText();
+		const mainTextContent4 = await mainText.textContent();
 
 		// Verify first work is displayed
-		expect(mainText).toContain(firstWork.display_name);
+		expect(mainTextContent4).toContain(firstWork.display_name);
 
 		// Verify select parameter is shown to user
-		expect(mainText).toMatch(/fields|select/i);
+		expect(mainTextContent4).toMatch(/fields|select/i);
 	});
 });

@@ -232,8 +232,8 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			// Wait for content to load
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
-			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			const mainText = await page.locator("main").textContent();
+			expect(mainText).toBeTruthy();
 
 			// Should not show error page
 			expect(mainText).not.toContain("Error");
@@ -254,8 +254,8 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			// Wait for content to load
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
-			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			const mainText = await page.locator("main").textContent();
+			expect(mainText).toBeTruthy();
 
 			// Should not show error page
 			expect(mainText).not.toContain("Error");
@@ -276,8 +276,8 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			// Wait for content to load
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
-			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			const mainText = await page.locator("main").textContent();
+			expect(mainText).toBeTruthy();
 
 			// Should not show error page
 			expect(mainText).not.toContain("Error");
@@ -294,8 +294,8 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			// Should redirect through api-openalex-org route
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
-			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			const mainText = await page.locator("main").textContent();
+			expect(mainText).toBeTruthy();
 
 			// Should not show error page
 			expect(mainText).not.toContain("Error");
@@ -312,8 +312,8 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			// Should redirect through api-openalex-org route
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
-			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			const mainText = await page.locator("main").textContent();
+			expect(mainText).toBeTruthy();
 
 			// Should not show error page
 			expect(mainText).not.toContain("Error");

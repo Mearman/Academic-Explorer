@@ -99,7 +99,7 @@ test.describe('@entity Subfields Detail Page', () => {
 
 		// Verify field title is displayed
 		const fieldTitle = page.locator('[data-testid="entity-title"]');
-		await expect(fieldTitle).toHaveText();
+		await expect(fieldTitle).toBeVisible();
 	});
 
 	test('should load page without errors', async ({ page }) => {

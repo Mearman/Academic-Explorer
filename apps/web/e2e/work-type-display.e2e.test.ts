@@ -43,10 +43,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for work content to load
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor().catch(async () => {
+    }).catch(async () => {
       console.log('⚠️ Work detail page not loaded properly');
       throw new Error('Work detail page failed to load');
     });
@@ -59,8 +59,8 @@ test.describe('Work Type Display', () => {
 
     if (badgeExists) {
       // Verify badge has text content
-      const badgeText = workTypeBadge;
-      await expect(badgeText).toHaveText();
+      const badgeText = await workTypeBadge.textContent();
+      expect(badgeText).toBeTruthy();
       expect(badgeText!.length).toBeGreaterThan(0);
 
       console.log(`✅ Work type badge found: "${badgeText}"`);
@@ -117,15 +117,15 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor();
+    });
 
     // Verify the page displays the work type "dataset" somewhere in the content
     // The work type is part of OpenAlex API response
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -148,14 +148,14 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor();
+    });
 
     // Verify the page displays content
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -183,10 +183,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Verify the page loads successfully
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor();
+    });
 
     // The article should not have a specimen badge
     const specimenBadge = page.locator('[data-testid="xpac-work-type-badge"]:has-text("specimen")');
@@ -204,14 +204,14 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor();
+    });
 
     // Verify the page displays content
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -233,9 +233,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
-    }).waitFor();
+    });
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -278,8 +278,8 @@ test.describe('Work Type Display', () => {
       expect(boundingBox!.height).toBeGreaterThan(0);
 
       // Verify badge has text content
-      const badgeText = workTypeBadge;
-      await expect(badgeText).toHaveText();
+      const badgeText = await workTypeBadge.textContent();
+      expect(badgeText).toBeTruthy();
 
       console.log(`✅ Work type badge has proper Mantine styling: "${badgeText}"`);
     } else {
@@ -294,9 +294,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
-    }).waitFor();
+    });
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -328,9 +328,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
-    }).waitFor();
+    });
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -338,10 +338,10 @@ test.describe('Work Type Display', () => {
 
     if (badgeVisible) {
       // Check for other publication metadata badges (year, open access, etc.)
-      const bodyText = page;
+      const bodyText = await page.locator('body').textContent();
 
       // Work detail page should have publication information
-      await expect(bodyText).toHaveText('body', );
+      expect(bodyText).toBeTruthy();
       expect(bodyText!.length).toBeGreaterThan(100);
 
       // Verify work type badge is part of cohesive publication details
@@ -368,8 +368,8 @@ test.describe('Work Type Display', () => {
     });
 
     // Verify page loads without critical errors
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Work type badge may or may not be present - both are valid
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -415,9 +415,9 @@ test.describe('Work Type Badge Integration', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.locator('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]').waitFor({
       timeout: 10_000,
-    }).waitFor();
+    });
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();

@@ -32,10 +32,10 @@ test.describe('Metadata Improvement Badges', () => {
 
     // Wait for badges container to be present
     // The component may take time to render after data loads
-    await page.locator('[data-testid="metadata-improvement-badges"]', {
+    await page.locator('[data-testid="metadata-improvement-badges"]').waitFor({
       timeout: 10_000,
       state: 'visible',
-    }).waitFor().catch(async () => {
+    }).catch(async () => {
       // If badges don't appear, check if this is due to missing data
       const pageContent = await page.content();
       console.log('⚠️ Badges not found. Checking page state...');
@@ -122,9 +122,9 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Wait for badges to render
-    await page.locator('[data-testid="metadata-improvement-badges"]', {
+    await page.locator('[data-testid="metadata-improvement-badges"]').waitFor({
       timeout: 10_000,
-    }).waitFor().catch(() => {
+    }).catch(() => {
       console.log('⚠️ Badges not rendered - work may not have improvements or data not loaded');
     });
 
@@ -144,8 +144,8 @@ test.describe('Metadata Improvement Badges', () => {
       // Verify each badge has text content
       for (let i = 0; i < badgeCount; i++) {
         const badge = badgeElements.nth(i);
-        const badgeText = badge;
-        await expect(badgeText).toHaveText();
+        const badgeText = await badge.textContent();
+        expect(badgeText).toBeTruthy();
         expect(badgeText!.length).toBeGreaterThan(0);
         console.log(`  - Badge ${i + 1}: "${badgeText}"`);
       }
@@ -259,8 +259,8 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Verify work detail page structure
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Check if badges are integrated into the page layout
     // Badges should be within the main content area

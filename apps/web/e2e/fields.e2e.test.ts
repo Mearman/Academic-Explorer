@@ -123,8 +123,8 @@ test.describe('@entity Fields Detail Page', () => {
 			await expect(heading).toBeVisible();
 
 			// Should display domain name
-			const domainName = heading;
-			await expect(domainName).toHaveText();
+			const domainName = await heading.textContent();
+			expect(domainName).toBeTruthy();
 			expect(domainName).not.toBe('');
 		}
 	});
@@ -189,8 +189,8 @@ test.describe('@entity Fields Detail Page', () => {
 			await expect(heading).toBeVisible();
 
 			// Should display subfield name
-			const subfieldPageName = heading;
-			await expect(subfieldPageName).toHaveText();
+			const subfieldPageName = await heading.textContent();
+			expect(subfieldPageName).toBeTruthy();
 		}
 	});
 

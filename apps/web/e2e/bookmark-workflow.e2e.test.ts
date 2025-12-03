@@ -81,7 +81,8 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		// Get the actual entity title for verification
 		const entityTitle = page.locator('h1').first();
-		await expect(entityTitle).toHaveText();
+		const titleText = await entityTitle.textContent();
+		expect(titleText).toBeTruthy();
 
 		// 2. Verify bookmark button is not bookmarked initially
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
@@ -123,7 +124,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		const bookmarkTitle = page.locator('[data-testid="bookmark-title-link"]').first();
 		await expect(bookmarkTitle).toBeVisible();
 		const bookmarkTitleText = await bookmarkTitle.textContent();
-		expect(bookmarkTitleText).toContain(TEST_ENTITIES.work.id);
+		expect(bookmarkTitleText ?? '').toContain(TEST_ENTITIES.work.id);
 
 		// 9. Navigate back to entity and unbookmark
 		await page.goto(`/works/${TEST_ENTITIES.work.id}`);
@@ -154,7 +155,8 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		// Get entity title
 		const entityTitle = page.locator('h1').first();
-		await expect(entityTitle).toHaveText();
+		const titleText = await entityTitle.textContent();
+		expect(titleText).toBeTruthy();
 
 		// Click bookmark button
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
@@ -174,7 +176,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		const bookmarkTitle = page.locator('[data-testid="bookmark-title-link"]').first();
 		const bookmarkTitleText = await bookmarkTitle.textContent();
-		expect(bookmarkTitleText).toContain(TEST_ENTITIES.author.id);
+		expect(bookmarkTitleText ?? '').toContain(TEST_ENTITIES.author.id);
 	});
 
 	test('should handle multiple bookmarks', async ({ page }) => {
@@ -315,7 +317,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await expect(bookmarkCards).toHaveCount(1);
 
 		const visibleTitle = await page.locator('[data-testid="bookmark-title-link"]').first().textContent();
-		expect(visibleTitle).toContain(TEST_ENTITIES.work.id);
+		expect(visibleTitle ?? '').toContain(TEST_ENTITIES.work.id);
 
 		// Clear search
 		await searchInput.clear();

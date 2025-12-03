@@ -37,8 +37,8 @@ test.describe('Filesystem Cache', () => {
     await page.goto(`/#/authors/${cachedAuthorId}`, { waitUntil: 'domcontentloaded' });
 
     // Verify the page loaded (look for any heading or content)
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
     expect(bodyText!.length).toBeGreaterThan(100); // Page has content
 
     console.log(`✅ Test completed - Author page loaded`);
@@ -57,8 +57,8 @@ test.describe('Filesystem Cache', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
     // Verify the page loaded
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
 
     // Cache file should now exist (either from before or newly created)
     expect(fs.existsSync(cachePath)).toBe(true);
@@ -98,8 +98,8 @@ test.describe('Filesystem Cache', () => {
 
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
-      const bodyText = page;
-      await expect(bodyText).toHaveText('body', );
+      const bodyText = await page.locator('body').textContent();
+      expect(bodyText).toBeTruthy();
       expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
@@ -114,8 +114,8 @@ test.describe('Filesystem Cache', () => {
 
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
-      const bodyText = page;
-      await expect(bodyText).toHaveText('body', );
+      const bodyText = await page.locator('body').textContent();
+      expect(bodyText).toBeTruthy();
       expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
@@ -130,8 +130,8 @@ test.describe('Filesystem Cache', () => {
 
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
-      const bodyText = page;
-      await expect(bodyText).toHaveText('body', );
+      const bodyText = await page.locator('body').textContent();
+      expect(bodyText).toBeTruthy();
       expect(bodyText!.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
@@ -143,15 +143,15 @@ test.describe('Filesystem Cache', () => {
 
     // First load
     await page.goto(`/#/authors/${authorId}`, { waitUntil: 'domcontentloaded' });
-    const firstBodyText = page;
+    const firstBodyText = await page.locator('body').textContent();
 
     // Reload page
     await page.reload({ waitUntil: 'domcontentloaded' });
-    const secondBodyText = page;
+    const secondBodyText = await page.locator('body').textContent();
 
     // Both should have content (cache persisted)
-    await expect(firstBodyText).toHaveText('body', );
-    await expect(secondBodyText).toHaveText('body', );
+    expect(firstBodyText).toBeTruthy();
+    expect(secondBodyText).toBeTruthy();
     expect(firstBodyText!.length).toBeGreaterThan(100);
     expect(secondBodyText!.length).toBeGreaterThan(100);
 
