@@ -279,10 +279,11 @@ storageProvider.initializeSpecialLists().catch((error) => {
   }
 })();
 
-const rootElement = document.querySelector<HTMLElement>("#root");
-if (!rootElement) {
-  throw new Error("Root element not found");
+const rootElementOrNull = document.querySelector("#root");
+if (!rootElementOrNull || !(rootElementOrNull instanceof HTMLElement)) {
+  throw new TypeError("Root element not found or is not an HTMLElement");
 }
+const rootElement = rootElementOrNull;
 
 /**
  * React 19 error handlers for PostHog error tracking
