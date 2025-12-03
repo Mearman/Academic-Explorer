@@ -89,8 +89,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         // Reuse storage state for faster tests (cached cookies, localStorage, IndexedDB)
-        // Disabled in CI to prevent stale state with preview server caching
-        storageState: process.env.CI ? undefined : (fs.existsSync("./test-results/storage-state/state.json") ? "./test-results/storage-state/state.json" : undefined),
+        storageState: fs.existsSync("./test-results/storage-state/state.json") ? "./test-results/storage-state/state.json" : undefined,
       },
     },
 
