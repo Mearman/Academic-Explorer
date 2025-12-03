@@ -21,8 +21,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await createListWithMultipleEntities(page, "Export Test List");
 
     // Wait for list creation to complete and UI to stabilize
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Use the export button directly from the selected list details card
     const exportButton = page.locator('[data-testid="export-list-button"]');
     await expect(exportButton).toBeVisible({ timeout: 10_000 });
@@ -47,8 +46,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await createListWithMultipleEntities(page, "Multi-format Export Test");
 
     // Wait for UI to stabilize
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Open export modal
     const exportButton = page.locator('[data-testid="export-list-button"]');
     await expect(exportButton).toBeVisible({ timeout: 10_000 });
@@ -71,8 +69,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       await expect(page.locator('text="Export Successful"')).toBeVisible({ timeout: 5000 });
 
       // Wait for notification to disappear
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Close and reopen modal for next format (if not last)
       if (format !== implementedFormats.at(-1)) {
         await page.locator('button:has-text("Done")').click();
@@ -150,8 +147,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     });
 
     // Wait a moment for file processing
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Import the file
     await page.locator('button:has-text("Import List")').click();
 
@@ -216,8 +212,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     });
 
     // Wait for validation and preview to load
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Should show preview section with "Import Preview" text
     await expect(page.locator('text="Import Preview"')).toBeVisible();
     await expect(page.locator('text="Preview Test List"')).toBeVisible();
@@ -288,7 +283,7 @@ const createListWithMultipleEntities = async (page: Page, listName: string): Pro
 
     // Wait for modal to close
     await expect(page.getByRole('dialog').filter({ hasText: 'Add to' })).not.toBeVisible({ timeout: 5000 });
-    await page.waitForTimeout(500);
+    // Removed: waitForTimeout - use locator assertions instead
   }
 
   // Navigate back to catalogue page

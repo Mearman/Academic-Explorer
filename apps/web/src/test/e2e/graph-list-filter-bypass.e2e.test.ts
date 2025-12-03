@@ -119,7 +119,7 @@ test.describe('@workflow Graph List Filter Bypass', () => {
 						const checked = await otherFilter.isChecked().catch(() => false);
 						if (checked) {
 							await otherFilter.click();
-							await page.waitForTimeout(300);
+							// Removed: waitForTimeout - use locator assertions instead
 						}
 					}
 				}
@@ -287,7 +287,7 @@ test.describe('@workflow Graph List Filter Bypass', () => {
 						if (isChecked && i > 0) {
 							// Uncheck all except first
 							await checkbox.click();
-							await page.waitForTimeout(300);
+							// Removed: waitForTimeout - use locator assertions instead
 						}
 					}
 

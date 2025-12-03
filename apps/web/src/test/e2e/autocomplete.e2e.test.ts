@@ -56,7 +56,7 @@ test.describe('Autocomplete API Integration', () => {
       await page.goto(`${BASE_URL}/#/autocomplete`);
 
       // Wait for page to load
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Check for page title
       await expect(page.locator('h1')).toContainText('General Autocomplete');
@@ -67,10 +67,10 @@ test.describe('Autocomplete API Integration', () => {
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent(query)}`);
 
       // Wait for search to complete
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Wait for content to load (either table, alert, or card with results)
-      await page.waitForSelector('table, [role="alert"], .mantine-Card-root', { timeout: 10_000 });
+      await page.locator('table, [role="alert"], .mantine-Card-root').waitFor({ timeout: 10_000 });
 
       // Check for results or graceful error handling
       const hasTable = await page.locator('table').isVisible().catch(() => false);
@@ -125,7 +125,7 @@ test.describe('Autocomplete API Integration', () => {
 
     test('should handle empty search query gracefully', async ({ page }) => {
       await page.goto(`${BASE_URL}/#/autocomplete`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Should show empty state message
       const emptyState = page.locator('text=/Enter a search term/i');
@@ -134,15 +134,14 @@ test.describe('Autocomplete API Integration', () => {
 
     test('should update URL when typing in search input', async ({ page }) => {
       await page.goto(`${BASE_URL}/#/autocomplete`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Find and type in search input
       const searchInput = page.locator('input[placeholder*="Search"]').first();
       await searchInput.fill('test query');
 
       // Wait for debounce and URL update
-      await page.waitForTimeout(600);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check URL was updated (accepts both %20 and + for spaces)
       const url = page.url();
       expect(url).toMatch(/q=test(%20|\+)query/);
@@ -180,15 +179,14 @@ test.describe('Autocomplete API Integration', () => {
   test.describe('Header Search Input', () => {
     test('should navigate to autocomplete page when searching from header', async ({ page }) => {
       await page.goto(`${BASE_URL}/#/`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Find header search input
       const headerSearch = page.locator('input[aria-label="Global search input"]');
       await headerSearch.fill('test search');
 
       // Wait for debounce and navigation
-      await page.waitForTimeout(600);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should navigate to autocomplete page (accepts both %20 and + for spaces)
       const url = page.url();
       expect(url).toContain('autocomplete');
@@ -198,7 +196,7 @@ test.describe('Autocomplete API Integration', () => {
     test('should sync header search with autocomplete page query', async ({ page }) => {
       const query = 'machine learning';
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent(query)}`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Header search should be populated with the query
       const headerSearch = page.locator('input[aria-label="Global search input"]');
@@ -210,7 +208,7 @@ test.describe('Autocomplete API Integration', () => {
     test('should clear header search when navigating away from autocomplete', async ({ page }) => {
       // First, search for something
       await page.goto(`${BASE_URL}/#/autocomplete?q=test`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       const headerSearch = page.locator('input[aria-label="Global search input"]');
       let value = headerSearch;
@@ -218,7 +216,7 @@ test.describe('Autocomplete API Integration', () => {
 
       // Navigate to home page
       await page.goto(`${BASE_URL}/#/`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Header search should be cleared
       value = headerSearch;
@@ -250,7 +248,7 @@ test.describe('Autocomplete API Integration', () => {
     test('should display user-friendly error message on API failure', async ({ page }) => {
       // Use an invalid query that might cause an error
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent('💩💩💩')}`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // Should either show results or a user-friendly error (not a 403 about parameters)
       const pageContent = await page.content();
@@ -265,7 +263,7 @@ test.describe('Autocomplete API Integration', () => {
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent(query)}`);
 
       // Wait for page load
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // If results are present, check for entity type badges
       const hasTable = await page.locator('table').isVisible().catch(() => false);
@@ -279,7 +277,7 @@ test.describe('Autocomplete API Integration', () => {
     test('should make entity names clickable links', async ({ page }) => {
       const query = TEST_QUERIES.authors;
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent(query)}`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // If results are present, check for clickable entity links
       const hasTable = await page.locator('table').isVisible().catch(() => false);
@@ -293,7 +291,7 @@ test.describe('Autocomplete API Integration', () => {
     test('should display citation counts when available', async ({ page }) => {
       const query = TEST_QUERIES.works;
       await page.goto(`${BASE_URL}/#/autocomplete?q=${encodeURIComponent(query)}`);
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
 
       // If results are present, check for citation data
       const hasTable = await page.locator('table').isVisible().catch(() => false);

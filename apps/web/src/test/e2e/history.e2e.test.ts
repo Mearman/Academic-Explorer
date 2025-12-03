@@ -84,7 +84,7 @@ test.describe('@utility History Page', () => {
 			await waitForAppReady(page);
 			await page.waitForLoadState('networkidle');
 			// Give time for history to be recorded
-			await page.waitForTimeout(1000);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		// Navigate to history page
@@ -119,8 +119,7 @@ test.describe('@utility History Page', () => {
 		await pageObject.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`);
 		await waitForAppReady(page);
 		await page.waitForLoadState('networkidle');
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to history page
 		await pageObject.goto(`${BASE_URL}/#/history`);
 		await waitForAppReady(page);
@@ -153,8 +152,7 @@ test.describe('@utility History Page', () => {
 		await pageObject.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`);
 		await waitForAppReady(page);
 		await page.waitForLoadState('networkidle');
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to history page
 		await pageObject.goto(`${BASE_URL}/#/history`);
 		await waitForAppReady(page);
@@ -189,7 +187,7 @@ test.describe('@utility History Page', () => {
 			await pageObject.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`);
 			await waitForAppReady(page);
 			await page.waitForLoadState('networkidle');
-			await page.waitForTimeout(1000);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		// Navigate to history page
@@ -225,8 +223,7 @@ test.describe('@utility History Page', () => {
 		const clearButton = page.getByRole('button', { name: /clear/i });
 		if (await clearButton.isVisible()) {
 			await clearButton.click();
-			await page.waitForTimeout(500);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Should show all entries again
 			const clearedCards = page.locator('.mantine-Card-root');
 			const clearedCount = await clearedCards.count();
@@ -244,8 +241,7 @@ test.describe('@utility History Page', () => {
 		await pageObject.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`);
 		await waitForAppReady(page);
 		await page.waitForLoadState('networkidle');
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to history page
 		await pageObject.goto(`${BASE_URL}/#/history`);
 		await waitForAppReady(page);
@@ -254,8 +250,7 @@ test.describe('@utility History Page', () => {
 		// Search for something that doesn't exist
 		const searchInput = page.getByPlaceholder(/search history/i);
 		await searchInput.fill('xyznonexistentquery123');
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Should show "no history found" message
 		const noResultsText = page.getByText(/no history found/i);
 		await expect(noResultsText).toBeVisible({ timeout: 10_000 });
@@ -273,8 +268,7 @@ test.describe('@utility History Page', () => {
 		await pageObject.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`);
 		await waitForAppReady(page);
 		await page.waitForLoadState('networkidle');
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to history page
 		await pageObject.goto(`${BASE_URL}/#/history`);
 		await waitForAppReady(page);
@@ -296,8 +290,7 @@ test.describe('@utility History Page', () => {
 		await confirmButton.click();
 
 		// Wait for deletion to complete
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify entry was deleted
 		const remainingCards = page.locator('.mantine-Card-root');
 		const remainingCount = await remainingCards.count();

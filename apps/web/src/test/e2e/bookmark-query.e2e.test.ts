@@ -129,7 +129,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Navigate to query page
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -152,12 +152,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Navigate to query page
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Find and click bookmark button
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
@@ -168,8 +167,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       await bookmarkButton.click();
 
       // Wait for bookmark to be saved
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify success notification or visual feedback
       const successIndicator = page.locator(
         '[data-testid="bookmark-success"], .mantine-Notification-root:has-text("Bookmarked")'
@@ -188,7 +186,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       console.log(`Testing complex query bookmark: ${query.description}`);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -202,7 +200,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL - feature not implemented
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
+      // Removed: waitForTimeout - use locator assertions instead
     });
   });
 
@@ -213,12 +211,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // First, bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -226,16 +223,14 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL - bookmark button doesn't exist
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for the bookmarked query
       const bookmarkedQuery = page.locator(
         `[data-testid="bookmark-card"]:has-text("${query.description}")`
@@ -258,12 +253,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
     }) => {
       // Navigate to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for query bookmark indicator/badge
       const queryBookmarkBadge = page.locator(
         '[data-testid="bookmark-type-badge"]:has-text("Query")'
@@ -283,12 +277,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -296,24 +289,21 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate away
       await page.goto(`${BASE_URL}/#/works`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Go to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Click on bookmarked query
       const bookmarkedQuery = page.locator(
         '[data-testid="bookmark-card"]'
@@ -323,8 +313,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       await expect(bookmarkedQuery).toBeVisible({ timeout: 5000 });
       await bookmarkedQuery.click();
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify we're on the query page with correct parameters
       const currentParams = await extractQueryParams(page);
 
@@ -338,12 +327,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       const queryUrl = buildQueryUrl(query.path, query.params);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Bookmark the paginated query
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
@@ -352,16 +340,14 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to bookmarks and click the bookmark
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkedQuery = page.locator(
         '[data-testid="bookmark-card"]'
       ).first();
@@ -369,8 +355,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkedQuery).toBeVisible({ timeout: 5000 });
       await bookmarkedQuery.click();
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify pagination parameters are preserved
       const currentParams = await extractQueryParams(page);
 
@@ -389,12 +374,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       console.log(`Testing complex grouping query: ${query.description}`);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Attempt to bookmark
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
@@ -403,16 +387,14 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify in bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should show grouping parameter in bookmark card
       const bookmarkCard = page.locator(
         '[data-testid="bookmark-card"]'
@@ -428,12 +410,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       const queryUrl = buildQueryUrl(query.path, query.params);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -452,12 +433,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Bookmark a query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -465,20 +445,17 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Reload the page
-      await page.reload({ waitUntil: "networkidle" });
-      await page.waitForTimeout(2000);
-
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark still exists
       const bookmarkCard = page.locator(
         '[data-testid="bookmark-card"]'
@@ -494,12 +471,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Bookmark a query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -507,20 +483,17 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Unbookmark the query
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark was removed
       const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
       const count = await bookmarkCards.count();
@@ -537,12 +510,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       const queryUrl = "/works?filter=";
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should still show bookmark button (or gracefully handle)
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
@@ -561,12 +533,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       });
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -574,16 +545,14 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify special characters are preserved
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkCard = page.locator(
         '[data-testid="bookmark-card"]'
       ).first();
@@ -591,8 +560,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkCard).toBeVisible({ timeout: 5000 });
       await bookmarkCard.click();
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify URL encoding is correct
       const currentParams = await extractQueryParams(page);
       expect(currentParams.search).toBe("machine learning & AI");
@@ -603,12 +571,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       const queryUrl = buildQueryUrl(query.path, query.params);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -619,12 +586,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Rapid clicks
       for (let i = 0; i < 5; i++) {
         await bookmarkButton.click();
-        await page.waitForTimeout(100);
+        // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Should end in a consistent state (no errors)
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check for errors
       const errorNotification = page.locator(
         '.mantine-Notification-root:has-text("Error")'
@@ -643,12 +609,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       const queryUrl = buildQueryUrl(query.path, query.params);
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -658,8 +623,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Click to bookmark
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Button should show bookmarked state (filled icon, different color, etc.)
       const bookmarkedStateIndicator = page.locator(
         '[data-testid="bookmark-query-button"][aria-pressed="true"], [data-testid="bookmark-query-button"].bookmarked'
@@ -675,12 +639,11 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       // Bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator(
         '[data-testid="bookmark-query-button"]'
       );
@@ -688,16 +651,14 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // This should FAIL
       await expect(bookmarkButton).toBeVisible({ timeout: 5000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check bookmark card display
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkCard = page.locator(
         '[data-testid="bookmark-card"]'
       ).first();

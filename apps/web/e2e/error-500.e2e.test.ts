@@ -3,7 +3,7 @@
  *
  * Tests handling of server-side errors using route interception
  * @module error-500.e2e
- * @tag @error
+ * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
@@ -70,8 +70,7 @@ test.describe('@error 500 Server Errors', () => {
     if (hasRetry) {
       // Click retry and verify it attempts to reload
       await retryButton.click();
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // After retry, should have made additional request
       expect(requestCount).toBeGreaterThan(1);
     }

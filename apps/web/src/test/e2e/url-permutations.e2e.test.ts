@@ -125,7 +125,7 @@ const waitForContent = async (page: any, timeout: number): Promise<void> => {
     // Try fallback selectors immediately with short timeout
     for (const selector of fallbackSelectors) {
       try {
-        await page.locator(selector, { timeout: 2000 }).waitFor();
+        await page.locator(selector).waitFor({ timeout: 2000 });
         return;
       } catch {
         // Try next fallback
@@ -200,9 +200,9 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
-        await expect(mainContent).toHaveText();
+        const textContent = await mainContent.textContent();
         // Some pages may show "Not Found" which is valid - just verify content exists
-        expect(mainContent!.trim().length).toBeGreaterThan(0);
+        expect(textContent?.trim().length).toBeGreaterThan(0);
       });
     });
   });
@@ -226,9 +226,9 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
-        await expect(mainContent).toHaveText();
+        const textContent = await mainContent.textContent();
         // Some pages may show "Not Found" which is valid - just verify content exists
-        expect(mainContent!.trim().length).toBeGreaterThan(0);
+        expect(textContent?.trim().length).toBeGreaterThan(0);
       });
     });
   });
@@ -252,9 +252,9 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
-        await expect(mainContent).toHaveText();
+        const textContent = await mainContent.textContent();
         // Some pages may show "Not Found" which is valid - just verify content exists
-        expect(mainContent!.trim().length).toBeGreaterThan(0);
+        expect(textContent?.trim().length).toBeGreaterThan(0);
       });
     });
   });
@@ -284,9 +284,9 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
-        await expect(mainContent).toHaveText();
+        const textContent = await mainContent.textContent();
         // Some pages may show "Not Found" which is valid - just verify content exists
-        expect(mainContent!.trim().length).toBeGreaterThan(0);
+        expect(textContent?.trim().length).toBeGreaterThan(0);
 
         // For list pages with filters, verify results are shown
         if (isListPage(apiUrl)) {
@@ -319,8 +319,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
 
-        await expect(mainContent).toHaveText();
-        contents.push(mainContent!.trim());
+        const textContent = await mainContent.textContent();
+        contents.push(textContent?.trim() ?? '');
 
         // Small delay between requests
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -365,9 +365,9 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
         const mainContent = page.locator(contentSelector);
-        await expect(mainContent).toHaveText();
+        const textContent = await mainContent.textContent();
         // Some pages may show "Not Found" which is valid - just verify content exists
-        expect(mainContent!.trim().length).toBeGreaterThan(0);
+        expect(textContent?.trim().length).toBeGreaterThan(0);
 
         // Verify entity type is in the content or URL
         const currentUrl = page.url();

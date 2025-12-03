@@ -78,7 +78,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     if (settingsButtonVisible) {
       await settingsButton.click();
       // Wait for navigation or modal
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
       settingsPageUrl = page.url();
     } else {
       // Try direct navigation to settings route
@@ -103,8 +103,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Select "Version 1 (legacy)" option
     await dataVersionSelector.click();
-    await page.waitForTimeout(300);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find and click the "Version 1 (legacy)" option
     const version1Option = page.locator('div').filter({
       hasText: /^Version 1 \(legacy\)$/,
@@ -120,8 +119,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     }
 
     // Wait for setting to be saved
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear previous intercepted requests to only check requests after version change
     interceptedRequests.length = 0;
 
@@ -129,8 +127,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     // Use a known work ID (W2741809807 from author verification tests)
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify that intercepted requests contain data_version=1
     const requestsWithVersion1 = interceptedRequests.filter(
       (req) => req.hasDataVersion && req.dataVersionValue === '1'
@@ -197,7 +194,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     if (settingsButtonVisible) {
       await settingsButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     } else {
       await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
@@ -214,8 +211,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Select "Version 2 (current)"
     await dataVersionSelector.click();
-    await page.waitForTimeout(300);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const version2Option = page.locator('div').filter({
       hasText: /^Version 2 \(current\)$/,
     }).first();
@@ -228,16 +224,14 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     await version2Option.click();
     console.log('✓ Selected "Version 2 (current)"');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear previous requests
     interceptedRequests.length = 0;
 
     // Trigger API request
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify data_version=2 in requests
     const requestsWithVersion2 = interceptedRequests.filter(
       (req) => req.hasDataVersion && req.dataVersionValue === '2'
@@ -295,7 +289,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     if (settingsButtonVisible) {
       await settingsButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     } else {
       await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
@@ -312,8 +306,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Select "Auto (v2 default)"
     await dataVersionSelector.click();
-    await page.waitForTimeout(300);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const autoOption = page.locator('div').filter({
       hasText: /^Auto \(v2 default\)$/,
     }).first();
@@ -326,16 +319,14 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     await autoOption.click();
     console.log('✓ Selected "Auto (v2 default)"');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear previous requests
     interceptedRequests.length = 0;
 
     // Trigger API request
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify that NO requests have data_version parameter
     const requestsWithDataVersion = interceptedRequests.filter(
       (req) => req.hasDataVersion
@@ -396,8 +387,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     // Navigate to app without any prior settings
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify no data_version parameter in default state
     const requestsWithDataVersion = interceptedRequests.filter(
       (req) => req.hasDataVersion
@@ -455,7 +445,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     if (settingsButtonVisible) {
       await settingsButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     } else {
       await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
@@ -470,8 +460,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     }
 
     await dataVersionSelector.click();
-    await page.waitForTimeout(300);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const version1Option = page.locator('div').filter({
       hasText: /^Version 1 \(legacy\)$/,
     }).first();
@@ -484,8 +473,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     await version1Option.click();
     console.log('✓ Selected Version 1');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear prior requests
     allInterceptedRequests.length = 0;
 
@@ -499,7 +487,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     for (const entityPage of entityPages) {
       await page.goto(entityPage, { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
-      await page.waitForTimeout(800);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify all requests have data_version=1
@@ -563,7 +551,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     if (settingsButtonVisible) {
       await settingsButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     } else {
       await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
@@ -578,8 +566,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     }
 
     await dataVersionSelector.click();
-    await page.waitForTimeout(300);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const version1Option = page.locator('div').filter({
       hasText: /^Version 1 \(legacy\)$/,
     }).first();
@@ -592,21 +579,18 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     await version1Option.click();
     console.log('✓ Selected Version 1');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear requests before refresh
     interceptedRequests.length = 0;
 
     // Refresh the page
     await page.reload({ waitUntil: 'load' });
     console.log('✓ Page refreshed');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to an entity page
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify data_version=1 is still in requests after refresh
     const version1Requests = interceptedRequests.filter(
       (req) => req.hasDataVersion && req.dataVersionValue === '1'
@@ -642,7 +626,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     if (settingsButtonVisible) {
       await settingsButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     } else {
       await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');

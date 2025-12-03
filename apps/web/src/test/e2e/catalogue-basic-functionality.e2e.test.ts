@@ -54,7 +54,7 @@ test.describe("Catalogue Basic Functionality", () => {
     await page.waitForLoadState("networkidle");
 
     // Wait for catalogue to load and check if we're on the Lists tab
-    await page.waitForSelector('text="Catalogue"', { timeout: 10_000 });
+    await page.locator('text="Catalogue"').waitFor({ timeout: 10_000 });
 
     // Ensure we're on the Lists tab (not Bibliographies)
     const listsTab = page.locator('button:has-text("Lists")');
@@ -196,8 +196,7 @@ test.describe("Catalogue Basic Functionality", () => {
     await confirmButton.click({ force: true });
 
     // Wait a bit for the async operation to start
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify the specific list card with this ID is removed from the DOM
     await expect(page.locator(`[data-testid="list-card-${listId}"]`)).not.toBeAttached({ timeout: 10_000 });
   });
@@ -213,8 +212,7 @@ test.describe("Catalogue Basic Functionality", () => {
     await searchInput.fill('Machine Learning');
 
     // Wait for search results to update
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify search results - check that list cards are visible/hidden appropriately
     // Use the list card testid to verify visibility
     const mlCard = page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "Machine Learning Research" }).first();
@@ -230,8 +228,7 @@ test.describe("Catalogue Basic Functionality", () => {
     await searchInput.fill('');
 
     // Wait for search to update
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify all lists are visible again
     await expect(mlCard).toBeVisible({ timeout: 10_000 });
     await expect(dsCard).toBeVisible({ timeout: 10_000 });

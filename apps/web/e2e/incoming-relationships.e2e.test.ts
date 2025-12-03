@@ -26,8 +26,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await populateWorkCitations(page);
 
     // Wait for page to render with new graph data
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
 
@@ -49,8 +48,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await page.goto('/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     await expect(citationsSection).toBeVisible();
 
@@ -67,8 +65,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await page.goto('/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     const firstCitation = citationsSection.locator('[data-testid^="relationship-item-"]').first();
     const citationLink = firstCitation.locator('a').first();
@@ -92,8 +89,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await page.goto('/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     await expect(citationsSection).toBeVisible();
 
@@ -113,8 +109,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await page.goto('/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
 
     // Check if "Load more" button exists (only if there are >50 citations)
@@ -163,8 +158,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await page.goto('/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     const firstItem = citationsSection.locator('[data-testid^="relationship-item-"]').first();
 

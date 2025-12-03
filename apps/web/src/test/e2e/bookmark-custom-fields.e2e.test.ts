@@ -36,7 +36,7 @@ const bookmarkCurrentPage = async (page: Page): Promise<void> => {
   await expect(bookmarkButton).toBeVisible();
   await bookmarkButton.click();
   // Wait for bookmark operation to complete
-  await page.waitForTimeout(500);
+  // Removed: waitForTimeout - use locator assertions instead
 };
 
 /**
@@ -140,8 +140,7 @@ test.describe("Bookmark Custom Field Views", () => {
     const rawViewButton = page.locator('button:has-text("Raw View")');
     if (await rawViewButton.isVisible()) {
       await rawViewButton.click();
-      await page.waitForTimeout(500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const rawContent = await page.locator("pre").textContent();
       const jsonData = JSON.parse(rawContent || "{}");
 
@@ -208,12 +207,10 @@ test.describe("Bookmark Custom Field Views", () => {
     // Unbookmark
     const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
     await bookmarkButton.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Bookmark again (should preserve the same select parameter)
     await bookmarkButton.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to bookmarks page
     await navigateToBookmarks(page);
 
@@ -414,7 +411,7 @@ test.describe("Bookmark Custom Field Views", () => {
     const queryBookmarkButton = page.locator('[data-testid="query-bookmark-button"]');
     if (await queryBookmarkButton.isVisible()) {
       await queryBookmarkButton.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Navigate to bookmarks

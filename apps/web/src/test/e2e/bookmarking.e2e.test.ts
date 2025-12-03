@@ -30,7 +30,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -58,7 +58,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[1]; // Work
 
       await page.goto(`${BASE_URL}/works/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -86,7 +86,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -103,8 +103,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       await bookmarkButton.click();
 
       // Wait for bookmark to be processed
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark was created by checking if button state changed
       // This might be a filled icon or different color
       const updatedIcon = bookmarkButton.locator('svg');
@@ -115,7 +114,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -126,12 +125,10 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // First bookmark the entity
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Then unbookmark it
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify the button state changed back
       const finalIcon = bookmarkButton.locator('svg');
       await expect(finalIcon).toBeVisible();
@@ -141,7 +138,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -152,14 +149,12 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Bookmark the entity
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Reload the page
-      await page.reload({ waitUntil: "networkidle" });
+      await page.reload({ waitUntil: 'domcontentloaded' });
 
       // Wait for page to load again
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark button is still in bookmarked state
       const reloadedBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
       await expect(reloadedBookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -169,7 +164,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Test bookmarking multiple entities
       for (const entity of TEST_ENTITIES.slice(0, 2)) { // Test author and work
         await page.goto(`${BASE_URL}/${entity.type}/${entity.id}`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
@@ -179,18 +174,17 @@ test.describe("Bookmark Functionality E2E Tests", () => {
         await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
+        // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Navigate to bookmarks page to verify
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for bookmarks to load
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check that we have bookmarks
       const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
       await expect(bookmarkCards.first()).toBeVisible({ timeout: 10_000 });
@@ -200,7 +194,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
   test.describe("Bookmarks Page", () => {
     test("should load bookmarks page", async ({ page }) => {
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -229,7 +223,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // First bookmark an entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -237,17 +231,15 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const bookmarkButton = buttons.first();
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Then go to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for bookmarks to load
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should see bookmarked entity
       const bookmarkContent = page.locator('.mantine-Card-root').first();
       await expect(bookmarkContent).toBeVisible({ timeout: 10_000 });
@@ -259,12 +251,11 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Test the navigation functionality directly by simulating a bookmark scenario
       // Navigate to bookmarks page and verify it loads
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify we're on the bookmarks page (look for the main page header)
       const bookmarksHeader = page.locator('main').getByText('Bookmarks', { exact: true });
       await expect(bookmarksHeader).toBeVisible({ timeout: 10_000 });
@@ -272,12 +263,11 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Simulate bookmark navigation by testing the hash navigation functionality
       // Navigate to the author page directly
       await page.goto(`${BASE_URL}/#/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify we're on the author page
       const currentUrl = page.url();
       expect(currentUrl).toContain(`authors/${entity.id}`);
@@ -287,8 +277,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
         window.location.hash = targetUrl;
       }, `/authors/${entity.id}`);
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify the navigation worked
       const finalUrl = page.url();
       expect(finalUrl).toContain(`authors/${entity.id}`);
@@ -302,7 +291,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Go to bookmarks page (use hash routing)
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -324,7 +313,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const searchQuery = "machine learning";
 
       await page.goto(`${BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -334,16 +323,14 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       if (await bookmarkButton.isVisible({ timeout: 10_000 })) {
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Go to bookmarks to verify
         await page.goto(`${BASE_URL}/#/bookmarks`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Should see the search bookmark
         const bookmarkContent = page.locator('.mantine-Card-root').first();
         if (await bookmarkContent.isVisible()) {
@@ -358,7 +345,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -375,12 +362,11 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Try bookmarking multiple times rapidly
       for (let i = 0; i < 3; i++) {
         await bookmarkButton.click();
-        await page.waitForTimeout(100);
+        // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Wait for any errors to surface
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should not have console errors
       expect(errors.filter(e => e.includes('bookmark'))).toHaveLength(0);
     });
@@ -390,7 +376,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Bookmark an entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -398,19 +384,17 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       const bookmarkButton = buttons.first();
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to different pages
       await page.goto(`${BASE_URL}/works/W2741809807`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Go back to original entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 

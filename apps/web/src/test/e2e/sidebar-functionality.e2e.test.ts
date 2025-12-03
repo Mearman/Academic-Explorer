@@ -41,7 +41,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
       await leftSidebarToggle.click();
 
       // Wait for sidebar to open and content to potentially load
-      await page.waitForTimeout(3000);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Check if bookmarks sidebar is displayed
@@ -49,8 +49,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     console.log('Bookmarks sidebar is visible');
 
     // Wait additional time for content to load after sidebar opens
-    await page.waitForTimeout(5000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if it's stuck in loading state first
     const loadingText = page.getByText('Loading bookmarks...');
     const isLoading = await loadingText.isVisible().catch(() => false);
@@ -92,8 +91,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Wait for sidebar to open
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if history sidebar is displayed
     const historySidebar = page.getByRole('heading', { name: /history/i });
     await expect(historySidebar).toBeVisible({ timeout: 5000 });
@@ -105,7 +103,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     // If search input isn't visible, check if history sidebar is at least open
     if (!searchInputVisible) {
       // Wait a bit more for content to load
-      await page.waitForTimeout(2000);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // History sidebar should be open even if search input isn't immediately visible
@@ -126,14 +124,12 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await page.goto(workUrl, { waitUntil: "domcontentloaded", timeout: 15_000 });
 
     // Wait for navigation to complete
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Open right sidebar and check if history is tracked
     await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Wait for sidebar to open
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if history entries are displayed (may be grouped by date or show work info)
     const historyEntries = page.getByText(/works\/W2741809807/).or(page.getByText(/Jason Priem/)).or(page.getByText(/Today/));
     await expect(historyEntries.first()).toBeVisible({ timeout: 5000 });

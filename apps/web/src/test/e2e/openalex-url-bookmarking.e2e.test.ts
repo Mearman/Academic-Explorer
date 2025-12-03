@@ -32,7 +32,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Navigate to the OpenAlex URL via our redirection route
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -51,7 +51,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Navigate to the OpenAlex entity URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -67,7 +67,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/institutions/I27837315`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -82,7 +82,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/sources/S137773608`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -100,29 +100,26 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Navigate via OpenAlex URL (gets redirected)
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for redirect to complete
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for bookmark button
       const bookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
 
       // Try to find bookmark button with multiple selectors
       if (await bookmarkButton.isVisible({ timeout: 5000 })) {
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify bookmark was created by going to bookmarks page
         await page.goto(`${BASE_URL}/bookmarks`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Should see bookmark content
         const bookmarkContent = page.locator('.mantine-Card-root').first();
         if (await bookmarkContent.isVisible({ timeout: 5000 })) {
@@ -137,29 +134,26 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Navigate via OpenAlex URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for redirect and page load
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for bookmark button in entity detail
       const bookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Bookmark the entity
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify in bookmarks page
       await page.goto(`${BASE_URL}/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should see the bookmarked author
       const bookmarkContent = page.locator('.mantine-Card-root').first();
       await expect(bookmarkContent).toBeVisible({ timeout: 10_000 });
@@ -171,38 +165,34 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Navigate via OpenAlex URL
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/authors/A5017898742`;
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Bookmark the entity
       const bookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to the same entity via direct URL
       await page.goto(`${BASE_URL}/authors/A5017898742`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should still show as bookmarked
       const directBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
       await expect(directBookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Navigate again via OpenAlex URL
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should still show as bookmarked
       const redirectedBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
       await expect(redirectedBookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -219,13 +209,12 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       const localTestUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
 
       await page.goto(localTestUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Should redirect to internal works route with proper parameters
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
     });
@@ -238,12 +227,11 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=publication_year:2023,is_oa:true&sort=cited_by_count:desc&per-page=50`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check that parameters are preserved in the redirected URL (URL-encoded format)
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
@@ -260,12 +248,11 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       const redirectUrl = `${BASE_URL}/#/https://api.openalex.org/invalid-endpoint`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should handle gracefully - either show error or redirect to search
       const currentUrl = page.url();
       // Should not crash and should still be on our app
@@ -278,12 +265,11 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       const redirectUrl = `${BASE_URL}/#/${malformedUrl}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should not crash the application
       const currentUrl = page.url();
       expect(currentUrl).toBeTruthy();

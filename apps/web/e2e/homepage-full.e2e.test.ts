@@ -2,14 +2,14 @@
  * E2E tests for homepage functionality
  * Automated version of manual homepage tests
  * Tests the main BibGraph homepage with search, navigation, and basic interactions
- * @automated-manual
+ * @manual
  */
 
 import { expect, test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 
-test.describe("Homepage E2E Tests @automated-manual", () => {
+test.describe("Homepage E2E Tests @manual", () => {
   test("should load homepage without infinite loops", async ({ page }) => {
     // Set up error tracking before navigation
     const errors: string[] = [];
@@ -19,7 +19,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
     // Navigate to homepage
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
 
@@ -36,7 +36,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should display homepage content correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
+    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check main title in the homepage card
@@ -62,7 +62,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
   test("should have working example search links", async ({ page }) => {
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
     await waitForAppReady(page);
@@ -83,7 +83,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
   test("should display technology stack correctly", async ({ page }) => {
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
     await waitForAppReady(page);
@@ -103,7 +103,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should display example searches", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
+    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for example search section
@@ -122,7 +122,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should allow typing in search input", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
+    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -143,7 +143,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should handle search button states correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
+    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -165,7 +165,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should display helpful usage instructions", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
+    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for usage instructions - the actual text from the component
@@ -177,7 +177,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
   test("should have proper accessibility features", async ({ page }) => {
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
     await waitForAppReady(page);
@@ -205,7 +205,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Set mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -235,7 +235,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -262,7 +262,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Set desktop viewport
       await page.setViewportSize({ width: 1920, height: 1080 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -289,7 +289,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Set 4K viewport
       await page.setViewportSize({ width: 3840, height: 2160 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -317,7 +317,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       page,
     }) => {
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -339,7 +339,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       page,
     }) => {
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -360,7 +360,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       page,
     }) => {
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -392,7 +392,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Test on mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -418,7 +418,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       page,
     }) => {
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -461,7 +461,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // Test on mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -502,7 +502,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // difficult to test deterministically. Visual regression testing would be more
       // appropriate for zoom level verification.
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);
@@ -540,7 +540,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // At 200% zoom, layout calculations may be unreliable due to browser rounding
       // and viewport adjustment behaviors.
       await page.goto("/", {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
       await waitForAppReady(page);

@@ -9,8 +9,8 @@ test.describe('Deployed Site - Critical URLs', () => {
   test.setTimeout(30_000);
 
   test('concepts list page should NOT show "Unsupported entity type"', async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/concepts`, { waitUntil: 'networkidle', timeout: 20_000 });
-    await page.waitForSelector('main', { timeout: 10_000 });
+    await page.goto(`${BASE_URL}/#/concepts`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+    await page.locator('main').waitFor({ timeout: 10_000 });
     
     const mainText = await page.locator('main').textContent();
     
@@ -25,8 +25,8 @@ test.describe('Deployed Site - Critical URLs', () => {
   });
 
   test('concepts detail page C71924100 should load', async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/concepts/C71924100`, { waitUntil: 'networkidle', timeout: 20_000 });
-    await page.waitForSelector('main', { timeout: 10_000 });
+    await page.goto(`${BASE_URL}/#/concepts/C71924100`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+    await page.locator('main').waitFor({ timeout: 10_000 });
     
     const mainText = page.locator('main');
     await expect(mainText).toHaveText();
@@ -36,8 +36,8 @@ test.describe('Deployed Site - Critical URLs', () => {
   });
 
   test('author A5017898742 page should load (user requested)', async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/authors/A5017898742`, { waitUntil: 'networkidle', timeout: 20_000 });
-    await page.waitForSelector('main', { timeout: 10_000 });
+    await page.goto(`${BASE_URL}/#/authors/A5017898742`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+    await page.locator('main').waitFor({ timeout: 10_000 });
     
     const mainText = page.locator('main');
     await expect(mainText).toHaveText();
@@ -47,8 +47,8 @@ test.describe('Deployed Site - Critical URLs', () => {
   });
 
   test('topics list page should load', async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/topics`, { waitUntil: 'networkidle', timeout: 20_000 });
-    await page.waitForSelector('main', { timeout: 10_000 });
+    await page.goto(`${BASE_URL}/#/topics`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+    await page.locator('main').waitFor({ timeout: 10_000 });
     
     const mainText = await page.locator('main').textContent();
     const hasError = mainText?.toLowerCase().includes('unsupported entity type');

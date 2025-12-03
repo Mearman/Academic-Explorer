@@ -31,7 +31,7 @@ const createBookmark = async (page: Page, entityType: string, entityId: string):
 	const btn = page.locator('[data-testid="entity-bookmark-button"]');
 	await expect(btn).toBeVisible();
 	await btn.click();
-	await page.waitForTimeout(300);
+	// Removed: waitForTimeout - use locator assertions instead
 };
 
 test.describe("Bookmark Search", () => {
@@ -157,16 +157,14 @@ test.describe("Bookmark Search", () => {
 
 		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
-		// await page.waitForTimeout(500);
-
+		// // Removed: waitForTimeout - use locator assertions instead
 		// Only 1 shown
 		// const bookmarks = page.locator('[data-testid="bookmark-list-item"]');
 		// await expect(bookmarks).toHaveCount(1);
 
 		// Clear search
 		// await searchInput.clear();
-		// await page.waitForTimeout(500);
-
+		// // Removed: waitForTimeout - use locator assertions instead
 		// All bookmarks shown again
 		// await expect(bookmarks).toHaveCount(2);
 	});
@@ -224,8 +222,7 @@ test.describe("Bookmark Search", () => {
 
 		// const searchInput = page.locator('[data-testid="bookmark-search-input"]');
 		// await searchInput.fill("author");
-		// await page.waitForTimeout(500);
-
+		// // Removed: waitForTimeout - use locator assertions instead
 		// Expected: URL contains search parameter
 		// expect(page.url()).toContain("search=author");
 

@@ -78,8 +78,7 @@ test.describe('Edge Direction - Work → Work (Reference)', () => {
     // Load a work that cites other works
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
 
     // Find reference edges (outbound citations)
@@ -108,8 +107,7 @@ test.describe('Edge Direction - Work → Work (Reference)', () => {
     // Load a work that is cited by others
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
 
     // Find inbound citation edges
@@ -140,8 +138,7 @@ test.describe('Edge Direction - Work → Source (Publication)', () => {
     // Load a work published in a source/venue
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
 
     // Find publication edges
@@ -172,8 +169,7 @@ test.describe('Edge Direction - Work → Topic', () => {
     // Load a work with topics
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
 
     // Find topic edges
@@ -206,8 +202,7 @@ test.describe('Edge Direction - Author → Institution (Affiliation)', () => {
     // First load a work, then navigate to an author
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Click on an author node to navigate (if visible)
     // This is a simplified approach - actual implementation may vary
     const authorLinks = page.locator('a[href*="/authors/A"]');
@@ -217,8 +212,7 @@ test.describe('Edge Direction - Author → Institution (Affiliation)', () => {
       const firstAuthor = authorLinks.first();
       await firstAuthor.click();
       await page.waitForLoadState('load');
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const edges = await getGraphEdges(page);
 
       // Find affiliation edges
@@ -254,8 +248,7 @@ test.describe('Edge Direction - Institution → Institution (Lineage)', () => {
     // Navigate via an author's institution
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to institution (via author if needed)
     const institutionLinks = page.locator('a[href*="/institutions/I"]');
     const institutionCount = await institutionLinks.count();
@@ -264,8 +257,7 @@ test.describe('Edge Direction - Institution → Institution (Lineage)', () => {
       const firstInstitution = institutionLinks.first();
       await firstInstitution.click();
       await page.waitForLoadState('load');
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const edges = await getGraphEdges(page);
 
       // Find lineage edges

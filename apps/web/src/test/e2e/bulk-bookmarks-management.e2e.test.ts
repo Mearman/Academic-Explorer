@@ -73,7 +73,7 @@ test.describe("Bulk Bookmarks Management", () => {
     });
 
     // Wait a moment for bookmarks to be saved
-    await page.waitForTimeout(1000);
+    // Removed: waitForTimeout - use locator assertions instead
   };
 
   test("should display bookmarks management interface", async ({ page }) => {
@@ -210,21 +210,18 @@ test.describe("Bulk Bookmarks Management", () => {
     await confirmButton.click();
 
     // Wait for operation to complete (modal should disappear)
-    await page.waitForSelector('text=Delete Selected Bookmarks', { state: 'detached', timeout: 10_000 });
+    await page.locator('text=Delete Selected Bookmarks', { state: 'detached', timeout: 10_000 }).waitFor();
 
     // Wait a bit for the UI to update
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify success modal appears (use main content to avoid sidebar conflicts)
     await expect(page.locator('main:has-text("Success")')).toBeVisible({ timeout: 5000 });
 
     // Close success modal
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Wait for the UI to update without full page refresh
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get final count - should be immediately updated
     const finalBookmarkCards = page.locator('[data-testid="bookmark-card"]');
     const finalCount = await finalBookmarkCards.count();
@@ -255,8 +252,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await searchInput.fill(firstTitle!);
 
     // Wait for search to filter
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Should show 1 bookmark (the one we searched for)
     const filteredCards = page.locator('[data-testid="bookmark-card"]');
     const filteredCount = await filteredCards.count();
@@ -265,8 +261,7 @@ test.describe("Bulk Bookmarks Management", () => {
 
     // Clear search
     await searchInput.fill('');
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Should show all bookmarks again
     const allCardsAfterClear = page.locator('[data-testid="bookmark-card"]');
     const countAfterClear = await allCardsAfterClear.count();
@@ -367,8 +362,7 @@ test.describe("Bulk Bookmarks Management", () => {
     // Wait for success modal and close it
     await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check that main page count decreased
     const mainCountAfterDelete = await getMainPageBookmarkCount();
     expect(mainCountAfterDelete).toBeLessThan(initialMainCount);
@@ -401,7 +395,7 @@ test.describe("Bulk Bookmarks Management", () => {
           await page.locator('button:has-text("Delete")').click();
           await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
           await page.keyboard.press('Escape');
-          await page.waitForTimeout(1000);
+          // Removed: waitForTimeout - use locator assertions instead
         }
 
         // Check that sidebar count decreased

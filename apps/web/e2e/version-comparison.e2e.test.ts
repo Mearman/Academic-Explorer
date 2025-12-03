@@ -33,8 +33,7 @@ test.describe('Version Metadata Comparison Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for work data to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify version comparison indicator is visible
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
@@ -60,8 +59,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for version label badge
     const versionLabel = page.getByRole('button', { name: /Data Version/i });
     const labelExists = await versionLabel.first().isVisible({ timeout: 5000 }).catch(() => false);
@@ -86,8 +84,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for references comparison badge
     const referencesBadge = page.getByTestId('version-comparison-indicator-references');
     const badgeExists = await referencesBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -116,8 +113,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for locations comparison badge
     const locationsBadge = page.getByTestId('version-comparison-indicator-locations');
     const badgeExists = await locationsBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -146,8 +142,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check references badge for positive differences
     const referencesBadge = page.getByTestId('version-comparison-indicator-references');
     const refBadgeVisible = await referencesBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -179,8 +174,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check locations badge for negative differences
     const locationsBadge = page.getByTestId('version-comparison-indicator-locations');
     const locBadgeVisible = await locationsBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -211,8 +205,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for "No change" text in badges
     const badges = page.locator('[data-testid^="version-comparison-indicator-"]');
     const badgeCount = await badges.count();
@@ -238,8 +231,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const referencesBadge = page.getByTestId('version-comparison-indicator-references');
     const badgeExists = await referencesBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -248,8 +240,7 @@ test.describe('Version Metadata Comparison Display', () => {
       await referencesBadge.hover();
 
       // Wait for tooltip to appear
-      await page.waitForTimeout(500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check if tooltip is visible
       // Mantine tooltips are rendered in a portal with aria-hidden="false" when visible
       const tooltip = page.locator('[role="tooltip"]');
@@ -278,8 +269,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // The component renders an info icon when there are differences
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
@@ -309,8 +299,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -340,8 +329,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -381,8 +369,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -412,8 +399,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -424,8 +410,7 @@ test.describe('Version Metadata Comparison Display', () => {
 
       // Scroll the page
       await page.evaluate(() => window.scrollBy(0, 300));
-      await page.waitForTimeout(500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Check if indicator is still visible or position adjusted
       const afterScrollBox = await indicator.boundingBox();
 
@@ -446,8 +431,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -476,8 +460,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Outside November, the component should either not render or be hidden
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorVisible = await indicator.isVisible({ timeout: 2000 }).catch(() => false);
@@ -496,8 +479,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W123456789';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // The indicator may not be visible if there are no differences
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 2000 }).catch(() => false);
@@ -521,8 +503,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const referencesBadge = page.getByTestId('version-comparison-indicator-references');
     const badgeExists = await referencesBadge.isVisible({ timeout: 5000 }).catch(() => false);
 

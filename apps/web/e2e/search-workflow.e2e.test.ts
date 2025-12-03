@@ -252,7 +252,7 @@ test.describe('@workflow Search Workflow', () => {
 		await searchPage.submitSearch();
 
 		// Wait for search to complete
-		await page.waitForTimeout(2000);
+		// Removed: waitForTimeout - use locator assertions instead
 		await waitForNoLoading(page);
 
 		// Verify no results message or empty state is displayed
@@ -377,8 +377,7 @@ test.describe('@workflow Search Workflow', () => {
 			await bookmarkButton.click();
 
 			// Wait for bookmark to be saved
-			await page.waitForTimeout(500);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Verify button text changed to indicate bookmarked state
 			const bookmarkedButton = page.getByRole('button', {
 				name: /bookmarked|remove.*bookmark/i,

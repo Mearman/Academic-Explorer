@@ -32,7 +32,7 @@ test.describe("@utility Settings Page", () => {
 	}) => {
 
 		// Navigate to settings
-		await page.goto(`${BASE_URL}/settings`, { waitUntil: "networkidle" });
+		await page.goto(`${BASE_URL}/settings`, { waitUntil: 'domcontentloaded' });
 		await waitForAppReady(page);
 
 		// Verify we're on the settings page
@@ -77,9 +77,9 @@ test.describe("@utility Settings Page", () => {
 		await settingsPage.toggleXpac();
 
 		// Wait for notification
-		await page.waitForSelector(".mantine-Notification-root", {
+		await page.locator(".mantine-Notification-root", {
 			timeout: 5000,
-		});
+		}).waitFor();
 
 		// Verify state changed
 		const newState = await settingsPage.isXpacEnabled();
@@ -111,8 +111,7 @@ test.describe("@utility Settings Page", () => {
 		await settingsPage.toggleTheme();
 
 		// Wait for theme transition
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify theme changed
 		const newTheme = await settingsPage.getCurrentTheme();
 		expect(newTheme).not.toBe(initialTheme);
@@ -175,9 +174,9 @@ test.describe("@utility Settings Page", () => {
 		await settingsPage.toggleXpac();
 
 		// Wait for notification to confirm save
-		await page.waitForSelector(".mantine-Notification-root", {
+		await page.locator(".mantine-Notification-root", {
 			timeout: 5000,
-		});
+		}).waitFor();
 
 		// Verify state changed
 		const changedState = await settingsPage.isXpacEnabled();
@@ -209,8 +208,7 @@ test.describe("@utility Settings Page", () => {
 
 		// Toggle theme
 		await settingsPage.toggleTheme();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify theme changed
 		const changedTheme = await settingsPage.getCurrentTheme();
 		expect(changedTheme).not.toBe(initialTheme);
@@ -246,9 +244,9 @@ test.describe("@utility Settings Page", () => {
 		});
 
 		// Wait for notification indicating completion
-		await page.waitForSelector(".mantine-Notification-root", {
+		await page.locator(".mantine-Notification-root", {
 			timeout: 10_000,
-		});
+		}).waitFor();
 
 		// Verify success notification
 		const notification = page.locator(".mantine-Notification-root");

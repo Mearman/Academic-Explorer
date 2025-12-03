@@ -10,7 +10,7 @@
  * 6. Remove bookmark
  * 7. Verify entity removed from bookmarks
  * @module bookmark-workflow.e2e
- * @tag @workflow
+ * @tags workflow
  */
 
 import AxeBuilder from '@axe-core/playwright';
@@ -95,8 +95,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await bookmarkButton.click();
 
 		// Wait for bookmark operation to complete
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// 4. Verify bookmark button state changes to bookmarked
 		await expect(bookmarkButton).toHaveAttribute('data-variant', 'filled');
 
@@ -134,8 +133,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		// 10. Click bookmark button to remove bookmark
 		const unbookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await unbookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// 11. Verify bookmark button state changes to not bookmarked
 		await expect(unbookmarkButton).not.toHaveAttribute('data-variant', 'filled');
 
@@ -162,8 +160,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await expect(bookmarkButton).toBeVisible();
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify bookmarked state
 		await expect(bookmarkButton).toHaveAttribute('data-variant', 'filled');
 
@@ -188,8 +185,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		let bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Bookmark second entity (author)
 		await page.goto(`/authors/${TEST_ENTITIES.author.id}`);
 		await waitForAppReady(page);
@@ -197,8 +193,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
 		await page.goto('/bookmarks');
 		await waitForAppReady(page);
@@ -221,8 +216,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
 		await page.goto('/bookmarks');
 		await waitForAppReady(page);
@@ -243,8 +237,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		// Unbookmark the entity
 		const unbookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await unbookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Go back to bookmarks page
 		await page.goto('/bookmarks');
 		await waitForAppReady(page);
@@ -262,8 +255,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate away to another page
 		await page.goto('/explore');
 		await waitForAppReady(page);
@@ -297,16 +289,14 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		let bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto(`/authors/${TEST_ENTITIES.author.id}`);
 		await waitForAppReady(page);
 		await waitForEntityData(page);
 
 		bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
 		await page.goto('/bookmarks');
 		await waitForAppReady(page);
@@ -319,8 +309,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		const searchInput = page.getByPlaceholder(/search bookmarks/i);
 		await expect(searchInput).toBeVisible();
 		await searchInput.fill(TEST_ENTITIES.work.id);
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify only work entity is shown
 		bookmarkCards = page.locator('[data-testid="bookmark-card"]');
 		await expect(bookmarkCards).toHaveCount(1);
@@ -330,8 +319,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 		// Clear search
 		await searchInput.clear();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify all bookmarks are shown again
 		bookmarkCards = page.locator('[data-testid="bookmark-card"]');
 		await expect(bookmarkCards).toHaveCount(2);

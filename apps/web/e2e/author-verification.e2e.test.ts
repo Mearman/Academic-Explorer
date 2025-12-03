@@ -28,7 +28,7 @@ test.describe('Author Verification Indicators', () => {
 
     // Wait for work data to load and authorship section to render
     // Use catch handler to gracefully handle test environment variability
-    await page.waitForSelector('[data-testid="rich-entity-display-title"]', {
+    await page.locator('[data-testid="rich-entity-display-title"]').waitFor({
       timeout: 10_000,
       state: 'visible',
     }).catch(async () => {
@@ -38,8 +38,7 @@ test.describe('Author Verification Indicators', () => {
     });
 
     // Wait for page stabilization
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if any unverified author indicators are present
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
@@ -68,8 +67,7 @@ test.describe('Author Verification Indicators', () => {
     await page.waitForLoadState('load');
 
     // Wait for page to stabilize
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 
@@ -93,8 +91,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 
@@ -120,8 +117,7 @@ test.describe('Author Verification Indicators', () => {
     await page.waitForLoadState('load');
 
     // Wait for author list to render
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find all author links (verified authors should have clickable links)
     // Verified authors have anchor elements with entity color
     const authorAnchors = page.locator('a[size="xs"]').filter({
@@ -156,8 +152,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 
@@ -186,8 +181,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 
@@ -214,8 +208,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 
@@ -249,8 +242,7 @@ test.describe('Author Verification Indicators', () => {
     for (const workId of workIds) {
       await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
       const indicatorCount = await unverifiedIndicators.count();
 
@@ -273,8 +265,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if indicators are within the authors card/section
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
@@ -301,8 +292,7 @@ test.describe('Author Verification Indicators', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const unverifiedIndicators = page.locator('[data-testid="unverified-author-indicator"]');
     const indicatorCount = await unverifiedIndicators.count();
 

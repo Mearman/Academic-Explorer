@@ -10,7 +10,7 @@
  *
  * This test would have caught the authorships_count bug that caused
  * https://mearman.github.io/BibGraph/#/works/W2009047091 to fail.
- * @automated-manual - Promoted from manual test suite
+ * @manual - Promoted from manual test suite
  */
 
 import {
@@ -106,7 +106,7 @@ const validateFields = (entityType: EntityType, entityId: string, data: Record<s
 	};
 };
 
-test.describe('API Field Validation @automated-manual', () => {
+test.describe('API Field Validation @manual', () => {
 	test.setTimeout(60_000); // 1 minute per test
 
 	test('Work entity should return all expected fields', async ({ request }) => {
@@ -270,7 +270,7 @@ test.describe('API Field Validation @automated-manual', () => {
 	});
 });
 
-test.describe('API Error Detection @automated-manual', () => {
+test.describe('API Error Detection @manual', () => {
 	test.setTimeout(60_000); // API tests need longer timeout
 
 	test('Invalid select parameter should return 400 error', async ({ request }) => {

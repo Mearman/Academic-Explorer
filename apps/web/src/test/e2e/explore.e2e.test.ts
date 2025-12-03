@@ -127,8 +127,7 @@ test.describe('@utility Explore Page', () => {
 			if (hasZoomIn) {
 				await explorePage.zoomIn();
 				// Wait for zoom animation
-				await page.waitForTimeout(500);
-
+				// Removed: waitForTimeout - use locator assertions instead
 				// Verify no errors occurred after zoom
 				// (SVG transform might be on child element or managed differently)
 				const errorCount = await page.locator('[role="alert"]').count();
@@ -145,8 +144,7 @@ test.describe('@utility Explore Page', () => {
 		await waitForAppReady(page);
 
 		// Give the page time to load data
-		await page.waitForTimeout(2000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Check node count
 		const nodeCount = await explorePage.getNodeCount();
 

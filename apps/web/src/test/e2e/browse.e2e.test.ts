@@ -345,8 +345,7 @@ test.describe('@utility Browse Page', () => {
 		await firstCard.hover();
 
 		// Wait for CSS transition
-		await page.waitForTimeout(100);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Get hover background color
 		const hoverBgColor = await firstCard.evaluate((el) =>
 			window.getComputedStyle(el).backgroundColor,

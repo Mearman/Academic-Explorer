@@ -77,16 +77,15 @@ test.describe('All OpenAlex URLs - Load Test', () => {
 
           // Navigate to the app URL
           await page.goto(appUrl, {
-            waitUntil: 'networkidle',
+            waitUntil: 'domcontentloaded',
             timeout: 30_000
           });
 
           // Wait for main content
-          await page.waitForSelector('main', { timeout: 10_000 });
+          await page.locator('main').waitFor({ timeout: 10_000 });
 
           // Wait a bit for data to load
-          await page.waitForTimeout(3000);
-
+          // Removed: waitForTimeout - use locator assertions instead
           // Get page content
           const mainContent = page.locator('main');
 

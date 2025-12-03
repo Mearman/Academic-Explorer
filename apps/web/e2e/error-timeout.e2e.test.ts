@@ -3,7 +3,7 @@
  *
  * Tests handling of slow/hanging requests that exceed timeout limits
  * @module error-timeout.e2e
- * @tag @error
+ * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
@@ -37,8 +37,7 @@ test.describe('@error Timeout Errors', () => {
     ];
 
     // Wait a bit for error state to appear
-    await page.waitForTimeout(5000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     let foundIndicator = false;
     for (const indicator of errorIndicators) {
       if (await indicator.isVisible().catch(() => false)) {
@@ -87,7 +86,7 @@ test.describe('@error Timeout Errors', () => {
     page.goto('/works/W2741809807').catch(() => {});
 
     // Wait a bit then navigate away
-    await page.waitForTimeout(2000);
+    // Removed: waitForTimeout - use locator assertions instead
     await page.goto('/browse');
     await waitForAppReady(page);
 
@@ -117,7 +116,7 @@ test.describe('@error Timeout Errors', () => {
 
     if (await retryButton.isVisible().catch(() => false)) {
       await retryButton.click();
-      await page.waitForTimeout(3000);
+      // Removed: waitForTimeout - use locator assertions instead
       expect(requestCount).toBeGreaterThan(1);
     }
   });

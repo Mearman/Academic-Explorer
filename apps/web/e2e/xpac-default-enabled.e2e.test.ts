@@ -277,8 +277,7 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Wait a bit for works requests to complete
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter for works requests
     const worksRequests = apiRequests.filter(req =>
       req.url.includes('/works')
@@ -321,8 +320,7 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Wait a bit for works requests to complete
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter for works requests
     const worksRequests = apiRequests.filter(req =>
       req.url.includes('/works')

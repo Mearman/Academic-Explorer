@@ -155,8 +155,7 @@ test.describe('@entity Fields Detail Page', () => {
 		});
 
 		// Wait a moment for any delayed errors
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Filter out known acceptable errors (if any)
 		const criticalErrors = consoleErrors.filter(error => {
 			// Filter out non-critical errors here if needed

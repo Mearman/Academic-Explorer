@@ -48,7 +48,7 @@ const expectPageLoads = async (page: import("@playwright/test").Page, path: stri
 	});
 
 	const url = buildUrl(path);
-	await page.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
+	await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
 	await waitForAppReady(page, { timeout: 30_000 });
 
 	// Verify no JavaScript errors

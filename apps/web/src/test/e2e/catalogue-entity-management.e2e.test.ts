@@ -106,8 +106,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.waitForLoadState("networkidle");
 
     // Wait a bit for catalogue to fully load
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find and click the list card
     const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Removal Test List" }).first();
     await expect(listCard).toBeVisible({ timeout: 10_000 });
@@ -120,8 +119,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="stat-total"]:has-text("2")')).toBeVisible({ timeout: 10_000 });
 
     // Wait longer for entities to load in table (entities are fetched asynchronously from IndexedDB)
-    await page.waitForTimeout(5000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find entity items - wait for either success or clear error message
     const entityItems = page.locator('[data-testid="entity-item"]');
     const noEntitiesMessage = page.locator('text="No entities yet"');
@@ -150,8 +148,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.getByTestId('confirm-remove-entity-button').click();
 
     // Wait for removal to complete
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify entity count decreased
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(1, { timeout: 5000 });
   });
@@ -170,8 +167,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get initial order of entities
     const entities = page.locator('[data-testid="entity-item"]');
     await expect(entities).toHaveCount(2, { timeout: 10_000 });
@@ -206,8 +202,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.mouse.up();
 
     // Wait for reordering to complete
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify entities still present
     await expect(entities).toHaveCount(2);
 
@@ -230,8 +225,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify initial entity count
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
@@ -243,15 +237,13 @@ test.describe("Catalogue Entity Management", () => {
     await searchInput.fill('A5017898742');
 
     // Wait for filtering to apply
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify filtered results (should show only 1 entity)
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(1, { timeout: 5000 });
 
     // Clear search
     await searchInput.clear();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify all entities are shown again
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 5000 });
   });
@@ -270,8 +262,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify entities loaded
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
@@ -292,8 +283,7 @@ test.describe("Catalogue Entity Management", () => {
     await firstEntity.locator('button:has-text("Save")').click();
 
     // Wait for save to complete
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify notes are displayed (not "No notes")
     await expect(firstEntity.locator('text="This is a test note for e2e testing"')).toBeVisible({ timeout: 5000 });
   });
@@ -341,8 +331,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify entities loaded
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
@@ -352,8 +341,7 @@ test.describe("Catalogue Entity Management", () => {
     await selectAllCheckbox.click();
 
     // Wait for bulk action buttons to appear
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find and click "Remove Selected" button
     const bulkRemoveButton = page.locator('[data-testid="bulk-remove-button"]');
     await expect(bulkRemoveButton).toBeVisible({ timeout: 5000 });
@@ -364,8 +352,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('button:has-text("Remove")').last().click();
 
     // Wait for operation to complete
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify all entities were removed - should show "No entities yet" message
     await expect(page.locator('text="No entities yet"')).toBeVisible({ timeout: 5000 });
     await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(0, { timeout: 5000 });
@@ -435,8 +422,7 @@ const addEntityToCatalogue = async (page: Page, entityId: string, entityType: st
   await page.waitForLoadState("networkidle");
 
   // Wait for page to fully load - entity pages can take time to render
-  await page.waitForTimeout(2000);
-
+  // Removed: waitForTimeout - use locator assertions instead
   // Look for "Add to Catalogue" button using the data-testid attribute
   const addToCatalogueButton = page.locator('[data-testid="add-to-catalogue-button"]');
 
@@ -477,7 +463,7 @@ const addEntityToCatalogue = async (page: Page, entityId: string, entityType: st
   await expect(addToListDialog).not.toBeVisible({ timeout: 5000 });
 
   // Give time for the add operation to complete
-  await page.waitForTimeout(1000);
+  // Removed: waitForTimeout - use locator assertions instead
 };
 
 const createListWithMultipleEntities = async (page: Page, listName: string): Promise<void> => {

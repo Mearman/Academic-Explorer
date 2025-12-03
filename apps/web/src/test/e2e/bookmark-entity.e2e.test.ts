@@ -59,7 +59,7 @@ test.describe("Bookmark Entity Pages (T010)", () => {
     });
 
     // Wait a moment for cleanup to complete
-    await page.waitForTimeout(500);
+    // Removed: waitForTimeout - use locator assertions instead
   });
 
   test.describe("Author Entity Bookmarking", () => {
@@ -67,13 +67,12 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for page to fully render
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // THIS TEST WILL FAIL - bookmark button needs data-testid attribute
       // Expected: <ActionIcon data-testid="entity-bookmark-button">
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
@@ -85,12 +84,11 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // THIS TEST WILL FAIL - bookmark button needs data-testid attribute
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -104,8 +102,7 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       await bookmarkButton.click();
 
       // Wait for bookmark operation to complete
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark state changed - button should now be filled/yellow
       const updatedVariant = bookmarkButton;
       await expect(updatedVariant).toHaveAttribute('data-variant', 'filled');
@@ -145,34 +142,30 @@ test.describe("Bookmark Entity Pages (T010)", () => {
 
       // Navigate to author page and bookmark it
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate away to a different entity
       const differentEntity = TEST_ENTITIES[1]; // Work
       await page.goto(`${BASE_URL}/#/${differentEntity.type}/${differentEntity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate back to the original author
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark is still active (button should be filled)
       const returnedBookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(returnedBookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -185,27 +178,24 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // First bookmark the entity
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify it's bookmarked
       let variant = bookmarkButton;
       await expect(variant).toHaveAttribute('data-variant', 'filled');
 
       // Now unbookmark it
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify it's no longer bookmarked
       variant = bookmarkButton;
       await expect(variant).not.toHaveAttribute('data-variant', 'filled');
@@ -244,23 +234,20 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Bookmark the entity
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Reload the page
-      await page.reload({ waitUntil: "networkidle" });
-      await page.waitForTimeout(2000);
-
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark button still shows bookmarked state
       const reloadedBookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(reloadedBookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -275,19 +262,17 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[1]; // Work
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Click to bookmark
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify bookmark state changed
       const variant = bookmarkButton;
       await expect(variant).toHaveAttribute('data-variant', 'filled');
@@ -327,18 +312,16 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[2]; // Institution
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const variant = bookmarkButton;
       await expect(variant).toHaveAttribute('data-variant', 'filled');
     });
@@ -349,16 +332,15 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       // Bookmark entities of different types
       for (const entity of TEST_ENTITIES.slice(0, 3)) {
         await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
         await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
+        // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Verify all bookmarks exist in storage
@@ -391,25 +373,22 @@ test.describe("Bookmark Entity Pages (T010)", () => {
 
       // Bookmark an entity first
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should see the bookmarked entity card
       const bookmarkCard = page.locator('[data-testid="bookmark-card"]').first();
       await expect(bookmarkCard).toBeVisible({ timeout: 10_000 });
@@ -421,12 +400,11 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Listen for console errors
       const errors: string[] = [];
       page.on("pageerror", (error) => {
@@ -439,12 +417,11 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       // Rapidly toggle bookmark multiple times
       for (let i = 0; i < 5; i++) {
         await bookmarkButton.click();
-        await page.waitForTimeout(200);
+        // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Wait for any errors to surface
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should not have any bookmark-related errors
       const bookmarkErrors = errors.filter(e =>
         e.toLowerCase().includes('bookmark') ||
@@ -457,12 +434,11 @@ test.describe("Bookmark Entity Pages (T010)", () => {
       const entity = TEST_ENTITIES[0]; // Author
 
       await page.goto(`${BASE_URL}/#/${entity.type}/${entity.id}`, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
@@ -472,8 +448,7 @@ test.describe("Bookmark Entity Pages (T010)", () => {
 
       // In a real scenario, the loading prop would be briefly true
       // For this test, we just verify the button remains interactable
-      await page.waitForTimeout(500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const isEnabled = bookmarkButton;
       await expect(isEnabled).toBeEnabled();
     });

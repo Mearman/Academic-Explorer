@@ -24,11 +24,10 @@ test.describe('Pretty URL Display', () => {
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('main', { timeout: 40_000 });
+    await page.locator('main').waitFor({ timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the current URL
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
@@ -53,11 +52,10 @@ test.describe('Pretty URL Display', () => {
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('main', { timeout: 40_000 });
+    await page.locator('main').waitFor({ timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 
@@ -78,11 +76,10 @@ test.describe('Pretty URL Display', () => {
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('main', { timeout: 40_000 });
+    await page.locator('main').waitFor({ timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 
@@ -103,11 +100,10 @@ test.describe('Pretty URL Display', () => {
     console.log(`Navigating to encoded URL with query params: ${testUrl}`);
 
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('main', { timeout: 40_000 });
+    await page.locator('main').waitFor({ timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 
@@ -131,11 +127,10 @@ test.describe('Pretty URL Display', () => {
     console.log(`Navigating to already-decoded URL: ${testUrl}`);
 
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('main', { timeout: 40_000 });
+    await page.locator('main').waitFor({ timeout: 40_000 });
 
     // Wait for URL processing to complete (may be encoded then decoded by hook)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 
@@ -153,10 +148,9 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to OpenAlex ID URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 

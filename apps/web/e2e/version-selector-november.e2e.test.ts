@@ -37,8 +37,7 @@ test.describe("Data Version Selector November Availability", () => {
 
     // Navigate to settings by clicking the settings icon or link
     // First, wait for the page to stabilize
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Open settings menu - look for settings button/link in the layout
     // The settings are typically accessible from the main navigation
     // Try to find and click the settings button
@@ -52,8 +51,7 @@ test.describe("Data Version Selector November Availability", () => {
     }
 
     // Wait for the data version selector to appear
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify that the data version selector is visible
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
@@ -70,8 +68,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Try to navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -81,8 +78,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
@@ -91,8 +87,7 @@ test.describe("Data Version Selector November Availability", () => {
     await selector.click();
 
     // Wait for dropdown options to appear
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify all three options are present
     const options = page.locator('[data-testid="data-version-selector"] >> role=option');
     const optionCount = await options.count();
@@ -138,8 +133,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -149,8 +143,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for the description text
     const descriptionText = page.locator(
       '[data-testid="data-version-selector-description"]',
@@ -186,8 +179,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -197,16 +189,14 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
 
     // Click the selector to open dropdown
     await selector.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Select "Version 1 (legacy)" option
     const version1Option = page.locator(
       'text="Version 1 (legacy)"',
@@ -214,8 +204,7 @@ test.describe("Data Version Selector November Availability", () => {
     await version1Option.click();
 
     // Wait for the selection to register
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify the value has changed
     const selectedValue = await selector.inputValue();
     expect(selectedValue).toContain("1");
@@ -224,15 +213,13 @@ test.describe("Data Version Selector November Availability", () => {
 
     // Now change it back to Auto
     await selector.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const autoOption = page.locator(
       'text="Auto (v2 default)"',
     ).first();
     await autoOption.click();
 
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify it changed to Auto
     const autoValue = selector;
     await expect(autoValue).toHaveValue();
@@ -249,8 +236,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -260,24 +246,21 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
 
     // Change the version
     await selector.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const version2Option = page.locator(
       'text="Version 2 (current)"',
     ).first();
     await version2Option.click();
 
     // Wait for notification to appear
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for success notification or confirmation message
     const notification = page.locator(
       ':text("Data Version Updated"), :text("Data version")',
@@ -304,8 +287,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -315,8 +297,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // The data version selector should NOT be visible in December
     const selector = page.locator('[data-testid="data-version-selector"]');
     const isVisible = await selector.isVisible().catch(() => false);
@@ -332,8 +313,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -343,8 +323,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
@@ -384,8 +363,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -395,19 +373,16 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Select Version 1
     const selector = page.locator('[data-testid="data-version-selector"]');
     await selector.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const version1Option = page.locator(
       'text="Version 1 (legacy)"',
     ).first();
     await version1Option.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const selectedValue1 = await selector.inputValue();
     expect(selectedValue1).toContain("1");
 
@@ -416,8 +391,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate away (back to home)
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate back to settings
     const settingsButton2 = page.locator('[data-testid="settings-button"]');
     if (await settingsButton2.isVisible()) {
@@ -427,8 +401,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify the selection is still Version 1
     const selector2 = page.locator('[data-testid="data-version-selector"]');
     const selectedValue2 = await selector2.inputValue();
@@ -446,8 +419,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -457,8 +429,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get the data version selector
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();
@@ -497,8 +468,7 @@ test.describe("Data Version Selector November Availability", () => {
       // Navigate to home then settings
       await page.goto("/#/", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
-      await page.waitForTimeout(1500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Navigate to settings
       const settingsButton = page.locator('[data-testid="settings-button"]');
       if (await settingsButton.isVisible()) {
@@ -508,8 +478,7 @@ test.describe("Data Version Selector November Availability", () => {
         await page.waitForLoadState("load");
       }
 
-      await page.waitForTimeout(1000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify selector is visible
       const selector = page.locator('[data-testid="data-version-selector"]');
       const isVisible = await selector.isVisible().catch(() => false);
@@ -531,8 +500,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Navigate to home then settings
     await page.goto("/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await page.waitForTimeout(1500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
     const settingsButton = page.locator('[data-testid="settings-button"]');
     if (await settingsButton.isVisible()) {
@@ -542,8 +510,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.waitForLoadState("load");
     }
 
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify selector is visible on mobile
     const selector = page.locator('[data-testid="data-version-selector"]');
     await expect(selector).toBeVisible();

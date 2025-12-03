@@ -32,12 +32,11 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing OpenAlex work routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
 
     // Wait for content to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier" page
@@ -77,10 +76,9 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ORCID URL routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier"
@@ -122,10 +120,9 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ROR URL routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier"
@@ -164,10 +161,9 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ISSN routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier"
@@ -205,10 +201,9 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing URL-encoded DOI: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier"
@@ -248,10 +243,9 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing OpenAlex ID compatibility: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
-    await page.waitForSelector('main', { timeout: 20_000 });
-    await page.waitForTimeout(2000);
-
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('main').waitFor({ timeout: 20_000 });
+    // Removed: waitForTimeout - use locator assertions instead
     const pageContent = await page.locator('body').textContent() || '';
 
     // Verify NOT stuck on "Resolving identifier"

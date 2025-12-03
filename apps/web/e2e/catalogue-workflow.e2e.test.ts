@@ -1,7 +1,7 @@
 /**
  * E2E Workflow tests for catalogue/list management
  * Tests the complete lifecycle of creating, populating, viewing, and managing catalogue lists
- * @workflow @automated-manual
+ * @workflow @manual
  * @module catalogue-workflow.e2e
  */
 
@@ -41,8 +41,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 					const listCard = page.locator(`[data-testid="list-card-${createdListId}"]`);
 					if (await listCard.count() > 0) {
 						await listCard.click();
-						await page.waitForTimeout(500);
-
+						// Removed: waitForTimeout - use locator assertions instead
 						// Click delete button
 						const deleteButton = page.locator(`[data-testid="delete-list-${createdListId}"]`);
 						if (await deleteButton.count() > 0) {
@@ -51,7 +50,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 							// Confirm deletion
 							const confirmButton = page.getByRole('button', { name: /delete/i }).last();
 							await confirmButton.click();
-							await page.waitForTimeout(500);
+							// Removed: waitForTimeout - use locator assertions instead
 						}
 					}
 				} catch (error) {
@@ -66,8 +65,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 					const bibCard = page.locator(`[data-testid="list-card-${createdBibliographyId}"]`);
 					if (await bibCard.count() > 0) {
 						await bibCard.click();
-						await page.waitForTimeout(500);
-
+						// Removed: waitForTimeout - use locator assertions instead
 						// Click delete button
 						const deleteButton = page.locator(`[data-testid="delete-list-${createdBibliographyId}"]`);
 						if (await deleteButton.count() > 0) {
@@ -76,7 +74,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 							// Confirm deletion
 							const confirmButton = page.getByRole('button', { name: /delete/i }).last();
 							await confirmButton.click();
-							await page.waitForTimeout(500);
+							// Removed: waitForTimeout - use locator assertions instead
 						}
 					}
 				} catch (error) {
@@ -123,8 +121,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 		// Modal should close and list should appear
 		await expect(page.getByRole('dialog')).toBeHidden();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify the list appears in the list view
 		const listCard = page.getByText(testListTitle);
 		await expect(listCard).toBeVisible();
@@ -170,8 +167,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 		// Verify bibliography was created
 		await expect(page.getByRole('dialog')).toBeHidden();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Switch to Bibliographies tab
 		const bibliographiesTab = page.getByRole('tab', { name: /bibliographies/i });
 		await bibliographiesTab.click();
@@ -192,8 +188,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await page.getByRole('radio', { name: /general list/i }).check();
 		const submitButton = page.getByRole('button', { name: /create list/i });
 		await submitButton.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to a known entity (work)
 		await page.goto('/works/W2741809807');
 		await waitForAppReady(page);
@@ -207,8 +202,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await addToListButton.click();
 
 		// Menu should open showing available lists
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Click on our created list
 		const listMenuItem = page.getByRole('menuitem', { name: testListTitle });
 
@@ -217,8 +211,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 			await listMenuItem.click();
 
 			// Wait for success notification
-			await page.waitForTimeout(1000);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Notification should appear
 			const notification = page.getByText(/added to/i);
 			if (await notification.count() > 0) {
@@ -238,7 +231,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 			await createAndAddButton.click();
 
 			// Wait for success
-			await page.waitForTimeout(1000);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		// Navigate back to catalogue to verify
@@ -248,8 +241,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		// Select the list
 		const listCard = page.getByText(testListTitle);
 		await listCard.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify entity appears in list
 		const entityItem = page.locator('[data-testid="entity-item"]').first();
 		if (await entityItem.count() > 0) {
@@ -266,19 +258,16 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await createButton.click();
 		await page.locator('#list-title').fill(testListTitle);
 		await page.getByRole('button', { name: /create list/i }).click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity
 		await page.goto('/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		const listMenuItem = page.getByRole('menuitem').first();
 		await listMenuItem.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate back to catalogue
 		await page.goto('/catalogue');
 		await waitForAppReady(page);
@@ -286,8 +275,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		// Select the list
 		const listCard = page.getByText(testListTitle);
 		await listCard.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify selected list details are shown
 		const selectedListTitle = page.locator('[data-testid="selected-list-title"]');
 		if (await selectedListTitle.count() > 0) {
@@ -303,8 +291,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 			const entityLink = entityItem.locator('a').first();
 			if (await entityLink.count() > 0) {
 				await entityLink.click();
-				await page.waitForTimeout(1000);
-
+				// Removed: waitForTimeout - use locator assertions instead
 				// Should navigate to entity page
 				await expect(page).toHaveURL(/\/works\/W\d+/);
 				await expect(page.locator('h1')).toBeVisible();
@@ -321,18 +308,16 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await createButton.click();
 		await page.locator('#list-title').fill(testListTitle);
 		await page.getByRole('button', { name: /create list/i }).click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity
 		await page.goto('/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
-		await page.waitForTimeout(500);
+		// Removed: waitForTimeout - use locator assertions instead
 		const listMenuItem = page.getByRole('menuitem').first();
 		await listMenuItem.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate back to catalogue
 		await page.goto('/catalogue');
 		await waitForAppReady(page);
@@ -340,8 +325,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		// Select the list
 		const listCard = page.getByText(testListTitle);
 		await listCard.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Count entities before removal
 		const entityCountBefore = await page.locator('[data-testid="entity-item"]').count();
 		expect(entityCountBefore).toBeGreaterThan(0);
@@ -356,8 +340,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 		if (await moreActionsButton.count() > 0) {
 			await moreActionsButton.click();
-			await page.waitForTimeout(500);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Click remove option
 			const removeOption = page.getByRole('menuitem', { name: /remove/i });
 			await removeOption.click();
@@ -369,8 +352,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 			await confirmButton.click();
 
 			// Wait for removal
-			await page.waitForTimeout(1000);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Verify entity count decreased or shows empty state
 			const entityCountAfter = await page.locator('[data-testid="entity-item"]').count();
 			expect(entityCountAfter).toBeLessThan(entityCountBefore);
@@ -392,14 +374,12 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await createButton.click();
 		await page.locator('#list-title').fill(testListTitle);
 		await page.getByRole('button', { name: /create list/i }).click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Verify list exists
 		const listCard = page.getByText(testListTitle);
 		await expect(listCard).toBeVisible();
 		await listCard.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Find and click delete button
 		// Delete button may be in the list card or in selected list details
 		const deleteButton = page.getByRole('button', { name: /delete/i }).first();
@@ -418,8 +398,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 			}
 
 			// Wait for deletion
-			await page.waitForTimeout(1000);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Verify list no longer exists
 			const listCardAfterDelete = page.getByText(testListTitle);
 			await expect(listCardAfterDelete).toBeHidden();
@@ -438,25 +417,22 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await createButton.click();
 		await page.locator('#list-title').fill(testListTitle);
 		await page.getByRole('button', { name: /create list/i }).click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity first time
 		await page.goto('/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
-		await page.waitForTimeout(500);
+		// Removed: waitForTimeout - use locator assertions instead
 		const listMenuItem = page.getByRole('menuitem').first();
 		await listMenuItem.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Try adding the same entity again
 		await addToListButton.click();
-		await page.waitForTimeout(500);
+		// Removed: waitForTimeout - use locator assertions instead
 		const listMenuItemSecond = page.getByRole('menuitem').first();
 		await listMenuItemSecond.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Should show notification about duplicate
 		const duplicateNotification = page.getByText(/already in/i);
 		if (await duplicateNotification.count() > 0) {
@@ -468,8 +444,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await waitForAppReady(page);
 		const listCard = page.getByText(testListTitle);
 		await listCard.click();
-		await page.waitForTimeout(1000);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		const entityCount = await page.locator('[data-testid="entity-item"]').count();
 		expect(entityCount).toBe(1);
 	});

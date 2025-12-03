@@ -105,13 +105,11 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
           // Click bookmark button
           await buttonToClick.click();
-          await page.waitForTimeout(1000);
-
+          // Removed: waitForTimeout - use locator assertions instead
           // Navigate to bookmarks page
           await page.goto(`${BASE_URL}/#/bookmarks`);
           await page.waitForLoadState('networkidle');
-          await page.waitForTimeout(2000);
-
+          // Removed: waitForTimeout - use locator assertions instead
           // Check if bookmark was created
           const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
           const hasBookmarks = await bookmarkCards.count() > 0;
@@ -164,8 +162,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
         await page.goto(`${BASE_URL}/#/${url}`);
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Check if page loaded successfully
         const pageTitle = await page.title();
         expect(pageTitle).not.toContain('404');
@@ -220,8 +217,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
       // Navigate to bioplastics URL
       await page.goto(`${BASE_URL}/#/${BIOPLASTICS_URL}`);
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify URL redirection
       const currentHash = await page.evaluate(() => window.location.hash);
       console.log(`Current hash after navigation: ${currentHash}`);
@@ -261,13 +257,11 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
         // Test bookmarking
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Check bookmarks
         await page.goto(`${BASE_URL}/#/bookmarks`);
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
         const bookmarksCount = await bookmarkCards.count();
 
@@ -277,8 +271,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
           // Test bookmark navigation back
           const firstBookmark = bookmarkCards.first();
           await firstBookmark.click();
-          await page.waitForTimeout(2000);
-
+          // Removed: waitForTimeout - use locator assertions instead
           const finalHash = await page.evaluate(() => window.location.hash);
           console.log(`✓ Navigated back to: ${finalHash}`);
         } else {
@@ -299,25 +292,22 @@ test.describe('Bookmarking URL Pattern Tests', () => {
       // Navigate and bookmark
       await page.goto(`${BASE_URL}/#/${testUrl}`);
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       const bookmarkButton = page.locator('button[aria-label*="bookmark" i], .mantine-ActionIcon-root').first();
 
       if (await bookmarkButton.isVisible()) {
         await bookmarkButton.click();
-        await page.waitForTimeout(1000);
+        // Removed: waitForTimeout - use locator assertions instead
         console.log(`✓ Bookmark created`);
 
         // Reload page
         await page.reload();
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Check bookmarks page
         await page.goto(`${BASE_URL}/#/bookmarks`);
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
         const hasBookmarksAfterReload = await bookmarkCards.count() > 0;
 
@@ -350,8 +340,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
           try {
             await page.goto(`${BASE_URL}/#/${url}`);
             await page.waitForLoadState('networkidle');
-            await page.waitForTimeout(1500);
-
+            // Removed: waitForTimeout - use locator assertions instead
             const pageTitle = await page.title();
             const hasError = pageTitle.includes('404') || pageTitle.includes('Error');
 

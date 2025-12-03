@@ -4,7 +4,7 @@
  * Automated tests promoting manual data completeness verification.
  * Tests that the styled view displays ALL data from API responses.
  * Compares field count and content between direct API response and rendered page.
- * @automated-manual
+ * @manual
  */
 
 import { expect,test } from '@playwright/test';
@@ -16,7 +16,7 @@ import {
 
 const BASE_URL = process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173';
 
-test.describe('Data Completeness - Styled View vs API @automated-manual', () => {
+test.describe('Data Completeness - Styled View vs API @manual', () => {
 	test.setTimeout(60_000);
 
 	test('works search - bioplastics filter should display all API data', async ({
@@ -50,13 +50,13 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 			await waitForNoLoading(page, { timeout: 30_000 });
 
 			// Wait for main content to be visible
-			await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
+			await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 			const mainText = page.locator('main');
-			await expect(mainText).toHaveText();
+			const mainTextContent = await mainText.textContent();
 
 			// Verify first result is present
-			expect(mainText).toContain(firstResult.display_name);
+			expect(mainTextContent).toContain(firstResult.display_name);
 
 			// Verify we have similar number of results displayed
 			const resultCards = await page
@@ -66,11 +66,11 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 
 			// Check for key metadata fields in the first result
 			if (firstResult.publication_year) {
-				expect(mainText).toContain(String(firstResult.publication_year));
+				expect(mainTextContent).toContain(String(firstResult.publication_year));
 			}
 
 			// Verify pagination info is shown
-			expect(mainText).toMatch(/items|results|works/i);
+			expect(mainTextContent).toMatch(/items|results|works/i);
 		}
 	});
 
@@ -98,29 +98,29 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
+		await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 		const mainText = page.locator('main');
-		await expect(mainText).toHaveText();
+		const mainTextContent2 = await mainText.textContent();
 
 		// Verify essential fields are displayed
-		expect(mainText).toContain(apiData.display_name);
+		expect(mainTextContent2).toContain(apiData.display_name);
 
 		if (apiData.orcid) {
-			expect(mainText).toContain('ORCID');
+			expect(mainTextContent2).toContain('ORCID');
 		}
 
 		if (apiData.works_count) {
-			expect(mainText).toContain('works');
+			expect(mainTextContent2).toContain('works');
 		}
 
 		if (apiData.cited_by_count) {
-			expect(mainText).toContain('citations');
+			expect(mainTextContent2).toContain('citations');
 		}
 
 		// Check for last known institution if present
 		if (apiData.last_known_institution?.display_name) {
-			expect(mainText).toContain(
+			expect(mainTextContent2).toContain(
 				apiData.last_known_institution.display_name
 			);
 		}
@@ -152,7 +152,7 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
+		await page.locator('main', { timeout: 15_000, state: 'visible' }).waitFor();
 
 		const mainText = page.locator('main');
 		await expect(mainText).toHaveText();
@@ -196,7 +196,7 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
+		await page.locator('main', { timeout: 15_000, state: 'visible' }).waitFor();
 
 		const mainText = page.locator('main');
 		await expect(mainText).toHaveText();

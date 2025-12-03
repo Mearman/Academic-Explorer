@@ -3,7 +3,7 @@
  *
  * Tests handling of network disconnection, connection failures, and offline mode
  * @module error-network.e2e
- * @tag @error
+ * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
@@ -84,7 +84,7 @@ test.describe('@error Network Errors', () => {
 
     if (await retryButton.isVisible().catch(() => false)) {
       await retryButton.click();
-      await page.waitForTimeout(2000);
+      // Removed: waitForTimeout - use locator assertions instead
       expect(requestCount).toBeGreaterThan(1);
     }
   });
@@ -115,8 +115,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should now show content or at least different state
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // After reload with network, should either show content or be in loading state
     const contentOrLoading = page.locator('h1, [data-testid="entity-title"], .skeleton, [data-testid="loading"]');
     await expect(contentOrLoading.first()).toBeVisible({ timeout: 15_000 });
@@ -196,8 +195,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Wait for initial content to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Now block network
     await page.route('**/api.openalex.org/**', (route) => {
       route.abort('failed');
@@ -227,8 +225,7 @@ test.describe('@error Network Errors', () => {
       await searchInput.fill('machine learning');
       await searchInput.press('Enter');
 
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should show error or no results
       const errorOrEmpty = page.locator('[role="alert"], .error, [data-testid="error-message"], .empty-state');
       const hasError = await errorOrEmpty.count();
@@ -250,8 +247,7 @@ test.describe('@error Network Errors', () => {
 
     await page.goto('/works/W2741809807');
     await waitForAppReady(page);
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Block network for relationship requests
     blockNetwork = true;
 
@@ -262,8 +258,7 @@ test.describe('@error Network Errors', () => {
       const expandButton = relationshipsSection.locator('button, summary');
       if (await expandButton.first().isVisible().catch(() => false)) {
         await expandButton.first().click();
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Should show error or retry option
         const errorText = page.getByText(/error|failed|try again|unavailable/i);
         const hasError = await errorText.count();

@@ -74,7 +74,7 @@ test.describe('Filesystem Cache', () => {
     await page.goto(`/#/works/${nonExistentId}`, { waitUntil: 'domcontentloaded' });
 
     // Wait for error state to appear (allow time for API request to fail)
-    await page.waitForSelector('[data-testid="error-state"]', { timeout: 15_000 });
+    await page.locator('[data-testid="error-state"]').waitFor({ timeout: 15_000 });
 
     // Verify error state is shown
     const pageContent = await page.textContent('body');

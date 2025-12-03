@@ -7,14 +7,14 @@
  * - Sidebars scroll independently
  * - Scroll contexts are isolated
  * - Keyboard navigation works correctly
- * @automated-manual Promoted from manual test suite
+ * @manual Promoted from manual test suite
  */
 
 import { expect,test } from "@playwright/test";
 
 import { waitForAppReady, waitForNoLoading } from "@/test/helpers/app-ready";
 
-test.describe("Layout Scrolling Behavior @automated-manual", () => {
+test.describe("Layout Scrolling Behavior @manual", () => {
   test.describe("User Story 1: Seamless Content Navigation", () => {
     /**
      * T006: Main content area should have no nested scrollbar

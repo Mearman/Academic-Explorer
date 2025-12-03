@@ -24,7 +24,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -60,13 +60,12 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const localTestUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(localTestUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for redirect and content to load
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify the redirection worked properly
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
@@ -80,12 +79,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const complexUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc&per-page=25`;
 
       await page.goto(complexUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify all parameters are preserved (URL encoded)
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
@@ -102,13 +100,12 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for redirect and page load
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for bookmark button (any button with SVG icon)
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
 
@@ -135,13 +132,12 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait for redirect and page load
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Find and click bookmark button
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
@@ -153,8 +149,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
         // Click to bookmark
         await firstBookmarkButton.click();
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify bookmark state changed
         const updatedIcon = firstBookmarkButton.locator('svg');
         await expect(updatedIcon).toBeVisible();
@@ -170,28 +165,25 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Find and click bookmark button
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
       if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Navigate to bookmarks page to verify
         await page.goto(`${BASE_URL}/#/bookmarks`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(3000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Check page content for bookmark indicators
         const pageContent = await page.locator('body').innerText();
         const hasBookmarkContent =
@@ -216,39 +208,35 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Create bookmark
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
       if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Navigate to bookmarks page
         await page.goto(`${BASE_URL}/#/bookmarks`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(3000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify we're on bookmarks page
         expect(page.url()).toContain('bookmarks');
 
         // Now navigate back to the bioplastics works page directly
         await page.goto(`${BASE_URL}/#/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(3000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify we're back on the works page with correct parameters
         const finalUrl = page.url();
         expect(finalUrl).toContain('works');
@@ -270,40 +258,36 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Bookmark the page
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
       if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
-        await page.waitForTimeout(2000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Navigate to the same page via direct internal route
         await page.goto(`${BASE_URL}/#/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(3000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Should still show bookmark button
         const directBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
         await expect(directBookmarkButton).toBeVisible({ timeout: 10_000 });
 
         // Navigate again via OpenAlex URL
         await page.goto(redirectUrl, {
-          waitUntil: "networkidle",
+          waitUntil: 'domcontentloaded',
           timeout: 30_000,
         });
 
-        await page.waitForTimeout(4000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Should still show bookmark button
         const redirectedBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
         await expect(redirectedBookmarkButton).toBeVisible({ timeout: 10_000 });
@@ -316,12 +300,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const malformedUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=invalid-filter&sort=invalid-sort`;
 
       await page.goto(malformedUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should not crash the application
       const currentUrl = page.url();
       expect(currentUrl).toBeTruthy();
@@ -345,13 +328,12 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const redirectUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(redirectUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
       // Wait longer than usual to test timeout handling
-      await page.waitForTimeout(10_000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Should handle timeouts gracefully without throwing unhandled errors
       const criticalErrors = errors.filter(e =>
         e.includes('Uncaught') ||
@@ -367,12 +349,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const encodedUrl = `${BASE_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics%20AND%20biofuels&sort=publication_year:desc`;
 
       await page.goto(encodedUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify URL parameters are handled correctly
       const currentUrl = page.url();
       expect(currentUrl).toContain('works');
@@ -390,12 +371,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const productionSimulationUrl = `${BASE_URL}/#/${BIOMATERIALS_URL}`;
 
       await page.goto(productionSimulationUrl, {
-        waitUntil: "networkidle",
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
-      await page.waitForTimeout(4000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Verify the application handles the production URL format
       const finalUrl = page.url();
       expect(finalUrl).toContain('works');

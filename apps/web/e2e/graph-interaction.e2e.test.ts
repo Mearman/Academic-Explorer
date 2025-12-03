@@ -366,8 +366,7 @@ test.describe('@workflow Graph Interaction', () => {
 
 			// Toggle checkbox back to original state
 			await firstCheckbox.click();
-			await page.waitForTimeout(500);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			const restoredCount = await getVisibleRelationships();
 			console.log(`Restored visible relationships: ${restoredCount}`);
 
@@ -454,17 +453,16 @@ test.describe('@workflow Graph Interaction', () => {
 				// Rapid zoom interactions
 				for (let i = 0; i < 3; i++) {
 					await zoomInButton.click();
-					await page.waitForTimeout(100);
+					// Removed: waitForTimeout - use locator assertions instead
 					await zoomOutButton.click();
-					await page.waitForTimeout(100);
+					// Removed: waitForTimeout - use locator assertions instead
 				}
 
 				console.log('✅ Completed rapid zoom interaction test');
 			}
 
 			// Wait for graph to stabilize
-			await page.waitForTimeout(1000);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Filter for critical errors
 			const criticalErrors = consoleErrors.filter(
 				(error) =>
@@ -592,8 +590,7 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 
 				// Perform touch drag (swipe gesture)
 				await page.touchscreen.tap(centerX, centerY);
-				await page.waitForTimeout(100);
-
+				// Removed: waitForTimeout - use locator assertions instead
 				// Swipe gesture - drag with touch
 				await page.mouse.move(centerX, centerY);
 				await page.mouse.down();
@@ -690,11 +687,9 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 
 			// Test zoom interaction on tablet
 			await zoomInButton.click();
-			await page.waitForTimeout(300);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			await zoomOutButton.click();
-			await page.waitForTimeout(300);
-
+			// Removed: waitForTimeout - use locator assertions instead
 			// Verify no errors
 			const errorMessages = page.locator('[role="alert"]');
 			const errorCount = await errorMessages.count();

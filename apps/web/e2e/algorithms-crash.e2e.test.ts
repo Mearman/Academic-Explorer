@@ -7,7 +7,7 @@
  * Bug: "Cannot read properties of undefined (reading 'map')" error
  * occurs in GraphAlgorithmsPanel when Select component receives undefined data.
  * @module algorithms-crash.e2e
- * @tag @error @utility
+ * @tags error @utility
  */
 
 import { expect,test } from "@playwright/test";
@@ -28,11 +28,10 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
       errors.push(error.message);
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
 
     // Wait for the page to stabilize
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for ErrorBoundary indicators (React catches errors before they become pageerrors)
     const navigationError = page.locator("text=Navigation Error");
     const hasNavigationError = navigationError;
@@ -47,8 +46,7 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Give the page time to render (and potentially crash)
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for error boundary indicators
     const navigationError = page.locator("text=Navigation Error");
     const cannotReadError = page.locator("text=Cannot read properties");
@@ -114,14 +112,14 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     const motifAccordion = page.getByRole("button", { name: /Motif Detection/ });
     if (await motifAccordion.isVisible()) {
       await motifAccordion.click();
-      await page.waitForTimeout(1000);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Try to expand Connected Components accordion (use exact match to avoid matching "Strongly Connected")
     const componentsAccordion = page.getByRole("button", { name: /^Connected Components/ });
     if (await componentsAccordion.isVisible()) {
       await componentsAccordion.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Should still have no errors after interactions

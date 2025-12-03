@@ -29,8 +29,8 @@ test.describe('Sample URLs - All Entity Types', () => {
     test(`${desc} should load`, async ({ page }) => {
       const appUrl = toAppUrl(url);
       
-      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 20_000 });
-      await page.waitForSelector('main', { timeout: 10_000 });
+      await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+      await page.locator('main').waitFor({ timeout: 10_000 });
       
       const mainText = await page.locator('main').textContent();
       

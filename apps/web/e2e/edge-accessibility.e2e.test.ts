@@ -20,8 +20,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
 
     // Wait for graph to load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Run axe accessibility audit
     const accessibilityScanResults = await new AxeBuilder({ page })
       .include('[data-testid="graph-container"]') // Only scan graph area if container exists
@@ -32,8 +31,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should provide data attributes for edge direction', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for outbound edges with data-direction attribute
     const outboundEdges = page.locator('[data-direction="outbound"]');
     const outboundCount = await outboundEdges.count();
@@ -48,8 +46,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should provide data attributes for relationship types', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for edges with data-relation-type attribute
     const edgesWithType = page.locator('[data-relation-type]');
     const count = await edgesWithType.count();
@@ -66,8 +63,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should distinguish outbound vs inbound edges without color', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify outbound edges have solid line style (no strokeDasharray or strokeDasharray is empty)
     const outboundEdges = page.locator('[data-direction="outbound"]');
     const outboundCount = await outboundEdges.count();
@@ -105,8 +101,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should use distinct colors for different relationship types', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get colors for different relationship types
     const authorshipEdges = page.locator('[data-relation-type="AUTHORSHIP"]');
     const referenceEdges = page.locator('[data-relation-type="REFERENCE"]');
@@ -129,8 +124,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should provide marker indicators for edge direction', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for outbound edges with solid arrow markers
     const outboundEdges = page.locator('[data-direction="outbound"]');
     const outboundCount = await outboundEdges.count();
@@ -160,8 +154,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should maintain visibility at different zoom levels', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check edge visibility at default zoom
     const edgesAtDefaultZoom = page.locator('[data-direction]');
     const defaultCount = await edgesAtDefaultZoom.count();
@@ -170,8 +163,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
     // Simulate zoom in (if graph supports it)
     // await page.keyboard.press('Control++');
-    // await page.waitForTimeout(500);
-
+    // // Removed: waitForTimeout - use locator assertions instead
     // Edges should still be visible
     const edgesAfterZoom = page.locator('[data-direction]');
     const zoomCount = await edgesAfterZoom.count();
@@ -181,8 +173,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should provide sufficient color contrast for graphical objects', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Get edge colors
     const edges = page.locator('[data-direction]');
     const count = await edges.count();
@@ -212,8 +203,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
   test('should combine all three visual channels for full accessibility', async ({ page }) => {
     await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find an edge and verify it has all three visual channels
     const edges = page.locator('[data-direction][data-relation-type]');
     const count = await edges.count();

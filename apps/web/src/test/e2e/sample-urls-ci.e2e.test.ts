@@ -63,7 +63,7 @@ const getTimeout = (): number => process.env.CI === 'true' ? 30_000 : 10_000;
 const waitForContent = async (page: any, timeout: number): Promise<void> => {
   try {
     // Primary selector - main content area
-    await page.waitForSelector('main', { timeout });
+    await page.locator('main', { timeout }).waitFor();
   } catch (error) {
     // Fallback selectors for CI environments with slower loading
     const fallbackSelectors = [
@@ -75,7 +75,7 @@ const waitForContent = async (page: any, timeout: number): Promise<void> => {
 
     for (const selector of fallbackSelectors) {
       try {
-        await page.waitForSelector(selector, { timeout: 5000 });
+        await page.locator(selector).waitFor({ timeout: 5000 });
         return; // Found a fallback selector
       } catch {
         // Try next fallback
@@ -103,7 +103,7 @@ test.describe('Sample URLs - CI Testing', () => {
       const timeout = getTimeout();
 
       // Navigate to the app URL
-      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+      await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
 
       // Wait for content with dynamic timeout and fallback selectors
       await waitForContent(page, timeout);
@@ -115,11 +115,11 @@ test.describe('Sample URLs - CI Testing', () => {
       // Get content selector that might have fallen back
       const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
       const mainContent = page.locator(contentSelector);
-      await expect(mainContent).toHaveText();
+      const textContent = await mainContent.textContent();
 
       // Some pages may have minimal content due to API rate limiting or sparse data
       // Just verify we have some content (more lenient check)
-      expect(mainContent!.trim().length).toBeGreaterThan(10);
+      expect(textContent?.trim().length).toBeGreaterThan(10);
 
       // For detail pages, verify entity data is shown
       if (isEntityDetail(apiUrl)) {
@@ -144,38 +144,38 @@ test.describe('Data Completeness Verification', () => {
   test('Author page should display entity data', async ({ page }) => {
     const appUrl = toAppUrl('https://api.openalex.org/authors/A5017898742');
 
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Verify page loaded and has content
     const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
     const mainContent = page.locator(contentSelector);
-    await expect(mainContent).toHaveText();
+    const textContent1 = await mainContent.textContent();
 
     // Verify no error state
     const errorHeading = await page.locator('h1:has-text("Error")').count();
     expect(errorHeading).toBe(0);
 
     // Verify we have meaningful content (author name should be visible)
-    expect(mainContent).toContain('Mearman');
+    expect(textContent1).toContain('Mearman');
   });
 
   test('Works search page should display results', async ({ page }) => {
     const appUrl = toAppUrl('https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc');
 
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Verify page loaded and has content
     const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
     const mainContent = page.locator(contentSelector);
-    await expect(mainContent).toHaveText();
+    const textContent2 = await mainContent.textContent();
 
     // Verify no error state
     const errorHeading = await page.locator('h1:has-text("Error")').count();
     expect(errorHeading).toBe(0);
 
     // Verify we have some meaningful content (more lenient check)
-    expect(mainContent!.trim().length).toBeGreaterThan(20);
+    expect(textContent2?.trim().length).toBeGreaterThan(20);
   });
 });

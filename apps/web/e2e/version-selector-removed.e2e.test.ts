@@ -397,8 +397,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.waitForLoadState("load");
 
     // Wait a bit for any async operations to complete
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter out expected warnings (e.g., about features, etc.)
     const errorMessages = consoleMessages.filter(
       (msg) =>

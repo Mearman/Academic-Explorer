@@ -84,10 +84,10 @@ test.describe('Data Consistency - All 276 URLs', () => {
         // const entityType = getEntityType(apiUrl);
 
         // Navigate to the app URL
-        await page.goto(appUrl, { waitUntil: 'networkidle' });
+        await page.goto(appUrl, { waitUntil: 'domcontentloaded' });
 
         // Wait for content to load (look for main content area)
-        await page.waitForSelector('main', { timeout: 10_000 });
+        await page.locator('main').waitFor({ timeout: 10_000 });
 
         // Wait for data to actually load - look for loading state to disappear
         // The page might show a loading skeleton or spinner initially
@@ -171,10 +171,10 @@ test.describe('Data Consistency - All 276 URLs', () => {
             const appUrl = toAppUrl(apiUrl);
 
             // Navigate to the app URL
-            await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+            await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
 
             // Wait for main content
-            await page.waitForSelector('main', { timeout: 10_000 });
+            await page.locator('main').waitFor({ timeout: 10_000 });
 
             // Verify no error state
             const errorHeading = await page.locator('h1:has-text("Error")').count();
@@ -230,8 +230,8 @@ test.describe('Data Consistency - All 276 URLs', () => {
         const apiData = await response.json();
 
         // Navigate to app
-        await page.goto(appUrl, { waitUntil: 'networkidle' });
-        await page.waitForSelector('main');
+        await page.goto(appUrl, { waitUntil: 'domcontentloaded' });
+        await page.locator('main').waitFor();
 
         // Verify each field is displayed
         for (const field of fields) {

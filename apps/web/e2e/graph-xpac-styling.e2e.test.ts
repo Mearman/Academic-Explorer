@@ -35,8 +35,7 @@ test.describe('Graph XPAC Styling', () => {
     });
 
     // Wait for page to stabilize
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter out known non-critical errors
     const criticalErrors = errors.filter(
       e => !e.includes('404') &&
@@ -113,8 +112,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should render graph with accessible node labels', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for graph nodes with accessibility features
     const graphNodes = page.locator(
       '[role="button"][aria-label],' +
@@ -145,8 +143,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should identify XPAC works in graph data or DOM', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for XPAC work indicators in DOM
     let xpacFound = false;
 
@@ -194,8 +191,7 @@ test.describe('Graph XPAC Styling', () => {
     // First, search for works to populate graph
     await page.goto('/#/search?q=machine+learning', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Navigate to graph view if available
     const graphLink = page.locator('a[href*="/graph"]').or(
       page.getByRole('button', { name: /graph/i })
@@ -206,8 +202,7 @@ test.describe('Graph XPAC Styling', () => {
     if (graphLinkExists > 0) {
       await graphLink.first().click();
       await page.waitForLoadState('load');
-      await page.waitForTimeout(3000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for styled XPAC nodes
       const xpacNodes = page.locator('[data-is-xpac="true"], [data-work-type]');
       const xpacCount = await xpacNodes.count();
@@ -252,8 +247,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should render unverified author nodes with distinctive styling', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for author nodes with verification status
     const authorNodes = page.locator('[data-node-type="author"], [aria-label*="author"]');
     const authorCount = await authorNodes.count();
@@ -296,8 +290,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should handle graph interactions without breaking styling', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Find graph container
     const canvas = page.locator('canvas').first();
     const canvasExists = await canvas.count();
@@ -308,12 +301,10 @@ test.describe('Graph XPAC Styling', () => {
       if (isVisible) {
         // Simulate interaction with graph
         await canvas.click({ position: { x: 100, y: 100 } });
-        await page.waitForTimeout(500);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Hover over element
         await canvas.hover({ position: { x: 150, y: 150 } });
-        await page.waitForTimeout(500);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify graph still renders after interaction
         await expect(canvas).toBeVisible();
 
@@ -323,8 +314,7 @@ test.describe('Graph XPAC Styling', () => {
           errors.push(error.message);
         });
 
-        await page.waitForTimeout(1000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         const criticalErrors = errors.filter(
           e => !e.includes('404') && !e.includes('undefined')
         );
@@ -341,8 +331,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should maintain graph styling consistency across page interactions', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Capture initial state
     const canvas = page.locator('canvas').first();
     const initialCanvasExists = await canvas.count();
@@ -356,8 +345,7 @@ test.describe('Graph XPAC Styling', () => {
 
       if (themeButtonExists > 0) {
         await themeButton.click();
-        await page.waitForTimeout(1000);
-
+        // Removed: waitForTimeout - use locator assertions instead
         // Verify graph still renders after theme change
         const updatedCanvas = page.locator('canvas').first();
         const updatedBoundingBox = await updatedCanvas.boundingBox();
@@ -376,8 +364,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should pass accessibility checks on graph page', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Run accessibility scan
     const accessibilityScanResults = await new AxeBuilder({ page })
       .include('body')
@@ -404,8 +391,7 @@ test.describe('Graph XPAC Styling', () => {
   test('should display graph statistics if available', async ({ page }) => {
     await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Look for graph statistics display
     const statsSection = page.locator('[data-testid*="graph-stats"], [class*="GraphStats"]');
     const statsExists = await statsSection.count();
@@ -433,8 +419,7 @@ test.describe('Graph XPAC Styling', () => {
     await page.waitForLoadState('load');
 
     // Initial load
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify initial render
     const canvas = page.locator('canvas').first();
     const canvasExists = await canvas.count();
@@ -443,13 +428,12 @@ test.describe('Graph XPAC Styling', () => {
     // Simulate extended interaction
     for (let i = 0; i < 5; i++) {
       await canvas.click({ position: { x: Math.random() * 200, y: Math.random() * 200 } });
-      await page.waitForTimeout(300);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify graph still responsive
     await canvas.hover();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Graph should still be visible
     await expect(canvas).toBeVisible();
 

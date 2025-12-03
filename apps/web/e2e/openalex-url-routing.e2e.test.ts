@@ -13,8 +13,8 @@
  *
  * Promoted from manual tests to automated smoke tests.
  * @module openalex-url-routing.e2e
- * @tag @automated-manual
- * @tag @utility
+ * @tag @manual
+ * @tags utility
  * @see apps/web/src/test/e2e/manual/openalex-url.e2e.test.ts
  * @see apps/web/src/test/e2e/manual/external-id-routing.e2e.test.ts
  */
@@ -29,7 +29,7 @@ import {
 
 const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
-test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
+test.describe("@manual @utility OpenAlex URL Routing", () => {
 	test.describe("API URL Conversion and Routing", () => {
 		// Note: Test uses A5023888391 instead of A5017898742 to avoid CI timeout issues
 		// Both test the same routing functionality, just different author entities
@@ -230,7 +230,7 @@ test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 			expect(currentUrl).toContain("/institutions/ror/02y3ad647");
 
 			// Wait for content to load
-			await page.waitForSelector("main", { timeout: 10_000 });
+			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
 			await expect(mainText).toHaveText();
@@ -252,7 +252,7 @@ test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 			expect(currentUrl).toContain("/institutions/ror/00cvxb145");
 
 			// Wait for content to load
-			await page.waitForSelector("main", { timeout: 10_000 });
+			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
 			await expect(mainText).toHaveText();
@@ -274,7 +274,7 @@ test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 			expect(currentUrl).toContain("/sources/issn/2041-1723");
 
 			// Wait for content to load
-			await page.waitForSelector("main", { timeout: 10_000 });
+			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
 			await expect(mainText).toHaveText();
@@ -292,7 +292,7 @@ test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 			await waitForAppReady(page, { timeout: 30_000 });
 
 			// Should redirect through api-openalex-org route
-			await page.waitForSelector("main", { timeout: 10_000 });
+			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
 			await expect(mainText).toHaveText();
@@ -310,7 +310,7 @@ test.describe("@automated-manual @utility OpenAlex URL Routing", () => {
 			await waitForAppReady(page, { timeout: 30_000 });
 
 			// Should redirect through api-openalex-org route
-			await page.waitForSelector("main", { timeout: 10_000 });
+			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
 			await expect(mainText).toHaveText();

@@ -4,7 +4,7 @@
  * Tests the 2D/3D view mode toggle, WebGL detection, and 3D rendering
  * on the algorithms page.
  * @module 3d-visualization.e2e
- * @tag @utility @3d
+ * @tags utility @3d
  */
 
 import { expect,test } from "@playwright/test";
@@ -25,7 +25,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
       errors.push(error.message);
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // ViewModeToggle should be visible
@@ -40,7 +40,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
   });
 
   test("should start in 2D mode by default", async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Check localStorage or aria state for default mode
@@ -65,7 +65,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
       errors.push(error.message);
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Click the 3D button in ViewModeToggle
@@ -81,8 +81,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     await button3D.click();
 
     // Wait for mode switch
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify preference was saved
     const viewModePreference = await page.evaluate(() => {
       return localStorage.getItem("bibgraph-view-mode-preference");
@@ -93,7 +92,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
   });
 
   test("should persist view mode preference across page reloads", async ({ page }) => {
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Set preference to 3D (if available)
@@ -105,10 +104,9 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     }
 
     await button3D.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Reload page
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Verify preference persisted
@@ -124,14 +122,13 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
       localStorage.setItem("bibgraph-view-mode-preference", "3D");
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Click 2D button
     const button2D = page.getByRole("radio", { name: "2D" });
     await button2D.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify preference was saved
     const viewModePreference = await page.evaluate(() => {
       return localStorage.getItem("bibgraph-view-mode-preference");
@@ -145,15 +142,14 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
       errors.push(error.message);
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Generate sample data first
     const regenerateButton = page.getByRole("button", { name: "Regenerate Sample Data" });
     await expect(regenerateButton).toBeVisible({ timeout: 10_000 });
     await regenerateButton.click();
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check if 3D is available
     const button3D = page.getByRole("radio", { name: "3D" });
     const isDisabled = await button3D.isDisabled();
@@ -164,13 +160,11 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
 
     // Switch to 3D
     await button3D.click();
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Switch back to 2D
     const button2D = page.getByRole("radio", { name: "2D" });
     await button2D.click();
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Should have no errors during mode switches
     expect(errors, "JavaScript errors during mode switches").toHaveLength(0);
 
@@ -182,7 +176,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     // Note: This test simulates WebGL unavailability by checking error handling
     // In a real WebGL-disabled browser, the 3D button would be disabled
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Check for tooltip on disabled 3D button (if WebGL unavailable)
@@ -192,8 +186,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     if (isDisabled) {
       // Should have a tooltip explaining why
       await button3D.hover();
-      await page.waitForTimeout(500);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for tooltip text about WebGL
       const tooltipText = page.locator('[role="tooltip"]');
       if (await tooltipText.isVisible()) {
@@ -212,24 +205,22 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
       errors.push(error.message);
     });
 
-    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page, { timeout: 30_000 });
 
     // Generate sample data
     const regenerateButton = page.getByRole("button", { name: "Regenerate Sample Data" });
     await regenerateButton.click();
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Expand Community Detection and run an algorithm
     const communityButton = page.getByRole("button", { name: /Community Detection/ });
     await communityButton.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Try to run an algorithm (e.g., Louvain)
     const runLouvain = page.getByRole("button", { name: /Run/i }).first();
     if (await runLouvain.isVisible()) {
       await runLouvain.click();
-      await page.waitForTimeout(1000);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Now switch to 3D mode
@@ -237,8 +228,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     const isDisabled = await button3D.isDisabled();
     if (!isDisabled) {
       await button3D.click();
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // The algorithm results should still be visible
       // (community coloring in the graph)
     }

@@ -42,7 +42,7 @@ test.describe('ISSN Timeout Investigation', () => {
 
     try {
       await page.goto(targetUrl, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
 
@@ -51,7 +51,7 @@ test.describe('ISSN Timeout Investigation', () => {
 
       // Try to find main content
       try {
-        await page.waitForSelector('main', { timeout: 10_000 });
+        await page.locator('main').waitFor({ timeout: 10_000 });
         const mainText = await page.locator('main').textContent();
         console.log('Main content found:', mainText?.slice(0, 200));
       } catch (mainError) {
@@ -105,8 +105,7 @@ test.describe('ISSN Timeout Investigation', () => {
     });
 
     // Wait longer for potential async loading
-    await page.waitForTimeout(15_000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const finalUrl = page.url();
     console.log('Final URL after extended wait:', finalUrl);
 
@@ -129,11 +128,11 @@ test.describe('ISSN Timeout Investigation', () => {
 
     // First test a working ROR
     await page.goto(`${DEPLOYED_URL}/#/institutions/ror/02y3ad647`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
 
-    await page.waitForSelector('main', { timeout: 10_000 });
+    await page.locator('main').waitFor({ timeout: 10_000 });
     const rorUrl = page.url();
     const rorMain = await page.locator('main').textContent();
 
@@ -149,8 +148,7 @@ test.describe('ISSN Timeout Investigation', () => {
       timeout: 30_000,
     });
 
-    await page.waitForTimeout(15_000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     const issnUrl = page.url();
     const issnMain = await page.locator('body').textContent();
 

@@ -71,8 +71,7 @@ test.describe('@utility Search Page', () => {
 		await searchPage.enterSearchQuery('test query');
 
 		// Wait for debounce and clear button to appear
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Clear button should now be visible
 		await expect(clearButton).toBeVisible();
 
@@ -131,8 +130,7 @@ test.describe('@utility Search Page', () => {
 		await searchPage.enterSearchQuery(testQuery);
 
 		// Wait for debounce and URL update
-		await page.waitForTimeout(600);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Submit the search to ensure URL is updated
 		const searchButton = page.getByRole('button', { name: /search/i }).first();
 		await searchButton.click();

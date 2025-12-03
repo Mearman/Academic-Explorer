@@ -45,7 +45,7 @@ const clearBookmarks = async (page: Page): Promise<void> => {
 //	const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 //	await expect(bookmarkButton).toBeVisible();
 //	await bookmarkButton.click();
-//	await page.waitForTimeout(500);
+//	// Removed: waitForTimeout - use locator assertions instead
 //
 //	// TODO: Add tags via tag input (once implemented)
 //	// For now, tags would be added through bookmark edit UI
@@ -63,8 +63,7 @@ test.describe("Bookmark Tagging", () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
@@ -85,8 +84,7 @@ test.describe("Bookmark Tagging", () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		// Go to bookmarks page
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
@@ -107,8 +105,7 @@ test.describe("Bookmark Tagging", () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -126,8 +123,7 @@ test.describe("Bookmark Tagging", () => {
 
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await bookmarkButton.click();
-		await page.waitForTimeout(500);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -151,7 +147,7 @@ test.describe("Bookmark Tagging", () => {
 			await page.waitForLoadState("networkidle");
 			const btn = page.locator('[data-testid="entity-bookmark-button"]');
 			await btn.click();
-			await page.waitForTimeout(300);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		await page.goto("/bookmarks/");
@@ -173,8 +169,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -186,8 +181,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/works/W2741809807");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -201,8 +195,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -220,8 +213,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/works/W2741809807");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -234,8 +226,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -256,7 +247,7 @@ test.describe("Bookmark Tagging", () => {
 			await page.goto(`/${entity.type}/${entity.id}`);
 			await page.waitForLoadState("networkidle");
 			await page.locator('[data-testid="entity-bookmark-button"]').click();
-			await page.waitForTimeout(200);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		await page.goto("/bookmarks/");
@@ -271,8 +262,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -284,8 +274,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/works/W2741809807");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -305,7 +294,7 @@ test.describe("Bookmark Tagging", () => {
 			await page.goto(`/${bookmark.type}/${bookmark.id}`);
 			await page.waitForLoadState("networkidle");
 			await page.locator('[data-testid="entity-bookmark-button"]').click();
-			await page.waitForTimeout(200);
+			// Removed: waitForTimeout - use locator assertions instead
 		}
 
 		await page.goto("/bookmarks/");
@@ -319,8 +308,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -332,8 +320,7 @@ test.describe("Bookmark Tagging", () => {
 		await page.goto("/works/W2741809807");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -352,8 +339,7 @@ test.describe("Tag-based Navigation", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
@@ -366,8 +352,7 @@ test.describe("Tag-based Navigation", () => {
 		await page.goto("/authors/A2208157607");
 		await page.waitForLoadState("networkidle");
 		await page.locator('[data-testid="entity-bookmark-button"]').click();
-		await page.waitForTimeout(300);
-
+		// Removed: waitForTimeout - use locator assertions instead
 		await page.goto("/bookmarks/");
 		await page.waitForLoadState("networkidle");
 
