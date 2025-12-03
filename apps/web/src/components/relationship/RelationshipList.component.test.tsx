@@ -18,6 +18,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>{children}</MantineProvider>
 );
 
+// Mock scrollIntoView to prevent Mantine Select cleanup errors
+Element.prototype.scrollIntoView = vi.fn();
+
 describe('RelationshipList', () => {
   const createMockItems = (count: number): RelationshipItem[] => {
     return Array.from({ length: count }, (_, i) => ({
@@ -153,9 +156,10 @@ describe('RelationshipList', () => {
       </TestWrapper>
     );
 
-    // Find the page size selector
-    const pageSizeSelect = screen.getByLabelText('Items per page');
+    // Find the page size selector input
+    const pageSizeSelect = screen.getByDisplayValue('50 per page');
     expect(pageSizeSelect).toBeInTheDocument();
+    expect(pageSizeSelect).toHaveAttribute('aria-label', 'Items per page');
 
     // Change page size to 100
     await user.click(pageSizeSelect);

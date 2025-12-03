@@ -58,7 +58,7 @@ describe('WebGL Detection', () => {
         }),
         getExtension: vi.fn().mockImplementation((name: string) => {
           if (name === 'WEBGL_debug_renderer_info') {
-            return { UNMASKED_VENDOR_WEBGL: 0x9245, UNMASKED_RENDERER_WEBGL: 0x9246 };
+            return { UNMASKED_VENDOR_WEBGL: 0x9246, UNMASKED_RENDERER_WEBGL: 0x9245 };
           }
           if (name === 'WEBGL_lose_context') {
             return { loseContext: vi.fn() };

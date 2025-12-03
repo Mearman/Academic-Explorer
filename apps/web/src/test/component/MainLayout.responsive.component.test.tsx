@@ -40,6 +40,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 // Import after mocks
 import { MainLayout } from '@/components/layout/MainLayout';
 import { LayoutProvider } from '@/stores/layout-store';
+import { ThemeProvider } from '@/contexts/theme-context';
+import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 // Test wrapper with essential providers only
 const createTestWrapper = () => {
@@ -50,12 +53,18 @@ const createTestWrapper = () => {
     },
   });
 
+  const storageProvider = new InMemoryStorageProvider();
+
   const AllProviders = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <MantineProvider defaultColorScheme="light">
-        <LayoutProvider>
-          {children}
-        </LayoutProvider>
+        <ThemeProvider>
+          <StorageProviderWrapper provider={storageProvider}>
+            <LayoutProvider>
+              {children}
+            </LayoutProvider>
+          </StorageProviderWrapper>
+        </ThemeProvider>
       </MantineProvider>
     </QueryClientProvider>
   );
