@@ -1,7 +1,6 @@
 import type { EntityType } from "@bibgraph/types";
 import { ENTITY_METADATA } from "@bibgraph/types";
 import { Anchor, Badge, Card, Group, Stack, Text } from "@mantine/core";
-import { forwardRef } from "react";
 
 export interface EntityCardProps {
   id: string;

@@ -199,6 +199,7 @@ export default tseslint.config([
             "jsdoc/require-description": "off",
             "jsdoc/require-param-description": "off",
             "jsdoc/require-returns-description": "off",
+            "jsdoc/require-returns": "off", // Too noisy for React components
 
             // Node.js rules (from flat/recommended-module for ES modules)
             ...nodePlugin.configs["flat/recommended-module"].rules,
@@ -261,6 +262,19 @@ export default tseslint.config([
         rules: {
             "import/no-default-export": "off",
             "import/no-relative-packages": "off",
+        },
+    },
+    // Disable Node.js-specific rules for browser code
+    {
+        files: [
+            "apps/web/**/*.{ts,tsx}",
+            "packages/ui/**/*.{ts,tsx}",
+            "packages/client/**/*.{ts,tsx}",
+        ],
+        rules: {
+            "n/no-unsupported-features/node-builtins": "off",
+            "n/no-missing-import": "off",
+            "n/no-missing-require": "off",
         },
     },
     // JSONC configuration (using flat/recommended-with-jsonc)
