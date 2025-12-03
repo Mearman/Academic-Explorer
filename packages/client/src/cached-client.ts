@@ -5,11 +5,11 @@
 import type { EntityType,OpenAlexEntity, QueryParams } from "@bibgraph/types";
 import { isOpenAlexEntity } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
-import { z } from "zod";
 
 import { extractAndIndexRelationships } from "./cache/dexie/graph-extraction";
 import { getPersistentGraph } from "./cache/dexie/persistent-graph";
-import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
+import type { OpenAlexClientConfig, ValidationSchema } from "./client";
+import { OpenAlexBaseClient } from "./client";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
 import { FundersApi } from "./entities/funders";
@@ -330,10 +330,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * @param schema
    */
   async getById<T = unknown>(
-    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
+    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: ValidationSchema<T> },
     id?: string,
     params?: QueryParams,
-    schema?: z.ZodType<T>
+    schema?: ValidationSchema<T>
   ): Promise<T> {
     // Handle legacy signature: getById(endpoint, id, params, schema)
     if (typeof endpointOrParams === 'string') {
@@ -517,7 +517,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     const id = maybeEntity.id;
     if (typeof id !== 'string') return false;
     // Check for valid OpenAlex ID pattern: https://openalex.org/[A-Z]\d+ or just [A-Z]\d+
-    return /^(https:\/\/openalex\.org\/)?[A-Z]\d+$/.test(id);
+    return /^(?:https:\/\/openalex\.org\/)?[A-Z]\d+$/.test(id);
   }
 
   /**

@@ -544,7 +544,7 @@ export const validateDateRange = (from: string | null | undefined, to: string | 
       }
 
       const date = new Date(dateStr);
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         return undefined;
       }
 

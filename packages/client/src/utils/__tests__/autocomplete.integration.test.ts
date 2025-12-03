@@ -38,11 +38,10 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-      if (results.length > 0) {
-        expect(results[0]).toHaveProperty("id");
-        expect(results[0]).toHaveProperty("display_name");
-        expect(results[0]).toHaveProperty("entity_type");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0]).toHaveProperty("id");
+      expect(results[0]).toHaveProperty("display_name");
+      expect(results[0]).toHaveProperty("entity_type");
     });
 
     it("should handle queries with special characters", async () => {
@@ -69,12 +68,10 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0]).toHaveProperty("id");
-        expect(results[0]).toHaveProperty("display_name");
-        expect(results[0].entity_type).toBe("author");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0]).toHaveProperty("id");
+      expect(results[0]).toHaveProperty("display_name");
+      expect(results[0].entity_type).toBe("author");
     });
 
     it("should fetch works with autocomplete", async () => {
@@ -82,10 +79,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("work");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("work");
     });
 
     it("should fetch sources with autocomplete", async () => {
@@ -93,10 +88,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("source");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("source");
     });
 
     it("should fetch institutions with autocomplete", async () => {
@@ -104,10 +97,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("institution");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("institution");
     });
 
     it("should fetch topics with autocomplete", async () => {
@@ -115,10 +106,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("topic");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("topic");
     });
 
     it("should fetch publishers with autocomplete", async () => {
@@ -126,10 +115,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("publisher");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("publisher");
     });
 
     it("should fetch funders with autocomplete", async () => {
@@ -137,10 +124,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("funder");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("funder");
     });
 
     it("should fetch concepts with autocomplete", async () => {
@@ -148,10 +133,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-
-      if (results.length > 0) {
-        expect(results[0].entity_type).toBe("concept");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].entity_type).toBe("concept");
     });
   });
 
@@ -161,14 +144,13 @@ describe("AutocompleteApi Integration Tests", () => {
         "machine learning",
       );
 
-      if (results.length > 0) {
-        const result = results[0];
-        expect(result).toHaveProperty("id");
-        expect(result).toHaveProperty("display_name");
-        expect(result).toHaveProperty("entity_type");
-        expect(typeof result.id).toBe("string");
-        expect(typeof result.display_name).toBe("string");
-      }
+      expect(results.length).toBeGreaterThan(0);
+      const result = results[0];
+      expect(result).toHaveProperty("id");
+      expect(result).toHaveProperty("display_name");
+      expect(result).toHaveProperty("entity_type");
+      expect(typeof result.id).toBe("string");
+      expect(typeof result.display_name).toBe("string");
     });
 
     it("should include optional fields when available", async () => {
@@ -176,16 +158,13 @@ describe("AutocompleteApi Integration Tests", () => {
         "neural networks",
       );
 
-      if (results.length > 0) {
-        const result = results[0];
-        // These fields may or may not be present
-        if (result.cited_by_count !== undefined) {
-          expect(typeof result.cited_by_count).toBe("number");
-        }
-        if (result.hint !== undefined) {
-          expect(typeof result.hint).toBe("string");
-        }
-      }
+      expect(results.length).toBeGreaterThan(0);
+      const result = results[0];
+      // These fields may or may not be present - validate them when present
+      const citedByCountValid = result.cited_by_count === undefined || typeof result.cited_by_count === "number";
+      const hintValid = result.hint === undefined || typeof result.hint === "string";
+      expect(citedByCountValid).toBe(true);
+      expect(hintValid).toBe(true);
     });
   });
 
@@ -198,19 +177,18 @@ describe("AutocompleteApi Integration Tests", () => {
       // Just verify we get results - the OpenAlex API may return results in various orders
       // depending on relevance scoring which may not strictly follow citation counts
       expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(1);
 
-      if (results.length > 1) {
-        // Check that results with citation counts exist
-        const resultsWithCitations = results.filter(
-          (r) => r.cited_by_count !== undefined && r.cited_by_count > 0,
-        );
+      // Check that results with citation counts exist
+      const resultsWithCitations = results.filter(
+        (r) => r.cited_by_count !== undefined && r.cited_by_count > 0,
+      );
 
-        // If we have results with citations, they should be reasonably ordered
-        // but we don't enforce strict descending order as the API uses complex relevance scoring
-        if (resultsWithCitations.length > 0) {
-          expect(resultsWithCitations[0].cited_by_count).toBeGreaterThan(0);
-        }
-      }
+      // If we have results with citations, they should be reasonably ordered
+      // but we don't enforce strict descending order as the API uses complex relevance scoring
+      const firstCitationCount = resultsWithCitations.length > 0 ? resultsWithCitations[0].cited_by_count : 0;
+      const citationCountValid = resultsWithCitations.length === 0 || (firstCitationCount !== undefined && firstCitationCount > 0);
+      expect(citationCountValid).toBe(true);
     });
   });
 
@@ -253,9 +231,7 @@ describe("AutocompleteApi Integration Tests", () => {
       const results = await client.client.autocomplete.autocompleteAuthors("Marie Curie");
 
       expect(results.length).toBeGreaterThan(0);
-      if (results.length > 0) {
-        expect(results[0].display_name.toLowerCase()).toContain("curie");
-      }
+      expect(results[0].display_name.toLowerCase()).toContain("curie");
     });
 
     it("should find well-known institutions", async () => {
@@ -264,23 +240,19 @@ describe("AutocompleteApi Integration Tests", () => {
       );
 
       expect(results.length).toBeGreaterThan(0);
-      if (results.length > 0) {
-        const names = results.map((r) => r.display_name.toLowerCase());
-        expect(
-          names.some(
-            (name) => name.includes("mit") || name.includes("massachusetts"),
-          ),
-        ).toBe(true);
-      }
+      const names = results.map((r) => r.display_name.toLowerCase());
+      expect(
+        names.some(
+          (name) => name.includes("mit") || name.includes("massachusetts"),
+        ),
+      ).toBe(true);
     });
 
     it("should find major journals", async () => {
       const results = await client.client.autocomplete.autocompleteSources("Nature");
 
       expect(results.length).toBeGreaterThan(0);
-      if (results.length > 0) {
-        expect(results[0].display_name.toLowerCase()).toContain("nature");
-      }
+      expect(results[0].display_name.toLowerCase()).toContain("nature");
     });
 
     it("should find popular topics", async () => {
@@ -289,10 +261,8 @@ describe("AutocompleteApi Integration Tests", () => {
       );
 
       expect(results.length).toBeGreaterThan(0);
-      if (results.length > 0) {
-        const names = results.map((r) => r.display_name.toLowerCase());
-        expect(names.some((name) => name.includes("machine"))).toBe(true);
-      }
+      const names = results.map((r) => r.display_name.toLowerCase());
+      expect(names.some((name) => name.includes("machine"))).toBe(true);
     });
   });
 

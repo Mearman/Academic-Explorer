@@ -148,10 +148,8 @@ export class IdResolver {
       ],
       normalize: (
         match: string,
-        config?: IdValidationConfig,
       ): string | null => {
-        // Suppress unused variable warning - config will be used when preferUrls is implemented
-        void config;
+        // config parameter will be added when preferUrls is implemented
         const orcidMatch = match.match(/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i);
         if (!orcidMatch) return null;
 

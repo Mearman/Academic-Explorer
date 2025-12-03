@@ -372,7 +372,8 @@ export class StatisticsApi {
 
 				const citations = groupStats.results.map((item) => this.extractCitedByCount(item));
 				const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
-				const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
+				const sortedCitations = [...citations].sort((a, b) => a - b);
+				const medianCitations = sortedCitations[Math.floor(sortedCitations.length / 2)] || 0;
 
 				// Simplified growth rate calculation
 				const growthRate = Math.random() * 20 - 10; // Placeholder - would need historical data

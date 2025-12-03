@@ -282,7 +282,7 @@ export class ApiInterceptor {
       ) {
         // Handle numeric parameters
         const numValue = Number.parseInt(value, 10);
-        if (!isNaN(numValue)) {
+        if (!Number.isNaN(numValue)) {
           params[key] = numValue;
         }
       } else {

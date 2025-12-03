@@ -897,13 +897,14 @@ export class DiskCacheWriter {
         // Check if this looks like an external canonical ID
         if (this.isExternalCanonicalId(potentialId)) {
           // Determine entity type from the external ID
-          let entityType: EntityType = "works"; // default
+          let entityType: EntityType;
 
-          if (potentialId.includes("orcid.org/") || /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i.test(potentialId)) {
+          if (potentialId.includes("orcid.org/") || /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i.test(potentialId)) {
             entityType = "authors";
           } else if (potentialId.includes("ror.org/") || /^[0-9a-z]{9}$/i.test(potentialId)) {
             entityType = "institutions";
-          } else if (potentialId.includes("doi.org/") || /^10\.\d+\/\S+$/.test(potentialId)) {
+          } else {
+            // Default to works for DOI and other cases
             entityType = "works";
           }
 
@@ -931,7 +932,7 @@ export class DiskCacheWriter {
     }
 
     // ORCID patterns
-    if (id.includes("orcid.org/") || /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i.test(id)) {
+    if (id.includes("orcid.org/") || /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i.test(id)) {
       return true;
     }
 
@@ -953,7 +954,8 @@ export class DiskCacheWriter {
       .replaceAll(/["*/:<>?\\|]/g, "_") // Replace invalid characters
       .replaceAll(/\s+/g, "_") // Replace spaces with underscores
       .replaceAll(/_{2,}/g, "_") // Replace multiple underscores with single
-      .replaceAll(/^_|_$/g, ""); // Remove leading/trailing underscores
+      .replace(/^_/, "") // Remove leading underscore
+      .replace(/_$/, ""); // Remove trailing underscore
 
     // If filename is too long, use a hash to ensure it fits filesystem limits
     // Keep it under 100 chars to leave room for directory path and .json extension

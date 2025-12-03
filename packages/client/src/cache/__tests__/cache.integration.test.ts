@@ -38,11 +38,11 @@ vi.mock("../../client", () => ({
       this.config = config;
     }
     config: any;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     async getById<T>(_params: { endpoint: string; id: string; params?: any }): Promise<T> {
       throw new Error("API call failed");
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     updateConfig(_config: any): void {
       // Mock implementation
     }
@@ -188,7 +188,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
     const config: CachedClientConfig = {
       staticCacheEnabled: true,
       staticCacheGitHubPagesUrl: "https://example.github.io",
-      staticCacheLocalDir: "/tmp/cache",
+      staticCacheLocalDir: "./cache",
     };
 
     cachedClient = new CachedOpenAlexClient(config);

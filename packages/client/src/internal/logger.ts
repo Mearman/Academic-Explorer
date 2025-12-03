@@ -5,26 +5,10 @@
 
 export type LogLevel = "debug" | "warn" | "error";
 
-interface LogEntry {
-	timestamp: Date;
-	level: LogLevel;
-	message: string;
-	data?: unknown;
-}
-
 class InternalLogger {
 	private enableConsoleOutput = false; // Disabled by default for package use
 
 	log(level: LogLevel, message: string, data?: unknown) {
-		// Entry structure kept for potential future use (e.g., log aggregation)
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const entry: LogEntry = {
-			timestamp: new Date(),
-			level,
-			message,
-			data,
-		};
-
 		// Only log to console if explicitly enabled
 		if (this.enableConsoleOutput) {
 			const logMessage = `[OpenAlex] ${message}`;

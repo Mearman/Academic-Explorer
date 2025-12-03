@@ -1,10 +1,10 @@
 /**
  * Client-specific types only
- * All entity types should be imported directly from @bibgraph/types where needed
+ * All entity types should be imported directly from `@bibgraph/types` where needed
  */
 
 // Note: Core types (OpenAlexId, OpenAlexError, OpenAlexResponse, AutocompleteResult)
-// should be imported directly from @bibgraph/types where needed
+// should be imported directly from `@bibgraph/types` where needed
 
 // Note: AutocompleteOptions is defined in utils/autocomplete.ts (canonical source)
 // Import from there directly to avoid barrel file re-export duplicates

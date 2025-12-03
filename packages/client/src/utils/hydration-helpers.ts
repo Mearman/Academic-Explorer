@@ -43,7 +43,24 @@ export const isFullyHydrated = (entity: Record<string, unknown>): boolean => get
  * @param start
  * @param end
  */
-export const safeSlice = <T>(array: T[] | undefined, start?: number, end?: number): T[] => array?.slice(start, end) ?? [];
+export const safeSlice = <T>(array: T[] | undefined, start?: number, end?: number): T[] => {
+  if (array === undefined) {
+    return [];
+  }
+  if (start === undefined && end === undefined) {
+    return array;
+  }
+  if (start !== undefined && end !== undefined) {
+    return array.slice(start, end);
+  }
+  if (start !== undefined) {
+    return array.slice(start);
+  }
+  if (end !== undefined) {
+    return array.slice(0, end);
+  }
+  return array;
+};
 
 export const safeMap = <T, R>(array: T[] | undefined, fn: (item: T, index: number) => R): R[] => array?.map(fn) ?? [];
 

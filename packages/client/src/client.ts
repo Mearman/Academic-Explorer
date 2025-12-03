@@ -6,7 +6,13 @@
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@bibgraph/types";
 import { validateWithSchema } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
-import { z } from "zod";
+
+/**
+ * Schema interface that matches Zod-like validation
+ */
+export interface ValidationSchema<T> {
+  parse: (data: unknown) => T;
+}
 
 import { apiInterceptor, type InterceptedRequest } from "./interceptors/api-interceptor";
 import { calculateRetryDelay,RETRY_CONFIG } from "./internal/rate-limit";
@@ -693,17 +699,15 @@ export class OpenAlexBaseClient {
    * Hook for caching entities from response data
    * Override in subclasses to implement entity-level caching (e.g., IndexedDB, memory)
    * Called for all successful API responses with parsed JSON data
-   * @param params
-   * @param params.url
-   * @param params.responseData
+   * @param _params - Parameters object (unused in base class)
+   * @param _params.url - Request URL
+   * @param _params.responseData - Parsed response data
    */
-  protected async cacheResponseEntities(params: {
+  protected async cacheResponseEntities(_params: {
     url: string;
     responseData: unknown;
   }): Promise<void> {
     // Base implementation does nothing - override in subclasses
-    // params is intentionally unused in base class but required for subclass implementations
-    void params;
   }
 
   private async makeRequest({
@@ -837,7 +841,7 @@ export class OpenAlexBaseClient {
   public async get<T = unknown>(
     endpoint: string,
     params: QueryParams = {},
-    schema?: z.ZodType<T>,
+    schema?: ValidationSchema<T>,
   ): Promise<T> {
     const url = this.buildUrl(endpoint, params);
     const response = await this.makeRequest({ url });
@@ -885,10 +889,10 @@ export class OpenAlexBaseClient {
    * @param schema
    */
   public async getById<T = unknown>(
-    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
+    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: ValidationSchema<T> },
     id?: string,
     params?: QueryParams,
-    schema?: z.ZodType<T>
+    schema?: ValidationSchema<T>
   ): Promise<T> {
     // Handle legacy signature: getById(endpoint, id, params, schema)
     if (typeof endpointOrParams === 'string') {

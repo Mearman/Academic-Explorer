@@ -135,7 +135,7 @@ export class SourcesApi {
     const normalized = issn
       .trim()
       .toLowerCase()
-      .replace(/^(issn[\s:]*|eissn[\s:]*)/i, "")
+      .replace(/^(?:issn[\s:]*|eissn[\s:]*)/i, "")
       .trim();
 
     // Check for standard ISSN format (with hyphen) or bare 8-digit format
@@ -159,7 +159,7 @@ export class SourcesApi {
     const cleaned = issn
       .trim()
       .toLowerCase()
-      .replace(/^(issn[\s:]*|eissn[\s:]*)/i, "")
+      .replace(/^(?:issn[\s:]*|eissn[\s:]*)/i, "")
       .trim()
       .replaceAll(/[^\d\-x]/gi, "")
       .toUpperCase();
@@ -220,7 +220,7 @@ export class SourcesApi {
     }
 
     // Check for explicit ISSN prefixes
-    if (/^(issn[\s:]*|eissn[\s:]*)/i.test(id.trim())) {
+    if (/^(?:issn[\s:]*|eissn[\s:]*)/i.test(id.trim())) {
       return true;
     }
 
@@ -870,7 +870,7 @@ export class SourcesApi {
       | "unknown" = "unknown";
     if (/^\d{4}-\d{3}[\dX]$/i.test(trimmed)) {
       format = "standard";
-    } else if (/^(EISSN|ISSN)[\s:]/i.test(trimmed)) {
+    } else if (/^(?:EISSN|ISSN)[\s:]/i.test(trimmed)) {
       format = /:/.test(trimmed) ? "scheme_notation" : "with_prefix";
     } else if (/^\d{7}[\dX]$/i.test(trimmed)) {
       format = "bare";

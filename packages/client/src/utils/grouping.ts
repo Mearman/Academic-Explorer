@@ -82,7 +82,7 @@ export class GroupingApi {
    * @param value
    */
   private isNumber(value: unknown): value is number {
-    return typeof value === "number" && !isNaN(value);
+    return typeof value === "number" && !Number.isNaN(value);
   }
 
   /**
@@ -273,7 +273,7 @@ export class GroupingApi {
         trends.push({
           group: group.key,
           group_display_name: group.key_display_name,
-          temporal_data: temporalData.sort((a, b) => a.year - b.year),
+          temporal_data: [...temporalData].sort((a, b) => a.year - b.year),
           total_count: group.count,
           ...(growthRate !== undefined && { growth_rate: growthRate }),
         });
@@ -704,7 +704,7 @@ export class GroupingApi {
     if (group && typeof group === "object") {
       const groupRecord = group as Record<string, unknown>;
       const value = metric in groupRecord ? groupRecord[metric] : undefined;
-      if (typeof value === "number" && !isNaN(value)) {
+      if (typeof value === "number" && !Number.isNaN(value)) {
         return value;
       }
     }

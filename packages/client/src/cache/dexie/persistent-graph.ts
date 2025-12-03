@@ -66,10 +66,7 @@ export class PersistentGraph {
    * Starts hydration if not already started
    */
   async initialize(): Promise<void> {
-    if (this.hydrationState === 'hydrated') {
-      return;
-    }
-    await this.hydrate();
+    await this.ensureHydrated();
   }
 
   /**
@@ -578,11 +575,11 @@ export class PersistentGraph {
     let edges: GraphEdgeRecord[] = [];
 
     if (direction === 'outbound' || direction === 'both') {
-      edges = edges.concat(this.getEdgesFrom(nodeId, type, filter));
+      edges = [...edges, ...this.getEdgesFrom(nodeId, type, filter)];
     }
 
     if (direction === 'inbound' || direction === 'both') {
-      edges = edges.concat(this.getEdgesTo(nodeId, type, filter));
+      edges = [...edges, ...this.getEdgesTo(nodeId, type, filter)];
     }
 
     return edges;

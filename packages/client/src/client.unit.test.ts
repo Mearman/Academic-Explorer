@@ -31,19 +31,22 @@ describe("OpenAlexBaseClient", () => {
     mockFetch.mockClear();
 
     // Create a factory function for mock responses to avoid reuse issues
-    const createMockResponse = (
-      data = {
+    const createMockResponse = (data?: {
+      results: unknown[];
+      meta: { count: number; db_response_time_ms: number; page: number; per_page: number };
+    }) => {
+      const responseData = data ?? {
         results: [],
         meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
-      },
-    ) =>
-      Response.json(data, {
+      };
+      return Response.json(responseData, {
         status: 200,
         statusText: "OK",
         headers: new Headers({
           "content-type": "application/json",
         }),
       });
+    };
 
     mockResponse = createMockResponse();
 
@@ -339,16 +342,12 @@ describe("OpenAlexBaseClient", () => {
       );
       mockFetch.mockResolvedValueOnce(errorResponse);
 
-      try {
-        await client.get("works");
-        expect.fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(OpenAlexApiError);
-        expect((error as OpenAlexApiError).message).toBe(
-          "Invalid filter parameter",
-        );
-        expect((error as OpenAlexApiError).statusCode).toBe(400);
-      }
+      const promise = client.get("works");
+      await expect(promise).rejects.toBeInstanceOf(OpenAlexApiError);
+      await expect(promise).rejects.toMatchObject({
+        message: "Invalid filter parameter",
+        statusCode: 400,
+      });
     });
 
     it("should handle malformed error response JSON", async () => {
@@ -358,16 +357,12 @@ describe("OpenAlexBaseClient", () => {
       });
       mockFetch.mockResolvedValueOnce(errorResponse);
 
-      try {
-        await client.get("works");
-        expect.fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(OpenAlexApiError);
-        expect((error as OpenAlexApiError).message).toBe(
-          "HTTP 400 Bad Request",
-        );
-        expect((error as OpenAlexApiError).statusCode).toBe(400);
-      }
+      const promise = client.get("works");
+      await expect(promise).rejects.toBeInstanceOf(OpenAlexApiError);
+      await expect(promise).rejects.toMatchObject({
+        message: "HTTP 400 Bad Request",
+        statusCode: 400,
+      });
     });
   });
 
@@ -657,15 +652,11 @@ describe("OpenAlexBaseClient", () => {
 
       client = new OpenAlexBaseClient({ retries: 0 });
 
-      try {
-        await client.get("works");
-        expect.fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(OpenAlexApiError);
-        expect((error as OpenAlexApiError).message).toContain(
-          "Failed to fetch",
-        );
-      }
+      const promise = client.get("works");
+      await expect(promise).rejects.toBeInstanceOf(OpenAlexApiError);
+      await expect(promise).rejects.toMatchObject({
+        message: expect.stringContaining("Failed to fetch"),
+      });
     });
   });
 });

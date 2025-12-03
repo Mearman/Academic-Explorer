@@ -170,12 +170,11 @@ export class PersistentGraphAdapter {
    */
   getNeighbors(id: string): string[] {
     const direction = this.options.direction ?? 'both';
-    const edgeFilter = this.options.edgeFilter;
 
     // Get neighbors from underlying graph
     let neighbors = this.graph.getNeighbors(id, {
       direction,
-      types: edgeFilter?.authorPosition ? undefined : undefined, // Types filter is separate
+      // Types filter is separate from edgeFilter
     });
 
     // Apply node type filter
@@ -199,11 +198,11 @@ export class PersistentGraphAdapter {
     let edges: GraphEdgeRecord[] = [];
 
     if (direction === 'outbound' || direction === 'both') {
-      edges = edges.concat(this.graph.getEdgesFrom(id));
+      edges = [...edges, ...this.graph.getEdgesFrom(id)];
     }
 
     if (direction === 'inbound' || direction === 'both') {
-      edges = edges.concat(this.graph.getEdgesTo(id));
+      edges = [...edges, ...this.graph.getEdgesTo(id)];
     }
 
     // Apply edge filter

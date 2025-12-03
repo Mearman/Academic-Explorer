@@ -130,8 +130,7 @@ export class FilterBuilder {
    *
    * Converts a filter object with key-value pairs to OpenAlex API filter format.
    * This is the primary method for converting EntityFilters to query strings.
-   * @param filters - The filter object containing field-value pairs
-   * @returns Formatted filter string for the OpenAlex API
+   * @param _filters - The filter object containing field-value pairs (not yet implemented)
    * @example
    * ```typescript
    * const filterString = builder.buildFromObject({
@@ -142,15 +141,8 @@ export class FilterBuilder {
    * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
    * ```
    */
-  buildFromObject(
-    filters:
-      | EntityFilters
-      | Partial<EntityFilters>
-      | Record<string, FilterValue>,
-  ): string {
+  buildFromObject(): string {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - filters will be used in implementation
-    void filters;
     throw new Error("FilterBuilder.buildFromObject not yet implemented");
   }
 
@@ -159,8 +151,7 @@ export class FilterBuilder {
    *
    * Converts a structured filter expression with logical operators to OpenAlex format.
    * Supports nested expressions and complex logical combinations.
-   * @param expression - The filter expression to convert
-   * @returns Formatted filter string for the OpenAlex API
+   * @param _expression - The filter expression to convert (not yet implemented)
    * @example
    * ```typescript
    * const filterString = builder.buildFromExpression({
@@ -178,10 +169,8 @@ export class FilterBuilder {
    * });
    * ```
    */
-  buildFromExpression(expression: FilterExpression): string {
+  buildFromExpression(): string {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - expression will be used in implementation
-    void expression;
     throw new Error("FilterBuilder.buildFromExpression not yet implemented");
   }
 
@@ -190,8 +179,7 @@ export class FilterBuilder {
    *
    * Converts an array of individual filter conditions to OpenAlex format,
    * combining them with the default logical operator.
-   * @param conditions - Array of filter conditions
-   * @returns Formatted filter string for the OpenAlex API
+   * @param _conditions - Array of filter conditions (not yet implemented)
    * @example
    * ```typescript
    * const filterString = builder.buildFromConditions([
@@ -200,10 +188,8 @@ export class FilterBuilder {
    * ]);
    * ```
    */
-  buildFromConditions(conditions: FilterCondition[]): string {
+  buildFromConditions(): string {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - conditions will be used in implementation
-    void conditions;
     throw new Error("FilterBuilder.buildFromConditions not yet implemented");
   }
 
@@ -212,8 +198,7 @@ export class FilterBuilder {
    *
    * Checks if the provided filter object is valid for OpenAlex API usage.
    * Validates field names, value types, and overall structure.
-   * @param filters - The filter object to validate
-   * @returns Validation result with any error details
+   * @param _filters - The filter object to validate (not yet implemented)
    * @example
    * ```typescript
    * const validation = builder.validateFilters({
@@ -226,12 +211,8 @@ export class FilterBuilder {
    * }
    * ```
    */
-  validateFilters(
-    filters: Record<string, FilterValue>,
-  ): FilterValidationResult {
+  validateFilters(): FilterValidationResult {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - filters will be used in implementation
-    void filters;
     throw new Error("FilterBuilder.validateFilters not yet implemented");
   }
 
@@ -240,13 +221,10 @@ export class FilterBuilder {
    *
    * Checks if the provided filter expression is valid and properly structured.
    * Validates logical operators, field names, and nested expressions.
-   * @param expression - The filter expression to validate
-   * @returns Validation result with any error details
+   * @param _expression - The filter expression to validate (not yet implemented)
    */
-  validateExpression(expression: FilterExpression): FilterValidationResult {
+  validateExpression(): FilterValidationResult {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - expression will be used in implementation
-    void expression;
     throw new Error("FilterBuilder.validateExpression not yet implemented");
   }
 
@@ -255,18 +233,15 @@ export class FilterBuilder {
    *
    * Escapes special characters in filter values to prevent query parsing issues.
    * Handles quotes, pipes, commas, and other OpenAlex-specific characters.
-   * @param value - The filter value to escape
-   * @returns Escaped value safe for use in API queries
+   * @param _value - The filter value to escape (not yet implemented)
    * @example
    * ```typescript
    * const escaped = builder.escapeValue('machine "learning" & AI');
    * // Returns properly escaped value for OpenAlex API
    * ```
    */
-  escapeValue(value: string): string {
+  escapeValue(): string {
     // Implementation will be added in separate task
-    // Suppress unused variable warning - value will be used in implementation
-    void value;
     throw new Error("FilterBuilder.escapeValue not yet implemented");
   }
 
@@ -400,13 +375,14 @@ export const createFilterBuilder = (options?: FilterBuilderOptions): FilterBuild
  * This is an internal function used by query-builder.ts which wraps it as buildFilterString
  * External consumers should use the buildFilterString export from query-builder.ts
  * @param filters - The filter object to convert
+ * @param _filters
  * @param options - Optional builder configuration
  * @returns Formatted filter string for the OpenAlex API
  * @internal
  */
-export const buildFilterStringFromFilters = (filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>, options?: FilterBuilderOptions): string => {
+export const buildFilterStringFromFilters = (_filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>, options?: FilterBuilderOptions): string => {
   const builder = new FilterBuilder(options);
-  return builder.buildFromObject(filters);
+  return builder.buildFromObject();
 };
 
 // Types are already exported above - no need to re-export

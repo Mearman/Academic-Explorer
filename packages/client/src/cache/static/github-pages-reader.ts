@@ -521,9 +521,7 @@ export class GitHubPagesReader {
         const isDevelopment =
           hostname.includes("dev") || hostname.includes("test");
 
-        return Boolean(
-          isGitHubPages || (!isLocalhost && !isDevelopment && hostname),
-        );
+        return isGitHubPages || (!isLocalhost && !isDevelopment && hostname !== "");
       }
     }
 

@@ -49,7 +49,7 @@ global.Worker = class MockWorker {
   onmessage: ((event: MockMessageEvent) => void) | null = null;
   onerror: ((event: MockErrorEvent) => void) | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   constructor(_scriptURL: string | URL) {
     // Mock worker initialization
   }
@@ -453,7 +453,7 @@ class MockHighPerformanceCache {
   }
 
   private percentile(values: number[], p: number): number {
-    const sorted = values.sort((a, b) => a - b);
+    const sorted = [...values].sort((a, b) => a - b);
     const index = Math.ceil((p / 100) * sorted.length) - 1;
     return sorted[index] || 0;
   }
@@ -461,7 +461,7 @@ class MockHighPerformanceCache {
   private initializeBackgroundWorker(): void {
     try {
       this.backgroundWorker = new Worker("/cache-worker.js");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       this.backgroundWorker.onmessage = (_event) => {
         // Handle background sync results
       };
