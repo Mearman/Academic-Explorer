@@ -299,6 +299,10 @@ export default tseslint.config([
             "no-console": "off",
             "custom/no-deprecated": "off",
             "jsdoc/require-jsdoc": "off",
+            // Disable overly strict rules that conflict with test patterns
+            "sonarjs/no-nested-functions": "off", // Test helpers often nest functions deeply
+            "vitest/no-conditional-expect": "off", // Conditional expects are valid in parameterized tests
+            "@eslint-react/no-unstable-default-props": "off", // Test utils can use inline defaults
             // Prevent .only from being committed
             "no-only-tests/no-only-tests": "error",
         },
