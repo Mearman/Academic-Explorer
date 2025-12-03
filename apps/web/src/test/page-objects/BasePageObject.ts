@@ -58,13 +58,13 @@ export class BasePageObject {
 			testElement.style.position = 'absolute';
 			testElement.style.visibility = 'hidden';
 			testElement.style.pointerEvents = 'none';
-			document.body.appendChild(testElement);
+			document.body.append(testElement);
 
 			// Check if CSS is loaded by verifying computed styles
 			const computedStyle = getComputedStyle(testElement);
 			const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
 
-			document.body.removeChild(testElement);
+			testElement.remove();
 			return stylesLoaded;
 		}, { timeout: 10_000 });
 

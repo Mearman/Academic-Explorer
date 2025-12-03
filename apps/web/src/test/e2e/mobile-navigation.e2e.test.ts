@@ -186,12 +186,12 @@ test.describe('Mobile Navigation Menu - E2E', () => {
         testElement.style.position = 'absolute';
         testElement.style.visibility = 'hidden';
         testElement.style.pointerEvents = 'none';
-        document.body.appendChild(testElement);
+        document.body.append(testElement);
 
         const computedStyle = getComputedStyle(testElement);
         const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
 
-        document.body.removeChild(testElement);
+        testElement.remove();
         return stylesLoaded;
       }, { timeout: 10_000 });
 
