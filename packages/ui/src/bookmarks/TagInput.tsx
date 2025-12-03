@@ -157,7 +157,7 @@ export const TagInput = ({
 			handleAddTag(search);
 		} else if (event.key === "Backspace" && !search && value.length > 0) {
 			// Remove last tag on backspace if input is empty
-			const lastTag = value.at(-1);
+			const lastTag = value[value.length - 1];
 			if (lastTag !== undefined) {
 				handleRemoveTag(lastTag);
 			}

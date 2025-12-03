@@ -87,10 +87,13 @@ export const DataVersionSelector: React.FC<DataVersionSelectorProps> = ({
 	"data-testid": dataTestId = "data-version-selector",
 }) => {
 	const handleChange = (selectedValue: string | null) => {
-		if (selectedValue === "undefined" || selectedValue === null) {
-			onChange(undefined);
-		} else if (selectedValue === "1" || selectedValue === "2") {
+		if (selectedValue === "1" || selectedValue === "2") {
 			onChange(selectedValue);
+		} else {
+			// selectedValue is "undefined" or null - map to undefined value
+			// Note: undefined is a meaningful value here, not an optional parameter
+			const versionValue: "1" | "2" | undefined = undefined;
+			onChange(versionValue);
 		}
 	};
 

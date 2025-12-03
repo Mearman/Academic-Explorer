@@ -140,7 +140,7 @@ Object.defineProperty(window, "matchMedia", {
 // Mock clipboard API
 Object.defineProperty(navigator, "clipboard", {
 	value: {
-		writeText: vi.fn().mockResolvedValue(undefined),
+		writeText: vi.fn(async () => {}),
 		readText: vi.fn().mockResolvedValue(""),
 	},
 })

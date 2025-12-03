@@ -107,9 +107,9 @@ export const EntityCard = (
 
           {tags && tags.length > 0 && (
             <Group gap="xs" mt="xs">
-              {tags.map((tag, index) => (
+              {tags.map((tag) => (
                 <Badge
-                  key={`${tag.label}-${index}`}
+                  key={tag.label}
                   color={tag.color || "gray"}
                   variant="dot"
                   size="sm"

@@ -17,6 +17,7 @@ export type FilterChip = {
 export type EntityCollectionListProps<T = Record<string, unknown>> = {
 	items: T[]
 	renderItem: (item: T, index: number) => ReactNode
+	getItemKey?: (item: T, index: number) => string | number
 	searchPlaceholder?: string
 	searchKeys?: Array<keyof T>
 	filters?: FilterChip[]
@@ -56,6 +57,7 @@ const useDebounce = <T,>({ value, delay }: { value: T; delay: number }): T => {
  * @param root0
  * @param root0.items
  * @param root0.renderItem
+ * @param root0.getItemKey
  * @param root0.searchPlaceholder
  * @param root0.searchKeys
  * @param root0.filters
@@ -70,6 +72,7 @@ const useDebounce = <T,>({ value, delay }: { value: T; delay: number }): T => {
  * <EntityCollectionList
  *   items={authors}
  *   renderItem={(author) => <AuthorCard {...author} />}
+ *   getItemKey={(author) => author.id}
  *   searchKeys={['display_name', 'orcid']}
  *   filters={[
  *     { label: 'Verified', value: 'verified', color: 'green' },
@@ -87,6 +90,7 @@ const useDebounce = <T,>({ value, delay }: { value: T; delay: number }): T => {
 export const EntityCollectionList = <T,>({
 	items,
 	renderItem,
+	getItemKey,
 	searchPlaceholder = "Search...",
 	searchKeys = EMPTY_SEARCH_KEYS as Array<keyof T>,
 	filters = EMPTY_FILTERS,
@@ -226,9 +230,10 @@ export const EntityCollectionList = <T,>({
 					<ScrollArea style={{ height }}>
 						{filteredItems.length > 0 ? (
 							<Stack gap="sm">
-								{filteredItems.map((item, index) => (
-									<Box key={index}>{renderItem(item, index)}</Box>
-								))}
+								{filteredItems.map((item, index) => {
+									const key = getItemKey ? getItemKey(item, index) : index;
+									return <Box key={key}>{renderItem(item, index)}</Box>;
+								})}
 							</Stack>
 						) : (
 							renderEmptyState()

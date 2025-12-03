@@ -81,7 +81,7 @@ const getEntityTypeColor = (entityType: EntityType): string => {
  * @param date
  */
 const formatRelativeTime = (date: Date): string => {
-	if (!date || isNaN(date.getTime())) {
+	if (!date || Number.isNaN(date.getTime())) {
 		return "Invalid date";
 	}
 
