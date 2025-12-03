@@ -15,9 +15,8 @@
  */
 
 import { getWorks, getAuthors, getInstitutions, getSources, getTopicById } from '@bibgraph/client';
-import type { EntityType, GraphNode, GraphEdge } from '@bibgraph/types';
 import { RelationType, getEntityRelationshipQueries } from '@bibgraph/types';
-import type { RelationshipQueryConfig } from '@bibgraph/types';
+import type { EntityType, GraphNode, GraphEdge , RelationshipQueryConfig } from '@bibgraph/types';
 import {
   logger,
   getBackgroundTaskExecutor,

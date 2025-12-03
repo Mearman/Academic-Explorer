@@ -1,6 +1,7 @@
 import { createTheme, style } from "@vanilla-extract/css";
-import { baseThemeContract } from "./theme-vars.css";
+
 import type { ComponentLibrary } from "./theme-contracts";
+import { baseThemeContract } from "./theme-vars.css";
 
 // Component library-specific spacing and design tokens
 const componentLibraries = {

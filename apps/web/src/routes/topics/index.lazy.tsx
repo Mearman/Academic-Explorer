@@ -3,8 +3,8 @@ import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { EntityList } from "@/components/EntityList";
-import type { ColumnConfig } from "@/components/types";
 import type { TableViewMode } from "@/components/TableViewModeToggle";
+import type { ColumnConfig } from "@/components/types";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 

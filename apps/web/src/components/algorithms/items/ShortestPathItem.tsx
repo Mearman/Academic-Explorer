@@ -11,6 +11,12 @@
  */
 
 import {
+  ENTITY_METADATA,
+  ENTITY_TYPES,
+  type EntityType,
+  type WeightableEdgeProperty,
+} from '@bibgraph/types';
+import {
   Accordion,
   Badge,
   Button,
@@ -31,12 +37,6 @@ import {
   IconSettings,
 } from '@tabler/icons-react';
 import { useState, useMemo } from 'react';
-import {
-  ENTITY_METADATA,
-  ENTITY_TYPES,
-  type EntityType,
-  type WeightableEdgeProperty,
-} from '@bibgraph/types';
 
 import {
   findShortestPath,

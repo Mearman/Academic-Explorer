@@ -15,9 +15,10 @@
 import type { GraphNode, ViewMode } from '@bibgraph/types';
 import { useState, useCallback, useMemo } from 'react';
 
+import type { DisplayMode } from '@/components/graph/types';
+
 import { useViewModePreference } from './useViewModePreference';
 
-import type { DisplayMode } from '@/components/graph/types';
 
 /**
  * Community detection result (from algorithm execution)

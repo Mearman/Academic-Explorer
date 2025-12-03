@@ -5,15 +5,16 @@
 
 import type { CSSProperties } from 'react';
 import { useMemo, useCallback } from 'react';
+
+import { useTheme } from '../contexts/theme-context';
 import { sprinkles } from '../styles/sprinkles';
+import type { Sprinkles } from '../styles/sprinkles';
 import {
   createDynamicSpacing,
   interactiveStates,
   createCardStyles,
   createButtonStyles
 } from '../styles/sprinkles/dynamic-theme';
-import { useTheme } from '../contexts/theme-context';
-import type { Sprinkles } from '../styles/sprinkles';
 import type { ComponentLibrary } from '../styles/theme-contracts';
 
 /**
@@ -344,7 +345,3 @@ export const useLayoutPatterns = () => {
 /**
  * Type exports for TypeScript support
  */
-export type {
-  Sprinkles,
-  ComponentLibrary,
-};

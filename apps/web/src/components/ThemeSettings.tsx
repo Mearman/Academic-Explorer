@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   Text,
@@ -17,6 +16,7 @@ import {
   IconMoon,
   IconDeviceDesktop,
 } from "@tabler/icons-react";
+import React from "react";
 
 import { useTheme } from "@/contexts/theme-context";
 import type { ComponentLibrary, ColorScheme, BorderRadius } from "@/styles/theme-contracts";

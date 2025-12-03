@@ -7,10 +7,10 @@ import React, { ReactNode, useState } from "react";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { sprinkles } from "@/styles/sprinkles";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import { sprinkles } from "@/styles/sprinkles";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 

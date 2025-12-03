@@ -9,10 +9,10 @@
  * - Union formula still works after deduplication
  */
 
-import { describe, it, expect } from 'vitest';
 
 import { RelationType } from '@bibgraph/types';
 import type { GraphSourceEntity } from '@bibgraph/utils';
+import { describe, it, expect } from 'vitest';
 
 import { deduplicateEntities } from './use-multi-source-graph';
 

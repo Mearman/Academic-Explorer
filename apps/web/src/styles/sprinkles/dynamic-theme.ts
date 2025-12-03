@@ -4,8 +4,9 @@
  */
 
 import { assignInlineVars, setElementVars } from '@vanilla-extract/dynamic';
-import { themeVars } from '../theme-vars.css';
+
 import type { ComponentLibrary } from '../theme-contracts';
+import { themeVars } from '../theme-vars.css';
 
 /**
  * Type definitions for dynamic theme configuration

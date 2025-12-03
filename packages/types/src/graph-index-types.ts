@@ -8,8 +8,8 @@
  */
 
 import type { EntityType } from './entities';
-import type { RelationType } from './relationships';
 import type { EdgeDirection } from './graph-types';
+import type { RelationType } from './relationships';
 
 // ============================================================================
 // Completeness Status

@@ -1,7 +1,8 @@
 import { createTheme } from '@mantine/core'
-import { foundationColors, foundationSettings } from './theme-base'
+
 import { essentialComponents } from './essential-components'
 import { mantineComponents } from './mantine-components'
+import { foundationColors, foundationSettings } from './theme-base'
 
 // PURE MANTINE theme - uses essential + mantine components
 // mantineComponents explicitly reset styles that might persist from radix/shadcn themes

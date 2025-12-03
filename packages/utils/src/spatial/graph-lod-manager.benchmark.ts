@@ -5,6 +5,7 @@
  */
 
 import type { Position3D } from '@bibgraph/types';
+
 import { GraphLODManager, extractFrustumPlanes, createFrustumBounds } from './graph-lod-manager';
 
 interface BenchmarkResult {

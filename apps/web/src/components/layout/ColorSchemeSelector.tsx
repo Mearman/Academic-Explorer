@@ -10,8 +10,8 @@ import {
 import { useState, useEffect } from 'react'
 
 import { SplitButton } from '@/components/ui/SplitButton'
-import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 import { useTheme } from '@/contexts/theme-context'
+import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 import { sprinkles } from '@/styles/sprinkles'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'

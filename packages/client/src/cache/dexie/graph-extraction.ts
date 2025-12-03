@@ -23,9 +23,10 @@ import {
   normalizeOpenAlexId,
 } from '@bibgraph/utils';
 
+import type { StaticEntityType } from '../../internal/static-data-utils';
+
 import { generateCacheKey, getEntityCacheDB } from './entity-cache-db';
 import { type PersistentGraph } from './persistent-graph';
-import type { StaticEntityType } from '../../internal/static-data-utils';
 
 // ============================================================================
 // Constants

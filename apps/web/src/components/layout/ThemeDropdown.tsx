@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Menu,
   ActionIcon,
@@ -14,6 +13,7 @@ import {
   IconMoon,
   IconDeviceDesktop,
 } from "@tabler/icons-react";
+import React, { useState } from "react";
 
 import { ThemeSettings } from "@/components/ThemeSettings";
 import { useTheme } from "@/contexts/theme-context";

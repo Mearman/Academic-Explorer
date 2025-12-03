@@ -7,7 +7,6 @@ import { logger } from "@bibgraph/utils/logger";
 import { useLocation, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
-import { serializeSearch } from "@/utils/url-decoding";
 import {
   extractQueryParameters,
   createQueryBookmarkRequest,
@@ -17,6 +16,7 @@ import {
   areQueriesEquivalent,
 } from "@/lib/query-bookmarking";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+import { serializeSearch } from "@/utils/url-decoding";
 
 import { useUserInteractions } from "./use-user-interactions";
 

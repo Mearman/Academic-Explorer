@@ -61,7 +61,6 @@ interface ForceGraphLink {
 
 // Import and re-export shared types from parent directory
 import type { DisplayMode, NodeStyle, LinkStyle } from '../types';
-export type { DisplayMode, NodeStyle, LinkStyle } from '../types';
 
 export interface ForceGraph3DVisualizationProps {
   /** Graph nodes */

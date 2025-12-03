@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { MantineProvider, createTheme, type MantineTheme } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
-
-import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
-import { createRuntimeThemeOverrides, radiusValues } from "@/styles/theme-context-utils";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
+import { createRuntimeThemeOverrides, radiusValues } from "@/styles/theme-context-utils";
+import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 type ColorScheme = ShadcnPalette

@@ -1,7 +1,8 @@
 import { createTheme } from '@mantine/core'
-import { foundationColors, foundationSettings } from './theme-base'
+
 import { essentialComponents } from './essential-components'
 import { radixComponents } from './radix-components'
+import { foundationColors, foundationSettings } from './theme-base'
 
 export const radixTheme = createTheme({
   colors: foundationColors,

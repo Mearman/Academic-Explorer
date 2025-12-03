@@ -5,8 +5,8 @@
  * Tests MUST fail initially (Test-First Development - Constitution Principle II)
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
 import type { EntityType, GraphNode } from '@bibgraph/types';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { applyEntityTypeFilter } from './useEntityTypeFilter';
 

@@ -1,4 +1,5 @@
 import { createTheme, MantineColorsTuple, rem } from '@mantine/core'
+
 import { generateMantineColors } from '../css-variable-resolver'
 
 const shadcnColors = generateMantineColors()

@@ -26,8 +26,8 @@ import { transformEntityToGridItem, transformEntityToListItem } from "../utils/e
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
-import type { ColumnConfig as BaseColumnConfig } from "./types";
 import { TableViewModeToggle, type TableViewMode } from "./TableViewModeToggle";
+import type { ColumnConfig as BaseColumnConfig } from "./types";
 
 type Entity =
   | Funder

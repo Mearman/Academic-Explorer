@@ -7,10 +7,10 @@
  * - Discovering relationships between existing nodes
  */
 
+import type { GraphEdge } from '@bibgraph/types';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useCallback, useState, useEffect } from 'react';
 
-import type { GraphEdge } from '@bibgraph/types';
 
 import { useGraphAutoPopulation } from '@/hooks/use-graph-auto-population';
 import type { GraphVisualizationState } from '@/hooks/use-graph-visualization';

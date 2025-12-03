@@ -2,8 +2,9 @@
  * Unit tests for GraphLODManager - Level of Detail management
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+
 import {
   GraphLODManager,
   LODLevel,

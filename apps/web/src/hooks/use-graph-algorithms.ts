@@ -55,7 +55,6 @@ import {
 } from '@/services/graph-algorithms';
 
 // Re-export types for consumer convenience
-export type { WeightedPathOptions, WeightConfig, EdgePropertyFilter };
 
 /**
  * Options for community detection

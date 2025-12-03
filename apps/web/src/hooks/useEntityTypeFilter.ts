@@ -8,10 +8,10 @@
  * - Empty selectedTypes array means "show all"
  */
 
-import { useMemo, useState } from 'react';
 
 import type { EntityType, GraphNode } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
+import { useMemo, useState } from 'react';
 
 const LOG_CONTEXT = 'entity-type-filter';
 

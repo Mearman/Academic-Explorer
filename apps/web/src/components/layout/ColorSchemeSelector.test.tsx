@@ -1,8 +1,9 @@
 import { MantineProvider } from '@mantine/core'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-import { ColorSchemeSelector } from './ColorSchemeSelector'
 import { ThemeProvider } from '@/contexts/theme-context'
+
+import { ColorSchemeSelector } from './ColorSchemeSelector'
 
 const renderColorSchemeSelector = (initialColorScheme = 'light') => {
   return render(

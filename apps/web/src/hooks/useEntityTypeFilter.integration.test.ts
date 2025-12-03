@@ -10,9 +10,9 @@
  * Tests MUST verify end-to-end flow from storage → nodes → filtering
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { EntityType, GraphNode } from '@bibgraph/types';
 import { InMemoryStorageProvider } from '@bibgraph/utils';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { applyEntityTypeFilter } from './useEntityTypeFilter';
 

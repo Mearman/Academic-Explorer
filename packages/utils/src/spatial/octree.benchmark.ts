@@ -5,6 +5,7 @@
  */
 
 import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+
 import { Octree, createOctreeFromItems } from './octree';
 
 interface BenchmarkResult {

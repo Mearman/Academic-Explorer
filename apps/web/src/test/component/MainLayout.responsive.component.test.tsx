@@ -39,9 +39,10 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
 // Import after mocks
 import { MainLayout } from '@/components/layout/MainLayout';
-import { LayoutProvider } from '@/stores/layout-store';
-import { ThemeProvider } from '@/contexts/theme-context';
 import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
+import { ThemeProvider } from '@/contexts/theme-context';
+import { LayoutProvider } from '@/stores/layout-store';
+
 import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 // Test wrapper with essential providers only

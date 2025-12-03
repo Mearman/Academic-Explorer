@@ -2,8 +2,9 @@
  * Unit tests for Octree spatial indexing
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
 import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+import { describe, it, expect, beforeEach } from 'vitest';
+
 import { Octree, createOctreeFromItems } from './octree';
 
 describe('Octree', () => {

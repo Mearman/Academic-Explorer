@@ -45,7 +45,6 @@ interface ForceGraphLink extends LinkObject {
 
 // Import and re-export shared types
 import type { DisplayMode, NodeStyle, LinkStyle } from './types';
-export type { DisplayMode, NodeStyle, LinkStyle } from './types';
 
 export interface ForceGraphVisualizationProps {
   /** Graph nodes */

@@ -2,6 +2,7 @@ import { MantineProvider } from '@mantine/core'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 import { ThemeProvider } from '@/contexts/theme-context'
+
 import { SplitButton } from './SplitButton'
 
 describe('SplitButton', () => {

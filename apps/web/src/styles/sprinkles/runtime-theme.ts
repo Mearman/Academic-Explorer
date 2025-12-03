@@ -4,8 +4,9 @@
  */
 
 import { createGlobalTheme } from '@vanilla-extract/css';
-import { themeVars } from '../theme-vars.css';
+
 import type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius } from '../theme-contracts';
+import { themeVars } from '../theme-vars.css';
 
 /**
  * Runtime theme configuration that can be applied dynamically
@@ -290,4 +291,3 @@ export const getComponentLibraryTheme = (library: ComponentLibrary) => {
 /**
  * Type exports for TypeScript support
  */
-export type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius };

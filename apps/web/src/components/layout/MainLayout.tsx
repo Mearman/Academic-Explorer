@@ -32,7 +32,6 @@ import { Link } from "@tanstack/react-router";
 import React, { useState, useCallback, useRef } from "react";
 
 import { useLayoutStore } from "@/stores/layout-store";
-
 import { sprinkles } from "@/styles/sprinkles";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
