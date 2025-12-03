@@ -15,6 +15,10 @@ import jsdoc from "eslint-plugin-jsdoc";
 import nodePlugin from "eslint-plugin-n";
 import jsoncPlugin from "eslint-plugin-jsonc";
 import ymlPlugin from "eslint-plugin-yml";
+import unicornPlugin from "eslint-plugin-unicorn";
+import sonarjsPlugin from "eslint-plugin-sonarjs";
+import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import playwrightPlugin from "eslint-plugin-playwright";
 import { customRulesPlugin } from "./tools/eslint-rules/index.js";
 
 /**
@@ -145,6 +149,8 @@ export default tseslint.config([
             "prefer-arrow-functions": preferArrowFunctions,
             "jsdoc": jsdoc,
             "n": nodePlugin,
+            "unicorn": unicornPlugin,
+            "sonarjs": sonarjsPlugin,
             "custom": customRulesPlugin,
         },
         rules: {
@@ -205,6 +211,18 @@ export default tseslint.config([
             ...nodePlugin.configs["flat/recommended-module"].rules,
             "n/no-missing-import": "off", // TypeScript handles this
             "n/no-unpublished-import": "off", // We use workspace packages
+
+            // Unicorn rules (from flat/recommended)
+            ...unicornPlugin.configs["flat/recommended"].rules,
+            "unicorn/prevent-abbreviations": "off", // Too strict for existing codebase
+            "unicorn/filename-case": "off", // We use PascalCase for components
+            "unicorn/no-null": "off", // null is common in React/DOM APIs
+            "unicorn/prefer-module": "off", // We support both CJS and ESM
+
+            // SonarJS rules (from flat/recommended)
+            ...sonarjsPlugin.configs.recommended.rules,
+            "sonarjs/cognitive-complexity": ["warn", 25], // Allow moderate complexity
+            "sonarjs/no-duplicate-string": "off", // Too noisy for string literals
         },
         settings: {
             "import/resolver": {
@@ -235,17 +253,34 @@ export default tseslint.config([
             "no-only-tests/no-only-tests": "error",
         },
     },
+    // Playwright E2E test configuration
+    {
+        files: ["**/*.e2e.test.{ts,tsx}", "**/e2e/**/*.ts"],
+        plugins: {
+            playwright: playwrightPlugin,
+        },
+        rules: {
+            // Playwright recommended rules
+            ...playwrightPlugin.configs["flat/recommended"].rules,
+        },
+    },
     // TanStack Query rules (using flat/recommended)
     ...tanstackQuery.configs["flat/recommended"],
     // React rules using @eslint-react (using recommended-typescript)
     {
         files: ["**/*.tsx"],
         ...eslintReact.configs["recommended-typescript"],
+        plugins: {
+            ...eslintReact.configs["recommended-typescript"].plugins,
+            "jsx-a11y": jsxA11yPlugin,
+        },
         rules: {
             ...eslintReact.configs["recommended-typescript"].rules,
             "@eslint-react/no-unstable-context-value": "error",
             "@eslint-react/no-unstable-default-props": "error",
             "@eslint-react/prefer-read-only-props": "off",
+            // JSX A11y rules (from flat/recommended)
+            ...jsxA11yPlugin.flatConfigs.recommended.rules,
         },
     },
     // Allow default exports for config files and special cases
@@ -264,10 +299,11 @@ export default tseslint.config([
             "import/no-relative-packages": "off",
         },
     },
-    // Disable Node.js-specific rules for browser code
+    // Disable Node.js-specific rules for browser code and CLI (uses modern Node features)
     {
         files: [
             "apps/web/**/*.{ts,tsx}",
+            "apps/cli/**/*.{ts,tsx}",
             "packages/ui/**/*.{ts,tsx}",
             "packages/client/**/*.{ts,tsx}",
             "packages/utils/**/*.{ts,tsx}",
@@ -276,6 +312,16 @@ export default tseslint.config([
             "n/no-unsupported-features/node-builtins": "off",
             "n/no-missing-import": "off",
             "n/no-missing-require": "off",
+        },
+    },
+    // Allow process.exit() in CLI tools and scripts
+    {
+        files: [
+            "tools/**/*.ts",
+            "apps/cli/**/*.ts",
+        ],
+        rules: {
+            "n/no-process-exit": "off",
         },
     },
     // Disable export sorting for barrelsby-generated index files (they have their own ordering)
