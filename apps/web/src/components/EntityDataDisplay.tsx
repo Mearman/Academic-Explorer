@@ -31,7 +31,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React, { useCallback,useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
