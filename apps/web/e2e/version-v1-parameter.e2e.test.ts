@@ -354,7 +354,8 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.clock.setSystemTime(new Date('2025-11-15T12:00:00Z'));
 
     // Clear any existing settings from IndexedDB
-    await page.goto('about:blank');
+    // Must navigate to app origin before accessing IndexedDB (about:blank context denies access)
+    await page.goto('/');
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase('bibgraph-settings');
