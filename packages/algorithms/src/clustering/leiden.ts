@@ -370,6 +370,57 @@ export const leiden = <N extends Node, E extends Edge>(graph: Graph<N, E>, optio
 };
 
 /**
+ * Helper to process neighbors of a super-node during BFS connectivity check.
+ * @param nodeId - The node to process
+ * @param graph - The graph
+ * @param nodeToSuperNode - Map from node ID to super-node ID
+ * @param community - The community being checked
+ * @param visited - Set of visited super-nodes
+ * @param queue - BFS queue
+ * @param incomingEdges - Pre-computed incoming edges map
+ */
+const processNeighborsForConnectivity = <N extends Node, E extends Edge>(
+  nodeId: string,
+  graph: Graph<N, E>,
+  nodeToSuperNode: Map<string, string>,
+  community: InternalCommunity,
+  visited: Set<string>,
+  queue: string[],
+  incomingEdges: Map<string, E[]>
+): void => {
+  const outgoingResult = graph.getOutgoingEdges(nodeId);
+  if (outgoingResult.ok) {
+    outgoingResult.value.forEach((edge) => {
+      const targetSuperNodeId = nodeToSuperNode.get(edge.target);
+      if (
+        targetSuperNodeId &&
+        community.nodes.has(targetSuperNodeId) &&
+        !visited.has(targetSuperNodeId)
+      ) {
+        visited.add(targetSuperNodeId);
+        queue.push(targetSuperNodeId);
+      }
+    });
+  }
+
+  // Check incoming edges for directed graphs (use pre-computed map for efficiency)
+  if (graph.isDirected()) {
+    const incoming = incomingEdges.get(nodeId) || [];
+    for (const edge of incoming) {
+      const sourceSuperNodeId = nodeToSuperNode.get(edge.source);
+      if (
+        sourceSuperNodeId &&
+        community.nodes.has(sourceSuperNodeId) &&
+        !visited.has(sourceSuperNodeId)
+      ) {
+        visited.add(sourceSuperNodeId);
+        queue.push(sourceSuperNodeId);
+      }
+    }
+  }
+};
+
+/**
  * Phase 2: Refinement - Split disconnected communities using BFS.
  *
  * This is the key innovation of Leiden over Louvain. Any community that is
@@ -403,36 +454,7 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
 
       // Find all super-nodes connected to this one
       currentMemberNodes.forEach((nodeId) => {
-        const outgoingResult = graph.getOutgoingEdges(nodeId);
-        if (outgoingResult.ok) {
-          outgoingResult.value.forEach((edge) => {
-            const targetSuperNodeId = nodeToSuperNode.get(edge.target);
-            if (
-              targetSuperNodeId &&
-              community.nodes.has(targetSuperNodeId) &&
-              !visited.has(targetSuperNodeId)
-            ) {
-              visited.add(targetSuperNodeId);
-              queue.push(targetSuperNodeId);
-            }
-          });
-        }
-
-        // Check incoming edges for directed graphs (use pre-computed map for efficiency)
-        if (graph.isDirected()) {
-          const incoming = incomingEdges.get(nodeId) || [];
-          for (const edge of incoming) {
-            const sourceSuperNodeId = nodeToSuperNode.get(edge.source);
-            if (
-              sourceSuperNodeId &&
-              community.nodes.has(sourceSuperNodeId) &&
-              !visited.has(sourceSuperNodeId)
-            ) {
-              visited.add(sourceSuperNodeId);
-              queue.push(sourceSuperNodeId);
-            }
-          }
-        }
+        processNeighborsForConnectivity(nodeId, graph, nodeToSuperNode, community, visited, queue, incomingEdges);
       });
     }
 
@@ -473,35 +495,7 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
         if (currentMemberNodes === undefined) continue;
 
         currentMemberNodes.forEach((nodeId) => {
-          const outgoingResult = graph.getOutgoingEdges(nodeId);
-          if (outgoingResult.ok) {
-            outgoingResult.value.forEach((edge) => {
-              const targetSuperNodeId = nodeToSuperNode.get(edge.target);
-              if (
-                targetSuperNodeId &&
-                community.nodes.has(targetSuperNodeId) &&
-                !visited.has(targetSuperNodeId)
-              ) {
-                visited.add(targetSuperNodeId);
-                queue.push(targetSuperNodeId);
-              }
-            });
-          }
-
-          if (graph.isDirected()) {
-            const incoming = incomingEdges.get(nodeId) || [];
-            for (const edge of incoming) {
-              const sourceSuperNodeId = nodeToSuperNode.get(edge.source);
-              if (
-                sourceSuperNodeId &&
-                community.nodes.has(sourceSuperNodeId) &&
-                !visited.has(sourceSuperNodeId)
-              ) {
-                visited.add(sourceSuperNodeId);
-                queue.push(sourceSuperNodeId);
-              }
-            }
-          }
+          processNeighborsForConnectivity(nodeId, graph, nodeToSuperNode, community, visited, queue, incomingEdges);
         });
       }
 

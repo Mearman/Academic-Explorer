@@ -179,7 +179,7 @@ export const kCoreDecomposition = <N extends Node, E extends Edge>(graph: Graph<
           const oldBin = bins[neighborDegree];
 
           // Remove from old bin using swap-and-pop for O(1) removal
-          const lastIdx = oldBin.at(-1);
+          const lastIdx = oldBin[oldBin.length - 1];
           if (lastIdx !== undefined) {
             oldBin[neighborPos] = lastIdx;
             oldBin.pop();

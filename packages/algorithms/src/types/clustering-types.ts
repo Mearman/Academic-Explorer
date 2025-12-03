@@ -338,7 +338,6 @@ export interface ClusterMetrics {
  * Configuration for Louvain algorithm optimization.
  * @remarks
  * All fields are optional. If not provided, adaptive defaults are used based on graph size.
- * @since Phase 1 (Parameter Tuning)
  */
 export interface LouvainConfiguration {
   /**
@@ -352,7 +351,6 @@ export interface LouvainConfiguration {
    * Higher resolution = more communities detected
    * Lower resolution = fewer communities detected
    * @default 1.0
-   * @since Phase 1 (Parameter Tuning)
    */
   resolution?: number;
 
@@ -367,7 +365,6 @@ export interface LouvainConfiguration {
    * - `"best"`: Always evaluate all neighbors, select maximum ΔQ (quality-first)
    * - `"random"`: Accept first neighbor with positive ΔQ (not recommended)
    * @default "auto"
-   * @since Phase 2 (Fast Louvain)
    */
   mode?: "auto" | "best" | "random";
 
@@ -380,7 +377,6 @@ export interface LouvainConfiguration {
    * Used for:
    * - Neighbor order randomization (Fisher-Yates shuffle)
    * - Tie-breaking in modularity optimization
-   * @since Phase 1 (Parameter Tuning)
    */
   seed?: number;
 
@@ -395,7 +391,6 @@ export interface LouvainConfiguration {
    * - Lower values = stricter convergence, higher quality, slower performance
    * - Higher values = looser convergence, lower quality, faster performance
    * @default Adaptive (1e-5 or 1e-6 based on graph size)
-   * @since Phase 1 (Parameter Tuning)
    */
   minModularityIncrease?: number;
 
@@ -414,7 +409,6 @@ export interface LouvainConfiguration {
    * Most node movements occur in first few iterations, so lower limits
    * are effective for large graphs.
    * @default Adaptive (20, 40, or 50 based on graph size and level)
-   * @since Phase 1 (Parameter Tuning)
    */
   maxIterations?: number;
 }
@@ -424,7 +418,6 @@ export interface LouvainConfiguration {
  * @remarks
  * Used by altered communities heuristic to reduce redundant computation.
  * Only nodes in altered communities (and their neighbors) need to be revisited.
- * @since Phase 4 (spec-027, Altered Communities)
  */
 export interface AlteredCommunitiesState {
   /**
@@ -453,7 +446,6 @@ export interface AlteredCommunitiesState {
  *
  * **Note**: Cache population logic was removed in final optimization phase due to
  * complexity and lack of measured performance benefit for citation networks.
- * @since Phase 5 (spec-027, Community Caching)
  */
 export type CommunityHashTable = Map<string, number>;
 
@@ -517,7 +509,6 @@ export type HierarchicalError =
  * - Best mode: Modularity ~0.2 (baseline)
  * - Auto mode (large graphs): Modularity ~0.19 (5% loss for 3-6x speedup)
  * - Random mode: Modularity ~0.18-0.19 (acceptable for speed-critical use cases)
- * @since Phase 1 (spec-027)
  */
 export interface LouvainResult<T = string> {
   /** Map of community ID → community structure */

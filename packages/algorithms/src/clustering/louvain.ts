@@ -37,7 +37,6 @@ interface LouvainCommunity {
  * @remarks
  * Large graphs (>500 nodes) use looser threshold for faster convergence.
  * Small graphs (≤500 nodes) use stricter threshold for higher quality.
- * @since Phase 1 (spec-027)
  */
 export const getAdaptiveThreshold = (nodeCount: number): number => nodeCount > 500 ? 1e-5 : 1e-6;
 
@@ -50,7 +49,6 @@ export const getAdaptiveThreshold = (nodeCount: number): number => nodeCount > 5
  * First hierarchy level (level 0) with large graphs (>200 nodes) uses lower limit (20)
  * because most node movements happen in the first iteration.
  * Subsequent levels and small graphs use higher limits (40-50) for refinement.
- * @since Phase 1 (spec-027)
  */
 export const getAdaptiveIterationLimit = (nodeCount: number, level: number): number => {
   if (level === 0 && nodeCount > 200) {
@@ -77,7 +75,6 @@ export const getAdaptiveIterationLimit = (nodeCount: number, level: number): num
  *
  * **Current strategy**: Always use best-neighbor mode for quality. Random mode remains available
  * via explicit `mode: "random"` parameter for experimentation but is not recommended.
- * @since Phase 4 (spec-027, Fast Louvain)
  */
 export const determineOptimalMode = (): "best" | "random" => "best";
 
@@ -92,7 +89,6 @@ export const determineOptimalMode = (): "best" | "random" => "best";
  * If seed is undefined, uses Math.random() (non-deterministic).
  *
  * LCG parameters: a=1664525, c=1013904223, m=2^32 (Numerical Recipes)
- * @since Phase 4 (spec-027, Fast Louvain)
  */
 export const shuffle = <T>(array: T[], seed?: number): T[] => {
   let rng: () => number;

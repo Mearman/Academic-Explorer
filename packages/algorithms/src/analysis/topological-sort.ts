@@ -55,7 +55,7 @@ export const topologicalSort = <N extends Node, E extends Edge = Edge>(graph: Gr
     }
 
     if (visited.has(nodeId)) {
-      return Ok(undefined);
+      return Ok(void 0);
     }
 
     visited.add(nodeId);
@@ -81,7 +81,7 @@ export const topologicalSort = <N extends Node, E extends Edge = Edge>(graph: Gr
       postorder.push(node.value);
     }
 
-    return Ok(undefined);
+    return Ok(void 0);
   };
 
   // Run DFS from all unvisited nodes
@@ -95,5 +95,6 @@ export const topologicalSort = <N extends Node, E extends Edge = Edge>(graph: Gr
   }
 
   // Reverse postorder gives topological order
-  return Ok(postorder.reverse());
+  postorder.reverse();
+  return Ok(postorder);
 };

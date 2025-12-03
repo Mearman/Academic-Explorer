@@ -4,7 +4,6 @@
  * CSR is a memory-efficient format for storing sparse graphs using typed arrays.
  * Provides better cache locality and memory access patterns compared to Map-based adjacency lists.
  * @module utils/csr
- * @since Phase 5 (spec-027)
  */
 
 import { Graph } from '../graph/graph';
@@ -38,7 +37,6 @@ import { type Edge,type Node } from '../types/graph';
  * const neighborIndices = csr.edges.slice(start, end); // [1, 2] (B, C)
  * const neighborWeights = csr.weights.slice(start, end); // [1.0, 2.0]
  * ```
- * @since Phase 5 (spec-027)
  */
 export interface CSRGraph<N extends Node, E extends Edge> {
   /**
@@ -134,7 +132,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
  * console.log(csrGraph.edges); // [1]
  * console.log(csrGraph.weights); // [1.0]
  * ```
- * @since Phase 5 (spec-027)
  */
 export const convertToCSR = <N extends Node, E extends Edge>(graph: Graph<N, E>): CSRGraph<N, E> => {
   const allNodes = graph.getAllNodes();

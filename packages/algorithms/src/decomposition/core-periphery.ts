@@ -156,9 +156,9 @@ export const corePeripheryDecomposition = <N extends Node, E extends Edge>(graph
 
   // Step 2: Iterative coreness optimization using matrix approach
   // Borgatti-Everett: maximize correlation between observed edges and coreness product
-  let iterations = 0;
   let converged = false;
   let previousFit = -Infinity;
+  let iterations: number;
 
   for (iterations = 0; iterations < maxIterations; iterations++) {
     // Update coreness scores to maximize fit with ideal core-periphery pattern

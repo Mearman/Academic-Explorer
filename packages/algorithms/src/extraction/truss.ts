@@ -90,6 +90,50 @@ export const computeTriangleSupport = <N extends Node, E extends Edge>(graph: Gr
 };
 
 /**
+ * Helper to update edge support when a triangle is removed.
+ * @param a - First node of edge
+ * @param b - Second node of edge
+ * @param source - Source of removed edge
+ * @param target - Target of removed edge
+ * @param triangleId - Triangle being removed
+ * @param truss - Current truss graph
+ * @param support - Support map
+ * @param edgeTriangles - Edge to triangles map
+ */
+const updateEdgeSupportAfterTriangleRemoval = <N extends Node, E extends Edge>(
+  a: string,
+  b: string,
+  source: string,
+  target: string,
+  triangleId: string,
+  truss: Graph<N, E>,
+  support: Map<string, number>,
+  edgeTriangles: Map<string, Set<string>>
+): void => {
+  if ((a === source && b === target) || (a === target && b === source)) {
+    return; // Skip the removed edge itself
+  }
+
+  // Find the actual edge ID for this pair
+  truss.getAllEdges().forEach((otherEdge) => {
+    const match =
+      (otherEdge.source === a && otherEdge.target === b) ||
+      (otherEdge.source === b && otherEdge.target === a);
+
+    if (match) {
+      // Decrement support for this edge
+      const currentSupport = support.get(otherEdge.id) || 0;
+      if (currentSupport > 0) {
+        support.set(otherEdge.id, currentSupport - 1);
+      }
+
+      // Remove this triangle from the edge's triangle set
+      edgeTriangles.get(otherEdge.id)?.delete(triangleId);
+    }
+  });
+};
+
+/**
  * Extracts k-truss subgraph from the input graph.
  *
  * K-truss: maximal subgraph where every edge participates in at least (k-2) triangles.
@@ -241,27 +285,7 @@ export const extractKTruss = <N extends Node, E extends Edge>(graph: Graph<N, E>
         ];
 
         otherEdgePairs.forEach(([a, b]) => {
-          if ((a === source && b === target) || (a === target && b === source)) {
-            return; // Skip the removed edge itself
-          }
-
-          // Find the actual edge ID for this pair
-          truss.getAllEdges().forEach((otherEdge) => {
-            const match =
-              (otherEdge.source === a && otherEdge.target === b) ||
-              (otherEdge.source === b && otherEdge.target === a);
-
-            if (match) {
-              // Decrement support for this edge
-              const currentSupport = support.get(otherEdge.id) || 0;
-              if (currentSupport > 0) {
-                support.set(otherEdge.id, currentSupport - 1);
-              }
-
-              // Remove this triangle from the edge's triangle set
-              edgeTriangles.get(otherEdge.id)?.delete(triangleId);
-            }
-          });
+          updateEdgeSupportAfterTriangleRemoval(a, b, source, target, triangleId, truss, support, edgeTriangles);
         });
       });
 

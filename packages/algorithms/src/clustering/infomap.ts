@@ -104,24 +104,6 @@ export const infomap = <N extends Node, E extends Edge>(graph: Graph<N, E>, opti
   const nodeToModule = new Map<string, number>();
   const modules = new Map<number, InternalModule>();
 
-  // Group nodes by their strongest neighbor connections
-  const nodeNeighbors = new Map<string, Map<string, number>>();
-
-  allNodes.forEach((node) => {
-    const neighbors = new Map<string, number>();
-
-    transitions.forEach((t) => {
-      if (t.from === node.id) {
-        neighbors.set(t.to, (neighbors.get(t.to) || 0) + t.probability);
-      }
-      if (t.to === node.id) {
-        neighbors.set(t.from, (neighbors.get(t.from) || 0) + t.probability);
-      }
-    });
-
-    nodeNeighbors.set(node.id, neighbors);
-  });
-
   // Use simpler initialization: group into modules of ~20 nodes each
   let nextModuleId = 0;
   const targetModuleSize = 20;
