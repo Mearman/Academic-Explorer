@@ -5,11 +5,11 @@ import { z } from "zod";
 import { LazyRoute } from "@/components/routing/LazyRoute";
 
 const autocompleteSearchSchema = z.object({
-  filter: z.string().optional().catch(),
-  search: z.string().optional().catch(),
-  q: z.string().optional().catch(),
+  filter: z.string().optional().catch(undefined),
+  search: z.string().optional().catch(undefined),
+  q: z.string().optional().catch(undefined),
   // Comma-separated list of entity types to search (empty = all)
-  types: z.string().optional().catch(),
+  types: z.string().optional().catch(undefined),
 });
 
 const AutocompleteGeneralRoute = lazy(() => import("./index.lazy"));

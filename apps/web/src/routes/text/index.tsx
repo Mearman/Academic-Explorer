@@ -5,9 +5,9 @@ import { z } from "zod";
 import { LazyRoute } from "@/components/routing/LazyRoute";
 
 const textSearchSchema = z.object({
-  title: z.string().optional().catch(),
-  abstract: z.string().optional().catch(),
-  text: z.string().optional().catch(),
+  title: z.string().optional().catch(undefined),
+  abstract: z.string().optional().catch(undefined),
+  text: z.string().optional().catch(undefined),
 });
 
 const TextAnalysisRoute = lazy(() => import("./index.lazy"));

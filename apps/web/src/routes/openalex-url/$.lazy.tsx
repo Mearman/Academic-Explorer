@@ -29,10 +29,6 @@ const buildPathWithSearch = (path: string, params: URLSearchParams): string => {
   return path;
 };
 
-export const Route = createLazyFileRoute("/openalex-url/$")({
-  component: OpenAlexUrlComponent,
-});
-
 const OpenAlexUrlComponent = () => {
   logger.debug("routing", "OpenAlexUrlComponent: Component function called");
   const { _splat: splat } = useParams({ from: "/openalex-url/$" });
@@ -315,4 +311,9 @@ const OpenAlexUrlComponent = () => {
     </div>
   );
 };
+
+export const Route = createLazyFileRoute("/openalex-url/$")({
+  component: OpenAlexUrlComponent,
+});
+
 export default OpenAlexUrlComponent;

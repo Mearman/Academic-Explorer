@@ -44,10 +44,6 @@ const isSTARDatasetArray = (data: unknown): data is STARDataset[] => Array.isArr
         "includedPapers" in item,
     );
 
-export const Route = createFileRoute("/evaluation/results")({
-  component: ComparisonResults,
-});
-
 interface ComparisonRun {
   id: string;
   datasetName: string;
@@ -1285,3 +1281,7 @@ const ComparisonResults = () => {
     </div>
   );
 };
+
+export const Route = createFileRoute("/evaluation/results")({
+  component: ComparisonResults,
+});

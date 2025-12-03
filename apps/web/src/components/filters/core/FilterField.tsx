@@ -27,7 +27,7 @@ interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
   error?: string;
 }
 
-export const FilterField = <T,>({
+export const FilterField = <T extends EntityFilters>({
   condition,
   config,
   onUpdate,

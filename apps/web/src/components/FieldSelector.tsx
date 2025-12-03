@@ -23,7 +23,7 @@ export interface FieldSelectorProps<
   description?: string;
 }
 
-export const FieldSelector = <T,>({
+export const FieldSelector = <T extends readonly string[]>({
   availableFields,
   selectedFields,
   onFieldsChange,
@@ -139,10 +139,9 @@ export const FieldSelector = <T,>({
                     onKeyDown={(event) => {
                       if (event.key === "Backspace" && search.length === 0) {
                         event.preventDefault();
-                        if (selectedFields.length > 0) {
-                          handleValueRemove(
-                            selectedFields.at(-1),
-                          );
+                        const lastField = selectedFields.at(-1);
+                        if (lastField !== undefined) {
+                          handleValueRemove(lastField);
                         }
                       }
                     }}

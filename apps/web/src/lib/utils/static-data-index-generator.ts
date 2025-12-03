@@ -216,7 +216,7 @@ export const generateIndexForEntityType = async (entityDir: string, entityType: 
     }
 
     const overallLastUpdated =
-      Math.max(maxLastUpdated, new Date().toISOString());
+      maxLastUpdated > new Date().toISOString() ? maxLastUpdated : new Date().toISOString();
 
     // Read existing index to check if content has changed
     const indexPath = path.join(entityDir, INDEX_FILENAME);
