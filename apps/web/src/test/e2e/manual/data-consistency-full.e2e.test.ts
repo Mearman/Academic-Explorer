@@ -149,8 +149,7 @@ test.describe('Data Consistency - All 276 URLs', () => {
           // These might be handled differently in the UI
           // For now, just verify the page loads without error
           const mainContent = page.locator('main');
-          const mainText = await mainContent.textContent();
-          expect(mainText).toBeTruthy();
+          await expect(mainContent).not.toHaveText('');
         }
       });
     }
@@ -181,11 +180,10 @@ test.describe('Data Consistency - All 276 URLs', () => {
             const errorHeading = await page.locator('h1:has-text("Error")').count();
             expect(errorHeading).toBe(0);
 
-            // Verify main content exists
+            // Verify main content exists and has substantial content
             const mainContent = page.locator('main');
-            const mainText = await mainContent.textContent();
-            expect(mainText).toBeTruthy();
-            expect(mainText!.length).toBeGreaterThan(50); // Should have substantial content
+            await expect(mainContent).not.toHaveText('');
+            await expect(mainContent).not.toHaveText(/^.{0,50}$/); // Should have more than 50 characters
 
             // For detail pages, verify entity data is shown
             if (isEntityDetail(apiUrl)) {

@@ -139,7 +139,7 @@ export const FieldSelector = <T extends readonly string[]>({
                     onKeyDown={(event) => {
                       if (event.key === "Backspace" && search.length === 0) {
                         event.preventDefault();
-                        const lastField = selectedFields.at(-1);
+                        const lastField = selectedFields[selectedFields.length - 1];
                         if (lastField !== undefined) {
                           handleValueRemove(lastField);
                         }

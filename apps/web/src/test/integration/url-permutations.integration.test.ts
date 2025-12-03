@@ -425,7 +425,7 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
         expect(current).toBeGreaterThanOrEqual(next);
       }
 
-      console.log(`✓ Sort order verified: citations ${data.results[0].cited_by_count} → ${data.results.at(-1).cited_by_count}`);
+      console.log(`✓ Sort order verified: citations ${data.results[0].cited_by_count} → ${data.results[data.results.length - 1].cited_by_count}`);
     }, 10_000);
 
     it('should verify select parameter limits fields', async () => {

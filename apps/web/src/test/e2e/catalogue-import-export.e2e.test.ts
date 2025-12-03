@@ -71,7 +71,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       // Wait for notification to disappear
       // Removed: waitForTimeout - use locator assertions instead
       // Close and reopen modal for next format (if not last)
-      if (format !== implementedFormats.at(-1)) {
+      if (format !== implementedFormats[implementedFormats.length - 1]) {
         await page.locator('button:has-text("Done")').click();
         await page.locator('[data-testid="export-list-button"]').click();
         await expect(page.getByRole('dialog', { name: 'Export List' })).toBeVisible();

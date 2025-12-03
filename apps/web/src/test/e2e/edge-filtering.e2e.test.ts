@@ -66,7 +66,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     const outboundOptions = await page.getByText("Outbound").all();
     // Click the last occurrence (the one in the SegmentedControl)
     if (outboundOptions.length > 0) {
-      await outboundOptions.at(-1)!.click();
+      await outboundOptions[outboundOptions.length - 1]!.click();
     }
 
     // Wait for filter to update
@@ -85,7 +85,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     const inboundOptions = await page.getByText("Inbound").all();
     // Click the last occurrence (the one in the SegmentedControl)
     if (inboundOptions.length > 0) {
-      await inboundOptions.at(-1)!.click();
+      await inboundOptions[inboundOptions.length - 1]!.click();
     }
 
     // Wait for filter to update
@@ -107,7 +107,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Click Outbound
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions.at(-1)!.click();
+      await outboundOptions[outboundOptions.length - 1]!.click();
       // Removed: waitForTimeout - use locator assertions instead
       await expect(page.getByText("outbound", { exact: true })).toBeVisible({ timeout: 5000 });
       console.log("Changed to: Outbound");
@@ -116,7 +116,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Click Inbound
     const inboundOptions = await page.getByText("Inbound").all();
     if (inboundOptions.length > 0) {
-      await inboundOptions.at(-1)!.click();
+      await inboundOptions[inboundOptions.length - 1]!.click();
       // Removed: waitForTimeout - use locator assertions instead
       await expect(page.getByText("inbound", { exact: true })).toBeVisible({ timeout: 5000 });
       console.log("Changed to: Inbound");
@@ -153,7 +153,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Set filter to Outbound
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions.at(-1)!.click();
+      await outboundOptions[outboundOptions.length - 1]!.click();
       // Removed: waitForTimeout - use locator assertions instead
     }
 
@@ -177,14 +177,14 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
       // Outbound
       const outboundOptions = await page.getByText("Outbound").all();
       if (outboundOptions.length > 0) {
-        await outboundOptions.at(-1)!.click();
+        await outboundOptions[outboundOptions.length - 1]!.click();
         // Removed: waitForTimeout - use locator assertions instead
       }
 
       // Inbound
       const inboundOptions = await page.getByText("Inbound").all();
       if (inboundOptions.length > 0) {
-        await inboundOptions.at(-1)!.click();
+        await inboundOptions[inboundOptions.length - 1]!.click();
         // Removed: waitForTimeout - use locator assertions instead
       }
 
@@ -221,7 +221,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Interact with filter
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions.at(-1)!.click();
+      await outboundOptions[outboundOptions.length - 1]!.click();
       // Removed: waitForTimeout - use locator assertions instead
     }
 
