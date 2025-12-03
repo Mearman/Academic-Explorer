@@ -3,8 +3,6 @@
  * Provides functions to apply and manage theme changes at runtime
  */
 
-import { createGlobalTheme } from '@vanilla-extract/css';
-
 import type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius } from '../theme-contracts';
 import { themeVars } from '../theme-vars.css';
 

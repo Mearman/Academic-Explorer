@@ -21,17 +21,6 @@ const CONTAINER_SIZES: Record<string, string> = {
   xxl: rem("1600px"),
 }
 
-// Helper to detect neutral colors
-const isNeutralColor = (color?: string): boolean => {
-  return color ? ["zinc", "slate", "gray", "neutral", "stone"].includes(color) : false
-}
-
-// Helper to get theme-aware color variable
-const getThemeColor = (color: string | undefined, variant: 'filled' | 'light' | 'outline' | 'contrast', theme: any): string => {
-  if (!color) return 'var(--mantine-primary-color-filled)'
-  return `var(--mantine-color-${color}-${variant})`
-}
-
 export const shadcnMantineTheme = createTheme({
   colors: {
     // All shadcn color palettes
@@ -871,7 +860,7 @@ export const shadcnMantineTheme = createTheme({
     // Phase 1: Critical Layout & Navigation Components
 
     AppShell: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--appshell-bg': 'var(--mantine-color-body)',
           '--appshell-border-color': 'var(--mantine-color-default-border)',
@@ -1071,7 +1060,7 @@ export const shadcnMantineTheme = createTheme({
     // Phase 2: Data Display Components
 
     Table: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--table-bg': 'var(--mantine-color-body)',
           '--table-border-color': 'var(--mantine-color-default-border)',
@@ -1137,7 +1126,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     TableScrollContainer: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--scroll-container-bg': 'var(--mantine-color-body)',
           '--scroll-container-border-color': 'var(--mantine-color-default-border)',
@@ -1195,7 +1184,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     Divider: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--divider-color': 'var(--mantine-color-default-border)',
           '--divider-size': '1px',
@@ -1247,7 +1236,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     Code: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--code-bg': 'var(--mantine-color-gray-0)',
           '--code-color': 'var(--mantine-color-red-6)',
@@ -1529,7 +1518,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     Title: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--title-color': 'var(--mantine-color-default-color)',
           '--title-font-weight': '700',
@@ -1550,7 +1539,7 @@ export const shadcnMantineTheme = createTheme({
     // Critical Missing Components (Actively Used)
 
     Accordion: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--accordion-border-color': 'var(--mantine-color-default-border)',
           '--accordion-radius': 'var(--mantine-radius-default)',
@@ -1623,7 +1612,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     Slider: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--slider-size': 'rem(6px)',
           '--slider-track-size': 'rem(4px)',
@@ -1711,7 +1700,7 @@ export const shadcnMantineTheme = createTheme({
     },
 
     RangeSlider: {
-      vars: (theme) => ({
+      vars: () => ({
         root: {
           '--range-slider-size': 'rem(6px)',
           '--range-slider-track-size': 'rem(4px)',
@@ -1767,7 +1756,7 @@ export const shadcnMantineTheme = createTheme({
 
     // TextInput component - Basic text input field styling
     TextInput: {
-      vars: (theme) => ({
+      vars: () => ({
         input: {
           '--text-input-size': 'var(--mantine-control-size)',
           '--text-input-radius': 'var(--mantine-radius-default)',
@@ -1780,7 +1769,7 @@ export const shadcnMantineTheme = createTheme({
           '--text-input-bg': 'var(--mantine-color-default)',
         },
       }),
-      styles: (theme) => ({
+      styles: () => ({
         input: {
           border: '1px solid var(--text-input-border-color)',
           backgroundColor: 'var(--text-input-bg)',
@@ -1808,7 +1797,7 @@ export const shadcnMantineTheme = createTheme({
   
     // NativeSelect component - Native browser select dropdown
     NativeSelect: {
-      vars: (theme) => ({
+      vars: () => ({
         input: {
           '--native-select-size': 'var(--mantine-control-size)',
           '--native-select-radius': 'var(--mantine-radius-default)',
@@ -1818,7 +1807,7 @@ export const shadcnMantineTheme = createTheme({
           '--native-select-focused-border-color': 'var(--mantine-color-primary-6)',
         },
       }),
-      styles: (theme) => ({
+      styles: () => ({
         input: {
           cursor: 'pointer',
           backgroundColor: 'var(--native-select-bg)',

@@ -114,10 +114,6 @@ function EntityGraphPage() {
     handleNodeClick,
     handleBackgroundClick,
     clearHighlights,
-    highlightNodes,
-    highlightPath,
-    setCommunitiesResult,
-    selectCommunity,
     setPathSource,
     setPathTarget,
   } = visualization;

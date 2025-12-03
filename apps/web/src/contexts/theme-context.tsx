@@ -3,7 +3,6 @@ import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 import React, { createContext, useContext } from "react";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
-import { createRuntimeThemeOverrides } from "@/styles/theme-context-utils";
 import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'

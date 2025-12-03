@@ -109,6 +109,3 @@ export function useEntityTypeFilter(allNodes: GraphNode[]) {
     isGraphListNode,
   };
 }
-
-// For backwards compatibility and direct usage
-export { useEntityTypeFilter as default };

@@ -20,7 +20,7 @@ function stringHash(str: string): number {
  * Generate hue from string hash
  * Returns a value between 0-360 for consistent color mapping
  */
-function hashToHue(str: string, saturation: number = 70): number {
+function hashToHue(str: string): number {
   const hash = stringHash(str);
 
   // Convert hash to hue range (0-360)

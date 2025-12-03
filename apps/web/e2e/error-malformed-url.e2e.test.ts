@@ -21,7 +21,7 @@ test.describe('@error Malformed URL Errors', () => {
 		await waitForAppReady(page);
 
 		// Should show error message or handle gracefully
-		const hasErrorMessage = await page.getByText(/invalid|not found|error|processing/i).isVisible().catch(() => false);
+		const hasErrorMessage = await page.getByText(/error|invalid|not found|processing/i).isVisible().catch(() => false);
 		const hasContent = (await page.locator('#root, body').textContent())?.length ?? 0;
 
 		// Either show error message or have non-empty content (graceful handling)
@@ -37,7 +37,7 @@ test.describe('@error Malformed URL Errors', () => {
 		await waitForAppReady(page);
 
 		// Should show error or processing message
-		const errorOrProcessing = await page.getByText(/invalid|not found|error|processing/i).isVisible().catch(() => false);
+		const errorOrProcessing = await page.getByText(/error|invalid|not found|processing/i).isVisible().catch(() => false);
 		const hasContent = (await page.locator('#root').textContent())?.length ?? 0;
 
 		// Should handle gracefully with either error message or content
@@ -53,7 +53,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		const hasError = await errorText.isVisible().catch(() => false);
 
 		// At minimum, page should render something
@@ -86,7 +86,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		const hasError = await errorText.isVisible().catch(() => false);
 
 		if (!hasError) {
@@ -104,7 +104,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or processing message
-		const errorOrProcessing = page.getByText(/invalid|not found|error|processing/i);
+		const errorOrProcessing = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -114,7 +114,7 @@ test.describe('@error Malformed URL Errors', () => {
 		await waitForAppReady(page);
 
 		// Should show error or processing message
-		const errorOrProcessing = await page.getByText(/invalid|not found|error|processing/i).isVisible().catch(() => false);
+		const errorOrProcessing = await page.getByText(/error|invalid|not found|processing/i).isVisible().catch(() => false);
 		const hasContent = (await page.locator('#root').textContent())?.length ?? 0;
 
 		expect(errorOrProcessing || hasContent > 0).toBe(true);
@@ -129,7 +129,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		const hasError = await errorText.isVisible().catch(() => false);
 
 		if (!hasError) {
@@ -146,7 +146,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		const hasError = await errorText.isVisible().catch(() => false);
 
 		if (!hasError) {
@@ -206,7 +206,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -233,7 +233,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or redirect to index
-		const errorOrIndex = await page.getByText(/invalid|not found|error|works/i).isVisible().catch(() => false);
+		const errorOrIndex = await page.getByText(/error|invalid|not found|works/i).isVisible().catch(() => false);
 		expect(errorOrIndex).toBe(true);
 	});
 
@@ -273,7 +273,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should not access filesystem or crash
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		const hasError = await errorText.isVisible().catch(() => false);
 
 		// Should either show error or handle gracefully
@@ -289,7 +289,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -302,7 +302,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should not execute any SQL and should handle safely
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -315,7 +315,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or handle gracefully
-		const errorOrProcessing = page.getByText(/invalid|not found|error|processing/i);
+		const errorOrProcessing = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -328,7 +328,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error or redirect appropriately
-		const errorOrProcessing = await page.getByText(/invalid|not found|error|processing/i).isVisible().catch(() => false);
+		const errorOrProcessing = await page.getByText(/error|invalid|not found|processing/i).isVisible().catch(() => false);
 
 		// Either shows error or handles gracefully
 		expect(errorOrProcessing || (hasContent?.length ?? 0) > 0).toBe(true);
@@ -343,7 +343,7 @@ test.describe('@error Malformed URL Errors', () => {
 		expect(hasContent?.length).toBeGreaterThan(0);
 
 		// Should show error message
-		const errorText = page.getByText(/invalid|not found|error|processing/i);
+		const errorText = page.getByText(/error|invalid|not found|processing/i);
 		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
 	});
 
@@ -381,7 +381,7 @@ test.describe('@error Malformed URL Error Recovery', () => {
 		await page.goto('/works/invalid-work-id');
 		await waitForAppReady(page);
 
-		const hasError = await page.getByText(/invalid|not found|error/i).isVisible().catch(() => false);
+		const hasError = await page.getByText(/error|invalid|not found/i).isVisible().catch(() => false);
 
 		// If error shown, verify recovery path exists
 		if (hasError) {
@@ -434,7 +434,7 @@ test.describe('@error Malformed URL Accessibility', () => {
 		await waitForAppReady(page);
 
 		// Error messages should be accessible
-		const errorText = page.getByText(/invalid|not found|error|processing/i).first();
+		const errorText = page.getByText(/error|invalid|not found|processing/i).first();
 		const isVisible = await errorText.isVisible().catch(() => false);
 
 		if (isVisible) {

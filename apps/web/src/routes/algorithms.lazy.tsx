@@ -38,7 +38,7 @@ import {
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
-import { AlgorithmTabs, type CommunityResult } from '@/components/algorithms';
+import { AlgorithmTabs } from '@/components/algorithms';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';

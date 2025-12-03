@@ -29,9 +29,8 @@ export const radixComponents = {
 
   // Radix Card - absolutely minimal styling
   Card: {
-    vars: (theme, props) => {
+    vars: (_theme, props) => {
       const variant = props.variant ?? 'default'
-      const colorKey = props.color && Object.keys(theme.colors).includes(props.color) ? props.color : undefined
 
       return {
         root: {
@@ -154,7 +153,7 @@ export const radixComponents = {
     defaultProps: {
       shadow: undefined, // No shadow for Radix
     },
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         'paper-bg': 'transparent', // Radix is unstyled
         'paper-shadow': 'none', // Radix is unstyled
@@ -174,7 +173,7 @@ export const radixComponents = {
     defaultProps: {
       withBorder: false, // No border for Radix
     },
-    vars: (theme) => ({
+    vars: () => ({
       content: {
         'modal-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'modal-shadow': 'none', // No shadow for Radix
@@ -191,7 +190,7 @@ export const radixComponents = {
 
   // Radix Drawer - minimal styling
   Drawer: {
-    vars: (theme) => ({
+    vars: () => ({
       content: {
         'drawer-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'drawer-shadow': 'none', // No shadow for Radix
@@ -208,7 +207,7 @@ export const radixComponents = {
 
   // Radix Popover - minimal styling
   Popover: {
-    vars: (theme) => ({
+    vars: () => ({
       dropdown: {
         'popover-bg': 'var(--mantine-color-body)', // Use theme-aware body color
         'popover-shadow': 'none', // No shadow for Radix
@@ -244,7 +243,7 @@ export const radixComponents = {
 
   // Radix AppShell - minimal backgrounds
   AppShell: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--appshell-bg': 'transparent',
         '--appshell-border-color': 'var(--mantine-color-default-border)',
@@ -301,7 +300,7 @@ export const radixComponents = {
 
   // Radix Accordion - minimal styling
   Accordion: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--accordion-border-color': 'var(--mantine-color-default-border)',
         '--accordion-radius': 'var(--mantine-radius-default)',

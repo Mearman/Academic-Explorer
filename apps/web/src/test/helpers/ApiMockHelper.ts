@@ -137,7 +137,7 @@ export class ApiMockHelper {
 		data: unknown
 	): Promise<void> {
 		const pattern = new RegExp(
-			`/api/openalex/${entityType}/${entityId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`
+			`/api/openalex/${entityType}/${entityId.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&')}`
 		);
 
 		await this.mockApiRoute(pattern, data);

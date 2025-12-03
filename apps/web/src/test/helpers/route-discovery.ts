@@ -162,7 +162,7 @@ export function extractEntityType(route: string): EntityType | null {
 	}
 
 	// Match nested patterns like /concepts/$conceptId
-	const nestedMatch = route.match(/^\/([a-z]+)\/\$[a-zA-Z]+$/);
+	const nestedMatch = route.match(/^\/([a-z]+)\/\$[A-Za-z]+$/);
 	if (nestedMatch) {
 		return nestedMatch[1] as EntityType;
 	}
@@ -192,7 +192,7 @@ export function resolveRoute(route: string, id: string): string {
 	}
 
 	// Replace $paramName patterns
-	return route.replace(/\$[a-zA-Z]+$/, id);
+	return route.replace(/\$[A-Za-z]+$/, id);
 }
 
 /**

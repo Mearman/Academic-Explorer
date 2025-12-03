@@ -99,7 +99,7 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // List pages with no cached data may show "No data available" (72 chars minimum)
           const hasSelectParam = apiUrl.includes('?select=');
           // Check if URL is a list page (ends with entity type, no ID)
-          const isListPage = /\/(works|authors|sources|institutions|funders|publishers|concepts|topics)(\?|$)/.test(apiUrl);
+          const isListPage = /\/(authors|concepts|funders|institutions|publishers|sources|topics|works)(\?|$)/.test(apiUrl);
           const isExternalId = apiUrl.includes('orcid:') || apiUrl.includes('issn:') || apiUrl.includes('ror:');
           const minContentLength = hasSelectParam ? 50 : (isListPage ? 50 : (isExternalId ? 75 : 100));
 

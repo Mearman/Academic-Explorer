@@ -210,7 +210,7 @@ function ExternalIdRoute() {
 
         // Reject obviously invalid patterns
         const invalidPatterns = [
-          /^[^a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/, // Contains invalid URL characters
+          /^[^!#$%&'(\-0-9A-Za-z./:?_~@[\])*+,;=]+$/, // Contains invalid URL characters
           /^\s+$/, // Only whitespace
           /^(data:|javascript:|vbscript:)/i, // Dangerous protocols
         ];
@@ -235,7 +235,7 @@ function ExternalIdRoute() {
         // Convert: https://api.openalex.org/authors/A5023888391 -> https://api.openalex.org/A5023888391
         // The API uses REST-style paths but the entity detection expects the ID directly after openalex.org
         const apiPathMatch = idForDetection.match(
-          /^(https?:\/\/(?:api\.)?openalex\.org)\/(?:authors|works|institutions|sources|funders|publishers|topics|concepts)\/([WASIPCFKQT]\d+)$/i,
+          /^(https?:\/\/(?:api\.)?openalex\.org)\/(?:authors|concepts|funders|institutions|publishers|sources|topics|works)\/([ACFIKPQSTW]\d+)$/i,
         );
         if (apiPathMatch) {
           idForDetection = `${apiPathMatch[1]}/${apiPathMatch[2]}`;
@@ -250,7 +250,7 @@ function ExternalIdRoute() {
         // Clean up OpenAlex API URLs with external IDs (ROR, ORCID, etc.)
         // Convert: https://api.openalex.org/institutions/ror:02y3ad647 -> ror:02y3ad647
         const externalIdApiPathMatch = idForDetection.match(
-          /^https?:\/\/(?:api\.)?openalex\.org\/(?:authors|works|institutions|sources|funders|publishers|topics|concepts)\/(.+)$/i,
+          /^https?:\/\/(?:api\.)?openalex\.org\/(?:authors|concepts|funders|institutions|publishers|sources|topics|works)\/(.+)$/i,
         );
         if (externalIdApiPathMatch) {
           idForDetection = externalIdApiPathMatch[1];
@@ -283,7 +283,7 @@ function ExternalIdRoute() {
             case "ROR": {
               // Extract raw ROR ID from normalized URL for the route
               // normalizedId is like "https://ror.org/02y3ad647" but route expects "02y3ad647"
-              const rorIdMatch = detection.normalizedId.match(/ror\.org\/([a-z0-9]{9})$/i);
+              const rorIdMatch = detection.normalizedId.match(/ror\.org\/([0-9a-z]{9})$/i);
               const rorIdForRoute = rorIdMatch ? rorIdMatch[1] : detection.normalizedId;
               specificRoute = `/institutions/ror/${rorIdForRoute}`;
               break;

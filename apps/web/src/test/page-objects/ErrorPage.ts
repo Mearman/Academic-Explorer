@@ -111,7 +111,7 @@ export class ErrorPage extends BaseSPAPageObject {
 		await this.expectErrorDisplayed();
 		const page = this.page;
 		const has500 = await page
-			.getByText(/500|server error|internal error/i)
+			.getByText(/500|internal error|server error/i)
 			.isVisible()
 			.catch(() => false);
 		expect(has500).toBe(true);
@@ -121,7 +121,7 @@ export class ErrorPage extends BaseSPAPageObject {
 		await this.expectErrorDisplayed();
 		const page = this.page;
 		const hasNetworkError = await page
-			.getByText(/network|connection|offline|failed to fetch/i)
+			.getByText(/connection|failed to fetch|network|offline/i)
 			.isVisible()
 			.catch(() => false);
 		expect(hasNetworkError).toBe(true);
@@ -131,7 +131,7 @@ export class ErrorPage extends BaseSPAPageObject {
 		await this.expectErrorDisplayed();
 		const page = this.page;
 		const hasTimeout = await page
-			.getByText(/timeout|timed out|took too long/i)
+			.getByText(/timed out|timeout|took too long/i)
 			.isVisible()
 			.catch(() => false);
 		expect(hasTimeout).toBe(true);

@@ -123,7 +123,7 @@ test.describe('@utility Search Page', () => {
 
 		// Verify it mentions key entity types
 		const descriptionText = await pageDescription.textContent();
-		expect(descriptionText).toMatch(/works|authors|sources|institutions|topics/i);
+		expect(descriptionText).toMatch(/authors|institutions|sources|topics|works/i);
 	});
 
 	test('should maintain search query in URL on page reload', async ({ page }) => {

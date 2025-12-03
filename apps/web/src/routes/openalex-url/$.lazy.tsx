@@ -103,9 +103,9 @@ function OpenAlexUrlComponent() {
 
         // Special handling for external IDs with colons (ror:, issn:, orcid:, etc.)
         // These need to be routed to dedicated external ID routes
-        const rorPattern = /^ror:([a-z0-9]{9})$/i;
-        const issnPattern = /^issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
-        const orcidPattern = /^orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
+        const rorPattern = /^ror:([0-9a-z]{9})$/i;
+        const issnPattern = /^issn:(\d{4}-\d{3}[0-9X])$/i;
+        const orcidPattern = /^orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i;
         const doiPattern = /^https:\/?\/?doi\.org\/(.+)$/i;
 
         const rorMatch = id.match(rorPattern);

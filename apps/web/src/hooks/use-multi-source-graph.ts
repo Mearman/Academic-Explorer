@@ -386,10 +386,6 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
       const graph = getPersistentGraph();
       await graph.initialize();
       const graphEdges = graph.getAllEdges();
-      const graphNodes = graph.getAllNodes();
-
-      // Build node map for quick lookup
-      const graphNodeMap = new Map(graphNodes.map(n => [n.id, n]));
 
       // Find edges where BOTH endpoints are in current entity set
       // This ensures we only show relationships between existing nodes

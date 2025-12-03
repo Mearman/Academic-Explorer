@@ -398,7 +398,7 @@ export const sharedComponents = {
 
   // Layout components
   AppShell: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--appshell-bg': 'var(--mantine-color-body)',
         '--appshell-border-color': 'var(--mantine-color-default-border)',
@@ -455,7 +455,7 @@ export const sharedComponents = {
 
   // Critical Missing Components (Actively Used)
   Accordion: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--accordion-border-color': 'var(--mantine-color-default-border)',
         '--accordion-radius': 'var(--mantine-radius-default)',
@@ -528,7 +528,7 @@ export const sharedComponents = {
   },
 
   Slider: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--slider-size': 'rem(6px)',
         '--slider-track-size': 'rem(4px)',
@@ -616,7 +616,7 @@ export const sharedComponents = {
   },
 
   RangeSlider: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--range-slider-size': 'rem(6px)',
         '--range-slider-track-size': 'rem(4px)',

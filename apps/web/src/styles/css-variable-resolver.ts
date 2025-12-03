@@ -51,8 +51,6 @@ export const generateCSSVariables = (mode: 'light' | 'dark'): ThemeColors => {
 
   // Generate variant variables (filled, light, outline, contrast) with hover states
   Object.entries(shadcnPalettes).forEach(([paletteName, shades]) => {
-    const baseColor = paletteName
-
     // Filled variants
     const filledShade = isNeutralColor(paletteName) ? 8 :
                         ["yellow", "lime"].includes(paletteName) ? 4 :

@@ -27,7 +27,7 @@ test.describe("@error 404 Not Found Errors", () => {
 		const errorElement = page.locator(
 			'[data-testid="error-page"], [role="alert"], .error-message',
 		);
-		const notFoundText = page.getByText(/not found|404|does not exist/i);
+		const notFoundText = page.getByText(/404|does not exist|not found/i);
 
 		// Either error page or error message should be visible
 		const hasError =
@@ -39,7 +39,7 @@ test.describe("@error 404 Not Found Errors", () => {
 	test("should display 404 error for non-existent author", async ({ page }) => {
 		await errorPage.gotoNonExistentEntity("authors", "A9999999999999");
 
-		const notFoundText = page.getByText(/not found|404|does not exist/i);
+		const notFoundText = page.getByText(/404|does not exist|not found/i);
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 
@@ -48,7 +48,7 @@ test.describe("@error 404 Not Found Errors", () => {
 	}) => {
 		await errorPage.gotoNonExistentEntity("institutions", "I9999999999999");
 
-		const notFoundText = page.getByText(/not found|404|does not exist/i);
+		const notFoundText = page.getByText(/404|does not exist|not found/i);
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 
@@ -121,14 +121,14 @@ test.describe("@error 404 Not Found Errors", () => {
 	test("should display 404 error for malformed work ID", async ({ page }) => {
 		await errorPage.gotoNonExistentEntity("works", "INVALID_ID");
 
-		const notFoundText = page.getByText(/not found|404|invalid|does not exist/i);
+		const notFoundText = page.getByText(/404|does not exist|invalid|not found/i);
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 
 	test("should display 404 error for malformed author ID", async ({ page }) => {
 		await errorPage.gotoNonExistentEntity("authors", "INVALID_ID");
 
-		const notFoundText = page.getByText(/not found|404|invalid|does not exist/i);
+		const notFoundText = page.getByText(/404|does not exist|invalid|not found/i);
 		await expect(notFoundText).toBeVisible({ timeout: 10000 });
 	});
 

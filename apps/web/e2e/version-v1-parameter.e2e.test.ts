@@ -69,7 +69,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     // Navigate to settings (look for settings link or button)
     // Settings might be in a menu, header, or sidebar
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
@@ -190,7 +190,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
@@ -288,7 +288,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
@@ -448,7 +448,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
@@ -556,7 +556,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
@@ -635,7 +635,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button, a').filter({
-      hasText: /settings|configuration/i,
+      hasText: /configuration|settings/i,
     }).first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);

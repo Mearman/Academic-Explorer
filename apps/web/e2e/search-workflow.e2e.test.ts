@@ -80,7 +80,7 @@ test.describe('@workflow Search Workflow', () => {
 		// Verify URL changed to entity detail page
 		const currentUrl = page.url();
 		expect(currentUrl).toMatch(
-			/(works|authors|institutions|sources|topics|funders|publishers)\//
+			/(authors|funders|institutions|publishers|sources|topics|works)\//
 		);
 	});
 
@@ -103,7 +103,7 @@ test.describe('@workflow Search Workflow', () => {
 
 		// Verify at least one badge has valid entity type text
 		const firstBadgeText = await badges.first().textContent();
-		expect(firstBadgeText).toMatch(/work|author|institution|source|topic/i);
+		expect(firstBadgeText).toMatch(/author|institution|source|topic|work/i);
 	});
 
 	test('should maintain search query after viewing result and navigating back', async ({
@@ -308,7 +308,7 @@ test.describe('@workflow Search Workflow', () => {
 
 		// Verify at least one valid entity type is present
 		const hasValidEntityType = badgeTexts.some((text) =>
-			/work|author|institution|source|topic|funder|publisher/i.test(text)
+			/author|funder|institution|publisher|source|topic|work/i.test(text)
 		);
 		expect(hasValidEntityType).toBe(true);
 	});
@@ -519,7 +519,7 @@ test.describe('@workflow @mobile Search Workflow - Mobile Viewport', () => {
 		// Verify URL changed to entity detail page
 		const currentUrl = page.url();
 		expect(currentUrl).toMatch(
-			/(works|authors|institutions|sources|topics|funders|publishers)\//
+			/(authors|funders|institutions|publishers|sources|topics|works)\//
 		);
 
 		// Verify entity detail page is responsive on mobile

@@ -176,7 +176,7 @@ test.describe('@utility History Page', () => {
 
 		// Verify we navigated to an entity page
 		const currentUrl = page.url();
-		expect(currentUrl).toMatch(/\/(authors|works|institutions)\//);
+		expect(currentUrl).toMatch(/\/(authors|institutions|works)\//);
 
 		// Verify no errors occurred
 		await pageObject.expectNoError();

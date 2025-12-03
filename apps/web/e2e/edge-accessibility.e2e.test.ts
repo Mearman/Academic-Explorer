@@ -236,7 +236,7 @@ test.describe('Edge Styling Accessibility (WCAG 2.1 AA)', () => {
 
       // Should have direction data attribute
       const direction = await edge.getAttribute('data-direction');
-      expect(direction).toMatch(/^(outbound|inbound)$/);
+      expect(direction).toMatch(/^(inbound|outbound)$/);
 
       // Should have relation type data attribute
       const relationType = await edge.getAttribute('data-relation-type');

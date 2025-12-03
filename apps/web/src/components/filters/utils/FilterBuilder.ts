@@ -169,7 +169,7 @@ export class FilterBuilder {
 
     // OpenAlex API specific escaping rules:
     // If the value contains spaces, commas, or special characters, wrap in quotes
-    const needsQuoting = /[\s,|:()&"']/.test(escaped);
+    const needsQuoting = /[\s"&'(),:|]/.test(escaped);
 
     if (needsQuoting) {
       // Escape existing quotes
@@ -317,7 +317,7 @@ export class FilterBuilder {
 
     if (typeof value === "string") {
       // Check for operator prefixes like ">100", ">=50", etc.
-      const numericPattern = /^[><=!]*\d+(\.\d+)?$/;
+      const numericPattern = /^[!<=>]*\d+(\.\d+)?$/;
       return numericPattern.test(value.trim());
     }
 

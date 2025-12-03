@@ -71,7 +71,7 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 			}
 
 			// Verify pagination info is shown
-			expect(mainText).toMatch(/results|items|works/i);
+			expect(mainText).toMatch(/items|results|works/i);
 		}
 	});
 
@@ -206,6 +206,6 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		expect(mainText).toContain(firstWork.display_name);
 
 		// Verify select parameter is shown to user
-		expect(mainText).toMatch(/select|fields/i);
+		expect(mainText).toMatch(/fields|select/i);
 	});
 });

@@ -575,7 +575,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       }
 
       // T065: Validate Base64URL format (basic check)
-      if (!compressedData || !/^[A-Za-z0-9_-]+$/.test(compressedData)) {
+      if (!compressedData || !/^[\w-]+$/.test(compressedData)) {
         throw new Error("Invalid share URL: data must be Base64URL encoded");
       }
 
@@ -871,7 +871,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       // Create filename: catalogue-{listTitle}-{date}.{format}
       const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       const sanitizedTitle = list.title
-        .replace(/[^a-z0-9]/gi, '-')
+        .replace(/[^0-9a-z]/gi, '-')
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '')
         .toLowerCase();

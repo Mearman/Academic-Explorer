@@ -199,8 +199,6 @@ export const useDynamicButton = (options?: {
  * Provides breakpoint-aware styling helpers
  */
 export const useResponsiveDesign = () => {
-  const { config } = useTheme();
-
   const breakpoints = useMemo(() => ({
     mobile: '0px',
     tablet: '768px',
@@ -305,8 +303,6 @@ export const useThemeColors = () => {
  * Simplified version that returns valid Sprinkles parameters
  */
 export const useLayoutPatterns = () => {
-  const { sprinkles } = useSprinkles();
-
   return useMemo(() => ({
     // Flex layouts - returning the parameters instead of calling sprinkles
     flexCenter: { display: 'flex', alignItems: 'center', justifyContent: 'center' },

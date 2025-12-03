@@ -59,7 +59,7 @@ test.describe('Keywords Navigation and Display', () => {
     await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
 
     // Look for view toggle button (may be labeled differently based on current mode)
-    const toggleButton = page.locator('button').filter({ hasText: /View|Raw|Rich/i }).first();
+    const toggleButton = page.locator('button').filter({ hasText: /Raw|Rich|View/i }).first();
 
     // Click toggle to switch to raw view
     await toggleButton.click();

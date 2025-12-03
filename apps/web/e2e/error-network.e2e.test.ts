@@ -24,8 +24,8 @@ test.describe('@error Network Errors', () => {
 
     // Should display network error or retry option
     const errorIndicators = [
-      page.getByText(/network|connection|offline|failed to fetch/i),
-      page.getByText(/error|unavailable|try again/i),
+      page.getByText(/connection|failed to fetch|network|offline/i),
+      page.getByText(/error|try again|unavailable/i),
       page.locator('[data-testid="error-message"], [role="alert"]'),
     ];
 
@@ -48,7 +48,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should show error state
-    const errorText = page.getByText(/error|failed|connection|try again/i);
+    const errorText = page.getByText(/connection|error|failed|try again/i);
     await expect(errorText.first()).toBeVisible({ timeout: 15000 });
   });
 
@@ -61,7 +61,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should show offline/connection error
-    const errorText = page.getByText(/offline|disconnected|connection|error/i);
+    const errorText = page.getByText(/connection|disconnected|error|offline/i);
     await expect(errorText.first()).toBeVisible({ timeout: 15000 });
   });
 
@@ -105,7 +105,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Verify error state
-    const errorText = page.getByText(/error|failed|connection/i);
+    const errorText = page.getByText(/connection|error|failed/i);
     await expect(errorText.first()).toBeVisible({ timeout: 15000 });
 
     // "Restore" network
@@ -145,7 +145,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should show timeout or connection error
-    const errorText = page.getByText(/timeout|timed out|connection|error|unavailable/i);
+    const errorText = page.getByText(/connection|error|timed out|timeout|unavailable/i);
     await expect(errorText.first()).toBeVisible({ timeout: 15000 });
   });
 
@@ -266,7 +266,7 @@ test.describe('@error Network Errors', () => {
         await page.waitForTimeout(2000);
 
         // Should show error or retry option
-        const errorText = page.getByText(/error|failed|unavailable|try again/i);
+        const errorText = page.getByText(/error|failed|try again|unavailable/i);
         const hasError = await errorText.count();
         expect(hasError).toBeGreaterThan(0);
       }
@@ -290,8 +290,8 @@ test.describe('@error Network Errors', () => {
 
     // Should show user-friendly messages (at least one of these patterns)
     const friendlyPatterns = [
-      /network|connection|offline/i.test(bodyText || ''),
-      /unavailable|try again|retry/i.test(bodyText || ''),
+      /connection|network|offline/i.test(bodyText || ''),
+      /retry|try again|unavailable/i.test(bodyText || ''),
       /failed to load|unable to connect/i.test(bodyText || ''),
     ];
 

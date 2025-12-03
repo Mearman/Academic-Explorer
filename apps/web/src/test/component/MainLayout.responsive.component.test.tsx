@@ -6,6 +6,7 @@
  * not actual CSS behavior. E2E tests validate real responsive behavior.
  */
 
+import { InMemoryStorageProvider } from '@bibgraph/utils';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, cleanup } from '@testing-library/react';
@@ -42,8 +43,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { StorageProviderWrapper } from '@/contexts/storage-provider-context';
 import { ThemeProvider } from '@/contexts/theme-context';
 import { LayoutProvider } from '@/stores/layout-store';
-
-import { InMemoryStorageProvider } from '@bibgraph/utils';
 
 // Test wrapper with essential providers only
 const createTestWrapper = () => {

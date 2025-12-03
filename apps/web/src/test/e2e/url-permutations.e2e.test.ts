@@ -400,7 +400,7 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     expect(pageText).toContain(`Mock Work ${workId}`);
 
     // Verify page structure includes key sections
-    expect(pageText).toMatch(/publication|year|cited|author/i);
+    expect(pageText).toMatch(/author|cited|publication|year/i);
 
     console.log(`✓ Work page displays content for ${workId}`);
   });
@@ -422,7 +422,7 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     expect(pageText).toContain(`Mock Author ${authorId}`);
 
     // Verify page structure includes key sections
-    expect(pageText).toMatch(/works|publications|cited/i);
+    expect(pageText).toMatch(/cited|publications|works/i);
 
     console.log(`✓ Author page displays content for ${authorId}`);
   });

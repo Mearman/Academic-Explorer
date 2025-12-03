@@ -216,7 +216,7 @@ export const shadcnComponents = {
 
   // Shadcn Popover with shadcn styling
   Popover: {
-    vars: (theme) => ({
+    vars: () => ({
       dropdown: {
         'popover-bg': 'hsl(var(--shadcn-background))',
         'popover-shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
@@ -250,7 +250,7 @@ export const shadcnComponents = {
 
   // Shadcn AppShell with shadcn backgrounds
   AppShell: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--appshell-bg': 'hsl(var(--shadcn-background))',
         '--appshell-border-color': 'hsl(var(--shadcn-border))',
@@ -307,7 +307,7 @@ export const shadcnComponents = {
 
   // Shadcn Accordion with shadcn styling
   Accordion: {
-    vars: (theme) => ({
+    vars: () => ({
       root: {
         '--accordion-border-color': 'hsl(var(--shadcn-border))',
         '--accordion-radius': 'var(--mantine-radius-default)',

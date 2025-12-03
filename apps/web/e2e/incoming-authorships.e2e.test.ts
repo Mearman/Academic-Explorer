@@ -23,7 +23,7 @@ test.describe('Incoming Relationships - Author Authorships', () => {
     await expect(authorshipsSection).toBeVisible();
 
     // Section should have label
-    await expect(authorshipsSection.getByText(/works|authorships/i)).toBeVisible();
+    await expect(authorshipsSection.getByText(/authorships|works/i)).toBeVisible();
 
     // Should display count badge
     await expect(authorshipsSection.locator('[data-testid="relationship-count"]')).toBeVisible();

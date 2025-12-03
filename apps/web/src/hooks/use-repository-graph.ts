@@ -31,7 +31,7 @@ import { useStorageProvider } from '@/contexts/storage-provider-context';
 function normalizeOpenAlexId(id: string): string {
   if (!id) return id;
   // If it's a URL, extract just the ID part
-  const urlMatch = id.match(/openalex\.org\/([WASIPCFTKDQ]\d+)$/i);
+  const urlMatch = id.match(/openalex\.org\/([ACDFIKPQSTW]\d+)$/i);
   if (urlMatch) {
     return urlMatch[1].toUpperCase();
   }

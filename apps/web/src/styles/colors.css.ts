@@ -1,9 +1,6 @@
-import { createTheme } from "@vanilla-extract/css";
-
-import { mantineTheme, componentLibraries } from "./component-libraries.css";
+import { componentLibraries } from "./component-libraries.css";
 import { shadcnPalettes, type ShadcnPalette } from './shadcn-colors';
 import type { ColorMode, ColorScheme } from "./theme-contracts";
-import { baseThemeContract } from "./theme-vars.css";
 
 // Helper function to create color scheme from shadcn palette
 const createColorScheme = (palette: ShadcnPalette) => ({

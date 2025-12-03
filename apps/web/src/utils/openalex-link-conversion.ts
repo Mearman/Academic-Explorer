@@ -12,7 +12,7 @@ export interface ConvertedLink {
  * Detects if a string is an OpenAlex entity ID (e.g., A5017898742, W1234567890)
  */
 export function isOpenAlexId(str: string): boolean {
-  return /^[AWISVFCPT]\d+$/.test(str);
+  return /^[ACFIPSTVW]\d+$/.test(str);
 }
 
 /**
@@ -41,7 +41,7 @@ export function convertOpenAlexToInternalLink(url: string): ConvertedLink {
   const originalUrl = url;
 
   // Case 1: OpenAlex entity URL (https://openalex.org/A5017898742)
-  const entityUrlMatch = url.match(/https?:\/\/openalex\.org\/([AWISVFCPT]\d+)/i);
+  const entityUrlMatch = url.match(/https?:\/\/openalex\.org\/([ACFIPSTVW]\d+)/i);
   if (entityUrlMatch) {
     const entityId = entityUrlMatch[1];
     const entityType = getEntityTypeFromId(entityId);
@@ -90,7 +90,7 @@ export function convertOpenAlexToInternalLink(url: string): ConvertedLink {
  * Extracts OpenAlex IDs from a string
  */
 export function extractOpenAlexIds(str: string): string[] {
-  const matches = str.match(/[AWISVFCPT]\d+/g);
+  const matches = str.match(/[ACFIPSTVW]\d+/g);
   return matches || [];
 }
 

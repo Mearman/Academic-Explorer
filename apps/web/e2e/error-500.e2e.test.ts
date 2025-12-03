@@ -37,7 +37,7 @@ test.describe('@error 500 Server Errors', () => {
 
     // Should display error message or error state
     const errorIndicators = page.locator('[data-testid="error-message"], [role="alert"], .error');
-    const errorText = page.getByText(/error|failed|unavailable|try again/i);
+    const errorText = page.getByText(/error|failed|try again|unavailable/i);
 
     // Wait for error to be displayed
     await expect(errorIndicators.or(errorText).first()).toBeVisible({ timeout: 15000 });
@@ -92,7 +92,7 @@ test.describe('@error 500 Server Errors', () => {
 
     // Verify user-friendly message (not raw error)
     const technicalError = page.getByText(/500|internal server error/i);
-    const friendlyError = page.getByText(/something went wrong|error occurred|try again later/i);
+    const friendlyError = page.getByText(/error occurred|something went wrong|try again later/i);
 
     // Should have at least one error indicator
     const hasError = await technicalError.isVisible().catch(() => false) ||
@@ -130,7 +130,7 @@ test.describe('@error 500 Server Errors', () => {
     await waitForAppReady(page);
 
     // Should handle 503 gracefully
-    const errorText = page.getByText(/error|unavailable|maintenance/i);
+    const errorText = page.getByText(/error|maintenance|unavailable/i);
     await expect(errorText.first()).toBeVisible({ timeout: 15000 });
   });
 });

@@ -105,9 +105,9 @@ function ApiOpenAlexRoute() {
 
         // Special handling for external IDs with colons (ror:, issn:, orcid:, etc.)
         // These need to be routed to dedicated external ID routes
-        const rorPattern = /^institutions\/ror:([a-z0-9]{9})$/i;
-        const issnPattern = /^sources\/issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
-        const orcidPattern = /^authors\/orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
+        const rorPattern = /^institutions\/ror:([0-9a-z]{9})$/i;
+        const issnPattern = /^sources\/issn:(\d{4}-\d{3}[0-9X])$/i;
+        const orcidPattern = /^authors\/orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i;
 
         const rorMatch = decodedId.match(rorPattern);
         if (rorMatch) {

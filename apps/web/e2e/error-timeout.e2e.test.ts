@@ -32,7 +32,7 @@ test.describe('@error Timeout Errors', () => {
 
     // Should show timeout or error message
     const errorIndicators = [
-      page.getByText(/timeout|timed out|took too long|loading/i),
+      page.getByText(/loading|timed out|timeout|took too long/i),
       page.getByText(/error|failed|unavailable/i),
       page.locator('[data-testid="error-message"], [role="alert"], .skeleton'),
     ];

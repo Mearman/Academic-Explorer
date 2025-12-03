@@ -2,7 +2,6 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { DexieStorageProvider } from "@bibgraph/utils";
 import { setupGlobalErrorHandling, logger } from "@bibgraph/utils/logger";
-import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -176,9 +175,6 @@ import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 
 // Import { registerOpenAlexServiceWorker } from "@/lib/service-worker";
-
-// Import shadcn theme integration from theme builder
-import { shadcnMantineTheme } from "./styles/shadcn-mantine-theme";
 
 
 // Initialize global error handling, network monitoring, and performance tracking
