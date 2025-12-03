@@ -28,7 +28,7 @@ export interface BuildInfo {
 export const getBuildInfo = (): BuildInfo => {
 	// __BUILD_INFO__ is replaced at compile-time by Vite's define option
 	// Use typeof check to handle environments where it's not defined
-	if (__BUILD_INFO__ !== undefined) {
+	if (typeof __BUILD_INFO__ !== "undefined") {
 		return __BUILD_INFO__
 	}
 
