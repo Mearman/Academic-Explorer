@@ -39,8 +39,9 @@ test.describe('Data Version 2 Default Behavior', () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
-    expect(bodyText!.length).toBeGreaterThan(100);
+    await expect(bodyText).not.toBeEmpty();
+    const textLength = await bodyText.evaluate((el) => el.textContent?.length ?? 0);
+    expect(textLength).toBeGreaterThan(100);
 
     // Verify API requests were made
     expect(apiRequests.length).toBeGreaterThan(0);
@@ -187,11 +188,13 @@ test.describe('Data Version 2 Default Behavior', () => {
 
     // Verify page renders without errors regardless of is_xpac value
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Check for no error messages
-    const hasError = bodyText?.toLowerCase().includes('error') &&
-                     !bodyText?.toLowerCase().includes('0 errors'); // Allow "0 errors" in dev tools
+    const bodyTextContent = await bodyText.textContent();
+    const hasError = bodyTextContent !== null &&
+                     bodyTextContent.toLowerCase().includes('error') &&
+                     !bodyTextContent.toLowerCase().includes('0 errors'); // Allow "0 errors" in dev tools
 
     expect(hasError).toBeFalsy();
 

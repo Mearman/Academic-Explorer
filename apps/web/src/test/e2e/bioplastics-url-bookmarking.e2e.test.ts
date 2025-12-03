@@ -43,6 +43,9 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       // Check for works list or search results
       const pageContent = await page.locator('body').textContent();
+      if (!pageContent) {
+        throw new Error("Expected page content but got null");
+      }
 
       // Should see either loading content, results, or search indicators
       const hasValidContent =
@@ -186,6 +189,9 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
         // Removed: waitForTimeout - use locator assertions instead
         // Check page content for bookmark indicators
         const pageContent = await page.locator('body').textContent();
+        if (!pageContent) {
+          throw new Error("Expected page content but got null");
+        }
         const hasBookmarkContent =
           pageContent.includes('bioplastics') ||
           pageContent.includes('works') ||
@@ -244,6 +250,9 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
         // Verify the page loads correctly
         const pageContent = await page.locator('body').textContent();
+        if (!pageContent) {
+          throw new Error("Expected page content but got null");
+        }
         const hasValidContent =
           pageContent.includes('Works') ||
           pageContent.includes('Loading') ||
@@ -383,6 +392,9 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       // Verify content loads
       const hasValidContent = await page.locator('body').textContent();
+      if (!hasValidContent) {
+        throw new Error("Expected page content but got null");
+      }
       const contentLoaded =
         hasValidContent.includes('Works') ||
         hasValidContent.includes('Loading') ||

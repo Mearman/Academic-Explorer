@@ -211,6 +211,9 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Check that page content has loaded (either bookmarks or empty state)
       const pageContent = await page.locator('body').textContent();
+      if (!pageContent) {
+        throw new Error("Expected page content but got null");
+      }
       const hasValidContent = pageContent.includes('No bookmarks') ||
                              pageContent.includes('Search bookmarks') ||
                              pageContent.includes('bookmark');

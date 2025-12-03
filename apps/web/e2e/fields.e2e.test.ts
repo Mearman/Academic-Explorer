@@ -124,8 +124,7 @@ test.describe('@entity Fields Detail Page', () => {
 
 			// Should display domain name
 			const domainName = heading;
-			await expect(domainName).toHaveText();
-			expect(domainName).not.toBe('');
+			await expect(domainName).toHaveText(/.+/);
 		}
 	});
 
@@ -190,7 +189,7 @@ test.describe('@entity Fields Detail Page', () => {
 
 			// Should display subfield name
 			const subfieldPageName = heading;
-			await expect(subfieldPageName).toHaveText();
+			await expect(subfieldPageName).toHaveText(/.+/);
 		}
 	});
 

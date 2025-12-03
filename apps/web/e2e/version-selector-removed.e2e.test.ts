@@ -30,8 +30,9 @@ test.describe("Data Version Selector Removal After November 2025", () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
-    expect(bodyText!.length).toBeGreaterThan(100);
+    await expect(bodyText).not.toBeEmpty();
+    const textLength = await bodyText.evaluate((el) => el.textContent?.length ?? 0);
+    expect(textLength).toBeGreaterThan(100);
 
     // Verify data version selector is NOT visible
     const dataVersionSelector = page.getByTestId("data-version-selector");
@@ -64,7 +65,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Verify data version selector is NOT visible
     const dataVersionSelector = page.getByTestId("data-version-selector");
@@ -265,7 +266,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
 
     // Verify page loaded (not in settings, so selector shouldn't be present)
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Navigate back to settings
     await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
@@ -442,8 +443,9 @@ test.describe("Data Version Selector Removal After November 2025", () => {
 
     // Verify page is fully rendered
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
-    expect(bodyText!.length).toBeGreaterThan(100);
+    await expect(bodyText).not.toBeEmpty();
+    const textLength = await bodyText.evaluate((el) => el.textContent?.length ?? 0);
+    expect(textLength).toBeGreaterThan(100);
 
     console.log(
       `✅ Settings page loaded successfully in ${loadTime}ms without selector`

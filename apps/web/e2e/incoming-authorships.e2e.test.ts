@@ -71,7 +71,7 @@ test.describe('Incoming Relationships - Author Authorships', () => {
     if (await metadata.count() > 0) {
       // Metadata should contain position or corresponding indicator
       const metadataText = metadata;
-      await expect(metadataText).toHaveText();
+      await expect(metadataText).not.toBeEmpty();
     }
   });
 });

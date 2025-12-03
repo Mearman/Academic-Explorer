@@ -54,7 +54,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(firstWorkLink).toBeVisible();
 
 		const workTitle = firstWorkLink;
-		await expect(workTitle).toHaveText();
+		await expect(workTitle).toHaveText(/.+/);
 
 		await firstWorkLink.click();
 
@@ -69,7 +69,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify work title is displayed
 		const displayedTitle = entityTitle;
-		await expect(displayedTitle).toHaveText();
+		await expect(displayedTitle).toHaveText(/.+/);
 	});
 
 	test('should complete full workflow: browse → authors index → author detail', async ({ page }) => {
@@ -100,7 +100,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(firstAuthorLink).toBeVisible();
 
 		const authorName = firstAuthorLink;
-		await expect(authorName).toHaveText();
+		await expect(authorName).toHaveText(/.+/);
 
 		await firstAuthorLink.click();
 
@@ -115,7 +115,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify author name is displayed
 		const displayedName = entityTitle;
-		await expect(displayedName).toHaveText();
+		await expect(displayedName).toHaveText(/.+/);
 	});
 
 	test('should complete full workflow: browse → institutions index → institution detail', async ({ page }) => {
@@ -146,7 +146,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(firstInstitutionLink).toBeVisible();
 
 		const institutionName = firstInstitutionLink;
-		await expect(institutionName).toHaveText();
+		await expect(institutionName).toHaveText(/.+/);
 
 		await firstInstitutionLink.click();
 
@@ -161,7 +161,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify institution name is displayed
 		const displayedName = entityTitle;
-		await expect(displayedName).toHaveText();
+		await expect(displayedName).toHaveText(/.+/);
 	});
 
 	test('should support browser back navigation from detail to index', async ({ page }) => {
@@ -304,9 +304,7 @@ test.describe('@workflow Browse Workflow', () => {
 		// Verify each link has text content
 		for (let i = 0; i < Math.min(5, workCount); i++) {
 			const linkLocator = workLinks.nth(i);
-			const text = linkLocator;
-			await expect(text).toHaveText();
-			expect(text?.trim().length).toBeGreaterThan(0);
+			await expect(linkLocator).toHaveText(/.+/);
 		}
 	});
 

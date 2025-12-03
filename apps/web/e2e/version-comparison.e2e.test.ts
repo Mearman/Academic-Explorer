@@ -313,7 +313,7 @@ test.describe('Version Metadata Comparison Display', () => {
         console.log(`Helper text: "${text}"`);
 
         // Should guide users on what the comparison means
-        await expect(text).toHaveText();
+        await expect(text).not.toBeEmpty();
         console.log('✅ Helper text displayed');
       } else {
         console.log('ℹ️ Helper text not visible');

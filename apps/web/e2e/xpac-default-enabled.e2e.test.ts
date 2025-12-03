@@ -39,8 +39,9 @@ test.describe('xpac Works Default Inclusion', () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
-    expect(bodyText!.length).toBeGreaterThan(100);
+    await expect(bodyText).not.toBeEmpty();
+    const textLength = await bodyText.evaluate((el) => el.textContent?.length ?? 0);
+    expect(textLength).toBeGreaterThan(100);
 
     // Verify API requests were made (or check for page content indicating success)
     if (apiRequests.length > 0) {
@@ -87,7 +88,7 @@ test.describe('xpac Works Default Inclusion', () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Check for xpac-specific field: is_xpac
     if (apiResponses.length > 0) {
@@ -148,7 +149,7 @@ test.describe('xpac Works Default Inclusion', () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Verify API requests were made (or page loaded with content)
     if (apiRequests.length > 0) {
@@ -195,7 +196,7 @@ test.describe('xpac Works Default Inclusion', () => {
 
     // Verify page loaded successfully
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Check for xpac work types (dataset, software, specimen, other)
     if (apiResponses.length > 0) {
@@ -240,16 +241,19 @@ test.describe('xpac Works Default Inclusion', () => {
 
     // Verify page renders without errors
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Check for no error messages
-    const hasError = bodyText?.toLowerCase().includes('error') &&
-                     !bodyText?.toLowerCase().includes('0 errors'); // Allow "0 errors" in dev tools
+    const bodyTextContent = await bodyText.textContent();
+    const hasError = bodyTextContent !== null &&
+                     bodyTextContent.toLowerCase().includes('error') &&
+                     !bodyTextContent.toLowerCase().includes('0 errors'); // Allow "0 errors" in dev tools
 
     expect(hasError).toBeFalsy();
 
     // Verify page has content (not empty or error page)
-    expect(bodyText!.length).toBeGreaterThan(100);
+    const textLength = bodyTextContent?.length ?? 0;
+    expect(textLength).toBeGreaterThan(100);
 
     console.log('✅ Page renders xpac work without errors');
   });

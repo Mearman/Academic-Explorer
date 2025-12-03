@@ -233,11 +233,11 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			await expect(mainText).not.toBeEmpty();
 
 			// Should not show error page
-			expect(mainText).not.toContain("Error");
-			expect(mainText).not.toContain("Not Found");
+			await expect(mainText).not.toContainText("Error");
+			await expect(mainText).not.toContainText("Not Found");
 		});
 
 		test("should handle ROR ID with colon - ror:00cvxb145", async ({ page }) => {
@@ -255,11 +255,11 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			await expect(mainText).not.toBeEmpty();
 
 			// Should not show error page
-			expect(mainText).not.toContain("Error");
-			expect(mainText).not.toContain("Not Found");
+			await expect(mainText).not.toContainText("Error");
+			await expect(mainText).not.toContainText("Not Found");
 		});
 
 		test("should handle ISSN with colon - issn:2041-1723", async ({ page }) => {
@@ -277,11 +277,11 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			await expect(mainText).not.toBeEmpty();
 
 			// Should not show error page
-			expect(mainText).not.toContain("Error");
-			expect(mainText).not.toContain("Not Found");
+			await expect(mainText).not.toContainText("Error");
+			await expect(mainText).not.toContainText("Not Found");
 		});
 
 		test("should handle full API URL with ROR", async ({ page }) => {
@@ -295,11 +295,11 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			await expect(mainText).not.toBeEmpty();
 
 			// Should not show error page
-			expect(mainText).not.toContain("Error");
-			expect(mainText).not.toContain("Not Found");
+			await expect(mainText).not.toContainText("Error");
+			await expect(mainText).not.toContainText("Not Found");
 		});
 
 		test("should handle full API URL with ISSN", async ({ page }) => {
@@ -313,11 +313,11 @@ test.describe("@manual @utility OpenAlex URL Routing", () => {
 			await page.locator("main").waitFor({ timeout: 10_000 });
 
 			const mainText = page.locator("main");
-			await expect(mainText).toHaveText();
+			await expect(mainText).not.toBeEmpty();
 
 			// Should not show error page
-			expect(mainText).not.toContain("Error");
-			expect(mainText).not.toContain("Not Found");
+			await expect(mainText).not.toContainText("Error");
+			await expect(mainText).not.toContainText("Not Found");
 		});
 	});
 

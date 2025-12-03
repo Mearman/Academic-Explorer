@@ -222,7 +222,7 @@ test.describe("Data Version Selector November Availability", () => {
     // Removed: waitForTimeout - use locator assertions instead
     // Verify it changed to Auto
     const autoValue = selector;
-    await expect(autoValue).toHaveValue();
+    await expect(autoValue).toHaveValue("auto");
 
     console.log("✅ Successfully changed data version back to Auto");
   });

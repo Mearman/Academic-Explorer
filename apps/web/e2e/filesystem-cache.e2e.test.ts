@@ -38,8 +38,7 @@ test.describe('Filesystem Cache', () => {
 
     // Verify the page loaded (look for any heading or content)
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
-    expect(bodyText!.length).toBeGreaterThan(100); // Page has content
+    await expect(bodyText).not.toBeEmpty();
 
     console.log(`✅ Test completed - Author page loaded`);
   });
@@ -58,7 +57,7 @@ test.describe('Filesystem Cache', () => {
 
     // Verify the page loaded
     const bodyText = page.locator('body');
-    await expect(bodyText).toHaveText();
+    await expect(bodyText).not.toBeEmpty();
 
     // Cache file should now exist (either from before or newly created)
     expect(fs.existsSync(cachePath)).toBe(true);
@@ -99,8 +98,7 @@ test.describe('Filesystem Cache', () => {
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
       const bodyText = page.locator('body');
-      await expect(bodyText).toHaveText();
-      expect(bodyText!.length).toBeGreaterThan(100);
+      await expect(bodyText).not.toBeEmpty();
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -115,8 +113,7 @@ test.describe('Filesystem Cache', () => {
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
       const bodyText = page.locator('body');
-      await expect(bodyText).toHaveText();
-      expect(bodyText!.length).toBeGreaterThan(100);
+      await expect(bodyText).not.toBeEmpty();
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -131,8 +128,7 @@ test.describe('Filesystem Cache', () => {
       await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
 
       const bodyText = page.locator('body');
-      await expect(bodyText).toHaveText();
-      expect(bodyText!.length).toBeGreaterThan(100);
+      await expect(bodyText).not.toBeEmpty();
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
     });
@@ -150,10 +146,8 @@ test.describe('Filesystem Cache', () => {
     const secondBodyText = page.locator('body');
 
     // Both should have content (cache persisted)
-    await expect(firstBodyText).toHaveText();
-    await expect(secondBodyText).toHaveText();
-    expect(firstBodyText!.length).toBeGreaterThan(100);
-    expect(secondBodyText!.length).toBeGreaterThan(100);
+    await expect(firstBodyText).toHaveText(/.+/);
+    await expect(secondBodyText).toHaveText(/.+/);
 
     console.log(`✅ Cache persisted across reloads`);
   });
