@@ -10,24 +10,33 @@ import type { EntityType } from "@bibgraph/types"
  */
 const prefixToEntityType = (prefix: string): EntityType => {
 	switch (prefix) {
-		case "W":
+		case "W": {
 			return "works"
-		case "A":
+		}
+		case "A": {
 			return "authors"
-		case "S":
+		}
+		case "S": {
 			return "sources"
-		case "I":
+		}
+		case "I": {
 			return "institutions"
-		case "T":
+		}
+		case "T": {
 			return "topics"
-		case "C":
+		}
+		case "C": {
 			return "concepts"
-		case "P":
+		}
+		case "P": {
 			return "publishers"
-		case "F":
+		}
+		case "F": {
 			return "funders"
-		default:
+		}
+		default: {
 			throw new Error(`Unknown entity prefix: ${prefix}`)
+		}
 	}
 };
 

@@ -3,6 +3,11 @@
  * Separated for better testability
  */
 
+import { existsSync, readFileSync } from "node:fs"
+import { access, mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises"
+import { dirname, join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
+
 import { cachedOpenAlex, CachedOpenAlexClient } from "@bibgraph/client/cached-client"
 import { staticDataProvider } from "@bibgraph/client/internal/static-data-provider"
 import { logError, logger } from "@bibgraph/utils/logger"
@@ -12,10 +17,6 @@ import {
 	type UnifiedIndex,
 	type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
 } from "@bibgraph/utils/static-data/cache-utilities"
-import { existsSync, readFileSync } from "fs"
-import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
 import { z } from "zod"
 
 import { type StaticEntityType,SUPPORTED_ENTITIES } from "./entity-detection.js"
@@ -552,7 +553,7 @@ export class OpenAlexCLI {
 
 			try {
 				const queryIndexPath = join(queryDir, INDEX_FILENAME)
-				const { readFile } = await import("fs/promises")
+				const { readFile } = await import("node:fs/promises")
 				const queryIndexContent = await readFile(queryIndexPath, "utf-8")
 				const queryIndexRaw: unknown = JSON.parse(queryIndexContent)
 				const queryIndexValidation = QueryIndexSchema.safeParse(queryIndexRaw)
@@ -910,7 +911,7 @@ export class OpenAlexCLI {
 		const entityPath = join(
 			this.dataPath,
 			entityType,
-			entityEntry.$ref.startsWith("./") ? entityEntry.$ref.substring(2) : entityEntry.$ref
+			entityEntry.$ref.startsWith("./") ? entityEntry.$ref.slice(2) : entityEntry.$ref
 		)
 		const entityContent = await readFile(entityPath, "utf-8")
 		const parsed: unknown = JSON.parse(entityContent)
@@ -997,7 +998,7 @@ export class OpenAlexCLI {
 	): Promise<unknown | null> {
 		const queryDir = join(this.dataPath, entityType, "queries")
 		try {
-			const { readdir } = await import("fs/promises")
+			const { readdir } = await import("node:fs/promises")
 			const files = await readdir(queryDir)
 			const queryFiles = files.filter((f) => f.endsWith(".json") && f !== INDEX_FILENAME)
 
@@ -1087,7 +1088,7 @@ export class OpenAlexCLI {
 			const urlObj = new URL(url)
 			const params: Record<string, unknown> = {}
 
-			for (const [key, value] of Array.from(urlObj.searchParams.entries())) {
+			for (const [key, value] of urlObj.searchParams.entries()) {
 				// Normalize known parameters
 				if (key === "select" && typeof value === "string") {
 					params[key] = value
@@ -1499,7 +1500,7 @@ export class OpenAlexCLI {
 		}>
 	> {
 		const queryDir = join(this.dataPath, entityType, "queries")
-		const { readdir } = await import("fs/promises")
+		const { readdir } = await import("node:fs/promises")
 		const files = await readdir(queryDir)
 
 		const results: Array<{
@@ -1571,7 +1572,7 @@ export class OpenAlexCLI {
 		const entityIds: string[] = []
 		for (const key of Object.keys(index)) {
 			// Extract entity ID that matches the specific entity type
-			const regex = new RegExp(`${prefix}\\d{8,10}`, "g")
+			const regex = new RegExp(String.raw`${prefix}\d{8,10}`, "g")
 			const matches = key.match(regex)
 			if (matches) {
 				for (const entityId of matches) {
@@ -1697,7 +1698,7 @@ export class OpenAlexCLI {
 			}
 		} catch (error) {
 			logError(logger, FAILED_TO_GET_CACHE_STATS_MESSAGE, error, LOG_CONTEXT_GENERAL)
-			return Promise.resolve({ enabled: false })
+			return { enabled: false };
 		}
 	}
 

@@ -3,10 +3,11 @@
  * Handles environment-aware static data cache operations
  */
 
+import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "node:fs/promises"
+import { dirname, join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
+
 import { logError, logger } from "@bibgraph/utils/logger"
-import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "fs/promises"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
 import { z } from "zod"
 
 import { type StaticEntityType,SUPPORTED_ENTITIES } from "../entity-detection.js"
@@ -222,16 +223,14 @@ export class StaticCacheManager {
 			const index: Record<string, unknown> = JSON.parse(indexContent)
 			const validation = UnifiedIndexSchema.safeParse(index)
 
-			if (!validation.success) {
-				result.errors.push(`Invalid index format for ${entityType}: ${validation.error.message}`)
-			} else {
+			if (validation.success) {
 				result.entityCounts[entityType] = Object.keys(validation.data).length
 
 				// Check for referenced files
 				for (const [entityId, entry] of Object.entries(validation.data)) {
 					const filePath = join(
 						entityDir,
-						entry.$ref.startsWith("./") ? entry.$ref.substring(2) : entry.$ref
+						entry.$ref.startsWith("./") ? entry.$ref.slice(2) : entry.$ref
 					)
 					try {
 						await access(filePath)
@@ -239,6 +238,8 @@ export class StaticCacheManager {
 						result.corruptedFiles.push(`${entityType}/${entry.$ref} (referenced by ${entityId})`)
 					}
 				}
+			} else {
+				result.errors.push(`Invalid index format for ${entityType}: ${validation.error.message}`)
 			}
 		} catch (error) {
 			result.missingIndexes.push(entityType)
@@ -410,11 +411,7 @@ export class StaticCacheManager {
 				const itemPath = join(dirPath, item)
 				const stats = await stat(itemPath)
 
-				if (stats.isDirectory()) {
-					totalSize += await this.getDirectorySize(itemPath)
-				} else {
-					totalSize += stats.size
-				}
+				totalSize += stats.isDirectory() ? (await this.getDirectorySize(itemPath)) : stats.size;
 			}
 		} catch {
 			// Handle errors silently

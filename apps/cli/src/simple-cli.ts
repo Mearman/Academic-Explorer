@@ -38,9 +38,9 @@ program
 	.description("List supported entity types")
 	.action(() => {
 		console.log("Supported entity types:")
-		SUPPORTED_ENTITIES.forEach((type) => {
+		for (const type of SUPPORTED_ENTITIES) {
 			console.log(`  - ${type}`)
-		})
+		}
 	})
 
 program

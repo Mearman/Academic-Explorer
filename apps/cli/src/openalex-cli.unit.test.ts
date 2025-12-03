@@ -2,7 +2,7 @@
  * Unit tests for OpenAlex CLI
  */
 
-/* eslint-disable import/order */
+ 
 // Import order is intentional: vitest must be imported first for mocking setup
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -50,7 +50,7 @@ vi.mock("fs/promises", async (importOriginal) => {
 		console.log(
 			`[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`
 		)
-		return undefined
+		return
 	}
 
 	return {
@@ -108,7 +108,7 @@ vi.mock("fs/promises", async (importOriginal) => {
 				pathStr.includes("A123456789.json") ||
 				pathStr.includes("index.json")
 			) {
-				return undefined // Success
+				return // Success
 			}
 
 			// For any other path, throw ENOENT
@@ -124,7 +124,7 @@ vi.mock("fs/promises", async (importOriginal) => {
 		mkdir: vi.fn().mockImplementation(async (path: string) => {
 			// Log the mkdir attempt but don't actually create directories
 			console.log(`[MOCK] Would create directory: ${path}`)
-			return undefined
+			return
 		}),
 		stat: vi.fn().mockImplementation(async (path: string) => {
 			const pathStr = path
@@ -158,7 +158,7 @@ vi.mock("fs/promises", async (importOriginal) => {
 })
 
 // Mock fetch globally
-global.fetch = vi.fn()
+globalThis.fetch = vi.fn()
 
 // Mock logger - must match the import path used below
 // Use importOriginal to preserve all exports while only mocking the logger functions
@@ -176,8 +176,9 @@ vi.mock("@bibgraph/utils/logger", async (importOriginal) => {
 })
 
 // Import after mocks are set up
+import { access, mkdir,readFile, writeFile } from "node:fs/promises"
+
 import { logError,logger } from "@bibgraph/utils/logger"
-import { access, mkdir,readFile, writeFile } from "fs/promises"
 
 import type { StaticEntityType } from "./entity-detection.js"
 import { OpenAlexCLI } from "./openalex-cli-class.js"
@@ -199,12 +200,12 @@ describe("OpenAlexCLI", () => {
 		// Ensure writeFile and mkdir never actually write to filesystem
 		vi.mocked(writeFile).mockImplementation(async () => {
 			// Silently succeed but don't write to real filesystem
-			return undefined
+			return
 		})
 
 		vi.mocked(mkdir).mockImplementation(async () => {
 			// Silently succeed but don't create real directories
-			return undefined
+			return
 		})
 
 		// Set up mock data for consistent tests
@@ -304,7 +305,7 @@ describe("OpenAlexCLI", () => {
 				pathStr.includes("publishers/index.json") ||
 				pathStr.includes("funders/index.json")
 			) {
-				return undefined // File exists
+				return // File exists
 			}
 
 			// Deny access to all other paths
@@ -319,7 +320,7 @@ describe("OpenAlexCLI", () => {
 	describe("hasStaticData", () => {
 		it("should return true when index file exists", async () => {
 			// Mock access to resolve successfully (file exists)
-			vi.mocked(access).mockResolvedValue(undefined)
+			vi.mocked(access).mockResolvedValue()
 
 			const result = await cli.hasStaticData("authors")
 
@@ -353,13 +354,13 @@ describe("OpenAlexCLI", () => {
 			expect(keys.length).toBeGreaterThan(0)
 
 			// Verify entries have the expected structure
-			keys.forEach((key) => {
+			for (const key of keys) {
 				expect(key).toMatch(/^https:\/\/api\.openalex\.org\/authors\/A/)
 				expect(result![key]).toHaveProperty("$ref")
 				expect(result![key]).toHaveProperty("lastModified")
 				expect(result![key]).toHaveProperty("contentHash")
 				expect(result![key].$ref).toMatch(/\.json$/)
-			})
+			}
 		})
 
 		it("should return null and log error when file read fails", async () => {
@@ -530,7 +531,7 @@ describe("OpenAlexCLI", () => {
 			// Mock the CLI method to prevent real file writes
 			const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
 				console.log("[MOCK] saveEntityToCache called - preventing real file operations")
-				return Promise.resolve()
+				return;
 			})
 
 			// This should not throw an error (now mocked)
@@ -552,7 +553,7 @@ describe("OpenAlexCLI", () => {
 			// Mock the CLI method to prevent real file writes
 			const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
 				console.log("[MOCK] saveEntityToCache called - preventing real file operations")
-				return Promise.resolve()
+				return;
 			})
 
 			// This should complete without throwing an error (now mocked)
@@ -677,9 +678,9 @@ describe("OpenAlexCLI", () => {
 			expect(result.length).toBeGreaterThan(0)
 
 			// All entries should be valid author IDs starting with 'A' followed by numbers
-			result.forEach((id) => {
+			for (const id of result) {
 				expect(id).toMatch(/^A\d+$/)
-			})
+			}
 		})
 
 		it("should return empty array when index not found", async () => {
@@ -702,12 +703,12 @@ describe("OpenAlexCLI", () => {
 			expect(Array.isArray(result)).toBe(true)
 			// We can't guarantee specific results since we don't know the exact content
 			// but we can test that the function works and returns properly structured data
-			result.forEach((entity) => {
+			for (const entity of result) {
 				expect(entity).toHaveProperty("id")
 				expect(entity).toHaveProperty("display_name")
 				expect(entity.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/)
 				expect(typeof entity.display_name).toBe("string")
-			})
+			}
 		})
 
 		it("should perform case-insensitive search", async () => {
@@ -716,12 +717,12 @@ describe("OpenAlexCLI", () => {
 
 			expect(Array.isArray(result)).toBe(true)
 			// Results should be the same regardless of case
-			result.forEach((entity) => {
+			for (const entity of result) {
 				expect(entity).toHaveProperty("id")
 				expect(entity).toHaveProperty("display_name")
 				expect(entity.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/)
 				expect(typeof entity.display_name).toBe("string")
-			})
+			}
 		})
 	})
 
@@ -752,13 +753,13 @@ describe("OpenAlexCLI", () => {
 			expect(typeof result.works.lastModified).toBe("string")
 
 			// Check for other entity types that might exist in filesystem
-			Object.keys(result).forEach((entityType) => {
+			for (const entityType of Object.keys(result)) {
 				expect(result[entityType]).toHaveProperty("count")
 				expect(result[entityType]).toHaveProperty("lastModified")
 				expect(typeof result[entityType].count).toBe("number")
 				expect(result[entityType].count).toBeGreaterThanOrEqual(0) // Allow 0 for empty test directories
 				expect(typeof result[entityType].lastModified).toBe("string")
-			})
+			}
 		})
 	})
 })

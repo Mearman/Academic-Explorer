@@ -9,10 +9,11 @@
 // Commander.js methods flagged as deprecated are actually the correct modern API
 // The deprecation warnings are due to type definition complexities, not actual API deprecation
 
+import { dirname, join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
+
 import type { EntityType } from "@bibgraph/types"
 import { Command } from "commander"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
 import { z } from "zod"
 
 import { StaticCacheManager } from "./cache/static-cache-manager.js"
@@ -144,8 +145,8 @@ const validateFetchCommandOptions = (options: unknown): FetchCommandOptions => {
 
 const buildQueryOptions = (validatedOptions: FetchCommandOptions): QueryOptions => {
 	const perPage =
-		typeof validatedOptions.perPage === "string" ? parseInt(validatedOptions.perPage, 10) : 25
-	const page = typeof validatedOptions.page === "string" ? parseInt(validatedOptions.page, 10) : 1
+		typeof validatedOptions.perPage === "string" ? Number.parseInt(validatedOptions.perPage, 10) : 25
+	const page = typeof validatedOptions.page === "string" ? Number.parseInt(validatedOptions.page, 10) : 1
 
 	const queryOptions: QueryOptions = {
 		per_page: perPage,
@@ -226,15 +227,18 @@ const printEntitySummary = ({
 
 	// Entity-specific summary fields
 	switch (entityType) {
-		case "authors":
+		case "authors": {
 			printAuthorSummary(entity)
 			break
-		case "works":
+		}
+		case "works": {
 			printWorkSummary(entity)
 			break
-		case "institutions":
+		}
+		case "institutions": {
 			printInstitutionSummary(entity)
 			break
+		}
 	}
 };
 
@@ -419,9 +423,9 @@ program
 			console.log(JSON.stringify(entities, null, 2))
 		} else {
 			console.log(`\n${entityType.toUpperCase()} (${entities.length.toString()} entities):`)
-			entities.forEach((id, index) => {
+			for (const [index, id] of entities.entries()) {
 				console.log(`${(index + 1).toString().padStart(3)}: ${id}`)
-			})
+			}
 		}
 	})
 
@@ -512,7 +516,7 @@ program
 		const validatedOptions = optionsValidation.data
 		const results = await cli.searchEntities(staticEntityType, searchTerm)
 		const limit =
-			typeof validatedOptions.limit === "string" ? parseInt(validatedOptions.limit, 10) : 10
+			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
 		const limitedResults = results.slice(0, limit)
 
 		if (validatedOptions.format === "json") {
@@ -521,9 +525,9 @@ program
 			console.log(
 				`\nSearch results for "${searchTerm}" in ${entityType} (${limitedResults.length.toString()}/${results.length.toString()}):`
 			)
-			limitedResults.forEach((entity, index) => {
+			for (const [index, entity] of limitedResults.entries()) {
 				console.log(`${(index + 1).toString().padStart(3)}: ${entity.display_name} (${entity.id})`)
-			})
+			}
 		}
 	})
 
@@ -548,13 +552,13 @@ program
 			console.log("\nOpenAlex Static Data Statistics:")
 			console.log("=".repeat(50))
 
-			Object.entries(stats).forEach(([entityType, data]) => {
+			for (const [entityType, data] of Object.entries(stats)) {
 				const lastMod = new Date(data.lastModified).toLocaleString()
 
 				console.log(
 					`${entityType.toUpperCase().padEnd(12)}: ${data.count.toString().padStart(4)} entities, last: ${lastMod}`
 				)
-			})
+			}
 		}
 	})
 
@@ -732,7 +736,7 @@ program
 
 		const validatedOptions = optionsValidation.data
 		const limit =
-			typeof validatedOptions.limit === "string" ? parseInt(validatedOptions.limit, 10) : 10
+			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
 		const entities = await cli.getWellPopulatedEntities(entityTypeValidation.data, limit)
 
 		if (validatedOptions.format === "json") {
@@ -743,7 +747,7 @@ program
 			)
 			console.log("=".repeat(50))
 
-			entities.forEach((entity, index) => {
+			for (const [index, entity] of entities.entries()) {
 				console.log(
 					`${(index + 1).toString().padStart(3)}: ${entity.entityId} (${entity.fieldCount.toString()} fields)`
 				)
@@ -754,7 +758,7 @@ program
 					const suffix = extraCount > 0 ? ` +${extraCount.toString()} more` : ""
 					console.log(`     Fields: ${fieldsText}${suffix}`)
 				}
-			})
+			}
 		}
 	})
 
@@ -772,7 +776,7 @@ program
 
 		const validatedOptions = optionsValidation.data
 		const limit =
-			typeof validatedOptions.limit === "string" ? parseInt(validatedOptions.limit, 10) : 10
+			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
 		const collections = await cli.getPopularCollections(limit)
 
 		if (validatedOptions.format === "json") {
@@ -781,12 +785,12 @@ program
 			console.log(`\nPopular Cached Collections (${collections.length.toString()}):`)
 			console.log("=".repeat(50))
 
-			collections.forEach((collection, index) => {
+			for (const [index, collection] of collections.entries()) {
 				console.log(`${(index + 1).toString().padStart(3)}: ${collection.queryKey}`)
 				console.log(
 					`     Entities: ${collection.entityCount.toString()}, Pages: ${collection.pageCount.toString()}`
 				)
-			})
+			}
 		}
 	})
 
@@ -858,7 +862,7 @@ program
 		}
 
 		try {
-			const limit = validatedOptions.limit ? parseInt(validatedOptions.limit) : undefined
+			const limit = validatedOptions.limit ? Number.parseInt(validatedOptions.limit) : undefined
 			const generateOptions = {
 				entityTypes: entityType ? [entityType] : undefined,
 				limit,
@@ -913,30 +917,30 @@ program
 			if (validatedOptions.verbose || !validation.isValid) {
 				if (validation.errors.length > 0) {
 					console.log("\nErrors:")
-					validation.errors.forEach((error, index) => {
+					for (const [index, error] of validation.errors.entries()) {
 						console.log(`  ${(index + 1).toString()}. ${error}`)
-					})
+					}
 				}
 
 				if (validation.warnings.length > 0) {
 					console.log("\nWarnings:")
-					validation.warnings.forEach((warning, index) => {
+					for (const [index, warning] of validation.warnings.entries()) {
 						console.log(`  ${(index + 1).toString()}. ${warning}`)
-					})
+					}
 				}
 
 				if (validation.corruptedFiles.length > 0) {
 					console.log("\nCorrupted Files:")
-					validation.corruptedFiles.forEach((file, index) => {
+					for (const [index, file] of validation.corruptedFiles.entries()) {
 						console.log(`  ${(index + 1).toString()}. ${file}`)
-					})
+					}
 				}
 			}
 
 			console.log("\nEntity Counts:")
-			Object.entries(validation.entityCounts).forEach(([entityType, count]) => {
+			for (const [entityType, count] of Object.entries(validation.entityCounts)) {
 				console.log(`  ${entityType}: ${count.toString()}`)
-			})
+			}
 		} catch (error) {
 			console.error(`Validation failed: ${error instanceof Error ? error.message : String(error)}`)
 			process.exit(1)
@@ -1022,9 +1026,9 @@ program
 			console.log("=".repeat(50))
 
 			console.log("Entity Type Distribution:")
-			Object.entries(analysis.entityDistribution).forEach(([type, count]) => {
+			for (const [type, count] of Object.entries(analysis.entityDistribution)) {
 				console.log(`  ${type.padEnd(12)}: ${count.toString().padStart(4)} entities`)
-			})
+			}
 
 			console.log(`\nTotal Static Entities: ${analysis.totalEntities.toString()}`)
 			console.log(`Cache Hit Potential: ${(analysis.cacheHitPotential * 100).toFixed(1)}%`)
@@ -1038,9 +1042,9 @@ program
 
 			if (analysis.gaps.length > 0) {
 				console.log(`\nIdentified Gaps: ${analysis.gaps.length.toString()}`)
-				analysis.gaps.slice(0, 5).forEach((gap, index) => {
+				for (const [index, gap] of analysis.gaps.slice(0, 5).entries()) {
 					console.log(`  ${(index + 1).toString().padStart(2)}: ${gap}`)
-				})
+				}
 				if (analysis.gaps.length > 5) {
 					console.log(`     +${(analysis.gaps.length - 5).toString()} more gaps identified`)
 				}
@@ -1094,9 +1098,9 @@ program
 
 		if (result.errors.length > 0) {
 			console.log(`\nErrors encountered: ${result.errors.length.toString()}`)
-			result.errors.slice(0, 3).forEach((error, index) => {
+			for (const [index, error] of result.errors.slice(0, 3).entries()) {
 				console.log(`  ${(index + 1).toString().padStart(2)}: ${error}`)
-			})
+			}
 			if (result.errors.length > 3) {
 				console.log(`     +${(result.errors.length - 3).toString()} more errors`)
 			}
