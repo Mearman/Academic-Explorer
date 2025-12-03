@@ -143,12 +143,12 @@ export const convertToCSR = <N extends Node, E extends Edge>(graph: Graph<N, E>)
   const edgeCount = allEdges.length;
 
   // Validate graph size fits in typed arrays (Uint32Array max value is 2^32 - 1)
-  if (nodeCount > 0xffffffff) {
+  if (nodeCount > 0xFF_FF_FF_FF) {
     throw new RangeError(
       `Graph has ${nodeCount} nodes, exceeding Uint32Array limit (4,294,967,295)`
     );
   }
-  if (edgeCount > 0xffffffff) {
+  if (edgeCount > 0xFF_FF_FF_FF) {
     throw new RangeError(
       `Graph has ${edgeCount} edges, exceeding Uint32Array limit (4,294,967,295)`
     );
@@ -200,7 +200,7 @@ export const convertToCSR = <N extends Node, E extends Edge>(graph: Graph<N, E>)
     const pos = currentPos[sourceIdx]++;
     edges[pos] = targetIdx;
     // Edge may not have weight property, default to 1.0
-    weights[pos] = (edge as { weight?: number }).weight ?? 1.0;
+    weights[pos] = (edge as { weight?: number }).weight ?? 1;
   }
 
   return {

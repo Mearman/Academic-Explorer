@@ -84,8 +84,8 @@ export const leiden = <N extends Node, E extends Edge>(graph: Graph<N, E>, optio
 > => {
   const startTime = performance.now();
   const {
-    weightFn = () => 1.0,
-    resolution = 1.0,
+    weightFn = () => 1,
+    resolution = 1,
     maxIterations = 100,
   } = options;
 
@@ -386,7 +386,7 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
 
   // Identify disconnected communities
   communities.forEach((community, communityId) => {
-    const superNodeIds = Array.from(community.nodes);
+    const superNodeIds = [...community.nodes];
     if (superNodeIds.length <= 1) return; // Single super-node is always connected
 
     // Check connectivity using BFS on super-nodes
@@ -443,13 +443,13 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
   });
 
   // Split disconnected communities
-  let maxCommunityId = Math.max(...Array.from(communities.keys()));
+  let maxCommunityId = Math.max(...communities.keys());
 
   communitiesToSplit.forEach((communityId) => {
     const community = communities.get(communityId);
     if (community === undefined) return;
 
-    const superNodeIds = Array.from(community.nodes);
+    const superNodeIds = [...community.nodes];
 
     // Find connected components within this community
     const componentAssignment = new Map<string, number>();
@@ -768,11 +768,9 @@ const buildLeidenResults = <N extends Node, E extends Edge>(graph: Graph<N, E>, 
       if (outgoingResult.ok) {
         outgoingResult.value.forEach((edge) => {
           const targetOption = graph.getNode(edge.target);
-          if (targetOption.some) {
-            if (nodes.has(targetOption.value)) {
+          if (targetOption.some && nodes.has(targetOption.value)) {
               internalEdges++;
             }
-          }
         });
       }
     });
@@ -827,7 +825,7 @@ const validateConnectivity = <N extends Node, E extends Edge>(graph: Graph<N, E>
   if (community.size === 0) return true;
   if (community.size === 1) return true;
 
-  const nodes = Array.from(community);
+  const nodes = [...community];
   const startNode = nodes[0];
   const visited = new Set<string>();
   const queue: N[] = [startNode];

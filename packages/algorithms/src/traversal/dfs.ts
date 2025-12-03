@@ -93,7 +93,7 @@ export const dfs = <N extends Node, E extends Edge = Edge>(graph: Graph<N, E>, s
     // Get neighbors and push to stack (in reverse order for left-to-right traversal)
     const neighborsResult = graph.getNeighbors(currentId);
     if (neighborsResult.ok) {
-      const neighbors = Array.from(neighborsResult.value);
+      const neighbors = [...neighborsResult.value];
 
       // Push in reverse order so first neighbor is processed first (LIFO)
       for (let i = neighbors.length - 1; i >= 0; i--) {

@@ -78,7 +78,7 @@ export const infomap = <N extends Node, E extends Edge>(graph: Graph<N, E>, opti
   const startTime = performance.now();
 
   const {
-    weightFn = () => 1.0,
+    weightFn = () => 1,
     maxIterations = 10, // Reduced for performance
     numTrials = 10,
     seed,
@@ -164,7 +164,7 @@ export const infomap = <N extends Node, E extends Edge>(graph: Graph<N, E>, opti
     let improved = false;
 
     // Visit nodes in random order
-    const nodeOrder = shuffleArray([...allNodes.map(n => n.id)], seed ? seed + iteration : undefined);
+    const nodeOrder = shuffleArray(allNodes.map(n => n.id), seed ? seed + iteration : undefined);
 
     for (const nodeId of nodeOrder) {
       const currentModuleId = nodeToModule.get(nodeId);
@@ -380,7 +380,7 @@ const calculateVisitProbabilities = <N extends Node, E extends Edge>(graph: Grap
   // Initialize uniform distribution
   const visitProb = new Map<string, number>();
   allNodes.forEach((node) => {
-    visitProb.set(node.id, 1.0 / n);
+    visitProb.set(node.id, 1 / n);
   });
 
   // Build transition map for efficient lookup
@@ -405,7 +405,7 @@ const calculateVisitProbabilities = <N extends Node, E extends Edge>(graph: Grap
 
     // Initialize with teleport probability
     allNodes.forEach((node) => {
-      newVisitProb.set(node.id, (1.0 - dampingFactor) / n);
+      newVisitProb.set(node.id, (1 - dampingFactor) / n);
     });
 
     // Add contributions from incoming edges
@@ -458,15 +458,13 @@ const updateExitProbabilities = (modules: Map<number, InternalModule>, nodeToMod
     const sourceModuleId = nodeToModule.get(t.from);
     const targetModuleId = nodeToModule.get(t.to);
 
-    if (sourceModuleId !== undefined && targetModuleId !== undefined) {
-      if (sourceModuleId !== targetModuleId) {
+    if (sourceModuleId !== undefined && targetModuleId !== undefined && sourceModuleId !== targetModuleId) {
         // Transition leaves module
         const module = modules.get(sourceModuleId);
         if (module) {
           module.exitProbability += t.probability;
         }
       }
-    }
   });
 };
 
@@ -556,7 +554,7 @@ const calculateMoveDelta = (nodeId: string, fromModuleId: number, toModuleId: nu
 
   // Safety checks
   if (!fromModule || !toModule) {
-    return 100.0; // Large penalty for invalid moves
+    return 100; // Large penalty for invalid moves
   }
 
   // Calculate exit probability changes for the node
@@ -692,10 +690,10 @@ const shuffleArray = <T>(array: T[], seed?: number): T[] => {
   const shuffled = [...array];
 
   // Simple seeded random number generator (LCG)
-  let random = seed !== undefined ? seed : Math.random() * 2147483647;
+  let random = seed === undefined ? Math.random() * 2_147_483_647 : seed;
   const nextRandom = () => {
-    random = (random * 1103515245 + 12345) & 0x7fffffff;
-    return random / 0x7fffffff;
+    random = (random * 1_103_515_245 + 12_345) & 0x7F_FF_FF_FF;
+    return random / 0x7F_FF_FF_FF;
   };
 
   for (let i = shuffled.length - 1; i > 0; i--) {

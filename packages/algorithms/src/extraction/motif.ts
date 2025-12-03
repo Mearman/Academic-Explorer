@@ -376,7 +376,7 @@ export const detectBibliographicCoupling = <N extends Node, E extends Edge>(grap
 
   // Compare papers pairwise
   const pairs: BibliographicCouplingPair<N>[] = [];
-  const nodeIds = Array.from(referenceSets.keys());
+  const nodeIds = [...referenceSets.keys()];
 
   for (let i = 0; i < nodeIds.length; i++) {
     for (let j = i + 1; j < nodeIds.length; j++) {

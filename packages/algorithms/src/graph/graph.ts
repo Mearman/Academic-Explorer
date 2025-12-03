@@ -129,7 +129,7 @@ export class Graph<N extends Node, E extends Edge> {
    */
   getNode(id: string): Option<N> {
     const node = this.nodes.get(id);
-    return node !== undefined ? Some(node) : None();
+    return node === undefined ? None() : Some(node);
   }
 
   /**
@@ -231,7 +231,7 @@ export class Graph<N extends Node, E extends Edge> {
     }
 
     const neighbors = this.adjacencyList.get(id);
-    return Ok(Array.from(neighbors || []));
+    return Ok([...neighbors || []]);
   }
 
   /**
@@ -268,7 +268,7 @@ export class Graph<N extends Node, E extends Edge> {
    * ```
    */
   getAllNodes(): N[] {
-    return Array.from(this.nodes.values());
+    return [...this.nodes.values()];
   }
 
   /**
@@ -281,7 +281,7 @@ export class Graph<N extends Node, E extends Edge> {
    * ```
    */
   getAllEdges(): E[] {
-    return Array.from(this.edges.values());
+    return [...this.edges.values()];
   }
 
   /**

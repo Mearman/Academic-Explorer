@@ -52,7 +52,7 @@ export const spectralPartition = <N extends Node, E extends Edge>(graph: Graph<N
     seed?: number;
   } = {}): Result<Partition<N>[], PartitioningError> => {
   const {
-    weightFn = () => 1.0,
+    weightFn = () => 1,
     balanceTolerance = 1.2,
     maxKMeansIterations = 100,
   } = options;
@@ -137,10 +137,10 @@ export const spectralPartition = <N extends Node, E extends Edge>(graph: Graph<N
  */
 const computeNormalizedLaplacian = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodes: N[], nodeIdToIndex: Map<string, number>, weightFn: WeightFunction<N, E>): number[][] => {
   const n = nodes.length;
-  const adjacency: number[][] = Array(n)
+  const adjacency: number[][] = new Array(n)
     .fill(0)
-    .map(() => Array(n).fill(0));
-  const degrees: number[] = Array(n).fill(0);
+    .map(() => new Array(n).fill(0));
+  const degrees: number[] = new Array(n).fill(0);
 
   // Build adjacency matrix and compute degrees
   nodes.forEach((node, i) => {
@@ -169,21 +169,17 @@ const computeNormalizedLaplacian = <N extends Node, E extends Edge>(graph: Graph
 
   // Compute D^(-1/2)
   const invSqrtDegrees: number[] = degrees.map((d) =>
-    d > 0 ? 1.0 / Math.sqrt(d) : 0
+    d > 0 ? 1 / Math.sqrt(d) : 0
   );
 
   // Compute normalized Laplacian: L = I - D^(-1/2) * A * D^(-1/2)
-  const laplacian: number[][] = Array(n)
+  const laplacian: number[][] = new Array(n)
     .fill(0)
-    .map(() => Array(n).fill(0));
+    .map(() => new Array(n).fill(0));
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (i === j) {
-        laplacian[i][j] = 1.0;
-      } else {
-        laplacian[i][j] = -invSqrtDegrees[i] * adjacency[i][j] * invSqrtDegrees[j];
-      }
+      laplacian[i][j] = i === j ? 1 : -invSqrtDegrees[i] * adjacency[i][j] * invSqrtDegrees[j];
     }
   }
 
@@ -204,9 +200,9 @@ const extractSmallestEigenvectors = (laplacian: number[][], k: number, n: number
   // Simplified approach: Use power iteration for largest eigenvalues of (I - L)
   // This gives us the smallest eigenvalues of L
 
-  const embeddings: number[][] = Array(n)
+  const embeddings: number[][] = new Array(n)
     .fill(0)
-    .map(() => Array(k).fill(0));
+    .map(() => new Array(k).fill(0));
 
   // Initialize with random values
   for (let node = 0; node < n; node++) {
@@ -243,16 +239,12 @@ const extractSmallestEigenvectors = (laplacian: number[][], k: number, n: number
     // Power iteration to refine this eigenvector
     const maxIterations = 20;
     for (let iter = 0; iter < maxIterations; iter++) {
-      const newVector: number[] = Array(n).fill(0);
+      const newVector: number[] = new Array(n).fill(0);
 
       // Multiply by (I - L)
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-          if (i === j) {
-            newVector[i] += embeddings[j][dim];
-          } else {
-            newVector[i] += -laplacian[i][j] * embeddings[j][dim];
-          }
+          newVector[i] += i === j ? embeddings[j][dim] : -laplacian[i][j] * embeddings[j][dim];
         }
       }
 
@@ -298,7 +290,7 @@ const kMeansClustering = (embeddings: number[][], k: number, maxIterations: numb
 
   // Initialize centroids using k-means++ strategy
   const centroids: number[][] = [];
-  const assignments: number[] = Array(n).fill(0);
+  const assignments: number[] = new Array(n).fill(0);
 
   // First centroid: random node
   const firstIdx = Math.floor(Math.random() * n);
@@ -306,12 +298,12 @@ const kMeansClustering = (embeddings: number[][], k: number, maxIterations: numb
 
   // Remaining centroids: weighted by distance to nearest existing centroid
   for (let c = 1; c < k; c++) {
-    const distances: number[] = Array(n).fill(Infinity);
+    const distances: number[] = new Array(n).fill(Infinity);
 
     // Compute distance to nearest centroid for each point
     for (let i = 0; i < n; i++) {
-      for (let j = 0; j < centroids.length; j++) {
-        const dist = euclideanDistance(embeddings[i], centroids[j]);
+      for (const centroid of centroids) {
+        const dist = euclideanDistance(embeddings[i], centroid);
         distances[i] = Math.min(distances[i], dist);
       }
     }
@@ -357,10 +349,10 @@ const kMeansClustering = (embeddings: number[][], k: number, maxIterations: numb
     }
 
     // Update step: recompute centroids
-    const clusterSizes: number[] = Array(k).fill(0);
-    const newCentroids: number[][] = Array(k)
+    const clusterSizes: number[] = new Array(k).fill(0);
+    const newCentroids: number[][] = new Array(k)
       .fill(0)
-      .map(() => Array(dimensions).fill(0));
+      .map(() => new Array(dimensions).fill(0));
 
     for (let i = 0; i < n; i++) {
       const cluster = assignments[i];
@@ -389,8 +381,8 @@ const kMeansClustering = (embeddings: number[][], k: number, maxIterations: numb
  */
 const euclideanDistance = (v1: number[], v2: number[]): number => {
   let sum = 0;
-  for (let i = 0; i < v1.length; i++) {
-    const diff = v1[i] - v2[i];
+  for (const [i, element] of v1.entries()) {
+    const diff = element - v2[i];
     sum += diff * diff;
   }
   return Math.sqrt(sum);
@@ -408,7 +400,7 @@ const rebalancePartitions = (assignments: number[], k: number, nodeCount: number
   const idealSize = nodeCount / k;
 
   // Count partition sizes
-  const partitionSizes = Array(k).fill(0);
+  const partitionSizes = new Array(k).fill(0);
   assignments.forEach((partitionId) => {
     partitionSizes[partitionId]++;
   });

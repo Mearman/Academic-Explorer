@@ -94,12 +94,10 @@ export const filterGraph = <N extends Node, E extends Edge>(graph: Graph<N, E>, 
   const allEdges = graph.getAllEdges();
   for (const edge of allEdges) {
     // Edge can only be included if both endpoints are included
-    if (includedNodes.has(edge.source) && includedNodes.has(edge.target)) {
-      // Apply edge predicate if provided
-      if (!edgePredicate || edgePredicate(edge)) {
+    if (includedNodes.has(edge.source) && includedNodes.has(edge.target) && // Apply edge predicate if provided
+      (!edgePredicate || edgePredicate(edge))) {
         subgraph.addEdge(edge);
       }
-    }
   }
 
   return { ok: true, value: subgraph };

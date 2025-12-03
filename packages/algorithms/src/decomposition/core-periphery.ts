@@ -291,8 +291,8 @@ const updateCorenessScoresOptimized = <E extends Edge>(nodeIds: string[], edges:
 
   // Only normalize if scores exceed valid [0, 1] range
   // This prevents artificial inflation when max score < 1.0
-  const maxScore = Math.max(...Array.from(newScores.values()), 0);
-  if (maxScore > 1.0) {
+  const maxScore = Math.max(...newScores.values(), 0);
+  if (maxScore > 1) {
     // Scores exceed range, normalize to prevent overflow
     for (const [nodeId, score] of newScores) {
       corenessScores.set(nodeId, score / maxScore);
@@ -441,9 +441,9 @@ const calculateFitQuality = <N extends Node, E extends Edge>(graph: Graph<N, E>,
       : 0;
 
   // Ideal densities (Borgatti-Everett model)
-  const idealCoreDensity = 1.0; // All core-core edges present
+  const idealCoreDensity = 1; // All core-core edges present
   const idealCPDensity = 0.5; // Some core-periphery edges
-  const idealPeripheryDensity = 0.0; // No periphery-periphery edges
+  const idealPeripheryDensity = 0; // No periphery-periphery edges
 
   // Calculate correlation coefficient (Pearson's r)
   const observed = [observedCoreDensity, observedCPDensity, observedPeripheryDensity];
@@ -457,8 +457,8 @@ const calculateFitQuality = <N extends Node, E extends Edge>(graph: Graph<N, E>,
   let sumSquaredObserved = 0;
   let sumSquaredIdeal = 0;
 
-  for (let i = 0; i < observed.length; i++) {
-    const diffObserved = observed[i] - meanObserved;
+  for (const [i, element] of observed.entries()) {
+    const diffObserved = element - meanObserved;
     const diffIdeal = ideal[i] - meanIdeal;
 
     numerator += diffObserved * diffIdeal;

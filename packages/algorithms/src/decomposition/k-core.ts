@@ -121,8 +121,8 @@ export const kCoreDecomposition = <N extends Node, E extends Edge>(graph: Graph<
     // Note: We must search from 0 each time because when we decrement neighbor degrees,
     // we may move nodes to bins lower than the current minBin
     let currentBin = -1;
-    for (let b = 0; b < bins.length; b++) {
-      if (bins[b].length > 0) {
+    for (const [b, bin] of bins.entries()) {
+      if (bin.length > 0) {
         currentBin = b;
         break;
       }
@@ -179,13 +179,18 @@ export const kCoreDecomposition = <N extends Node, E extends Edge>(graph: Graph<
           const oldBin = bins[neighborDegree];
 
           // Remove from old bin using swap-and-pop for O(1) removal
-          const lastIdx = oldBin[oldBin.length - 1];
-          oldBin[neighborPos] = lastIdx;
-          oldBin.pop();
+          const lastIdx = oldBin.at(-1);
+          if (lastIdx !== undefined) {
+            oldBin[neighborPos] = lastIdx;
+            oldBin.pop();
 
-          // Update position of swapped node (if different)
-          if (lastIdx !== neighborIdx) {
-            binPosition.set(lastIdx, neighborPos);
+            // Update position of swapped node (if different)
+            if (lastIdx !== neighborIdx) {
+              binPosition.set(lastIdx, neighborPos);
+            }
+          } else {
+            // Bin is empty, just pop
+            oldBin.pop();
           }
 
           // Add to new bin and update position

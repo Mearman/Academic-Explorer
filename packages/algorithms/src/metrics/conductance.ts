@@ -39,12 +39,12 @@ import type { Edge,Node } from '../types/graph';
 export const calculateConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusterNodes: Set<N>): number => {
   // Handle edge cases
   if (clusterNodes.size === 0) {
-    return 0.0;
+    return 0;
   }
 
   if (clusterNodes.size === graph.getNodeCount()) {
     // Entire graph is the cluster - no boundary edges
-    return 0.0;
+    return 0;
   }
 
   // Calculate cut(S) - edges crossing cluster boundary
@@ -68,7 +68,7 @@ export const calculateConductance = <N extends Node, E extends Edge>(graph: Grap
     const degree = neighbors.length;
 
     // Check if node is in cluster
-    const nodeInCluster = Array.from(clusterNodes).some((clusterNode) => {
+    const nodeInCluster = [...clusterNodes].some((clusterNode) => {
       return clusterNode.id === nodeId;
     });
 
@@ -78,7 +78,7 @@ export const calculateConductance = <N extends Node, E extends Edge>(graph: Grap
 
       // Count edges crossing boundary (to nodes outside cluster)
       neighbors.forEach((neighborId) => {
-        const neighborInCluster = Array.from(clusterNodes).some((clusterNode) => {
+        const neighborInCluster = [...clusterNodes].some((clusterNode) => {
           return clusterNode.id === neighborId;
         });
 
@@ -101,13 +101,13 @@ export const calculateConductance = <N extends Node, E extends Edge>(graph: Grap
 
   if (denominator === 0) {
     // Isolated cluster with no edges
-    return 0.0;
+    return 0;
   }
 
   const conductance = cut / denominator;
 
   // Clamp to [0, 1] range due to floating point precision
-  return Math.max(0.0, Math.min(1.0, conductance));
+  return Math.max(0, Math.min(1, conductance));
 };
 
 /**
@@ -129,10 +129,10 @@ export const calculateConductance = <N extends Node, E extends Edge>(graph: Grap
  */
 export const calculateAverageConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
-    return 0.0;
+    return 0;
   }
 
-  let totalConductance = 0.0;
+  let totalConductance = 0;
 
   clusters.forEach((cluster) => {
     const conductance = calculateConductance(graph, cluster);
@@ -163,10 +163,10 @@ export const calculateAverageConductance = <N extends Node, E extends Edge>(grap
  */
 export const calculateWeightedAverageConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
-    return 0.0;
+    return 0;
   }
 
-  let weightedSum = 0.0;
+  let weightedSum = 0;
   let totalWeight = 0;
 
   clusters.forEach((cluster) => {
@@ -178,7 +178,7 @@ export const calculateWeightedAverageConductance = <N extends Node, E extends Ed
   });
 
   if (totalWeight === 0) {
-    return 0.0;
+    return 0;
   }
 
   return weightedSum / totalWeight;

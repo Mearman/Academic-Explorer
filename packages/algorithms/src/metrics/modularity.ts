@@ -44,7 +44,7 @@ export const calculateModularity = <N extends Node, E extends Edge>(graph: Graph
 
   // Handle edge case: empty graph or no edges
   if (m === 0) {
-    return 0.0;
+    return 0;
   }
 
   // Build community membership map: nodeId -> communityId
@@ -69,7 +69,7 @@ export const calculateModularity = <N extends Node, E extends Edge>(graph: Graph
   });
 
   // Calculate modularity using Newman-Girvan formula
-  let Q = 0.0;
+  let Q = 0;
   const twoM = 2 * m;
 
   // For directed graphs: iterate over all pairs
@@ -169,11 +169,11 @@ export const calculateModularity = <N extends Node, E extends Edge>(graph: Graph
  */
 export const calculateCommunityModularity = <N extends Node, E extends Edge>(graph: Graph<N, E>, community: Community<N>, totalEdges: number): number => {
   if (totalEdges === 0) {
-    return 0.0;
+    return 0;
   }
 
   const twoM = 2 * totalEdges;
-  let Q_c = 0.0;
+  let Q_c = 0;
 
   // Calculate degrees for nodes in this community
   const degrees = new Map<N, number>();
@@ -188,7 +188,7 @@ export const calculateCommunityModularity = <N extends Node, E extends Edge>(gra
   });
 
   // Iterate over pairs within the community
-  const nodesArray = Array.from(community.nodes);
+  const nodesArray = [...community.nodes];
 
   if (graph.isDirected()) {
     // Directed: iterate over all pairs

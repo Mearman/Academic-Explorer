@@ -74,7 +74,7 @@ class DistanceMatrix {
     let minJ = -1;
     let minDist = Infinity;
 
-    const clusters = Array.from(activeClusters);
+    const clusters = [...activeClusters];
     for (let i = 0; i < clusters.length; i++) {
       for (let j = i + 1; j < clusters.length; j++) {
         const dist = this.get(clusters[i], clusters[j]);
@@ -99,7 +99,7 @@ class DistanceMatrix {
  */
 const buildAdjacencyMatrix = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeIndexMap: Map<string, number>): number[][] => {
   const n = nodeIndexMap.size;
-  const adjMatrix: number[][] = Array.from({ length: n }, () => Array(n).fill(0));
+  const adjMatrix: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
 
   // Set diagonal to 1 (node is adjacent to itself)
   for (let i = 0; i < n; i++) {
@@ -137,7 +137,7 @@ const computeDistanceMatrix = (adjMatrix: number[][]): DistanceMatrix => {
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
       // Distance = 1 - adjacency (0 if edge exists, 1 if no edge)
-      const distance = 1.0 - adjMatrix[i][j];
+      const distance = 1 - adjMatrix[i][j];
       distMatrix.set(i, j, distance);
     }
   }
@@ -220,10 +220,9 @@ const buildDendrogram = <N extends Node>(nodes: N[], merges: MergeStep[], height
       });
 
       // Apply merges up to the specified height
-      for (let i = 0; i < merges.length; i++) {
+      for (const [i, merge] of merges.entries()) {
         if (heights[i] > height) break;
 
-        const merge = merges[i];
         const cluster1 = clusters.get(merge.cluster1);
         const cluster2 = clusters.get(merge.cluster2);
 
@@ -241,7 +240,7 @@ const buildDendrogram = <N extends Node>(nodes: N[], merges: MergeStep[], height
         clusters.set(n + i, newCluster);
       }
 
-      return Array.from(clusters.values());
+      return [...clusters.values()];
     },
 
     /**
@@ -288,7 +287,7 @@ const buildDendrogram = <N extends Node>(nodes: N[], merges: MergeStep[], height
         clusters.set(n + i, newCluster);
       }
 
-      return Array.from(clusters.values());
+      return [...clusters.values()];
     },
   };
 };

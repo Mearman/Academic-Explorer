@@ -47,7 +47,7 @@ export const calculateDensity = <N extends Node, E extends Edge>(graph: Graph<N,
 
   // Handle edge cases
   if (n === 0 || n === 1) {
-    return 0.0; // No density for empty or single-node clusters
+    return 0; // No density for empty or single-node clusters
   }
 
   // Calculate possible edges
@@ -58,7 +58,7 @@ export const calculateDensity = <N extends Node, E extends Edge>(graph: Graph<N,
   // Count actual edges within cluster
   let actualEdges = 0;
 
-  const nodesArray = Array.from(clusterNodes);
+  const nodesArray = [...clusterNodes];
   for (let i = 0; i < nodesArray.length; i++) {
     for (let j = i + 1; j < nodesArray.length; j++) {
       const nodeI = nodesArray[i];
@@ -88,7 +88,7 @@ export const calculateDensity = <N extends Node, E extends Edge>(graph: Graph<N,
   const density = actualEdges / possibleEdges;
 
   // Clamp to [0, 1] due to floating point precision
-  return Math.max(0.0, Math.min(1.0, density));
+  return Math.max(0, Math.min(1, density));
 };
 
 /**
@@ -109,10 +109,10 @@ export const calculateDensity = <N extends Node, E extends Edge>(graph: Graph<N,
  */
 export const calculateAverageDensity = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
-    return 0.0;
+    return 0;
   }
 
-  let totalDensity = 0.0;
+  let totalDensity = 0;
 
   clusters.forEach((cluster) => {
     const density = calculateDensity(graph, cluster);
@@ -145,14 +145,14 @@ export const calculateCoverageRatio = <N extends Node, E extends Edge>(graph: Gr
   const totalEdges = graph.getEdgeCount();
 
   if (totalEdges === 0) {
-    return 0.0;
+    return 0;
   }
 
   // Count edges within clusters
   let internalEdges = 0;
 
   clusters.forEach((cluster) => {
-    const nodesArray = Array.from(cluster);
+    const nodesArray = [...cluster];
 
     for (let i = 0; i < nodesArray.length; i++) {
       for (let j = i + 1; j < nodesArray.length; j++) {
@@ -183,7 +183,7 @@ export const calculateCoverageRatio = <N extends Node, E extends Edge>(graph: Gr
 
   const coverage = internalEdges / totalEdges;
 
-  return Math.max(0.0, Math.min(1.0, coverage));
+  return Math.max(0, Math.min(1, coverage));
 };
 
 /**

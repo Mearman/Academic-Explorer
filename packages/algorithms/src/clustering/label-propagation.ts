@@ -108,8 +108,8 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
   let rngState = seed;
   const seededRandom = (): number => {
     // Linear congruential generator (simple PRNG)
-    rngState = (rngState * 1103515245 + 12345) & 0x7fffffff;
-    return rngState / 0x7fffffff;
+    rngState = (rngState * 1_103_515_245 + 12_345) & 0x7F_FF_FF_FF;
+    return rngState / 0x7F_FF_FF_FF;
   };
 
   // Fisher-Yates shuffle with seeded RNG
@@ -147,7 +147,7 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
         if (neighborLabel !== undefined) {
           labelCounts.set(
             neighborLabel,
-            (labelCounts.get(neighborLabel) || 0) + 1.0
+            (labelCounts.get(neighborLabel) || 0) + 1
           );
         }
       }
@@ -160,7 +160,7 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
           if (neighborLabel !== undefined) {
             labelCounts.set(
               neighborLabel,
-              (labelCounts.get(neighborLabel) || 0) + 1.0
+              (labelCounts.get(neighborLabel) || 0) + 1
             );
           }
         }

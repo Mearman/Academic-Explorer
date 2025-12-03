@@ -97,16 +97,16 @@ export const determineOptimalMode = (): "best" | "random" => "best";
 export const shuffle = <T>(array: T[], seed?: number): T[] => {
   let rng: () => number;
 
-  if (seed !== undefined) {
+  if (seed === undefined) {
+    // Non-deterministic for production
+    rng = Math.random;
+  } else {
     // Deterministic PRNG for reproducible tests
     let state = seed;
     rng = () => {
-      state = (1664525 * state + 1013904223) >>> 0; // LCG: a=1664525, c=1013904223, m=2^32
-      return state / 0x100000000; // Normalize to [0, 1)
+      state = (1_664_525 * state + 1_013_904_223) >>> 0; // LCG: a=1664525, c=1013904223, m=2^32
+      return state / 0x1_00_00_00_00; // Normalize to [0, 1)
     };
-  } else {
-    // Non-deterministic for production
-    rng = Math.random;
   }
 
   // Fisher-Yates shuffle
@@ -174,8 +174,8 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
   const startTime = performance.now();
 
   const {
-    weightFn = () => 1.0,
-    resolution = 1.0,
+    weightFn = () => 1,
+    resolution = 1,
     minModularityIncrease,
     maxIterations = 100,
   } = options;
@@ -385,7 +385,7 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
         });
 
         // Convert neighbor communities to array for mode-based processing
-        const neighborList = Array.from(neighborCommunities.entries());
+        const neighborList = [...neighborCommunities.entries()];
 
         if (resolvedMode === "random") {
           // T024: Random-neighbor mode (Fast Louvain) - shuffle and accept first positive ΔQ
@@ -819,7 +819,7 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
 
     if (sourceCommunity === targetCommunity) {
       // Internal edge - count it
-      const weight = (edge as { weight?: number }).weight ?? 1.0;
+      const weight = (edge as { weight?: number }).weight ?? 1;
       const currentSigma = sigmaIn.get(sourceCommunity) ?? 0;
       sigmaIn.set(sourceCommunity, currentSigma + weight);
     }
@@ -837,7 +837,7 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
     // density = actualEdges / possibleEdges
     // For undirected: actualEdges = sigmaIn / 2, possibleEdges = n * (n - 1) / 2
     // Simplified: density = sigmaIn / (n * (n - 1))
-    let density = 0.0;
+    let density = 0;
     if (n > 1) {
       const possibleEdges = graph.isDirected()
         ? n * (n - 1)              // Directed: all ordered pairs
@@ -848,7 +848,7 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
         : internalEdgeWeight / 2;  // Undirected: each edge counted twice
 
       density = actualEdges / possibleEdges;
-      density = Math.max(0.0, Math.min(1.0, density)); // Clamp to [0, 1]
+      density = Math.max(0, Math.min(1, density)); // Clamp to [0, 1]
     }
 
     const community: Community<N> = {

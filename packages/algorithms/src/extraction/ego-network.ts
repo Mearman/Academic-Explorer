@@ -72,7 +72,7 @@ export const extractEgoNetwork = <N extends Node, E extends Edge>(graph: Graph<N
     const nodesAtDistance = discoverNodesWithinRadius(graph, seedId, radius);
 
     // Add discovered nodes to ego network
-    for (const [nodeId, distance] of Array.from(nodesAtDistance.entries())) {
+    for (const [nodeId, distance] of nodesAtDistance.entries()) {
       // Include seed node based on includeSeed option
       if (distance === 0 && !includeSeed) {
         continue;
