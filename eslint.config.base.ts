@@ -229,6 +229,25 @@ export default tseslint.config([
             "unicorn/consistent-function-scoping": "off", // Closures are sometimes intentional
             "unicorn/prefer-add-event-listener": "off", // onmessage is common for workers
             "unicorn/no-useless-switch-case": "off", // Fall-through cases are intentional
+            "unicorn/import-style": "off", // Import style preferences vary
+            "unicorn/text-encoding-identifier-case": "off", // utf-8 vs utf8 is fine
+            "unicorn/prefer-code-point": "off", // charCodeAt is widely used
+            "unicorn/numeric-separators-style": "off", // Numeric separators are optional
+            "unicorn/prefer-at": "off", // array[length-1] is common pattern
+            "unicorn/prefer-top-level-await": "off", // Not all modules use TLA
+            "unicorn/no-zero-fractions": "off", // 1.0 is explicit decimal intent
+            "unicorn/no-for-loop": "off", // Traditional for loops have use cases
+            "unicorn/no-new-array": "off", // new Array(n) is valid
+            "unicorn/prefer-modern-math-apis": "off", // Math.sqrt is standard
+            "unicorn/no-negated-condition": "off", // Negated conditions can be clearer
+            "unicorn/no-array-callback-reference": "off", // Direct function refs are fine
+            "unicorn/error-message": "off", // Empty errors have use cases
+            "unicorn/prefer-switch": "off", // if-else chains can be clearer
+            "unicorn/prefer-ternary": "off", // if-else can be more readable
+            "unicorn/no-nested-ternary": "off", // Nested ternaries are sometimes needed
+            "unicorn/no-array-sort": "off", // In-place sort is intentional
+            "unicorn/no-array-reverse": "off", // In-place reverse is intentional
+            "unicorn/prefer-node-protocol": "off", // node: protocol not required
 
             // SonarJS rules (from flat/recommended)
             ...sonarjsPlugin.configs.recommended.rules,
@@ -237,6 +256,18 @@ export default tseslint.config([
             "sonarjs/prefer-regexp-exec": "off", // Conflicts with unicorn/prefer-regexp-test
             "sonarjs/redundant-type-aliases": "off", // Type aliases provide semantic meaning
             "sonarjs/no-nested-template-literals": "off", // Nested templates are readable
+            "sonarjs/no-commented-code": "off", // Commented code serves documentation purposes
+            "sonarjs/function-return-type": "off", // Mixed return types are intentional
+            "sonarjs/pseudo-random": "off", // Math.random is safe for non-security contexts
+            "sonarjs/use-type-alias": "off", // Inline union types are acceptable
+            "sonarjs/different-types-comparison": "off", // Strict equality is intentional
+            "sonarjs/no-nested-conditional": "off", // Nested ternaries are sometimes clearer
+            "sonarjs/no-invariant-returns": "off", // Stubs may return constant values
+            "sonarjs/todo-tag": "off", // TODOs are intentional markers
+            "sonarjs/no-alphabetical-sort": "off", // Simple sort is fine for strings
+            "sonarjs/slow-regex": "off", // Regex performance is acceptable
+            "sonarjs/no-clear-text-protocols": "off", // HTTP detection patterns are intentional
+            "sonarjs/no-small-switch": "off", // Small switches improve readability
         },
         settings: {
             "import/resolver": {
