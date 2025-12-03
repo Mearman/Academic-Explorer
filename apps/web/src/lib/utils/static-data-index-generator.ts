@@ -215,8 +215,8 @@ export const generateIndexForEntityType = async (entityDir: string, entityType: 
     }
 
     const currentIsoString = new Date().toISOString();
-    // Use Math.max for ISO string comparison (strings are lexicographically comparable)
-    const overallLastUpdated = Math.max(maxLastUpdated, currentIsoString);
+    // ISO strings are lexicographically comparable - use string comparison
+    const overallLastUpdated = maxLastUpdated > currentIsoString ? maxLastUpdated : currentIsoString;
 
     // Read existing index to check if content has changed
     const indexPath = path.join(entityDir, INDEX_FILENAME);
