@@ -206,6 +206,7 @@ export default tseslint.config([
             "jsdoc/require-yields-type": "off",
             "jsdoc/require-throws-type": "off",
             "jsdoc/check-param-names": "off", // Conflicts with destructured params
+            "jsdoc/check-tag-names": ["warn", { definedTags: ["packageDocumentation", "typeParam"] }], // Allow TSDoc tags
 
             // Node.js rules (from flat/recommended-module for ES modules)
             ...nodePlugin.configs["flat/recommended-module"].rules,
