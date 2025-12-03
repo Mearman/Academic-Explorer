@@ -18,4 +18,4 @@ export const isValidROR = (ror: string): boolean => ror.startsWith("https://ror.
 
 export const isValidISSN = (issn: string): boolean => /^\d{4}-\d{3}[\dX]$/.test(issn);
 
-export const isValidWikidataId = (id: string): boolean => id.startsWith("Q") && /^\d+$/.test(id.substring(1));
+export const isValidWikidataId = (id: string): boolean => id.startsWith("Q") && /^\d+$/.test(id.slice(1));

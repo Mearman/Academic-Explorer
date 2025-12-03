@@ -141,7 +141,7 @@ export const validateBookmarkUrl = (url: string): void => {
 		const parsedUrl = new URL(url);
 
 		// Check for valid protocol
-		if (!parsedUrl.protocol.match(/^https?:$/)) {
+		if (!/^https?:$/.test(parsedUrl.protocol)) {
 			throw new BookmarkValidationError(
 				`Invalid URL protocol: ${parsedUrl.protocol}. Only http: and https: are allowed`,
 				{ url, protocol: parsedUrl.protocol },
