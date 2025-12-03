@@ -2,10 +2,23 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
 import importPlugin from "eslint-plugin-import";
+import promisePlugin from "eslint-plugin-promise";
+import regexpPlugin from "eslint-plugin-regexp";
+import autofixPlugin from "eslint-plugin-autofix";
+import eslintReact from "@eslint-react/eslint-plugin";
+import tanstackQuery from "@tanstack/eslint-plugin-query";
+import vitestPlugin from "@vitest/eslint-plugin";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import preferArrowFunctions from "eslint-plugin-prefer-arrow-functions";
+import noOnlyTests from "eslint-plugin-no-only-tests";
+import jsdoc from "eslint-plugin-jsdoc";
+import nodePlugin from "eslint-plugin-n";
+import jsoncPlugin from "eslint-plugin-jsonc";
+import ymlPlugin from "eslint-plugin-yml";
 import { customRulesPlugin } from "./tools/eslint-rules/index.js";
 
 /**
- * Simplified ESLint configuration for debugging
+ * ESLint configuration using recommended presets where available
  */
 export default tseslint.config([
     // Global ignores
@@ -125,42 +138,72 @@ export default tseslint.config([
         plugins: {
             "@typescript-eslint": tseslint.plugin,
             "import": importPlugin,
+            "promise": promisePlugin,
+            "regexp": regexpPlugin,
+            "autofix": autofixPlugin,
+            "simple-import-sort": simpleImportSort,
+            "prefer-arrow-functions": preferArrowFunctions,
+            "jsdoc": jsdoc,
+            "n": nodePlugin,
             "custom": customRulesPlugin,
         },
         rules: {
+            // TypeScript rules
             "@typescript-eslint/no-unused-vars": "error",
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
+
+            // Custom rules
             "custom/barrelsby-header": "error",
             "custom/no-deprecated": "error",
             "custom/no-duplicate-reexports": "error",
             "custom/no-reexport-from-non-barrel": "error",
-            "custom/no-redundant-assignment": "off", // Rule created and tested, disabled to reduce noise
+            "custom/no-redundant-assignment": "off",
 
-            // Import rules
+            // Import rules (from recommended + custom)
+            ...importPlugin.configs.recommended.rules,
+            ...importPlugin.configs.typescript.rules,
             "import/no-relative-packages": "error",
             "import/no-cycle": "error",
-            "import/no-self-import": "error",
-            "import/no-duplicates": "error",
-            "import/export": "error",
+            "import/no-default-export": "error",
             "import/order": ["error", {
-                "groups": [
-                    "builtin",
-                    "external",
-                    "internal",
-                    "parent",
-                    "sibling",
-                    "index"
-                ],
+                "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
                 "newlines-between": "always",
-                "alphabetize": {
-                    "order": "asc",
-                    "caseInsensitive": true
-                }
+                "alphabetize": { "order": "asc", "caseInsensitive": true }
             }],
 
-            // Forbid default exports
-            "import/no-default-export": "error",
+            // Promise rules (from flat/recommended)
+            ...promisePlugin.configs["flat/recommended"].rules,
+
+            // Regexp rules (from flat/recommended)
+            ...regexpPlugin.configs["flat/recommended"].rules,
+
+            // Autofix plugin
+            "autofix/no-debugger": "error",
+
+            // Simple import sort (excellent autofix)
+            "simple-import-sort/imports": "error",
+            "simple-import-sort/exports": "error",
+
+            // Prefer arrow functions (has autofix)
+            "prefer-arrow-functions/prefer-arrow-functions": ["error", {
+                "classPropertiesAllowed": false,
+                "disallowPrototype": false,
+                "returnStyle": "unchanged",
+                "singleReturnOnly": false,
+            }],
+
+            // JSDoc rules (from flat/recommended-typescript)
+            ...jsdoc.configs["flat/recommended-typescript"].rules,
+            "jsdoc/require-jsdoc": "off", // Too strict - don't require JSDoc everywhere
+            "jsdoc/require-description": "off",
+            "jsdoc/require-param-description": "off",
+            "jsdoc/require-returns-description": "off",
+
+            // Node.js rules (from flat/recommended-module for ES modules)
+            ...nodePlugin.configs["flat/recommended-module"].rules,
+            "n/no-missing-import": "off", // TypeScript handles this
+            "n/no-unpublished-import": "off", // We use workspace packages
         },
         settings: {
             "import/resolver": {
@@ -171,14 +214,37 @@ export default tseslint.config([
             },
         },
     },
-    // Configuration for test files
+    // Configuration for test files (using vitest recommended)
     {
         files: ["**/*.{test,spec}.{ts,tsx}", "**/*.e2e.test.{ts,tsx}", "**/test/**/*.ts", "**/e2e/**/*.ts"],
+        plugins: {
+            vitest: vitestPlugin,
+            "no-only-tests": noOnlyTests,
+        },
         rules: {
+            // Vitest recommended rules
+            ...vitestPlugin.configs.recommended.rules,
+            // Relax rules for tests
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "no-console": "off",
-            "custom/no-deprecated": "off", // Disable for test files due to TypeScript service issues
+            "custom/no-deprecated": "off",
+            "jsdoc/require-jsdoc": "off",
+            // Prevent .only from being committed
+            "no-only-tests/no-only-tests": "error",
+        },
+    },
+    // TanStack Query rules (using flat/recommended)
+    ...tanstackQuery.configs["flat/recommended"],
+    // React rules using @eslint-react (using recommended-typescript)
+    {
+        files: ["**/*.tsx"],
+        ...eslintReact.configs["recommended-typescript"],
+        rules: {
+            ...eslintReact.configs["recommended-typescript"].rules,
+            "@eslint-react/no-unstable-context-value": "error",
+            "@eslint-react/no-unstable-default-props": "error",
+            "@eslint-react/prefer-read-only-props": "off",
         },
     },
     // Allow default exports for config files and special cases
@@ -188,13 +254,29 @@ export default tseslint.config([
             "**/vite.config.*.ts",
             "**/eslint.config.*.ts",
             "**/.storybook/**/*",
-            "**/routes/**/*.tsx", // TanStack Router route files
+            "**/routes/**/*.tsx",
             "**/routeTree.gen.ts",
-            "**/config/**/*", // Config directory files
+            "**/config/**/*",
         ],
         rules: {
             "import/no-default-export": "off",
-            "import/no-relative-packages": "off", // Allow relative imports in config files
+            "import/no-relative-packages": "off",
+        },
+    },
+    // JSONC configuration (using flat/recommended-with-jsonc)
+    ...jsoncPlugin.configs["flat/recommended-with-jsonc"],
+    {
+        files: ["**/*.json", "**/*.jsonc"],
+        rules: {
+            "jsonc/sort-keys": "off",
+        },
+    },
+    // YML configuration (using flat/standard)
+    ...ymlPlugin.configs["flat/standard"],
+    {
+        files: ["**/*.yml", "**/*.yaml"],
+        rules: {
+            "yml/no-empty-mapping-value": "off",
         },
     },
 ]);
