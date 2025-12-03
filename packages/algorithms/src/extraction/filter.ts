@@ -3,9 +3,8 @@
  */
 import { Graph } from '../graph/graph';
 import type { ExtractionError } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
-
 import { filterGraph } from './subgraph';
 import type { SubgraphFilter } from './validators';
 import { validateSubgraphFilter } from './validators';
@@ -19,14 +18,12 @@ import { validateSubgraphFilter } from './validators';
  * - Node attributes: Filter nodes by attribute values
  * - Edge types: Filter edges by type set
  * - Combine modes: AND (default) or OR for multiple filters
- *
  * @param graph - Source graph to filter
  * @param filter - Filter specification with predicates and options
  * @returns Result containing filtered subgraph or error
  *
  * Time Complexity: O(V + E) where V = nodes, E = edges
  * Space Complexity: O(V' + E') where V', E' are filtered counts
- *
  * @example
  * ```typescript
  * // Filter for recent high-impact papers
@@ -37,10 +34,7 @@ import { validateSubgraphFilter } from './validators';
  * });
  * ```
  */
-export function filterSubgraph<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  filter: SubgraphFilter<N, E>
-): Result<Graph<N, E>, ExtractionError> {
+export const filterSubgraph = <N extends Node, E extends Edge>(graph: Graph<N, E>, filter: SubgraphFilter<N, E>): Result<Graph<N, E>, ExtractionError> => {
   // Validate input graph
   if (!graph) {
     return {
@@ -79,15 +73,14 @@ export function filterSubgraph<N extends Node, E extends Edge>(
 
   // AND mode (default) - use existing filterGraph function
   return filterGraph(graph, combinedNodePredicate, combinedEdgePredicate);
-}
+};
 
 /**
  * Builds a combined node predicate from filter specification.
  * Handles nodePredicate and nodeAttributes with AND logic.
+ * @param filter
  */
-function buildNodePredicate<N extends Node, E extends Edge>(
-  filter: SubgraphFilter<N, E>
-): (node: N) => boolean {
+const buildNodePredicate = <N extends Node, E extends Edge>(filter: SubgraphFilter<N, E>): (node: N) => boolean => {
   const predicates: Array<(node: N) => boolean> = [];
 
   // Add custom node predicate if provided
@@ -115,15 +108,14 @@ function buildNodePredicate<N extends Node, E extends Edge>(
 
   // Combine predicates with AND logic
   return (node: N) => predicates.every((pred) => pred(node));
-}
+};
 
 /**
  * Builds a combined edge predicate from filter specification.
  * Handles edgePredicate and edgeTypes with AND logic.
+ * @param filter
  */
-function buildEdgePredicate<N extends Node, E extends Edge>(
-  filter: SubgraphFilter<N, E>
-): (edge: E) => boolean {
+const buildEdgePredicate = <N extends Node, E extends Edge>(filter: SubgraphFilter<N, E>): (edge: E) => boolean => {
   const predicates: Array<(edge: E) => boolean> = [];
 
   // Add custom edge predicate if provided
@@ -144,7 +136,7 @@ function buildEdgePredicate<N extends Node, E extends Edge>(
 
   // Combine predicates with AND logic
   return (edge: E) => predicates.every((pred) => pred(edge));
-}
+};
 
 /**
  * Filters graph using OR mode - includes nodes/edges that pass either filter.
@@ -153,13 +145,12 @@ function buildEdgePredicate<N extends Node, E extends Edge>(
  * 1. Include all nodes that pass node predicate
  * 2. For edges that pass edge predicate, also include their endpoint nodes
  * 3. Include all edges that pass edge predicate AND have both endpoints included
+ * @param graph
+ * @param filter
+ * @param nodePredicate
+ * @param edgePredicate
  */
-function filterGraphOr<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  filter: SubgraphFilter<N, E>,
-  nodePredicate: (node: N) => boolean,
-  edgePredicate: (edge: E) => boolean
-): Result<Graph<N, E>, ExtractionError> {
+const filterGraphOr = <N extends Node, E extends Edge>(graph: Graph<N, E>, filter: SubgraphFilter<N, E>, nodePredicate: (node: N) => boolean, edgePredicate: (edge: E) => boolean): Result<Graph<N, E>, ExtractionError> => {
   const subgraph = new Graph<N, E>(graph.isDirected());
   const includedNodes = new Set<string>();
 
@@ -201,4 +192,4 @@ function filterGraphOr<N extends Node, E extends Edge>(
   }
 
   return { ok: true, value: subgraph };
-}
+};

@@ -7,11 +7,10 @@
  */
 import type { Graph } from '../graph/graph';
 import type { ExtractionError } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
-
 import { extractInducedSubgraph } from './subgraph';
-import { validateEgoNetworkOptions, type EgoNetworkOptions } from './validators';
+import { type EgoNetworkOptions,validateEgoNetworkOptions } from './validators';
 
 /**
  * Extracts a k-hop ego network around one or more seed nodes.
@@ -28,11 +27,9 @@ import { validateEgoNetworkOptions, type EgoNetworkOptions } from './validators'
  *
  * Time Complexity: O(V + E) where V is nodes in ego network, E is edges
  * Space Complexity: O(V) for visited set and result graph
- *
  * @param graph - Source graph to extract from
  * @param options - Ego network extraction options
  * @returns Result containing extracted subgraph or validation error
- *
  * @example
  * ```typescript
  * // Extract 2-hop neighborhood around a paper
@@ -47,10 +44,7 @@ import { validateEgoNetworkOptions, type EgoNetworkOptions } from './validators'
  * }
  * ```
  */
-export function extractEgoNetwork<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: EgoNetworkOptions
-): Result<Graph<N, E>, ExtractionError> {
+export const extractEgoNetwork = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: EgoNetworkOptions): Result<Graph<N, E>, ExtractionError> => {
   // Validate options
   const validationResult = validateEgoNetworkOptions(graph, options);
   if (!validationResult.ok) {
@@ -89,21 +83,16 @@ export function extractEgoNetwork<N extends Node, E extends Edge>(
 
   // Extract induced subgraph containing all ego nodes
   return extractInducedSubgraph(graph, egoNodes);
-}
+};
 
 /**
  * Discovers all nodes within a given radius using BFS with distance tracking.
- *
  * @param graph - Graph to traverse
  * @param startId - Starting node ID
  * @param maxRadius - Maximum distance (number of hops)
  * @returns Map of node IDs to their distance from start
  */
-function discoverNodesWithinRadius<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  startId: string,
-  maxRadius: number
-): Map<string, number> {
+const discoverNodesWithinRadius = <N extends Node, E extends Edge>(graph: Graph<N, E>, startId: string, maxRadius: number): Map<string, number> => {
   const distances = new Map<string, number>();
   const queue: Array<{ nodeId: string; distance: number }> = [
     { nodeId: startId, distance: 0 },
@@ -139,20 +128,18 @@ function discoverNodesWithinRadius<N extends Node, E extends Edge>(
   }
 
   return distances;
-}
+};
 
 /**
  * Convenience wrapper for extracting multi-source ego network.
  *
  * Extracts the union of ego networks around multiple seed nodes.
  * This is a simplified API for the common case of multi-source extraction.
- *
  * @param graph - Source graph
  * @param seedNodes - Array of seed node IDs
  * @param radius - Number of hops to include
  * @param includeSeed - Whether to include seed nodes (default: true)
  * @returns Result containing extracted subgraph or error
- *
  * @example
  * ```typescript
  * // Extract 1-hop neighborhoods around multiple authors
@@ -163,15 +150,8 @@ function discoverNodesWithinRadius<N extends Node, E extends Edge>(
  * );
  * ```
  */
-export function extractMultiSourceEgoNetwork<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  seedNodes: string[],
-  radius: number,
-  includeSeed: boolean = true
-): Result<Graph<N, E>, ExtractionError> {
-  return extractEgoNetwork(graph, {
+export const extractMultiSourceEgoNetwork = <N extends Node, E extends Edge>(graph: Graph<N, E>, seedNodes: string[], radius: number, includeSeed: boolean = true): Result<Graph<N, E>, ExtractionError> => extractEgoNetwork(graph, {
     radius,
     seedNodes,
     includeSeed,
   });
-}

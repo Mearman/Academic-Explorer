@@ -10,8 +10,8 @@
 
 import { type Graph } from '../graph/graph';
 import { type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Result, Ok } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { Ok,type Result } from '../types/result';
 
 /**
  * Triangle motif (3-clique) in undirected graph.
@@ -95,10 +95,8 @@ export interface BibliographicCouplingOptions {
  *
  * Time complexity: O(E * d^2) where E = edges, d = max degree
  * Space complexity: O(T) where T = number of triangles
- *
  * @param graph - Undirected graph to analyze
  * @returns Array of triangles found
- *
  * @example
  * ```typescript
  * const graph = createTriangleGraph();
@@ -108,9 +106,7 @@ export interface BibliographicCouplingOptions {
  * }
  * ```
  */
-export function detectTriangles<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): Result<Triangle<N>[], InvalidInputError> {
+export const detectTriangles = <N extends Node, E extends Edge>(graph: Graph<N, E>): Result<Triangle<N>[], InvalidInputError> => {
   const triangles: Triangle<N>[] = [];
   const edges = graph.getAllEdges();
   const processedTriangles = new Set<string>();
@@ -165,7 +161,7 @@ export function detectTriangles<N extends Node, E extends Edge>(
   }
 
   return Ok(triangles);
-}
+};
 
 /**
  * Detect star patterns (hub nodes with high degree).
@@ -178,11 +174,9 @@ export function detectTriangles<N extends Node, E extends Edge>(
  *
  * Time complexity: O(N + E) where N = nodes, E = edges
  * Space complexity: O(S) where S = number of stars
- *
  * @param graph - Graph to analyze
  * @param options - Detection options
  * @returns Array of star patterns found
- *
  * @example
  * ```typescript
  * const result = detectStarPatterns(graph, { minDegree: 10, type: 'out' });
@@ -193,10 +187,7 @@ export function detectTriangles<N extends Node, E extends Edge>(
  * }
  * ```
  */
-export function detectStarPatterns<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: StarPatternOptions
-): Result<StarPattern<N>[], InvalidInputError> {
+export const detectStarPatterns = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: StarPatternOptions): Result<StarPattern<N>[], InvalidInputError> => {
   const stars: StarPattern<N>[] = [];
   const nodes = graph.getAllNodes();
   const { minDegree, type } = options;
@@ -255,7 +246,7 @@ export function detectStarPatterns<N extends Node, E extends Edge>(
   }
 
   return Ok(stars);
-}
+};
 
 /**
  * Detect co-citation pairs in directed citation graph.
@@ -270,11 +261,9 @@ export function detectStarPatterns<N extends Node, E extends Edge>(
  *
  * Time complexity: O(N * R^2) where N = papers, R = avg references per paper
  * Space complexity: O(P^2) where P = unique papers
- *
  * @param graph - Directed citation graph
  * @param options - Detection options
  * @returns Array of co-citation pairs
- *
  * @example
  * ```typescript
  * const result = detectCoCitations(graph, { minCount: 5 });
@@ -285,10 +274,7 @@ export function detectStarPatterns<N extends Node, E extends Edge>(
  * }
  * ```
  */
-export function detectCoCitations<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: CoCitationOptions
-): Result<CoCitationPair<N>[], InvalidInputError> {
+export const detectCoCitations = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: CoCitationOptions): Result<CoCitationPair<N>[], InvalidInputError> => {
   const { minCount } = options;
   const coCitationMap = new Map<string, number>(); // "paper1,paper2" -> count
   const nodes = graph.getAllNodes();
@@ -338,7 +324,7 @@ export function detectCoCitations<N extends Node, E extends Edge>(
   }
 
   return Ok(pairs);
-}
+};
 
 /**
  * Detect bibliographic coupling pairs in directed citation graph.
@@ -353,11 +339,9 @@ export function detectCoCitations<N extends Node, E extends Edge>(
  *
  * Time complexity: O(N^2 * R) where N = papers, R = avg references
  * Space complexity: O(N * R) for reference sets
- *
  * @param graph - Directed citation graph
  * @param options - Detection options
  * @returns Array of bibliographic coupling pairs
- *
  * @example
  * ```typescript
  * const result = detectBibliographicCoupling(graph, { minShared: 3 });
@@ -368,10 +352,7 @@ export function detectCoCitations<N extends Node, E extends Edge>(
  * }
  * ```
  */
-export function detectBibliographicCoupling<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: BibliographicCouplingOptions
-): Result<BibliographicCouplingPair<N>[], InvalidInputError> {
+export const detectBibliographicCoupling = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: BibliographicCouplingOptions): Result<BibliographicCouplingPair<N>[], InvalidInputError> => {
   const { minShared } = options;
   const nodes = graph.getAllNodes();
 
@@ -433,4 +414,4 @@ export function detectBibliographicCoupling<N extends Node, E extends Edge>(
   }
 
   return Ok(pairs);
-}
+};

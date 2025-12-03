@@ -7,12 +7,11 @@ import { dijkstra } from '../pathfinding/dijkstra';
 import { bfs } from '../traversal/bfs';
 import type { Path } from '../types/algorithm-results';
 import type { ExtractionError } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Option } from '../types/option';
-import { Some, None } from '../types/option';
+import { None,Some } from '../types/option';
 import type { Result } from '../types/result';
-import { Ok, Err } from '../types/result';
-
+import { Err,Ok } from '../types/result';
 import { extractInducedSubgraph } from './subgraph';
 
 /**
@@ -34,7 +33,6 @@ export type ReachabilityDirection = 'forward' | 'backward';
  * - Dijkstra: O((V + E) log V) for weighted graphs
  *
  * Space Complexity: O(V)
- *
  * @param graph - The graph to search
  * @param sourceId - Starting node ID
  * @param targetId - Destination node ID
@@ -42,7 +40,6 @@ export type ReachabilityDirection = 'forward' | 'backward';
  *   - Ok(Some(path)) if path exists
  *   - Ok(None) if no path exists
  *   - Err(error) if inputs are invalid
- *
  * @example
  * ```typescript
  * // Find citation path between papers
@@ -53,11 +50,7 @@ export type ReachabilityDirection = 'forward' | 'backward';
  * }
  * ```
  */
-export function findShortestPath<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  sourceId: string,
-  targetId: string
-): Result<Option<Path<N, E>>, ExtractionError> {
+export const findShortestPath = <N extends Node, E extends Edge>(graph: Graph<N, E>, sourceId: string, targetId: string): Result<Option<Path<N, E>>, ExtractionError> => {
   // Validate inputs
   if (!graph) {
     return Err({
@@ -117,7 +110,7 @@ export function findShortestPath<N extends Node, E extends Edge>(
     // Use BFS for unweighted graphs (more efficient)
     return findPathWithBFS(graph, sourceId, targetId);
   }
-}
+};
 
 /**
  * Extracts a subgraph containing all nodes reachable from a source node.
@@ -128,13 +121,11 @@ export function findShortestPath<N extends Node, E extends Edge>(
  *
  * Time Complexity: O(V + E) where V, E are in the reachable subgraph
  * Space Complexity: O(V)
- *
  * @param graph - The graph to extract from
  * @param sourceId - Starting node ID
  * @param direction - 'forward' for outgoing edges, 'backward' for incoming edges
  * @param maxDepth - Optional maximum depth to traverse (undefined = unlimited)
  * @returns Result containing extracted subgraph or ExtractionError
- *
  * @example
  * ```typescript
  * // Extract all papers cited by P123 (forward)
@@ -147,12 +138,7 @@ export function findShortestPath<N extends Node, E extends Edge>(
  * const local = extractReachabilitySubgraph(graph, 'P123', 'forward', 2);
  * ```
  */
-export function extractReachabilitySubgraph<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  sourceId: string,
-  direction: ReachabilityDirection,
-  maxDepth?: number
-): Result<Graph<N, E>, ExtractionError> {
+export const extractReachabilitySubgraph = <N extends Node, E extends Edge>(graph: Graph<N, E>, sourceId: string, direction: ReachabilityDirection, maxDepth?: number): Result<Graph<N, E>, ExtractionError> => {
   // Validate inputs
   if (!graph) {
     return Err({
@@ -202,13 +188,14 @@ export function extractReachabilitySubgraph<N extends Node, E extends Edge>(
 
   // Extract induced subgraph containing reachable nodes
   return extractInducedSubgraph(graph, reachableNodes);
-}
+};
 
 /**
  * Checks if a graph has any weighted edges (edges with weight !== 1).
+ * @param graph
  * @internal
  */
-function checkIfWeighted<N extends Node, E extends Edge>(graph: Graph<N, E>): boolean {
+const checkIfWeighted = <N extends Node, E extends Edge>(graph: Graph<N, E>): boolean => {
   const edges = graph.getAllEdges();
 
   for (const edge of edges) {
@@ -218,18 +205,17 @@ function checkIfWeighted<N extends Node, E extends Edge>(graph: Graph<N, E>): bo
   }
 
   return false;
-}
+};
 
 /**
  * Finds shortest path using BFS for unweighted graphs.
  * More efficient than Dijkstra when all edges have weight 1.
+ * @param graph
+ * @param sourceId
+ * @param targetId
  * @internal
  */
-function findPathWithBFS<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  sourceId: string,
-  targetId: string
-): Result<Option<Path<N, E>>, ExtractionError> {
+const findPathWithBFS = <N extends Node, E extends Edge>(graph: Graph<N, E>, sourceId: string, targetId: string): Result<Option<Path<N, E>>, ExtractionError> => {
   const bfsResult = bfs(graph, sourceId);
 
   if (!bfsResult.ok) {
@@ -284,19 +270,18 @@ function findPathWithBFS<N extends Node, E extends Edge>(
       totalWeight,
     })
   );
-}
+};
 
 /**
  * Finds an edge between two nodes.
  * For directed graphs, finds edge from source to target.
  * For undirected graphs, finds edge in either direction.
+ * @param graph
+ * @param sourceId
+ * @param targetId
  * @internal
  */
-function findEdgeBetween<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  sourceId: string,
-  targetId: string
-): Option<E> {
+const findEdgeBetween = <N extends Node, E extends Edge>(graph: Graph<N, E>, sourceId: string, targetId: string): Option<E> => {
   // Try direct edge first
   const outgoingEdges = graph.getOutgoingEdges(sourceId);
   if (outgoingEdges.ok) {
@@ -311,17 +296,16 @@ function findEdgeBetween<N extends Node, E extends Edge>(
   // So we don't need a separate check
 
   return None();
-}
+};
 
 /**
  * Gets neighbors in the specified direction.
+ * @param graph
+ * @param nodeId
+ * @param direction
  * @internal
  */
-function getNeighborsInDirection<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  direction: ReachabilityDirection
-): string[] {
+const getNeighborsInDirection = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, direction: ReachabilityDirection): string[] => {
   if (direction === 'forward') {
     // Follow outgoing edges
     const edges = graph.getOutgoingEdges(nodeId);
@@ -341,4 +325,4 @@ function getNeighborsInDirection<N extends Node, E extends Edge>(
   }
 
   return [];
-}
+};

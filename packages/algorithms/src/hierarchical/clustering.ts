@@ -11,18 +11,17 @@
  *
  * Time Complexity: O(n³) for naive implementation, O(n² log n) with optimizations
  * Space Complexity: O(n²) for distance matrix
- *
  * @module hierarchical/clustering
  */
 
 import type { Graph } from '../graph/graph';
 import type {
   Dendrogram,
-  MergeStep,
   HierarchicalResult,
+  MergeStep,
 } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err,Ok } from '../types/result';
 
 /**
  * Linkage method for computing cluster-to-cluster distances.
@@ -44,6 +43,8 @@ class DistanceMatrix {
 
   /**
    * Get distance between clusters i and j.
+   * @param i
+   * @param j
    */
   get(i: number, j: number): number {
     if (i === j) return 0;
@@ -53,6 +54,9 @@ class DistanceMatrix {
 
   /**
    * Set distance between clusters i and j.
+   * @param i
+   * @param j
+   * @param distance
    */
   set(i: number, j: number, distance: number): void {
     if (i === j) return;
@@ -63,6 +67,7 @@ class DistanceMatrix {
   /**
    * Find the pair of clusters with minimum distance.
    * Returns [i, j, distance] where i < j.
+   * @param activeClusters
    */
   findMinimum(activeClusters: Set<number>): [number, number, number] | undefined {
     let minI = -1;
@@ -89,11 +94,10 @@ class DistanceMatrix {
  * Build adjacency matrix from graph (1.0 if edge exists, 0.0 otherwise).
  * For undirected graphs, matrix is symmetric.
  * For directed graphs, treats as undirected (combines both directions).
+ * @param graph
+ * @param nodeIndexMap
  */
-function buildAdjacencyMatrix<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeIndexMap: Map<string, number>
-): number[][] {
+const buildAdjacencyMatrix = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeIndexMap: Map<string, number>): number[][] => {
   const n = nodeIndexMap.size;
   const adjMatrix: number[][] = Array.from({ length: n }, () => Array(n).fill(0));
 
@@ -119,13 +123,14 @@ function buildAdjacencyMatrix<N extends Node, E extends Edge>(
   });
 
   return adjMatrix;
-}
+};
 
 /**
  * Compute initial distance matrix from adjacency matrix.
  * Distance = 1.0 - adjacency (0 if connected, 1 if not connected).
+ * @param adjMatrix
  */
-function computeDistanceMatrix(adjMatrix: number[][]): DistanceMatrix {
+const computeDistanceMatrix = (adjMatrix: number[][]): DistanceMatrix => {
   const n = adjMatrix.length;
   const distMatrix = new DistanceMatrix(n);
 
@@ -138,21 +143,20 @@ function computeDistanceMatrix(adjMatrix: number[][]): DistanceMatrix {
   }
 
   return distMatrix;
-}
+};
 
 /**
  * Update distance matrix after merging two clusters.
  * Uses linkage method to compute new distances.
+ * @param distMatrix
+ * @param merged
+ * @param cluster1
+ * @param cluster2
+ * @param activeClusters
+ * @param linkage
+ * @param clusterSizes
  */
-function updateDistances(
-  distMatrix: DistanceMatrix,
-  merged: number,
-  cluster1: number,
-  cluster2: number,
-  activeClusters: Set<number>,
-  linkage: LinkageMethod,
-  clusterSizes: Map<number, number>
-): void {
+const updateDistances = (distMatrix: DistanceMatrix, merged: number, cluster1: number, cluster2: number, activeClusters: Set<number>, linkage: LinkageMethod, clusterSizes: Map<number, number>): void => {
   const size1 = clusterSizes.get(cluster1) ?? 1;
   const size2 = clusterSizes.get(cluster2) ?? 1;
 
@@ -186,16 +190,15 @@ function updateDistances(
 
     distMatrix.set(merged, k, newDist);
   });
-}
+};
 
 /**
  * Build dendrogram from merge history.
+ * @param nodes
+ * @param merges
+ * @param heights
  */
-function buildDendrogram<N extends Node>(
-  nodes: N[],
-  merges: MergeStep[],
-  heights: number[]
-): Dendrogram<string> {
+const buildDendrogram = <N extends Node>(nodes: N[], merges: MergeStep[], heights: number[]): Dendrogram<string> => {
   const leafNodes = nodes.map((node) => node.id);
   const clusterSizes = merges.map((merge) => merge.size);
 
@@ -207,8 +210,9 @@ function buildDendrogram<N extends Node>(
 
     /**
      * Cut dendrogram at specified height to produce flat clusters.
+     * @param height
      */
-    cutAtHeight(height: number): Set<string>[] {
+    cutAtHeight: (height: number): Set<string>[] => {
       // Start with all nodes in singleton clusters (indices 0 to n-1)
       const clusters = new Map<number, Set<string>>();
       leafNodes.forEach((nodeId, idx) => {
@@ -242,8 +246,9 @@ function buildDendrogram<N extends Node>(
 
     /**
      * Get exactly k clusters by cutting dendrogram.
+     * @param numClusters
      */
-    getClusters(numClusters: number): Set<string>[] {
+    getClusters: (numClusters: number): Set<string>[] => {
       if (numClusters <= 0) return [];
       if (numClusters >= leafNodes.length) {
         // Return singleton clusters
@@ -286,18 +291,16 @@ function buildDendrogram<N extends Node>(
       return Array.from(clusters.values());
     },
   };
-}
+};
 
 /**
  * Perform hierarchical clustering on a graph.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
  * @param options - Configuration options
  * @param options.linkage - Linkage method: 'single', 'complete', or 'average' (default: 'average')
  * @returns Result containing dendrogram or error
- *
  * @example
  * ```typescript
  * const graph = new Graph<TopicNode, TopicEdge>(false);
@@ -311,12 +314,9 @@ function buildDendrogram<N extends Node>(
  * }
  * ```
  */
-export function hierarchicalClustering<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: {
+export const hierarchicalClustering = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: {
     linkage?: LinkageMethod;
-  } = {}
-): HierarchicalResult<string> {
+  } = {}): HierarchicalResult<string> => {
   const startTime = performance.now();
   const linkage = options.linkage ?? 'average';
 
@@ -441,4 +441,4 @@ export function hierarchicalClustering<N extends Node, E extends Edge>(
       parameters: { linkage },
     },
   });
-}
+};

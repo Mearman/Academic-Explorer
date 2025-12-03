@@ -3,12 +3,12 @@
  */
 import type { Graph } from '../graph/graph';
 import type {
+  ExtractionError,
   InvalidFilterError,
   InvalidInputError,
   InvalidTrussError,
-  ExtractionError,
 } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
 
 /**
@@ -51,15 +51,11 @@ export interface KTrussOptions {
 
 /**
  * Validates ego network extraction options.
- *
  * @param graph - The graph to extract from
  * @param options - Ego network options to validate
  * @returns Result with validated options or error
  */
-export function validateEgoNetworkOptions<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: EgoNetworkOptions
-): Result<EgoNetworkOptions, ExtractionError> {
+export const validateEgoNetworkOptions = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: EgoNetworkOptions): Result<EgoNetworkOptions, ExtractionError> => {
   // Validate radius
   if (typeof options.radius !== 'number' || options.radius < 0) {
     return {
@@ -118,17 +114,14 @@ export function validateEgoNetworkOptions<N extends Node, E extends Edge>(
       includeSeed: options.includeSeed ?? true,
     },
   };
-}
+};
 
 /**
  * Validates subgraph filter specification.
- *
  * @param filter - Filter to validate
  * @returns Result with validated filter or error
  */
-export function validateSubgraphFilter<N extends Node, E extends Edge>(
-  filter: SubgraphFilter<N, E>
-): Result<SubgraphFilter<N, E>, InvalidFilterError> {
+export const validateSubgraphFilter = <N extends Node, E extends Edge>(filter: SubgraphFilter<N, E>): Result<SubgraphFilter<N, E>, InvalidFilterError> => {
   if (!filter) {
     return {
       ok: false,
@@ -164,17 +157,14 @@ export function validateSubgraphFilter<N extends Node, E extends Edge>(
       combineMode: filter.combineMode ?? 'and',
     },
   };
-}
+};
 
 /**
  * Validates k-truss extraction options.
- *
  * @param options - K-truss options to validate
  * @returns Result with validated options or error
  */
-export function validateKTrussOptions(
-  options: KTrussOptions
-): Result<KTrussOptions, InvalidTrussError | InvalidInputError> {
+export const validateKTrussOptions = (options: KTrussOptions): Result<KTrussOptions, InvalidTrussError | InvalidInputError> => {
   if (!options) {
     return {
       ok: false,
@@ -216,4 +206,4 @@ export function validateKTrussOptions(
       returnHierarchy: options.returnHierarchy ?? false,
     },
   };
-}
+};

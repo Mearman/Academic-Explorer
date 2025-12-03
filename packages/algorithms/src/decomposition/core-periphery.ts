@@ -11,7 +11,6 @@
  *
  * Time complexity: O(k * E) where k = iterations (typically < 100), E = edges
  * Space complexity: O(V) for coreness scores
- *
  * @module decomposition/core-periphery
  */
 
@@ -20,8 +19,8 @@ import type {
   CorePeripheryResult,
   CorePeripheryStructure,
 } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err,Ok } from '../types/result';
 
 /**
  * Default parameters for core-periphery decomposition.
@@ -50,13 +49,11 @@ export interface CorePeripheryOptions {
  * Identifies a dense core of highly connected nodes and a sparse periphery.
  * Core nodes have high coreness scores (> threshold) and are densely connected to each other.
  * Periphery nodes have low coreness scores and are sparsely connected.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
  * @param options - Optional parameters (threshold, iterations, epsilon)
  * @returns Result with core-periphery structure or error
- *
  * @example
  * ```typescript
  * const result = corePeripheryDecomposition(citationGraph, { coreThreshold: 0.7 });
@@ -67,10 +64,7 @@ export interface CorePeripheryOptions {
  * }
  * ```
  */
-export function corePeripheryDecomposition<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: CorePeripheryOptions = {}
-): CorePeripheryResult<string> {
+export const corePeripheryDecomposition = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: CorePeripheryOptions = {}): CorePeripheryResult<string> => {
   const startTime = performance.now();
 
   // Validate input
@@ -222,7 +216,7 @@ export function corePeripheryDecomposition<N extends Node, E extends Edge>(
       },
     },
   });
-}
+};
 
 /**
  * Initialize coreness scores based on node degree.
@@ -230,11 +224,10 @@ export function corePeripheryDecomposition<N extends Node, E extends Edge>(
  *
  * Formula: coreness[v] = degree[v] / max_degree
  * Normalized to [0, 1] range.
+ * @param nodeIds
+ * @param adjacency
  */
-function initializeCorenessScores(
-  nodeIds: string[],
-  adjacency: Map<string, Set<string>>
-): Map<string, number> {
+const initializeCorenessScores = (nodeIds: string[], adjacency: Map<string, Set<string>>): Map<string, number> => {
   const corenessScores = new Map<string, number>();
 
   // Find max degree for normalization
@@ -257,7 +250,7 @@ function initializeCorenessScores(
   }
 
   return corenessScores;
-}
+};
 
 /**
  * Update coreness scores using Borgatti-Everett optimization.
@@ -265,12 +258,11 @@ function initializeCorenessScores(
  *
  * Formula: coreness[i] = Σ(adj[i,j] * coreness[j]) / degree[i]
  * This is essentially computing eigenvector centrality weighted by current coreness.
+ * @param nodeIds
+ * @param edges
+ * @param corenessScores
  */
-function updateCorenessScoresOptimized<E extends Edge>(
-  nodeIds: string[],
-  edges: E[],
-  corenessScores: Map<string, number>
-): void {
+const updateCorenessScoresOptimized = <E extends Edge>(nodeIds: string[], edges: E[], corenessScores: Map<string, number>): void => {
   const newScores = new Map<string, number>();
 
   // Build index map for fast lookup
@@ -311,19 +303,18 @@ function updateCorenessScoresOptimized<E extends Edge>(
       corenessScores.set(nodeId, score);
     }
   }
-}
+};
 
 /**
  * Calculate correlation fit between observed edges and coreness products.
  * Higher correlation = better core-periphery structure.
  *
  * Returns: Pearson correlation coefficient between adj[i,j] and coreness[i]*coreness[j]
+ * @param edges
+ * @param corenessScores
+ * @param nodeCount
  */
-function calculateCorrelationFit<E extends Edge>(
-  edges: E[],
-  corenessScores: Map<string, number>,
-  nodeCount: number
-): number {
+const calculateCorrelationFit = <E extends Edge>(edges: E[], corenessScores: Map<string, number>, nodeCount: number): number => {
   // Calculate mean edge presence and mean coreness product
   const edgeCount = edges.length;
   const possibleEdges = nodeCount * (nodeCount - 1); // Directed graph
@@ -369,18 +360,17 @@ function calculateCorrelationFit<E extends Edge>(
 
   const correlation = numerator / Math.sqrt(sumSqEdge * sumSqCoreness);
   return correlation;
-}
+};
 
 /**
  * Apply core threshold to separate core from periphery.
  * Nodes with coreness > threshold → core
  * Nodes with coreness ≤ threshold → periphery
+ * @param nodeIds
+ * @param corenessScores
+ * @param threshold
  */
-function applyCoreThreshold(
-  nodeIds: string[],
-  corenessScores: Map<string, number>,
-  threshold: number
-): { coreNodes: Set<string>; peripheryNodes: Set<string> } {
+const applyCoreThreshold = (nodeIds: string[], corenessScores: Map<string, number>, threshold: number): { coreNodes: Set<string>; peripheryNodes: Set<string> } => {
   const coreNodes = new Set<string>();
   const peripheryNodes = new Set<string>();
 
@@ -395,7 +385,7 @@ function applyCoreThreshold(
   }
 
   return { coreNodes, peripheryNodes };
-}
+};
 
 /**
  * Calculate fit quality (correlation between observed and ideal structure).
@@ -406,12 +396,11 @@ function applyCoreThreshold(
  *
  * Fit quality = correlation coefficient between observed and ideal
  * Range: [-1, 1], higher is better
+ * @param graph
+ * @param coreNodes
+ * @param peripheryNodes
  */
-function calculateFitQuality<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  coreNodes: Set<string>,
-  peripheryNodes: Set<string>
-): number {
+const calculateFitQuality = <N extends Node, E extends Edge>(graph: Graph<N, E>, coreNodes: Set<string>, peripheryNodes: Set<string>): number => {
   const edges = graph.getAllEdges();
 
   // Count observed edges by type
@@ -487,4 +476,4 @@ function calculateFitQuality<N extends Node, E extends Edge>(
 
   // Clamp to valid range [-1, 1] (handle floating point errors)
   return Math.max(-1, Math.min(1, correlation));
-}
+};

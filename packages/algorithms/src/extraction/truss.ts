@@ -16,17 +16,15 @@
  * References:
  * - Cohen, J. (2008). "Trusses: Cohesive subgraphs for social network analysis"
  * - Wang, J., & Cheng, J. (2012). "Truss decomposition in massive networks"
- *
  * @module extraction/truss
  */
 
 import { Graph } from '../graph/graph';
 import type { ExtractionError } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
 import { Ok } from '../types/result';
-
-import { validateKTrussOptions, type KTrussOptions } from './validators';
+import { type KTrussOptions,validateKTrussOptions } from './validators';
 
 
 /**
@@ -40,10 +38,8 @@ import { validateKTrussOptions, type KTrussOptions } from './validators';
  * 1. For each edge (u,v), find common neighbors of u and v
  * 2. Each common neighbor w forms a triangle (u,v,w)
  * 3. Count triangles = |neighbors(u) ∩ neighbors(v)|
- *
  * @param graph - Input graph (directed or undirected)
  * @returns Result containing map of edge ID to triangle count
- *
  * @example
  * ```typescript
  * const result = computeTriangleSupport(graph);
@@ -53,9 +49,7 @@ import { validateKTrussOptions, type KTrussOptions } from './validators';
  * }
  * ```
  */
-export function computeTriangleSupport<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): Result<Map<string, number>, ExtractionError> {
+export const computeTriangleSupport = <N extends Node, E extends Edge>(graph: Graph<N, E>): Result<Map<string, number>, ExtractionError> => {
   const support = new Map<string, number>();
 
   // Build adjacency map for efficient neighbor lookup
@@ -93,7 +87,7 @@ export function computeTriangleSupport<N extends Node, E extends Edge>(
   });
 
   return Ok(support);
-}
+};
 
 /**
  * Extracts k-truss subgraph from the input graph.
@@ -111,11 +105,9 @@ export function computeTriangleSupport<N extends Node, E extends Edge>(
  *    b. Update triangle support for affected edges
  *    c. Mark affected edges for recheck
  * 4. Return remaining subgraph
- *
  * @param graph - Input graph (directed or undirected)
  * @param options - K-truss options (k value, hierarchy flag)
  * @returns Result containing k-truss subgraph or error
- *
  * @example
  * ```typescript
  * // Extract 3-truss (edges in at least 1 triangle)
@@ -126,10 +118,7 @@ export function computeTriangleSupport<N extends Node, E extends Edge>(
  * }
  * ```
  */
-export function extractKTruss<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: KTrussOptions
-): Result<Graph<N, E>, ExtractionError> {
+export const extractKTruss = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: KTrussOptions): Result<Graph<N, E>, ExtractionError> => {
   // Validate options
   const validationResult = validateKTrussOptions(options);
   if (!validationResult.ok) {
@@ -295,4 +284,4 @@ export function extractKTruss<N extends Node, E extends Edge>(
   });
 
   return Ok(truss);
-}
+};

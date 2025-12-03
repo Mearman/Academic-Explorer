@@ -1,8 +1,8 @@
 import { type Graph } from '../graph/graph';
 import { type Component } from '../types/algorithm-results';
 import { type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Find all connected components in an undirected graph (or weakly connected components in directed graph).
@@ -11,13 +11,10 @@ import { type Result, Ok, Err } from '../types/result';
  *
  * Time Complexity: O(V + E)
  * Space Complexity: O(V)
- *
  * @param graph - The graph to analyze
  * @returns Result containing array of components
  */
-export function connectedComponents<N extends Node, E extends Edge = Edge>(
-  graph: Graph<N, E>
-): Result<Component<N>[], InvalidInputError> {
+export const connectedComponents = <N extends Node, E extends Edge = Edge>(graph: Graph<N, E>): Result<Component<N>[], InvalidInputError> => {
   if (!graph) {
     return Err({
       type: 'invalid-input',
@@ -30,7 +27,7 @@ export function connectedComponents<N extends Node, E extends Edge = Edge>(
   const components: Component<N>[] = [];
   let componentId = 0;
 
-  function dfs(nodeId: string, componentNodes: N[]): void {
+  const dfs = (nodeId: string, componentNodes: N[]): void => {
     visited.add(nodeId);
 
     const node = graph.getNode(nodeId);
@@ -57,7 +54,7 @@ export function connectedComponents<N extends Node, E extends Edge = Edge>(
         }
       }
     }
-  }
+  };
 
   // Find all components
   for (const node of nodes) {
@@ -74,4 +71,4 @@ export function connectedComponents<N extends Node, E extends Edge = Edge>(
   }
 
   return Ok(components);
-}
+};

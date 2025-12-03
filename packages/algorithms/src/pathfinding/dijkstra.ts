@@ -3,12 +3,11 @@ import { type Path } from '../types/algorithm-results';
 import {
   type GraphError,
 } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Option, Some, None } from '../types/option';
-import { type Result, Ok, Err } from '../types/result';
-import { type WeightFunction, defaultWeightFunction } from '../types/weight-function';
+import { type Edge,type Node } from '../types/graph';
+import { None,type Option, Some } from '../types/option';
+import { Err,Ok, type Result } from '../types/result';
+import { defaultWeightFunction,type WeightFunction } from '../types/weight-function';
 import { validateNonNegativeWeight } from '../utils/validators';
-
 import { MinHeap } from './priority-queue';
 
 /**
@@ -22,7 +21,6 @@ import { MinHeap } from './priority-queue';
  *
  * **Important**: Does not work with negative edge weights. Use Bellman-Ford for graphs
  * with negative weights.
- *
  * @param graph - The graph to search
  * @param startId - ID of the start node
  * @param endId - ID of the end node
@@ -32,7 +30,6 @@ import { MinHeap } from './priority-queue';
  *   - Ok(None) if no path exists (disconnected)
  *   - Err(NegativeWeightError) if negative weights detected
  *   - Err(InvalidInputError) if start/end nodes not found
- *
  * @example
  * ```typescript
  * const graph = new Graph<MyNode, MyEdge>(true);
@@ -52,12 +49,7 @@ import { MinHeap } from './priority-queue';
  * );
  * ```
  */
-export function dijkstra<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  startId: string,
-  endId: string,
-  weightFn: WeightFunction<N, E> = defaultWeightFunction
-): Result<Option<Path<N, E>>, GraphError> {
+export const dijkstra = <N extends Node, E extends Edge>(graph: Graph<N, E>, startId: string, endId: string, weightFn: WeightFunction<N, E> = defaultWeightFunction): Result<Option<Path<N, E>>, GraphError> => {
   // Validate inputs
   if (!graph) {
     return Err({
@@ -190,19 +182,18 @@ export function dijkstra<N extends Node, E extends Edge>(
   const path = reconstructPath(graph, startId, endId, predecessors, weightFn);
 
   return Ok(Some(path));
-}
+};
 
 /**
  * Reconstruct the path from start to end using predecessors.
+ * @param graph
+ * @param startId
+ * @param endId
+ * @param predecessors
+ * @param weightFn
  * @internal
  */
-function reconstructPath<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  startId: string,
-  endId: string,
-  predecessors: Map<string, { nodeId: string; edgeId: string } | null>,
-  weightFn: WeightFunction<N, E>
-): Path<N, E> {
+const reconstructPath = <N extends Node, E extends Edge>(graph: Graph<N, E>, startId: string, endId: string, predecessors: Map<string, { nodeId: string; edgeId: string } | null>, weightFn: WeightFunction<N, E>): Path<N, E> => {
   const pathNodes: N[] = [];
   const pathEdges: E[] = [];
   let totalWeight = 0;
@@ -249,4 +240,4 @@ function reconstructPath<N extends Node, E extends Edge>(
     edges: pathEdges,
     totalWeight,
   };
-}
+};

@@ -1,6 +1,6 @@
 import { type InvalidInputError } from '../types/errors';
-import { type Option, Some, None } from '../types/option';
-import { type Result, Ok, Err } from '../types/result';
+import { None,type Option, Some } from '../types/option';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Entry in the min-heap priority queue.
@@ -25,9 +25,7 @@ interface HeapEntry<T> {
  * - size: O(1)
  *
  * Space Complexity: O(n) for heap array and position map
- *
  * @template T - Type of elements stored in the queue
- *
  * @example
  * ```typescript
  * const heap = new MinHeap<string>();
@@ -44,7 +42,6 @@ export class MinHeap<T> {
 
   /**
    * Insert an element with given priority.
-   *
    * @param element - Element to insert
    * @param priority - Priority value (lower = higher priority)
    */
@@ -58,7 +55,6 @@ export class MinHeap<T> {
 
   /**
    * Extract and return the element with minimum priority.
-   *
    * @returns Option containing the minimum element, or None if heap is empty
    */
   extractMin(): Option<T> {
@@ -87,7 +83,6 @@ export class MinHeap<T> {
 
   /**
    * Decrease the priority of an existing element.
-   *
    * @param element - Element whose priority to decrease
    * @param newPriority - New priority value (must be lower than current)
    * @returns Result indicating success or error
@@ -119,7 +114,6 @@ export class MinHeap<T> {
 
   /**
    * Check if the heap is empty.
-   *
    * @returns true if heap contains no elements
    */
   isEmpty(): boolean {
@@ -128,7 +122,6 @@ export class MinHeap<T> {
 
   /**
    * Get the number of elements in the heap.
-   *
    * @returns Number of elements
    */
   size(): number {
@@ -137,6 +130,7 @@ export class MinHeap<T> {
 
   /**
    * Bubble up an element to maintain heap property.
+   * @param index
    * @internal
    */
   private bubbleUp(index: number): void {
@@ -157,6 +151,7 @@ export class MinHeap<T> {
 
   /**
    * Bubble down an element to maintain heap property.
+   * @param index
    * @internal
    */
   private bubbleDown(index: number): void {
@@ -193,6 +188,8 @@ export class MinHeap<T> {
 
   /**
    * Swap two elements in the heap and update position map.
+   * @param i
+   * @param j
    * @internal
    */
   private swap(i: number, j: number): void {

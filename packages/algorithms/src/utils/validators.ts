@@ -1,18 +1,14 @@
 import { type InvalidInputError, type InvalidWeightError, type NegativeWeightError } from '../types/errors';
 import { type Edge } from '../types/graph';
-import { Err, type Result, Ok } from '../types/result';
+import { Err, Ok,type Result } from '../types/result';
 
 /**
  * Validate that input is not null or undefined.
- *
  * @param input - Input to validate
  * @param name - Name of input for error message
  * @returns Ok(void) if valid, Err(InvalidInputError) if null/undefined
  */
-export function validateNotNull(
-  input: unknown,
-  name: string
-): Result<void, InvalidInputError> {
+export const validateNotNull = (input: unknown, name: string): Result<void, InvalidInputError> => {
   if (input === null || input === undefined) {
     return Err({
       type: 'invalid-input',
@@ -21,17 +17,14 @@ export function validateNotNull(
     });
   }
   return Ok(undefined);
-}
+};
 
 /**
  * Validate edge weight is a valid number (not NaN, not Infinity).
- *
  * @param edge - Edge to validate
  * @returns Ok(void) if valid, Err(InvalidWeightError) if invalid
  */
-export function validateEdgeWeight(
-  edge: Edge
-): Result<void, InvalidWeightError> {
+export const validateEdgeWeight = (edge: Edge): Result<void, InvalidWeightError> => {
   if (edge.weight === undefined) {
     return Ok(undefined); // Optional weight is valid
   }
@@ -64,17 +57,14 @@ export function validateEdgeWeight(
   }
 
   return Ok(undefined);
-}
+};
 
 /**
  * Validate edge weight is non-negative (for Dijkstra's algorithm).
- *
  * @param edge - Edge to validate
  * @returns Ok(void) if valid, Err(NegativeWeightError) if negative
  */
-export function validateNonNegativeWeight(
-  edge: Edge
-): Result<void, NegativeWeightError> {
+export const validateNonNegativeWeight = (edge: Edge): Result<void, NegativeWeightError> => {
   const weight = edge.weight ?? 1; // Default weight is 1
 
   if (weight < 0) {
@@ -87,4 +77,4 @@ export function validateNonNegativeWeight(
   }
 
   return Ok(undefined);
-}
+};

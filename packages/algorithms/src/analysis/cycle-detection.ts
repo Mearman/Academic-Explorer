@@ -1,9 +1,9 @@
 import { type Graph } from '../graph/graph';
 import { type CycleInfo } from '../types/algorithm-results';
 import { type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Option, Some, None } from '../types/option';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { None,type Option, Some } from '../types/option';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Detect cycles in a graph using DFS.
@@ -13,13 +13,10 @@ import { type Result, Ok, Err } from '../types/result';
  *
  * Time Complexity: O(V + E)
  * Space Complexity: O(V)
- *
  * @param graph - The graph to check for cycles
  * @returns Result containing Option with cycle info if found
  */
-export function detectCycle<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): Result<Option<CycleInfo<N, E>>, InvalidInputError> {
+export const detectCycle = <N extends Node, E extends Edge>(graph: Graph<N, E>): Result<Option<CycleInfo<N, E>>, InvalidInputError> => {
   if (!graph) {
     return Err({
       type: 'invalid-input',
@@ -32,7 +29,7 @@ export function detectCycle<N extends Node, E extends Edge>(
   const inStack = new Set<string>();
   const parent = new Map<string, string | null>();
 
-  function dfsDirected(nodeId: string): Option<CycleInfo<N, E>> {
+  const dfsDirected = (nodeId: string): Option<CycleInfo<N, E>> => {
     visited.add(nodeId);
     inStack.add(nodeId);
 
@@ -56,9 +53,9 @@ export function detectCycle<N extends Node, E extends Edge>(
 
     inStack.delete(nodeId);
     return None();
-  }
+  };
 
-  function dfsUndirected(nodeId: string, parentId: string | null): Option<CycleInfo<N, E>> {
+  const dfsUndirected = (nodeId: string, parentId: string | null): Option<CycleInfo<N, E>> => {
     visited.add(nodeId);
 
     const neighborsResult = graph.getNeighbors(nodeId);
@@ -78,9 +75,9 @@ export function detectCycle<N extends Node, E extends Edge>(
     }
 
     return None();
-  }
+  };
 
-  function reconstructCycle(fromId: string, toId: string): Option<CycleInfo<N, E>> {
+  const reconstructCycle = (fromId: string, toId: string): Option<CycleInfo<N, E>> => {
     const cycleNodes: N[] = [];
     const cycleEdges: E[] = [];
 
@@ -121,7 +118,7 @@ export function detectCycle<N extends Node, E extends Edge>(
     }
 
     return Some({ nodes: cycleNodes, edges: cycleEdges });
-  }
+  };
 
   // Run DFS from all unvisited nodes
   for (const node of nodes) {
@@ -139,4 +136,4 @@ export function detectCycle<N extends Node, E extends Edge>(
   }
 
   return Ok(None());
-}
+};

@@ -1,8 +1,8 @@
 import { type Graph } from '../graph/graph';
 import { type TraversalResult } from '../types/algorithm-results';
 import { type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Depth-First Search (DFS) traversal algorithm.
@@ -12,11 +12,9 @@ import { type Result, Ok, Err } from '../types/result';
  *
  * Time Complexity: O(V + E) where V = vertices, E = edges
  * Space Complexity: O(V) for visited set and parent tracking
- *
  * @param graph - The graph to traverse
  * @param startId - ID of the starting node
  * @returns Result containing traversal information or error
- *
  * @example
  * ```typescript
  * const graph = new Graph<MyNode, MyEdge>(true);
@@ -31,10 +29,7 @@ import { type Result, Ok, Err } from '../types/result';
  * }
  * ```
  */
-export function dfs<N extends Node, E extends Edge = Edge>(
-  graph: Graph<N, E>,
-  startId: string
-): Result<TraversalResult<N>, InvalidInputError> {
+export const dfs = <N extends Node, E extends Edge = Edge>(graph: Graph<N, E>, startId: string): Result<TraversalResult<N>, InvalidInputError> => {
   // Validate inputs
   if (!graph) {
     return Err({
@@ -126,4 +121,4 @@ export function dfs<N extends Node, E extends Edge = Edge>(
     discovered,
     finished,
   });
-}
+};

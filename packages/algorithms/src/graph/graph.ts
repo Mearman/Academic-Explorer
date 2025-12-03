@@ -1,18 +1,16 @@
 import {
-  type InvalidInputError,
   type DuplicateNodeError,
+  type InvalidInputError,
 } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Option, Some, None } from '../types/option';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { None,type Option, Some } from '../types/option';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Generic graph data structure supporting both directed and undirected graphs.
  * Uses adjacency list representation for efficient neighbor lookup (O(1) average case).
- *
  * @typeParam N - Node type (must extend Node interface with id and type fields)
  * @typeParam E - Edge type (must extend Edge interface with source, target fields)
- *
  * @example
  * ```typescript
  * type WorkNode = { id: string; type: 'work'; title: string };
@@ -39,7 +37,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Create a new graph.
-   *
    * @param directed - Whether the graph is directed (true) or undirected (false)
    */
   constructor(directed: boolean) {
@@ -51,10 +48,8 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Add a node to the graph.
-   *
    * @param node - Node to add
    * @returns Ok(void) if successful, Err(DuplicateNodeError) if node ID already exists
-   *
    * @example
    * ```typescript
    * const result = graph.addNode({ id: 'N1', type: 'test', label: 'Node 1' });
@@ -80,7 +75,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Remove a node from the graph (and all incident edges).
-   *
    * @param id - Node ID to remove
    * @returns Ok(void) if successful, Err(InvalidInputError) if node not found
    */
@@ -114,7 +108,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Check if node exists in graph.
-   *
    * @param id - Node ID to check
    * @returns true if node exists, false otherwise
    */
@@ -124,10 +117,8 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get node by ID.
-   *
    * @param id - Node ID to retrieve
    * @returns Some(node) if found, None if not found
-   *
    * @example
    * ```typescript
    * const nodeOption = graph.getNode('N1');
@@ -143,10 +134,8 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Add an edge to the graph.
-   *
    * @param edge - Edge to add
    * @returns Ok(void) if successful, Err(InvalidInputError) if source/target nodes don't exist
-   *
    * @example
    * ```typescript
    * const result = graph.addEdge({ id: 'E1', source: 'N1', target: 'N2', type: 'link' });
@@ -193,7 +182,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Remove an edge from the graph.
-   *
    * @param id - Edge ID to remove
    * @returns Ok(void) if successful, Err(InvalidInputError) if edge not found
    */
@@ -223,10 +211,8 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get neighbor node IDs for a given node.
-   *
    * @param id - Node ID to get neighbors for
    * @returns Ok(neighbor IDs) if successful, Err(InvalidInputError) if node not found
-   *
    * @example
    * ```typescript
    * const result = graph.getNeighbors('N1');
@@ -250,7 +236,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get total number of nodes in graph.
-   *
    * @returns Node count
    */
   getNodeCount(): number {
@@ -259,7 +244,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get total number of edges in graph.
-   *
    * @returns Edge count
    */
   getEdgeCount(): number {
@@ -268,7 +252,6 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Check if graph is directed.
-   *
    * @returns true if directed, false if undirected
    */
   isDirected(): boolean {
@@ -277,9 +260,7 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get all nodes in the graph.
-   *
    * @returns Array of all nodes
-   *
    * @example
    * ```typescript
    * const nodes = graph.getAllNodes();
@@ -292,9 +273,7 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get all edges in the graph.
-   *
    * @returns Array of all edges
-   *
    * @example
    * ```typescript
    * const edges = graph.getAllEdges();
@@ -307,10 +286,8 @@ export class Graph<N extends Node, E extends Edge> {
 
   /**
    * Get an edge by its ID.
-   *
    * @param id - Edge ID to look up
    * @returns Option containing the edge, or None if not found
-   *
    * @example
    * ```typescript
    * const edge = graph.getEdge('E1');
@@ -329,10 +306,8 @@ export class Graph<N extends Node, E extends Edge> {
    *
    * For directed graphs: Returns edges where node is the source.
    * For undirected graphs: Returns edges where node is either source or target.
-   *
    * @param id - Node ID to get outgoing edges from
    * @returns Result containing array of outgoing edges, or error if node not found
-   *
    * @example
    * ```typescript
    * const result = graph.getOutgoingEdges('N1');

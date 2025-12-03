@@ -1,4 +1,4 @@
-import { type Node, type Edge } from './graph';
+import { type Edge,type Node } from './graph';
 
 /**
  * Weight function that extracts weight from an edge and optionally considers source/target nodes.
@@ -7,12 +7,10 @@ import { type Node, type Edge } from './graph';
  * - Edge attributes: `(edge) => edge.customCost`
  * - Node attributes: `(edge, source, target) => source.elevation - target.elevation`
  * - Combined: `(edge, source, target) => edge.distance * target.difficulty`
- *
  * @param edge - The edge being traversed
  * @param sourceNode - The source node of the edge
  * @param targetNode - The target node of the edge
  * @returns The numeric weight for this edge (must be non-negative for Dijkstra)
- *
  * @example
  * ```typescript
  * // Use custom edge attribute
@@ -36,9 +34,6 @@ export type WeightFunction<N extends Node, E extends Edge> = (
 /**
  * Default weight function that uses edge.weight with fallback to 1.
  * This maintains backward compatibility with existing behavior.
+ * @param edge
  */
-export function defaultWeightFunction<E extends Edge>(
-  edge: E
-): number {
-  return edge.weight ?? 1;
-}
+export const defaultWeightFunction = <E extends Edge>(edge: E): number => edge.weight ?? 1;

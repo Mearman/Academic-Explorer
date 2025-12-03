@@ -12,7 +12,6 @@
  *
  * Time Complexity: O(n log n) for sparse graphs (similar to Louvain)
  * Space Complexity: O(n + m)
- *
  * @module clustering/leiden
  */
 
@@ -20,10 +19,10 @@ import type { Graph } from '../graph/graph';
 import { calculateClusterMetrics } from '../metrics/cluster-quality';
 import { calculateConductance } from '../metrics/conductance';
 import { calculateModularityDelta } from '../metrics/modularity';
-import type { LeidenCommunity, Community, ClusterMetrics, ClusteringError } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
+import type { ClusteringError,ClusterMetrics, Community, LeidenCommunity } from '../types/clustering-types';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
-import { Ok, Err } from '../types/result';
+import { Err,Ok } from '../types/result';
 import type { WeightFunction } from '../types/weight-function';
 
 /**
@@ -41,7 +40,6 @@ interface InternalCommunity {
  *
  * The Leiden algorithm improves upon Louvain by adding a refinement phase that
  * guarantees all detected communities are connected subgraphs.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
@@ -50,7 +48,6 @@ interface InternalCommunity {
  * @param options.resolution - Resolution parameter (default: 1.0, higher values favor more communities)
  * @param options.maxIterations - Maximum iterations per phase (default: 100)
  * @returns Result with array of detected Leiden communities
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
@@ -65,14 +62,11 @@ interface InternalCommunity {
  * }
  * ```
  */
-export function leiden<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: {
+export const leiden = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: {
     weightFn?: WeightFunction<N, E>;
     resolution?: number;
     maxIterations?: number;
-  } = {}
-): Result<
+  } = {}): Result<
   {
     communities: LeidenCommunity<N>[];
     metrics: ClusterMetrics;
@@ -87,7 +81,7 @@ export function leiden<N extends Node, E extends Edge>(
     };
   },
   ClusteringError
-> {
+> => {
   const startTime = performance.now();
   const {
     weightFn = () => 1.0,
@@ -373,22 +367,21 @@ export function leiden<N extends Node, E extends Edge>(
       parameters: { resolution, maxIterations },
     },
   });
-}
+};
 
 /**
  * Phase 2: Refinement - Split disconnected communities using BFS.
  *
  * This is the key innovation of Leiden over Louvain. Any community that is
  * disconnected gets split into connected components.
+ * @param graph
+ * @param communities
+ * @param nodeToCommunity
+ * @param superNodes
+ * @param nodeToSuperNode
+ * @param incomingEdges
  */
-function refineCommunities<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  communities: Map<number, InternalCommunity>,
-  nodeToCommunity: Map<string, number>,
-  superNodes: Map<string, Set<string>>,
-  nodeToSuperNode: Map<string, string>,
-  incomingEdges: Map<string, E[]>
-): void {
+const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, communities: Map<number, InternalCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeToSuperNode: Map<string, string>, incomingEdges: Map<string, E[]>): void => {
   const communitiesToSplit: number[] = [];
 
   // Identify disconnected communities
@@ -556,17 +549,16 @@ function refineCommunities<N extends Node, E extends Edge>(
       });
     }
   });
-}
+};
 
 /**
  * Calculate total degree for a node.
+ * @param graph
+ * @param nodeId
+ * @param weightFn
+ * @param incomingEdges
  */
-function calculateNodeDegree<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
-): number {
+const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): number => {
   let degree = 0;
 
   const outgoingResult = graph.getOutgoingEdges(nodeId);
@@ -592,15 +584,14 @@ function calculateNodeDegree<N extends Node, E extends Edge>(
   }
 
   return degree;
-}
+};
 
 /**
  * Calculate total edge weight in graph.
+ * @param graph
+ * @param weightFn
  */
-function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  weightFn: WeightFunction<N, E>
-): number {
+const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N, E>, weightFn: WeightFunction<N, E>): number => {
   let totalWeight = 0;
 
   const allNodes = graph.getAllNodes();
@@ -622,19 +613,18 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
   }
 
   return totalWeight;
-}
+};
 
 /**
  * Find neighboring communities for super-node.
+ * @param graph
+ * @param memberNodes
+ * @param nodeToSuperNode
+ * @param nodeToCommunity
+ * @param weightFn
+ * @param incomingEdges
  */
-function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  memberNodes: Set<string>,
-  nodeToSuperNode: Map<string, string>,
-  nodeToCommunity: Map<string, number>,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
-): Map<number, number> {
+const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(graph: Graph<N, E>, memberNodes: Set<string>, nodeToSuperNode: Map<string, string>, nodeToCommunity: Map<string, number>, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): Map<number, number> => {
   const neighborCommunities = new Map<number, number>();
 
   memberNodes.forEach((nodeId) => {
@@ -684,20 +674,19 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
   });
 
   return neighborCommunities;
-}
+};
 
 /**
  * Move a super-node from one community to another.
+ * @param superNodeId
+ * @param fromCommunityId
+ * @param toCommunityId
+ * @param communities
+ * @param nodeToCommunity
+ * @param superNodes
+ * @param nodeDegrees
  */
-function moveSuperNode(
-  superNodeId: string,
-  fromCommunityId: number,
-  toCommunityId: number,
-  communities: Map<number, InternalCommunity>,
-  nodeToCommunity: Map<string, number>,
-  superNodes: Map<string, Set<string>>,
-  nodeDegrees: Map<string, number>
-): void {
+const moveSuperNode = (superNodeId: string, fromCommunityId: number, toCommunityId: number, communities: Map<number, InternalCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeDegrees: Map<string, number>): void => {
   const fromCommunity = communities.get(fromCommunityId);
   if (fromCommunity === undefined) return;
 
@@ -719,14 +708,13 @@ function moveSuperNode(
   toCommunity.sigmaTot += superNodeDegree;
 
   nodeToCommunity.set(superNodeId, toCommunityId);
-}
+};
 
 /**
  * Remove empty communities.
+ * @param communities
  */
-function removeEmptyCommunities(
-  communities: Map<number, InternalCommunity>
-): void {
+const removeEmptyCommunities = (communities: Map<number, InternalCommunity>): void => {
   const emptyCommunityIds: number[] = [];
 
   communities.forEach((community, id) => {
@@ -738,16 +726,15 @@ function removeEmptyCommunities(
   emptyCommunityIds.forEach((id) => {
     communities.delete(id);
   });
-}
+};
 
 /**
  * Build final LeidenCommunity results with connectivity validation.
+ * @param graph
+ * @param nodeToCommunity
+ * @param incomingEdges
  */
-function buildLeidenResults<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeToCommunity: Map<string, number>,
-  incomingEdges: Map<string, E[]>
-): LeidenCommunity<N>[] {
+const buildLeidenResults = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeToCommunity: Map<string, number>, incomingEdges: Map<string, E[]>): LeidenCommunity<N>[] => {
   const communityMap = new Map<number, Set<N>>();
 
   nodeToCommunity.forEach((communityId, nodeId) => {
@@ -803,12 +790,13 @@ function buildLeidenResults<N extends Node, E extends Edge>(
   });
 
   return communities;
-}
+};
 
 /**
  * Convert LeidenCommunity to Community for metrics calculation.
+ * @param leidenCommunity
  */
-function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>): Community<N> {
+const leidenToCommunity = <N extends Node>(leidenCommunity: LeidenCommunity<N>): Community<N> => {
   const size = leidenCommunity.nodes.size;
   const maxPossibleEdges = size * (size - 1);
   const density = maxPossibleEdges > 0 ? leidenCommunity.internalEdges / maxPossibleEdges : 0;
@@ -827,16 +815,15 @@ function leidenToCommunity<N extends Node>(leidenCommunity: LeidenCommunity<N>):
     density: density,
     size: size,
   };
-}
+};
 
 /**
  * Validate that a community is a connected subgraph using BFS.
+ * @param graph
+ * @param community
+ * @param incomingEdges
  */
-function validateConnectivity<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  community: Set<N>,
-  incomingEdges: Map<string, E[]>
-): boolean {
+const validateConnectivity = <N extends Node, E extends Edge>(graph: Graph<N, E>, community: Set<N>, incomingEdges: Map<string, E[]>): boolean => {
   if (community.size === 0) return true;
   if (community.size === 1) return true;
 
@@ -874,16 +861,17 @@ function validateConnectivity<N extends Node, E extends Edge>(
   }
 
   return visited.size === community.size;
-}
+};
 
 /**
  * Fisher-Yates shuffle algorithm.
+ * @param array
  */
-function shuffleArray<T>(array: T[]): T[] {
+const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
-}
+};

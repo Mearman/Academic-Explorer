@@ -10,14 +10,13 @@
  *
  * Time Complexity: O(n log n) for sparse graphs
  * Space Complexity: O(n + m)
- *
  * @module clustering/louvain
  */
 
 import type { Graph } from '../graph/graph';
 import { calculateModularityDelta } from '../metrics/modularity';
 import type { Community } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { WeightFunction } from '../types/weight-function';
 import { convertToCSR, type CSRGraph } from '../utils/csr';
 
@@ -33,47 +32,37 @@ interface LouvainCommunity {
 
 /**
  * Get adaptive convergence threshold based on graph size.
- *
  * @param nodeCount - Number of nodes in graph
  * @returns Convergence threshold (1e-5 for large graphs, 1e-6 for small graphs)
- *
  * @remarks
  * Large graphs (>500 nodes) use looser threshold for faster convergence.
  * Small graphs (≤500 nodes) use stricter threshold for higher quality.
- *
  * @since Phase 1 (spec-027)
  */
-export function getAdaptiveThreshold(nodeCount: number): number {
-  return nodeCount > 500 ? 1e-5 : 1e-6;
-}
+export const getAdaptiveThreshold = (nodeCount: number): number => nodeCount > 500 ? 1e-5 : 1e-6;
 
 /**
  * Get adaptive iteration limit based on graph size and hierarchy level.
- *
  * @param nodeCount - Number of nodes in graph
  * @param level - Hierarchy level (0 = first level)
  * @returns Maximum iterations (20, 40, or 50)
- *
  * @remarks
  * First hierarchy level (level 0) with large graphs (>200 nodes) uses lower limit (20)
  * because most node movements happen in the first iteration.
  * Subsequent levels and small graphs use higher limits (40-50) for refinement.
- *
  * @since Phase 1 (spec-027)
  */
-export function getAdaptiveIterationLimit(nodeCount: number, level: number): number {
+export const getAdaptiveIterationLimit = (nodeCount: number, level: number): number => {
   if (level === 0 && nodeCount > 200) {
     return 20;
   }
   return nodeCount < 100 ? 50 : 40;
-}
+};
 
 /**
  * Determine optimal neighbor selection mode based on graph size.
- *
  * @param nodeCount - Number of nodes in graph
  * @returns Neighbor selection mode ("best" or "random")
- *
  * @remarks
  * **UPDATE (Phase 4 debugging)**: Random mode disabled for citation networks.
  *
@@ -88,37 +77,24 @@ export function getAdaptiveIterationLimit(nodeCount: number, level: number): num
  *
  * **Current strategy**: Always use best-neighbor mode for quality. Random mode remains available
  * via explicit `mode: "random"` parameter for experimentation but is not recommended.
- *
  * @since Phase 4 (spec-027, Fast Louvain)
  */
-export function determineOptimalMode(): "best" | "random" {
-  // Always use best mode after Phase 4 debugging
-  // Random mode caused quality loss (Q: 0.37 → 0.05) and slower convergence (103 → 201 iterations)
-  return "best";
-
-  // Original auto mode logic (disabled):
-  // if (nodeCount < 200) return "best";
-  // if (nodeCount >= 500) return "random";
-  // return "best"; // Medium graphs (200-499) default to quality
-}
+export const determineOptimalMode = (): "best" | "random" => "best";
 
 /**
  * Shuffle an array in-place using Fisher-Yates algorithm.
- *
  * @param array - Array to shuffle (modified in-place)
  * @param seed - Optional random seed for deterministic shuffling (for tests)
  * @returns The shuffled array (same reference as input)
- *
  * @remarks
  * Fisher-Yates shuffle guarantees uniform distribution of permutations.
  * If seed is provided, uses simple linear congruential generator (LCG) for PRNG.
  * If seed is undefined, uses Math.random() (non-deterministic).
  *
  * LCG parameters: a=1664525, c=1013904223, m=2^32 (Numerical Recipes)
- *
  * @since Phase 4 (spec-027, Fast Louvain)
  */
-export function shuffle<T>(array: T[], seed?: number): T[] {
+export const shuffle = <T>(array: T[], seed?: number): T[] => {
   let rng: () => number;
 
   if (seed !== undefined) {
@@ -140,14 +116,13 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
   }
 
   return array;
-}
+};
 
 /**
  * Detect communities using the Louvain algorithm.
  *
  * The Louvain method is a greedy optimization method that attempts to optimize
  * the modularity of a partition of the network.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
@@ -159,7 +134,6 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
  * @param options.minModularityIncrease - Minimum modularity improvement to continue (adaptive default via getAdaptiveThreshold)
  * @param options.maxIterations - Maximum iterations per phase (adaptive default via getAdaptiveIterationLimit)
  * @returns Array of detected communities
- *
  * @remarks
  * **Adaptive Defaults** (spec-027 Phase 1):
  * - `minModularityIncrease`: 1e-5 for >500 nodes, 1e-6 otherwise
@@ -169,7 +143,6 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
  * - `"auto"`: Best-neighbor for <200 nodes, random for ≥500 nodes
  * - `"best"`: Always use best-neighbor (quality-first)
  * - `"random"`: Always use random-neighbor (speed-first, Fast Louvain)
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
@@ -189,17 +162,14 @@ export function shuffle<T>(array: T[], seed?: number): T[] {
  * const deterministicCommunities = detectCommunities(graph, { seed: 42 });
  * ```
  */
-export function detectCommunities<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: {
+export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: {
     weightFn?: WeightFunction<N, E>;
     resolution?: number;
     mode?: "auto" | "best" | "random";
     seed?: number;
     minModularityIncrease?: number;
     maxIterations?: number;
-  } = {}
-): Community<N>[] {
+  } = {}): Community<N>[] => {
   // T014: Runtime tracking (spec-027 Phase 1)
   const startTime = performance.now();
 
@@ -570,17 +540,16 @@ export function detectCommunities<N extends Node, E extends Edge>(
   console.log(`[spec-027] Neighbor selection mode: ${resolvedMode} (requested: ${mode})`);
 
   return buildCommunityResults(graph, finalNodeToCommunity);
-}
+};
 
 /**
  * Calculate total degree (sum of edge weights) for a node.
+ * @param graph
+ * @param nodeId
+ * @param weightFn
+ * @param incomingEdges
  */
-function calculateNodeDegree<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>
-): number {
+const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): number => {
   let degree = 0;
 
   // Outgoing edges
@@ -608,15 +577,14 @@ function calculateNodeDegree<N extends Node, E extends Edge>(
   }
 
   return degree;
-}
+};
 
 /**
  * Calculate total edge weight in graph.
+ * @param graph
+ * @param weightFn
  */
-function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  weightFn: WeightFunction<N, E>
-): number {
+const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N, E>, weightFn: WeightFunction<N, E>): number => {
   let totalWeight = 0;
 
   const allNodes = graph.getAllNodes();
@@ -639,7 +607,7 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
   }
 
   return totalWeight;
-}
+};
 
 /**
  * Find neighboring communities and calculate edge weights to each (for super-nodes).
@@ -647,16 +615,15 @@ function calculateTotalEdgeWeight<N extends Node, E extends Edge>(
  * For a super-node (which contains multiple original nodes), this finds all edges
  * from those original nodes to nodes in other super-nodes, and aggregates the weights
  * by the target super-node's community.
+ * @param graph
+ * @param memberNodes
+ * @param nodeToSuperNode
+ * @param nodeToCommunity
+ * @param weightFn
+ * @param incomingEdges
+ * @param csrGraph
  */
-function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  memberNodes: Set<string>,
-  nodeToSuperNode: Map<string, string>,
-  nodeToCommunity: Map<string, number>,
-  weightFn: WeightFunction<N, E>,
-  incomingEdges: Map<string, E[]>,
-  csrGraph: CSRGraph<N, E> | null = null
-): Map<number, number> {
+const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(graph: Graph<N, E>, memberNodes: Set<string>, nodeToSuperNode: Map<string, string>, nodeToCommunity: Map<string, number>, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>, csrGraph: CSRGraph<N, E> | null = null): Map<number, number> => {
   const neighborCommunities = new Map<number, number>(); // communityId -> total weight
 
   // For each member node in this super-node
@@ -743,7 +710,7 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
   });
 
   return neighborCommunities;
-}
+};
 
 /**
  * Move a super-node from one community to another.
@@ -751,16 +718,15 @@ function findNeighborCommunitiesForSuperNode<N extends Node, E extends Edge>(
  * This is similar to moveNode but works with super-nodes, which contain
  * multiple original nodes. The sigmaTot and sigmaIn calculations need to
  * account for all edges between the member nodes.
+ * @param superNodeId
+ * @param fromCommunityId
+ * @param toCommunityId
+ * @param communities
+ * @param nodeToCommunity
+ * @param superNodes
+ * @param nodeDegrees
  */
-function moveSuperNode(
-  superNodeId: string,
-  fromCommunityId: number,
-  toCommunityId: number,
-  communities: Map<number, LouvainCommunity>,
-  nodeToCommunity: Map<string, number>,
-  superNodes: Map<string, Set<string>>,
-  nodeDegrees: Map<string, number>
-): void {
+const moveSuperNode = (superNodeId: string, fromCommunityId: number, toCommunityId: number, communities: Map<number, LouvainCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeDegrees: Map<string, number>): void => {
   const fromCommunity = communities.get(fromCommunityId);
   if (!fromCommunity) return;
 
@@ -791,14 +757,13 @@ function moveSuperNode(
 
   // Update mapping
   nodeToCommunity.set(superNodeId, toCommunityId);
-}
+};
 
 /**
  * Remove empty communities from the map.
+ * @param communities
  */
-function removeEmptyCommunities(
-  communities: Map<number, LouvainCommunity>
-): void {
+const removeEmptyCommunities = (communities: Map<number, LouvainCommunity>): void => {
   const emptyCommunityIds: number[] = [];
 
   communities.forEach((community, id) => {
@@ -810,15 +775,14 @@ function removeEmptyCommunities(
   emptyCommunityIds.forEach((id) => {
     communities.delete(id);
   });
-}
+};
 
 /**
  * Build final Community results from node-to-community mapping.
+ * @param graph
+ * @param nodeToCommunity
  */
-function buildCommunityResults<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeToCommunity: Map<string, number>
-): Community<N>[] {
+const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeToCommunity: Map<string, number>): Community<N>[] => {
   // Group nodes by community
   const communityMap = new Map<number, Set<N>>();
 
@@ -901,16 +865,17 @@ function buildCommunityResults<N extends Node, E extends Edge>(
   });
 
   return communities;
-}
+};
 
 /**
  * Fisher-Yates shuffle algorithm.
+ * @param array
  */
-function shuffleArray<T>(array: T[]): T[] {
+const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
-}
+};

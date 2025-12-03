@@ -10,19 +10,18 @@
  *
  * Time Complexity: O(m) per iteration, typically 3-5 iterations → O(m)
  * Space Complexity: O(n)
- *
  * @module clustering/label-propagation
  */
 
 import type { Graph } from '../graph/graph';
 import type {
-  LabelCluster,
   ClusterId,
   ClusteringError,
+  LabelCluster,
   LabelPropagationResult,
 } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err,Ok } from '../types/result';
 import type { WeightFunction } from '../types/weight-function';
 
 /**
@@ -31,7 +30,6 @@ import type { WeightFunction } from '../types/weight-function';
  * Fast semi-supervised clustering algorithm that propagates labels through
  * the network based on neighbor voting. Nodes iteratively adopt the most
  * frequent label among their neighbors.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
@@ -40,7 +38,6 @@ import type { WeightFunction } from '../types/weight-function';
  * @param options.maxIterations - Maximum iterations (default: 100)
  * @param options.seed - Random seed for reproducibility (default: Date.now())
  * @returns Result containing clusters or error
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
@@ -54,14 +51,11 @@ import type { WeightFunction } from '../types/weight-function';
  * }
  * ```
  */
-export function labelPropagation<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: {
+export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: {
     weightFn?: WeightFunction<N, E>;
     maxIterations?: number;
     seed?: number;
-  } = {}
-): LabelPropagationResult<N> {
+  } = {}): LabelPropagationResult<N> => {
   const startTime = performance.now();
 
   const {
@@ -254,4 +248,4 @@ export function labelPropagation<N extends Node, E extends Edge>(
       },
     },
   });
-}
+};

@@ -1,12 +1,11 @@
 /**
  * Conductance calculation for cluster quality measurement.
  * Measures the ratio of boundary edges to cluster volume.
- *
  * @module metrics/conductance
  */
 
 import type { Graph } from '../graph/graph';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 
 /**
  * Calculate conductance for a cluster/community.
@@ -23,13 +22,11 @@ import type { Node, Edge } from '../types/graph';
  * - Lower values indicate better cluster quality (fewer boundary edges)
  * - φ < 0.1 typically indicates strong cluster cohesion
  * - φ > 0.5 indicates weak cluster structure
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusterNodes - Set of nodes in the cluster
  * @returns Conductance score in range [0.0, 1.0]
- *
  * @example
  * ```typescript
  * const graph = new Graph<string, Edge>(false);
@@ -39,10 +36,7 @@ import type { Node, Edge } from '../types/graph';
  * console.log(`Conductance: ${conductance.toFixed(3)}`); // e.g., "Conductance: 0.125"
  * ```
  */
-export function calculateConductance<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusterNodes: Set<N>
-): number {
+export const calculateConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusterNodes: Set<N>): number => {
   // Handle edge cases
   if (clusterNodes.size === 0) {
     return 0.0;
@@ -114,17 +108,15 @@ export function calculateConductance<N extends Node, E extends Edge>(
 
   // Clamp to [0, 1] range due to floating point precision
   return Math.max(0.0, Math.min(1.0, conductance));
-}
+};
 
 /**
  * Calculate average conductance across multiple clusters.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusters - Array of node sets representing clusters
  * @returns Average conductance score
- *
  * @example
  * ```typescript
  * const clusters = [
@@ -135,10 +127,7 @@ export function calculateConductance<N extends Node, E extends Edge>(
  * const avgConductance = calculateAverageConductance(graph, clusters);
  * ```
  */
-export function calculateAverageConductance<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusters: Set<N>[]
-): number {
+export const calculateAverageConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
     return 0.0;
   }
@@ -151,19 +140,17 @@ export function calculateAverageConductance<N extends Node, E extends Edge>(
   });
 
   return totalConductance / clusters.length;
-}
+};
 
 /**
  * Calculate weighted average conductance (weighted by cluster size).
  *
  * Larger clusters have more influence on the average.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusters - Array of node sets representing clusters
  * @returns Weighted average conductance score
- *
  * @example
  * ```typescript
  * const clusters = [
@@ -174,10 +161,7 @@ export function calculateAverageConductance<N extends Node, E extends Edge>(
  * const weightedAvg = calculateWeightedAverageConductance(graph, clusters);
  * ```
  */
-export function calculateWeightedAverageConductance<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusters: Set<N>[]
-): number {
+export const calculateWeightedAverageConductance = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
     return 0.0;
   }
@@ -198,4 +182,4 @@ export function calculateWeightedAverageConductance<N extends Node, E extends Ed
   }
 
   return weightedSum / totalWeight;
-}
+};

@@ -1,13 +1,12 @@
 /**
  * Modularity calculation for community detection algorithms.
  * Implements the Newman-Girvan modularity formula.
- *
  * @module metrics/modularity
  */
 
 import type { Graph } from '../graph/graph';
 import type { Community } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 
 /**
  * Calculate modularity (Q) for a graph partitioned into communities.
@@ -26,13 +25,11 @@ import type { Node, Edge } from '../types/graph';
  * - Higher values indicate stronger community structure
  * - Q > 0.3 typically indicates significant community structure
  * - Q < 0 indicates worse than random partitioning
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param communities - Community assignments
  * @returns Modularity score in range [-0.5, 1.0]
- *
  * @example
  * ```typescript
  * const graph = new Graph<string, Edge>(false);
@@ -42,10 +39,7 @@ import type { Node, Edge } from '../types/graph';
  * console.log(`Modularity: ${Q.toFixed(3)}`); // e.g., "Modularity: 0.427"
  * ```
  */
-export function calculateModularity<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  communities: Community<N>[]
-): number {
+export const calculateModularity = <N extends Node, E extends Edge>(graph: Graph<N, E>, communities: Community<N>[]): number => {
   const m = graph.getEdgeCount();
 
   // Handle edge case: empty graph or no edges
@@ -155,31 +149,25 @@ export function calculateModularity<N extends Node, E extends Edge>(
   Q /= twoM;
 
   return Q;
-}
+};
 
 /**
  * Calculate modularity contribution for a single community.
  *
  * Used for incremental modularity updates during optimization.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param community - Community to evaluate
  * @param totalEdges - Total number of edges in graph
  * @returns Modularity contribution of this community
- *
  * @example
  * ```typescript
  * const m = graph.getEdgeCount();
  * const contribution = calculateCommunityModularity(graph, community, m);
  * ```
  */
-export function calculateCommunityModularity<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  community: Community<N>,
-  totalEdges: number
-): number {
+export const calculateCommunityModularity = <N extends Node, E extends Edge>(graph: Graph<N, E>, community: Community<N>, totalEdges: number): number => {
   if (totalEdges === 0) {
     return 0.0;
   }
@@ -257,7 +245,7 @@ export function calculateCommunityModularity<N extends Node, E extends Edge>(
   Q_c /= twoM;
 
   return Q_c;
-}
+};
 
 /**
  * Calculate modularity delta for moving a node between communities.
@@ -265,14 +253,12 @@ export function calculateCommunityModularity<N extends Node, E extends Edge>(
  * Used by Louvain and Leiden algorithms for greedy optimization.
  *
  * ΔQ = [Σin + k_i_in] / (2m) - [(Σtot + k_i)² / (2m)²] - [Σin / (2m) - (Σtot / (2m))² - (k_i / (2m))²]
- *
  * @param k_i - Degree of node being moved
  * @param k_i_in - Sum of edge weights from node to nodes in target community
  * @param sigma_tot - Sum of degrees of nodes in target community
  * @param sigma_in - Sum of edge weights between nodes in target community
  * @param m - Total number of edges in graph
  * @returns Change in modularity (positive means improvement)
- *
  * @example
  * ```typescript
  * const deltaQ = calculateModularityDelta(5, 3, 20, 15, 100);
@@ -281,13 +267,7 @@ export function calculateCommunityModularity<N extends Node, E extends Edge>(
  * }
  * ```
  */
-export function calculateModularityDelta(
-  k_i: number,
-  k_i_in: number,
-  sigma_tot: number,
-  sigma_in: number,
-  m: number
-): number {
+export const calculateModularityDelta = (k_i: number, k_i_in: number, sigma_tot: number, sigma_in: number, m: number): number => {
   const twoM = 2 * m;
 
   // Modularity after move
@@ -302,4 +282,4 @@ export function calculateModularityDelta(
     Math.pow(k_i / twoM, 2);
 
   return Q_after - Q_before;
-}
+};

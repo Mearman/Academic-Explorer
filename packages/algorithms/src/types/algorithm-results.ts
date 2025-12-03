@@ -1,16 +1,13 @@
-import { type Node, type Edge } from './graph';
+import { type Edge,type Node } from './graph';
 
 /**
  * Result from graph traversal algorithms (DFS, BFS).
  * Contains visit order, parent relationships, and timing metadata.
- *
  * @typeParam N - Node type
- *
- * @property visitOrder - Nodes in the order they were visited
- * @property parents - Parent relationship map (node ID → parent ID or null for root)
- * @property discovered - Discovery timestamps (DFS only, undefined for BFS)
- * @property finished - Finish timestamps (DFS only, undefined for BFS)
- *
+ * visitOrder - Nodes in the order they were visited
+ * parents - Parent relationship map (node ID → parent ID or null for root)
+ * discovered - Discovery timestamps (DFS only, undefined for BFS)
+ * finished - Finish timestamps (DFS only, undefined for BFS)
  * @example
  * ```typescript
  * const result = dfs(graph, 'start');
@@ -37,18 +34,14 @@ export interface TraversalResult<N extends Node> {
 /**
  * Path from source to destination node.
  * Contains ordered nodes, connecting edges, and total weight.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
- *
- * @property nodes - Nodes in path order (source to destination)
- * @property edges - Edges connecting consecutive nodes
- * @property totalWeight - Sum of edge weights
- *
+ * nodes - Nodes in path order (source to destination)
+ * edges - Edges connecting consecutive nodes
+ * totalWeight - Sum of edge weights
  * @invariant nodes.length >= 2 (at least source and destination)
  * @invariant edges.length === nodes.length - 1
  * @invariant edges[i].source === nodes[i].id && edges[i].target === nodes[i+1].id
- *
  * @example
  * ```typescript
  * const result = dijkstra(graph, 'A', 'Z');
@@ -74,15 +67,11 @@ export interface Path<N extends Node, E extends Edge> {
 /**
  * Connected component of nodes.
  * Represents a maximal set of mutually reachable nodes.
- *
  * @typeParam N - Node type
- *
- * @property id - Component identifier (0-indexed)
- * @property nodes - Nodes in this component
- * @property size - Number of nodes in component
- *
+ * id - Component identifier (0-indexed)
+ * nodes - Nodes in this component
+ * size - Number of nodes in component
  * @invariant size === nodes.length
- *
  * @example
  * ```typescript
  * const result = connectedComponents(graph);
@@ -108,16 +97,12 @@ export interface Component<N extends Node> {
 /**
  * Information about a detected cycle.
  * Contains the nodes and edges that form the cycle.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
- *
- * @property nodes - Nodes forming the cycle
- * @property edges - Edges connecting the cycle nodes
- *
+ * nodes - Nodes forming the cycle
+ * edges - Edges connecting the cycle nodes
  * @invariant nodes.length >= 2 (at least two nodes form a cycle)
  * @invariant edges.length === nodes.length (cycle closes back to start)
- *
  * @example
  * ```typescript
  * const result = detectCycle(graph);

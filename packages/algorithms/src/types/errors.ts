@@ -48,7 +48,6 @@ export type DuplicateNodeError = {
 /**
  * Base discriminated union for all graph operation errors.
  * Pattern match using the `type` discriminator field.
- *
  * @example
  * ```typescript
  * const handleError = (error: GraphError) => {

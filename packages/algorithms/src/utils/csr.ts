@@ -3,20 +3,17 @@
  *
  * CSR is a memory-efficient format for storing sparse graphs using typed arrays.
  * Provides better cache locality and memory access patterns compared to Map-based adjacency lists.
- *
  * @module utils/csr
  * @since Phase 5 (spec-027)
  */
 
 import { Graph } from '../graph/graph';
-import { type Node, type Edge } from '../types/graph';
+import { type Edge,type Node } from '../types/graph';
 
 /**
  * Compressed Sparse Row (CSR) graph representation.
- *
  * @typeParam N - Node type (must extend Node interface)
  * @typeParam E - Edge type (must extend Edge interface)
- *
  * @remarks
  * CSR stores the graph in three typed arrays for optimal memory access:
  *
@@ -41,13 +38,11 @@ import { type Node, type Edge } from '../types/graph';
  * const neighborIndices = csr.edges.slice(start, end); // [1, 2] (B, C)
  * const neighborWeights = csr.weights.slice(start, end); // [1.0, 2.0]
  * ```
- *
  * @since Phase 5 (spec-027)
  */
 export interface CSRGraph<N extends Node, E extends Edge> {
   /**
    * Offset array for CSR format.
-   *
    * @remarks
    * offsets[i] = start index in edges array for node i's neighbors
    * offsets[i+1] = end index (exclusive) for node i's neighbors
@@ -58,7 +53,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
   /**
    * Packed array of all neighbor node indices.
-   *
    * @remarks
    * Sorted by source node (all of node 0's neighbors, then node 1's neighbors, etc.)
    * Values are indices into nodeIds array, NOT node IDs
@@ -69,7 +63,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
   /**
    * Edge weights corresponding to edges array.
-   *
    * @remarks
    * weights[i] = weight of edge edges[i]
    * For unweighted graphs, all values are 1.0
@@ -80,7 +73,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
   /**
    * Ordered array of node IDs.
-   *
    * @remarks
    * Maps integer indices to original string node IDs
    * nodeIds[i] = original node ID for index i
@@ -91,7 +83,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
   /**
    * Reverse mapping from node ID to array index.
-   *
    * @remarks
    * nodeIndex.get(id) = index of node id in nodeIds array
    * Inverse of nodeIds array for O(1) lookups
@@ -102,7 +93,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
   /**
    * Original graph reference for metadata access.
-   *
    * @remarks
    * CSR only stores topology and weights. To access node/edge attributes,
    * use this reference: csrGraph.graph.getNode(nodeId)
@@ -112,13 +102,11 @@ export interface CSRGraph<N extends Node, E extends Edge> {
 
 /**
  * Convert a Graph to Compressed Sparse Row (CSR) format.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph to convert
  * @returns CSR representation of the graph
  * @throws {RangeError} If graph is too large for typed arrays (>4 billion nodes or edges)
- *
  * @remarks
  * **Time complexity**: O(V + E) where V = nodes, E = edges
  * **Space complexity**: O(V + E) for typed arrays
@@ -133,7 +121,6 @@ export interface CSRGraph<N extends Node, E extends Edge> {
  * 2. Count edges per node to compute offsets
  * 3. Allocate typed arrays (offsets, edges, weights)
  * 4. Populate edges and weights arrays by iterating through graph edges
- *
  * @example
  * ```typescript
  * const graph = new Graph<WorkNode, CitationEdge>(true);
@@ -147,12 +134,9 @@ export interface CSRGraph<N extends Node, E extends Edge> {
  * console.log(csrGraph.edges); // [1]
  * console.log(csrGraph.weights); // [1.0]
  * ```
- *
  * @since Phase 5 (spec-027)
  */
-export function convertToCSR<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): CSRGraph<N, E> {
+export const convertToCSR = <N extends Node, E extends Edge>(graph: Graph<N, E>): CSRGraph<N, E> => {
   const allNodes = graph.getAllNodes();
   const allEdges = graph.getAllEdges();
   const nodeCount = allNodes.length;
@@ -227,4 +211,4 @@ export function convertToCSR<N extends Node, E extends Edge>(
     nodeIndex,
     graph,
   };
-}
+};

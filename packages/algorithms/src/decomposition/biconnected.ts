@@ -14,14 +14,13 @@
  *
  * Time Complexity: O(V + E) - single DFS traversal
  * Space Complexity: O(V + E) - DFS stack + edge stack
- *
  * @module decomposition/biconnected
  */
 
 import type { Graph } from '../graph/graph';
 import type { BiconnectedComponent, BiconnectedResult } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err,Ok } from '../types/result';
 
 /**
  * Edge representation for stack-based component extraction.
@@ -66,8 +65,7 @@ interface TarjanState {
 /**
  * Initialize Tarjan algorithm state.
  */
-function initializeState(): TarjanState {
-  return {
+const initializeState = (): TarjanState => ({
     disc: new Map(),
     low: new Map(),
     parent: new Map(),
@@ -77,22 +75,16 @@ function initializeState(): TarjanState {
     articulationPoints: new Set(),
     components: [],
     nextComponentId: 0,
-  };
-}
+  });
 
 /**
  * DFS traversal for Tarjan's articulation point algorithm.
- *
  * @param graph - Undirected graph to analyze
  * @param u - Current node ID
  * @param state - Algorithm state
+ * @param isRoot
  */
-function tarjanDFS<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  u: string,
-  state: TarjanState,
-  isRoot: boolean
-): void {
+const tarjanDFS = <N extends Node, E extends Edge>(graph: Graph<N, E>, u: string, state: TarjanState, isRoot: boolean): void => {
   // Initialize discovery time and low-link value
   state.disc.set(u, state.time);
   state.low.set(u, state.time);
@@ -173,19 +165,18 @@ function tarjanDFS<N extends Node, E extends Edge>(
     }
   }
 
-}
+};
 
 /**
  * Extract a biconnected component from edge stack.
  *
  * Pops edges from stack until reaching the edge (u, v) that triggered the extraction.
- *
  * @param state - Algorithm state
  * @param u - Articulation point
  * @param v - Child that triggered extraction
  * @returns Extracted biconnected component
  */
-function extractComponent(state: TarjanState, u: string, v: string): BiconnectedComponent<string> {
+const extractComponent = (state: TarjanState, u: string, v: string): BiconnectedComponent<string> => {
   const nodes = new Set<string>();
   const articulationPoints = new Set<string>();
   let edgeCount = 0;
@@ -225,16 +216,15 @@ function extractComponent(state: TarjanState, u: string, v: string): Biconnected
     articulationPoints,
     isBridge,
   };
-}
+};
 
 /**
  * Extract remaining edges from stack as a biconnected component.
  * Used for components that don't have articulation points (root components).
- *
  * @param state - Algorithm state
  * @returns Extracted biconnected component
  */
-function extractRemainingComponent(state: TarjanState): BiconnectedComponent<string> {
+const extractRemainingComponent = (state: TarjanState): BiconnectedComponent<string> => {
   const nodes = new Set<string>();
   const articulationPoints = new Set<string>();
   let edgeCount = 0;
@@ -268,7 +258,7 @@ function extractRemainingComponent(state: TarjanState): BiconnectedComponent<str
     articulationPoints,
     isBridge,
   };
-}
+};
 
 /**
  * Find biconnected components using Tarjan's algorithm.
@@ -286,12 +276,10 @@ function extractRemainingComponent(state: TarjanState): BiconnectedComponent<str
  * 3. Detect articulation points: low[child] ≥ disc[v]
  * 4. Extract components by popping edge stack on backtrack
  * 5. Handle disconnected graphs (DFS from each unvisited node)
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Undirected graph to analyze
  * @returns Result containing biconnected components and articulation points, or error
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(false); // undirected
@@ -311,9 +299,7 @@ function extractRemainingComponent(state: TarjanState): BiconnectedComponent<str
  * }
  * ```
  */
-export function biconnectedComponents<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): BiconnectedResult<string> {
+export const biconnectedComponents = <N extends Node, E extends Edge>(graph: Graph<N, E>): BiconnectedResult<string> => {
   const startTime = performance.now();
 
   // Validation
@@ -385,4 +371,4 @@ export function biconnectedComponents<N extends Node, E extends Edge>(
       runtime,
     },
   });
-}
+};

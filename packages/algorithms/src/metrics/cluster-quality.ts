@@ -1,14 +1,12 @@
 /**
  * Cluster quality metrics: density and aggregated ClusterMetrics.
  * Provides utilities for evaluating clustering quality.
- *
  * @module metrics/cluster-quality
  */
 
 import type { Graph } from '../graph/graph';
-import type { Community, ClusterMetrics } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-
+import type { ClusterMetrics,Community } from '../types/clustering-types';
+import type { Edge,Node } from '../types/graph';
 import { calculateAverageConductance } from './conductance';
 import { calculateModularity } from './modularity';
 
@@ -30,13 +28,11 @@ import { calculateModularity } from './modularity';
  * - 1.0 = complete graph (all possible edges present)
  * - 0.0 = no internal edges
  * - Higher density indicates tighter community structure
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusterNodes - Set of nodes in the cluster
  * @returns Density score in range [0.0, 1.0]
- *
  * @example
  * ```typescript
  * const graph = new Graph<string, Edge>(false);
@@ -46,10 +42,7 @@ import { calculateModularity } from './modularity';
  * console.log(`Density: ${density.toFixed(3)}`); // e.g., "Density: 0.667"
  * ```
  */
-export function calculateDensity<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusterNodes: Set<N>
-): number {
+export const calculateDensity = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusterNodes: Set<N>): number => {
   const n = clusterNodes.size;
 
   // Handle edge cases
@@ -96,17 +89,15 @@ export function calculateDensity<N extends Node, E extends Edge>(
 
   // Clamp to [0, 1] due to floating point precision
   return Math.max(0.0, Math.min(1.0, density));
-}
+};
 
 /**
  * Calculate average density across multiple clusters.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusters - Array of node sets representing clusters
  * @returns Average density score
- *
  * @example
  * ```typescript
  * const clusters = [
@@ -116,10 +107,7 @@ export function calculateDensity<N extends Node, E extends Edge>(
  * const avgDensity = calculateAverageDensity(graph, clusters);
  * ```
  */
-export function calculateAverageDensity<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusters: Set<N>[]
-): number {
+export const calculateAverageDensity = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   if (clusters.length === 0) {
     return 0.0;
   }
@@ -132,7 +120,7 @@ export function calculateAverageDensity<N extends Node, E extends Edge>(
   });
 
   return totalDensity / clusters.length;
-}
+};
 
 /**
  * Calculate coverage ratio: fraction of edges within clusters vs. total edges.
@@ -142,23 +130,18 @@ export function calculateAverageDensity<N extends Node, E extends Edge>(
  * Range: [0.0, 1.0]
  * - Higher coverage means most edges are within communities
  * - Lower coverage means many inter-community edges
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param clusters - Array of node sets representing clusters
  * @returns Coverage ratio
- *
  * @example
  * ```typescript
  * const coverage = calculateCoverageRatio(graph, clusters);
  * console.log(`${(coverage * 100).toFixed(1)}% of edges are within clusters`);
  * ```
  */
-export function calculateCoverageRatio<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  clusters: Set<N>[]
-): number {
+export const calculateCoverageRatio = <N extends Node, E extends Edge>(graph: Graph<N, E>, clusters: Set<N>[]): number => {
   const totalEdges = graph.getEdgeCount();
 
   if (totalEdges === 0) {
@@ -201,20 +184,18 @@ export function calculateCoverageRatio<N extends Node, E extends Edge>(
   const coverage = internalEdges / totalEdges;
 
   return Math.max(0.0, Math.min(1.0, coverage));
-}
+};
 
 /**
  * Calculate aggregated quality metrics for a clustering result.
  *
  * Computes modularity, average conductance, average density, coverage ratio,
  * and cluster count for a complete clustering.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param communities - Array of communities
  * @returns Aggregated ClusterMetrics
- *
  * @example
  * ```typescript
  * const graph = new Graph<string, Edge>(false);
@@ -228,10 +209,7 @@ export function calculateCoverageRatio<N extends Node, E extends Edge>(
  * console.log(`Clusters: ${metrics.numClusters}`);
  * ```
  */
-export function calculateClusterMetrics<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  communities: Community<N>[]
-): ClusterMetrics {
+export const calculateClusterMetrics = <N extends Node, E extends Edge>(graph: Graph<N, E>, communities: Community<N>[]): ClusterMetrics => {
   // Extract node sets from communities
   const clusters = communities.map((c) => c.nodes);
 
@@ -250,18 +228,16 @@ export function calculateClusterMetrics<N extends Node, E extends Edge>(
     coverageRatio,
     // silhouetteCoefficient is optional, not computed here
   };
-}
+};
 
 /**
  * Update ClusterMetrics with per-community density values.
  *
  * Modifies community objects to include their individual density scores.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph
  * @param communities - Array of communities (modified in place)
- *
  * @example
  * ```typescript
  * const communities: Community<string>[] = [...];
@@ -269,11 +245,8 @@ export function calculateClusterMetrics<N extends Node, E extends Edge>(
  * // Now each community has updated 'density' field
  * ```
  */
-export function updateCommunityDensities<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  communities: Community<N>[]
-): void {
+export const updateCommunityDensities = <N extends Node, E extends Edge>(graph: Graph<N, E>, communities: Community<N>[]): void => {
   communities.forEach((community) => {
     community.density = calculateDensity(graph, community.nodes);
   });
-}
+};

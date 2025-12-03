@@ -10,14 +10,13 @@
  * References:
  * - Batagelj, V., & Zaversnik, M. (2003). "An O(m) Algorithm for Cores Decomposition of Networks"
  *   arXiv:cs/0310049
- *
  * @module decomposition/k-core
  */
 
 import type { Graph } from '../graph/graph';
 import type { Core, KCoreResult } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err,Ok } from '../types/result';
 
 /**
  * K-Core Decomposition using Batagelj-Zaversnik algorithm.
@@ -31,10 +30,8 @@ import { Ok, Err } from '../types/result';
  * 3. Process nodes in degree order, removing each and updating neighbors
  * 4. Track core number when node is removed (= current degree at removal time)
  * 5. Construct nested k-core hierarchy from core numbers
- *
  * @param graph - Input graph (directed or undirected)
  * @returns Result containing cores map, degeneracy, and core numbers
- *
  * @example
  * ```typescript
  * const result = kCoreDecomposition(graph);
@@ -48,9 +45,7 @@ import { Ok, Err } from '../types/result';
  * }
  * ```
  */
-export function kCoreDecomposition<N extends Node, E extends Edge>(
-  graph: Graph<N, E>
-): KCoreResult<string> {
+export const kCoreDecomposition = <N extends Node, E extends Edge>(graph: Graph<N, E>): KCoreResult<string> => {
   const startTime = performance.now();
 
   // Validation: Empty graph
@@ -238,4 +233,4 @@ export function kCoreDecomposition<N extends Node, E extends Edge>(
       runtime: endTime - startTime,
     },
   });
-}
+};

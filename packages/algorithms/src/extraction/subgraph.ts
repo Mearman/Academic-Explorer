@@ -3,13 +3,12 @@
  */
 import { Graph } from '../graph/graph';
 import type { InvalidInputError } from '../types/errors';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import type { Result } from '../types/result';
 
 /**
  * Extracts an induced subgraph containing only the specified nodes
  * and all edges between them.
- *
  * @param graph - Source graph
  * @param nodeIds - Set of node IDs to include in subgraph
  * @returns A new graph containing only the specified nodes and their interconnecting edges
@@ -17,10 +16,7 @@ import type { Result } from '../types/result';
  * Time Complexity: O(V + E) where V is nodeIds.size and E is edges in original graph
  * Space Complexity: O(V + E') where E' is edges in induced subgraph
  */
-export function extractInducedSubgraph<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeIds: Set<string>
-): Result<Graph<N, E>, InvalidInputError> {
+export const extractInducedSubgraph = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeIds: Set<string>): Result<Graph<N, E>, InvalidInputError> => {
   if (!graph) {
     return {
       ok: false,
@@ -58,11 +54,10 @@ export function extractInducedSubgraph<N extends Node, E extends Edge>(
   }
 
   return { ok: true, value: subgraph };
-}
+};
 
 /**
  * Extracts a subgraph by filtering nodes and edges based on predicates.
- *
  * @param graph - Source graph
  * @param nodePredicate - Function to determine if a node should be included
  * @param edgePredicate - Optional function to determine if an edge should be included
@@ -71,11 +66,7 @@ export function extractInducedSubgraph<N extends Node, E extends Edge>(
  * Time Complexity: O(V + E)
  * Space Complexity: O(V' + E')
  */
-export function filterGraph<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodePredicate: (node: N) => boolean,
-  edgePredicate?: (edge: E) => boolean
-): Result<Graph<N, E>, InvalidInputError> {
+export const filterGraph = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodePredicate: (node: N) => boolean, edgePredicate?: (edge: E) => boolean): Result<Graph<N, E>, InvalidInputError> => {
   if (!graph) {
     return {
       ok: false,
@@ -112,22 +103,16 @@ export function filterGraph<N extends Node, E extends Edge>(
   }
 
   return { ok: true, value: subgraph };
-}
+};
 
 /**
  * Creates a copy of the graph with only specific edge types.
- *
  * @param graph - Source graph
  * @param edgeTypes - Set of edge types to include
  * @returns A new graph containing only edges of the specified types
  */
-export function filterByEdgeType<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  edgeTypes: Set<string>
-): Result<Graph<N, E>, InvalidInputError> {
-  return filterGraph(
+export const filterByEdgeType = <N extends Node, E extends Edge>(graph: Graph<N, E>, edgeTypes: Set<string>): Result<Graph<N, E>, InvalidInputError> => filterGraph(
     graph,
     () => true, // Include all nodes
     (edge) => edgeTypes.has(edge.type)
   );
-}

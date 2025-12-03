@@ -13,7 +13,6 @@
  *
  * Time Complexity: O(n log n) for sparse graphs
  * Space Complexity: O(n + m)
- *
  * @module clustering/infomap
  */
 
@@ -21,7 +20,7 @@ import type { Graph } from '../graph/graph';
 import { calculateDensity } from '../metrics/cluster-quality';
 import { calculateModularity } from '../metrics/modularity';
 import type { InfomapModule, InfomapResult } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
+import type { Edge,Node } from '../types/graph';
 import { Err, Ok } from '../types/result';
 import type { WeightFunction } from '../types/weight-function';
 
@@ -49,7 +48,6 @@ interface Transition {
  *
  * Infomap uses information theory to find communities by minimizing the
  * description length (map equation) of random walks on the network.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
@@ -59,7 +57,6 @@ interface Transition {
  * @param options.numTrials - Number of random trials for greedy search (default: 10)
  * @param options.seed - Random seed for reproducibility (default: undefined)
  * @returns Result containing modules with compression ratio
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
@@ -72,15 +69,12 @@ interface Transition {
  * }
  * ```
  */
-export function infomap<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  options: {
+export const infomap = <N extends Node, E extends Edge>(graph: Graph<N, E>, options: {
     weightFn?: WeightFunction<N, E>;
     maxIterations?: number;
     numTrials?: number;
     seed?: number;
-  } = {}
-): InfomapResult<N> {
+  } = {}): InfomapResult<N> => {
   const startTime = performance.now();
 
   const {
@@ -325,16 +319,15 @@ export function infomap<N extends Node, E extends Edge>(
       },
     },
   });
-}
+};
 
 /**
  * Calculate transition probabilities from edge weights.
  * For each edge, probability = edge_weight / sum_of_outgoing_weights
+ * @param graph
+ * @param weightFn
  */
-function calculateTransitionProbabilities<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  weightFn: WeightFunction<N, E>
-): Transition[] {
+const calculateTransitionProbabilities = <N extends Node, E extends Edge>(graph: Graph<N, E>, weightFn: WeightFunction<N, E>): Transition[] => {
   const transitions: Transition[] = [];
 
   const allNodes = graph.getAllNodes();
@@ -373,15 +366,14 @@ function calculateTransitionProbabilities<N extends Node, E extends Edge>(
   });
 
   return transitions;
-}
+};
 
 /**
  * Calculate steady-state visit probabilities using PageRank-like iteration.
+ * @param graph
+ * @param transitions
  */
-function calculateVisitProbabilities<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  transitions: Transition[]
-): Map<string, number> {
+const calculateVisitProbabilities = <N extends Node, E extends Edge>(graph: Graph<N, E>, transitions: Transition[]): Map<string, number> => {
   const allNodes = graph.getAllNodes();
   const n = allNodes.length;
 
@@ -446,17 +438,16 @@ function calculateVisitProbabilities<N extends Node, E extends Edge>(
   }
 
   return visitProb;
-}
+};
 
 /**
  * Update exit probabilities for all modules.
  * Exit probability = sum of transition probabilities leaving the module.
+ * @param modules
+ * @param nodeToModule
+ * @param transitions
  */
-function updateExitProbabilities(
-  modules: Map<number, InternalModule>,
-  nodeToModule: Map<string, number>,
-  transitions: Transition[]
-): void {
+const updateExitProbabilities = (modules: Map<number, InternalModule>, nodeToModule: Map<string, number>, transitions: Transition[]): void => {
   // Reset exit probabilities
   modules.forEach((module) => {
     module.exitProbability = 0;
@@ -477,16 +468,15 @@ function updateExitProbabilities(
       }
     }
   });
-}
+};
 
 /**
  * Calculate description length using the map equation.
  * L(M) = H(X) + Σ p_i * H(X_i)
+ * @param modules
+ * @param visitProbabilities
  */
-function calculateDescriptionLength(
-  modules: Map<number, InternalModule>,
-  visitProbabilities: Map<string, number>
-): number {
+const calculateDescriptionLength = (modules: Map<number, InternalModule>, visitProbabilities: Map<string, number>): number => {
   // Calculate entropy of between-module transitions
   let H_X = 0;
   modules.forEach((module) => {
@@ -514,17 +504,16 @@ function calculateDescriptionLength(
   });
 
   return H_X + sumPiHi;
-}
+};
 
 /**
  * Find neighboring modules connected to a node.
+ * @param graph
+ * @param nodeId
+ * @param nodeToModule
+ * @param transitions
  */
-function findNeighborModules<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodeId: string,
-  nodeToModule: Map<string, number>,
-  transitions: Transition[]
-): Set<number> {
+const findNeighborModules = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, nodeToModule: Map<string, number>, transitions: Transition[]): Set<number> => {
   const neighborModules = new Set<number>();
 
   // Check outgoing edges
@@ -549,20 +538,19 @@ function findNeighborModules<N extends Node, E extends Edge>(
   });
 
   return neighborModules;
-}
+};
 
 /**
  * Calculate change in description length from moving a node.
  * Uses proper map equation delta calculation.
+ * @param nodeId
+ * @param fromModuleId
+ * @param toModuleId
+ * @param modules
+ * @param nodeToModule
+ * @param transitions
  */
-function calculateMoveDelta(
-  nodeId: string,
-  fromModuleId: number,
-  toModuleId: number,
-  modules: Map<number, InternalModule>,
-  nodeToModule: Map<string, number>,
-  transitions: Transition[]
-): number {
+const calculateMoveDelta = (nodeId: string, fromModuleId: number, toModuleId: number, modules: Map<number, InternalModule>, nodeToModule: Map<string, number>, transitions: Transition[]): number => {
   const fromModule = modules.get(fromModuleId);
   const toModule = modules.get(toModuleId);
 
@@ -601,19 +589,18 @@ function calculateMoveDelta(
   const delta = nodeToFromModuleProb - nodeToToModuleProb;
 
   return delta;
-}
+};
 
 /**
  * Move a node from one module to another.
+ * @param nodeId
+ * @param fromModuleId
+ * @param toModuleId
+ * @param modules
+ * @param nodeToModule
+ * @param visitProbabilities
  */
-function moveNode(
-  nodeId: string,
-  fromModuleId: number,
-  toModuleId: number,
-  modules: Map<number, InternalModule>,
-  nodeToModule: Map<string, number>,
-  visitProbabilities: Map<string, number>
-): void {
+const moveNode = (nodeId: string, fromModuleId: number, toModuleId: number, modules: Map<number, InternalModule>, nodeToModule: Map<string, number>, visitProbabilities: Map<string, number>): void => {
   const fromModule = modules.get(fromModuleId);
   const toModule = modules.get(toModuleId);
   if (!fromModule || !toModule) return;
@@ -630,14 +617,13 @@ function moveNode(
 
   // Update mapping
   nodeToModule.set(nodeId, toModuleId);
-}
+};
 
 /**
  * Remove empty modules from the map.
+ * @param modules
  */
-function removeEmptyModules(
-  modules: Map<number, InternalModule>
-): void {
+const removeEmptyModules = (modules: Map<number, InternalModule>): void => {
   const emptyModuleIds: number[] = [];
 
   modules.forEach((module, id) => {
@@ -649,18 +635,17 @@ function removeEmptyModules(
   emptyModuleIds.forEach((id) => {
     modules.delete(id);
   });
-}
+};
 
 /**
  * Build final InfomapModule results.
+ * @param graph
+ * @param modules
+ * @param nodeToModule
+ * @param visitProbabilities
+ * @param globalCompressionRatio
  */
-function buildInfomapModules<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  modules: Map<number, InternalModule>,
-  nodeToModule: Map<string, number>,
-  visitProbabilities: Map<string, number>,
-  globalCompressionRatio: number
-): InfomapModule<N>[] {
+const buildInfomapModules = <N extends Node, E extends Edge>(graph: Graph<N, E>, modules: Map<number, InternalModule>, nodeToModule: Map<string, number>, visitProbabilities: Map<string, number>, globalCompressionRatio: number): InfomapModule<N>[] => {
   const results: InfomapModule<N>[] = [];
   let moduleIndex = 0;
 
@@ -696,12 +681,14 @@ function buildInfomapModules<N extends Node, E extends Edge>(
   });
 
   return results;
-}
+};
 
 /**
  * Fisher-Yates shuffle algorithm with optional seed.
+ * @param array
+ * @param seed
  */
-function shuffleArray<T>(array: T[], seed?: number): T[] {
+const shuffleArray = <T>(array: T[], seed?: number): T[] => {
   const shuffled = [...array];
 
   // Simple seeded random number generator (LCG)
@@ -717,4 +704,4 @@ function shuffleArray<T>(array: T[], seed?: number): T[] {
   }
 
   return shuffled;
-}
+};

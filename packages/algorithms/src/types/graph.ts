@@ -1,10 +1,8 @@
 /**
  * Base Node interface with required discriminator field.
  * All node types must extend this interface.
- *
- * @property id - Unique node identifier (must be unique within graph)
- * @property type - Discriminator field for runtime type narrowing
- *
+ * id - Unique node identifier (must be unique within graph)
+ * type - Discriminator field for runtime type narrowing
  * @example
  * ```typescript
  * type WorkNode = {
@@ -40,13 +38,11 @@ export interface Node {
 /**
  * Base Edge interface with required fields for graph connectivity.
  * All edge types must extend this interface.
- *
- * @property id - Unique edge identifier
- * @property source - ID of source node (must exist in graph)
- * @property target - ID of target node (must exist in graph)
- * @property type - Discriminator field for runtime type narrowing
- * @property weight - Optional edge weight (default: 1 if not specified)
- *
+ * id - Unique edge identifier
+ * source - ID of source node (must exist in graph)
+ * target - ID of target node (must exist in graph)
+ * type - Discriminator field for runtime type narrowing
+ * weight - Optional edge weight (default: 1 if not specified)
  * @example
  * ```typescript
  * type CitationEdge = {

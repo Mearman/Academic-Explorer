@@ -1,34 +1,26 @@
 import { type GraphError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
+import { type Edge,type Node } from '../types/graph';
 import { type Option } from '../types/option';
 import { type Result } from '../types/result';
 
 /**
  * Type guard to check if a value is a Node.
- *
  * @param value - Value to check
  * @returns true if value is a Node
  */
-export function isNode(value: unknown): value is Node {
-  return (
-    typeof value === 'object' &&
+export const isNode = (value: unknown): value is Node => typeof value === 'object' &&
     value !== null &&
     'id' in value &&
     typeof (value as Node).id === 'string' &&
     'type' in value &&
-    typeof (value as Node).type === 'string'
-  );
-}
+    typeof (value as Node).type === 'string';
 
 /**
  * Type guard to check if a value is an Edge.
- *
  * @param value - Value to check
  * @returns true if value is an Edge
  */
-export function isEdge(value: unknown): value is Edge {
-  return (
-    typeof value === 'object' &&
+export const isEdge = (value: unknown): value is Edge => typeof value === 'object' &&
     value !== null &&
     'id' in value &&
     typeof (value as Edge).id === 'string' &&
@@ -37,57 +29,41 @@ export function isEdge(value: unknown): value is Edge {
     'target' in value &&
     typeof (value as Edge).target === 'string' &&
     'type' in value &&
-    typeof (value as Edge).type === 'string'
-  );
-}
+    typeof (value as Edge).type === 'string';
 
 /**
  * Type guard to check if a Result is Ok.
- *
  * @param result - Result to check
  * @returns true if Result is Ok
  */
-export function isOk<T, E>(result: Result<T, E>): result is { ok: true; value: T } {
-  return result.ok === true;
-}
+export const isOk = <T, E>(result: Result<T, E>): result is { ok: true; value: T } => result.ok === true;
 
 /**
  * Type guard to check if a Result is Err.
- *
  * @param result - Result to check
  * @returns true if Result is Err
  */
-export function isErr<T, E>(result: Result<T, E>): result is { ok: false; error: E } {
-  return result.ok === false;
-}
+export const isErr = <T, E>(result: Result<T, E>): result is { ok: false; error: E } => result.ok === false;
 
 /**
  * Type guard to check if an Option is Some.
- *
  * @param option - Option to check
  * @returns true if Option is Some
  */
-export function isSome<T>(option: Option<T>): option is { some: true; value: T } {
-  return option.some === true;
-}
+export const isSome = <T>(option: Option<T>): option is { some: true; value: T } => option.some === true;
 
 /**
  * Type guard to check if an Option is None.
- *
  * @param option - Option to check
  * @returns true if Option is None
  */
-export function isNone<T>(option: Option<T>): option is { some: false } {
-  return option.some === false;
-}
+export const isNone = <T>(option: Option<T>): option is { some: false } => option.some === false;
 
 /**
  * Type guard to check if an error is a specific GraphError variant.
- *
  * @param error - Error to check
  * @param type - Error type to match
  * @returns true if error matches the specified type
- *
  * @example
  * ```typescript
  * if (isGraphErrorType(error, 'duplicate-node')) {
@@ -95,9 +71,4 @@ export function isNone<T>(option: Option<T>): option is { some: false } {
  * }
  * ```
  */
-export function isGraphErrorType<T extends GraphError['type']>(
-  error: GraphError,
-  type: T
-): error is Extract<GraphError, { type: T }> {
-  return error.type === type;
-}
+export const isGraphErrorType = <T extends GraphError['type']>(error: GraphError, type: T): error is Extract<GraphError, { type: T }> => error.type === type;

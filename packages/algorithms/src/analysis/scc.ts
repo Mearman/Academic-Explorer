@@ -1,8 +1,8 @@
 import { type Graph } from '../graph/graph';
 import { type Component } from '../types/algorithm-results';
 import { type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Find all strongly connected components using Tarjan's algorithm.
@@ -12,13 +12,10 @@ import { type Result, Ok, Err } from '../types/result';
  *
  * Time Complexity: O(V + E)
  * Space Complexity: O(V)
- *
  * @param graph - The directed graph to analyze
  * @returns Result containing array of SCCs
  */
-export function stronglyConnectedComponents<N extends Node, E extends Edge = Edge>(
-  graph: Graph<N, E>
-): Result<Component<N>[], InvalidInputError> {
+export const stronglyConnectedComponents = <N extends Node, E extends Edge = Edge>(graph: Graph<N, E>): Result<Component<N>[], InvalidInputError> => {
   if (!graph) {
     return Err({
       type: 'invalid-input',
@@ -35,7 +32,7 @@ export function stronglyConnectedComponents<N extends Node, E extends Edge = Edg
   let currentIndex = 0;
   let componentId = 0;
 
-  function strongConnect(nodeId: string): void {
+  const strongConnect = (nodeId: string): void => {
     // Set depth index for node
     index.set(nodeId, currentIndex);
     lowlink.set(nodeId, currentIndex);
@@ -89,7 +86,7 @@ export function stronglyConnectedComponents<N extends Node, E extends Edge = Edg
         size: sccNodes.length,
       });
     }
-  }
+  };
 
   // Run Tarjan's algorithm from all unvisited nodes
   for (const node of nodes) {
@@ -99,4 +96,4 @@ export function stronglyConnectedComponents<N extends Node, E extends Edge = Edg
   }
 
   return Ok(components);
-}
+};

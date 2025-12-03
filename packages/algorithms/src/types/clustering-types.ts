@@ -6,7 +6,6 @@
  * - Graph Partitioning: Spectral partitioning
  * - Hierarchical Clustering: Agglomerative clustering with dendrogram
  * - Graph Decomposition: K-core, Core-periphery, Biconnected components
- *
  * @module clustering-types
  */
 
@@ -337,16 +336,13 @@ export interface ClusterMetrics {
 
 /**
  * Configuration for Louvain algorithm optimization.
- *
  * @remarks
  * All fields are optional. If not provided, adaptive defaults are used based on graph size.
- *
  * @since Phase 1 (Parameter Tuning)
  */
 export interface LouvainConfiguration {
   /**
    * Resolution parameter for modularity calculation.
-   *
    * @remarks
    * Controls community size detection:
    * - Values > 1.0: Favor smaller, more granular communities
@@ -355,7 +351,6 @@ export interface LouvainConfiguration {
    *
    * Higher resolution = more communities detected
    * Lower resolution = fewer communities detected
-   *
    * @default 1.0
    * @since Phase 1 (Parameter Tuning)
    */
@@ -363,7 +358,6 @@ export interface LouvainConfiguration {
 
   /**
    * Neighbor selection strategy.
-   *
    * @remarks
    * **UPDATE (Phase 4)**: Auto mode now always selects "best" mode.
    * Random mode caused quality degradation (Q: 0.37 → 0.05) and slower convergence
@@ -372,7 +366,6 @@ export interface LouvainConfiguration {
    * - `"auto"` (default): Best-neighbor mode for all graphs (Phase 4 update)
    * - `"best"`: Always evaluate all neighbors, select maximum ΔQ (quality-first)
    * - `"random"`: Accept first neighbor with positive ΔQ (not recommended)
-   *
    * @default "auto"
    * @since Phase 2 (Fast Louvain)
    */
@@ -380,7 +373,6 @@ export interface LouvainConfiguration {
 
   /**
    * Random seed for deterministic neighbor shuffling.
-   *
    * @remarks
    * If provided, enables reproducible test results by seeding the PRNG.
    * If undefined, uses Math.random() (non-deterministic).
@@ -388,14 +380,12 @@ export interface LouvainConfiguration {
    * Used for:
    * - Neighbor order randomization (Fisher-Yates shuffle)
    * - Tie-breaking in modularity optimization
-   *
    * @since Phase 1 (Parameter Tuning)
    */
   seed?: number;
 
   /**
    * Modularity convergence threshold override.
-   *
    * @remarks
    * Adaptive default (if undefined):
    * - 1e-5 for graphs >500 nodes (looser, faster)
@@ -404,7 +394,6 @@ export interface LouvainConfiguration {
    * Stops iteration when ΔQ < threshold:
    * - Lower values = stricter convergence, higher quality, slower performance
    * - Higher values = looser convergence, lower quality, faster performance
-   *
    * @default Adaptive (1e-5 or 1e-6 based on graph size)
    * @since Phase 1 (Parameter Tuning)
    */
@@ -412,7 +401,6 @@ export interface LouvainConfiguration {
 
   /**
    * Maximum iterations per hierarchy level override.
-   *
    * @remarks
    * Adaptive default (if undefined):
    * - 20 iterations for first hierarchy level (level 0) with >200 nodes
@@ -425,7 +413,6 @@ export interface LouvainConfiguration {
    *
    * Most node movements occur in first few iterations, so lower limits
    * are effective for large graphs.
-   *
    * @default Adaptive (20, 40, or 50 based on graph size and level)
    * @since Phase 1 (Parameter Tuning)
    */
@@ -434,17 +421,14 @@ export interface LouvainConfiguration {
 
 /**
  * Altered communities state for tracking changed communities between iterations.
- *
  * @remarks
  * Used by altered communities heuristic to reduce redundant computation.
  * Only nodes in altered communities (and their neighbors) need to be revisited.
- *
  * @since Phase 4 (spec-027, Altered Communities)
  */
 export interface AlteredCommunitiesState {
   /**
    * Set of community IDs that had nodes move in or out during the last iteration.
-   *
    * @remarks
    * - Initialized with all community IDs before first iteration (visit all nodes)
    * - Cleared at the start of each iteration
@@ -456,7 +440,6 @@ export interface AlteredCommunitiesState {
 
 /**
  * Community edge weight cache for Louvain optimization.
- *
  * @remarks
  * Hash table caching edge weights between pairs of communities.
  * Reduces redundant calculations during modularity evaluations.
@@ -470,7 +453,6 @@ export interface AlteredCommunitiesState {
  *
  * **Note**: Cache population logic was removed in final optimization phase due to
  * complexity and lack of measured performance benefit for citation networks.
- *
  * @since Phase 5 (spec-027, Community Caching)
  */
 export type CommunityHashTable = Map<string, number>;
@@ -521,9 +503,7 @@ export type HierarchicalError =
 
 /**
  * Result of Louvain community detection.
- *
  * @typeParam T - Node identifier type (typically string)
- *
  * @remarks
  * This interface defines the data structure returned by the Louvain algorithm.
  * The actual function returns `Result<LouvainResult<string>, ClusteringError>`.
@@ -537,7 +517,6 @@ export type HierarchicalError =
  * - Best mode: Modularity ~0.2 (baseline)
  * - Auto mode (large graphs): Modularity ~0.19 (5% loss for 3-6x speedup)
  * - Random mode: Modularity ~0.18-0.19 (acceptable for speed-critical use cases)
- *
  * @since Phase 1 (spec-027)
  */
 export interface LouvainResult<T = string> {

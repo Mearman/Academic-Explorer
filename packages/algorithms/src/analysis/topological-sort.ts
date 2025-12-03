@@ -1,7 +1,7 @@
 import { type Graph } from '../graph/graph';
 import { type CycleDetectedError, type InvalidInputError } from '../types/errors';
-import { type Node, type Edge } from '../types/graph';
-import { type Result, Ok, Err } from '../types/result';
+import { type Edge,type Node } from '../types/graph';
+import { Err,Ok, type Result } from '../types/result';
 
 /**
  * Topological sort using DFS-based reverse postorder.
@@ -11,13 +11,10 @@ import { type Result, Ok, Err } from '../types/result';
  *
  * Time Complexity: O(V + E)
  * Space Complexity: O(V)
- *
  * @param graph - The directed graph to sort
  * @returns Result containing ordered nodes or cycle error
  */
-export function topologicalSort<N extends Node, E extends Edge = Edge>(
-  graph: Graph<N, E>
-): Result<N[], CycleDetectedError | InvalidInputError> {
+export const topologicalSort = <N extends Node, E extends Edge = Edge>(graph: Graph<N, E>): Result<N[], CycleDetectedError | InvalidInputError> => {
   if (!graph) {
     return Err({
       type: 'invalid-input',
@@ -32,7 +29,7 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
   const postorder: N[] = [];
 
   // DFS with cycle detection and path reconstruction
-  function dfs(nodeId: string, parentId: string | null): Result<void, CycleDetectedError> {
+  const dfs = (nodeId: string, parentId: string | null): Result<void, CycleDetectedError> => {
     if (inStack.has(nodeId)) {
       // Back edge detected - reconstruct cycle path from parent chain
       const cyclePath: string[] = [];
@@ -85,7 +82,7 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
     }
 
     return Ok(undefined);
-  }
+  };
 
   // Run DFS from all unvisited nodes
   for (const node of nodes) {
@@ -99,4 +96,4 @@ export function topologicalSort<N extends Node, E extends Edge = Edge>(
 
   // Reverse postorder gives topological order
   return Ok(postorder.reverse());
-}
+};

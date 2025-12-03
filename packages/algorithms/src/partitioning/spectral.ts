@@ -10,14 +10,13 @@
  *
  * Time Complexity: O(n² + k*iterations) for eigenvector computation + k-means
  * Space Complexity: O(n² + n*k)
- *
  * @module partitioning/spectral
  */
 
 import type { Graph } from '../graph/graph';
 import type { Partition, PartitioningError } from '../types/clustering-types';
-import type { Node, Edge } from '../types/graph';
-import { Ok, Err, type Result } from '../types/result';
+import type { Edge,Node } from '../types/graph';
+import { Err, Ok, type Result } from '../types/result';
 import type { WeightFunction } from '../types/weight-function';
 
 /**
@@ -25,7 +24,6 @@ import type { WeightFunction } from '../types/weight-function';
  *
  * Divides graph into k balanced partitions by analyzing the spectral properties
  * of the graph Laplacian matrix.
- *
  * @typeParam N - Node type
  * @typeParam E - Edge type
  * @param graph - Input graph (directed or undirected)
@@ -36,7 +34,6 @@ import type { WeightFunction } from '../types/weight-function';
  * @param options.maxKMeansIterations - Max iterations for k-means (default: 100)
  * @param options.seed - Random seed for k-means initialization (default: undefined)
  * @returns Result containing array of k partitions or error
- *
  * @example
  * ```typescript
  * const graph = new Graph<PaperNode, CitationEdge>(true);
@@ -48,16 +45,12 @@ import type { WeightFunction } from '../types/weight-function';
  * }
  * ```
  */
-export function spectralPartition<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  k: number,
-  options: {
+export const spectralPartition = <N extends Node, E extends Edge>(graph: Graph<N, E>, k: number, options: {
     weightFn?: WeightFunction<N, E>;
     balanceTolerance?: number;
     maxKMeansIterations?: number;
     seed?: number;
-  } = {}
-): Result<Partition<N>[], PartitioningError> {
+  } = {}): Result<Partition<N>[], PartitioningError> => {
   const {
     weightFn = () => 1.0,
     balanceTolerance = 1.2,
@@ -132,18 +125,17 @@ export function spectralPartition<N extends Node, E extends Edge>(
   );
 
   return Ok(partitions);
-}
+};
 
 /**
  * Compute normalized Laplacian matrix: L = D^(-1/2) * (D - A) * D^(-1/2)
  * where D is degree matrix and A is adjacency matrix.
+ * @param graph
+ * @param nodes
+ * @param nodeIdToIndex
+ * @param weightFn
  */
-function computeNormalizedLaplacian<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodes: N[],
-  nodeIdToIndex: Map<string, number>,
-  weightFn: WeightFunction<N, E>
-): number[][] {
+const computeNormalizedLaplacian = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodes: N[], nodeIdToIndex: Map<string, number>, weightFn: WeightFunction<N, E>): number[][] => {
   const n = nodes.length;
   const adjacency: number[][] = Array(n)
     .fill(0)
@@ -196,17 +188,16 @@ function computeNormalizedLaplacian<N extends Node, E extends Edge>(
   }
 
   return laplacian;
-}
+};
 
 /**
  * Extract k smallest eigenvectors using power iteration method.
  * Returns a matrix where each row represents a node's embedding in k-dimensional space.
+ * @param laplacian
+ * @param k
+ * @param n
  */
-function extractSmallestEigenvectors(
-  laplacian: number[][],
-  k: number,
-  n: number
-): number[][] {
+const extractSmallestEigenvectors = (laplacian: number[][], k: number, n: number): number[][] => {
   // For spectral partitioning, we need k-1 smallest non-trivial eigenvectors
   // (excluding the trivial eigenvector corresponding to eigenvalue 0)
 
@@ -292,17 +283,16 @@ function extractSmallestEigenvectors(
   }
 
   return embeddings;
-}
+};
 
 /**
  * K-means clustering on eigenvector embeddings.
  * Returns cluster assignments for each node.
+ * @param embeddings
+ * @param k
+ * @param maxIterations
  */
-function kMeansClustering(
-  embeddings: number[][],
-  k: number,
-  maxIterations: number
-): number[] {
+const kMeansClustering = (embeddings: number[][], k: number, maxIterations: number): number[] => {
   const n = embeddings.length;
   const dimensions = embeddings[0].length;
 
@@ -390,30 +380,31 @@ function kMeansClustering(
   }
 
   return assignments;
-}
+};
 
 /**
  * Euclidean distance between two vectors.
+ * @param v1
+ * @param v2
  */
-function euclideanDistance(v1: number[], v2: number[]): number {
+const euclideanDistance = (v1: number[], v2: number[]): number => {
   let sum = 0;
   for (let i = 0; i < v1.length; i++) {
     const diff = v1[i] - v2[i];
     sum += diff * diff;
   }
   return Math.sqrt(sum);
-}
+};
 
 /**
  * Rebalance partitions to meet balance tolerance.
  * Moves nodes from oversized partitions to undersized ones.
+ * @param assignments
+ * @param k
+ * @param nodeCount
+ * @param balanceTolerance
  */
-function rebalancePartitions(
-  assignments: number[],
-  k: number,
-  nodeCount: number,
-  balanceTolerance: number
-): number[] {
+const rebalancePartitions = (assignments: number[], k: number, nodeCount: number, balanceTolerance: number): number[] => {
   const idealSize = nodeCount / k;
 
   // Count partition sizes
@@ -484,19 +475,18 @@ function rebalancePartitions(
   }
 
   return rebalanced;
-}
+};
 
 /**
  * Build partition results from cluster assignments.
+ * @param graph
+ * @param nodes
+ * @param assignments
+ * @param k
+ * @param weightFn
+ * @param nodeIdToIndex
  */
-function buildPartitions<N extends Node, E extends Edge>(
-  graph: Graph<N, E>,
-  nodes: N[],
-  assignments: number[],
-  k: number,
-  weightFn: WeightFunction<N, E>,
-  nodeIdToIndex: Map<string, number>
-): Partition<N>[] {
+const buildPartitions = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodes: N[], assignments: number[], k: number, weightFn: WeightFunction<N, E>, nodeIdToIndex: Map<string, number>): Partition<N>[] => {
   // Group nodes by partition
   const partitionNodes: Map<number, Set<N>> = new Map();
   for (let i = 0; i < k; i++) {
@@ -554,4 +544,4 @@ function buildPartitions<N extends Node, E extends Edge>(
   }
 
   return partitions;
-}
+};
