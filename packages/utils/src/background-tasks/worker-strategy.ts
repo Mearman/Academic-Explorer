@@ -5,14 +5,13 @@
  * Uses predefined operations for security (no dynamic code evaluation).
  *
  * Best for: API calls and data processing that should happen off main thread
- *
  * @module utils/background-tasks/worker-strategy
  */
 
 import type {
-  BackgroundTaskStrategy,
   BackgroundTaskOptions,
   BackgroundTaskResult,
+  BackgroundTaskStrategy,
   ProgressCallback,
 } from './types';
 
@@ -22,9 +21,7 @@ let taskIdCounter = 0;
 /**
  * Generate unique task ID
  */
-function generateTaskId(): string {
-  return `task_${++taskIdCounter}_${Date.now()}`;
-}
+const generateTaskId = (): string => `task_${++taskIdCounter}_${Date.now()}`;
 
 /**
  * Worker message types
@@ -124,7 +121,7 @@ const WORKER_SCRIPT = `
 /**
  * Create inline worker from script string
  */
-function createInlineWorker(): Worker | null {
+const createInlineWorker = (): Worker | null => {
   try {
     const blob = new Blob([WORKER_SCRIPT], { type: 'application/javascript' });
     const url = URL.createObjectURL(blob);
@@ -134,7 +131,7 @@ function createInlineWorker(): Worker | null {
   } catch {
     return null;
   }
-}
+};
 
 /**
  * Pending task information
@@ -240,6 +237,8 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
   /**
    * Execute a single task - delegates to processBatch for consistency
    * Note: For the worker strategy, single tasks are less efficient than batches
+   * @param task
+   * @param options
    */
   async execute<T>(
     task: () => T | Promise<T>,
@@ -275,6 +274,9 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
   /**
    * Process batch - delegates to fetchBatch if items are fetch requests
    * Otherwise falls back to chunked main thread processing
+   * @param items
+   * @param processor
+   * @param options
    */
   async processBatch<T, R>(
     items: T[],
@@ -331,7 +333,6 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
   /**
    * Execute batch fetch requests in the worker
    * This is the primary use case for the worker strategy
-   *
    * @param requests - Array of fetch requests with IDs
    * @param options - Task options including progress callback
    * @returns Map of request ID to fetch result
@@ -356,6 +357,7 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
     }
 
     const taskId = generateTaskId();
+    const worker = this.worker; // Capture for type narrowing
 
     return new Promise((resolve) => {
       this.pendingTasks.set(taskId, {
@@ -384,7 +386,7 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
         const pendingTask = this.pendingTasks.get(taskId);
         if (pendingTask) {
           this.pendingTasks.delete(taskId);
-          this.worker?.postMessage({ type: 'cancel', taskId });
+          worker.postMessage({ type: 'cancel', taskId });
           resolve({
             success: false,
             cancelled: true,
@@ -399,7 +401,7 @@ export class WorkerStrategy implements BackgroundTaskStrategy {
         taskId,
         payload: { requests, chunkSize },
       };
-      this.worker!.postMessage(message);
+      worker.postMessage(message);
     });
   }
 

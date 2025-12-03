@@ -6,13 +6,13 @@
  */
 
 import type {
-	GraphNode,
-	GraphEdge,
-	GraphNode3D,
-	GraphEdge3D,
-	Position3D,
 	BoundingBox3D,
 	EntityType,
+	GraphEdge,
+	GraphEdge3D,
+	GraphNode,
+	GraphNode3D,
+	Position3D,
 } from '@bibgraph/types'
 
 /**
@@ -54,12 +54,11 @@ const DEFAULT_LAYOUT_CONFIG: Layout3DConfig = {
 
 /**
  * Convert a 2D GraphNode to a 3D GraphNode3D
- *
  * @param node - 2D graph node
  * @param config - Optional layout configuration
  * @returns 3D graph node
  */
-export function to3DNode(node: GraphNode, config: Layout3DConfig = DEFAULT_LAYOUT_CONFIG): GraphNode3D {
+export const to3DNode = (node: GraphNode, config: Layout3DConfig = DEFAULT_LAYOUT_CONFIG): GraphNode3D => {
 	// Calculate Z position based on entity type hierarchy or random spread
 	const z = config.useHierarchy && config.entityZLevels
 		? (config.entityZLevels[node.entityType] ?? config.baseZ)
@@ -71,17 +70,14 @@ export function to3DNode(node: GraphNode, config: Layout3DConfig = DEFAULT_LAYOU
 		...rest,
 		position: { x, y, z },
 	}
-}
+};
 
 /**
  * Convert a 3D GraphNode3D to a 2D GraphNode
- *
  * @param node3D - 3D graph node
  * @returns 2D graph node
  */
-export function from3DNode(node3D: GraphNode3D): GraphNode {
-	// Extract only the core GraphNode properties from the 3D node
-	return {
+export const from3DNode = (node3D: GraphNode3D): GraphNode => ({
 		id: node3D.id,
 		entityId: node3D.entityId,
 		entityType: node3D.entityType,
@@ -95,17 +91,15 @@ export function from3DNode(node3D: GraphNode3D): GraphNode {
 		error: node3D.error,
 		isXpac: node3D.isXpac,
 		hasUnverifiedAuthor: node3D.hasUnverifiedAuthor,
-	}
-}
+	});
 
 /**
  * Convert a 2D GraphEdge to a 3D GraphEdge3D
- *
  * @param edge - 2D graph edge
  * @param nodes3D - Map of node IDs to 3D nodes (for control point calculation)
  * @returns 3D graph edge
  */
-export function to3DEdge(edge: GraphEdge, nodes3D?: Map<string, GraphNode3D>): GraphEdge3D {
+export const to3DEdge = (edge: GraphEdge, nodes3D?: Map<string, GraphNode3D>): GraphEdge3D => {
 	const edge3D: GraphEdge3D = { ...edge }
 
 	// Calculate control points for curved edges if nodes are provided
@@ -129,17 +123,14 @@ export function to3DEdge(edge: GraphEdge, nodes3D?: Map<string, GraphNode3D>): G
 	}
 
 	return edge3D
-}
+};
 
 /**
  * Convert a 3D GraphEdge3D to a 2D GraphEdge
- *
  * @param edge3D - 3D graph edge
  * @returns 2D graph edge
  */
-export function from3DEdge(edge3D: GraphEdge3D): GraphEdge {
-	// Extract only the core GraphEdge properties from the 3D edge
-	return {
+export const from3DEdge = (edge3D: GraphEdge3D): GraphEdge => ({
 		id: edge3D.id,
 		source: edge3D.source,
 		target: edge3D.target,
@@ -148,22 +139,16 @@ export function from3DEdge(edge3D: GraphEdge3D): GraphEdge {
 		label: edge3D.label,
 		weight: edge3D.weight,
 		metadata: edge3D.metadata,
-	}
-}
+	});
 
 /**
  * Convert an entire 2D graph to 3D
- *
  * @param nodes - Array of 2D graph nodes
  * @param edges - Array of 2D graph edges
  * @param config - Optional layout configuration
  * @returns Object containing 3D nodes and edges
  */
-export function to3DGraph(
-	nodes: GraphNode[],
-	edges: GraphEdge[],
-	config: Layout3DConfig = DEFAULT_LAYOUT_CONFIG
-): { nodes3D: GraphNode3D[]; edges3D: GraphEdge3D[] } {
+export const to3DGraph = (nodes: GraphNode[], edges: GraphEdge[], config: Layout3DConfig = DEFAULT_LAYOUT_CONFIG): { nodes3D: GraphNode3D[]; edges3D: GraphEdge3D[] } => {
 	// Convert nodes first
 	const nodes3D = nodes.map(node => to3DNode(node, config))
 
@@ -175,33 +160,26 @@ export function to3DGraph(
 	const edges3D = edges.map(edge => to3DEdge(edge, nodeMap))
 
 	return { nodes3D, edges3D }
-}
+};
 
 /**
  * Convert an entire 3D graph to 2D
- *
  * @param nodes3D - Array of 3D graph nodes
  * @param edges3D - Array of 3D graph edges
  * @returns Object containing 2D nodes and edges
  */
-export function from3DGraph(
-	nodes3D: GraphNode3D[],
-	edges3D: GraphEdge3D[]
-): { nodes: GraphNode[]; edges: GraphEdge[] } {
-	return {
+export const from3DGraph = (nodes3D: GraphNode3D[], edges3D: GraphEdge3D[]): { nodes: GraphNode[]; edges: GraphEdge[] } => ({
 		nodes: nodes3D.map(from3DNode),
 		edges: edges3D.map(from3DEdge),
-	}
-}
+	});
 
 /**
  * Calculate bounding box for a 3D edge
+ * @param start
+ * @param end
+ * @param controlPoint
  */
-function calculateEdgeBounds(
-	start: Position3D,
-	end: Position3D,
-	controlPoint?: Position3D
-): BoundingBox3D {
+const calculateEdgeBounds = (start: Position3D, end: Position3D, controlPoint?: Position3D): BoundingBox3D => {
 	const points = [start, end]
 	if (controlPoint) {
 		points.push(controlPoint)
@@ -219,12 +197,13 @@ function calculateEdgeBounds(
 			z: Math.max(...points.map(p => p.z)),
 		},
 	}
-}
+};
 
 /**
  * Calculate bounding box for a set of 3D nodes
+ * @param nodes3D
  */
-export function calculateGraphBounds(nodes3D: GraphNode3D[]): BoundingBox3D {
+export const calculateGraphBounds = (nodes3D: GraphNode3D[]): BoundingBox3D => {
 	if (nodes3D.length === 0) {
 		return {
 			min: { x: 0, y: 0, z: 0 },
@@ -244,53 +223,52 @@ export function calculateGraphBounds(nodes3D: GraphNode3D[]): BoundingBox3D {
 			z: Math.max(...nodes3D.map(n => n.position.z)),
 		},
 	}
-}
+};
 
 /**
  * Calculate the center point of a bounding box
+ * @param bounds
  */
-export function getBoundsCenter(bounds: BoundingBox3D): Position3D {
-	return {
+export const getBoundsCenter = (bounds: BoundingBox3D): Position3D => ({
 		x: (bounds.min.x + bounds.max.x) / 2,
 		y: (bounds.min.y + bounds.max.y) / 2,
 		z: (bounds.min.z + bounds.max.z) / 2,
-	}
-}
+	});
 
 /**
  * Calculate the size (dimensions) of a bounding box
+ * @param bounds
  */
-export function getBoundsSize(bounds: BoundingBox3D): Position3D {
-	return {
+export const getBoundsSize = (bounds: BoundingBox3D): Position3D => ({
 		x: bounds.max.x - bounds.min.x,
 		y: bounds.max.y - bounds.min.y,
 		z: bounds.max.z - bounds.min.z,
-	}
-}
+	});
 
 /**
  * Check if a point is inside a bounding box
+ * @param point
+ * @param bounds
  */
-export function isPointInBounds(point: Position3D, bounds: BoundingBox3D): boolean {
-	return point.x >= bounds.min.x && point.x <= bounds.max.x &&
+export const isPointInBounds = (point: Position3D, bounds: BoundingBox3D): boolean => point.x >= bounds.min.x && point.x <= bounds.max.x &&
 		point.y >= bounds.min.y && point.y <= bounds.max.y &&
-		point.z >= bounds.min.z && point.z <= bounds.max.z
-}
+		point.z >= bounds.min.z && point.z <= bounds.max.z;
 
 /**
  * Check if two bounding boxes intersect
+ * @param a
+ * @param b
  */
-export function doBoundsIntersect(a: BoundingBox3D, b: BoundingBox3D): boolean {
-	return a.min.x <= b.max.x && a.max.x >= b.min.x &&
+export const doBoundsIntersect = (a: BoundingBox3D, b: BoundingBox3D): boolean => a.min.x <= b.max.x && a.max.x >= b.min.x &&
 		a.min.y <= b.max.y && a.max.y >= b.min.y &&
-		a.min.z <= b.max.z && a.max.z >= b.min.z
-}
+		a.min.z <= b.max.z && a.max.z >= b.min.z;
 
 /**
  * Expand a bounding box to include a point
+ * @param bounds
+ * @param point
  */
-export function expandBounds(bounds: BoundingBox3D, point: Position3D): BoundingBox3D {
-	return {
+export const expandBounds = (bounds: BoundingBox3D, point: Position3D): BoundingBox3D => ({
 		min: {
 			x: Math.min(bounds.min.x, point.x),
 			y: Math.min(bounds.min.y, point.y),
@@ -301,34 +279,37 @@ export function expandBounds(bounds: BoundingBox3D, point: Position3D): Bounding
 			y: Math.max(bounds.max.y, point.y),
 			z: Math.max(bounds.max.z, point.z),
 		},
-	}
-}
+	});
 
 /**
  * Calculate distance between two 3D points
+ * @param a
+ * @param b
  */
-export function distance3D(a: Position3D, b: Position3D): number {
+export const distance3D = (a: Position3D, b: Position3D): number => {
 	const dx = b.x - a.x
 	const dy = b.y - a.y
 	const dz = b.z - a.z
 	return Math.sqrt(dx * dx + dy * dy + dz * dz)
-}
+};
 
 /**
  * Linear interpolation between two 3D positions
+ * @param a
+ * @param b
+ * @param t
  */
-export function lerp3D(a: Position3D, b: Position3D, t: number): Position3D {
-	return {
+export const lerp3D = (a: Position3D, b: Position3D, t: number): Position3D => ({
 		x: a.x + (b.x - a.x) * t,
 		y: a.y + (b.y - a.y) * t,
 		z: a.z + (b.z - a.z) * t,
-	}
-}
+	});
 
 /**
  * Normalize a 3D vector
+ * @param v
  */
-export function normalize3D(v: Position3D): Position3D {
+export const normalize3D = (v: Position3D): Position3D => {
 	const len = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
 	if (len === 0) return { x: 0, y: 0, z: 0 }
 	return {
@@ -336,4 +317,4 @@ export function normalize3D(v: Position3D): Position3D {
 		y: v.y / len,
 		z: v.z / len,
 	}
-}
+};

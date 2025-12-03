@@ -9,7 +9,7 @@ import path from "node:path"
 import type { CacheStorageType } from "../cache-browser/types.js"
 import { logger } from "../logger.js"
 
-export function isCacheStorageType(value: string): value is CacheStorageType {
+export const isCacheStorageType = (value: string): value is CacheStorageType => {
 	const validCacheTypes: readonly string[] = [
 		"works",
 		"authors",
@@ -26,7 +26,7 @@ export function isCacheStorageType(value: string): value is CacheStorageType {
 		"subfields",
 	]
 	return validCacheTypes.includes(value)
-}
+};
 
 /**
  * Metadata structure for cached files
@@ -160,8 +160,9 @@ export interface ParsedOpenAlexUrl {
 /**
  * Generate content hash excluding volatile metadata fields
  * Uses SHA256 for consistency and excludes fields that change without content changing
+ * @param data
  */
-export async function generateContentHash(data: unknown): Promise<string> {
+export const generateContentHash = async (data: unknown): Promise<string> => {
 	try {
 		// Create a copy and remove volatile metadata fields
 		let cleanContent: unknown = data
@@ -198,12 +199,13 @@ export async function generateContentHash(data: unknown): Promise<string> {
 		logger.warn("cache", "Failed to generate content hash", { error })
 		return "hash-error"
 	}
-}
+};
 
 /**
  * Parse OpenAlex URL into structured information
+ * @param url
  */
-export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
+export const parseOpenAlexUrl = (url: string): ParsedOpenAlexUrl | null => {
 	if (typeof url !== "string" || url.trim().length === 0) {
 		logger.warn("cache", "Invalid URL input for parsing", { url: typeof url })
 		return null
@@ -256,10 +258,10 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 
 			const decodedCandidate = decodeSegment(entityIdCandidate)
 			const isOpenAlexId =
-				/^[A-Z]\d{1,}$/i.test(entityIdCandidate) || /^[A-Z]\d{1,}$/i.test(decodedCandidate)
+				/^[A-Z]\d+$/i.test(entityIdCandidate) || /^[A-Z]\d+$/i.test(decodedCandidate)
 			const isOpenAlexUrl =
-				/^https?:\/\/openalex\.org\/[A-Z]\d{1,}$/i.test(decodedCandidate) ||
-				/^https%3A%2F%2Fopenalex\.org%2F[A-Z]\d{1,}$/i.test(entityIdCandidate)
+				/^https?:\/\/openalex\.org\/[A-Z]\d+$/i.test(decodedCandidate) ||
+				/^https%3A%2F%2Fopenalex\.org%2F[A-Z]\d+$/i.test(entityIdCandidate)
 			const isOrcidId =
 				/^(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
 				/^https?:\/\/orcid\.org\/(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
@@ -282,14 +284,15 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 		logger.warn("cache", "Failed to parse OpenAlex URL", { url, error })
 		return null
 	}
-}
+};
 
 /**
  * Remove sensitive parameters from URL query string for caching
  * Strips api_key and mailto parameters completely from the query
  * Handles both query-only strings (?param=value) and path+query strings (/path?param=value)
+ * @param urlString
  */
-export function sanitizeUrlForCaching(urlString: string): string {
+export const sanitizeUrlForCaching = (urlString: string): string => {
 	if (!urlString) return urlString
 
 	// Handle both full URLs with ? and query-only strings
@@ -321,15 +324,16 @@ export function sanitizeUrlForCaching(urlString: string): string {
 	} else {
 		return sanitizedQuery
 	}
-}
+};
 
 /**
  * Normalize query string for consistent filename generation
  * - Normalizes cursor values to "*" for pagination consistency
  * - Sorts parameters alphabetically for deterministic ordering
  * - URL encodes parameter values for filesystem safety
+ * @param queryString
  */
-export function normalizeQueryForFilename(queryString: string): string {
+export const normalizeQueryForFilename = (queryString: string): string => {
 	if (!queryString || queryString === "?") {
 		return ""
 	}
@@ -368,7 +372,7 @@ export function normalizeQueryForFilename(queryString: string): string {
 		})
 		return queryString // Return original on error
 	}
-}
+};
 
 /**
  * Encode filename by replacing problematic characters with hex codes
@@ -380,8 +384,9 @@ export function normalizeQueryForFilename(queryString: string): string {
  * 3. Provides unified encoding format across all special characters
  *
  * This is reversible and creates consistent filenames regardless of input format
+ * @param filename
  */
-export function encodeFilename(filename: string): string {
+export const encodeFilename = (filename: string): string => {
 	if (typeof filename !== "string") {
 		logger.warn("cache", "Invalid filename input for encoding", {
 			filename: typeof filename,
@@ -401,7 +406,7 @@ export function encodeFilename(filename: string): string {
 		// Then encode all special characters with hex format
 		// Encodes: filesystem-unsafe (<>"|*?/\) + URL-special (:=%&+,)
 		return decoded.replace(
-			/[<>:"|*?/\\%=&+,]/g,
+			/["%&*+,/:<=>?\\|]/g,
 			(char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
 		)
 	} catch (error) {
@@ -412,35 +417,37 @@ export function encodeFilename(filename: string): string {
 			error,
 		})
 		return filename.replace(
-			/[<>"|*?/\\]/g,
+			/["*/<>?\\|]/g,
 			(char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
 		)
 	}
-}
+};
 
 /**
  * Decode filename by converting hex codes back to original characters
  * Reverses the encoding done by encodeFilename
+ * @param filename
  */
-export function decodeFilename(filename: string): string {
-	return filename.replace(/__([0-9A-F]+)__/g, (match, hex) => {
+export const decodeFilename = (filename: string): string => filename.replace(/__([0-9A-F]+)__/g, (match, hex) => {
 		const hexStr = String(hex)
 		const codePoint = parseInt(hexStr, 16)
 		return String.fromCharCode(codePoint)
-	})
-}
+	});
 
 /**
  * Generate cache file path from OpenAlex URL
  * This is the canonical mapping used by all systems
+ * @param root0
+ * @param root0.url
+ * @param root0.staticDataRoot
  */
-export async function getCacheFilePath({
+export const getCacheFilePath = async ({
 	url,
 	staticDataRoot,
 }: {
 	url: string
 	staticDataRoot: string
-}): Promise<string | null> {
+}): Promise<string | null> => {
 	const parsed = parseOpenAlexUrl(url)
 	if (!parsed) {
 		return null
@@ -457,14 +464,9 @@ export async function getCacheFilePath({
 		logger.warn("cache", "Failed to generate cache file path", { url, error })
 		return null
 	}
-}
+};
 
-async function generateQueryFilePath(
-	pathSegments: string[],
-	queryString: string,
-	staticDataRoot: string,
-	url: string
-): Promise<string | null> {
+const generateQueryFilePath = async (pathSegments: string[], queryString: string, staticDataRoot: string, url: string): Promise<string | null> => {
 	// Normalize query string to remove sensitive information before caching
 	const sanitized = sanitizeUrlForCaching(queryString.slice(1)) // Remove leading '?'
 	const normalizedQuery = normalizeQueryForFilename(sanitized)
@@ -497,15 +499,15 @@ async function generateQueryFilePath(
 	}
 
 	return `${staticDataRoot}/${baseDir}/queries/${queryFilename}.json`
-}
+};
 
-function generateEntityFilePath({
+const generateEntityFilePath = ({
 	pathSegments,
 	staticDataRoot,
 }: {
 	pathSegments: string[]
 	staticDataRoot: string
-}): string | null {
+}): string | null => {
 	if (pathSegments.length === 1) {
 		// For root collections: /authors → authors.json (at top level)
 		return `${staticDataRoot}/${pathSegments[0]}.json`
@@ -525,15 +527,15 @@ function generateEntityFilePath({
 	}
 
 	return null
-}
+};
 
-function generateBaseCollectionPath({
+const generateBaseCollectionPath = ({
 	pathSegments,
 	staticDataRoot,
 }: {
 	pathSegments: string[]
 	staticDataRoot: string
-}): string {
+}): string => {
 	if (pathSegments.length === 1) {
 		return `${staticDataRoot}/${pathSegments[0]}.json`
 	}
@@ -542,13 +544,14 @@ function generateBaseCollectionPath({
 	const fileName = pathSegments[pathSegments.length - 1]
 	const dirPath = pathSegments.slice(0, -1).join("/")
 	return `${staticDataRoot}/${dirPath}/${fileName}.json`
-}
+};
 
 /**
  * Generate static file path for service worker
  * Maps OpenAlex URLs to static file paths for production serving
+ * @param url
  */
-export async function getStaticFilePath(url: string): Promise<string> {
+export const getStaticFilePath = async (url: string): Promise<string> => {
 	const parsed = parseOpenAlexUrl(url)
 	if (!parsed) {
 		return `/data/openalex${new URL(url).pathname}.json`
@@ -557,12 +560,16 @@ export async function getStaticFilePath(url: string): Promise<string> {
 	// Use the same logic as cache file path but with /data/openalex prefix
 	const cacheFilePath = await getCacheFilePath({ url, staticDataRoot: "" })
 	return `/data/openalex${cacheFilePath}`
-}
+};
 
 /**
  * Determine if cached content needs updating based on content hash
+ * @param root0
+ * @param root0.existingMetadata
+ * @param root0.newData
+ * @param root0.maxAge
  */
-export async function shouldUpdateCache({
+export const shouldUpdateCache = async ({
 	existingMetadata,
 	newData,
 	maxAge,
@@ -570,7 +577,7 @@ export async function shouldUpdateCache({
 	existingMetadata: CacheEntryMetadata | null
 	newData: unknown
 	maxAge?: number
-}): Promise<boolean> {
+}): Promise<boolean> => {
 	if (!existingMetadata) {
 		return true // No existing cache
 	}
@@ -591,12 +598,16 @@ export async function shouldUpdateCache({
 	}
 
 	return false // Cache is still valid
-}
+};
 
 /**
  * Create cache entry metadata for new cached content
+ * @param root0
+ * @param root0.data
+ * @param root0.sourceUrl
+ * @param root0.contentType
  */
-export async function createCacheEntryMetadata({
+export const createCacheEntryMetadata = async ({
 	data,
 	sourceUrl,
 	contentType,
@@ -604,19 +615,18 @@ export async function createCacheEntryMetadata({
 	data: unknown
 	sourceUrl?: string
 	contentType?: string
-}): Promise<CacheEntryMetadata> {
-	return {
+}): Promise<CacheEntryMetadata> => ({
 		contentHash: await generateContentHash(data),
 		lastModified: new Date().toISOString(),
 		sourceUrl,
 		contentType,
-	}
-}
+	});
 
 /**
  * Validate that data appears to be a valid OpenAlex entity
+ * @param data
  */
-export function isValidOpenAlexEntity(data: unknown): boolean {
+export const isValidOpenAlexEntity = (data: unknown): boolean => {
 	if (!data || typeof data !== "object") {
 		return false
 	}
@@ -625,12 +635,13 @@ export function isValidOpenAlexEntity(data: unknown): boolean {
 
 	// OpenAlex entities should have id and display_name
 	return typeof obj.id === "string" && typeof obj.display_name === "string"
-}
+};
 
 /**
  * Validate that data appears to be a valid OpenAlex query result
+ * @param data
  */
-export function isValidOpenAlexQueryResult(data: unknown): boolean {
+export const isValidOpenAlexQueryResult = (data: unknown): boolean => {
 	if (!data || typeof data !== "object") {
 		return false
 	}
@@ -639,12 +650,13 @@ export function isValidOpenAlexQueryResult(data: unknown): boolean {
 
 	// OpenAlex query results should have results array and meta object
 	return Array.isArray(obj.results) && typeof obj.meta === "object"
-}
+};
 
 /**
  * Extract entity type from file path or URL
+ * @param pathOrUrl
  */
-export function extractEntityType(pathOrUrl: string): CacheStorageType | null {
+export const extractEntityType = (pathOrUrl: string): CacheStorageType | null => {
 	// Handle URLs
 	if (pathOrUrl.startsWith("http")) {
 		const parsed = parseOpenAlexUrl(pathOrUrl)
@@ -661,12 +673,13 @@ export function extractEntityType(pathOrUrl: string): CacheStorageType | null {
 	}
 
 	return null
-}
+};
 /**
  * Convert query string to filesystem-safe filename
  * Combines normalization and encoding for cache file naming
+ * @param queryString
  */
-export function queryToFilename(queryString: string): string {
+export const queryToFilename = (queryString: string): string => {
 	if (!queryString) return ""
 
 	// Remove leading ? if present
@@ -679,13 +692,14 @@ export function queryToFilename(queryString: string): string {
 
 	// Encode for filesystem safety
 	return encodeFilename(normalizedClean)
-}
+};
 
 /**
  * Convert filesystem filename back to query string
  * Reverses the queryToFilename transformation
+ * @param filename
  */
-export function filenameToQuery(filename: string): string {
+export const filenameToQuery = (filename: string): string => {
 	if (!filename) return ""
 
 	// Decode from filesystem-safe format
@@ -693,19 +707,22 @@ export function filenameToQuery(filename: string): string {
 
 	// Add leading ? if we have content
 	return decoded ? `?${decoded}` : ""
-}
+};
 
 /**
  * Check if two URLs are equivalent for caching purposes
  * Ignores parameter order and sensitive parameters (api_key, mailto)
+ * @param root0
+ * @param root0.url1
+ * @param root0.url2
  */
-export function areUrlsEquivalentForCaching({
+export const areUrlsEquivalentForCaching = ({
 	url1,
 	url2,
 }: {
 	url1: string
 	url2: string
-}): boolean {
+}): boolean => {
 	if (!areValidUrlInputs({ url1, url2 })) {
 		return false
 	}
@@ -724,9 +741,9 @@ export function areUrlsEquivalentForCaching({
 		})
 		return false
 	}
-}
+};
 
-function areValidUrlInputs({ url1, url2 }: { url1: string; url2: string }): boolean {
+const areValidUrlInputs = ({ url1, url2 }: { url1: string; url2: string }): boolean => {
 	if (
 		typeof url1 !== "string" ||
 		typeof url2 !== "string" ||
@@ -740,9 +757,9 @@ function areValidUrlInputs({ url1, url2 }: { url1: string; url2: string }): bool
 		return false
 	}
 	return true
-}
+};
 
-function areValidHttpUrls({ url1, url2 }: { url1: string; url2: string }): boolean {
+const areValidHttpUrls = ({ url1, url2 }: { url1: string; url2: string }): boolean => {
 	if (
 		(!url1.startsWith("http://") && !url1.startsWith("https://")) ||
 		(!url2.startsWith("http://") && !url2.startsWith("https://"))
@@ -754,9 +771,9 @@ function areValidHttpUrls({ url1, url2 }: { url1: string; url2: string }): boole
 		return false
 	}
 	return true
-}
+};
 
-function compareUrlComponents({ url1, url2 }: { url1: string; url2: string }): boolean {
+const compareUrlComponents = ({ url1, url2 }: { url1: string; url2: string }): boolean => {
 	const urlObj1 = new URL(url1)
 	const urlObj2 = new URL(url2)
 
@@ -772,7 +789,7 @@ function compareUrlComponents({ url1, url2 }: { url1: string; url2: string }): b
 	const normalized2 = normalizeQueryForFilename(sanitized2)
 
 	return normalized1 === normalized2
-}
+};
 
 /**
  * Check if a URL would collide with an existing FileEntry (map to the same cache path)
@@ -781,11 +798,7 @@ function compareUrlComponents({ url1, url2 }: { url1: string; url2: string }): b
  * @param getCacheFilePathFn Function to get cache path (defaults to getCacheFilePath)
  * @returns true if the URL maps to the same cache path as the entry
  */
-export async function hasCollision(
-	entry: FileEntry,
-	url: string,
-	getCacheFilePathFn = getCacheFilePath
-): Promise<boolean> {
+export const hasCollision = async (entry: FileEntry, url: string, getCacheFilePathFn = getCacheFilePath): Promise<boolean> => {
 	if (!entry || !url) {
 		return false
 	}
@@ -802,16 +815,17 @@ export async function hasCollision(
 	)
 
 	return entryPath !== null && urlPath !== null && entryPath === urlPath
-}
+};
 
 /**
  * Type guard to check if a FileEntry supports multiple URLs (has been enhanced)
+ * @param entry
  */
-export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
+export const isMultiUrlFileEntry = (entry: unknown): entry is FileEntry & {
 	equivalentUrls: string[]
 	urlTimestamps: Record<string, string>
 	collisionInfo: CollisionInfo
-} {
+} => {
 	// Accept entries that declare the multi-url fields even if arrays are empty;
 	// validation will catch empty-equivalentUrls as invalid when appropriate.
 	if (
@@ -833,12 +847,16 @@ export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
 		typeof candidate.collisionInfo === "object" &&
 		candidate.collisionInfo !== null
 	)
-}
+};
 
 /**
  * Add new URL to equivalent URLs if not already present
+ * @param root0
+ * @param root0.entry
+ * @param root0.newUrl
+ * @param root0.currentTime
  */
-function addNewUrlToEntry({
+const addNewUrlToEntry = ({
 	entry,
 	newUrl,
 	currentTime,
@@ -846,7 +864,7 @@ function addNewUrlToEntry({
 	entry: FileEntry
 	newUrl: string
 	currentTime: string
-}): void {
+}): void => {
 	if (entry.equivalentUrls && !entry.equivalentUrls.includes(newUrl)) {
 		entry.equivalentUrls.push(newUrl)
 		if (entry.urlTimestamps) {
@@ -861,12 +879,13 @@ function addNewUrlToEntry({
 			entry.collisionInfo.firstCollision ??= currentTime
 		}
 	}
-}
+};
 
 /**
  * Sort equivalent URLs by recency (most recent first)
+ * @param entry
  */
-function sortUrlsByRecency(entry: FileEntry): void {
+const sortUrlsByRecency = (entry: FileEntry): void => {
 	try {
 		if (entry.urlTimestamps && Array.isArray(entry.equivalentUrls)) {
 			entry.equivalentUrls.sort((a, b) => {
@@ -889,12 +908,13 @@ function sortUrlsByRecency(entry: FileEntry): void {
 		// Non-fatal: if sorting fails, keep existing order and log a warning.
 		logger.warn("cache", "Failed to sort equivalentUrls by recency")
 	}
-}
+};
 
 /**
  * Normalize URL for collision detection
+ * @param url
  */
-function normalizeUrlForCollision(url: string): string {
+const normalizeUrlForCollision = (url: string): string => {
 	try {
 		const u = new URL(url)
 		const sanitized = sanitizeUrlForCaching(u.search)
@@ -903,12 +923,13 @@ function normalizeUrlForCollision(url: string): string {
 	} catch {
 		return url
 	}
-}
+};
 
 /**
  * Group URLs by their normalized collision key
+ * @param urls
  */
-function groupUrlsByCollisionKey(urls: string[]): Map<string, string[]> {
+const groupUrlsByCollisionKey = (urls: string[]): Map<string, string[]> => {
 	const groups = new Map<string, string[]>()
 	for (const url of urls) {
 		const key = normalizeUrlForCollision(url)
@@ -917,12 +938,15 @@ function groupUrlsByCollisionKey(urls: string[]): Map<string, string[]> {
 		groups.set(key, arr)
 	}
 	return groups
-}
+};
 
 /**
  * Select up to 2 non-primary URLs from a group, keeping recency order
+ * @param root0
+ * @param root0.urls
+ * @param root0.primary
  */
-function selectNonPrimaryUrls({ urls, primary }: { urls: string[]; primary: string }): string[] {
+const selectNonPrimaryUrls = ({ urls, primary }: { urls: string[]; primary: string }): string[] => {
 	const selected: string[] = []
 	let count = 0
 	for (const url of urls) {
@@ -933,12 +957,13 @@ function selectNonPrimaryUrls({ urls, primary }: { urls: string[]; primary: stri
 		}
 	}
 	return selected
-}
+};
 
 /**
  * Deduplicate equivalent URLs, keeping at most two non-primary URLs
+ * @param entry
  */
-function deduplicateUrls(entry: FileEntry): void {
+const deduplicateUrls = (entry: FileEntry): void => {
 	try {
 		if (Array.isArray(entry.equivalentUrls) && entry.equivalentUrls.length > 1) {
 			const primary = entry.url
@@ -962,18 +987,16 @@ function deduplicateUrls(entry: FileEntry): void {
 	} catch {
 		// ignore dedupe errors
 	}
-}
+};
 
 /**
  * Merge a new colliding URL into an existing FileEntry
  * Updates equivalentUrls, timestamps, and collision statistics
+ * @param existingEntry
+ * @param newUrl
  * @param currentTime Optional current timestamp; defaults to now
  */
-export function mergeCollision(
-	existingEntry: FileEntry,
-	newUrl: string,
-	currentTime: string = new Date().toISOString()
-): FileEntry {
+export const mergeCollision = (existingEntry: FileEntry, newUrl: string, currentTime: string = new Date().toISOString()): FileEntry => {
 	const entry = migrateToMultiUrl(existingEntry)
 
 	addNewUrlToEntry({ entry, newUrl, currentTime })
@@ -981,20 +1004,23 @@ export function mergeCollision(
 	deduplicateUrls(entry)
 
 	return entry
-}
+};
 
 /**
  * Reconstruct possible original URLs that could collide to the same cache filename
  * Generates canonical URL and variations with sensitive parameters
  * Assumes filename is a query filename from the queries/ directory
+ * @param root0
+ * @param root0.queryFilename
+ * @param root0.entityType
  */
-export function reconstructPossibleCollisions({
+export const reconstructPossibleCollisions = ({
 	queryFilename,
 	entityType,
 }: {
 	queryFilename: string
 	entityType: CacheStorageType
-}): string[] {
+}): string[] => {
 	const base = `https://api.openalex.org/${entityType}`
 	const queryStr = filenameToQuery(decodeFilename(queryFilename))
 	const canonical = `${base}${queryStr}`
@@ -1015,7 +1041,7 @@ export function reconstructPossibleCollisions({
 		// cursor token at the end. Preserve raw characters so tests can match exact
 		// literal strings (they expect unencoded ':' and '/'). This mirrors prior
 		// implementation.
-		let cursorLess = queryStr.replace(/[?&]cursor=\*/g, "")
+		let cursorLess = queryStr.replace(/[&?]cursor=\*/g, "")
 		if (cursorLess.startsWith("&")) cursorLess = cursorLess.slice(1)
 		if (cursorLess.endsWith("&")) cursorLess = cursorLess.slice(0, -1)
 		const withCursor = cursorLess ? `?${cursorLess}&cursor=MTIzNDU2` : "?cursor=MTIzNDU2"
@@ -1023,13 +1049,14 @@ export function reconstructPossibleCollisions({
 	}
 
 	return variations
-}
+};
 
 /**
  * Migrate a legacy single-URL FileEntry to the multi-URL format
  * Initializes the new fields with appropriate defaults
+ * @param entry
  */
-export function migrateToMultiUrl(entry: FileEntry): FileEntry {
+export const migrateToMultiUrl = (entry: FileEntry): FileEntry => {
 	if (isMultiUrlFileEntry(entry)) {
 		return entry // Already migrated
 	}
@@ -1049,17 +1076,16 @@ export function migrateToMultiUrl(entry: FileEntry): FileEntry {
 	}
 
 	return migrated
-}
+};
 
 /**
  * Validate a FileEntry for consistency and correctness
  * Checks equivalentUrls[0] === url and that all URLs map to the same cache path
  * Logs warnings for any issues found
+ * @param entry
+ * @param getCacheFilePathFn
  */
-export async function validateFileEntry(
-	entry: FileEntry,
-	getCacheFilePathFn = getCacheFilePath
-): Promise<boolean> {
+export const validateFileEntry = async (entry: FileEntry, getCacheFilePathFn = getCacheFilePath): Promise<boolean> => {
 	if (!isMultiUrlFileEntry(entry)) {
 		// Legacy entries are considered valid
 		return true
@@ -1113,7 +1139,7 @@ export async function validateFileEntry(
 	}
 
 	return true
-}
+};
 
 /**
  * Unified Index format for CLI compatibility
@@ -1131,8 +1157,9 @@ export type UnifiedIndex = Record<string, UnifiedIndexEntry>
  * Convert DirectoryIndex to UnifiedIndex format
  * Flattens the hierarchical DirectoryIndex structure into a flat map
  * suitable for CLI consumption
+ * @param dirIndex
  */
-export function directoryIndexToUnifiedIndex(dirIndex: DirectoryIndex): UnifiedIndex {
+export const directoryIndexToUnifiedIndex = (dirIndex: DirectoryIndex): UnifiedIndex => {
 	const unified: UnifiedIndex = {}
 
 	// Process all files in the directory index
@@ -1151,13 +1178,14 @@ export function directoryIndexToUnifiedIndex(dirIndex: DirectoryIndex): UnifiedI
 	}
 
 	return unified
-}
+};
 
 /**
  * Convert UnifiedIndex to DirectoryIndex format
  * Creates a hierarchical DirectoryIndex from a flat UnifiedIndex map
+ * @param unifiedIndex
  */
-export function unifiedIndexToDirectoryIndex(unifiedIndex: UnifiedIndex): DirectoryIndex {
+export const unifiedIndexToDirectoryIndex = (unifiedIndex: UnifiedIndex): DirectoryIndex => {
 	const files: Record<string, FileEntry> = {}
 
 	// Convert each unified entry to a FileEntry
@@ -1179,12 +1207,13 @@ export function unifiedIndexToDirectoryIndex(unifiedIndex: UnifiedIndex): Direct
 		lastUpdated: new Date().toISOString(),
 		files,
 	}
-}
+};
 
 /**
  * Check if an index is in UnifiedIndex format (flat structure)
+ * @param index
  */
-export function isUnifiedIndex(index: unknown): index is UnifiedIndex {
+export const isUnifiedIndex = (index: unknown): index is UnifiedIndex => {
 	if (!index || typeof index !== "object") {
 		return false
 	}
@@ -1212,12 +1241,13 @@ export function isUnifiedIndex(index: unknown): index is UnifiedIndex {
 	}
 
 	return true
-}
+};
 
 /**
  * Check if an index is in DirectoryIndex format (hierarchical structure)
+ * @param index
  */
-export function isDirectoryIndex(index: unknown): index is DirectoryIndex {
+export const isDirectoryIndex = (index: unknown): index is DirectoryIndex => {
 	if (!index || typeof index !== "object") {
 		return false
 	}
@@ -1238,13 +1268,14 @@ export function isDirectoryIndex(index: unknown): index is DirectoryIndex {
 	}
 
 	return true
-}
+};
 
 /**
  * Smart index reader that handles both formats
  * Automatically converts to the requested format
+ * @param index
  */
-export function readIndexAsUnified(index: unknown): UnifiedIndex | null {
+export const readIndexAsUnified = (index: unknown): UnifiedIndex | null => {
 	if (isUnifiedIndex(index)) {
 		return index
 	}
@@ -1255,13 +1286,14 @@ export function readIndexAsUnified(index: unknown): UnifiedIndex | null {
 
 	logger.warn("cache", "Unknown index format", { index })
 	return null
-}
+};
 
 /**
  * Smart index reader that handles both formats
  * Automatically converts to the requested format
+ * @param index
  */
-export function readIndexAsDirectory(index: unknown): DirectoryIndex | null {
+export const readIndexAsDirectory = (index: unknown): DirectoryIndex | null => {
 	if (isDirectoryIndex(index)) {
 		return index
 	}
@@ -1272,7 +1304,7 @@ export function readIndexAsDirectory(index: unknown): DirectoryIndex | null {
 
 	logger.warn("cache", "Unknown index format", { index })
 	return null
-}
+};
 
 /**
  * Static data cache path (relative to workspace root)
@@ -1283,9 +1315,9 @@ export const STATIC_DATA_CACHE_PATH = "apps/web/public/data/openalex"
  * Get the absolute path to the static data cache directory
  * @param projectRoot - Optional project root override (defaults to current working directory)
  */
-export function getStaticDataCachePath(projectRoot?: string): string {
+export const getStaticDataCachePath = (projectRoot?: string): string => {
 	// In Node.js environments, we can try to detect the project root
 	// For browser environments, this should be provided
 	const root = projectRoot ?? process.cwd?.() ?? ""
 	return path.join(root, STATIC_DATA_CACHE_PATH)
-}
+};

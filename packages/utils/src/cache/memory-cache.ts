@@ -54,6 +54,7 @@ export class MemoryCache<T> {
 
 	/**
 	 * Get a value from the cache
+	 * @param key
 	 */
 	get(key: string): T | undefined {
 		const entry = this.cache.get(key)
@@ -100,6 +101,10 @@ export class MemoryCache<T> {
 
 	/**
 	 * Set a value in the cache
+	 * @param root0
+	 * @param root0.key
+	 * @param root0.value
+	 * @param root0.ttl
 	 */
 	set({ key, value, ttl }: { key: string; value: T; ttl?: number }): void {
 		const now = Date.now()
@@ -144,6 +149,7 @@ export class MemoryCache<T> {
 
 	/**
 	 * Delete a value from the cache
+	 * @param key
 	 */
 	delete(key: string): boolean {
 		const existed = this.cache.delete(key)
@@ -159,6 +165,7 @@ export class MemoryCache<T> {
 
 	/**
 	 * Check if a key exists in the cache (without updating access)
+	 * @param key
 	 */
 	has(key: string): boolean {
 		const entry = this.cache.get(key)
@@ -235,6 +242,7 @@ export class MemoryCache<T> {
 
 	/**
 	 * Get entries matching a pattern
+	 * @param pattern
 	 */
 	getByPattern(pattern: string): Map<string, T> {
 		const result = new Map<string, T>()
@@ -255,6 +263,7 @@ export class MemoryCache<T> {
 
 	/**
 	 * Delete entries matching a pattern
+	 * @param pattern
 	 */
 	deleteByPattern(pattern: string): number {
 		const isWildcard = pattern.endsWith("*")

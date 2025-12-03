@@ -7,19 +7,23 @@
 
 /**
  * Debounce function calls
+ * @param func
+ * @param wait
  */
-function debounce<T extends unknown[]>(func: (...args: T) => void, wait: number): (...args: T) => void {
+const debounce = <T extends unknown[]>(func: (...args: T) => void, wait: number): (...args: T) => void => {
 	let timeout: NodeJS.Timeout | undefined
 	return (...args: T) => {
 		clearTimeout(timeout)
 		timeout = setTimeout(() => func(...args), wait)
 	}
-}
+};
 
 /**
  * Remove duplicate items from an array by a specific key
+ * @param array
+ * @param key
  */
-function uniqBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] {
+const uniqBy = <T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] => {
 	const seen = new Set()
 	return array.filter(item => {
 		const k = typeof key === 'function' ? key(item) : item[key]
@@ -27,13 +31,14 @@ function uniqBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] {
 		seen.add(k)
 		return true
 	})
-}
+};
 
 /**
  * Sort items by a property
+ * @param array
+ * @param key
  */
-function sortBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] {
-	return [...array].sort((a, b) => {
+const sortBy = <T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] => [...array].sort((a, b) => {
 		const aVal = typeof key === 'function' ? key(a) : a[key]
 		const bVal = typeof key === 'function' ? key(b) : b[key]
 
@@ -48,65 +53,67 @@ function sortBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] {
 		if (aStr < bStr) return -1
 		if (aStr > bStr) return 1
 		return 0
-	})
-}
+	});
 
 /**
  * Group items by a property
+ * @param array
+ * @param key
  */
-function groupBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): Record<string, T[]> {
-	return array.reduce((groups, item) => {
+const groupBy = <T>(array: T[], key: keyof T | ((item: T) => unknown)): Record<string, T[]> => array.reduce((groups, item) => {
 		const k = typeof key === 'function' ? key(item) : item[key]
 		const groupKey = String(k)
 		if (!groups[groupKey]) groups[groupKey] = []
 		groups[groupKey].push(item)
 		return groups
-	}, {} as Record<string, T[]>)
-}
+	}, {} as Record<string, T[]>);
 
 /**
  * Create a new object without specified keys
+ * @param obj
+ * @param keys
  */
-function omit<T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+const omit = <T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {
 	const result = { ...obj }
 	keys.forEach(key => delete result[key])
 	return result
-}
+};
 
 /**
  * Create a new object with only specified keys
+ * @param obj
+ * @param keys
  */
-function pick<T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+const pick = <T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
 	const result = {} as Pick<T, K>
 	keys.forEach(key => {
 		if (key in obj) result[key] = obj[key]
 	})
 	return result
-}
+};
 
 /**
  * Check if value is empty
+ * @param value
  */
-function isEmpty(value: unknown): boolean {
+const isEmpty = (value: unknown): boolean => {
 	if (value == null) return true
 	if (Array.isArray(value) || typeof value === 'string') return value.length === 0
 	if (typeof value === 'object') return Object.keys(value).length === 0
 	return false
-}
+};
 
 /**
  * Check if value is an array
+ * @param value
  */
-function isArray(value: unknown): value is unknown[] {
-	return Array.isArray(value)
-}
+const isArray = (value: unknown): value is unknown[] => Array.isArray(value);
 
 /**
  * Check if value is a string
+ * @param value
  */
-function isString(value: unknown): value is string {
-	return typeof value === 'string'
-}
+const isString = (value: unknown): value is string => typeof value === 'string';
 
 /**
  * Debounced search function for user input
@@ -117,15 +124,20 @@ export const debouncedSearch = debounce((searchFn: (query: string) => void, quer
 
 /**
  * Remove duplicate items from an array by a specific key
+ * @param root0
+ * @param root0.array
+ * @param root0.key
  */
-export function removeDuplicatesBy<T>({ array, key }: { array: T[]; key: keyof T }): T[] {
-	return uniqBy(array, key)
-}
+export const removeDuplicatesBy = <T>({ array, key }: { array: T[]; key: keyof T }): T[] => uniqBy(array, key);
 
 /**
  * Sort items by a numeric property (descending by default)
+ * @param root0
+ * @param root0.items
+ * @param root0.getProperty
+ * @param root0.ascending
  */
-export function sortByNumericProperty<T>({
+export const sortByNumericProperty = <T>({
 	items,
 	getProperty,
 	ascending = false,
@@ -133,101 +145,97 @@ export function sortByNumericProperty<T>({
 	items: T[]
 	getProperty: (item: T) => number | null | undefined
 	ascending?: boolean
-}): T[] {
+}): T[] => {
 	const sorted = sortBy(items, (item) => getProperty(item) ?? 0)
 	return ascending ? sorted : sorted.reverse()
-}
+};
 
 /**
  * Sort items by a string property (ascending by default)
+ * @param items
+ * @param getProperty
+ * @param ascending
  */
-export function sortByStringProperty<T>(
-	items: T[],
-	getProperty: (item: T) => string | null | undefined,
-	ascending = true
-): T[] {
+export const sortByStringProperty = <T>(items: T[], getProperty: (item: T) => string | null | undefined, ascending = true): T[] => {
 	const sorted = sortBy(items, (item) => getProperty(item) ?? "")
 	return ascending ? sorted : sorted.reverse()
-}
+};
 
 /**
  * Group items by a property value
+ * @param items
+ * @param getGroupKey
  */
-export function groupByProperty<T>(
-	items: T[],
-	getGroupKey: (item: T) => string | number
-): Record<string, T[]> {
-	return groupBy(items, (item) => {
+export const groupByProperty = <T>(items: T[], getGroupKey: (item: T) => string | number): Record<string, T[]> => groupBy(items, (item) => {
 		const key = getGroupKey(item)
 		return key.toString()
-	})
-}
+	});
 
 /**
  * Extract safe properties from an object, omitting undefined/null values
+ * @param root0
+ * @param root0.obj
+ * @param root0.keys
  */
-export function extractSafeProperties<T extends Record<string, unknown>, K extends keyof T>({
+export const extractSafeProperties = <T extends Record<string, unknown>, K extends keyof T>({
 	obj,
 	keys,
 }: {
 	obj: T
 	keys: K[]
-}): Pick<T, K> {
-	return pick(obj, keys)
-}
+}): Pick<T, K> => pick(obj, keys);
 
 /**
  * Remove sensitive or unnecessary properties from objects
+ * @param root0
+ * @param root0.obj
+ * @param root0.keysToOmit
  */
-export function sanitizeObject<T extends Record<string, unknown>>({
+export const sanitizeObject = <T extends Record<string, unknown>>({
 	obj,
 	keysToOmit,
 }: {
 	obj: T
 	keysToOmit: (keyof T)[]
-}): Omit<T, keyof T> {
-	return omit(obj, keysToOmit)
-}
+}): Omit<T, keyof T> => omit(obj, keysToOmit);
 
 /**
  * Check if a search query is valid (not empty, not just whitespace)
+ * @param query
  */
-export function isValidSearchQuery(query: unknown): query is string {
-	return isString(query) && query.trim().length > 0
-}
+export const isValidSearchQuery = (query: unknown): query is string => isString(query) && query.trim().length > 0;
 
 /**
  * Normalize search query (trim, lowercase)
+ * @param query
  */
-export function normalizeSearchQuery(query: string): string {
-	return query.trim().toLowerCase()
-}
+export const normalizeSearchQuery = (query: string): string => query.trim().toLowerCase();
 
 /**
  * Check if an array contains valid data
+ * @param data
  */
-export function hasValidData<T>(data: unknown): data is T[] {
-	return isArray(data) && !isEmpty(data)
-}
+export const hasValidData = <T>(data: unknown): data is T[] => isArray(data) && !isEmpty(data);
 
 /**
  * Get display name with fallback from multiple possible properties
+ * @param item
+ * @param item.display_name
+ * @param item.title
+ * @param item.name
+ * @param fallback
  */
-export function getDisplayName(
-	item: {
+export const getDisplayName = (item: {
 		display_name?: string | null
 		title?: string | null
 		name?: string | null
-	},
-	fallback = "Untitled"
-): string {
-	return item.display_name ?? item.title ?? item.name ?? fallback
-}
+	}, fallback = "Untitled"): string => item.display_name ?? item.title ?? item.name ?? fallback;
 
 /**
  * Format large numbers with K/M suffixes
+ * @param num
  */
-export function formatLargeNumber(num: number | null | undefined): string {
+export const formatLargeNumber = (num: number | null | undefined): string => {
 	if (!num || num === 0) return "0"
 
 	if (num >= 1000000) {
@@ -239,144 +247,166 @@ export function formatLargeNumber(num: number | null | undefined): string {
 	}
 
 	return num.toString()
-}
+};
 
 /**
  * Format percentage with specified decimal places
+ * @param value
+ * @param decimals
  */
-export function formatPercentage(value: number, decimals = 1): string {
-	return `${value.toFixed(decimals)}%`
-}
+export const formatPercentage = (value: number, decimals = 1): string => `${value.toFixed(decimals)}%`;
 
 /**
  * Clamp a number between min and max values
+ * @param root0
+ * @param root0.value
+ * @param root0.min
+ * @param root0.max
  */
-export function clamp({ value, min, max }: { value: number; min: number; max: number }): number {
-	return Math.min(Math.max(value, min), max)
-}
+export const clamp = ({ value, min, max }: { value: number; min: number; max: number }): number => Math.min(Math.max(value, min), max);
 
 /**
  * Create a range of numbers from start to end
+ * @param start
+ * @param end
+ * @param step
  */
-export function range(start: number, end: number, step = 1): number[] {
+export const range = (start: number, end: number, step = 1): number[] => {
 	const result: number[] = []
 	for (let i = start; i < end; i += step) {
 		result.push(i)
 	}
 	return result
-}
+};
 
 /**
  * Chunk an array into smaller arrays of specified size
+ * @param root0
+ * @param root0.array
+ * @param root0.size
  */
-export function chunk<T>({ array, size }: { array: T[]; size: number }): T[][] {
+export const chunk = <T>({ array, size }: { array: T[]; size: number }): T[][] => {
 	const chunks: T[][] = []
 	for (let i = 0; i < array.length; i += size) {
 		chunks.push(array.slice(i, i + size))
 	}
 	return chunks
-}
+};
 
 /**
  * Flatten a nested array by one level
+ * @param arrays
  */
-export function flatten<T>(arrays: T[][]): T[] {
-	return arrays.reduce((acc, arr) => acc.concat(arr), [])
-}
+export const flatten = <T>(arrays: T[][]): T[] => arrays.reduce((acc, arr) => acc.concat(arr), []);
 
 /**
  * Create a Map from an array using a key function
+ * @param root0
+ * @param root0.array
+ * @param root0.getKey
  */
-export function arrayToMap<T, K>({
+export const arrayToMap = <T, K>({
 	array,
 	getKey,
 }: {
 	array: T[]
 	getKey: (item: T) => K
-}): Map<K, T> {
+}): Map<K, T> => {
 	const map = new Map<K, T>()
 	for (const item of array) {
 		map.set(getKey(item), item)
 	}
 	return map
-}
+};
 
 /**
  * Create a lookup object from an array using a key function
+ * @param root0
+ * @param root0.array
+ * @param root0.getKey
  */
-export function arrayToLookup<T>({
+export const arrayToLookup = <T>({
 	array,
 	getKey,
 }: {
 	array: T[]
 	getKey: (item: T) => string | number
-}): Record<string, T> {
+}): Record<string, T> => {
 	const lookup: Record<string, T> = {}
 	for (const item of array) {
 		const key = getKey(item).toString()
 		lookup[key] = item
 	}
 	return lookup
-}
+};
 
 /**
  * Get unique values from an array
+ * @param array
  */
-export function unique<T>(array: T[]): T[] {
-	return Array.from(new Set(array))
-}
+export const unique = <T>(array: T[]): T[] => Array.from(new Set(array));
 
 /**
  * Get intersection of two arrays
+ * @param root0
+ * @param root0.array1
+ * @param root0.array2
  */
-export function intersection<T>({ array1, array2 }: { array1: T[]; array2: T[] }): T[] {
+export const intersection = <T>({ array1, array2 }: { array1: T[]; array2: T[] }): T[] => {
 	const set2 = new Set(array2)
 	return array1.filter((item) => set2.has(item))
-}
+};
 
 /**
  * Get difference between two arrays (items in first but not second)
+ * @param root0
+ * @param root0.array1
+ * @param root0.array2
  */
-export function difference<T>({ array1, array2 }: { array1: T[]; array2: T[] }): T[] {
+export const difference = <T>({ array1, array2 }: { array1: T[]; array2: T[] }): T[] => {
 	const set2 = new Set(array2)
 	return array1.filter((item) => !set2.has(item))
-}
+};
 
 /**
  * Sample random items from an array
+ * @param root0
+ * @param root0.array
+ * @param root0.count
  */
-export function sample<T>({ array, count }: { array: T[]; count: number }): T[] {
+export const sample = <T>({ array, count }: { array: T[]; count: number }): T[] => {
 	if (count >= array.length) return [...array]
 
 	const shuffled = [...array].sort(() => Math.random() - 0.5)
 	return shuffled.slice(0, count)
-}
+};
 
 /**
  * Deep clone an object/array using JSON methods
  * Note: This only works with JSON-serializable data
+ * @param obj
  */
-export function deepClone<T>(obj: T): T {
-	return JSON.parse(JSON.stringify(obj)) as T
-}
+export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj)) as T;
 
 /**
  * Merge arrays and remove duplicates
+ * @param arrays
  */
-export function mergeUnique<T>(...arrays: T[][]): T[] {
-	return unique(flatten(arrays))
-}
+export const mergeUnique = <T>(...arrays: T[][]): T[] => unique(flatten(arrays));
 
 /**
  * Partition an array into two arrays based on a predicate
+ * @param root0
+ * @param root0.array
+ * @param root0.predicate
  */
-export function partition<T>({
+export const partition = <T>({
 	array,
 	predicate,
 }: {
 	array: T[]
 	predicate: (item: T) => boolean
-}): [T[], T[]] {
+}): [T[], T[]] => {
 	const truthy: T[] = []
 	const falsy: T[] = []
 
@@ -389,69 +419,83 @@ export function partition<T>({
 	}
 
 	return [truthy, falsy]
-}
+};
 
 /**
  * Get the maximum value in an array using a selector function
+ * @param root0
+ * @param root0.array
+ * @param root0.selector
  */
-export function maxBy<T>({
+export const maxBy = <T>({
 	array,
 	selector,
 }: {
 	array: T[]
 	selector: (item: T) => number
-}): T | undefined {
+}): T | undefined => {
 	if (array.length === 0) return undefined
 
 	return array.reduce((max, current) => (selector(current) > selector(max) ? current : max))
-}
+};
 
 /**
  * Get the minimum value in an array using a selector function
+ * @param root0
+ * @param root0.array
+ * @param root0.selector
  */
-export function minBy<T>({
+export const minBy = <T>({
 	array,
 	selector,
 }: {
 	array: T[]
 	selector: (item: T) => number
-}): T | undefined {
+}): T | undefined => {
 	if (array.length === 0) return undefined
 
 	return array.reduce((min, current) => (selector(current) < selector(min) ? current : min))
-}
+};
 
 /**
  * Sum values in an array using a selector function
+ * @param root0
+ * @param root0.array
+ * @param root0.selector
  */
-export function sumBy<T>({
+export const sumBy = <T>({
 	array,
 	selector,
 }: {
 	array: T[]
 	selector: (item: T) => number
-}): number {
-	return array.reduce((sum, item) => sum + selector(item), 0)
-}
+}): number => array.reduce((sum, item) => sum + selector(item), 0);
 
 /**
  * Calculate average of values in an array using a selector function
+ * @param root0
+ * @param root0.array
+ * @param root0.selector
  */
-export function averageBy<T>({
+export const averageBy = <T>({
 	array,
 	selector,
 }: {
 	array: T[]
 	selector: (item: T) => number
-}): number {
+}): number => {
 	if (array.length === 0) return 0
 	return sumBy({ array, selector }) / array.length
-}
+};
 
 /**
  * Safely access nested object properties
+ * @param root0
+ * @param root0.obj
+ * @param root0.path
+ * @param root0.defaultValue
  */
-export function safeGet<T>({
+export const safeGet = <T>({
 	obj,
 	path,
 	defaultValue,
@@ -459,7 +503,7 @@ export function safeGet<T>({
 	obj: unknown
 	path: string
 	defaultValue?: T
-}): T | undefined {
+}): T | undefined => {
 	const keys = path.split(".")
 	let current = obj
 
@@ -471,18 +515,21 @@ export function safeGet<T>({
 	}
 
 	return (current as T) ?? defaultValue
-}
+};
 
 /**
  * Throttle function calls
+ * @param root0
+ * @param root0.func
+ * @param root0.delay
  */
-export function throttle<TArgs extends unknown[], TReturn>({
+export const throttle = <TArgs extends unknown[], TReturn>({
 	func,
 	delay,
 }: {
 	func: (...args: TArgs) => TReturn
 	delay: number
-}): (...args: TArgs) => TReturn | undefined {
+}): (...args: TArgs) => TReturn | undefined => {
 	let lastCall = 0
 	return (...args: TArgs): TReturn | undefined => {
 		const now = Date.now()
@@ -492,4 +539,4 @@ export function throttle<TArgs extends unknown[], TReturn>({
 		}
 		return undefined
 	}
-}
+};

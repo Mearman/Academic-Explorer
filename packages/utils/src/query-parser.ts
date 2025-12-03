@@ -25,10 +25,8 @@ export interface ParsedQuery {
  * - Quoted phrases: "machine learning"
  * - Wildcards: *AI*, machine*, *learning
  * - Field queries: title:value, author:"John Smith", title: "quoted value"
- *
  * @param query - The search query string to parse
  * @returns Parsed query object with field queries and general terms
- *
  * @example
  * ```typescript
  * const result = parseSearchQuery('title:"neural networks" author:smith *AI*');
@@ -41,7 +39,7 @@ export interface ParsedQuery {
  * // ]
  * ```
  */
-export function parseSearchQuery(query: string): ParsedQuery {
+export const parseSearchQuery = (query: string): ParsedQuery => {
 	const fieldQueries: FieldQuery[] = []
 	const generalTerms: QueryTerm[] = []
 
@@ -67,18 +65,18 @@ export function parseSearchQuery(query: string): ParsedQuery {
 	}
 
 	return { fieldQueries, generalTerms }
-}
+};
 
-function tokenizeQuery(query: string): string[] {
+const tokenizeQuery = (query: string): string[] => {
 	// Regex to match different token types in order of priority:
 	// 1. Field queries with quoted values (field:"quoted value")
 	// 2. Standalone quoted strings ("quoted value")
 	// 3. Other non-whitespace tokens
 	const tokenRegex = /\S+:"[^"]*"|"[^"]*"|\S+/g
 	return query.match(tokenRegex) ?? []
-}
+};
 
-function tryParseFieldQueryWithSpace({
+const tryParseFieldQueryWithSpace = ({
 	tokens,
 	index,
 	fieldQueries,
@@ -86,7 +84,7 @@ function tryParseFieldQueryWithSpace({
 	tokens: string[]
 	index: number
 	fieldQueries: FieldQuery[]
-}): boolean {
+}): boolean => {
 	const token = tokens[index]
 
 	// Check if this token ends with colon (field prefix with space)
@@ -97,7 +95,7 @@ function tryParseFieldQueryWithSpace({
 	const field = token.slice(0, -1)
 
 	// Validate field name (alphanumeric and underscore only)
-	if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field)) {
+	if (!/^[A-Z_]\w*$/i.test(field)) {
 		return false
 	}
 
@@ -105,17 +103,17 @@ function tryParseFieldQueryWithSpace({
 	const fieldQuery = createFieldQuery({ field, value: nextToken })
 	fieldQueries.push(fieldQuery)
 	return true
-}
+};
 
-function tryParseFieldQueryInOneToken({
+const tryParseFieldQueryInOneToken = ({
 	token,
 	fieldQueries,
 }: {
 	token: string
 	fieldQueries: FieldQuery[]
-}): boolean {
+}): boolean => {
 	// Check if this is a field query in one token (format: field:value)
-	const fieldMatch = token.match(/^([a-zA-Z_][a-zA-Z0-9_]*):(.+)$/)
+	const fieldMatch = token.match(/^([A-Z_]\w*):(.+)$/i)
 
 	if (fieldMatch) {
 		const [, field, value] = fieldMatch
@@ -125,9 +123,9 @@ function tryParseFieldQueryInOneToken({
 	}
 
 	return false
-}
+};
 
-function createFieldQuery({ field, value }: { field: string; value: string }): FieldQuery {
+const createFieldQuery = ({ field, value }: { field: string; value: string }): FieldQuery => {
 	const isQuoted = value.startsWith('"') && value.endsWith('"')
 	const cleanValue = isQuoted ? value.slice(1, -1) : value
 	const isWildcard = cleanValue.includes("*")
@@ -138,18 +136,21 @@ function createFieldQuery({ field, value }: { field: string; value: string }): F
 		isWildcard,
 		isQuoted,
 	}
-}
+};
 
 /**
  * Process a token as a general term and add it to the generalTerms array
+ * @param root0
+ * @param root0.token
+ * @param root0.generalTerms
  */
-function processGeneralTerm({
+const processGeneralTerm = ({
 	token,
 	generalTerms,
 }: {
 	token: string
 	generalTerms: QueryTerm[]
-}): void {
+}): void => {
 	const isQuoted = token.startsWith('"') && token.endsWith('"')
 	const cleanValue = isQuoted ? token.slice(1, -1) : token
 	const isWildcard = cleanValue.includes("*")
@@ -159,41 +160,37 @@ function processGeneralTerm({
 		isWildcard,
 		isQuoted,
 	})
-}
+};
 
 /**
  * Type guard to check if a query term is a field query
+ * @param term
  */
-export function isFieldQuery(term: QueryTerm | FieldQuery): term is FieldQuery {
-	return "field" in term
-}
+export const isFieldQuery = (term: QueryTerm | FieldQuery): term is FieldQuery => "field" in term;
 
 /**
  * Get all unique field names from parsed query
+ * @param parsedQuery
  */
-export function getQueryFields(parsedQuery: ParsedQuery): string[] {
-	return Array.from(new Set(parsedQuery.fieldQueries.map((fq) => fq.field)))
-}
+export const getQueryFields = (parsedQuery: ParsedQuery): string[] => Array.from(new Set(parsedQuery.fieldQueries.map((fq) => fq.field)));
 
 /**
  * Get field queries for a specific field
+ * @param root0
+ * @param root0.parsedQuery
+ * @param root0.field
  */
-export function getFieldQueries({
+export const getFieldQueries = ({
 	parsedQuery,
 	field,
 }: {
 	parsedQuery: ParsedQuery
 	field: string
-}): FieldQuery[] {
-	return parsedQuery.fieldQueries.filter((fq) => fq.field === field)
-}
+}): FieldQuery[] => parsedQuery.fieldQueries.filter((fq) => fq.field === field);
 
 /**
  * Check if the parsed query contains any wildcards
+ * @param parsedQuery
  */
-export function hasWildcards(parsedQuery: ParsedQuery): boolean {
-	return (
-		parsedQuery.fieldQueries.some((fq) => fq.isWildcard) ||
-		parsedQuery.generalTerms.some((gt) => gt.isWildcard)
-	)
-}
+export const hasWildcards = (parsedQuery: ParsedQuery): boolean => parsedQuery.fieldQueries.some((fq) => fq.isWildcard) ||
+		parsedQuery.generalTerms.some((gt) => gt.isWildcard);

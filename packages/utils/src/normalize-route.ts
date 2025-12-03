@@ -1,7 +1,7 @@
 const SENSITIVE_PARAMS = ["api_key", "cursor", "mailto"]
 
 
-function parseQueryString(query: string): Record<string, unknown> {
+const parseQueryString = (query: string): Record<string, unknown> => {
 	const result: Record<string, unknown> = {}
 	if (!query) return result
 
@@ -15,9 +15,9 @@ function parseQueryString(query: string): Record<string, unknown> {
 		}
 	}
 	return result
-}
+};
 
-function stringifyQueryString(obj: Record<string, unknown>): string {
+const stringifyQueryString = (obj: Record<string, unknown>): string => {
 	const pairs: string[] = []
 	for (const [key, value] of Object.entries(obj)) {
 		if (value !== undefined && value !== null) {
@@ -27,9 +27,9 @@ function stringifyQueryString(obj: Record<string, unknown>): string {
 		}
 	}
 	return pairs.join("&")
-}
+};
 
-export function normalizeRoute({ path, search }: { path: string; search: string }): string {
+export const normalizeRoute = ({ path, search }: { path: string; search: string }): string => {
 	const query = search.startsWith("?") ? search.slice(1) : search
 
 	const parsed = parseQueryString(query)
@@ -46,4 +46,4 @@ export function normalizeRoute({ path, search }: { path: string; search: string 
 
 	const normalizedSearch = stringifyQueryString(sortedQuery)
 	return normalizedSearch ? `${path}?${normalizedSearch}` : path
-}
+};

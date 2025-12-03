@@ -4,23 +4,23 @@
  */
 
 import type {
+	AddToGraphListParams,
 	EntityType,
 	GraphListNode,
-	AddToGraphListParams,
 	PruneGraphListResult,
 } from '@bibgraph/types';
 import { GRAPH_LIST_CONFIG } from '@bibgraph/types';
 
-import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
+import type { CatalogueEntity, CatalogueList, CatalogueShareRecord } from './catalogue-db.js';
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
 import type {
-	CatalogueStorageProvider,
-	CreateListParams,
+	AddBookmarkParams,
 	AddEntityParams,
 	AddToHistoryParams,
-	AddBookmarkParams,
-	ListStats,
 	BatchAddResult,
+	CatalogueStorageProvider,
+	CreateListParams,
+	ListStats,
 	ShareAccessResult,
 } from './catalogue-storage-provider.js';
 
@@ -612,6 +612,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	/**
 	 * Parse provenance from notes field
 	 * Format: "provenance:TYPE|label:LABEL"
+	 * @param notes
 	 */
 	private parseProvenance(notes: string | undefined): GraphListNode['provenance'] {
 		if (!notes) return 'user';
@@ -633,6 +634,8 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	/**
 	 * Serialize provenance and label into notes field
 	 * Format: "provenance:TYPE|label:LABEL"
+	 * @param provenance
+	 * @param label
 	 */
 	private serializeProvenanceWithLabel(provenance: string, label: string): string {
 		return `provenance:${provenance}|label:${label}`;
@@ -657,7 +660,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 				}
 
 				return {
-					id: entity.id!,
+					id: entity.id as string, // Filtered above
 					entityId: entity.entityId,
 					entityType: entity.entityType,
 					label,

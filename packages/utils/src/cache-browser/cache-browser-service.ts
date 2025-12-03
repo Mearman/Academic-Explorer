@@ -8,13 +8,12 @@ import { Dexie } from "dexie"
 
 type DexieInstance = InstanceType<typeof Dexie>
 import type { GenericLogger } from "../logger.js"
-
 import type {
-	CachedEntityMetadata,
-	CacheBrowserStats,
 	CacheBrowserFilters,
 	CacheBrowserOptions,
 	CacheBrowserResult,
+	CacheBrowserStats,
+	CachedEntityMetadata,
 	CacheStorageType,
 } from "./types.js"
 
@@ -91,6 +90,8 @@ export class CacheBrowserService {
 
 	/**
 	 * Browse cached entities with filtering and pagination
+	 * @param filters
+	 * @param options
 	 */
 	async browse(
 		filters: Partial<CacheBrowserFilters> = {},
@@ -188,6 +189,7 @@ export class CacheBrowserService {
 
 	/**
 	 * Clear cached entities based on filters
+	 * @param filters
 	 */
 	async clearCache(filters: Partial<CacheBrowserFilters> = {}): Promise<number> {
 		this.logger?.debug(CACHE_BROWSER_LOG_CONTEXT, "Starting cache clear operation", {

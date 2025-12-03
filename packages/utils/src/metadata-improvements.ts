@@ -104,10 +104,8 @@ const IMPROVEMENT_THRESHOLDS = {
  * - Works with references likely have more references than before
  * - Works with multiple locations likely have more locations than before
  * - XPAC works are excluded (they are new, not improved)
- *
  * @param work - Work metadata to analyze
  * @returns Array of detected improvements (empty if none detected or work is XPAC)
- *
  * @example
  * ```typescript
  * const improvements = detectMetadataImprovements({
@@ -121,7 +119,7 @@ const IMPROVEMENT_THRESHOLDS = {
  * // ]
  * ```
  */
-export function detectMetadataImprovements(work: WorkMetadata): MetadataImprovement[] {
+export const detectMetadataImprovements = (work: WorkMetadata): MetadataImprovement[] => {
 	const improvements: MetadataImprovement[] = [];
 
 	// XPAC works are new to Data Version 2, not improved existing works
@@ -175,14 +173,12 @@ export function detectMetadataImprovements(work: WorkMetadata): MetadataImprovem
 	}
 
 	return improvements;
-}
+};
 
 /**
  * Check if a work has any metadata improvements
- *
  * @param work - Work metadata to check
  * @returns True if improvements are detected
- *
  * @example
  * ```typescript
  * if (hasMetadataImprovements(work)) {
@@ -190,18 +186,14 @@ export function detectMetadataImprovements(work: WorkMetadata): MetadataImprovem
  * }
  * ```
  */
-export function hasMetadataImprovements(work: WorkMetadata): boolean {
-	return detectMetadataImprovements(work).length > 0;
-}
+export const hasMetadataImprovements = (work: WorkMetadata): boolean => detectMetadataImprovements(work).length > 0;
 
 /**
  * Get improvement badge text for a work
  *
  * Combines multiple improvements into a single badge-friendly string.
- *
  * @param work - Work metadata to analyze
  * @returns Badge text or null if no improvements
- *
  * @example
  * ```typescript
  * const badgeText = getImprovementBadgeText(work);
@@ -210,7 +202,7 @@ export function hasMetadataImprovements(work: WorkMetadata): boolean {
  * }
  * ```
  */
-export function getImprovementBadgeText(work: WorkMetadata): string | null {
+export const getImprovementBadgeText = (work: WorkMetadata): string | null => {
 	const improvements = detectMetadataImprovements(work);
 
 	if (improvements.length === 0) {
@@ -225,21 +217,19 @@ export function getImprovementBadgeText(work: WorkMetadata): string | null {
 	// Multiple improvements: combine types
 	const types = improvements.map(imp => imp.type).join(', ');
 	return `Improved: ${types}`;
-}
+};
 
 /**
  * Get improvement badge color based on improvement types
- *
  * @param work - Work metadata to analyze
  * @returns Suggested badge color (Mantine color name)
- *
  * @example
  * ```typescript
  * const color = getImprovementBadgeColor(work);
  * // Returns: 'blue' | 'green' | 'teal' | null
  * ```
  */
-export function getImprovementBadgeColor(work: WorkMetadata): string | null {
+export const getImprovementBadgeColor = (work: WorkMetadata): string | null => {
 	const improvements = detectMetadataImprovements(work);
 
 	if (improvements.length === 0) {
@@ -259,4 +249,4 @@ export function getImprovementBadgeColor(work: WorkMetadata): string | null {
 	}
 
 	return 'blue'; // Default for other improvements
-}
+};

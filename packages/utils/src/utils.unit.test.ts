@@ -2,7 +2,7 @@
  * Basic test file to satisfy vitest "no tests found" requirement
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, expect,it } from "vitest"
 
 describe("Utils Package", () => {
 	it("should have basic functionality", () => {

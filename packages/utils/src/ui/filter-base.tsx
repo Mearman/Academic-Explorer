@@ -77,14 +77,14 @@ export const FILTER_WIDTHS = {
 	xlarge: 320,
 } as const;
 
-export function BaseFilter<T = unknown>({
+export const BaseFilter = <T,>({
 	value,
 	onValueChange,
 	disabled = false,
 	compact = false,
 	fieldId,
 	children,
-}: BaseFilterProps<T>) {
+}: BaseFilterProps<T>) => {
 	// This is a base component that provides common filter functionality
 	// The actual implementation would render the filter UI
 	const renderProps: BaseFilterRenderProps<T> = {
@@ -102,20 +102,15 @@ export function BaseFilter<T = unknown>({
 			{content}
 		</div>
 	);
-}
+};
 
-export function createFilter<T = unknown>(
-	config: FilterFieldConfig,
-	initialValue: T,
-	initialOperator: FilterOperator = "="
-): {
+export const createFilter = <T,>(config: FilterFieldConfig, initialValue: T, initialOperator: FilterOperator = "="): {
 	value: T;
 	operator: FilterOperator;
 	config: FilterFieldConfig;
 	setValue: (value: T) => void;
 	setOperator: (operator: FilterOperator) => void;
-} {
-	return {
+} => ({
 		value: initialValue,
 		operator: initialOperator,
 		config,
@@ -127,16 +122,11 @@ export function createFilter<T = unknown>(
 			// This would be implemented with actual state management
 			logger.debug("ui", "Setting filter operator", { operator });
 		},
-	};
-}
+	});
 
-export function createEnumOptions(
-	options: FilterFieldOption[]
-): FilterFieldOption[] {
-	return options.map(option => ({
+export const createEnumOptions = (options: FilterFieldOption[]): FilterFieldOption[] => options.map(option => ({
 		value: option.value,
 		label: option.label,
 		description: option.description,
 		group: option.group,
 	}));
-}

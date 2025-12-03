@@ -4,17 +4,17 @@
  * Tests for field summary generation utilities
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, expect,it } from "vitest"
 
 import {
-	generateFieldSummary,
-	generateDetailedFieldSummary,
-	generateCompactFieldSummary,
-	generateFieldListPreview,
-	categorizeFields,
-	generateSmartFieldSummary,
-	compareFieldSelections,
 	areFieldSelectionsEquivalent,
+	categorizeFields,
+	compareFieldSelections,
+	generateCompactFieldSummary,
+	generateDetailedFieldSummary,
+	generateFieldListPreview,
+	generateFieldSummary,
+	generateSmartFieldSummary,
 	validateFieldNames,
 } from "./field-summary"
 

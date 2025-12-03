@@ -1,13 +1,13 @@
 import type {
-	Work,
 	Author,
-	Source,
-	InstitutionEntity,
-	Topic,
 	Concept,
-	Publisher,
-	Funder,
 	EntityType,
+	Funder,
+	InstitutionEntity,
+	Publisher,
+	Source,
+	Topic,
+	Work,
 } from "@bibgraph/types"
 
 /**
@@ -29,9 +29,9 @@ export const ENTITY_ID_PATTERNS = {
  */
 export const EXTERNAL_ID_PATTERNS = {
 	works: {
-		doi: /^10\.\d+\/[a-z\d]+/, // DOI pattern
+		doi: /^10\.\d+\/[\da-z]+/, // DOI pattern
 		pmid: /^\d+/, // PubMed ID
-		pmcid: /^[a-zA-Z]\d+/, // PMC ID
+		pmcid: /^[A-Z]\d+/i, // PMC ID
 		wikidata: /^Q\d+/, // Wikidata Q-ID
 	},
 	authors: {
@@ -44,7 +44,7 @@ export const EXTERNAL_ID_PATTERNS = {
 		wikidata: /^Q\d+/, // Wikidata Q-ID
 	},
 	institutions: {
-		ror: /^https:\/\/ror\.org\/[0-9a-zA-Z]+/, // ROR URL pattern
+		ror: /^https:\/\/ror\.org\/[0-9A-Za-z]+/, // ROR URL pattern
 		wikidata: /^Q\d+/, // Wikidata Q-ID
 		grid: /^grid\.\d+/, // GRID ID pattern (deprecated)
 	},
@@ -57,6 +57,8 @@ export const EXTERNAL_ID_PATTERNS = {
 
 /**
  * Type guard to check if a string matches a pattern
+ * @param pattern
+ * @param id
  */
 const matchesPattern = (pattern: RegExp, id: string): boolean => {
 	return pattern.test(id)
@@ -64,20 +66,22 @@ const matchesPattern = (pattern: RegExp, id: string): boolean => {
 
 /**
  * Infer entity type from a standard OpenAlex ID
+ * @param id
  */
-export function inferEntityTypeFromOpenAlexId(id: string): EntityType | null {
+export const inferEntityTypeFromOpenAlexId = (id: string): EntityType | null => {
 	for (const [entityType, pattern] of Object.entries(ENTITY_ID_PATTERNS)) {
 		if (matchesPattern(pattern, id)) {
 			return entityType as EntityType
 		}
 	}
 	return null
-}
+};
 
 /**
  * Infer entity type from external ID (DOI, ORCID, ISSN, etc.)
+ * @param id
  */
-export function inferEntityTypeFromExternalId(id: string): EntityType | null {
+export const inferEntityTypeFromExternalId = (id: string): EntityType | null => {
 	// Check DOI patterns
 	if (EXTERNAL_ID_PATTERNS.works.doi.test(id)) return "works"
 	if (EXTERNAL_ID_PATTERNS.works.pmid.test(id)) return "works"
@@ -110,26 +114,28 @@ export function inferEntityTypeFromExternalId(id: string): EntityType | null {
 	if (ENTITY_ID_PATTERNS.concepts.test(id)) return "concepts"
 
 	return null
-}
+};
 
 /**
  * Comprehensive entity type inference from any ID format
+ * @param id
  */
-export function inferEntityType(id: string): EntityType | null {
+export const inferEntityType = (id: string): EntityType | null => {
 	// Try OpenAlex ID patterns first
 	const openAlexType = inferEntityTypeFromOpenAlexId(id)
 	if (openAlexType) return openAlexType
 
 	// Fall back to external ID patterns
 	return inferEntityTypeFromExternalId(id)
-}
+};
 
 /**
  * Get entity type from a typed entity object
+ * @param entity
  */
-export function getEntityTypeFromEntity<
+export const getEntityTypeFromEntity = <
 	T extends Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder,
->(entity: T): EntityType {
+>(entity: T): EntityType => {
 	// Use type narrowing based on unique properties
 	if ("orcid" in entity) return "authors"
 	if ("issn" in entity || "issn_l" in entity) return "sources"
@@ -139,4 +145,4 @@ export function getEntityTypeFromEntity<
 
 	// Default to topic/concept based on context or remaining options
 	return "topics" // Default fallback
-}
+};

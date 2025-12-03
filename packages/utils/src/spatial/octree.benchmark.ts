@@ -4,9 +4,9 @@
  * Run with: npx tsx packages/utils/src/spatial/octree.benchmark.ts
  */
 
-import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+import type { BoundingBox3D,Position3D } from '@bibgraph/types';
 
-import { Octree, createOctreeFromItems } from './octree';
+import { createOctreeFromItems,Octree } from './octree';
 
 interface BenchmarkResult {
   name: string;
@@ -16,11 +16,7 @@ interface BenchmarkResult {
   opsPerSecond: number;
 }
 
-function benchmark(
-  name: string,
-  fn: () => void,
-  iterations: number = 1000
-): BenchmarkResult {
+const benchmark = (name: string, fn: () => void, iterations: number = 1000): BenchmarkResult => {
   // Warmup
   for (let i = 0; i < Math.min(100, iterations / 10); i++) {
     fn();
@@ -40,9 +36,9 @@ function benchmark(
     avgTimeMs,
     opsPerSecond: 1000 / avgTimeMs,
   };
-}
+};
 
-function generateRandomPoints(count: number, bounds: BoundingBox3D): Position3D[] {
+const generateRandomPoints = (count: number, bounds: BoundingBox3D): Position3D[] => {
   const points: Position3D[] = [];
   const rangeX = bounds.max.x - bounds.min.x;
   const rangeY = bounds.max.y - bounds.min.y;
@@ -56,13 +52,11 @@ function generateRandomPoints(count: number, bounds: BoundingBox3D): Position3D[
     });
   }
   return points;
-}
+};
 
-function formatResult(result: BenchmarkResult): string {
-  return `${result.name.padEnd(40)} ${result.avgTimeMs.toFixed(4).padStart(10)}ms  ${Math.round(result.opsPerSecond).toLocaleString().padStart(12)} ops/s`;
-}
+const formatResult = (result: BenchmarkResult): string => `${result.name.padEnd(40)} ${result.avgTimeMs.toFixed(4).padStart(10)}ms  ${Math.round(result.opsPerSecond).toLocaleString().padStart(12)} ops/s`;
 
-async function runBenchmarks() {
+const runBenchmarks = async () => {
   console.log('='.repeat(70));
   console.log('Octree Performance Benchmarks');
   console.log('='.repeat(70));
@@ -185,7 +179,7 @@ async function runBenchmarks() {
   } else {
     console.log('All operations within frame budget!');
   }
-}
+};
 
 // Only run when executed directly (not when imported)
 if (import.meta.url.endsWith('octree.benchmark.ts')) {

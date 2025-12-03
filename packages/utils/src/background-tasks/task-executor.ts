@@ -3,7 +3,6 @@
  *
  * Unified interface for executing background tasks with pluggable strategies.
  * Automatically falls back to supported strategies if preferred is unavailable.
- *
  * @module utils/background-tasks/task-executor
  */
 
@@ -11,10 +10,10 @@ import { IdleCallbackStrategy } from './idle-strategy';
 import { SchedulerStrategy } from './scheduler-strategy';
 import type {
   BackgroundStrategy,
-  BackgroundTaskStrategy,
+  BackgroundTaskExecutorConfig,
   BackgroundTaskOptions,
   BackgroundTaskResult,
-  BackgroundTaskExecutorConfig,
+  BackgroundTaskStrategy,
   ProgressCallback,
 } from './types';
 import { WorkerStrategy } from './worker-strategy';
@@ -111,7 +110,6 @@ class SyncStrategy implements BackgroundTaskStrategy {
  * Background Task Executor
  *
  * Manages strategy selection and provides unified interface for background tasks.
- *
  * @example
  * ```typescript
  * const executor = new BackgroundTaskExecutor({
@@ -156,6 +154,7 @@ export class BackgroundTaskExecutor {
 
   /**
    * Select best available strategy
+   * @param preferred
    */
   private selectStrategy(preferred: BackgroundStrategy): BackgroundTaskStrategy {
     // Try preferred first
@@ -173,7 +172,11 @@ export class BackgroundTaskExecutor {
     }
 
     // Ultimate fallback: sync
-    return this.strategies.get('sync')!;
+    const syncStrategy = this.strategies.get('sync');
+    if (!syncStrategy) {
+      throw new Error('Sync strategy not found - this should never happen');
+    }
+    return syncStrategy;
   }
 
   /**
@@ -196,6 +199,7 @@ export class BackgroundTaskExecutor {
 
   /**
    * Switch to a different strategy
+   * @param strategy
    * @returns true if switch was successful, false if strategy not supported
    */
   setStrategy(strategy: BackgroundStrategy): boolean {
@@ -209,6 +213,8 @@ export class BackgroundTaskExecutor {
 
   /**
    * Execute a single task in the background
+   * @param task
+   * @param options
    */
   async execute<T>(
     task: () => T | Promise<T>,
@@ -220,6 +226,9 @@ export class BackgroundTaskExecutor {
 
   /**
    * Process items in batches with background scheduling
+   * @param items
+   * @param processor
+   * @param options
    */
   async processBatch<T, R>(
     items: T[],
@@ -232,6 +241,8 @@ export class BackgroundTaskExecutor {
 
   /**
    * Execute batch fetch in worker (only available with worker strategy)
+   * @param requests
+   * @param options
    */
   async fetchBatchInWorker<T>(
     requests: Array<{ url: string; options?: RequestInit; id: string }>,
@@ -315,22 +326,21 @@ let defaultExecutor: BackgroundTaskExecutor | null = null;
 /**
  * Get or create the default background task executor
  */
-export function getBackgroundTaskExecutor(): BackgroundTaskExecutor {
+export const getBackgroundTaskExecutor = (): BackgroundTaskExecutor => {
   if (!defaultExecutor) {
     defaultExecutor = new BackgroundTaskExecutor();
   }
   return defaultExecutor;
-}
+};
 
 /**
  * Configure the default executor
+ * @param config
  */
-export function configureBackgroundTaskExecutor(
-  config: Partial<BackgroundTaskExecutorConfig>
-): BackgroundTaskExecutor {
+export const configureBackgroundTaskExecutor = (config: Partial<BackgroundTaskExecutorConfig>): BackgroundTaskExecutor => {
   if (defaultExecutor) {
     defaultExecutor.dispose();
   }
   defaultExecutor = new BackgroundTaskExecutor(config);
   return defaultExecutor;
-}
+};

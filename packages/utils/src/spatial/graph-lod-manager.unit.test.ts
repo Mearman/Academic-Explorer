@@ -2,15 +2,15 @@
  * Unit tests for GraphLODManager - Level of Detail management
  */
 
-import type { Position3D, BoundingBox3D } from '@bibgraph/types';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import type { Position3D } from '@bibgraph/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  GraphLODManager,
-  LODLevel,
+  createFrustumBounds,
   DEFAULT_LOD_CONFIGS,
   extractFrustumPlanes,
-  createFrustumBounds,
+  GraphLODManager,
+  LODLevel,
 } from './graph-lod-manager';
 
 describe('GraphLODManager', () => {

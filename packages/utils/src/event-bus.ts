@@ -193,13 +193,9 @@ class CrossTabEventBus implements EventBus {
 }
 
 // Factory functions
-export function createLocalEventBus(): EventBus {
-	return new LocalEventBus()
-}
+export const createLocalEventBus = (): EventBus => new LocalEventBus();
 
-export function createCrossTabEventBus(channelName: string): EventBus {
-	return new CrossTabEventBus(channelName)
-}
+export const createCrossTabEventBus = (channelName: string): EventBus => new CrossTabEventBus(channelName);
 
 // Global instance
 export const localEventBus = createLocalEventBus()
@@ -270,31 +266,25 @@ export interface QueueCoordinatorOptions {
 }
 
 // Stub implementations for missing factories
-export function createTaskQueue(
-	_bus: EventBus,
-	_options: { maxConcurrency?: number } = {}
-): TaskQueue {
+export const createTaskQueue = (_bus: EventBus, _options: { maxConcurrency?: number } = {}): TaskQueue => {
 	void _options // Explicitly mark as unused
 	throw new Error(
 		"TaskQueue implementation not available in graph package - use from application layer"
 	)
-}
+};
 
-export function createWorkerPool(_bus: EventBus, _options: WorkerPoolOptions): WorkerPool {
+export const createWorkerPool = (_bus: EventBus, _options: WorkerPoolOptions): WorkerPool => {
 	void _bus // Explicitly mark as unused
 	void _options // Explicitly mark as unused
 	throw new Error(
 		"WorkerPool implementation not available in graph package - use from application layer"
 	)
-}
+};
 
-export function createQueuedResourceCoordinator(
-	_bus: EventBus,
-	_options: QueueCoordinatorOptions
-): QueuedResourceCoordinator {
+export const createQueuedResourceCoordinator = (_bus: EventBus, _options: QueueCoordinatorOptions): QueuedResourceCoordinator => {
 	void _bus // Explicitly mark as unused
 	void _options // Explicitly mark as unused
 	throw new Error(
 		"QueuedResourceCoordinator implementation not available in graph package - use from application layer"
 	)
-}
+};

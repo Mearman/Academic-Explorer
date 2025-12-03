@@ -41,8 +41,9 @@ export interface ShareUrlData {
 
 /**
  * Compress catalogue list data for URL sharing
+ * @param data
  */
-export function compressListData(data: CompressedListData): string {
+export const compressListData = (data: CompressedListData): string => {
   try {
     // Convert data to JSON string
     const jsonString = JSON.stringify({
@@ -66,12 +67,13 @@ export function compressListData(data: CompressedListData): string {
   } catch (error) {
     throw new Error(`Failed to compress list data: ${error instanceof Error ? error.message : String(error)}`);
   }
-}
+};
 
 /**
  * Decompress catalogue list data from URL parameter
+ * @param compressedData
  */
-export function decompressListData(compressedData: string): CompressedListData | null {
+export const decompressListData = (compressedData: string): CompressedListData | null => {
   try {
     // Restore base64 padding
     let base64 = compressedData.replace(/-/g, '+').replace(/_/g, '/');
@@ -103,16 +105,15 @@ export function decompressListData(compressedData: string): CompressedListData |
     // Return null instead of throwing for invalid data
     return null;
   }
-}
+};
 
 /**
  * Create a shareable URL for a catalogue list
+ * @param baseUrl
+ * @param listData
+ * @param logger
  */
-export function createShareUrl(
-  baseUrl: string,
-  listData: CompressedListData,
-  logger?: GenericLogger
-): string {
+export const createShareUrl = (baseUrl: string, listData: CompressedListData, logger?: GenericLogger): string => {
   try {
     const compressed = compressListData(listData);
 
@@ -133,15 +134,14 @@ export function createShareUrl(
     logger?.error(LOG_CATEGORY, "Failed to create share URL", { error });
     throw error;
   }
-}
+};
 
 /**
  * Extract and decompress catalogue data from URL
+ * @param url
+ * @param logger
  */
-export function extractListDataFromUrl(
-  url: string,
-  logger?: GenericLogger
-): CompressedListData | null {
+export const extractListDataFromUrl = (url: string, logger?: GenericLogger): CompressedListData | null => {
   try {
     // Extract data parameter from URL
     const urlObj = new URL(url);
@@ -156,12 +156,13 @@ export function extractListDataFromUrl(
     logger?.error(LOG_CATEGORY, "Failed to extract list data from URL", { url, error });
     return null;
   }
-}
+};
 
 /**
  * Validate compressed list data structure
+ * @param data
  */
-export function validateListData(data: unknown): data is CompressedListData {
+export const validateListData = (data: unknown): data is CompressedListData => {
   if (!data || typeof data !== 'object') {
     return false;
   }
@@ -208,13 +209,13 @@ export function validateListData(data: unknown): data is CompressedListData {
   }
 
   return true;
-}
+};
 
 /**
  * Optimize list data for compression by reducing redundancy
+ * @param data
  */
-export function optimizeListData(data: CompressedListData): CompressedListData {
-  return {
+export const optimizeListData = (data: CompressedListData): CompressedListData => ({
     list: {
       title: data.list.title.trim(),
       description: data.list.description?.trim() || undefined,
@@ -226,13 +227,13 @@ export function optimizeListData(data: CompressedListData): CompressedListData {
       entityId: entity.entityId.trim(),
       notes: entity.notes?.trim() || undefined,
     })),
-  };
-}
+  });
 
 /**
  * Estimate compressed size of list data without actually compressing
+ * @param data
  */
-export function estimateCompressedSize(data: CompressedListData): number {
+export const estimateCompressedSize = (data: CompressedListData): number => {
   const jsonString = JSON.stringify({
     v: 1,
     d: optimizeListData(data),
@@ -240,20 +241,22 @@ export function estimateCompressedSize(data: CompressedListData): number {
 
   // Rough estimate: compressed size is typically 20-40% of original for this type of data
   return Math.ceil(jsonString.length * 0.3);
-}
+};
 
 /**
  * Check if list data can be reasonably shared via URL
+ * @param data
  */
-export function canShareViaUrl(data: CompressedListData): boolean {
+export const canShareViaUrl = (data: CompressedListData): boolean => {
   const estimatedSize = estimateCompressedSize(data);
   return estimatedSize <= MAX_URL_LENGTH - 100; // Leave buffer for URL structure
-}
+};
 
 /**
  * Split large lists into multiple shareable chunks
+ * @param data
  */
-export function splitListForSharing(data: CompressedListData): CompressedListData[] {
+export const splitListForSharing = (data: CompressedListData): CompressedListData[] => {
   const maxEntities = 50; // Conservative limit per URL
   const chunks: CompressedListData[] = [];
 
@@ -283,4 +286,4 @@ export function splitListForSharing(data: CompressedListData): CompressedListDat
   }
 
   return chunks;
-}
+};

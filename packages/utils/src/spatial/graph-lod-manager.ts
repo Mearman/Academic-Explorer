@@ -12,7 +12,7 @@
  * - LOW: Minimal detail - basic shapes, no labels, no effects
  */
 
-import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+import type { BoundingBox3D,Position3D } from '@bibgraph/types';
 
 /**
  * LOD level enumeration
@@ -153,7 +153,6 @@ export class GraphLODManager {
 
   /**
    * Get LOD level for a specific object based on camera distance
-   *
    * @param objectPosition - Position of the object
    * @param cameraPosition - Position of the camera
    * @returns LOD level to use
@@ -171,7 +170,6 @@ export class GraphLODManager {
 
   /**
    * Get the effective LOD level considering both distance and global performance
-   *
    * @param objectPosition - Position of the object
    * @param cameraPosition - Position of the camera
    * @returns Effective LOD level
@@ -189,6 +187,7 @@ export class GraphLODManager {
 
   /**
    * Get the configuration for a specific LOD level
+   * @param level
    */
   getConfig(level: LODLevel): LODConfig {
     return this.configs[level];
@@ -203,6 +202,7 @@ export class GraphLODManager {
 
   /**
    * Set global LOD level manually
+   * @param level
    */
   setGlobalLOD(level: LODLevel): void {
     this.currentGlobalLOD = level;
@@ -247,7 +247,6 @@ export class GraphLODManager {
 
   /**
    * Check if an object should be visible based on frustum culling
-   *
    * @param objectPosition - Position of the object
    * @param objectRadius - Bounding radius of the object
    * @param frustumPlanes - Array of 6 frustum planes (left, right, top, bottom, near, far)
@@ -277,7 +276,6 @@ export class GraphLODManager {
 
   /**
    * Batch determine LOD levels for multiple objects
-   *
    * @param objects - Array of object positions
    * @param cameraPosition - Camera position
    * @returns Map of index to LOD level
@@ -297,6 +295,7 @@ export class GraphLODManager {
 
   /**
    * Get recommended node render settings based on LOD
+   * @param lod
    */
   getNodeRenderSettings(lod: LODLevel): {
     segments: number;
@@ -316,6 +315,7 @@ export class GraphLODManager {
 
   /**
    * Get recommended edge render settings based on LOD
+   * @param lod
    */
   getEdgeRenderSettings(lod: LODLevel): {
     useLines: boolean;
@@ -354,11 +354,10 @@ export class GraphLODManager {
 /**
  * Extract frustum planes from a projection-view matrix
  * This is a simplified version for basic frustum culling
+ * @param projectionMatrix
+ * @param viewMatrix
  */
-export function extractFrustumPlanes(
-  projectionMatrix: number[],
-  viewMatrix: number[]
-): Array<{ normal: Position3D; distance: number }> {
+export const extractFrustumPlanes = (projectionMatrix: number[], viewMatrix: number[]): Array<{ normal: Position3D; distance: number }> => {
   // Combine matrices (simplified - assumes column-major)
   const m = multiplyMatrices(projectionMatrix, viewMatrix);
 
@@ -408,12 +407,14 @@ export function extractFrustumPlanes(
       distance: plane.distance / len,
     };
   });
-}
+};
 
 /**
  * Multiply two 4x4 matrices (column-major)
+ * @param a
+ * @param b
  */
-function multiplyMatrices(a: number[], b: number[]): number[] {
+const multiplyMatrices = (a: number[], b: number[]): number[] => {
   const result = new Array(16).fill(0);
 
   for (let i = 0; i < 4; i++) {
@@ -425,19 +426,18 @@ function multiplyMatrices(a: number[], b: number[]): number[] {
   }
 
   return result;
-}
+};
 
 /**
  * Create a simple frustum bounds for quick culling checks
+ * @param cameraPosition
+ * @param lookAt
+ * @param fov
+ * @param aspectRatio
+ * @param near
+ * @param far
  */
-export function createFrustumBounds(
-  cameraPosition: Position3D,
-  lookAt: Position3D,
-  fov: number,
-  aspectRatio: number,
-  near: number,
-  far: number
-): BoundingBox3D {
+export const createFrustumBounds = (cameraPosition: Position3D, lookAt: Position3D, fov: number, aspectRatio: number, near: number, far: number): BoundingBox3D => {
   // Calculate approximate frustum bounds
   const direction = {
     x: lookAt.x - cameraPosition.x,
@@ -476,4 +476,4 @@ export function createFrustumBounds(
       z: Math.max(cameraPosition.z, farCenter.z) + spread,
     },
   };
-}
+};

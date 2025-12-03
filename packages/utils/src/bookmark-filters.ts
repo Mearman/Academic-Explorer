@@ -20,18 +20,16 @@ import type { Bookmark, EntityType } from "@bibgraph/types";
  * - Entity type (bookmark.entityType)
  *
  * Search is case-insensitive and supports partial word matching.
- *
  * @param bookmarks - Array of bookmarks to filter
  * @param searchQuery - Search query string
  * @returns Filtered array of bookmarks matching the search query
- *
  * @example
  * ```typescript
  * const results = filterBySearch(bookmarks, "machine learning");
  * // Returns bookmarks with "machine learning" in title, notes, tags, or entity type
  * ```
  */
-export function filterBySearch(bookmarks: Bookmark[], searchQuery: string): Bookmark[] {
+export const filterBySearch = (bookmarks: Bookmark[], searchQuery: string): Bookmark[] => {
 	if (!searchQuery || searchQuery.trim() === "") {
 		return bookmarks;
 	}
@@ -61,39 +59,35 @@ export function filterBySearch(bookmarks: Bookmark[], searchQuery: string): Book
 
 		return false;
 	});
-}
+};
 
 /**
  * Filter bookmarks by entity type
- *
  * @param bookmarks - Array of bookmarks to filter
  * @param entityType - Entity type to filter by (null returns all bookmarks)
  * @returns Filtered array of bookmarks of the specified entity type
- *
  * @example
  * ```typescript
  * const authors = filterByEntityType(bookmarks, "authors");
  * // Returns only author bookmarks
  * ```
  */
-export function filterByEntityType(bookmarks: Bookmark[], entityType: EntityType | null): Bookmark[] {
+export const filterByEntityType = (bookmarks: Bookmark[], entityType: EntityType | null): Bookmark[] => {
 	if (!entityType) {
 		return bookmarks;
 	}
 
 	return bookmarks.filter((bookmark) => bookmark.entityType === entityType);
-}
+};
 
 /**
  * Filter bookmarks by tags with AND or OR logic
- *
  * @param bookmarks - Array of bookmarks to filter
  * @param tags - Array of tag names to filter by (empty array returns all bookmarks)
  * @param matchAll - If true, uses AND logic (bookmark must have ALL tags).
  *                   If false, uses OR logic (bookmark must have AT LEAST ONE tag).
  *                   Defaults to false (OR logic).
  * @returns Filtered array of bookmarks matching the tag criteria
- *
  * @example
  * ```typescript
  * // OR logic: bookmarks with "ai" OR "ml"
@@ -103,7 +97,7 @@ export function filterByEntityType(bookmarks: Bookmark[], entityType: EntityType
  * const results = filterByTags(bookmarks, ["ai", "research"], true);
  * ```
  */
-export function filterByTags(bookmarks: Bookmark[], tags: string[], matchAll = false): Bookmark[] {
+export const filterByTags = (bookmarks: Bookmark[], tags: string[], matchAll = false): Bookmark[] => {
 	if (!tags || tags.length === 0) {
 		return bookmarks;
 	}
@@ -123,7 +117,7 @@ export function filterByTags(bookmarks: Bookmark[], tags: string[], matchAll = f
 			);
 		}
 	});
-}
+};
 
 /**
  * Apply multiple filters to bookmarks in sequence
@@ -132,11 +126,13 @@ export function filterByTags(bookmarks: Bookmark[], tags: string[], matchAll = f
  * 1. Search query filter
  * 2. Entity type filter
  * 3. Tag filter
- *
  * @param bookmarks - Array of bookmarks to filter
  * @param options - Filter options
+ * @param options.searchQuery
+ * @param options.entityType
+ * @param options.tags
+ * @param options.matchAllTags
  * @returns Filtered array of bookmarks
- *
  * @example
  * ```typescript
  * const results = applyFilters(bookmarks, {
@@ -147,15 +143,12 @@ export function filterByTags(bookmarks: Bookmark[], tags: string[], matchAll = f
  * });
  * ```
  */
-export function applyFilters(
-	bookmarks: Bookmark[],
-	options: {
+export const applyFilters = (bookmarks: Bookmark[], options: {
 		searchQuery?: string;
 		entityType?: EntityType | null;
 		tags?: string[];
 		matchAllTags?: boolean;
-	}
-): Bookmark[] {
+	}): Bookmark[] => {
 	let result = bookmarks;
 
 	// Apply search filter
@@ -174,4 +167,4 @@ export function applyFilters(
 	}
 
 	return result;
-}
+};

@@ -1,14 +1,14 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect,it } from "vitest"
 
 import {
-	parseSearchQuery,
-	isFieldQuery,
-	getQueryFields,
-	getFieldQueries,
-	hasWildcards,
-	type ParsedQuery,
-	type QueryTerm,
 	type FieldQuery,
+	getFieldQueries,
+	getQueryFields,
+	hasWildcards,
+	isFieldQuery,
+	type ParsedQuery,
+	parseSearchQuery,
+	type QueryTerm,
 } from "./query-parser.js"
 
 // Test constants for common patterns

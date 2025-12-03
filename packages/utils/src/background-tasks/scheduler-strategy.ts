@@ -5,15 +5,14 @@
  * Provides priority-based scheduling with explicit priority levels.
  *
  * Best for: Tasks that need priority control and modern browser support
- *
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Scheduler
  * @module utils/background-tasks/scheduler-strategy
  */
 
 import type {
-  BackgroundTaskStrategy,
   BackgroundTaskOptions,
   BackgroundTaskResult,
+  BackgroundTaskStrategy,
   ProgressCallback,
   TaskPriority,
 } from './types';
@@ -43,8 +42,9 @@ declare global {
 
 /**
  * Map TaskPriority to Scheduler API priority
+ * @param priority
  */
-function mapPriority(priority?: TaskPriority): SchedulerPostTaskOptions['priority'] {
+const mapPriority = (priority?: TaskPriority): SchedulerPostTaskOptions['priority'] => {
   switch (priority) {
     case 'high':
       return 'user-blocking';
@@ -55,14 +55,12 @@ function mapPriority(priority?: TaskPriority): SchedulerPostTaskOptions['priorit
     default:
       return 'background';
   }
-}
+};
 
 /**
  * Check if Scheduler API is available
  */
-function hasScheduler(): boolean {
-  return typeof window !== 'undefined' && 'scheduler' in window && typeof window.scheduler?.postTask === 'function';
-}
+const hasScheduler = (): boolean => typeof window !== 'undefined' && 'scheduler' in window && typeof window.scheduler?.postTask === 'function';
 
 /**
  * Background task strategy using the Scheduler API
@@ -91,7 +89,7 @@ export class SchedulerStrategy implements BackgroundTaskStrategy {
   ): Promise<BackgroundTaskResult<T>> {
     const startTime = performance.now();
 
-    if (!this.isSupported()) {
+    if (!this.isSupported() || !window.scheduler) {
       return {
         success: false,
         error: new Error('Scheduler API not supported'),
@@ -109,7 +107,7 @@ export class SchedulerStrategy implements BackgroundTaskStrategy {
     }
 
     try {
-      const scheduler = window.scheduler!;
+      const scheduler = window.scheduler;
 
       const result = await scheduler.postTask(task, {
         priority: mapPriority(options?.priority),
@@ -148,7 +146,7 @@ export class SchedulerStrategy implements BackgroundTaskStrategy {
     const results: R[] = [];
     const chunkSize = options?.chunkSize ?? DEFAULT_CHUNK_SIZE;
 
-    if (!this.isSupported()) {
+    if (!this.isSupported() || !window.scheduler) {
       return {
         success: false,
         error: new Error('Scheduler API not supported'),
@@ -171,7 +169,7 @@ export class SchedulerStrategy implements BackgroundTaskStrategy {
       };
     }
 
-    const scheduler = window.scheduler!;
+    const scheduler = window.scheduler;
 
     try {
       for (let i = 0; i < items.length; i += chunkSize) {
@@ -247,8 +245,9 @@ export class SchedulerStrategy implements BackgroundTaskStrategy {
 
 /**
  * Combine multiple abort signals into one
+ * @param signals
  */
-function anySignal(signals: AbortSignal[]): AbortSignal {
+const anySignal = (signals: AbortSignal[]): AbortSignal => {
   const controller = new AbortController();
 
   for (const signal of signals) {
@@ -260,4 +259,4 @@ function anySignal(signals: AbortSignal[]): AbortSignal {
   }
 
   return controller.signal;
-}
+};

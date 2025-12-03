@@ -11,10 +11,8 @@
 
 /**
  * Generates a human-readable summary of selected fields
- *
  * @param selectFields - Array of field names from select parameter
  * @returns Summary string describing the field selection
- *
  * @example
  * ```typescript
  * generateFieldSummary(['id', 'display_name']) // "2 fields"
@@ -23,22 +21,20 @@
  * generateFieldSummary(['id', 'title', 'doi', 'cited_by_count', 'publication_year']) // "5 fields"
  * ```
  */
-export function generateFieldSummary(selectFields: string[]): string {
+export const generateFieldSummary = (selectFields: string[]): string => {
 	if (!selectFields || selectFields.length === 0) {
 		return "default fields"
 	}
 
 	const count = selectFields.length
 	return count === 1 ? "1 field" : `${count} fields`
-}
+};
 
 /**
  * Generates a detailed field summary with field names
- *
  * @param selectFields - Array of field names from select parameter
  * @param maxFieldsToShow - Maximum number of field names to show before truncating (default: 3)
  * @returns Detailed summary string with field names
- *
  * @example
  * ```typescript
  * generateDetailedFieldSummary(['id', 'display_name']) // "2 fields: id, display_name"
@@ -46,10 +42,7 @@ export function generateFieldSummary(selectFields: string[]): string {
  * generateDetailedFieldSummary([]) // "default fields"
  * ```
  */
-export function generateDetailedFieldSummary(
-	selectFields: string[],
-	maxFieldsToShow = 3
-): string {
+export const generateDetailedFieldSummary = (selectFields: string[], maxFieldsToShow = 3): string => {
 	if (!selectFields || selectFields.length === 0) {
 		return "default fields"
 	}
@@ -68,14 +61,12 @@ export function generateDetailedFieldSummary(
 	const remainingLabel = remainingCount === 1 ? "1 more" : `${remainingCount} more`
 
 	return `${countLabel}: ${shownFields}, +${remainingLabel}`
-}
+};
 
 /**
  * Generates a compact field summary suitable for badges or chips
- *
  * @param selectFields - Array of field names from select parameter
  * @returns Compact summary string
- *
  * @example
  * ```typescript
  * generateCompactFieldSummary(['id', 'display_name']) // "2 fields"
@@ -84,22 +75,20 @@ export function generateDetailedFieldSummary(
  * generateCompactFieldSummary(['id', 'title', 'doi', 'cited_by_count', 'publication_year']) // "5 fields"
  * ```
  */
-export function generateCompactFieldSummary(selectFields: string[]): string {
+export const generateCompactFieldSummary = (selectFields: string[]): string => {
 	if (!selectFields || selectFields.length === 0) {
 		return "default"
 	}
 
 	const count = selectFields.length
 	return count === 1 ? "1 field" : `${count} fields`
-}
+};
 
 /**
  * Generates a field list preview with ellipsis
- *
  * @param selectFields - Array of field names from select parameter
  * @param maxLength - Maximum character length before truncating (default: 50)
  * @returns Field list preview string
- *
  * @example
  * ```typescript
  * generateFieldListPreview(['id', 'display_name']) // "id, display_name"
@@ -107,10 +96,7 @@ export function generateCompactFieldSummary(selectFields: string[]): string {
  * generateFieldListPreview(['id', 'display_name', 'works_count', 'cited_by_count', 'h_index'], 30) // "id, display_name, works_co..."
  * ```
  */
-export function generateFieldListPreview(
-	selectFields: string[],
-	maxLength = 50
-): string {
+export const generateFieldListPreview = (selectFields: string[], maxLength = 50): string => {
 	if (!selectFields || selectFields.length === 0) {
 		return "default fields"
 	}
@@ -123,14 +109,12 @@ export function generateFieldListPreview(
 
 	// Truncate and add ellipsis
 	return fieldList.substring(0, maxLength - 3) + "..."
-}
+};
 
 /**
  * Categorizes fields into common groups
- *
  * @param selectFields - Array of field names from select parameter
  * @returns Object with categorized field groups
- *
  * @example
  * ```typescript
  * categorizeFields(['id', 'display_name', 'works_count', 'cited_by_count'])
@@ -144,14 +128,14 @@ export function generateFieldListPreview(
  * // }
  * ```
  */
-export function categorizeFields(selectFields: string[]): {
+export const categorizeFields = (selectFields: string[]): {
 	identifiers: string[]
 	basic: string[]
 	metrics: string[]
 	relationships: string[]
 	dates: string[]
 	other: string[]
-} {
+} => {
 	const categories = {
 		identifiers: [] as string[],
 		basic: [] as string[],
@@ -163,11 +147,11 @@ export function categorizeFields(selectFields: string[]): {
 
 	// Field name patterns for categorization
 	const patterns = {
-		identifiers: /^(id|doi|orcid|ror|mag|openalex|issn|isbn)$/i,
-		basic: /^(display_name|title|name|description|summary|abstract)$/i,
-		metrics: /_(count|index|score|rank|percentile|impact)$/i,
-		relationships: /^(author|institution|source|concept|topic|funder|publisher|related)/i,
-		dates: /_(date|year|time|published|created|updated)$/i,
+		identifiers: /^(doi|id|isbn|issn|mag|openalex|orcid|ror)$/i,
+		basic: /^(abstract|description|display_name|name|summary|title)$/i,
+		metrics: /_(count|impact|index|percentile|rank|score)$/i,
+		relationships: /^(author|concept|funder|institution|publisher|related|source|topic)/i,
+		dates: /_(created|date|published|time|updated|year)$/i,
 	}
 
 	for (const field of selectFields) {
@@ -187,14 +171,12 @@ export function categorizeFields(selectFields: string[]): {
 	}
 
 	return categories
-}
+};
 
 /**
  * Generates a smart summary that highlights important field categories
- *
  * @param selectFields - Array of field names from select parameter
  * @returns Smart summary string with category highlights
- *
  * @example
  * ```typescript
  * generateSmartFieldSummary(['id', 'display_name', 'works_count', 'cited_by_count'])
@@ -207,7 +189,7 @@ export function categorizeFields(selectFields: string[]): {
  * // "1 field"
  * ```
  */
-export function generateSmartFieldSummary(selectFields: string[]): string {
+export const generateSmartFieldSummary = (selectFields: string[]): string => {
 	if (!selectFields || selectFields.length === 0) {
 		return "default fields"
 	}
@@ -246,15 +228,13 @@ export function generateSmartFieldSummary(selectFields: string[]): string {
 	}
 
 	return `${countLabel} (${highlights.join(", ")})`
-}
+};
 
 /**
  * Compares two field selections and returns the difference
- *
  * @param fieldsA - First field selection
  * @param fieldsB - Second field selection
  * @returns Object describing the differences
- *
  * @example
  * ```typescript
  * compareFieldSelections(
@@ -269,15 +249,12 @@ export function generateSmartFieldSummary(selectFields: string[]): string {
  * // }
  * ```
  */
-export function compareFieldSelections(
-	fieldsA: string[],
-	fieldsB: string[]
-): {
+export const compareFieldSelections = (fieldsA: string[], fieldsB: string[]): {
 	added: string[]
 	removed: string[]
 	common: string[]
 	countChange: number
-} {
+} => {
 	const setA = new Set(fieldsA)
 	const setB = new Set(fieldsB)
 
@@ -291,25 +268,20 @@ export function compareFieldSelections(
 		common,
 		countChange: fieldsB.length - fieldsA.length,
 	}
-}
+};
 
 /**
  * Checks if two field selections are equivalent (order-independent)
- *
  * @param fieldsA - First field selection
  * @param fieldsB - Second field selection
  * @returns True if selections contain the same fields (order doesn't matter)
- *
  * @example
  * ```typescript
  * areFieldSelectionsEquivalent(['id', 'title'], ['title', 'id']) // true
  * areFieldSelectionsEquivalent(['id', 'title'], ['id', 'display_name']) // false
  * ```
  */
-export function areFieldSelectionsEquivalent(
-	fieldsA: string[],
-	fieldsB: string[]
-): boolean {
+export const areFieldSelectionsEquivalent = (fieldsA: string[], fieldsB: string[]): boolean => {
 	if (fieldsA.length !== fieldsB.length) {
 		return false
 	}
@@ -317,26 +289,24 @@ export function areFieldSelectionsEquivalent(
 	const setB = new Set(fieldsB)
 
 	return fieldsA.every((field) => setB.has(field))
-}
+};
 
 /**
  * Validates that field names conform to OpenAlex field naming conventions
- *
  * @param selectFields - Array of field names to validate
  * @returns Object with validation result and any invalid fields
- *
  * @example
  * ```typescript
  * validateFieldNames(['id', 'display_name', 'works_count']) // { valid: true, invalidFields: [] }
  * validateFieldNames(['id', 'invalid field!', 'display_name']) // { valid: false, invalidFields: ['invalid field!'] }
  * ```
  */
-export function validateFieldNames(selectFields: string[]): {
+export const validateFieldNames = (selectFields: string[]): {
 	valid: boolean
 	invalidFields: string[]
-} {
+} => {
 	// OpenAlex field naming pattern: alphanumeric, underscores, dots (for nested fields)
-	const validFieldPattern = /^[a-zA-Z0-9_.]+$/
+	const validFieldPattern = /^[\w.]+$/
 
 	const invalidFields = selectFields.filter(
 		(field) => !validFieldPattern.test(field)
@@ -346,4 +316,4 @@ export function validateFieldNames(selectFields: string[]): {
 		valid: invalidFields.length === 0,
 		invalidFields,
 	}
-}
+};

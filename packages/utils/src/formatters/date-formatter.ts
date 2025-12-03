@@ -23,15 +23,13 @@ const DEFAULT_THRESHOLD_MS = 7 * TIME_UNITS.DAY;
 
 /**
  * Format a date as relative time (e.g., "2 hours ago", "3 days ago")
- *
  * @param date - The date to format
  * @returns Formatted relative time string
- *
  * @example
  * formatRelativeTime(new Date(Date.now() - 2 * 60 * 60 * 1000)) // "2 hours ago"
  * formatRelativeTime(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)) // "3 days ago"
  */
-export function formatRelativeTime(date: Date): string {
+export const formatRelativeTime = (date: Date): string => {
 	// Handle invalid dates
 	if (!date || isNaN(date.getTime())) {
 		return 'Invalid date';
@@ -90,18 +88,16 @@ export function formatRelativeTime(date: Date): string {
 	// Years
 	const years = Math.floor(diffMs / TIME_UNITS.YEAR);
 	return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-}
+};
 
 /**
  * Format a date as absolute time (e.g., "Mar 15, 2024 at 2:30 PM")
- *
  * @param date - The date to format
  * @returns Formatted absolute time string
- *
  * @example
  * formatAbsoluteTime(new Date('2024-03-15T14:30:00')) // "Mar 15, 2024 at 2:30 PM"
  */
-export function formatAbsoluteTime(date: Date): string {
+export const formatAbsoluteTime = (date: Date): string => {
 	// Handle invalid dates
 	if (!date || isNaN(date.getTime())) {
 		return 'Invalid date';
@@ -127,22 +123,20 @@ export function formatAbsoluteTime(date: Date): string {
 		// Fallback to ISO string if Intl fails
 		return date.toISOString();
 	}
-}
+};
 
 /**
  * Format a date with smart choice between relative and absolute formats
  * Recent dates (within threshold) use relative time, older dates use absolute time
- *
  * @param date - The date to format
  * @param threshold - Threshold in milliseconds for switching from relative to absolute (default: 7 days)
  * @returns Formatted timestamp string
- *
  * @example
  * formatTimestamp(new Date(Date.now() - 2 * 60 * 60 * 1000)) // "2 hours ago"
  * formatTimestamp(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)) // "Mar 5, 2024 at 2:30 PM"
  * formatTimestamp(new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), 14 * 24 * 60 * 60 * 1000) // "10 days ago"
  */
-export function formatTimestamp(date: Date, threshold = DEFAULT_THRESHOLD_MS): string {
+export const formatTimestamp = (date: Date, threshold = DEFAULT_THRESHOLD_MS): string => {
 	// Handle invalid dates
 	if (!date || isNaN(date.getTime())) {
 		return 'Invalid date';
@@ -159,4 +153,4 @@ export function formatTimestamp(date: Date, threshold = DEFAULT_THRESHOLD_MS): s
 
 	// Use absolute time for older dates or future dates
 	return formatAbsoluteTime(date);
-}
+};

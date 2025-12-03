@@ -3,7 +3,6 @@
  *
  * Defines the abstraction for different data sources that can contribute
  * entities to the graph visualization.
- *
  * @module graph-sources/types
  */
 

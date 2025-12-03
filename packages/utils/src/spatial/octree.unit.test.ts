@@ -2,10 +2,10 @@
  * Unit tests for Octree spatial indexing
  */
 
-import type { Position3D, BoundingBox3D } from '@bibgraph/types';
-import { describe, it, expect, beforeEach } from 'vitest';
+import type { BoundingBox3D } from '@bibgraph/types';
+import { beforeEach,describe, expect, it } from 'vitest';
 
-import { Octree, createOctreeFromItems } from './octree';
+import { createOctreeFromItems,Octree } from './octree';
 
 describe('Octree', () => {
   const defaultBounds: BoundingBox3D = {

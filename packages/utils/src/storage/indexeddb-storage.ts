@@ -80,6 +80,8 @@ const getDB = (config: StorageConfig): Promise<KeyValueDB> => {
 /**
  * Creates a pure Dexie storage adapter for IndexedDB operations
  * Simplified from hybrid approach - no localStorage fallback
+ * @param config
+ * @param logger
  */
 export const createIndexedDBStorage = (
 	config: StorageConfig,

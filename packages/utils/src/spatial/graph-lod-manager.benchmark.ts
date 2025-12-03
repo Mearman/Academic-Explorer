@@ -6,7 +6,7 @@
 
 import type { Position3D } from '@bibgraph/types';
 
-import { GraphLODManager, extractFrustumPlanes, createFrustumBounds } from './graph-lod-manager';
+import { createFrustumBounds,extractFrustumPlanes, GraphLODManager } from './graph-lod-manager';
 
 interface BenchmarkResult {
   name: string;
@@ -16,11 +16,7 @@ interface BenchmarkResult {
   opsPerSecond: number;
 }
 
-function benchmark(
-  name: string,
-  fn: () => void,
-  iterations: number = 10000
-): BenchmarkResult {
+const benchmark = (name: string, fn: () => void, iterations: number = 10000): BenchmarkResult => {
   // Warmup
   for (let i = 0; i < Math.min(1000, iterations / 10); i++) {
     fn();
@@ -40,9 +36,9 @@ function benchmark(
     avgTimeMs,
     opsPerSecond: 1000 / avgTimeMs,
   };
-}
+};
 
-function generateRandomPositions(count: number, spread: number): Position3D[] {
+const generateRandomPositions = (count: number, spread: number): Position3D[] => {
   const positions: Position3D[] = [];
   for (let i = 0; i < count; i++) {
     positions.push({
@@ -52,13 +48,11 @@ function generateRandomPositions(count: number, spread: number): Position3D[] {
     });
   }
   return positions;
-}
+};
 
-function formatResult(result: BenchmarkResult): string {
-  return `${result.name.padEnd(45)} ${result.avgTimeMs.toFixed(6).padStart(12)}ms  ${Math.round(result.opsPerSecond).toLocaleString().padStart(12)} ops/s`;
-}
+const formatResult = (result: BenchmarkResult): string => `${result.name.padEnd(45)} ${result.avgTimeMs.toFixed(6).padStart(12)}ms  ${Math.round(result.opsPerSecond).toLocaleString().padStart(12)} ops/s`;
 
-async function runBenchmarks() {
+const runBenchmarks = async () => {
   console.log('='.repeat(75));
   console.log('GraphLODManager Performance Benchmarks');
   console.log('='.repeat(75));
@@ -231,7 +225,7 @@ async function runBenchmarks() {
   } else {
     console.log('WARNING: LOD system overhead is high - optimization needed');
   }
-}
+};
 
 // Only run when executed directly (not when imported)
 if (import.meta.url.endsWith('graph-lod-manager.benchmark.ts')) {

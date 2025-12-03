@@ -49,10 +49,8 @@ const URL_ENTITY_PATTERNS: Record<string, EntityType> = {
  *
  * Handles comma-separated field names and returns them as an array.
  * Trims whitespace from each field name.
- *
  * @param input - Full URL string or just the select parameter value
  * @returns Array of field names, empty array if no select parameter found
- *
  * @example
  * ```typescript
  * extractSelectFields("id,display_name,cited_by_count")
@@ -65,7 +63,7 @@ const URL_ENTITY_PATTERNS: Record<string, EntityType> = {
  * // Returns: []
  * ```
  */
-export function extractSelectFields(input: string): string[] {
+export const extractSelectFields = (input: string): string[] => {
 	let selectValue: string | null = null
 
 	// Check if input looks like a URL (has protocol or query string)
@@ -95,17 +93,15 @@ export function extractSelectFields(input: string): string[] {
 		.split(",")
 		.map((field) => field.trim())
 		.filter((field) => field.length > 0)
-}
+};
 
 /**
  * Parses a URL and extracts all relevant components
  *
  * Extracts query parameters, entity type, entity ID, and select fields
  * from an OpenAlex API URL or any URL with query parameters.
- *
  * @param urlString - The URL to parse (relative or absolute)
  * @returns Parsed URL object with all extracted components
- *
  * @example
  * ```typescript
  * parseURL("https://api.openalex.org/works/W123456?select=id,title&filter=is_oa:true")
@@ -131,7 +127,7 @@ export function extractSelectFields(input: string): string[] {
  * // }
  * ```
  */
-export function parseURL(urlString: string): ParsedURL {
+export const parseURL = (urlString: string): ParsedURL => {
 	// Handle empty or invalid input
 	if (!urlString || typeof urlString !== "string") {
 		return {
@@ -212,19 +208,17 @@ export function parseURL(urlString: string): ParsedURL {
 		entityType,
 		entityId,
 	}
-}
+};
 
 /**
  * Reconstructs a URL from components with proper encoding
  *
  * IMPORTANT: The `select` parameter commas are NOT URL-encoded to comply
  * with OpenAlex API requirements. All other parameters are properly encoded.
- *
  * @param basePath - Base URL path (e.g., "/works" or "https://api.openalex.org/works")
  * @param queryParams - Query parameters as key-value pairs (optional)
  * @param selectFields - Array of field names for select parameter (optional)
  * @returns Complete URL with all parameters properly encoded
- *
  * @example
  * ```typescript
  * reconstructURL("/works", { filter: "is_oa:true" }, ["id", "title", "cited_by_count"])
@@ -237,11 +231,7 @@ export function parseURL(urlString: string): ParsedURL {
  * // Returns: "/works?page=2&per-page=50"
  * ```
  */
-export function reconstructURL(
-	basePath: string,
-	queryParams?: Record<string, string>,
-	selectFields?: string[]
-): string {
+export const reconstructURL = (basePath: string, queryParams?: Record<string, string>, selectFields?: string[]): string => {
 	// Handle empty base path
 	if (!basePath || typeof basePath !== "string") {
 		basePath = ""
@@ -296,4 +286,4 @@ export function reconstructURL(
 	const separator = basePath.includes("?") ? "&" : "?"
 
 	return `${basePath}${separator}${queryString}`
-}
+};

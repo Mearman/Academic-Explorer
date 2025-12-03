@@ -36,12 +36,10 @@ export interface StatusTracking {
 
 /**
  * Progress tracking utilities
+ * @param updateItem
+ * @param completeItem
  */
-export function createProgressUpdater(
-	updateItem: (id: string, updates: Record<string, unknown>) => void,
-	completeItem: (id: string, updates?: Record<string, unknown>) => void
-) {
-	return {
+export const createProgressUpdater = (updateItem: (id: string, updates: Record<string, unknown>) => void, completeItem: (id: string, updates?: Record<string, unknown>) => void) => ({
 		updateProgress: (id: string, progress: ProgressTracking) => {
 			const percentage =
 				progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0
@@ -65,5 +63,4 @@ export function createProgressUpdater(
 				...finalUpdates,
 			})
 		},
-	}
-}
+	});

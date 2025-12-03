@@ -4,9 +4,9 @@
  */
 
 import type {
+  AddToGraphListParams,
   EntityType,
   GraphListNode,
-  AddToGraphListParams,
   PruneGraphListResult,
 } from "@bibgraph/types";
 import { GRAPH_LIST_CONFIG } from "@bibgraph/types";
@@ -164,6 +164,12 @@ export class CatalogueService {
 
   /**
    * Create a new catalogue list
+   * @param params
+   * @param params.title
+   * @param params.description
+   * @param params.type
+   * @param params.tags
+   * @param params.isPublic
    */
   async createList(params: {
     title: string;
@@ -221,6 +227,7 @@ export class CatalogueService {
 
   /**
    * Get a specific catalogue list by ID
+   * @param listId
    */
   async getList(listId: string): Promise<CatalogueList | null> {
     try {
@@ -234,6 +241,8 @@ export class CatalogueService {
 
   /**
    * Update a catalogue list
+   * @param listId
+   * @param updates
    */
   async updateList(listId: string, updates: Partial<Pick<CatalogueList,
     "title" | "description" | "tags" | "isPublic"
@@ -262,6 +271,12 @@ export class CatalogueService {
   
   /**
    * Add an entity to a catalogue list
+   * @param params
+   * @param params.listId
+   * @param params.entityType
+   * @param params.entityId
+   * @param params.notes
+   * @param params.position
    */
   async addEntityToList(params: {
     listId: string;
@@ -343,6 +358,8 @@ export class CatalogueService {
 
   /**
    * Remove an entity from a catalogue list
+   * @param listId
+   * @param entityRecordId
    */
   async removeEntityFromList(listId: string, entityRecordId: string): Promise<void> {
     try {
@@ -373,6 +390,8 @@ export class CatalogueService {
 
   /**
    * Update entity notes
+   * @param entityRecordId
+   * @param notes
    */
   async updateEntityNotes(entityRecordId: string, notes: string): Promise<void> {
     try {
@@ -399,6 +418,7 @@ export class CatalogueService {
 
   /**
    * Get all entities in a catalogue list
+   * @param listId
    */
   async getListEntities(listId: string): Promise<CatalogueEntity[]> {
     try {
@@ -414,6 +434,8 @@ export class CatalogueService {
 
   /**
    * Add multiple entities to a catalogue list
+   * @param listId
+   * @param entities
    */
   async addEntitiesToList(listId: string, entities: Array<{
     entityType: EntityType;
@@ -514,6 +536,8 @@ export class CatalogueService {
 
   /**
    * Reorder entities in a list by updating their positions
+   * @param listId
+   * @param orderedEntityIds
    */
   async reorderEntities(listId: string, orderedEntityIds: string[]): Promise<void> {
     try {
@@ -568,6 +592,7 @@ export class CatalogueService {
 
   /**
    * Search catalogue lists by title, description, or tags
+   * @param query
    */
   async searchLists(query: string): Promise<CatalogueList[]> {
     try {
@@ -588,6 +613,7 @@ export class CatalogueService {
 
   /**
    * Generate a share token for a list
+   * @param listId
    */
   async generateShareToken(listId: string): Promise<string> {
     try {
@@ -620,6 +646,7 @@ export class CatalogueService {
 
   /**
    * Get list by share token
+   * @param shareToken
    */
   async getListByShareToken(shareToken: string): Promise<{ list: CatalogueList | null; valid: boolean }> {
     try {
@@ -652,6 +679,7 @@ export class CatalogueService {
 
   /**
    * Get list statistics
+   * @param listId
    */
   async getListStats(listId: string): Promise<{
     totalEntities: number;
@@ -763,6 +791,7 @@ export class CatalogueService {
 
   /**
    * Check if a list is a special system list
+   * @param listId
    */
   isSpecialList(listId: string): boolean {
     const specialIds: string[] = Object.values(SPECIAL_LIST_IDS);
@@ -771,6 +800,7 @@ export class CatalogueService {
 
   /**
    * Prevent deletion of special lists
+   * @param listId
    */
   async deleteList(listId: string): Promise<void> {
     if (this.isSpecialList(listId)) {
@@ -804,6 +834,12 @@ export class CatalogueService {
 
   /**
    * Add a bookmark to the special bookmarks list
+   * @param params
+   * @param params.entityType
+   * @param params.entityId
+   * @param params.url
+   * @param params.title
+   * @param params.notes
    */
   async addBookmark(params: {
     entityType: EntityType;
@@ -829,6 +865,7 @@ export class CatalogueService {
 
   /**
    * Remove a bookmark from the special bookmarks list
+   * @param entityRecordId
    */
   async removeBookmark(entityRecordId: string): Promise<void> {
     await this.removeEntityFromList(SPECIAL_LIST_IDS.BOOKMARKS, entityRecordId);
@@ -844,6 +881,8 @@ export class CatalogueService {
 
   /**
    * Check if an entity is bookmarked
+   * @param entityType
+   * @param entityId
    */
   async isBookmarked(entityType: EntityType, entityId: string): Promise<boolean> {
     try {
@@ -860,6 +899,12 @@ export class CatalogueService {
 
   /**
    * Add a page to the special history list
+   * @param params
+   * @param params.entityType
+   * @param params.entityId
+   * @param params.url
+   * @param params.title
+   * @param params.timestamp
    */
   async addToHistory(params: {
     entityType: EntityType;
@@ -951,14 +996,16 @@ export class CatalogueService {
   async getGraphList(): Promise<GraphListNode[]> {
     try {
       const entities = await this.getListEntities(SPECIAL_LIST_IDS.GRAPH);
-      return entities.map(entity => ({
-        id: entity.id!,
-        entityId: entity.entityId,
-        entityType: entity.entityType,
-        label: entity.notes || entity.entityId, // notes field stores label
-        addedAt: entity.addedAt,
-        provenance: this.parseProvenance(entity.notes),
-      }));
+      return entities
+        .filter(entity => entity.id !== undefined)
+        .map(entity => ({
+          id: String(entity.id), // Convert Dexie auto-incremented id to string
+          entityId: entity.entityId,
+          entityType: entity.entityType,
+          label: entity.notes || entity.entityId, // notes field stores label
+          addedAt: entity.addedAt,
+          provenance: this.parseProvenance(entity.notes),
+        }));
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to get graph list", { error });
       throw error;
@@ -967,6 +1014,7 @@ export class CatalogueService {
 
   /**
    * Add a node to the graph list
+   * @param params
    */
   async addToGraphList(params: AddToGraphListParams): Promise<string> {
     try {
@@ -982,14 +1030,14 @@ export class CatalogueService {
         .equals([SPECIAL_LIST_IDS.GRAPH, params.entityType, params.entityId])
         .first();
 
-      if (existing) {
+      if (existing && existing.id !== undefined) {
         // Update provenance
-        await this.db.catalogueEntities.update(existing.id!, {
+        await this.db.catalogueEntities.update(existing.id, {
           notes: this.serializeProvenanceWithLabel(params.provenance, params.label),
           addedAt: new Date(),
         });
         this.logger?.debug(LOG_CATEGORY, `Updated graph list node: ${params.entityId}`);
-        return existing.id!;
+        return existing.id;
       }
 
       // Add new node
@@ -1011,6 +1059,7 @@ export class CatalogueService {
 
   /**
    * Remove a node from the graph list
+   * @param entityId
    */
   async removeFromGraphList(entityId: string): Promise<void> {
     try {
@@ -1095,6 +1144,7 @@ export class CatalogueService {
 
   /**
    * Check if a node exists in the graph list
+   * @param entityId
    */
   async isInGraphList(entityId: string): Promise<boolean> {
     try {
@@ -1112,6 +1162,7 @@ export class CatalogueService {
 
   /**
    * Batch add nodes to graph list
+   * @param nodes
    */
   async batchAddToGraphList(nodes: AddToGraphListParams[]): Promise<string[]> {
     const addedIds: string[] = [];
@@ -1134,6 +1185,7 @@ export class CatalogueService {
 
   /**
    * Helper: Parse provenance from notes field
+   * @param notes
    */
   private parseProvenance(notes: string | undefined): GraphListNode['provenance'] {
     if (!notes) return 'user';
@@ -1150,6 +1202,8 @@ export class CatalogueService {
 
   /**
    * Helper: Serialize provenance and label to notes field
+   * @param provenance
+   * @param label
    */
   private serializeProvenanceWithLabel(provenance: string, label: string): string {
     return `provenance:${provenance}|label:${label}`;

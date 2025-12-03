@@ -3,7 +3,6 @@
  *
  * Extracts relationships from OpenAlex entity data for graph visualization.
  * This logic is shared between catalogue sources and cache sources.
- *
  * @module graph-sources/relationship-extractor
  */
 
@@ -15,40 +14,39 @@ import type { GraphSourceRelationship } from './types';
 /**
  * Normalize an OpenAlex ID by extracting the short ID from a URL if needed.
  * e.g., "https://openalex.org/A5048491430" -> "A5048491430"
+ * @param id
  */
-export function normalizeOpenAlexId(id: string): string {
+export const normalizeOpenAlexId = (id: string): string => {
   if (!id) return id;
   // If it's a URL, extract just the ID part
-  const urlMatch = id.match(/openalex\.org\/([WASIPCFTKDQ]\d+)$/i);
+  const urlMatch = id.match(/openalex\.org\/([ACDFIKPQSTW]\d+)$/i);
   if (urlMatch) {
     return urlMatch[1].toUpperCase();
   }
   // Already a short ID - normalize to uppercase
   return id.toUpperCase();
-}
+};
 
 /**
  * Extract display label from entity data based on entity type
+ * @param entityType
+ * @param entityId
+ * @param entityData
  */
-export function extractEntityLabel(
-  entityType: EntityType,
-  entityId: string,
-  entityData: Record<string, unknown>
-): string {
+export const extractEntityLabel = (entityType: EntityType, entityId: string, entityData: Record<string, unknown>): string => {
   switch (entityType) {
     case 'works':
       return (entityData.title as string) ?? (entityData.display_name as string) ?? entityId;
     default:
       return (entityData.display_name as string) ?? entityId;
   }
-}
+};
 
 /**
  * Extract relationships from a Work entity
+ * @param data
  */
-export function extractWorkRelationships(
-  data: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractWorkRelationships = (data: Record<string, unknown>): GraphSourceRelationship[] => {
   const relationships: GraphSourceRelationship[] = [];
 
   // Authorships -> Authors
@@ -118,14 +116,13 @@ export function extractWorkRelationships(
   }
 
   return relationships;
-}
+};
 
 /**
  * Extract relationships from an Author entity
+ * @param data
  */
-export function extractAuthorRelationships(
-  data: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractAuthorRelationships = (data: Record<string, unknown>): GraphSourceRelationship[] => {
   const relationships: GraphSourceRelationship[] = [];
 
   // Affiliations -> Institutions
@@ -157,14 +154,13 @@ export function extractAuthorRelationships(
   }
 
   return relationships;
-}
+};
 
 /**
  * Extract relationships from an Institution entity
+ * @param data
  */
-export function extractInstitutionRelationships(
-  data: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractInstitutionRelationships = (data: Record<string, unknown>): GraphSourceRelationship[] => {
   const relationships: GraphSourceRelationship[] = [];
   const institutionId = normalizeOpenAlexId((data.id as string) ?? '');
 
@@ -194,14 +190,13 @@ export function extractInstitutionRelationships(
   }
 
   return relationships;
-}
+};
 
 /**
  * Extract relationships from a Source entity
+ * @param data
  */
-export function extractSourceRelationships(
-  data: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractSourceRelationships = (data: Record<string, unknown>): GraphSourceRelationship[] => {
   const relationships: GraphSourceRelationship[] = [];
 
   // Host organization -> Publisher
@@ -231,14 +226,13 @@ export function extractSourceRelationships(
   }
 
   return relationships;
-}
+};
 
 /**
  * Extract relationships from a Topic entity
+ * @param data
  */
-export function extractTopicRelationships(
-  data: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractTopicRelationships = (data: Record<string, unknown>): GraphSourceRelationship[] => {
   const relationships: GraphSourceRelationship[] = [];
 
   // Field
@@ -264,15 +258,14 @@ export function extractTopicRelationships(
   }
 
   return relationships;
-}
+};
 
 /**
  * Extract relationships from any entity based on its type
+ * @param entityType
+ * @param entityData
  */
-export function extractRelationships(
-  entityType: EntityType,
-  entityData: Record<string, unknown>
-): GraphSourceRelationship[] {
+export const extractRelationships = (entityType: EntityType, entityData: Record<string, unknown>): GraphSourceRelationship[] => {
   switch (entityType) {
     case 'works':
       return extractWorkRelationships(entityData);
@@ -289,4 +282,4 @@ export function extractRelationships(
       // don't have relationships we extract
       return [];
   }
-}
+};

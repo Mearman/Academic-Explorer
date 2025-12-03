@@ -13,7 +13,7 @@
  * - Collision detection
  */
 
-import type { Position3D, BoundingBox3D } from '@bibgraph/types';
+import type { BoundingBox3D,Position3D } from '@bibgraph/types';
 
 /**
  * Item stored in the octree with associated data
@@ -93,7 +93,6 @@ export class Octree<T> {
 
   /**
    * Create a new Octree
-   *
    * @param bounds - The bounding box containing all points
    * @param config - Configuration options
    */
@@ -119,7 +118,6 @@ export class Octree<T> {
 
   /**
    * Insert an item into the octree
-   *
    * @param position - 3D position of the item
    * @param data - Associated data
    * @returns true if inserted successfully
@@ -136,7 +134,6 @@ export class Octree<T> {
 
   /**
    * Remove an item from the octree
-   *
    * @param position - Position of the item to remove
    * @param data - Data to match (uses reference equality)
    * @returns true if removed successfully
@@ -159,7 +156,6 @@ export class Octree<T> {
 
   /**
    * Query all items within a bounding box
-   *
    * @param queryBounds - The bounding box to search within
    * @returns Array of items within the bounds
    */
@@ -171,7 +167,6 @@ export class Octree<T> {
 
   /**
    * Query all items within a sphere
-   *
    * @param center - Center of the sphere
    * @param radius - Radius of the sphere
    * @returns Array of items within the sphere
@@ -204,7 +199,6 @@ export class Octree<T> {
 
   /**
    * Find the nearest neighbor to a point
-   *
    * @param point - The query point
    * @param maxDistance - Maximum search distance (optional)
    * @returns The nearest item or null if none found
@@ -225,7 +219,6 @@ export class Octree<T> {
 
   /**
    * Find the k nearest neighbors to a point
-   *
    * @param point - The query point
    * @param k - Number of neighbors to find
    * @param maxDistance - Maximum search distance (optional)
@@ -248,7 +241,6 @@ export class Octree<T> {
 
   /**
    * Query items that intersect a ray
-   *
    * @param origin - Ray origin
    * @param direction - Ray direction (should be normalized)
    * @param maxDistance - Maximum distance along ray
@@ -275,7 +267,6 @@ export class Octree<T> {
 
   /**
    * Rebuild the octree with new bounds
-   *
    * @param newBounds - New bounding box
    */
   rebuild(newBounds: BoundingBox3D): void {
@@ -559,11 +550,10 @@ export class Octree<T> {
 
 /**
  * Create an octree from an array of positioned items
+ * @param items
+ * @param config
  */
-export function createOctreeFromItems<T>(
-  items: Array<{ position: Position3D; data: T }>,
-  config?: OctreeConfig
-): Octree<T> {
+export const createOctreeFromItems = <T>(items: Array<{ position: Position3D; data: T }>, config?: OctreeConfig): Octree<T> => {
   if (items.length === 0) {
     return new Octree<T>(
       { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
@@ -597,4 +587,4 @@ export function createOctreeFromItems<T>(
   }
 
   return octree;
-}
+};

@@ -7,7 +7,7 @@
  * True persistence testing across sessions should be done via E2E tests.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it } from 'vitest';
 
 import type { CatalogueStorageProvider } from './catalogue-storage-provider.js';
 import { DexieStorageProvider } from './dexie-storage-provider.js';

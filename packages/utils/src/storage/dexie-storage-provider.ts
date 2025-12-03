@@ -4,17 +4,16 @@
  */
 
 import type {
+  AddToGraphListParams,
   EntityType,
   GraphListNode,
-  AddToGraphListParams,
   PruneGraphListResult,
 } from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
-
-import type { CatalogueList, CatalogueEntity } from './catalogue-db.js';
+import type { CatalogueEntity,CatalogueList } from './catalogue-db.js';
 import { CatalogueService } from './catalogue-db.js';
-import type { CatalogueStorageProvider, CreateListParams, AddEntityParams, AddToHistoryParams, AddBookmarkParams, ListStats, BatchAddResult, ShareAccessResult } from './catalogue-storage-provider.js';
+import type { AddBookmarkParams, AddEntityParams, AddToHistoryParams, BatchAddResult, CatalogueStorageProvider, CreateListParams, ListStats, ShareAccessResult } from './catalogue-storage-provider.js';
 
 /**
  * Production storage provider using IndexedDB via Dexie

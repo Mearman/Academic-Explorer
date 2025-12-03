@@ -300,7 +300,7 @@ interface PostHogErrorData {
 	timestamp: string
 }
 
-function sendErrorToPostHog(errorData: PostHogErrorData) {
+const sendErrorToPostHog = (errorData: PostHogErrorData) => {
 	try {
 		if (typeof window !== 'undefined' && 'posthog' in window) {
 			interface WindowWithPostHog extends Window {
@@ -317,12 +317,12 @@ function sendErrorToPostHog(errorData: PostHogErrorData) {
 		// Don't let analytics errors break the error handler
 		console.warn('Failed to send global error to PostHog:', analyticsError);
 	}
-}
+};
 
 /**
  * Get user agent group for analytics (privacy-friendly grouping)
  */
-function getUserAgentGroup(): string {
+const getUserAgentGroup = (): string => {
 	if (typeof navigator === 'undefined') return 'unknown';
 	const userAgent = navigator.userAgent.toLowerCase();
 	if (userAgent.includes('chrome')) return 'chrome';
@@ -330,7 +330,7 @@ function getUserAgentGroup(): string {
 	if (userAgent.includes('safari')) return 'safari';
 	if (userAgent.includes('edge')) return 'edge';
 	return 'other';
-}
+};
 
 // Export a singleton logger instance for simple usage
 export const logger = new GenericLogger()

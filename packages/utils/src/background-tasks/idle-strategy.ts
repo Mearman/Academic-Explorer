@@ -5,14 +5,13 @@
  * Automatically yields to the main thread for high-priority work like rendering.
  *
  * Best for: Non-urgent background tasks that can be deferred
- *
  * @module utils/background-tasks/idle-strategy
  */
 
 import type {
-  BackgroundTaskStrategy,
   BackgroundTaskOptions,
   BackgroundTaskResult,
+  BackgroundTaskStrategy,
   ProgressCallback,
 } from './types';
 
@@ -28,15 +27,13 @@ const IDLE_CALLBACK_TIMEOUT = 1000;
 /**
  * Polyfill check for requestIdleCallback
  */
-function hasIdleCallback(): boolean {
-  return typeof requestIdleCallback === 'function';
-}
+const hasIdleCallback = (): boolean => typeof requestIdleCallback === 'function';
 
 /**
  * Promisified requestIdleCallback with timeout
+ * @param timeout
  */
-function waitForIdle(timeout?: number): Promise<IdleDeadline> {
-  return new Promise((resolve) => {
+const waitForIdle = (timeout?: number): Promise<IdleDeadline> => new Promise((resolve) => {
     if (hasIdleCallback()) {
       requestIdleCallback(resolve, { timeout: timeout ?? IDLE_CALLBACK_TIMEOUT });
     } else {
@@ -49,7 +46,6 @@ function waitForIdle(timeout?: number): Promise<IdleDeadline> {
       }, 0);
     }
   });
-}
 
 /**
  * Background task strategy using requestIdleCallback

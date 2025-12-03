@@ -160,7 +160,7 @@ export interface MissingPaperDetectionResults {
  * Parse STAR file format
  * Stub implementation - applications should provide their own
  */
-export function parseSTARFile(): Promise<ParseResult> {
+export const parseSTARFile = (): Promise<ParseResult> => {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "parseSTARFile: Using stub implementation")
 	return Promise.resolve({
 		success: false,
@@ -169,20 +169,24 @@ export function parseSTARFile(): Promise<ParseResult> {
 			errors: [],
 		},
 	})
-}
+};
 
 /**
  * Create STAR dataset from parse result
  * Stub implementation - applications should provide their own
+ * @param root0
+ * @param root0.file
+ * @param root0.parseResult
+ * @param root0.reviewTopic
  */
-export function createSTARDatasetFromParseResult({
+export const createSTARDatasetFromParseResult = ({
 	file,
 	reviewTopic,
 }: {
 	file: File
 	parseResult: ParseResult
 	reviewTopic: string
-}): STARDataset {
+}): STARDataset => {
 	logger.warn(
 		DATA_EVALUATION_LOG_CONTEXT,
 		"createSTARDatasetFromParseResult: Using stub implementation"
@@ -197,18 +201,17 @@ export function createSTARDatasetFromParseResult({
 		reviewTopic,
 		uploadDate: new Date(),
 	}
-}
+};
 
 /**
  * Compare BibGraph results with ground truth
  * Stub implementation - applications should provide their own
+ * @param bibGraphResults
+ * @param dataset
+ * @param config
+ * @param onProgress
  */
-export function compareBibGraphResults(
-	bibGraphResults: WorkReference[],
-	dataset: STARDataset,
-	config: typeof DEFAULT_MATCHING_CONFIG,
-	onProgress?: (progress: ComparisonProgress) => void
-): ComparisonResults {
+export const compareBibGraphResults = (bibGraphResults: WorkReference[], dataset: STARDataset, config: typeof DEFAULT_MATCHING_CONFIG, onProgress?: (progress: ComparisonProgress) => void): ComparisonResults => {
 	logger.warn(
 		DATA_EVALUATION_LOG_CONTEXT,
 		"compareBibGraphResults: Using stub implementation"
@@ -243,43 +246,48 @@ export function compareBibGraphResults(
 		bibGraphResults,
 		timestamp: new Date().toISOString(),
 	}
-}
+};
 
 /**
  * Search based on STAR dataset
  * Stub implementation - applications should provide their own
+ * @param _dataset
  */
-export function searchBasedOnSTARDataset(
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	_dataset: STARDataset
-): WorkReference[] {
+export const searchBasedOnSTARDataset = (_dataset: STARDataset): WorkReference[] => {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "searchBasedOnSTARDataset: Using stub implementation")
 	return []
-}
+};
 
 /**
  * Calculate search coverage
  * Stub implementation - applications should provide their own
+ * @param root0
+ * @param root0.searchResults
+ * @param root0.dataset
  */
-export function calculateSearchCoverage({
+export const calculateSearchCoverage = ({
 	dataset,
 }: {
 	searchResults: WorkReference[]
 	dataset: STARDataset
-}): SearchCoverage {
+}): SearchCoverage => {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "calculateSearchCoverage: Using stub implementation")
 	return {
 		total: dataset.papers.length,
 		found: 0,
 		coverage: 0,
 	}
-}
+};
 
 /**
  * Detect potentially missing papers in search results
  * Stub implementation - applications should provide their own
+ * @param root0
+ * @param root0.dataset
+ * @param root0.config
+ * @param root0.onProgress
  */
-export function detectMissingPapers({
+export const detectMissingPapers = ({
 	dataset,
 	config,
 	onProgress,
@@ -287,7 +295,7 @@ export function detectMissingPapers({
 	dataset: STARDataset
 	config: MissingPaperDetectionConfig
 	onProgress?: (progress: DetectionProgress) => void
-}): MissingPaperDetectionResults {
+}): MissingPaperDetectionResults => {
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "detectMissingPapers: Using stub implementation")
 
 	// Simulate progress if callback provided
@@ -344,4 +352,4 @@ export function detectMissingPapers({
 			name: dataset.name || "Unknown Dataset",
 		},
 	}
-}
+};

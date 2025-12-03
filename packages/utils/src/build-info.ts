@@ -25,7 +25,7 @@ export interface BuildInfo {
  * Note: __BUILD_INFO__ is a compile-time constant replaced by Vite's define option.
  * In environments without build-time injection (e.g., CLI, tests), it falls back to defaults.
  */
-export function getBuildInfo(): BuildInfo {
+export const getBuildInfo = (): BuildInfo => {
 	// __BUILD_INFO__ is replaced at compile-time by Vite's define option
 	// Use typeof check to handle environments where it's not defined
 	if (typeof __BUILD_INFO__ !== "undefined") {
@@ -42,12 +42,13 @@ export function getBuildInfo(): BuildInfo {
 		version: "0.0.0-dev",
 		repositoryUrl: "https://github.com/Mearman/BibGraph",
 	}
-}
+};
 
 /**
  * Format build timestamp to human-readable string
+ * @param timestamp
  */
-export function formatBuildTimestamp(timestamp: string): string {
+export const formatBuildTimestamp = (timestamp: string): string => {
 	try {
 		const date = new Date(timestamp)
 		return date.toLocaleString("en-US", {
@@ -61,18 +62,21 @@ export function formatBuildTimestamp(timestamp: string): string {
 	} catch {
 		return "Unknown"
 	}
-}
+};
 
 /**
  * Generate GitHub commit URL
+ * @param root0
+ * @param root0.repositoryUrl
+ * @param root0.commitHash
  */
-export function getCommitUrl({
+export const getCommitUrl = ({
 	repositoryUrl,
 	commitHash,
 }: {
 	repositoryUrl: string
 	commitHash: string
-}): string {
+}): string => {
 	if (commitHash === "unknown" || !repositoryUrl) {
 		return repositoryUrl || "#"
 	}
@@ -80,18 +84,21 @@ export function getCommitUrl({
 	// Handle both github.com and raw GitHub URLs
 	const baseUrl = repositoryUrl.replace(/\.git$/, "")
 	return `${baseUrl}/commit/${commitHash}`
-}
+};
 
 /**
  * Generate GitHub release URL
+ * @param root0
+ * @param root0.repositoryUrl
+ * @param root0.version
  */
-export function getReleaseUrl({
+export const getReleaseUrl = ({
 	repositoryUrl,
 	version,
 }: {
 	repositoryUrl: string
 	version: string
-}): string {
+}): string => {
 	if (version === "0.0.0-dev" || !repositoryUrl) {
 		return repositoryUrl || "#"
 	}
@@ -103,16 +110,17 @@ export function getReleaseUrl({
 	const tagVersion = version.startsWith("v") ? version : `v${version}`
 
 	return `${baseUrl}/releases/tag/${tagVersion}`
-}
+};
 
 /**
  * Get relative time since build
+ * @param buildTimestamp
  */
-export function getRelativeBuildTime(buildTimestamp: string): string {
+export const getRelativeBuildTime = (buildTimestamp: string): string => {
 	try {
 		const buildDate = new Date(buildTimestamp)
 		return getRelativeTime(buildDate)
 	} catch {
 		return "unknown time ago"
 	}
-}
+};

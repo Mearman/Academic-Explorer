@@ -1,16 +1,15 @@
 /**
  * Unit tests for WebGL detection utility
- *
  * @vitest-environment jsdom
  * @module webgl-detection.unit.test
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   detectWebGLCapabilities,
-  isWebGLAvailable,
   getRecommendedRendererSettings,
+  isWebGLAvailable,
   resetWebGLDetectionCache,
   type WebGLDetectionResult,
 } from './webgl-detection';

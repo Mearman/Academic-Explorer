@@ -5,7 +5,7 @@
  * Handles differences between local development (public/ directory) and production (GitHub Pages URLs).
  */
 
-import { EnvironmentDetector, type BuildContext } from "./environment-detector.js"
+import { type BuildContext,EnvironmentDetector } from "./environment-detector.js"
 
 /**
  * Static data path configuration
@@ -87,6 +87,7 @@ export class CacheConfigFactory {
 
 	/**
 	 * Create static data paths configuration based on environment
+	 * @param context
 	 */
 	static createStaticDataPaths(context: BuildContext): StaticDataPaths {
 		if (context.isDevelopment && context.isDevServer) {
@@ -150,6 +151,7 @@ export class CacheConfigFactory {
 
 	/**
 	 * Create cache storage configuration based on environment
+	 * @param context
 	 */
 	static createCacheStorageConfig(context: BuildContext): CacheStorageConfig {
 		if (context.isDevelopment) {
@@ -198,6 +200,7 @@ export class CacheConfigFactory {
 
 	/**
 	 * Create network configuration based on environment
+	 * @param context
 	 */
 	static createNetworkConfig(context: BuildContext): NetworkConfig {
 		if (context.isDevelopment) {
@@ -258,6 +261,7 @@ export class CacheConfigFactory {
 
 	/**
 	 * Create complete cache configuration for current environment
+	 * @param context
 	 */
 	static createCacheConfig(context?: BuildContext): CacheConfig {
 		const envContext = context ?? EnvironmentDetector.getBuildContext()
@@ -272,6 +276,9 @@ export class CacheConfigFactory {
 
 	/**
 	 * Get optimized configuration for specific use cases
+	 * @param root0
+	 * @param root0.useCase
+	 * @param root0.context
 	 */
 	static createOptimizedConfig({
 		useCase,
@@ -367,29 +374,27 @@ export class CacheConfigFactory {
 /**
  * Convenience function to get current cache configuration
  */
-export function getCurrentCacheConfig(): CacheConfig {
-	return CacheConfigFactory.createCacheConfig()
-}
+export const getCurrentCacheConfig = (): CacheConfig => CacheConfigFactory.createCacheConfig();
 
 /**
  * Convenience function to get optimized cache configuration
+ * @param useCase
  */
-export function getOptimizedCacheConfig(
-	useCase: "research" | "production" | "testing" | "development"
-): CacheConfig {
-	return CacheConfigFactory.createOptimizedConfig({ useCase })
-}
+export const getOptimizedCacheConfig = (useCase: "research" | "production" | "testing" | "development"): CacheConfig => CacheConfigFactory.createOptimizedConfig({ useCase });
 
 /**
  * Get static data URL for a given path
+ * @param root0
+ * @param root0.relativePath
+ * @param root0.config
  */
-export function getStaticDataUrl({
+export const getStaticDataUrl = ({
 	relativePath,
 	config,
 }: {
 	relativePath: string
 	config?: CacheConfig
-}): string {
+}): string => {
 	const cacheConfig = config ?? getCurrentCacheConfig()
 	const { paths } = cacheConfig
 
@@ -402,18 +407,21 @@ export function getStaticDataUrl({
 
 	// For relative paths, assume current origin
 	return `${paths.baseUrl}${normalizedPath}`
-}
+};
 
 /**
  * Get OpenAlex data URL for a given entity path
+ * @param root0
+ * @param root0.entityPath
+ * @param root0.config
  */
-export function getOpenAlexDataUrl({
+export const getOpenAlexDataUrl = ({
 	entityPath,
 	config,
 }: {
 	entityPath: string
 	config?: CacheConfig
-}): string {
+}): string => {
 	const cacheConfig = config ?? getCurrentCacheConfig()
 	const { paths } = cacheConfig
 
@@ -425,4 +433,4 @@ export function getOpenAlexDataUrl({
 	}
 
 	return `${paths.openalexBaseUrl}${normalizedPath}`
-}
+};

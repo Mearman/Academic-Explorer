@@ -5,7 +5,7 @@
  * Provides type-safe cache strategy selection based on environment detection.
  */
 
-import { EnvironmentMode, type BuildContext } from "./environment-detector.js"
+import { type BuildContext,EnvironmentMode } from "./environment-detector.js"
 
 /**
  * Cache strategy enumeration
@@ -160,6 +160,7 @@ export interface CacheStrategyConfig {
 export class CacheStrategySelector {
 	/**
 	 * Get default cache strategy for environment mode
+	 * @param mode
 	 */
 	static getDefaultStrategy(mode: EnvironmentMode): CacheStrategy {
 		switch (mode) {
@@ -179,6 +180,7 @@ export class CacheStrategySelector {
 
 	/**
 	 * Get cache strategy configuration for specific strategy
+	 * @param strategy
 	 */
 	static getStrategyConfig(strategy: CacheStrategy): CacheStrategyConfig {
 		switch (strategy) {
@@ -361,6 +363,12 @@ export class CacheStrategySelector {
 
 	/**
 	 * Select optimal cache strategy based on build context
+	 * @param root0
+	 * @param root0.context
+	 * @param root0.options
+	 * @param root0.options.useCase
+	 * @param root0.options.offline
+	 * @param root0.options.debug
 	 */
 	static selectStrategy({
 		context,
@@ -414,6 +422,7 @@ export class CacheStrategySelector {
 
 	/**
 	 * Get all available strategies for current environment
+	 * @param context
 	 */
 	static getAvailableStrategies(context: BuildContext): CacheStrategy[] {
 		const strategies: CacheStrategy[] = []
@@ -448,10 +457,9 @@ export class CacheStrategySelector {
 
 /**
  * Convenience function to get cache strategy configuration
+ * @param strategy
  */
-export function getCacheStrategyConfig(strategy: CacheStrategy): CacheStrategyConfig {
-	return CacheStrategySelector.getStrategyConfig(strategy)
-}
+export const getCacheStrategyConfig = (strategy: CacheStrategy): CacheStrategyConfig => CacheStrategySelector.getStrategyConfig(strategy);
 
 // Note: getCurrentCacheStrategy() is exported from mode-switcher.ts
 // to avoid circular dependencies

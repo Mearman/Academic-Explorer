@@ -3,7 +3,6 @@
  *
  * Unified interface for executing tasks without blocking the main thread.
  * Supports multiple strategies: idle callbacks, scheduler API, and Web Workers.
- *
  * @module utils/background-tasks/types
  */
 

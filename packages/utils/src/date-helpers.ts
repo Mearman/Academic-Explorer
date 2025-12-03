@@ -5,81 +5,81 @@
 
 /**
  * Format a date to ISO string (YYYY-MM-DD)
+ * @param date
  */
-export function formatDateToISO(date: Date): string {
+export const formatDateToISO = (date: Date): string => {
 	const parts = date.toISOString().split("T")
 	return parts[0] ?? ""
-}
+};
 
 /**
  * Format a date to a human-readable string
+ * @param date
  */
-export function formatDateToHuman(date: Date): string {
-	return (
-		date.toLocaleDateString("en-US", {
+export const formatDateToHuman = (date: Date): string => date.toLocaleDateString("en-US", {
 			year: "numeric",
 			month: "long",
 			day: "numeric",
-		}) || ""
-	)
-}
+		}) || "";
 
 /**
  * Format a date to a short string (MM/DD/YYYY)
+ * @param date
  */
-export function formatDateToShort(date: Date): string {
-	return (
-		date.toLocaleDateString("en-US", {
+export const formatDateToShort = (date: Date): string => date.toLocaleDateString("en-US", {
 			year: "numeric",
 			month: "2-digit",
 			day: "2-digit",
-		}) || ""
-	)
-}
+		}) || "";
 
 /**
  * Parse an ISO date string to Date object
+ * @param dateString
  */
-export function parseISODate(dateString: string): Date | null {
+export const parseISODate = (dateString: string): Date | null => {
 	if (!dateString) return null
 
 	const date = new Date(dateString)
 	return isNaN(date.getTime()) ? null : date
-}
+};
 
 /**
  * Get the current date as ISO string
  */
-export function getCurrentDateISO(): string {
-	return formatDateToISO(new Date())
-}
+export const getCurrentDateISO = (): string => formatDateToISO(new Date());
 
 /**
  * Get the current timestamp in milliseconds
  */
-export function getCurrentTimestamp(): number {
-	return Date.now()
-}
+export const getCurrentTimestamp = (): number => Date.now();
 
 /**
  * Calculate the difference between two dates in days
+ * @param root0
+ * @param root0.date1
+ * @param root0.date2
  */
-export function daysBetween({ date1, date2 }: { date1: Date; date2: Date }): number {
+export const daysBetween = ({ date1, date2 }: { date1: Date; date2: Date }): number => {
 	const msPerDay = 24 * 60 * 60 * 1000
 	return Math.floor((date2.getTime() - date1.getTime()) / msPerDay)
-}
+};
 
 /**
  * Calculate the difference between two dates in milliseconds
+ * @param root0
+ * @param root0.date1
+ * @param root0.date2
  */
-export function msBetween({ date1, date2 }: { date1: Date; date2: Date }): number {
-	return Math.abs(date2.getTime() - date1.getTime())
-}
+export const msBetween = ({ date1, date2 }: { date1: Date; date2: Date }): number => Math.abs(date2.getTime() - date1.getTime());
 
 /**
  * Check if a date is within a certain range
+ * @param root0
+ * @param root0.date
+ * @param root0.startDate
+ * @param root0.endDate
  */
-export function isDateInRange({
+export const isDateInRange = ({
 	date,
 	startDate,
 	endDate,
@@ -87,126 +87,135 @@ export function isDateInRange({
 	date: Date
 	startDate: Date
 	endDate: Date
-}): boolean {
-	return date >= startDate && date <= endDate
-}
+}): boolean => date >= startDate && date <= endDate;
 
 /**
  * Add days to a date
+ * @param root0
+ * @param root0.date
+ * @param root0.days
  */
-export function addDays({ date, days }: { date: Date; days: number }): Date {
+export const addDays = ({ date, days }: { date: Date; days: number }): Date => {
 	const result = new Date(date)
 	result.setDate(result.getDate() + days)
 	return result
-}
+};
 
 /**
  * Add months to a date
+ * @param root0
+ * @param root0.date
+ * @param root0.months
  */
-export function addMonths({ date, months }: { date: Date; months: number }): Date {
+export const addMonths = ({ date, months }: { date: Date; months: number }): Date => {
 	const result = new Date(date)
 	result.setMonth(result.getMonth() + months)
 	return result
-}
+};
 
 /**
  * Add years to a date
+ * @param root0
+ * @param root0.date
+ * @param root0.years
  */
-export function addYears({ date, years }: { date: Date; years: number }): Date {
+export const addYears = ({ date, years }: { date: Date; years: number }): Date => {
 	const result = new Date(date)
 	result.setFullYear(result.getFullYear() + years)
 	return result
-}
+};
 
 /**
  * Get the start of the day (00:00:00)
+ * @param date
  */
-export function startOfDay(date: Date): Date {
+export const startOfDay = (date: Date): Date => {
 	const result = new Date(date)
 	result.setHours(0, 0, 0, 0)
 	return result
-}
+};
 
 /**
  * Get the end of the day (23:59:59.999)
+ * @param date
  */
-export function endOfDay(date: Date): Date {
+export const endOfDay = (date: Date): Date => {
 	const result = new Date(date)
 	result.setHours(23, 59, 59, 999)
 	return result
-}
+};
 
 /**
  * Get the start of the month
+ * @param date
  */
-export function startOfMonth(date: Date): Date {
+export const startOfMonth = (date: Date): Date => {
 	const result = new Date(date)
 	result.setDate(1)
 	result.setHours(0, 0, 0, 0)
 	return result
-}
+};
 
 /**
  * Get the end of the month
+ * @param date
  */
-export function endOfMonth(date: Date): Date {
+export const endOfMonth = (date: Date): Date => {
 	const result = new Date(date)
 	result.setMonth(result.getMonth() + 1, 0)
 	result.setHours(23, 59, 59, 999)
 	return result
-}
+};
 
 /**
  * Get the start of the year
+ * @param date
  */
-export function startOfYear(date: Date): Date {
+export const startOfYear = (date: Date): Date => {
 	const result = new Date(date)
 	result.setMonth(0, 1)
 	result.setHours(0, 0, 0, 0)
 	return result
-}
+};
 
 /**
  * Get the end of the year
+ * @param date
  */
-export function endOfYear(date: Date): Date {
+export const endOfYear = (date: Date): Date => {
 	const result = new Date(date)
 	result.setMonth(11, 31)
 	result.setHours(23, 59, 59, 999)
 	return result
-}
+};
 
 /**
  * Check if two dates are the same day
+ * @param root0
+ * @param root0.date1
+ * @param root0.date2
  */
-export function isSameDay({ date1, date2 }: { date1: Date; date2: Date }): boolean {
-	return (
-		date1.getFullYear() === date2.getFullYear() &&
+export const isSameDay = ({ date1, date2 }: { date1: Date; date2: Date }): boolean => date1.getFullYear() === date2.getFullYear() &&
 		date1.getMonth() === date2.getMonth() &&
-		date1.getDate() === date2.getDate()
-	)
-}
+		date1.getDate() === date2.getDate();
 
 /**
  * Check if a date is today
+ * @param date
  */
-export function isToday(date: Date): boolean {
-	return isSameDay({ date1: date, date2: new Date() })
-}
+export const isToday = (date: Date): boolean => isSameDay({ date1: date, date2: new Date() });
 
 /**
  * Check if a date is in the past
+ * @param date
  */
-export function isPast(date: Date): boolean {
-	return date < new Date()
-}
+export const isPast = (date: Date): boolean => date < new Date();
 
 /**
  * Check if a date is in the future
+ * @param date
  */
-export function isFuture(date: Date): boolean {
-	return date > new Date()
-}
+export const isFuture = (date: Date): boolean => date > new Date();
 
 /**
  * Get relative time string (e.g., "2 hours ago", "in 3 days")
@@ -214,8 +223,10 @@ export function isFuture(date: Date): boolean {
  * Note: If the date appears to be significantly in the future (>1 week),
  * it likely indicates a system clock mismatch and returns "just now" to avoid
  * confusing displays like "in 1 year" for recent builds.
+ * @param date
+ * @param baseDate
  */
-export function getRelativeTime(date: Date, baseDate: Date = new Date()): string {
+export const getRelativeTime = (date: Date, baseDate: Date = new Date()): string => {
 	const diffMs = date.getTime() - baseDate.getTime()
 	const isPastDate = diffMs < 0
 	const absDiffMs = Math.abs(diffMs)
@@ -245,12 +256,13 @@ export function getRelativeTime(date: Date, baseDate: Date = new Date()): string
 	}
 
 	return "just now"
-}
+};
 
 /**
  * Format duration in milliseconds to human readable string
+ * @param durationMs
  */
-export function formatDuration(durationMs: number): string {
+export const formatDuration = (durationMs: number): string => {
 	const seconds = Math.floor(durationMs / 1000)
 	const minutes = Math.floor(seconds / 60)
 	const hours = Math.floor(minutes / 60)
@@ -269,19 +281,21 @@ export function formatDuration(durationMs: number): string {
 	}
 
 	return `${seconds}s`
-}
+};
 
 /**
  * Format elapsed time from a start time
+ * @param startTime
  */
-export function formatElapsed(startTime: number): string {
-	return formatDuration(Date.now() - startTime)
-}
+export const formatElapsed = (startTime: number): string => formatDuration(Date.now() - startTime);
 
 /**
  * Create a date range array between two dates
+ * @param startDate
+ * @param endDate
+ * @param stepDays
  */
-export function createDateRange(startDate: Date, endDate: Date, stepDays = 1): Date[] {
+export const createDateRange = (startDate: Date, endDate: Date, stepDays = 1): Date[] => {
 	const dates: Date[] = []
 	const current = new Date(startDate)
 
@@ -291,40 +305,42 @@ export function createDateRange(startDate: Date, endDate: Date, stepDays = 1): D
 	}
 
 	return dates
-}
+};
 
 /**
  * Get the number of days in a month
+ * @param root0
+ * @param root0.year
+ * @param root0.month
  */
-export function getDaysInMonth({ year, month }: { year: number; month: number }): number {
-	return new Date(year, month + 1, 0).getDate()
-}
+export const getDaysInMonth = ({ year, month }: { year: number; month: number }): number => new Date(year, month + 1, 0).getDate();
 
 /**
  * Check if a year is a leap year
+ * @param year
  */
-export function isLeapYear(year: number): boolean {
-	return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-}
+export const isLeapYear = (year: number): boolean => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 
 /**
  * Get the week number of the year for a date
+ * @param date
  */
-export function getWeekNumber(date: Date): number {
+export const getWeekNumber = (date: Date): number => {
 	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
 	const dayNum = d.getUTCDay() || 7
 	d.setUTCDate(d.getUTCDate() + 4 - dayNum)
 	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
 	return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-}
+};
 
 /**
  * Format publication year for display
  * Handles cases where year might be null, undefined, or invalid
+ * @param year
  */
-export function formatPublicationYear(year: number | null | undefined): string {
+export const formatPublicationYear = (year: number | null | undefined): string => {
 	if (!year || year < 1000 || year > new Date().getFullYear() + 10) {
 		return "Unknown"
 	}
 	return year.toString()
-}
+};

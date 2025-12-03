@@ -171,7 +171,7 @@ const getDB = (): UserInteractionsDB => {
  * @param internalPath - Internal application path (e.g., "/authors/A5017898742")
  * @returns Full API URL (e.g., "https://api.openalex.org/authors/A5017898742")
  */
-export function internalPathToApiUrl(internalPath: string): string {
+export const internalPathToApiUrl = (internalPath: string): string => {
 	if (internalPath.startsWith('https://api.openalex.org')) {
 		return internalPath // Already an API URL
 	}
@@ -181,20 +181,20 @@ export function internalPathToApiUrl(internalPath: string): string {
 	}
 
 	return `https://api.openalex.org/${internalPath}`
-}
+};
 
 /**
  * Convert API URL to internal path
  * @param apiUrl - Full API URL (e.g., "https://api.openalex.org/authors/A5017898742")
  * @returns Internal application path (e.g., "/authors/A5017898742")
  */
-export function apiUrlToInternalPath(apiUrl: string): string {
+export const apiUrlToInternalPath = (apiUrl: string): string => {
 	if (apiUrl.startsWith('https://api.openalex.org')) {
 		return apiUrl.replace('https://api.openalex.org', '')
 	}
 
 	return apiUrl
-}
+};
 
 /**
  * Create a StoredNormalizedRequest with API URL support
@@ -203,11 +203,7 @@ export function apiUrlToInternalPath(apiUrl: string): string {
  * @param hash - Request hash for deduplication
  * @returns StoredNormalizedRequest with API URL fields populated
  */
-export function createApiUrlRequest(
-	internalPath: string,
-	params: Record<string, unknown>,
-	hash: string
-): StoredNormalizedRequest {
+export const createApiUrlRequest = (internalPath: string, params: Record<string, unknown>, hash: string): StoredNormalizedRequest => {
 	const apiUrl = internalPathToApiUrl(internalPath)
 
 	// Add query parameters to API URL if present
@@ -238,7 +234,7 @@ export function createApiUrlRequest(
 		apiUrl: fullApiUrl,
 		internalPath,
 	}
-}
+};
 
 /**
  * Service for managing user page visits and bookmarks
@@ -255,6 +251,13 @@ export class UserInteractionsService {
 	/**
 	 * Record a page visit with normalized OpenAlex request
 	 * @param request - The normalized request from @bibgraph/client
+	 * @param request.request
+	 * @param request.metadata
+	 * @param request.metadata.sessionId
+	 * @param request.metadata.referrer
+	 * @param request.metadata.duration
+	 * @param request.metadata.cached
+	 * @param request.metadata.bytesSaved
 	 */
 	async recordPageVisit({
 		request,
@@ -300,6 +303,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Get recent page visits across all pages
+	 * @param limit
 	 */
 	async getRecentPageVisits(limit = 50): Promise<PageVisitRecord[]> {
 		try {
@@ -350,6 +354,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Get bookmark by cache key
+	 * @param cacheKey
 	 */
 	async getBookmark(cacheKey: string): Promise<BookmarkRecord | null> {
 		try {
@@ -367,6 +372,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Get bookmark by hash
+	 * @param hash
 	 */
 	async getBookmarkByHash(hash: string): Promise<BookmarkRecord | null> {
 		try {
@@ -384,6 +390,11 @@ export class UserInteractionsService {
 
 	/**
 	 * Add a bookmark for a normalized request
+	 * @param root0
+	 * @param root0.request
+	 * @param root0.title
+	 * @param root0.notes
+	 * @param root0.tags
 	 */
 	async addBookmark({
 		request,
@@ -449,6 +460,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Remove a bookmark
+	 * @param bookmarkId
 	 */
 	async removeBookmark(bookmarkId: number): Promise<void> {
 		try {
@@ -474,6 +486,9 @@ export class UserInteractionsService {
 
 	/**
 	 * Update a bookmark
+	 * @param root0
+	 * @param root0.bookmarkId
+	 * @param root0.updates
 	 */
 	async updateBookmark({
 		bookmarkId,
@@ -501,6 +516,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Search bookmarks by title, notes, or tags
+	 * @param query
 	 */
 	async searchBookmarks(query: string): Promise<BookmarkRecord[]> {
 		try {
@@ -525,6 +541,9 @@ export class UserInteractionsService {
 
 	/**
 	 * Check if an entity is bookmarked
+	 * @param root0
+	 * @param root0.entityId
+	 * @param root0.entityType
 	 */
 	async isEntityBookmarked({
 		entityId,
@@ -539,6 +558,9 @@ export class UserInteractionsService {
 
 	/**
 	 * Check if a search is bookmarked
+	 * @param root0
+	 * @param root0.searchQuery
+	 * @param root0.filters
 	 */
 	async isSearchBookmarked({
 		searchQuery,
@@ -560,6 +582,9 @@ export class UserInteractionsService {
 
 	/**
 	 * Get entity bookmark
+	 * @param root0
+	 * @param root0.entityId
+	 * @param root0.entityType
 	 */
 	async getEntityBookmark({
 		entityId,
@@ -574,6 +599,9 @@ export class UserInteractionsService {
 
 	/**
 	 * Get search bookmark
+	 * @param root0
+	 * @param root0.searchQuery
+	 * @param root0.filters
 	 */
 	async getSearchBookmark({
 		searchQuery,
@@ -638,6 +666,14 @@ export class UserInteractionsService {
 
 	/**
 	 * Record page visit (legacy format for compatibility)
+	 * @param root0
+	 * @param root0.cacheKey
+	 * @param root0.metadata
+	 * @param root0.metadata.sessionId
+	 * @param root0.metadata.referrer
+	 * @param root0.metadata.duration
+	 * @param root0.metadata.cached
+	 * @param root0.metadata.bytesSaved
 	 */
 	async recordPageVisitLegacy({
 		cacheKey,
@@ -735,6 +771,8 @@ export class UserInteractionsService {
 
 	/**
 	 * Get page visits by endpoint pattern
+	 * @param endpointPattern
+	 * @param limit
 	 */
 	async getPageVisitsByEndpoint(endpointPattern: string, limit = 20): Promise<PageVisitRecord[]> {
 		try {
@@ -754,6 +792,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Get popular requests from page visits
+	 * @param limit
 	 */
 	async getPopularRequests(
 		limit = 10
@@ -787,6 +826,7 @@ export class UserInteractionsService {
 
 	/**
 	 * Remove multiple bookmarks in bulk
+	 * @param bookmarkIds
 	 */
 	async removeBookmarks(bookmarkIds: number[]): Promise<{ success: number; failed: number }> {
 		this.logger?.debug(LOG_CATEGORY, "removeBookmarks service called with:", bookmarkIds);
@@ -865,6 +905,11 @@ export class UserInteractionsService {
 
 	/**
 	 * Update tags for multiple bookmarks in bulk
+	 * @param root0
+	 * @param root0.bookmarkIds
+	 * @param root0.addTags
+	 * @param root0.removeTags
+	 * @param root0.replaceTags
 	 */
 	async updateBookmarkTags({
 		bookmarkIds,
@@ -952,6 +997,10 @@ export class UserInteractionsService {
 
 	/**
 	 * Update notes for multiple bookmarks in bulk
+	 * @param root0
+	 * @param root0.bookmarkIds
+	 * @param root0.notes
+	 * @param root0.action
 	 */
 	async updateBookmarkNotes({
 		bookmarkIds,

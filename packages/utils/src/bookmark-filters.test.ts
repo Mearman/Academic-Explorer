@@ -9,9 +9,9 @@
  */
 
 import type { Bookmark, EntityType } from "@bibgraph/types";
-import { describe, it, expect } from "vitest";
+import { describe, expect,it } from "vitest";
 
-import { filterBySearch, filterByEntityType, filterByTags } from "./bookmark-filters.js";
+import { filterByEntityType, filterBySearch, filterByTags } from "./bookmark-filters.js";
 
 // Mock bookmark data for testing
 const createMockBookmark = (

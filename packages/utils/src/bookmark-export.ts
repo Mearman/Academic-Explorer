@@ -41,8 +41,10 @@ export interface ExportOptions {
 
 /**
  * Export bookmarks to JSON format
+ * @param bookmarks
+ * @param options
  */
-export function exportToJSON(bookmarks: Bookmark[], options: ExportOptions): string {
+export const exportToJSON = (bookmarks: Bookmark[], options: ExportOptions): string => {
 	const data = bookmarks.map((bookmark) => ({
 		id: bookmark.id,
 		entityType: bookmark.entityType,
@@ -60,12 +62,14 @@ export function exportToJSON(bookmarks: Bookmark[], options: ExportOptions): str
 	}));
 
 	return JSON.stringify(data, null, 2);
-}
+};
 
 /**
  * Export bookmarks to CSV format
+ * @param bookmarks
+ * @param options
  */
-export function exportToCSV(bookmarks: Bookmark[], options: ExportOptions): string {
+export const exportToCSV = (bookmarks: Bookmark[], options: ExportOptions): string => {
 	// CSV headers
 	const headers = [
 		"Title",
@@ -96,12 +100,14 @@ export function exportToCSV(bookmarks: Bookmark[], options: ExportOptions): stri
 	});
 
 	return [headers.join(","), ...rows].join("\n");
-}
+};
 
 /**
  * Export bookmarks to Markdown format
+ * @param bookmarks
+ * @param options
  */
-export function exportToMarkdown(bookmarks: Bookmark[], options: ExportOptions): string {
+export const exportToMarkdown = (bookmarks: Bookmark[], options: ExportOptions): string => {
 	const lines: string[] = [];
 
 	// Title
@@ -173,12 +179,14 @@ export function exportToMarkdown(bookmarks: Bookmark[], options: ExportOptions):
 	}
 
 	return lines.join("\n");
-}
+};
 
 /**
  * Export bookmarks to HTML format
+ * @param bookmarks
+ * @param options
  */
-export function exportToHTML(bookmarks: Bookmark[], options: ExportOptions): string {
+export const exportToHTML = (bookmarks: Bookmark[], options: ExportOptions): string => {
 	const lines: string[] = [];
 
 	// HTML header
@@ -279,12 +287,14 @@ export function exportToHTML(bookmarks: Bookmark[], options: ExportOptions): str
 	lines.push("</html>");
 
 	return lines.join("\n");
-}
+};
 
 /**
  * Main export function that routes to the appropriate format
+ * @param bookmarks
+ * @param options
  */
-export function exportBookmarks(bookmarks: Bookmark[], options: ExportOptions): string {
+export const exportBookmarks = (bookmarks: Bookmark[], options: ExportOptions): string => {
 	switch (options.format) {
 		case "json":
 			return exportToJSON(bookmarks, options);
@@ -297,12 +307,15 @@ export function exportBookmarks(bookmarks: Bookmark[], options: ExportOptions): 
 		default:
 			throw new Error(`Unsupported export format: ${options.format}`);
 	}
-}
+};
 
 /**
  * Download exported data as a file
+ * @param content
+ * @param format
+ * @param filename
  */
-export function downloadExport(content: string, format: ExportFormat, filename?: string): void {
+export const downloadExport = (content: string, format: ExportFormat, filename?: string): void => {
 	const mimeTypes: Record<ExportFormat, string> = {
 		json: "application/json",
 		csv: "text/csv",
@@ -329,26 +342,26 @@ export function downloadExport(content: string, format: ExportFormat, filename?:
 	link.click();
 	globalThis.document.body.removeChild(link);
 	URL.revokeObjectURL(url);
-}
+};
 
 /**
  * Helper: Escape CSV values
+ * @param value
  */
-function escapeCSV(value: string): string {
+const escapeCSV = (value: string): string => {
 	if (value.includes(",") || value.includes('"') || value.includes("\n")) {
 		return `"${value.replace(/"/g, '""')}"`;
 	}
 	return value;
-}
+};
 
 /**
  * Helper: Escape HTML special characters
+ * @param value
  */
-function escapeHTML(value: string): string {
-	return value
+const escapeHTML = (value: string): string => value
 		.replace(/&/g, "&amp;")
 		.replace(/</g, "&lt;")
 		.replace(/>/g, "&gt;")
 		.replace(/"/g, "&quot;")
 		.replace(/'/g, "&#039;");
-}

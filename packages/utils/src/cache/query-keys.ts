@@ -12,8 +12,9 @@ export interface QueryParams {
 
 /**
  * Normalize a parameter value to a string for consistent cache keys
+ * @param value
  */
-function normalizeParamValue(value: unknown): string {
+const normalizeParamValue = (value: unknown): string => {
 	if (value === null || value === undefined) {
 		return ""
 	}
@@ -33,18 +34,21 @@ function normalizeParamValue(value: unknown): string {
 	if (typeof value === "symbol") return value.toString()
 	// undefined case
 	return ""
-}
+};
 
 /**
  * Create a deterministic cache key from query parameters
+ * @param root0
+ * @param root0.baseKey
+ * @param root0.params
  */
-export function createQueryKey({
+export const createQueryKey = ({
 	baseKey,
 	params,
 }: {
 	baseKey: string
 	params?: QueryParams
-}): string {
+}): string => {
 	if (!params || Object.keys(params).length === 0) {
 		return baseKey
 	}
@@ -64,38 +68,44 @@ export function createQueryKey({
 	}
 
 	return `${baseKey}?${paramPairs.join("&")}`
-}
+};
 
 /**
  * Create a cache key for a resource by ID
+ * @param root0
+ * @param root0.resourceType
+ * @param root0.id
  */
-export function createResourceKey({
+export const createResourceKey = ({
 	resourceType,
 	id,
 }: {
 	resourceType: string
 	id: string | number
-}): string {
-	return `${resourceType}:${id}`
-}
+}): string => `${resourceType}:${id}`;
 
 /**
  * Create a cache key for a collection query
+ * @param root0
+ * @param root0.resourceType
+ * @param root0.params
  */
-export function createCollectionKey({
+export const createCollectionKey = ({
 	resourceType,
 	params,
 }: {
 	resourceType: string
 	params?: QueryParams
-}): string {
-	return createQueryKey({ baseKey: `${resourceType}:collection`, params })
-}
+}): string => createQueryKey({ baseKey: `${resourceType}:collection`, params });
 
 /**
  * Create a cache key for a search query
+ * @param root0
+ * @param root0.resourceType
+ * @param root0.query
+ * @param root0.params
  */
-export function createSearchKey({
+export const createSearchKey = ({
 	resourceType,
 	query,
 	params,
@@ -103,82 +113,84 @@ export function createSearchKey({
 	resourceType: string
 	query: string
 	params?: QueryParams
-}): string {
+}): string => {
 	const searchParams = { query, ...params }
 	return createQueryKey({
 		baseKey: `${resourceType}:search`,
 		params: searchParams,
 	})
-}
+};
 
 /**
  * Extract resource type from a cache key
+ * @param cacheKey
  */
-export function extractResourceType(cacheKey: string): string | null {
+export const extractResourceType = (cacheKey: string): string | null => {
 	const colonIndex = cacheKey.indexOf(":")
 	return colonIndex > 0 ? cacheKey.substring(0, colonIndex) : null
-}
+};
 
 /**
  * Extract ID from a resource cache key
+ * @param cacheKey
  */
-export function extractResourceId(cacheKey: string): string | null {
+export const extractResourceId = (cacheKey: string): string | null => {
 	const parts = cacheKey.split(":")
 	if (parts.length >= 2 && parts[1] !== "collection" && parts[1] !== "search") {
 		return parts[1] ?? null
 	}
 	return null
-}
+};
 
 /**
  * Check if a cache key represents a collection query
+ * @param cacheKey
  */
-export function isCollectionKey(cacheKey: string): boolean {
-	return cacheKey.includes(":collection")
-}
+export const isCollectionKey = (cacheKey: string): boolean => cacheKey.includes(":collection");
 
 /**
  * Check if a cache key represents a search query
+ * @param cacheKey
  */
-export function isSearchKey(cacheKey: string): boolean {
-	return cacheKey.includes(":search")
-}
+export const isSearchKey = (cacheKey: string): boolean => cacheKey.includes(":search");
 
 /**
  * Check if a cache key represents a single resource
+ * @param cacheKey
  */
-export function isResourceKey(cacheKey: string): boolean {
-	return !isCollectionKey(cacheKey) && !isSearchKey(cacheKey) && cacheKey.includes(":")
-}
+export const isResourceKey = (cacheKey: string): boolean => !isCollectionKey(cacheKey) && !isSearchKey(cacheKey) && cacheKey.includes(":");
 
 /**
  * Generate a wildcard pattern for invalidating related cache entries
+ * @param resourceType
  */
-export function createInvalidationPattern(resourceType: string): string {
-	return `${resourceType}:*`
-}
+export const createInvalidationPattern = (resourceType: string): string => `${resourceType}:*`;
 
 /**
  * Check if a cache key matches an invalidation pattern
+ * @param root0
+ * @param root0.cacheKey
+ * @param root0.pattern
  */
-export function matchesPattern({
+export const matchesPattern = ({
 	cacheKey,
 	pattern,
 }: {
 	cacheKey: string
 	pattern: string
-}): boolean {
+}): boolean => {
 	if (pattern.endsWith("*")) {
 		const prefix = pattern.slice(0, -1)
 		return cacheKey.startsWith(prefix)
 	}
 	return cacheKey === pattern
-}
+};
 
 /**
  * Create a hash from query parameters for short cache keys
+ * @param params
  */
-export function hashParams(params: QueryParams): string {
+export const hashParams = (params: QueryParams): string => {
 	const str = JSON.stringify(params, Object.keys(params).sort())
 	let hash = 0
 	for (let i = 0; i < str.length; i++) {
@@ -187,25 +199,28 @@ export function hashParams(params: QueryParams): string {
 		hash = hash & hash // Convert to 32bit integer
 	}
 	return Math.abs(hash).toString(36)
-}
+};
 
 /**
  * Create a short cache key using parameter hashing
+ * @param root0
+ * @param root0.baseKey
+ * @param root0.params
  */
-export function createShortQueryKey({
+export const createShortQueryKey = ({
 	baseKey,
 	params,
 }: {
 	baseKey: string
 	params?: QueryParams
-}): string {
+}): string => {
 	if (!params || Object.keys(params).length === 0) {
 		return baseKey
 	}
 
 	const hash = hashParams(params)
 	return `${baseKey}#${hash}`
-}
+};
 
 /**
  * Cache key builder class for fluent API

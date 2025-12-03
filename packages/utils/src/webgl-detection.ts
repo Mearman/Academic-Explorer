@@ -39,10 +39,9 @@ let cachedResult: WebGLDetectionResult | null = null
 
 /**
  * Detect WebGL capabilities in the current browser environment
- *
  * @returns Detection result with capability information
  */
-export function detectWebGLCapabilities(): WebGLDetectionResult {
+export const detectWebGLCapabilities = (): WebGLDetectionResult => {
 	// Return cached result if available
 	if (cachedResult !== null) {
 		return cachedResult
@@ -126,26 +125,22 @@ export function detectWebGLCapabilities(): WebGLDetectionResult {
 	}
 
 	return cachedResult
-}
+};
 
 /**
  * Simple check for WebGL availability
  */
-export function isWebGLAvailable(): boolean {
-	return detectWebGLCapabilities().available
-}
+export const isWebGLAvailable = (): boolean => detectWebGLCapabilities().available;
 
 /**
  * Check specifically for WebGL2 availability
  */
-export function isWebGL2Available(): boolean {
-	return detectWebGLCapabilities().capability === 'webgl2'
-}
+export const isWebGL2Available = (): boolean => detectWebGLCapabilities().capability === 'webgl2';
 
 /**
  * Get a human-readable message for WebGL unavailability
  */
-function detectWebGLUnavailableReason(): string {
+const detectWebGLUnavailableReason = (): string => {
 	if (typeof window === 'undefined') {
 		return 'WebGL requires a browser environment'
 	}
@@ -178,24 +173,25 @@ function detectWebGLUnavailableReason(): string {
 	}
 
 	return 'WebGL is not available for unknown reasons'
-}
+};
 
 /**
  * Reset the cached detection result (useful for testing)
  */
-export function resetWebGLDetectionCache(): void {
+export const resetWebGLDetectionCache = (): void => {
 	cachedResult = null
-}
+};
 
 /**
  * Get recommended renderer settings based on WebGL capabilities
+ * @param result
  */
-export function getRecommendedRendererSettings(result: WebGLDetectionResult): {
+export const getRecommendedRendererSettings = (result: WebGLDetectionResult): {
 	antialias: boolean
 	pixelRatio: number
 	shadowMapEnabled: boolean
 	maxNodes: number
-} {
+} => {
 	if (!result.available) {
 		return {
 			antialias: false,
@@ -219,4 +215,4 @@ export function getRecommendedRendererSettings(result: WebGLDetectionResult): {
 		shadowMapEnabled: !isLowPower && result.capability === 'webgl2',
 		maxNodes: isLowPower ? 500 : (isHighEnd ? 2000 : 1000),
 	}
-}
+};

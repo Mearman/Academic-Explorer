@@ -4,7 +4,7 @@
  * for fast, isolated E2E and unit testing
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it } from 'vitest';
 
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
 import { InMemoryStorageProvider } from './in-memory-storage-provider.js';

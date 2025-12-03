@@ -247,6 +247,7 @@ export class EnvironmentDetector {
 
 	/**
 	 * Extract build info from raw build data
+	 * @param buildInfo
 	 */
 	private static extractBuildInfo(buildInfo: Record<string, unknown>): {
 		buildTimestamp?: string
@@ -386,34 +387,24 @@ export class EnvironmentDetector {
 /**
  * Convenience function to get current environment mode
  */
-export function getCurrentEnvironmentMode(): EnvironmentMode {
-	return EnvironmentDetector.detectMode()
-}
+export const getCurrentEnvironmentMode = (): EnvironmentMode => EnvironmentDetector.detectMode();
 
 /**
  * Convenience function to check if in development mode
  */
-export function isDevelopment(): boolean {
-	return EnvironmentDetector.detectMode() === EnvironmentMode.DEVELOPMENT
-}
+export const isDevelopment = (): boolean => EnvironmentDetector.detectMode() === EnvironmentMode.DEVELOPMENT;
 
 /**
  * Convenience function to check if in production mode
  */
-export function isProduction(): boolean {
-	return EnvironmentDetector.detectMode() === EnvironmentMode.PRODUCTION
-}
+export const isProduction = (): boolean => EnvironmentDetector.detectMode() === EnvironmentMode.PRODUCTION;
 
 /**
  * Convenience function to check if in test mode
  */
-export function isTest(): boolean {
-	return EnvironmentDetector.detectMode() === EnvironmentMode.TEST
-}
+export const isTest = (): boolean => EnvironmentDetector.detectMode() === EnvironmentMode.TEST;
 
 /**
  * Convenience function to get complete build context
  */
-export function getBuildContext(): BuildContext {
-	return EnvironmentDetector.getBuildContext()
-}
+export const getBuildContext = (): BuildContext => EnvironmentDetector.getBuildContext();

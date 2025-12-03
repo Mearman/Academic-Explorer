@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { formatRelativeTime, formatAbsoluteTime, formatTimestamp } from './date-formatter.js';
+import { formatAbsoluteTime, formatRelativeTime, formatTimestamp } from './date-formatter.js';
 
 describe('date-formatter', () => {
 	const FIXED_NOW = new Date('2024-03-15T12:00:00Z').getTime();

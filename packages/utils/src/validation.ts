@@ -6,8 +6,9 @@
 /**
  * Validates and returns external API response data
  * This performs basic validation before trusting external type contracts
+ * @param data
  */
-export function validateApiResponse(data: unknown): NonNullable<unknown> {
+export const validateApiResponse = (data: unknown): NonNullable<unknown> => {
 	// Basic validation that we received some data
 	if (data === null || data === undefined) {
 		throw new Error("Received null or undefined response from API")
@@ -15,85 +16,91 @@ export function validateApiResponse(data: unknown): NonNullable<unknown> {
 
 	// Return validated data that is guaranteed to be non-null
 	return data
-}
+};
 
 /**
  * Trust external API contract after validation
  * This function exists to isolate the one place where we must trust external APIs
  * All external API responses eventually need this assertion due to TypeScript limitations
+ * @param validatedData
  */
-export function trustApiContract(validatedData: NonNullable<unknown>): unknown {
-	// Return the validated data as unknown for further type checking
-	return validatedData
-}
+export const trustApiContract = (validatedData: NonNullable<unknown>): unknown => validatedData;
 
 /**
  * Type guard to verify if value is a record object
  * Returns true if the value is a valid Record<string, unknown>
+ * @param obj
  */
-export function isRecord(obj: unknown): obj is Record<string, unknown> {
-	return typeof obj === "object" && obj !== null && !Array.isArray(obj)
-}
+export const isRecord = (obj: unknown): obj is Record<string, unknown> => typeof obj === "object" && obj !== null && !Array.isArray(obj);
 
 /**
  * Safely convert validated object to record
  * This function assumes the object has already been validated as a record
+ * @param obj
  */
-export function trustObjectShape(obj: unknown): Record<string, unknown> {
+export const trustObjectShape = (obj: unknown): Record<string, unknown> => {
 	if (!isRecord(obj)) {
 		throw new Error("Object is not a valid record type")
 	}
 	// TypeScript knows this is a Record<string, unknown> after type guard
 	return obj
-}
+};
 
 /**
  * Extract a property value from an object with unknown structure
  * Returns unknown type that must be validated by caller
+ * @param root0
+ * @param root0.obj
+ * @param root0.key
  */
-export function extractProperty({
+export const extractProperty = ({
 	obj,
 	key,
 }: {
 	obj: Record<string, unknown>
 	key: string
-}): unknown {
-	return obj[key]
-}
+}): unknown => obj[key];
 
 /**
  * Type guard to check if a string is within a specific set of values
  * @param value - String to check
  * @param validValues - Array of valid values
+ * @param params
+ * @param params.value
+ * @param params.validValues
  * @returns True if value is in validValues
  */
-export function isStringInSet<T extends string>(params: {
+export const isStringInSet = <T extends string>(params: {
 	value: string
 	validValues: readonly T[]
-}): params is { value: T; validValues: readonly T[] } {
+}): params is { value: T; validValues: readonly T[] } => {
 	const { value, validValues } = params
 	return validValues.includes(value as T)
-}
+};
 
 /**
  * Safely convert string to enum-like type with validation
  * @param value - String to convert
+ * @param value.value
  * @param validValues - Array of valid enum values
+ * @param value.validValues
  * @returns Enum value if valid, null if invalid
  */
-export function safeParseEnum<T extends string>({
+export const safeParseEnum = <T extends string>({
 	value,
 	validValues,
 }: {
 	value: string
 	validValues: readonly T[]
-}): T | null {
-	return isStringInSet({ value, validValues }) ? (value as T) : null
-}
+}): T | null => isStringInSet({ value, validValues }) ? (value as T) : null;
 
 /**
  * Assert that a value is within a specific set, throwing an error if invalid
  * Use only when you're certain the value should be valid
+ * @param params
+ * @param params.value
+ * @param params.validValues
+ * @param params.typeName
  */
 export function assertStringInSet<T extends string>(params: {
 	value: string
@@ -112,85 +119,75 @@ export function assertStringInSet<T extends string>(params: {
 
 /**
  * Type guard to check if value is a string
+ * @param value
  */
-export function isString(value: unknown): value is string {
-	return typeof value === "string"
-}
+export const isString = (value: unknown): value is string => typeof value === "string";
 
 /**
  * Type guard to check if value is a number
+ * @param value
  */
-export function isNumber(value: unknown): value is number {
-	return typeof value === "number" && !isNaN(value)
-}
+export const isNumber = (value: unknown): value is number => typeof value === "number" && !isNaN(value);
 
 /**
  * Type guard to check if value is a boolean
+ * @param value
  */
-export function isBoolean(value: unknown): value is boolean {
-	return typeof value === "boolean"
-}
+export const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
 
 /**
  * Type guard to check if value is an array
+ * @param value
  */
-export function isArray(value: unknown): value is unknown[] {
-	return Array.isArray(value)
-}
+export const isArray = (value: unknown): value is unknown[] => Array.isArray(value);
 
 /**
  * Type guard to check if value is a non-empty array
+ * @param value
  */
-export function isNonEmptyArray<T>(value: unknown): value is T[] {
-	return Array.isArray(value) && value.length > 0
-}
+export const isNonEmptyArray = <T>(value: unknown): value is T[] => Array.isArray(value) && value.length > 0;
 
 /**
  * Type guard to check if value is a function
+ * @param value
  */
-export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
-	return typeof value === "function"
-}
+export const isFunction = (value: unknown): value is (...args: unknown[]) => unknown => typeof value === "function";
 
 /**
  * Type guard to check if value is null
+ * @param value
  */
-export function isNull(value: unknown): value is null {
-	return value === null
-}
+export const isNull = (value: unknown): value is null => value === null;
 
 /**
  * Type guard to check if value is undefined
+ * @param value
  */
-export function isUndefined(value: unknown): value is undefined {
-	return value === undefined
-}
+export const isUndefined = (value: unknown): value is undefined => value === undefined;
 
 /**
  * Type guard to check if value is null or undefined
+ * @param value
  */
-export function isNullish(value: unknown): value is null | undefined {
-	return value === null || value === undefined
-}
+export const isNullish = (value: unknown): value is null | undefined => value === null || value === undefined;
 
 /**
  * Type guard to check if value is defined (not null or undefined)
+ * @param value
  */
-export function isDefined<T>(value: T | null | undefined): value is T {
-	return value !== null && value !== undefined
-}
+export const isDefined = <T>(value: T | null | undefined): value is T => value !== null && value !== undefined;
 
 /**
  * Type guard to check if string is non-empty
+ * @param value
  */
-export function isNonEmptyString(value: unknown): value is string {
-	return isString(value) && value.length > 0
-}
+export const isNonEmptyString = (value: unknown): value is string => isString(value) && value.length > 0;
 
 /**
  * Type guard to check if string is a valid URL
+ * @param value
  */
-export function isValidUrl(value: unknown): value is string {
+export const isValidUrl = (value: unknown): value is string => {
 	if (!isString(value)) return false
 	try {
 		new URL(value)
@@ -198,32 +195,40 @@ export function isValidUrl(value: unknown): value is string {
 	} catch {
 		return false
 	}
-}
+};
 
 /**
  * Type guard to check if string is a valid email
+ * @param value
  */
-export function isValidEmail(value: unknown): value is string {
+export const isValidEmail = (value: unknown): value is string => {
 	if (!isString(value)) return false
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+	const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
 	return emailRegex.test(value)
-}
+};
 
 /**
  * Type guard factory for objects with specific properties
+ * @param params
+ * @param params.obj
+ * @param params.key
  */
-export function hasProperty<K extends string>(params: {
+export const hasProperty = <K extends string>(params: {
 	obj: unknown
 	key: K
-}): params is { obj: Record<K, unknown>; key: K } {
+}): params is { obj: Record<K, unknown>; key: K } => {
 	const { obj, key } = params
 	return isRecord(obj) && key in obj
-}
+};
 
 /**
  * Type guard factory for objects with specific property types
+ * @param params
+ * @param params.obj
+ * @param params.key
+ * @param params.typeGuard
  */
-export function hasPropertyOfType<T>(params: {
+export const hasPropertyOfType = <T>(params: {
 	obj: unknown
 	key: string
 	typeGuard: (value: unknown) => value is T
@@ -231,18 +236,18 @@ export function hasPropertyOfType<T>(params: {
 	obj: Record<string, unknown> & { [K in typeof params.key]: T }
 	key: string
 	typeGuard: (value: unknown) => value is T
-} {
+} => {
 	const { obj, key, typeGuard } = params
 	return hasProperty({ obj, key }) && typeGuard((obj as Record<string, unknown>)[key])
-}
+};
 
 /**
  * Create a type guard for objects matching a specific shape
+ * @param validators
  */
-export function createShapeValidator<T>(validators: {
+export const createShapeValidator = <T>(validators: {
 	[K in keyof T]: (value: unknown) => value is T[K]
-}) {
-	return (obj: unknown): obj is T => {
+}) => (obj: unknown): obj is T => {
 		if (!isRecord(obj)) return false
 
 		for (const [key, validatorFn] of Object.entries(validators)) {
@@ -257,9 +262,7 @@ export function createShapeValidator<T>(validators: {
 			}
 
 			// Additional type guard for validator function signature
-			function isValidValidator(fn: unknown): fn is (value: unknown) => boolean {
-				return typeof fn === "function"
-			}
+			const isValidValidator = (fn: unknown): fn is (value: unknown) => boolean => typeof fn === "function";
 
 			if (!isValidValidator(validatorFn)) {
 				return false
@@ -272,37 +275,42 @@ export function createShapeValidator<T>(validators: {
 		}
 
 		return true
-	}
-}
+	};
 
 /**
  * Validate that an array contains only items of a specific type
+ * @param params
+ * @param params.value
+ * @param params.itemGuard
  */
-export function isArrayOfType<T>(params: {
+export const isArrayOfType = <T>(params: {
 	value: unknown
 	itemGuard: (item: unknown) => item is T
-}): params is { value: T[]; itemGuard: (item: unknown) => item is T } {
+}): params is { value: T[]; itemGuard: (item: unknown) => item is T } => {
 	const { value, itemGuard } = params
 	return isArray(value) && value.every(itemGuard)
-}
+};
 
 /**
  * Safely parse JSON with type validation
+ * @param root0
+ * @param root0.jsonString
+ * @param root0.validator
  */
-export function safeJsonParse<T>({
+export const safeJsonParse = <T>({
 	jsonString,
 	validator,
 }: {
 	jsonString: string
 	validator: (value: unknown) => value is T
-}): T | null {
+}): T | null => {
 	try {
 		const parsed = JSON.parse(jsonString)
 		return validator(parsed) ? parsed : null
 	} catch {
 		return null
 	}
-}
+};
 
 // Define valid relation types for graph relationships
 const VALID_RELATION_TYPES = [
@@ -320,10 +328,9 @@ export type RelationType = (typeof VALID_RELATION_TYPES)[number]
 
 /**
  * Safely parse relation type with validation
+ * @param value
  */
-export function safeParseRelationType(value: string): RelationType | null {
-	return safeParseEnum({ value, validValues: VALID_RELATION_TYPES })
-}
+export const safeParseRelationType = (value: string): RelationType | null => safeParseEnum({ value, validValues: VALID_RELATION_TYPES });
 
 // Define valid expansion targets for graph expansion
 const VALID_EXPANSION_TARGETS = [
@@ -342,7 +349,6 @@ export type ExpansionTarget = (typeof VALID_EXPANSION_TARGETS)[number]
 
 /**
  * Safely parse expansion target with validation
+ * @param value
  */
-export function safeParseExpansionTarget(value: string): ExpansionTarget | null {
-	return safeParseEnum({ value, validValues: VALID_EXPANSION_TARGETS })
-}
+export const safeParseExpansionTarget = (value: string): ExpansionTarget | null => safeParseEnum({ value, validValues: VALID_EXPANSION_TARGETS });

@@ -4,9 +4,9 @@
  * Demonstrates functionality of parseURL, extractSelectFields, and reconstructURL
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, expect,it } from "vitest"
 
-import { parseURL, extractSelectFields, reconstructURL } from "./url-parser"
+import { extractSelectFields, parseURL, reconstructURL } from "./url-parser"
 
 describe("extractSelectFields", () => {
 	it("should extract fields from comma-separated string", () => {

@@ -4,23 +4,22 @@
  * This interface defines the contract for catalogue storage providers.
  * Implementations can use different backends (IndexedDB, in-memory, remote API, etc.)
  * while maintaining consistent behavior for all catalogue operations.
- *
- * @package @bibgraph/utils
+ * @package
  * @see {@link https://github.com/joe/BibGraph/specs/001-storage-abstraction/spec.md}
  */
 
 import type {
+  AddToGraphListParams,
   EntityType,
   GraphListNode,
-  AddToGraphListParams,
   PruneGraphListResult,
 } from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
 
 import type {
-  CatalogueList,
   CatalogueEntity,
+  CatalogueList,
   ListType,
 } from './catalogue-db.js';
 
@@ -141,11 +140,9 @@ export interface CatalogueStorageProvider {
 
   /**
    * Create a new catalogue list
-   *
    * @param params - List creation parameters
    * @returns Promise resolving to the new list ID (UUID)
    * @throws {Error} If list creation fails (e.g., validation error, storage full)
-   *
    * @example
    * ```typescript
    * const listId = await provider.createList({
@@ -161,11 +158,9 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get a specific list by ID
-   *
    * @param listId - Unique identifier of the list
    * @returns Promise resolving to list or null if not found
    * @throws {Error} If storage operation fails (but not if list doesn't exist)
-   *
    * @example
    * ```typescript
    * const list = await provider.getList("a1b2c3d4-...");
@@ -178,10 +173,8 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get all lists ordered by updatedAt (descending)
-   *
    * @returns Promise resolving to array of lists (empty if none exist)
    * @throws {Error} If storage operation fails
-   *
    * @example
    * ```typescript
    * const allLists = await provider.getAllLists();
@@ -194,12 +187,10 @@ export interface CatalogueStorageProvider {
    * Update list properties
    *
    * Automatically updates the list's `updatedAt` timestamp.
-   *
    * @param listId - ID of the list to update
    * @param updates - Partial object with fields to update
    * @returns Promise resolving when update completes
    * @throws {Error} If list not found or update fails
-   *
    * @example
    * ```typescript
    * await provider.updateList("a1b2c3d4-...", {
@@ -219,11 +210,9 @@ export interface CatalogueStorageProvider {
    * This operation cascades to delete:
    * - All catalogue entities in the list
    * - All share records for the list
-   *
    * @param listId - ID of the list to delete
    * @returns Promise resolving when deletion completes
    * @throws {Error} If list not found, is a special system list, or deletion fails
-   *
    * @example
    * ```typescript
    * try {
@@ -247,11 +236,9 @@ export interface CatalogueStorageProvider {
    *
    * Automatically assigns position to end of list if not specified.
    * Updates the parent list's `updatedAt` timestamp.
-   *
    * @param params - Entity addition parameters
    * @returns Promise resolving to the new entity record ID (UUID)
    * @throws {Error} If list not found, entity already exists, type mismatch, or add fails
-   *
    * @example
    * ```typescript
    * const entityRecordId = await provider.addEntityToList({
@@ -266,11 +253,9 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get all entities in a list, sorted by position
-   *
    * @param listId - ID of the list
    * @returns Promise resolving to array of entities (empty if none exist)
    * @throws {Error} If storage operation fails
-   *
    * @example
    * ```typescript
    * const entities = await provider.getListEntities("a1b2c3d4-...");
@@ -285,12 +270,10 @@ export interface CatalogueStorageProvider {
    * Remove an entity from a list
    *
    * Updates the parent list's `updatedAt` timestamp.
-   *
    * @param listId - ID of the list containing the entity
    * @param entityRecordId - ID of the catalogue entity record (not the OpenAlex entity ID)
    * @returns Promise resolving when removal completes
    * @throws {Error} If entity not found or removal fails
-   *
    * @example
    * ```typescript
    * await provider.removeEntityFromList("a1b2c3d4-...", "e1f2g3h4-...");
@@ -302,12 +285,10 @@ export interface CatalogueStorageProvider {
    * Update notes for an entity
    *
    * Updates the parent list's `updatedAt` timestamp.
-   *
    * @param entityRecordId - ID of the catalogue entity record
    * @param notes - New notes content (max 5000 characters)
    * @returns Promise resolving when update completes
    * @throws {Error} If entity not found or update fails
-   *
    * @example
    * ```typescript
    * await provider.updateEntityNotes("e1f2g3h4-...", "Key paper for literature review");
@@ -320,12 +301,10 @@ export interface CatalogueStorageProvider {
    *
    * This operation is more efficient than multiple `addEntityToList()` calls.
    * Failures are handled gracefully - partial success is possible.
-   *
    * @param listId - ID of the list
    * @param entities - Array of entities to add
    * @returns Promise resolving to success/failed counts
    * @throws {Error} If list not found
-   *
    * @example
    * ```typescript
    * const result = await provider.addEntitiesToList("a1b2c3d4-...", [
@@ -349,12 +328,10 @@ export interface CatalogueStorageProvider {
    *
    * Takes an ordered array of entity record IDs and updates their positions
    * to match the array order. This operation is atomic.
-   *
    * @param listId - ID of the list containing the entities
    * @param orderedEntityIds - Array of entity record IDs in the desired order
    * @returns Promise resolving when reorder completes
    * @throws {Error} If list not found, entity IDs invalid, or reorder fails
-   *
    * @example
    * ```typescript
    * // Move entity at index 2 to index 0
@@ -373,11 +350,9 @@ export interface CatalogueStorageProvider {
    * Search lists by title, description, or tags
    *
    * Case-insensitive search across all text fields.
-   *
    * @param query - Search query string
    * @returns Promise resolving to array of matching lists
    * @throws {Error} If search operation fails
-   *
    * @example
    * ```typescript
    * const results = await provider.searchLists("machine learning");
@@ -388,11 +363,9 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get statistics about entities in a list
-   *
    * @param listId - ID of the list
    * @returns Promise resolving to entity count statistics
    * @throws {Error} If list not found or stats calculation fails
-   *
    * @example
    * ```typescript
    * const stats = await provider.getListStats("a1b2c3d4-...");
@@ -411,11 +384,9 @@ export interface CatalogueStorageProvider {
    *
    * Creates a share record with expiration (default: 1 year).
    * Updates the list to set `isPublic: true` and assign `shareToken`.
-   *
    * @param listId - ID of the list to share
    * @returns Promise resolving to the generated share token (UUID)
    * @throws {Error} If list not found or token generation fails
-   *
    * @example
    * ```typescript
    * const token = await provider.generateShareToken("a1b2c3d4-...");
@@ -430,11 +401,9 @@ export interface CatalogueStorageProvider {
    *
    * Automatically increments access count and updates last accessed timestamp.
    * Checks token expiration and returns valid=false if expired.
-   *
    * @param shareToken - The share token (UUID)
    * @returns Promise resolving to share access result
    * @throws {Error} If token lookup fails (but not if token doesn't exist)
-   *
    * @example
    * ```typescript
    * const result = await provider.getListByShareToken("f1e2d3c4-...");
@@ -456,10 +425,8 @@ export interface CatalogueStorageProvider {
    *
    * Creates system lists if they don't already exist.
    * Safe to call multiple times (idempotent).
-   *
    * @returns Promise resolving when initialization completes
    * @throws {Error} If initialization fails
-   *
    * @example
    * ```typescript
    * // Call on app startup
@@ -472,10 +439,8 @@ export interface CatalogueStorageProvider {
    * Check if a list is a special system list
    *
    * System lists (Bookmarks, History) cannot be deleted or modified by users.
-   *
    * @param listId - ID of the list to check
    * @returns True if list is system-managed, false otherwise
-   *
    * @example
    * ```typescript
    * if (provider.isSpecialList(listId)) {
@@ -489,11 +454,9 @@ export interface CatalogueStorageProvider {
    * Add an entity to the Bookmarks system list
    *
    * Appends URL to notes for reference.
-   *
    * @param params - Bookmark parameters
    * @returns Promise resolving to the entity record ID
    * @throws {Error} If entity already bookmarked or add fails
-   *
    * @example
    * ```typescript
    * await provider.addBookmark({
@@ -509,11 +472,9 @@ export interface CatalogueStorageProvider {
 
   /**
    * Remove an entity from the Bookmarks system list
-   *
    * @param entityRecordId - ID of the bookmark entity record
    * @returns Promise resolving when removal completes
    * @throws {Error} If bookmark not found or removal fails
-   *
    * @example
    * ```typescript
    * await provider.removeBookmark("e1f2g3h4-...");
@@ -523,10 +484,8 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get all bookmarked entities
-   *
    * @returns Promise resolving to array of bookmark entities
    * @throws {Error} If retrieval fails
-   *
    * @example
    * ```typescript
    * const bookmarks = await provider.getBookmarks();
@@ -537,12 +496,10 @@ export interface CatalogueStorageProvider {
 
   /**
    * Check if an entity is bookmarked
-   *
    * @param entityType - Type of the entity
    * @param entityId - OpenAlex ID of the entity
    * @returns Promise resolving to true if bookmarked, false otherwise
    * @throws {Error} If check fails
-   *
    * @example
    * ```typescript
    * const isBookmarked = await provider.isBookmarked("works", "W2741809807");
@@ -558,11 +515,9 @@ export interface CatalogueStorageProvider {
    *
    * Updates timestamp if entity already exists in history.
    * Appends URL and title to notes for reference.
-   *
    * @param params - History entry parameters
    * @returns Promise resolving to the entity record ID
    * @throws {Error} If add fails
-   *
    * @example
    * ```typescript
    * await provider.addToHistory({
@@ -577,10 +532,8 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get all history entries
-   *
    * @returns Promise resolving to array of history entities
    * @throws {Error} If retrieval fails
-   *
    * @example
    * ```typescript
    * const history = await provider.getHistory();
@@ -595,10 +548,8 @@ export interface CatalogueStorageProvider {
    * Clear all browsing history
    *
    * Removes all entities from the History system list.
-   *
    * @returns Promise resolving when history is cleared
    * @throws {Error} If clear operation fails
-   *
    * @example
    * ```typescript
    * await provider.clearHistory();
@@ -609,10 +560,8 @@ export interface CatalogueStorageProvider {
 
   /**
    * Get all user-created lists (excludes Bookmarks and History)
-   *
    * @returns Promise resolving to array of non-system lists
    * @throws {Error} If retrieval fails
-   *
    * @example
    * ```typescript
    * const userLists = await provider.getNonSystemLists();
@@ -630,10 +579,8 @@ export interface CatalogueStorageProvider {
    *
    * Returns all nodes currently in the persistent graph working set.
    * Nodes are ordered by addedAt timestamp (newest first).
-   *
    * @returns Promise resolving to array of graph list nodes
    * @throws {Error} If retrieval fails
-   *
    * @example
    * ```typescript
    * const nodes = await provider.getGraphList();
@@ -651,12 +598,10 @@ export interface CatalogueStorageProvider {
    * Adds a new node to the persistent graph working set. If a node with the
    * same entityId already exists, updates its provenance to the most recent.
    * Enforces size limit (max 1000 nodes). Throws error if list is full.
-   *
    * @param params - Node parameters (entityId, entityType, label, provenance)
    * @returns Promise resolving to node ID
    * @throws {Error} If graph list is full (1000 nodes)
    * @throws {Error} If addition fails
-   *
    * @example
    * ```typescript
    * const nodeId = await provider.addToGraphList({
@@ -675,11 +620,9 @@ export interface CatalogueStorageProvider {
    * Removes a specific node from the persistent graph working set.
    * Also removes all edges connected to this node from the graph visualization.
    * No-op if node doesn't exist in graph list.
-   *
    * @param entityId - OpenAlex entity ID to remove
    * @returns Promise resolving when removal complete
    * @throws {Error} If removal fails
-   *
    * @example
    * ```typescript
    * await provider.removeFromGraphList('W2741809807');
@@ -694,10 +637,8 @@ export interface CatalogueStorageProvider {
    * Removes all nodes from the persistent graph working set.
    * Also cancels any ongoing auto-population tasks.
    * Graph list will be empty after this operation.
-   *
    * @returns Promise resolving when clear complete
    * @throws {Error} If clear operation fails
-   *
    * @example
    * ```typescript
    * await provider.clearGraphList();
@@ -711,10 +652,8 @@ export interface CatalogueStorageProvider {
    *
    * Returns the number of nodes currently in the graph list.
    * Used for size limit checks and warnings.
-   *
    * @returns Promise resolving to node count
    * @throws {Error} If size retrieval fails
-   *
    * @example
    * ```typescript
    * const size = await provider.getGraphListSize();
@@ -731,10 +670,8 @@ export interface CatalogueStorageProvider {
    * Removes auto-populated nodes that are older than 24 hours.
    * User-added, collection-load, and expansion nodes are never pruned.
    * This is used to keep the graph list manageable and remove stale data.
-   *
    * @returns Promise resolving to prune result (count and IDs of removed nodes)
    * @throws {Error} If prune operation fails
-   *
    * @example
    * ```typescript
    * const result = await provider.pruneGraphList();
@@ -748,11 +685,9 @@ export interface CatalogueStorageProvider {
    *
    * Efficiently checks if a specific entity is in the graph list.
    * Useful for UI states (e.g., "In graph" badge).
-   *
    * @param entityId - OpenAlex entity ID to check
    * @returns Promise resolving to true if node exists in graph list
    * @throws {Error} If check fails
-   *
    * @example
    * ```typescript
    * const inGraph = await provider.isInGraphList('W2741809807');
@@ -769,11 +704,9 @@ export interface CatalogueStorageProvider {
    * Efficiently adds multiple nodes in a single transaction.
    * Skips nodes that already exist (updates provenance instead).
    * Respects size limit (stops adding when limit reached).
-   *
    * @param nodes - Array of nodes to add
    * @returns Promise resolving to array of added node IDs
    * @throws {Error} If batch operation fails
-   *
    * @example
    * ```typescript
    * const ids = await provider.batchAddToGraphList([
@@ -788,7 +721,6 @@ export interface CatalogueStorageProvider {
 
 /**
  * Factory function type for creating storage providers
- *
  * @example
  * ```typescript
  * // Production: IndexedDB

@@ -50,10 +50,9 @@ export interface UseEntityRouteResult<T = unknown> {
  * Currently stubbed to allow the utils package to build.
  *
  * TODO: Implement with proper app-specific hooks or move to apps/web
+ * @param config
  */
-export function useEntityRoute<T = unknown>(
-	config: EntityRouteConfig
-): UseEntityRouteResult<T> {
+export const useEntityRoute = <T = unknown>(config: EntityRouteConfig): UseEntityRouteResult<T> => {
 	const params = useParams({ strict: false }) as Record<string, string>;
 	const search = useSearch({ strict: false }) as Record<string, unknown>;
 	const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -61,7 +60,7 @@ export function useEntityRoute<T = unknown>(
 	// Extract entity ID from params using the config's paramKey
 	const rawId = params[config.paramKey] || "";
 	// Safely clean the entity ID - handle undefined/null cases
-	const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/(?:.*?)openalex\.org\//, "") : "";
+	const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/.*?openalex\.org\//, "") : "";
 
 	return {
 		cleanEntityId,
@@ -82,4 +81,4 @@ export function useEntityRoute<T = unknown>(
 		},
 		routeSearch: search,
 	};
-}
+};

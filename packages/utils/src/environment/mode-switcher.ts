@@ -6,17 +6,16 @@
  */
 
 import { logger } from "../logger.js"
-
-import { CacheConfigFactory, type CacheConfig } from "./cache-config.js"
+import { type CacheConfig,CacheConfigFactory } from "./cache-config.js"
 import {
-	CacheStrategySelector,
-	CacheStrategy,
+	CacheBackendType,
 	CacheOperation,
 	CachePriority,
-	CacheBackendType,
+	CacheStrategy,
 	type CacheStrategyConfig,
+	CacheStrategySelector,
 } from "./cache-strategies.js"
-import { EnvironmentDetector, EnvironmentMode, type BuildContext } from "./environment-detector.js"
+import { type BuildContext,EnvironmentDetector, EnvironmentMode } from "./environment-detector.js"
 
 
 /**
@@ -68,6 +67,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Initialize mode switcher with optional overrides
+	 * @param options
 	 */
 	static initialize(options: ModeOptions = {}): RuntimeEnvironmentConfig {
 		const context = this.createEnvironmentContext(options)
@@ -105,6 +105,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Reconfigure with new options
+	 * @param options
 	 */
 	static reconfigure(options: ModeOptions): RuntimeEnvironmentConfig {
 		return this.initialize(options)
@@ -112,6 +113,8 @@ export class ModeSwitcher {
 
 	/**
 	 * Switch to specific mode
+	 * @param mode
+	 * @param additionalOptions
 	 */
 	static switchToMode(
 		mode: "development" | "production" | "test",
@@ -125,6 +128,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Switch to research mode
+	 * @param options
 	 */
 	static switchToResearchMode(options: Omit<ModeOptions, "useCase"> = {}): RuntimeEnvironmentConfig {
 		return this.initialize({
@@ -135,6 +139,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Switch to offline mode
+	 * @param options
 	 */
 	static switchToOfflineMode(options: Omit<ModeOptions, "offline"> = {}): RuntimeEnvironmentConfig {
 		return this.initialize({
@@ -145,6 +150,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Switch to debug mode
+	 * @param options
 	 */
 	static switchToDebugMode(options: Omit<ModeOptions, "debug"> = {}): RuntimeEnvironmentConfig {
 		return this.initialize({
@@ -155,6 +161,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Add configuration change listener
+	 * @param listener
 	 */
 	static addConfigListener(listener: (config: RuntimeEnvironmentConfig) => void): () => void {
 		this._listeners.push(listener)
@@ -193,6 +200,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Validate configuration compatibility
+	 * @param options
 	 */
 	static validateConfiguration(options: ModeOptions): {
 		valid: boolean
@@ -251,6 +259,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Create environment context with potential overrides
+	 * @param options
 	 */
 	private static createEnvironmentContext(options: ModeOptions): BuildContext {
 		let context = EnvironmentDetector.getBuildContext()
@@ -277,6 +286,9 @@ export class ModeSwitcher {
 
 	/**
 	 * Create cache configuration based on context and options
+	 * @param root0
+	 * @param root0.context
+	 * @param root0.options
 	 */
 	private static createCacheConfiguration({
 		context,
@@ -314,6 +326,9 @@ export class ModeSwitcher {
 
 	/**
 	 * Select cache strategy based on context and options
+	 * @param root0
+	 * @param root0.context
+	 * @param root0.options
 	 */
 	private static selectCacheStrategy({
 		context,
@@ -338,6 +353,9 @@ export class ModeSwitcher {
 
 	/**
 	 * Create strategy configuration with overrides
+	 * @param root0
+	 * @param root0.strategy
+	 * @param root0.options
 	 */
 	private static createStrategyConfiguration({
 		strategy,
@@ -382,6 +400,7 @@ export class ModeSwitcher {
 
 	/**
 	 * Notify all listeners of configuration changes
+	 * @param config
 	 */
 	private static notifyListeners(config: RuntimeEnvironmentConfig): void {
 		for (const listener of this._listeners) {
@@ -409,12 +428,16 @@ export class ModeSwitcher {
 
 /**
  * Get current cache strategy
+ * @param options
+ * @param options.useCase
+ * @param options.offline
+ * @param options.debug
  */
-export function getCurrentCacheStrategy(options?: {
+export const getCurrentCacheStrategy = (options?: {
 	useCase?: "research" | "production" | "development" | "testing"
 	offline?: boolean
 	debug?: boolean
-}): CacheStrategy {
+}): CacheStrategy => {
 	if (options) {
 		const config = ModeSwitcher.initialize(options)
 		return config.strategy
@@ -422,84 +445,74 @@ export function getCurrentCacheStrategy(options?: {
 
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.strategy
-}
+};
 
 /**
  * Get current cache configuration
  */
-export function getCurrentCacheConfiguration(): CacheConfig {
+export const getCurrentCacheConfiguration = (): CacheConfig => {
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.cacheConfig
-}
+};
 
 /**
  * Get current strategy configuration
  */
-export function getCurrentStrategyConfiguration(): CacheStrategyConfig {
+export const getCurrentStrategyConfiguration = (): CacheStrategyConfig => {
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.strategyConfig
-}
+};
 
 /**
  * Check if specific cache operation is supported
+ * @param operation
  */
-export function isCacheOperationSupported(operation: CacheOperation): boolean {
+export const isCacheOperationSupported = (operation: CacheOperation): boolean => {
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.strategyConfig.operations.includes(operation)
-}
+};
 
 /**
  * Get default cache priority for current environment
  */
-export function getDefaultCachePriority(): CachePriority {
+export const getDefaultCachePriority = (): CachePriority => {
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.strategyConfig.defaultPriority
-}
+};
 
 /**
  * Check if debug mode is enabled
  */
-export function isDebugMode(): boolean {
+export const isDebugMode = (): boolean => {
 	const config = ModeSwitcher.getCurrentConfig()
 	return config.strategyConfig.debug
-}
+};
 
 /**
  * Get environment description for current configuration
  */
-export function getEnvironmentDescription(): string {
-	return EnvironmentDetector.getEnvironmentDescription()
-}
+export const getEnvironmentDescription = (): string => EnvironmentDetector.getEnvironmentDescription();
 
 /**
  * Initialize environment with research-optimized settings
+ * @param options
  */
-export function initializeResearchEnvironment(
-	options: Omit<ModeOptions, "useCase"> = {}
-): RuntimeEnvironmentConfig {
-	return ModeSwitcher.switchToResearchMode(options)
-}
+export const initializeResearchEnvironment = (options: Omit<ModeOptions, "useCase"> = {}): RuntimeEnvironmentConfig => ModeSwitcher.switchToResearchMode(options);
 
 /**
  * Initialize environment with production-optimized settings
+ * @param options
  */
-export function initializeProductionEnvironment(
-	options: Omit<ModeOptions, "useCase"> = {}
-): RuntimeEnvironmentConfig {
-	return ModeSwitcher.reconfigure({
+export const initializeProductionEnvironment = (options: Omit<ModeOptions, "useCase"> = {}): RuntimeEnvironmentConfig => ModeSwitcher.reconfigure({
 		...options,
 		useCase: "production",
-	})
-}
+	});
 
 /**
  * Initialize environment with development-optimized settings
+ * @param options
  */
-export function initializeDevelopmentEnvironment(
-	options: Omit<ModeOptions, "useCase"> = {}
-): RuntimeEnvironmentConfig {
-	return ModeSwitcher.reconfigure({
+export const initializeDevelopmentEnvironment = (options: Omit<ModeOptions, "useCase"> = {}): RuntimeEnvironmentConfig => ModeSwitcher.reconfigure({
 		...options,
 		useCase: "development",
-	})
-}
+	});

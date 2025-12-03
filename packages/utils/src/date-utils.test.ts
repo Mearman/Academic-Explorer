@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect,it } from 'vitest'
 
 import {
-	isDataVersionSelectorVisible,
-	getVersionSelectorCutoffDate,
 	getDaysUntilVersionSelectorHidden,
+	getVersionSelectorCutoffDate,
+	isDataVersionSelectorVisible,
 } from './date-utils'
 
 describe('date-utils', () => {
