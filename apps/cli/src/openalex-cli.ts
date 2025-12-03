@@ -682,7 +682,7 @@ program
 		}
 
 		const validatedOptions = optionsValidation.data
-		const coverage = await cli.getFieldCoverage(entityTypeValidation.data, entityId)
+		const coverage = await cli.getFieldCoverage()
 
 		if (validatedOptions.format === "json") {
 			console.log(JSON.stringify(coverage, null, 2))
@@ -737,7 +737,7 @@ program
 		const validatedOptions = optionsValidation.data
 		const limit =
 			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
-		const entities = await cli.getWellPopulatedEntities(entityTypeValidation.data, limit)
+		const entities = await cli.getWellPopulatedEntities()
 
 		if (validatedOptions.format === "json") {
 			console.log(JSON.stringify(entities, null, 2))
@@ -777,7 +777,7 @@ program
 		const validatedOptions = optionsValidation.data
 		const limit =
 			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
-		const collections = await cli.getPopularCollections(limit)
+		const collections = await cli.getPopularCollections()
 
 		if (validatedOptions.format === "json") {
 			console.log(JSON.stringify(collections, null, 2))
