@@ -61,7 +61,7 @@ Previous Amendments:
 
 ## Shared Rationale
 
-This PhD research project requires maintainable, reliable code for academic reproducibility and demonstrations. Key constraints include: serial test execution due to memory limits, CI/CD deployment requirements, research productivity needs, and academic demonstration reliability. All principles serve these research context requirements while maintaining production-quality standards.
+This PhD research project requires maintainable, reliable code for academic reproducibility and demonstrations. Key constraints include: CI/CD deployment requirements, research productivity needs, and academic demonstration reliability. All principles serve these research context requirements while maintaining production-quality standards.
 
 ## Core Principles
 
@@ -106,7 +106,6 @@ const mockStorage = {} as jest.Mocked<StorageProvider>;
 - NEVER use generic names like `foo.test.ts` or `foo.spec.ts`
 
 **E2E test requirements**:
-- MUST run serially (prevent OOM errors)
 - MUST have isolated storage state
 - MUST complete within 2 seconds
 
@@ -139,11 +138,11 @@ const mockStorage = {} as jest.Mocked<StorageProvider>;
 
 ### V. Performance & Memory
 
-**Memory constraints are real**. Tests MUST run serially. Force simulation calculations MUST run in Web Workers.
+**Memory constraints are real**. Force simulation calculations MUST run in Web Workers.
 
 **Requirements**: Bundle warnings at 800kB, failures at 1MB; storage operations ≤2s; unit tests ≤100ms; graph simulations handle 1000+ nodes; deterministic layouts use fixed seeds.
 
-**Rationale**: Prevents OOM failures during research experiments and ensures responsive interactions.
+**Rationale**: Ensures responsive interactions during research experiments and maintains optimal performance.
 
 ### VI. Atomic Conventional Commits (NON-NEGOTIABLE)
 
@@ -521,7 +520,7 @@ pnpm validate  # typecheck → test → build → lint
 
 # Individual checks
 pnpm typecheck  # TypeScript validation across ALL packages
-pnpm test       # Full test suite (serially managed)
+pnpm test       # Full test suite
 pnpm build      # Production build verification
 pnpm lint       # ESLint checking across ALL packages
 pnpm audit      # Security vulnerability scan
@@ -576,7 +575,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 
 ### Quality Pipeline (MUST pass before commit)
 1. `pnpm typecheck` - TypeScript validation across ALL packages
-2. `pnpm test` - Full test suite (serial execution)
+2. `pnpm test` - Full test suite
 3. `pnpm build` - Production build verification
 4. `pnpm lint` - ESLint checking across ALL packages
 

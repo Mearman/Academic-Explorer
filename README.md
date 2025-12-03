@@ -30,7 +30,7 @@ pnpm cli get A5017898742          # Fetch specific entity
 ### Testing & Quality
 
 ```bash
-pnpm test                         # Run all tests (serial, 5-min timeout)
+pnpm test                         # Run all tests
 pnpm test:web                     # Web app tests only
 pnpm test:packages                # Package tests only
 pnpm typecheck                    # TypeScript validation
@@ -231,7 +231,7 @@ See [Project Constitution](.specify/memory/constitution.md) for development prin
 
 ## Testing
 
-Tests run **serially** to prevent OOM errors. Run with `pnpm test` or `pnpm validate` for full pipeline.
+Run with `pnpm test` or `pnpm validate` for full pipeline.
 
 ## CI/CD
 
