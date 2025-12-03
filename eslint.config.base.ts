@@ -255,6 +255,10 @@ export default tseslint.config([
             "unicorn/no-array-reverse": "off", // In-place reverse is intentional
             "unicorn/prefer-node-protocol": "off", // node: protocol not required
             "unicorn/no-typeof-undefined": "off", // typeof checks are valid for cross-environment code
+            "unicorn/prefer-dom-node-dataset": "off", // Playwright Locator doesn't support .dataset in TypeScript; getAttribute() is type-safe alternative
+            "unicorn/no-useless-undefined": "off", // TypeScript function signatures require explicit undefined for optional parameters
+            "unicorn/prefer-includes": "off", // .includes() doesn't provide type narrowing needed for type guards; .some() with comparison is required
+            "unicorn/prefer-math-min-max": "off", // Math.max/min only work on numbers; ternary required for string comparisons (ISO date strings)
 
             // SonarJS rules (from flat/recommended)
             ...sonarjsPlugin.configs.recommended.rules,
