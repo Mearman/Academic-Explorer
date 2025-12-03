@@ -52,6 +52,7 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
           logger.debug("catalogue-ui", "QR code generated successfully", {
             urlLength: shareUrl.length
           });
+          return void 0;
         })
         .catch((error) => {
           logger.error("catalogue-ui", "Failed to generate QR code", {

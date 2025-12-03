@@ -100,6 +100,14 @@ const ComparisonResults = () => {
   const [selectedDatasetForMissingPapers, setSelectedDatasetForMissingPapers] =
     useState<string | null>(null);
 
+  const updateComparisonProgress = (datasetId: string, progress: number) => {
+    setComparisonRuns((prev) =>
+      prev.map((run) =>
+        run.id === `run_${datasetId}` ? { ...run, progress } : run,
+      ),
+    );
+  };
+
   // Load STAR datasets from localStorage on component mount
   useEffect(() => {
     try {
@@ -196,13 +204,7 @@ const ComparisonResults = () => {
         academicExplorerResults,
         dataset,
         DEFAULT_MATCHING_CONFIG,
-        (progress) => {
-          setComparisonRuns((prev) =>
-            prev.map((run) =>
-              run.id === `run_${datasetId}` ? { ...run, progress } : run,
-            ),
-          );
-        },
+        (progress: number) => updateComparisonProgress(datasetId, progress),
       );
 
       const executionTime = performance.now() - startTime;

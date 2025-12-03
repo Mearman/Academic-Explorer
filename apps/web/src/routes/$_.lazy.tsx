@@ -17,6 +17,22 @@ const ExternalIdRoute = () => {
   // Serialize routeSearch to avoid infinite loop from object reference changes
   const routeSearchKey = JSON.stringify(routeSearch);
 
+  const buildQueryString = (params: Record<string, string>): string => {
+    return Object.entries(params)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+  };
+
+  const updateUrlWithSearchParams = (preservedSearchParams: Record<string, string>) => {
+    // After navigation completes, update the URL with unencoded query parameters
+    if (Object.keys(preservedSearchParams).length > 0) {
+      const queryString = buildQueryString(preservedSearchParams);
+      const fullUrl = `${window.location.pathname}${window.location.hash.split("?")[0]}?${queryString}`;
+      window.history.replaceState(null, "", fullUrl);
+    }
+    return void 0;
+  };
+
   useEffect(() => {
     const resolveExternalId = async () => {
       try {
@@ -301,16 +317,7 @@ const ExternalIdRoute = () => {
           void navigate({
             to: specificRoute,
             replace: true,
-          }).then(() => {
-            // After navigation completes, update the URL with unencoded query parameters
-            if (Object.keys(preservedSearchParams).length > 0) {
-              const queryString = Object.entries(preservedSearchParams)
-                .map(([key, value]) => `${key}=${value}`)
-                .join("&");
-              const fullUrl = `${window.location.pathname}${window.location.hash.split("?")[0]}?${queryString}`;
-              window.history.replaceState(null, "", fullUrl);
-            }
-          });
+          }).then(() => updateUrlWithSearchParams(preservedSearchParams));
         } else if (
           detection?.entityType &&
           (detection.detectionMethod === "OpenAlex ID" ||
@@ -324,16 +331,7 @@ const ExternalIdRoute = () => {
           void navigate({
             to: entityRoute,
             replace: true,
-          }).then(() => {
-            // After navigation completes, update the URL with unencoded query parameters
-            if (Object.keys(preservedSearchParams).length > 0) {
-              const queryString = Object.entries(preservedSearchParams)
-                .map(([key, value]) => `${key}=${value}`)
-                .join("&");
-              const fullUrl = `${window.location.pathname}${window.location.hash.split("?")[0]}?${queryString}`;
-              window.history.replaceState(null, "", fullUrl);
-            }
-          });
+          }).then(() => updateUrlWithSearchParams(preservedSearchParams));
         } else {
           // Instead of throwing, immediately redirect to search
           logger.warn(

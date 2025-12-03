@@ -442,32 +442,50 @@ const generateSampleGraph = (config: SampleGraphConfig = DEFAULT_CONFIG): { node
     return true;
   };
 
+  const createEdgesForSourceNode = (
+    sourceId: string,
+    targetNodes: string[],
+    type: RelationType,
+    probability: number
+  ): void => {
+    // Skip based on probability
+    if (random() > probability) return;
+
+    // Determine number of edges to create
+    const numEdges = Math.min(
+      randomInRange([1, Math.max(1, edgesPerNodeRange[1])], random),
+      targetNodes.length
+    );
+
+    // Shuffle targets and try to add edges
+    const shuffledTargets = [...targetNodes].sort(() => random() - 0.5);
+    for (let i = 0; i < numEdges && i < shuffledTargets.length; i++) {
+      tryAddEdge(sourceId, shuffledTargets[i], type);
+    }
+  };
+
+  const processSourceTargetPair = (
+    sourceType: EntityType,
+    targetType: EntityType,
+    type: RelationType,
+    probability: number,
+    componentIndex: number
+  ): void => {
+    const sourceNodes = nodesByTypeAndComponent.get(sourceType)?.[componentIndex] || [];
+    const targetNodes = nodesByTypeAndComponent.get(targetType)?.[componentIndex] || [];
+    if (targetNodes.length === 0) return;
+
+    sourceNodes.forEach((sourceId) => {
+      createEdgesForSourceNode(sourceId, targetNodes, type, probability);
+    });
+  };
+
   // Create edges for each relationship type within each component
   for (let c = 0; c < componentCount; c++) {
     RELATIONSHIP_DEFINITIONS.forEach(({ type, sourceTypes, targetTypes, probability }) => {
       sourceTypes.forEach((sourceType) => {
-        const sourceNodes = nodesByTypeAndComponent.get(sourceType)?.[c] || [];
-
         targetTypes.forEach((targetType) => {
-          const targetNodes = nodesByTypeAndComponent.get(targetType)?.[c] || [];
-          if (targetNodes.length === 0) return;
-
-          sourceNodes.forEach((sourceId) => {
-            // Skip based on probability
-            if (random() > probability) return;
-
-            // Determine number of edges to create
-            const numEdges = Math.min(
-              randomInRange([1, Math.max(1, edgesPerNodeRange[1])], random),
-              targetNodes.length
-            );
-
-            // Shuffle targets and try to add edges
-            const shuffledTargets = [...targetNodes].sort(() => random() - 0.5);
-            for (let i = 0; i < numEdges && i < shuffledTargets.length; i++) {
-              tryAddEdge(sourceId, shuffledTargets[i], type);
-            }
-          });
+          processSourceTargetPair(sourceType, targetType, type, probability, c);
         });
       });
     });

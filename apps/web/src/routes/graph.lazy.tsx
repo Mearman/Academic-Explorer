@@ -165,6 +165,7 @@ const EntityGraphPage = () => {
           if (result.success && (result.nodes.length > 0 || result.edges.length > 0)) {
             addNodesAndEdges(result.nodes, result.edges);
           }
+          return void 0;
         });
       }
     },

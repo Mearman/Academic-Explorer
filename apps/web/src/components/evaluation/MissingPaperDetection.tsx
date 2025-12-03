@@ -65,6 +65,12 @@ export const MissingPaperDetection = ({
     return detectionJobs.find((job) => job.datasetId === dataset.id);
   }, [detectionJobs, dataset.id]);
 
+  const updateJobProgress = (jobId: string, progress: number) => {
+    setDetectionJobs((prev) =>
+      prev.map((job) => (job.id === jobId ? { ...job, progress } : job)),
+    );
+  };
+
   const handleStartDetection = async () => {
     const jobId = "detection_" + dataset.id + "_" + Date.now().toString();
     const newJob: DetectionJob = {
@@ -86,11 +92,7 @@ export const MissingPaperDetection = ({
       const results = detectMissingPapers({
         dataset,
         config: detectionConfig,
-        onProgress: (progress) => {
-          setDetectionJobs((prev) =>
-            prev.map((job) => (job.id === jobId ? { ...job, progress } : job)),
-          );
-        },
+        onProgress: (progress: number) => updateJobProgress(jobId, progress),
       });
 
       const completedJob: DetectionJob = {
