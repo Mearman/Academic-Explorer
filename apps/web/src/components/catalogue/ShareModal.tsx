@@ -39,7 +39,7 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
   useEffect(() => {
     if (showQR && shareUrl) {
       setIsGeneratingQR(true); // T077: Set loading state
-      QRCode.toDataURL(shareUrl, {
+      void QRCode.toDataURL(shareUrl, {
         width: 200,
         margin: 1,
         color: {

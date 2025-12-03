@@ -591,7 +591,11 @@ export function CacheTierLists() {
   useEffect(() => {
     setIsLoading(true);
     loadStaticConfig();
-    Promise.all([loadCacheSummary(), loadTierStats(), loadStaticCacheEntities()]).finally(() => setIsLoading(false));
+    void Promise.all([loadCacheSummary(), loadTierStats(), loadStaticCacheEntities()])
+      .catch((error) => {
+        logger.error("cache-tier-ui", "Failed to load cache data", { error });
+      })
+      .finally(() => setIsLoading(false));
   }, [loadCacheSummary, loadStaticConfig, loadTierStats, loadStaticCacheEntities]);
 
   const handleRefreshMemory = useCallback(async () => {

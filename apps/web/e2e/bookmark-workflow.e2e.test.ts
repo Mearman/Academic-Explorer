@@ -49,12 +49,14 @@ test.describe('@workflow Bookmark Workflow', () => {
 			localStorage.clear();
 			// Clear all IndexedDB databases
 			if (window.indexedDB && window.indexedDB.databases) {
-				window.indexedDB.databases().then((dbs) => {
+				void window.indexedDB.databases().then((dbs) => {
 					dbs.forEach((db) => {
 						if (db.name) {
 							window.indexedDB.deleteDatabase(db.name);
 						}
 					});
+				}).catch(() => {
+					// Ignore errors during cleanup
 				});
 			}
 		});
