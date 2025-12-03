@@ -75,8 +75,24 @@ export const noDeprecated = createRule({
       }
     }
 
+    // Standard DOM APIs that should never be flagged as deprecated
+    const standardDOMAPIs = new Set([
+      "querySelector",
+      "querySelectorAll",
+      "getElementById",
+      "getElementsByClassName",
+      "getElementsByTagName",
+      "addEventListener",
+      "removeEventListener",
+    ]);
+
     return {
       Identifier(node: TSESTree.Identifier) {
+        // Skip standard DOM APIs that are incorrectly flagged
+        if (standardDOMAPIs.has(node.name)) {
+          return;
+        }
+
         // Skip if this identifier is a declaration
         const parent = node.parent;
         if (
