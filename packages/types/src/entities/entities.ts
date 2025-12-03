@@ -9,18 +9,18 @@ import type {
 	PartialExceptId,
 } from "./base"
 import {
-	workSchema,
 	authorSchema,
-	institutionSchema,
 	conceptSchema,
-	sourceSchema,
-	publisherSchema,
-	funderSchema,
-	topicSchema,
 	domainSchema,
 	fieldSchema,
-	subfieldSchema,
+	funderSchema,
+	institutionSchema,
 	keywordSchema,
+	publisherSchema,
+	sourceSchema,
+	subfieldSchema,
+	topicSchema,
+	workSchema,
 } from "./schemas"
 
 /**
@@ -45,9 +45,7 @@ type EntityWithWorksFieldMap = BaseEntityFieldMap & {
 
 /**
  * Generic base entity type that picks only the specified fields.
- *
  * @template Keys - Union type of allowed field names for this entity
- *
  * @example
  * type AuthorKeys = 'id' | 'display_name' | 'orcid';
  * interface Author extends BaseEntity<AuthorKeys> {
@@ -60,7 +58,6 @@ export type BaseEntity<Keys extends string = string> = {
 
 /**
  * Generic entity-with-works type that picks only the specified fields.
- *
  * @template Keys - Union type of allowed field names for this entity
  */
 export type EntityWithWorks<Keys extends string = string> = {

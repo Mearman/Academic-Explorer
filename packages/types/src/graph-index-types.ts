@@ -3,7 +3,6 @@
  *
  * Types for the persistent graph index layer.
  * These types define the IndexedDB storage schema and API contracts.
- *
  * @packageDocumentation
  */
 
@@ -20,7 +19,6 @@ import type { RelationType } from './relationships';
  *
  * State transitions are unidirectional (upgrade only):
  * stub → partial → full
- *
  * @example
  * ```typescript
  * // Node from relationship reference (ID only)

@@ -170,102 +170,97 @@ export const ENTITY_METADATA: Record<EntityType, EntityMetadataEntry> = {
 
 /**
  * Get complete metadata for an entity type
+ * @param entityType
  */
-export function getEntityMetadata(entityType: EntityType): EntityMetadataEntry {
-	return ENTITY_METADATA[entityType]
-}
+export const getEntityMetadata = (entityType: EntityType): EntityMetadataEntry => ENTITY_METADATA[entityType];
 
 /**
  * Get the singular form of an entity type (for catalogue compatibility)
+ * @param entityType
  */
-export function getEntitySingularForm(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].singularForm
-}
+export const getEntitySingularForm = (entityType: EntityType): string => ENTITY_METADATA[entityType].singularForm;
 
 /**
  * Get the ID prefix for an entity type
+ * @param entityType
  */
-export function getEntityIdPrefix(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].idPrefix
-}
+export const getEntityIdPrefix = (entityType: EntityType): string => ENTITY_METADATA[entityType].idPrefix;
 
 /**
  * Get the route path for an entity type
+ * @param entityType
  */
-export function getEntityRoutePath(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].routePath
-}
+export const getEntityRoutePath = (entityType: EntityType): string => ENTITY_METADATA[entityType].routePath;
 
 /**
  * Get the icon name for an entity type
+ * @param entityType
  */
-export function getEntityIcon(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].icon
-}
+export const getEntityIcon = (entityType: EntityType): string => ENTITY_METADATA[entityType].icon;
 
 /**
  * Get the color for an entity type
+ * @param entityType
  */
-export function getEntityColor(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].color
-}
+export const getEntityColor = (entityType: EntityType): string => ENTITY_METADATA[entityType].color;
 
 /**
  * Get the display name for an entity type
+ * @param entityType
  */
-export function getEntityDisplayName(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].displayName
-}
+export const getEntityDisplayName = (entityType: EntityType): string => ENTITY_METADATA[entityType].displayName;
 
 /**
  * Get the plural form for an entity type
+ * @param entityType
  */
-export function getEntityPlural(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].plural
-}
+export const getEntityPlural = (entityType: EntityType): string => ENTITY_METADATA[entityType].plural;
 
 /**
  * Convert singular form to plural EntityType
+ * @param singularForm
  * @example toEntityType('work') => 'works'
  */
-export function toEntityType(singularForm: string): EntityType | null {
+export const toEntityType = (singularForm: string): EntityType | null => {
 	const entry = Object.entries(ENTITY_METADATA).find(
 		([, metadata]) => metadata.singularForm === singularForm
 	)
 	return entry ? (entry[0] as EntityType) : null
-}
+};
 
 /**
  * Convert plural EntityType to singular form
+ * @param entityType
  * @example toSingularForm('works') => 'work'
  */
-export function toSingularForm(entityType: EntityType): string {
-	return ENTITY_METADATA[entityType].singularForm
-}
+export const toSingularForm = (entityType: EntityType): string => ENTITY_METADATA[entityType].singularForm;
 
 /**
  * Check if a string is a valid entity type (plural form)
+ * @param value
  */
-export function isEntityType(value: unknown): value is EntityType {
+export const isEntityType = (value: unknown): value is EntityType => {
 	if (typeof value !== "string") return false
 	return value in ENTITY_METADATA
-}
+};
 
 /**
  * Check if a string is a valid singular entity form
+ * @param value
  */
-export function isSingularEntityForm(value: unknown): boolean {
+export const isSingularEntityForm = (value: unknown): boolean => {
 	if (typeof value !== "string") return false
 	return Object.values(ENTITY_METADATA).some((metadata) => metadata.singularForm === value)
-}
+};
 
 /**
  * Detect entity type from OpenAlex ID
+ * @param openAlexId
  * @example detectEntityType('W123456') => 'works'
  */
-export function detectEntityType(openAlexId: string): EntityType | null {
+export const detectEntityType = (openAlexId: string): EntityType | null => {
 	const entry = Object.entries(ENTITY_METADATA).find(([, metadata]) =>
 		openAlexId.startsWith(metadata.idPrefix)
 	)
 	return entry ? (entry[0] as EntityType) : null
-}
+};

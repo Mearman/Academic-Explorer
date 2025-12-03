@@ -35,11 +35,10 @@ export interface KeywordGraphEdge {
 
 /**
  * Helper function to create keyword relationship edges
+ * @param workId
+ * @param keyword
  */
-export function createKeywordGraphEdge(
-	workId: string,
-	keyword: KeywordRelationship
-): KeywordGraphEdge {
+export const createKeywordGraphEdge = (workId: string, keyword: KeywordRelationship): KeywordGraphEdge => {
 	const keywordId = keyword.id
 	return {
 		id: `${workId}-work_has_keyword-${keywordId.replace('https://openalex.org/keywords/', '')}`,
@@ -51,18 +50,17 @@ export function createKeywordGraphEdge(
 		keywordDisplayName: keyword.display_name,
 		score: keyword.score
 	}
-}
+};
 
 /**
  * Type guard for keyword relationship data
+ * @param data
  */
-export function isKeywordRelationship(data: unknown): data is KeywordRelationship {
-	return typeof data === 'object' && data !== null &&
+export const isKeywordRelationship = (data: unknown): data is KeywordRelationship => typeof data === 'object' && data !== null &&
 		'id' in data &&
 		'display_name' in data &&
 		'score' in data &&
 		(typeof data.id === 'string') &&
 		(typeof data.display_name === 'string') &&
 		(typeof data.score === 'number') &&
-		data.score >= 0 && data.score <= 1
-}
+		data.score >= 0 && data.score <= 1;

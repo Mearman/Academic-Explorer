@@ -3,7 +3,6 @@
  *
  * Centralized configuration for querying related entities via OpenAlex API.
  * Defines inbound and outbound relationship queries for each entity type.
- *
  * @module relationship-queries
  */
 
@@ -102,7 +101,6 @@ export interface EmbeddedWithResolutionQuery {
 
 /**
  * Configuration for a single relationship query
- *
  * @template SourceType - The type of the source entity (the entity we're querying from)
  * @template TargetType - The type of the target entity (the entity type returned by the query)
  */
@@ -629,52 +627,35 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
 
 /**
  * Get relationship query configurations for a specific entity type
- *
  * @param entityType - The type of entity (e.g., 'authors', 'works')
  * @returns Inbound and outbound relationship query configurations
  */
-export function getEntityRelationshipQueries(
-  entityType: EntityType
-): EntityRelationshipQueries {
-  return ENTITY_RELATIONSHIP_QUERIES[entityType];
-}
+export const getEntityRelationshipQueries = (entityType: EntityType): EntityRelationshipQueries => ENTITY_RELATIONSHIP_QUERIES[entityType];
 
 /**
  * Get all inbound query configurations for an entity type
- *
  * @param entityType - The type of entity
  * @returns Array of inbound relationship query configurations
  */
-export function getInboundQueries(entityType: EntityType): RelationshipQueryConfig[] {
-  return ENTITY_RELATIONSHIP_QUERIES[entityType].inbound;
-}
+export const getInboundQueries = (entityType: EntityType): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound;
 
 /**
  * Get all outbound query configurations for an entity type
- *
  * @param entityType - The type of entity
  * @returns Array of outbound relationship query configurations
  */
-export function getOutboundQueries(entityType: EntityType): RelationshipQueryConfig[] {
-  return ENTITY_RELATIONSHIP_QUERIES[entityType].outbound;
-}
+export const getOutboundQueries = (entityType: EntityType): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound;
 
 /**
  * Check if an entity type has any inbound queries configured
- *
  * @param entityType - The type of entity
  * @returns True if inbound queries exist
  */
-export function hasInboundQueries(entityType: EntityType): boolean {
-  return ENTITY_RELATIONSHIP_QUERIES[entityType].inbound.length > 0;
-}
+export const hasInboundQueries = (entityType: EntityType): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound.length > 0;
 
 /**
  * Check if an entity type has any outbound queries configured
- *
  * @param entityType - The type of entity
  * @returns True if outbound queries exist
  */
-export function hasOutboundQueries(entityType: EntityType): boolean {
-  return ENTITY_RELATIONSHIP_QUERIES[entityType].outbound.length > 0;
-}
+export const hasOutboundQueries = (entityType: EntityType): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound.length > 0;

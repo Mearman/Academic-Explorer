@@ -35,11 +35,10 @@ export interface RepositoryGraphEdge {
 
 /**
  * Helper function to create repository relationship edges
+ * @param institutionId
+ * @param repository
  */
-export function createRepositoryGraphEdge(
-	institutionId: string,
-	repository: RepositoryRelationship
-): RepositoryGraphEdge {
+export const createRepositoryGraphEdge = (institutionId: string, repository: RepositoryRelationship): RepositoryGraphEdge => {
 	const sourceId = repository.id
 	return {
 		id: `${institutionId}-institution_has_repository-${sourceId.replace('https://openalex.org/', '')}`,
@@ -51,17 +50,16 @@ export function createRepositoryGraphEdge(
 		repositoryDisplayName: repository.display_name,
 		hostOrganizationId: repository.host_organization
 	}
-}
+};
 
 /**
  * Type guard for repository relationship data
+ * @param data
  */
-export function isRepositoryRelationship(data: unknown): data is RepositoryRelationship {
-	return typeof data === 'object' && data !== null &&
+export const isRepositoryRelationship = (data: unknown): data is RepositoryRelationship => typeof data === 'object' && data !== null &&
 		'id' in data &&
 		'display_name' in data &&
 		'host_organization' in data &&
 		(typeof data.id === 'string') &&
 		(typeof data.display_name === 'string') &&
-		(typeof data.host_organization === 'string')
-}
+		(typeof data.host_organization === 'string');

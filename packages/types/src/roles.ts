@@ -38,12 +38,11 @@ export interface RoleGraphEdge {
 
 /**
  * Helper function to create role relationship edges
+ * @param sourceId
+ * @param sourceEntityType
+ * @param role
  */
-export function createRoleGraphEdge(
-	sourceId: string,
-	sourceEntityType: EntityType,
-	role: RoleRelationship
-): RoleGraphEdge {
+export const createRoleGraphEdge = (sourceId: string, sourceEntityType: EntityType, role: RoleRelationship): RoleGraphEdge => {
 	const targetId = role.id
 	return {
 		id: `${sourceId}-has_role-${targetId.replace('https://openalex.org/', '')}-${role.role}`,
@@ -57,12 +56,13 @@ export function createRoleGraphEdge(
 		sourceEntityType,
 		targetEntityType: inferEntityTypeFromRole(role.role)
 	}
-}
+};
 
 /**
  * Infer target entity type from role name
+ * @param role
  */
-function inferEntityTypeFromRole(role: string): EntityType {
+const inferEntityTypeFromRole = (role: string): EntityType => {
 	switch (role) {
 		case 'funder':
 			return 'funders'
@@ -74,18 +74,17 @@ function inferEntityTypeFromRole(role: string): EntityType {
 			// Default to works for unknown roles
 			return 'works'
 	}
-}
+};
 
 /**
  * Type guard for role relationship data
+ * @param data
  */
-export function isRoleRelationship(data: unknown): data is RoleRelationship {
-	return typeof data === 'object' && data !== null &&
+export const isRoleRelationship = (data: unknown): data is RoleRelationship => typeof data === 'object' && data !== null &&
 		'role' in data &&
 		'id' in data &&
 		'works_count' in data &&
 		(typeof data.role === 'string') &&
 		(typeof data.id === 'string') &&
 		(typeof data.works_count === 'number') &&
-		data.works_count >= 0
-}
+		data.works_count >= 0;

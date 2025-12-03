@@ -2,7 +2,7 @@
  * Basic test for types package
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, expect,it } from "vitest"
 
 describe("Types Package", () => {
 	it("should have basic types exported", () => {

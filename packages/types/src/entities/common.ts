@@ -171,9 +171,9 @@ export type BaseAutocompleteOptions = z.infer<typeof BaseAutocompleteOptionsSche
 
 /**
  * Generic grouped response schema factory
+ * @param itemSchema
  */
-export function createGroupedResponseSchema<T>(itemSchema: z.ZodType<T>) {
-	return z.object({
+export const createGroupedResponseSchema = <T>(itemSchema: z.ZodType<T>) => z.object({
 		results: z.array(itemSchema),
 		meta: z.any(), // meta schema is complex, using any for now
 		group_by: z.array(
@@ -185,8 +185,7 @@ export function createGroupedResponseSchema<T>(itemSchema: z.ZodType<T>) {
 		),
 		next: z.string().optional(),
 		previous: z.string().optional(),
-	})
-}
+	});
 
 /**
  * Generic grouped response type

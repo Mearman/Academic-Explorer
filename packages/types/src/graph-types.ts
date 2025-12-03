@@ -383,34 +383,31 @@ export interface Visualization3DPreferences {
 
 /**
  * Type guard for Position3D
+ * @param obj
  */
-export function isPosition3D(obj: unknown): obj is Position3D {
-	return obj !== null &&
+export const isPosition3D = (obj: unknown): obj is Position3D => obj !== null &&
 		typeof obj === 'object' &&
 		'x' in obj && 'y' in obj && 'z' in obj &&
 		typeof (obj as Position3D).x === 'number' &&
 		typeof (obj as Position3D).y === 'number' &&
-		typeof (obj as Position3D).z === 'number'
-}
+		typeof (obj as Position3D).z === 'number';
 
 /**
  * Type guard for GraphNode3D
+ * @param obj
  */
-export function isGraphNode3D(obj: unknown): obj is GraphNode3D {
-	return obj !== null &&
+export const isGraphNode3D = (obj: unknown): obj is GraphNode3D => obj !== null &&
 		typeof obj === 'object' &&
 		'id' in obj && 'entityType' in obj && 'position' in obj &&
-		isPosition3D((obj as GraphNode3D).position)
-}
+		isPosition3D((obj as GraphNode3D).position);
 
 /**
  * Type guard for CameraState3D
+ * @param obj
  */
-export function isCameraState3D(obj: unknown): obj is CameraState3D {
-	return obj !== null &&
+export const isCameraState3D = (obj: unknown): obj is CameraState3D => obj !== null &&
 		typeof obj === 'object' &&
 		'position' in obj && 'target' in obj && 'up' in obj &&
 		isPosition3D((obj as CameraState3D).position) &&
 		isPosition3D((obj as CameraState3D).target) &&
-		isPosition3D((obj as CameraState3D).up)
-}
+		isPosition3D((obj as CameraState3D).up);

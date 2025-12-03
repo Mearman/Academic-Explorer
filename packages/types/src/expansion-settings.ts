@@ -317,36 +317,32 @@ export const DEFAULT_EXPANSION_SETTINGS: Record<string, ExpansionSettings> = {
 
 /**
  * Helper function to get property definitions for a given target
+ * @param target
  */
-export function getPropertiesForTarget(target: ExpansionTarget): PropertyDefinition[] {
+export const getPropertiesForTarget = (target: ExpansionTarget): PropertyDefinition[] => {
 	// For relation types, use properties of the target entity type
 	// This is a simplified mapping - in practice you might want more sophisticated logic
-	function isRelationType(value: string): boolean {
-		return Object.values(RelationType).some((relType) => relType === value)
-	}
+	const isRelationType = (value: string): boolean => Object.values(RelationType).some((relType) => relType === value);
 
 	if (isRelationType(target)) {
 		// For now, return work properties as most relations involve works
 		return ENTITY_PROPERTIES["works"] ?? []
 	}
 
-	function isEntityType(value: string): boolean {
-		return (
-			typeof value === "string" && !Object.values(RelationType).some((relType) => relType === value)
-		)
-	}
+	const isEntityType = (value: string): boolean => typeof value === "string" && !Object.values(RelationType).some((relType) => relType === value);
 
 	if (isEntityType(target)) {
 		return ENTITY_PROPERTIES[target] ?? []
 	}
 
 	return []
-}
+};
 
 /**
  * Helper function to get default settings for a target
+ * @param target
  */
-export function getDefaultSettingsForTarget(target: ExpansionTarget): ExpansionSettings {
+export const getDefaultSettingsForTarget = (target: ExpansionTarget): ExpansionSettings => {
 	const defaultSettings = DEFAULT_EXPANSION_SETTINGS[target] ?? { target }
 
 	// Return settings with proper defaults for optional properties
@@ -363,15 +359,14 @@ export function getDefaultSettingsForTarget(target: ExpansionTarget): ExpansionS
 	}
 
 	return result
-}
+};
 
 /**
  * Helper function to validate filter criteria
+ * @param filter
+ * @param property
  */
-export function validateFilterCriteria(
-	filter: FilterCriteria,
-	property: PropertyDefinition
-): boolean {
+export const validateFilterCriteria = (filter: FilterCriteria, property: PropertyDefinition): boolean => {
 	// Check if operator is valid for property type
 	switch (property.type) {
 		case "number":
@@ -392,4 +387,4 @@ export function validateFilterCriteria(
 		default:
 			return false
 	}
-}
+};

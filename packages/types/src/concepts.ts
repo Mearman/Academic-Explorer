@@ -41,11 +41,10 @@ export interface ConceptGraphEdge {
 
 /**
  * Helper function to create concept relationship edges
+ * @param workId
+ * @param concept
  */
-export function createConceptGraphEdge(
-	workId: string,
-	concept: ConceptRelationship
-): ConceptGraphEdge {
+export const createConceptGraphEdge = (workId: string, concept: ConceptRelationship): ConceptGraphEdge => {
 	const conceptId = concept.id
 	return {
 		id: `${workId}-concept-${conceptId.replace('https://openalex.org/', '')}`,
@@ -59,13 +58,13 @@ export function createConceptGraphEdge(
 		level: concept.level,
 		wikidata: concept.wikidata
 	}
-}
+};
 
 /**
  * Type guard for concept relationship data
+ * @param data
  */
-export function isConceptRelationship(data: unknown): data is ConceptRelationship {
-	return typeof data === 'object' && data !== null &&
+export const isConceptRelationship = (data: unknown): data is ConceptRelationship => typeof data === 'object' && data !== null &&
 		'id' in data &&
 		'display_name' in data &&
 		'score' in data &&
@@ -76,5 +75,4 @@ export function isConceptRelationship(data: unknown): data is ConceptRelationshi
 		(typeof data.level === 'number') &&
 		data.score >= 0 && data.score <= 1 &&
 		data.level >= 0 &&
-		('wikidata' in data ? data.wikidata === undefined || typeof data.wikidata === 'string' : true)
-}
+		('wikidata' in data ? data.wikidata === undefined || typeof data.wikidata === 'string' : true);

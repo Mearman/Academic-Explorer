@@ -4,31 +4,18 @@
 
 /**
  * Basic ID validation functions
+ * @param id
  */
-export function isOpenAlexId(id: string): boolean {
-	return /^https:\/\/openalex\.org\/[A-Z]\d+$/.test(id)
-}
+export const isOpenAlexId = (id: string): boolean => /^https:\/\/openalex\.org\/[A-Z]\d+$/.test(id);
 
-export function isValidDateString(date: string): boolean {
-	return /^\d{4}-\d{2}-\d{2}$/.test(date)
-}
+export const isValidDateString = (date: string): boolean => /^\d{4}-\d{2}-\d{2}$/.test(date);
 
-export function isValidDOI(doi: string): boolean {
-	return doi.startsWith("10.") && doi.includes("/")
-}
+export const isValidDOI = (doi: string): boolean => doi.startsWith("10.") && doi.includes("/");
 
-export function isValidORCID(orcid: string): boolean {
-	return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(orcid)
-}
+export const isValidORCID = (orcid: string): boolean => /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(orcid);
 
-export function isValidROR(ror: string): boolean {
-	return ror.startsWith("https://ror.org/") || ror.startsWith("0")
-}
+export const isValidROR = (ror: string): boolean => ror.startsWith("https://ror.org/") || ror.startsWith("0");
 
-export function isValidISSN(issn: string): boolean {
-	return /^\d{4}-\d{3}[\dX]$/.test(issn)
-}
+export const isValidISSN = (issn: string): boolean => /^\d{4}-\d{3}[\dX]$/.test(issn);
 
-export function isValidWikidataId(id: string): boolean {
-	return id.startsWith("Q") && /^\d+$/.test(id.substring(1))
-}
+export const isValidWikidataId = (id: string): boolean => id.startsWith("Q") && /^\d+$/.test(id.substring(1));

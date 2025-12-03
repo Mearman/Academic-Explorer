@@ -4,7 +4,7 @@
 
 import { isAuthor } from "./authors"
 import { isConcept } from "./concepts"
-import type { OpenAlexEntity, EntityType } from "./entities"
+import type { EntityType,OpenAlexEntity } from "./entities"
 import { isFunder } from "./funders"
 import { isInstitution } from "./institutions"
 import { isKeyword } from "./keywords"
@@ -13,7 +13,7 @@ import { isSource } from "./sources"
 import { isTopic } from "./topics"
 import { isWork } from "./works"
 
-export function getEntityType(entity: OpenAlexEntity): EntityType {
+export const getEntityType = (entity: OpenAlexEntity): EntityType => {
 	if (isWork(entity)) return "works"
 	if (isAuthor(entity)) return "authors"
 	if (isSource(entity)) return "sources"
@@ -25,11 +25,9 @@ export function getEntityType(entity: OpenAlexEntity): EntityType {
 	if (isKeyword(entity)) return "keywords"
 	// This should never happen since OpenAlexEntity is a union of all entity types
 	throw new Error(`Unknown entity type: ${JSON.stringify(entity)}`)
-}
+};
 
-export function isOpenAlexEntity(entity: unknown): entity is OpenAlexEntity {
-	return (
-		isWork(entity) ||
+export const isOpenAlexEntity = (entity: unknown): entity is OpenAlexEntity => isWork(entity) ||
 		isAuthor(entity) ||
 		isSource(entity) ||
 		isInstitution(entity) ||
@@ -37,6 +35,4 @@ export function isOpenAlexEntity(entity: unknown): entity is OpenAlexEntity {
 		isConcept(entity) ||
 		isPublisher(entity) ||
 		isFunder(entity) ||
-		isKeyword(entity)
-	)
-}
+		isKeyword(entity);

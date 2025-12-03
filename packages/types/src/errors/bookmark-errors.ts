@@ -106,9 +106,10 @@ export class BookmarkLimitExceededError extends BookmarkError {
 
 /**
  * Validates bookmark metadata using Zod schema
+ * @param metadata
  * @throws {BookmarkValidationError} If metadata is invalid
  */
-export function validateBookmarkMetadata(metadata: unknown): void {
+export const validateBookmarkMetadata = (metadata: unknown): void => {
 	const result = BookmarkMetadataSchema.safeParse(metadata);
 
 	if (!result.success) {
@@ -122,13 +123,14 @@ export function validateBookmarkMetadata(metadata: unknown): void {
 			metadata,
 		});
 	}
-}
+};
 
 /**
  * Validates a bookmark URL
+ * @param url
  * @throws {BookmarkValidationError} If URL is invalid
  */
-export function validateBookmarkUrl(url: string): void {
+export const validateBookmarkUrl = (url: string): void => {
 	// Check if URL is empty or whitespace
 	if (!url || url.trim().length === 0) {
 		throw new BookmarkValidationError("URL cannot be empty", { url });
@@ -164,21 +166,17 @@ export function validateBookmarkUrl(url: string): void {
 			{ url, originalError: String(error) },
 		);
 	}
-}
+};
 
 /**
  * Type guard to check if an error is a BookmarkError
+ * @param error
  */
-export function isBookmarkError(error: unknown): error is BookmarkError {
-	return error instanceof BookmarkError;
-}
+export const isBookmarkError = (error: unknown): error is BookmarkError => error instanceof BookmarkError;
 
 /**
  * Type guard to check if an error is a specific bookmark error type
+ * @param error
+ * @param code
  */
-export function isBookmarkErrorCode(
-	error: unknown,
-	code: BookmarkErrorCode,
-): boolean {
-	return isBookmarkError(error) && error.code === code;
-}
+export const isBookmarkErrorCode = (error: unknown, code: BookmarkErrorCode): boolean => isBookmarkError(error) && error.code === code;

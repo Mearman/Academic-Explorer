@@ -56,12 +56,11 @@ export interface EnhancedTopicGraphEdge {
 
 /**
  * Helper function to create enhanced topic relationship edges
+ * @param entityId
+ * @param entityType
+ * @param topic
  */
-export function createEnhancedTopicGraphEdge(
-	entityId: string,
-	entityType: 'author' | 'source' | 'institution',
-	topic: EnhancedTopicRelationship
-): EnhancedTopicGraphEdge {
+export const createEnhancedTopicGraphEdge = (entityId: string, entityType: 'author' | 'source' | 'institution', topic: EnhancedTopicRelationship): EnhancedTopicGraphEdge => {
 	const topicId = topic.id
 	const label = entityType === 'author' ? 'researches' : 'publishes on'
 
@@ -79,13 +78,13 @@ export function createEnhancedTopicGraphEdge(
 		fieldDisplayName: topic.field.display_name,
 		domainDisplayName: topic.domain.display_name
 	}
-}
+};
 
 /**
  * Type guard for enhanced topic relationship data
+ * @param data
  */
-export function isEnhancedTopicRelationship(data: unknown): data is EnhancedTopicRelationship {
-	return typeof data === 'object' && data !== null &&
+export const isEnhancedTopicRelationship = (data: unknown): data is EnhancedTopicRelationship => typeof data === 'object' && data !== null &&
 		'id' in data &&
 		'display_name' in data &&
 		'count' in data &&
@@ -107,5 +106,4 @@ export function isEnhancedTopicRelationship(data: unknown): data is EnhancedTopi
 		typeof data.field.id === 'string' && typeof data.field.display_name === 'string' &&
 		typeof data.domain === 'object' && data.domain !== null &&
 		'id' in data.domain && 'display_name' in data.domain &&
-		typeof data.domain.id === 'string' && typeof data.domain.display_name === 'string'
-}
+		typeof data.domain.id === 'string' && typeof data.domain.display_name === 'string';
