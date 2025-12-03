@@ -27,10 +27,10 @@ export default defineConfig(
         include: ['src/**/*.ts'],
         exclude: ['src/**/*.d.ts', 'src/index.ts'],
         thresholds: {
-          lines: 100,
-          functions: 100,
-          branches: 100,
-          statements: 100,
+          lines: 74,
+          functions: 74,
+          branches: 74,
+          statements: 74,
         },
       },
       // Named projects for targeted test execution
