@@ -14,7 +14,7 @@ const parseSearchParams = (params: URLSearchParams): Record<string, unknown> => 
   params.forEach((value, key) => {
     if (numericKeys.has(key)) {
       const num = Number(value);
-      obj[key] = isNaN(num) ? value : num;
+      obj[key] = Number.isNaN(num) ? value : num;
     } else {
       obj[key] = value;
     }

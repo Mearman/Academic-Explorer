@@ -259,14 +259,14 @@ export const FilterField = <T extends EntityFilters>({
 
       {/* Error Display */}
       {error && (
-        <Text size="xs" color="red" mt={4}>
+        <Text size="xs" c="red" mt={4}>
           {error}
         </Text>
       )}
 
       {/* Field Description */}
       {config.helpText && !compact && (
-        <Text size="xs" color="dimmed" mt={4}>
+        <Text size="xs" c="dimmed" mt={4}>
           {config.helpText}
         </Text>
       )}

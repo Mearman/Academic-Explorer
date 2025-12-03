@@ -109,7 +109,7 @@ export class MinHeap<T> {
     this.heap[index].priority = newPriority;
     this.bubbleUp(index);
 
-    return Ok(undefined);
+    return Ok(void 0);
   }
 
   /**

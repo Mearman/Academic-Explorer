@@ -42,7 +42,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       await page.waitForTimeout(3000); // Allow content to load
 
       // Check for works list or search results
-      const pageContent = await page.locator('body').innerText();
+      const pageContent = await page.locator('body').textContent();
 
       // Should see either loading content, results, or search indicators
       const hasValidContent =
@@ -185,7 +185,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
         // Removed: waitForTimeout - use locator assertions instead
         // Check page content for bookmark indicators
-        const pageContent = await page.locator('body').innerText();
+        const pageContent = await page.locator('body').textContent();
         const hasBookmarkContent =
           pageContent.includes('bioplastics') ||
           pageContent.includes('works') ||
@@ -243,7 +243,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
         expect(finalUrl).toContain('bioplastics');
 
         // Verify the page loads correctly
-        const pageContent = await page.locator('body').innerText();
+        const pageContent = await page.locator('body').textContent();
         const hasValidContent =
           pageContent.includes('Works') ||
           pageContent.includes('Loading') ||
@@ -313,7 +313,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       expect(currentUrl).toMatch(/localhost/);
 
       // Should not show browser error pages
-      const hasErrorContent = await page.locator('body').innerText();
+      const hasErrorContent = await page.locator('body').textContent();
       expect(hasErrorContent).not.toContain('Unable to connect');
       expect(hasErrorContent).not.toContain('Site cannot be reached');
     });
@@ -382,7 +382,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       expect(finalUrl).toContain('bioplastics');
 
       // Verify content loads
-      const hasValidContent = await page.locator('body').innerText();
+      const hasValidContent = await page.locator('body').textContent();
       const contentLoaded =
         hasValidContent.includes('Works') ||
         hasValidContent.includes('Loading') ||

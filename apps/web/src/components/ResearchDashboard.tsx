@@ -81,7 +81,7 @@ const QuickSearch = ({ onSearch }: QuickSearchProps) => {
           placeholder="Search academic literature..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           style={{ flex: 1 }}
         />
         <ActionIcon size="lg" onClick={handleSearch} color="blue">

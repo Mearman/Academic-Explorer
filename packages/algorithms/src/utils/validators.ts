@@ -16,7 +16,7 @@ export const validateNotNull = (input: unknown, name: string): Result<void, Inva
       input,
     });
   }
-  return Ok(undefined);
+  return Ok(void 0);
 };
 
 /**
@@ -26,7 +26,7 @@ export const validateNotNull = (input: unknown, name: string): Result<void, Inva
  */
 export const validateEdgeWeight = (edge: Edge): Result<void, InvalidWeightError> => {
   if (edge.weight === undefined) {
-    return Ok(undefined); // Optional weight is valid
+    return Ok(void 0); // Optional weight is valid
   }
 
   if (typeof edge.weight !== 'number') {
@@ -56,7 +56,7 @@ export const validateEdgeWeight = (edge: Edge): Result<void, InvalidWeightError>
     });
   }
 
-  return Ok(undefined);
+  return Ok(void 0);
 };
 
 /**
@@ -76,5 +76,5 @@ export const validateNonNegativeWeight = (edge: Edge): Result<void, NegativeWeig
     });
   }
 
-  return Ok(undefined);
+  return Ok(void 0);
 };

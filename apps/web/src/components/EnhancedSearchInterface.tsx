@@ -223,7 +223,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                 style={{ flex: 1 }}
                 size="md"
                 leftSection={<IconSearch size={16} />}
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
               <Button
                 onClick={handleSearch}

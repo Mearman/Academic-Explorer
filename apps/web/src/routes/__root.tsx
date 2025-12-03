@@ -51,7 +51,7 @@ export const Route = createRootRoute({
 
     // Check if pathname starts with /https:// or /http:// followed by api.openalex.org
     // Need to match /https://api.openalex.org/ or /http://api.openalex.org/
-    const openAlexPattern = /^\/(https?:\/\/api\.openalex\.org)\//;
+    const openAlexPattern = /^\/(?:https?:\/\/api\.openalex\.org)\//;
 
     if (openAlexPattern.test(pathname)) {
       // Strip the protocol and api.openalex.org from the pathname
@@ -135,8 +135,8 @@ export const Route = createRootRoute({
 
       if (sourceToFix) {
         // Look for collapsed protocol patterns
-        const collapsedHttpsPattern = /(^|\/)https?:\/([^/])/;
-        const collapsedRorPattern = /(^|\/)ror:\/([^/])/;
+        const collapsedHttpsPattern = /(?:^|\/)https?:\/(?:[^/])/;
+        const collapsedRorPattern = /(?:^|\/)ror:\/(?:[^/])/;
 
         let fixedSource = sourceToFix;
 
@@ -147,10 +147,10 @@ export const Route = createRootRoute({
         });
 
         // Fix collapsed https:// or http:// patterns
-        fixedSource = fixedSource.replace(collapsedHttpsPattern, '$1https://$2');
+        fixedSource = fixedSource.replace(/(^|\/)https?:\/([^/])/, '$1https://$2');
 
         // Fix collapsed ror:// patterns
-        fixedSource = fixedSource.replace(collapsedRorPattern, '$1ror://$2');
+        fixedSource = fixedSource.replace(/(^|\/)ror:\/([^/])/, '$1ror://$2');
 
         logger.debug("routing", "URL fix attempt", {
           originalSource: sourceToFix,

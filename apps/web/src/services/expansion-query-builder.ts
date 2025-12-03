@@ -81,7 +81,7 @@ const buildSortString = (sorts: SortCriteria[]): string | undefined => {
     return undefined;
   }
 
-  const sortedCriteria = sorts.sort((a, b) => a.priority - b.priority);
+  const sortedCriteria = [...sorts].sort((a, b) => a.priority - b.priority);
 
   const sortParts = sortedCriteria.map(
     (sort) => `${sort.property}:${sort.direction}`,

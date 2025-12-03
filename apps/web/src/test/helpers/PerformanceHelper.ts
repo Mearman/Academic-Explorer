@@ -45,8 +45,8 @@ export class PerformanceHelper {
 	 */
 	async getNavigationTiming(): Promise<PerformanceMetrics> {
 		const metrics = await this.page.evaluate(() => {
-			const timing = window.performance.timing;
-			const navigationStart = timing.navigationStart;
+			// Use the modern PerformanceNavigationTiming API
+			const [navigationTiming] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
 
 			// Get paint timing entries
 			const paintEntries = performance.getEntriesByType("paint");
@@ -58,8 +58,8 @@ export class PerformanceHelper {
 			);
 
 			return {
-				loadTime: timing.loadEventEnd - navigationStart,
-				domContentLoaded: timing.domContentLoadedEventEnd - navigationStart,
+				loadTime: navigationTiming ? navigationTiming.loadEventEnd : 0,
+				domContentLoaded: navigationTiming ? navigationTiming.domContentLoadedEventEnd : 0,
 				firstPaint: firstPaint?.startTime,
 				firstContentfulPaint: firstContentfulPaint?.startTime,
 			};

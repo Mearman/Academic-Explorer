@@ -372,12 +372,12 @@ const appActivityReducer = (
       const events = Object.values(state.events);
       if (events.length <= state.maxHistorySize) return state;
 
-      const sorted = events.sort((a, b) => b.timestamp - a.timestamp);
+      const sorted = [...events].sort((a, b) => b.timestamp - a.timestamp);
       const toKeep = sorted.slice(0, state.maxHistorySize);
       const toRemove = sorted.slice(state.maxHistorySize);
       const idsToRemove = toRemove
         .map((event) => Number.parseInt(event.id.split("_")[2] || "0"))
-        .filter((id) => !isNaN(id));
+        .filter((id) => !Number.isNaN(id));
 
       if (idsToRemove.length > 0) {
         getDB()

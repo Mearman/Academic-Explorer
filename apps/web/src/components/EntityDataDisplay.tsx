@@ -1277,7 +1277,7 @@ const GlobalGrid = ({ sections, colors }: GlobalGridProps) => {
       }}
     >
       {/* Sort by z-index: backgrounds first, then content */}
-      {gridItems
+      {[...gridItems]
         .sort((a, b) => a.zIndex - b.zIndex)
         .map((item) => (
           <Box

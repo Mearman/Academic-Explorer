@@ -33,7 +33,7 @@ export const SCCItem = ({
       </Text>
       {stronglyConnectedComponents.components.length > 0 && (
         <List spacing="xs" size="sm">
-          {stronglyConnectedComponents.components
+          {[...stronglyConnectedComponents.components]
             .sort((a, b) => b.length - a.length)
                         .map((component, index) => (
             <List.Item

@@ -171,7 +171,7 @@ export class NetworkInterceptor {
             // Calculate response size if possible
             const contentLength = response.headers.get("content-length");
             const size = contentLength
-              ? parseInt(contentLength, 10)
+              ? Number.parseInt(contentLength, 10)
               : undefined;
 
             networkActivityStore.completeRequest(

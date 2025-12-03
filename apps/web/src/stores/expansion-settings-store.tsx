@@ -559,7 +559,7 @@ export const useExpansionSettingsActions = () => {
       // Add sort summary
       const sorts = settings.sorts ?? [];
       if (sorts.length > 0) {
-        const sortSummary = sorts
+        const sortSummary = [...sorts]
           .sort((a, b) => a.priority - b.priority)
           .map(
             (s) =>

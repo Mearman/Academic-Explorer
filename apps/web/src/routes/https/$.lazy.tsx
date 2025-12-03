@@ -26,7 +26,7 @@ const parseUrlPathAndSearch = (urlString: string): {
     url.searchParams.forEach((value, key) => {
       if (numericKeys.has(key)) {
         const num = Number(value);
-        search[key] = isNaN(num) ? value : num;
+        search[key] = Number.isNaN(num) ? value : num;
       } else {
         search[key] = value;
       }

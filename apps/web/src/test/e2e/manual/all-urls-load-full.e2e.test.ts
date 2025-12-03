@@ -42,7 +42,7 @@ const toAppUrl = (apiUrl: string): string => {
 // Helper to get entity type from URL
 const getEntityType = (url: string): string | null => {
   const match = url.match(/\/([a-z]+)(?:\/|$|\?)/);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 };
 
 test.describe('All OpenAlex URLs - Load Test', () => {
@@ -99,7 +99,7 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // List pages with no cached data may show "No data available" (72 chars minimum)
           const hasSelectParam = apiUrl.includes('?select=');
           // Check if URL is a list page (ends with entity type, no ID)
-          const isListPage = /\/(authors|concepts|funders|institutions|publishers|sources|topics|works)(\?|$)/.test(apiUrl);
+          const isListPage = /\/(?:authors|concepts|funders|institutions|publishers|sources|topics|works)(?:\?|$)/.test(apiUrl);
           const isExternalId = apiUrl.includes('orcid:') || apiUrl.includes('issn:') || apiUrl.includes('ror:');
           const minContentLength = hasSelectParam ? 50 : (isListPage ? 50 : (isExternalId ? 75 : 100));
 

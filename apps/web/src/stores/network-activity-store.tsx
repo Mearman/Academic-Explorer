@@ -194,7 +194,7 @@ const networkActivityReducer = (
       if (requests.length <= state.maxHistorySize) return state;
 
       // Keep most recent requests
-      const sorted = requests.sort((a, b) => b.startTime - a.startTime);
+      const sorted = [...requests].sort((a, b) => b.startTime - a.startTime);
       const toKeep = sorted.slice(0, state.maxHistorySize);
 
       const newRequests: Record<string, NetworkRequest> = {};
@@ -388,7 +388,7 @@ export const useNetworkActivityActions = () => {
 
       context.dispatch({ type: "CLEAR_OLD_REQUESTS" });
 
-      const sorted = requests.sort((a, b) => b.startTime - a.startTime);
+      const sorted = [...requests].sort((a, b) => b.startTime - a.startTime);
       const toKeep = sorted.slice(0, currentState.maxHistorySize);
 
       logger.debug(

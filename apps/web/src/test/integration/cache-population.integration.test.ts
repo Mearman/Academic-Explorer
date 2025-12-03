@@ -128,7 +128,7 @@ describe("Cache Population Integration Tests", () => {
     const entityUrls = urlData.urls.filter((url) => {
       const path = url.replace("https://api.openalex.org/", "");
       return (
-        /^(authors|funders|institutions|publishers|sources|topics|works)\/[A-Z]\d+(\?|$)/.test(
+        /^(?:authors|funders|institutions|publishers|sources|topics|works)\/[A-Z]\d+(?:\?|$)/.test(
           path,
         ) && !knownBadUrls.includes(url)
       );
@@ -137,7 +137,7 @@ describe("Cache Population Integration Tests", () => {
     const collectionUrls = urlData.urls.filter((url) => {
       const path = url.replace("https://api.openalex.org/", "");
       return (
-        /^(authors|funders|institutions|publishers|sources|topics|works)(\?|$)/.test(
+        /^(?:authors|funders|institutions|publishers|sources|topics|works)(?:\?|$)/.test(
           path,
         ) && !entityUrls.includes(url)
       );

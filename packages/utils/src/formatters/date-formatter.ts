@@ -31,7 +31,7 @@ const DEFAULT_THRESHOLD_MS = 7 * TIME_UNITS.DAY;
  */
 export const formatRelativeTime = (date: Date): string => {
 	// Handle invalid dates
-	if (!date || isNaN(date.getTime())) {
+	if (!date || Number.isNaN(date.getTime())) {
 		return 'Invalid date';
 	}
 
@@ -99,7 +99,7 @@ export const formatRelativeTime = (date: Date): string => {
  */
 export const formatAbsoluteTime = (date: Date): string => {
 	// Handle invalid dates
-	if (!date || isNaN(date.getTime())) {
+	if (!date || Number.isNaN(date.getTime())) {
 		return 'Invalid date';
 	}
 
@@ -138,7 +138,7 @@ export const formatAbsoluteTime = (date: Date): string => {
  */
 export const formatTimestamp = (date: Date, threshold = DEFAULT_THRESHOLD_MS): string => {
 	// Handle invalid dates
-	if (!date || isNaN(date.getTime())) {
+	if (!date || Number.isNaN(date.getTime())) {
 		return 'Invalid date';
 	}
 

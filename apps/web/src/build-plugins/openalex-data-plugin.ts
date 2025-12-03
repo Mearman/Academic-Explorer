@@ -197,7 +197,7 @@ const detectAndCleanMalformedKey = (key: string): string => {
   // Pattern 1: Double-encoded URLs embedded in entity paths
   // Example: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
   const doubleEncodedPattern =
-    /^https:\/\/api\.openalex\.org\/(\w+)\/[A-Z]https%2F%2F/;
+    /^https:\/\/api\.openalex\.org\/(?:\w+)\/[A-Z]https%2F%2F/;
   if (doubleEncodedPattern.test(key)) {
     // Extract the embedded encoded URL and decode it
     const match = key.match(

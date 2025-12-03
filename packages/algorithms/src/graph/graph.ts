@@ -70,7 +70,7 @@ export class Graph<N extends Node, E extends Edge> {
     this.nodes.set(node.id, node);
     this.adjacencyList.set(node.id, new Set());
 
-    return Ok(undefined);
+    return Ok(void 0);
   }
 
   /**
@@ -103,7 +103,7 @@ export class Graph<N extends Node, E extends Edge> {
     this.nodes.delete(id);
     this.adjacencyList.delete(id);
 
-    return Ok(undefined);
+    return Ok(void 0);
   }
 
   /**
@@ -177,7 +177,7 @@ export class Graph<N extends Node, E extends Edge> {
       }
     }
 
-    return Ok(undefined);
+    return Ok(void 0);
   }
 
   /**
@@ -206,7 +206,7 @@ export class Graph<N extends Node, E extends Edge> {
 
     this.edges.delete(id);
 
-    return Ok(undefined);
+    return Ok(void 0);
   }
 
   /**
@@ -328,10 +328,9 @@ export class Graph<N extends Node, E extends Edge> {
     const outgoing: E[] = [];
 
     for (const edge of this.edges.values()) {
-      if (edge.source === id) {
-        outgoing.push(edge);
-      } else if (!this.directed && edge.target === id) {
-        // For undirected graphs, include edges where this node is the target
+      // For directed graphs: only edges where node is source
+      // For undirected graphs: edges where node is either source or target
+      if (edge.source === id || (!this.directed && edge.target === id)) {
         outgoing.push(edge);
       }
     }

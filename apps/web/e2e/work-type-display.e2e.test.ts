@@ -59,8 +59,8 @@ test.describe('Work Type Display', () => {
 
     if (badgeExists) {
       // Verify badge has text content
-      const badgeText = await workTypeBadge.textContent();
-      expect(badgeText).toBeTruthy();
+      const badgeText = workTypeBadge;
+      await expect(badgeText).toHaveText();
       expect(badgeText!.length).toBeGreaterThan(0);
 
       console.log(`✅ Work type badge found: "${badgeText}"`);
@@ -124,8 +124,8 @@ test.describe('Work Type Display', () => {
 
     // Verify the page displays the work type "dataset" somewhere in the content
     // The work type is part of OpenAlex API response
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -154,8 +154,8 @@ test.describe('Work Type Display', () => {
     });
 
     // Verify the page displays content
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -210,8 +210,8 @@ test.describe('Work Type Display', () => {
     });
 
     // Verify the page displays content
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -278,8 +278,8 @@ test.describe('Work Type Display', () => {
       expect(boundingBox!.height).toBeGreaterThan(0);
 
       // Verify badge has text content
-      const badgeText = await workTypeBadge.textContent();
-      expect(badgeText).toBeTruthy();
+      const badgeText = workTypeBadge;
+      await expect(badgeText).toHaveText();
 
       console.log(`✅ Work type badge has proper Mantine styling: "${badgeText}"`);
     } else {
@@ -338,10 +338,10 @@ test.describe('Work Type Display', () => {
 
     if (badgeVisible) {
       // Check for other publication metadata badges (year, open access, etc.)
-      const bodyText = await page.locator('body').textContent();
+      const bodyText = page.locator('body');
 
       // Work detail page should have publication information
-      expect(bodyText).toBeTruthy();
+      await expect(bodyText).toHaveText();
       expect(bodyText!.length).toBeGreaterThan(100);
 
       // Verify work type badge is part of cohesive publication details
@@ -368,8 +368,8 @@ test.describe('Work Type Display', () => {
     });
 
     // Verify page loads without critical errors
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Work type badge may or may not be present - both are valid
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();

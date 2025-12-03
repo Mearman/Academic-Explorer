@@ -47,10 +47,7 @@ vi.mock("fs/promises", async (importOriginal) => {
 	// Mock the fs/promises module with spy functions that prevent real operations
 	const mockWriteFile = async ({ path, data }: { path: string; data: string | Buffer }) => {
 		// Log the write attempt but don't actually write to filesystem
-		console.log(
-			`[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`
-		)
-		return
+		console.log(`[MOCK] Would write to: ${path} (${data.length} bytes)`)
 	}
 
 	return {
@@ -121,10 +118,10 @@ vi.mock("fs/promises", async (importOriginal) => {
 			)
 		}),
 		writeFile: vi.fn().mockImplementation(mockWriteFile),
-		mkdir: vi.fn().mockImplementation(async (path: string) => {
+		mkdir: vi.fn().mockImplementation(async (path: string): Promise<string | undefined> => {
 			// Log the mkdir attempt but don't actually create directories
 			console.log(`[MOCK] Would create directory: ${path}`)
-			return
+			return undefined
 		}),
 		stat: vi.fn().mockImplementation(async (path: string) => {
 			const pathStr = path
@@ -205,7 +202,7 @@ describe("OpenAlexCLI", () => {
 
 		vi.mocked(mkdir).mockImplementation(async () => {
 			// Silently succeed but don't create real directories
-			return
+			return void 0
 		})
 
 		// Set up mock data for consistent tests
@@ -531,7 +528,6 @@ describe("OpenAlexCLI", () => {
 			// Mock the CLI method to prevent real file writes
 			const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
 				console.log("[MOCK] saveEntityToCache called - preventing real file operations")
-				return;
 			})
 
 			// This should not throw an error (now mocked)
@@ -553,7 +549,6 @@ describe("OpenAlexCLI", () => {
 			// Mock the CLI method to prevent real file writes
 			const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
 				console.log("[MOCK] saveEntityToCache called - preventing real file operations")
-				return;
 			})
 
 			// This should complete without throwing an error (now mocked)

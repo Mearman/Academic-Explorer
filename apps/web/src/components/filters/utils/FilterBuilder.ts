@@ -289,14 +289,14 @@ export class FilterBuilder {
    */
   private isValidDateString(dateString: string): boolean {
     // Accept ISO 8601 dates (YYYY-MM-DD) and year-only formats
-    const datePattern = /^\d{4}(-\d{2}-\d{2})?$/;
+    const datePattern = /^\d{4}(?:-\d{2}-\d{2})?$/;
     if (!datePattern.test(dateString)) {
       return false;
     }
 
     // Additional validation with Date constructor
     const date = new Date(dateString);
-    return !isNaN(date.getTime());
+    return !Number.isNaN(date.getTime());
   }
 
   /**
@@ -306,12 +306,12 @@ export class FilterBuilder {
    */
   private isValidNumericFilter(value: unknown): boolean {
     if (typeof value === "number") {
-      return !isNaN(value) && isFinite(value);
+      return !Number.isNaN(value) && Number.isFinite(value);
     }
 
     if (typeof value === "string") {
       // Check for operator prefixes like ">100", ">=50", etc.
-      const numericPattern = /^[!<=>]*\d+(\.\d+)?$/;
+      const numericPattern = /^[!<=>]*\d+(?:\.\d+)?$/;
       return numericPattern.test(value.trim());
     }
 

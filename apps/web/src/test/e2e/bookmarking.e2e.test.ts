@@ -200,9 +200,9 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Check page loaded - wait for either loading state or final state
       await page.waitForFunction(() => {
-        const hasLoadingText = document.body.innerText.includes('Loading bookmarks');
-        const hasBookmarksContent = document.body.innerText.includes('No bookmarks') ||
-                                   document.body.innerText.includes('Search bookmarks');
+        const hasLoadingText = document.body.textContent.includes('Loading bookmarks');
+        const hasBookmarksContent = document.body.textContent.includes('No bookmarks') ||
+                                   document.body.textContent.includes('Search bookmarks');
         return hasBookmarksContent || !hasLoadingText;
       }, {}, { timeout: 10_000 });
 
@@ -210,7 +210,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       expect(page.url()).toContain('#/bookmarks');
 
       // Check that page content has loaded (either bookmarks or empty state)
-      const pageContent = await page.locator('body').innerText();
+      const pageContent = await page.locator('body').textContent();
       const hasValidContent = pageContent.includes('No bookmarks') ||
                              pageContent.includes('Search bookmarks') ||
                              pageContent.includes('bookmark');

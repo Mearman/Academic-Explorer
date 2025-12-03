@@ -144,8 +144,8 @@ test.describe('Metadata Improvement Badges', () => {
       // Verify each badge has text content
       for (let i = 0; i < badgeCount; i++) {
         const badge = badgeElements.nth(i);
-        const badgeText = await badge.textContent();
-        expect(badgeText).toBeTruthy();
+        const badgeText = badge;
+        await expect(badgeText).toHaveText();
         expect(badgeText!.length).toBeGreaterThan(0);
         console.log(`  - Badge ${i + 1}: "${badgeText}"`);
       }
@@ -259,8 +259,8 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Verify work detail page structure
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
+    const bodyText = page.locator('body');
+    await expect(bodyText).toHaveText();
 
     // Check if badges are integrated into the page layout
     // Badges should be within the main content area

@@ -53,7 +53,7 @@ if (typeof window !== "undefined") {
 
       // Only decode if this is NOT an external canonical ID URL pattern
       // External canonical IDs will be handled by the usePrettyUrl hook in React components
-      if (entityType && encodedId && !/^(https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i.test(encodedId)) {
+      if (entityType && encodedId && !/^(?:https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i.test(encodedId)) {
         try {
           const decodedId = decodeURIComponent(encodedId);
 
@@ -83,7 +83,7 @@ if (typeof window !== "undefined") {
 
     // Check for collapsed protocol slashes in the (potentially updated) hash
     if (!needsUpdate) {
-      const collapsedPattern = /(https?:\/)([^/])/;
+      const collapsedPattern = /(?:https?:\/)(?:[^/])/;
       if (collapsedPattern.test(fixedHash)) {
         // Fix collapsed patterns in the hash portion only
         fixedHash = fixedHash
@@ -148,9 +148,9 @@ if (typeof window !== "undefined") {
     }
 
     // Fix collapsed protocol slashes
-    const collapsedPattern = /(^|\/)https?:\/([^/])/;
+    const collapsedPattern = /(?:^|\/)https?:\/(?:[^/])/;
     if (collapsedPattern.test(fixedHash)) {
-      fixedHash = fixedHash.replace(collapsedPattern, '$1https://$2');
+      fixedHash = fixedHash.replace(/(^|\/)https?:\/([^/])/, '$1https://$2');
       needsUpdate = true;
     }
 

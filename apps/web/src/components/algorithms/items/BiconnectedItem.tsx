@@ -79,7 +79,7 @@ export const BiconnectedItem = ({
           <Box>
             <Text size="sm" fw={500} mb="xs">Components</Text>
             <List spacing="xs" size="sm">
-              {biconnectedComponents.components
+              {[...biconnectedComponents.components]
                 .sort((a, b) => b.nodes.length - a.nodes.length)
                 .map((component) => (
                 <List.Item

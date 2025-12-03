@@ -822,7 +822,7 @@ export const GraphAlgorithmsPanel = ({
               </Text>
               {stronglyConnectedComponents.components.length > 0 && (
                 <List spacing="xs" size="sm">
-                  {stronglyConnectedComponents.components
+                  {[...stronglyConnectedComponents.components]
                     .sort((a, b) => b.length - a.length)
                     .slice(0, 8)
                     .map((component, index) => (
@@ -1094,7 +1094,7 @@ export const GraphAlgorithmsPanel = ({
                   <Box>
                     <Text size="sm" fw={500} mb="xs">Components</Text>
                     <List spacing="xs" size="sm">
-                      {biconnectedComponents.components
+                      {[...biconnectedComponents.components]
                         .sort((a, b) => b.nodes.length - a.nodes.length)
                         .slice(0, 6)
                         .map((component) => (
