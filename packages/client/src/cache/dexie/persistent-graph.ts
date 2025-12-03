@@ -4,26 +4,24 @@
  * Combines in-memory graph operations with Dexie persistence for fast
  * traversal and durable storage. Implements write-through caching:
  * all mutations immediately persist to IndexedDB.
- *
  * @module cache/dexie/persistent-graph
  */
 
 import {
-  type GraphNodeRecord,
+  type CompletenessStatus,
+  type EdgeDirectionFilter,
+  type EdgePropertyFilter,
+  type EntityType,
+  type GraphEdgeInput,
   type GraphEdgeRecord,
   type GraphNodeInput,
-  type GraphEdgeInput,
-  type CompletenessStatus,
-  type RelationType,
-  type EdgePropertyFilter,
-  type EdgeDirectionFilter,
-  type NeighborQueryOptions,
-  type SubgraphResult,
+  type GraphNodeRecord,
   type GraphStatistics,
-  type EntityType,
+  type NeighborQueryOptions,
+  type RelationType,
+  type SubgraphResult,
 } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
-
 
 import { generateEdgeId } from './graph-index-db';
 import { getGraphIndexTier, type GraphIndexTier } from './graph-index-tier';
@@ -189,6 +187,7 @@ export class PersistentGraph {
   /**
    * Add a node to the graph
    * Write-through: persists to IndexedDB immediately
+   * @param input
    */
   async addNode(input: GraphNodeInput): Promise<void> {
     await this.ensureHydrated();
@@ -220,6 +219,7 @@ export class PersistentGraph {
 
   /**
    * Get a node by ID (synchronous - from memory)
+   * @param id
    */
   getNode(id: string): GraphNodeRecord | undefined {
     return this.nodeCache.get(id);
@@ -227,6 +227,7 @@ export class PersistentGraph {
 
   /**
    * Check if a node exists (synchronous - from memory)
+   * @param id
    */
   hasNode(id: string): boolean {
     return this.nodeCache.has(id);
@@ -235,6 +236,10 @@ export class PersistentGraph {
   /**
    * Update a node's completeness status
    * Only upgrades: stub → partial → full (never downgrades)
+   * @param id
+   * @param completeness
+   * @param label
+   * @param metadata
    */
   async updateNodeCompleteness(
     id: string,
@@ -281,6 +286,8 @@ export class PersistentGraph {
   /**
    * Update a node's label only
    * Convenience method for updating display names without changing completeness
+   * @param id
+   * @param label
    */
   async updateNodeLabel(id: string, label: string): Promise<void> {
     await this.ensureHydrated();
@@ -296,6 +303,7 @@ export class PersistentGraph {
 
   /**
    * Mark a node as expanded (relationships have been fetched)
+   * @param id
    */
   async markNodeExpanded(id: string): Promise<void> {
     await this.ensureHydrated();
@@ -339,6 +347,7 @@ export class PersistentGraph {
 
   /**
    * Get nodes by completeness status (synchronous - from memory)
+   * @param status
    */
   getNodesByCompleteness(status: CompletenessStatus): GraphNodeRecord[] {
     return Array.from(this.nodeCache.values()).filter((n) => n.completeness === status);
@@ -346,6 +355,7 @@ export class PersistentGraph {
 
   /**
    * Get nodes by entity type (synchronous - from memory)
+   * @param entityType
    */
   getNodesByType(entityType: EntityType): GraphNodeRecord[] {
     return Array.from(this.nodeCache.values()).filter((n) => n.entityType === entityType);
@@ -359,6 +369,7 @@ export class PersistentGraph {
    * Add an edge to the graph
    * Write-through: persists to IndexedDB immediately
    * Returns false if edge already exists (deduplication)
+   * @param input
    */
   async addEdge(input: GraphEdgeInput): Promise<boolean> {
     await this.ensureHydrated();
@@ -415,6 +426,9 @@ export class PersistentGraph {
 
   /**
    * Check if an edge exists (synchronous - from memory)
+   * @param source
+   * @param target
+   * @param type
    */
   hasEdge(source: string, target: string, type: RelationType): boolean {
     const edgeId = generateEdgeId(source, target, type);
@@ -437,6 +451,9 @@ export class PersistentGraph {
 
   /**
    * Get edges from a source node (synchronous - from memory)
+   * @param nodeId
+   * @param type
+   * @param filter
    */
   getEdgesFrom(
     nodeId: string,
@@ -465,6 +482,9 @@ export class PersistentGraph {
 
   /**
    * Get edges to a target node (synchronous - from memory)
+   * @param nodeId
+   * @param type
+   * @param filter
    */
   getEdgesTo(
     nodeId: string,
@@ -497,6 +517,8 @@ export class PersistentGraph {
 
   /**
    * Get neighbors of a node (synchronous - from memory)
+   * @param nodeId
+   * @param options
    */
   getNeighbors(nodeId: string, options?: NeighborQueryOptions): string[] {
     const direction = options?.direction ?? 'both';
@@ -542,6 +564,10 @@ export class PersistentGraph {
 
   /**
    * Get edges by direction (synchronous - from memory)
+   * @param nodeId
+   * @param direction
+   * @param type
+   * @param filter
    */
   getEdgesByDirection(
     nodeId: string,
@@ -564,6 +590,7 @@ export class PersistentGraph {
 
   /**
    * Get edges filtered by indexed properties (synchronous - from memory)
+   * @param filter
    */
   getEdgesByProperty(filter: EdgePropertyFilter): GraphEdgeRecord[] {
     return this.applyEdgeFilter(Array.from(this.edgeCache.values()), filter);
@@ -571,6 +598,7 @@ export class PersistentGraph {
 
   /**
    * Extract a subgraph containing specified nodes and their connecting edges
+   * @param nodeIds
    */
   getSubgraph(nodeIds: string[]): SubgraphResult {
     const nodeSet = new Set(nodeIds);
@@ -636,6 +664,7 @@ export class PersistentGraph {
 
   /**
    * Add multiple nodes in a batch
+   * @param inputs
    */
   async addNodes(inputs: GraphNodeInput[]): Promise<void> {
     await this.ensureHydrated();
@@ -676,6 +705,7 @@ export class PersistentGraph {
 
   /**
    * Add multiple edges in a batch
+   * @param inputs
    */
   async addEdges(inputs: GraphEdgeInput[]): Promise<number> {
     await this.ensureHydrated();
@@ -752,6 +782,8 @@ export class PersistentGraph {
 
   /**
    * Check if completeness should be upgraded
+   * @param current
+   * @param proposed
    */
   private shouldUpgradeCompleteness(
     current: CompletenessStatus,
@@ -767,6 +799,8 @@ export class PersistentGraph {
 
   /**
    * Apply edge property filter to edges
+   * @param edges
+   * @param filter
    */
   private applyEdgeFilter(edges: GraphEdgeRecord[], filter: EdgePropertyFilter): GraphEdgeRecord[] {
     return edges.filter((edge) => {
@@ -813,16 +847,16 @@ let persistentGraphInstance: PersistentGraph | null = null;
 /**
  * Get the singleton PersistentGraph instance
  */
-export function getPersistentGraph(): PersistentGraph {
+export const getPersistentGraph = (): PersistentGraph => {
   if (!persistentGraphInstance) {
     persistentGraphInstance = new PersistentGraph();
   }
   return persistentGraphInstance;
-}
+};
 
 /**
  * Reset the singleton instance (for testing)
  */
-export function resetPersistentGraph(): void {
+export const resetPersistentGraph = (): void => {
   persistentGraphInstance = null;
-}
+};

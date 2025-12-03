@@ -56,15 +56,14 @@ export const RETRY_CONFIG = {
 
 /**
  * Calculate retry delay with exponential backoff and jitter
+ * @param attemptIndex
+ * @param config
+ * @param retryAfterMs
  */
-export function calculateRetryDelay(
-  attemptIndex: number,
-  config:
+export const calculateRetryDelay = (attemptIndex: number, config:
     | typeof RETRY_CONFIG.rateLimited
     | typeof RETRY_CONFIG.network
-    | typeof RETRY_CONFIG.server,
-  retryAfterMs?: number,
-): number {
+    | typeof RETRY_CONFIG.server, retryAfterMs?: number): number => {
   // If server provides Retry-After header, respect it
   if (retryAfterMs) {
     return retryAfterMs;
@@ -87,4 +86,4 @@ export function calculateRetryDelay(
   const jitter = Math.random() * config.jitterMs;
 
   return Math.min(exponentialDelay + jitter, config.maxDelay);
-}
+};

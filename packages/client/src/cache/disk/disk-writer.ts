@@ -29,8 +29,12 @@ const UNKNOWN_ERROR_MESSAGE = "Unknown error";
 
 /**
  * For testing: allow injecting mock Node.js modules
+ * @param root0
+ * @param root0.mockFs
+ * @param root0.mockPath
+ * @param root0.mockCrypto
  */
-export function __setMockModules({
+export const __setMockModules = ({
   mockFs,
   mockPath,
   mockCrypto,
@@ -38,16 +42,16 @@ export function __setMockModules({
   mockFs?: typeof import("fs/promises");
   mockPath?: typeof import("path");
   mockCrypto?: typeof import("crypto");
-}): void {
+}): void => {
   fs = mockFs;
   path = mockPath;
   crypto = mockCrypto;
-}
+};
 
 /**
  * Initialize Node.js modules (required before using any file operations)
  */
-async function initializeNodeModules(): Promise<void> {
+const initializeNodeModules = async (): Promise<void> => {
   if (!fs || !path || !crypto) {
     const [fsModule, pathModule, cryptoModule] = await Promise.all([
       import("node:fs/promises"),
@@ -58,23 +62,23 @@ async function initializeNodeModules(): Promise<void> {
     path = pathModule.default || pathModule;
     crypto = cryptoModule.default || cryptoModule;
   }
-}
+};
 
 /**
  * Get initialized Node modules (throws if not initialized)
  */
-function getNodeModules(): {
+const getNodeModules = (): {
   fs: typeof import("node:fs/promises");
   path: typeof import("node:path");
   crypto: typeof import("node:crypto");
-} {
+} => {
   if (!fs || !path || !crypto) {
     throw new Error(
       "Node modules not initialized. Call initializeNodeModules() first.",
     );
   }
   return { fs, path, crypto };
-}
+};
 
 /**
  * Compare two DirectoryIndex objects to determine if content has changed
@@ -83,7 +87,7 @@ function getNodeModules(): {
  * @param newIndex - New index state
  * @returns true if content is identical (excluding lastUpdated), false otherwise
  */
-function indexContentEquals(oldIndex: DirectoryIndex, newIndex: DirectoryIndex): boolean {
+const indexContentEquals = (oldIndex: DirectoryIndex, newIndex: DirectoryIndex): boolean => {
   // Compare files
   const oldFiles = oldIndex.files ?? {};
   const newFiles = newIndex.files ?? {};
@@ -143,13 +147,13 @@ function indexContentEquals(oldIndex: DirectoryIndex, newIndex: DirectoryIndex):
   }
 
   return true;
-}
+};
 
 /**
  * Find the workspace root by looking for pnpm-workspace.yaml or package.json with workspaces
  * Walks up the directory tree from the current working directory
  */
-async function findWorkspaceRoot(): Promise<string> {
+const findWorkspaceRoot = async (): Promise<string> => {
   await initializeNodeModules();
   const { fs: fsModule, path: pathModule } = getNodeModules();
 
@@ -182,7 +186,7 @@ async function findWorkspaceRoot(): Promise<string> {
 
   // Fallback to current working directory if no workspace root found
   return process.cwd();
-}
+};
 
 /**
  * Configuration for disk cache writer
@@ -355,6 +359,7 @@ export class DiskCacheWriter {
    * 4. Atomic file writes using temporary files
    * 5. Index updates with hierarchical propagation
    * 6. Lock release in finally block
+   * @param data
    */
   private async _writeToCache(data: InterceptedData): Promise<void> {
     let indexLockId: string | undefined;
@@ -499,6 +504,10 @@ export class DiskCacheWriter {
 
   /**
    * Create a basic single-URL FileEntry
+   * @param baseName
+   * @param url
+   * @param lastRetrieved
+   * @param contentHash
    */
   private createBasicFileEntry(
     baseName: string,
@@ -516,6 +525,7 @@ export class DiskCacheWriter {
 
   /**
    * Extract entity type and ID from URL or response data
+   * @param data
    */
   private async extractEntityInfo(data: InterceptedData): Promise<{
     entityType?: EntityType;
@@ -566,6 +576,7 @@ export class DiskCacheWriter {
 
   /**
    * Extract entity info from URL path
+   * @param url
    */
   private extractEntityInfoFromUrl(url: string): {
     entityType?: EntityType;
@@ -663,6 +674,7 @@ export class DiskCacheWriter {
 
   /**
    * Extract entity info from response data
+   * @param responseData
    */
   private extractEntityInfoFromResponse(responseData: unknown): {
     entityType?: EntityType;
@@ -704,6 +716,7 @@ export class DiskCacheWriter {
 
   /**
    * Type guard for OpenAlex entity
+   * @param data
    */
   private isOpenAlexEntity(data: unknown): data is OpenAlexEntity {
     const obj = data as Record<string, unknown>;
@@ -717,6 +730,7 @@ export class DiskCacheWriter {
 
   /**
    * Type guard for OpenAlex response
+   * @param data
    */
   private isOpenAlexResponse(
     data: unknown,
@@ -732,6 +746,7 @@ export class DiskCacheWriter {
 
   /**
    * Detect entity type from entity data
+   * @param entity
    */
   private detectEntityType(entity: OpenAlexEntity): EntityType {
     // Try to detect based on specific properties
@@ -753,6 +768,7 @@ export class DiskCacheWriter {
   /**
    * Exclude meta field from response data before caching
    * The meta field contains pagination and timing info that shouldn't be cached
+   * @param responseData
    */
   private excludeMetaField(responseData: unknown): unknown {
     if (
@@ -770,6 +786,7 @@ export class DiskCacheWriter {
   /**
    * Check if response data has empty results
    * Returns true if the response has a results array that is empty
+   * @param responseData
    */
   private hasEmptyResults(responseData: unknown): boolean {
     if (
@@ -785,6 +802,12 @@ export class DiskCacheWriter {
 
   /**
    * Generate file paths for data
+   * @param entityInfo
+   * @param entityInfo.entityType
+   * @param entityInfo.entityId
+   * @param entityInfo.queryParams
+   * @param entityInfo.isQueryResponse
+   * @param basePath
    */
   private async generateFilePaths(
     entityInfo: {
@@ -857,6 +880,7 @@ export class DiskCacheWriter {
 
   /**
    * Extract external canonical ID from URL for proper caching
+   * @param url
    */
   private extractExternalCanonicalIdFromUrl(url: string): {
     entityType?: EntityType;
@@ -877,9 +901,9 @@ export class DiskCacheWriter {
 
           if (potentialId.includes("orcid.org/") || potentialId.match(/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i)) {
             entityType = "authors";
-          } else if (potentialId.includes("ror.org/") || potentialId.match(/^[a-z0-9]{9}$/i)) {
+          } else if (potentialId.includes("ror.org/") || potentialId.match(/^[0-9a-z]{9}$/i)) {
             entityType = "institutions";
-          } else if (potentialId.includes("doi.org/") || potentialId.match(/^10\.\d+\/[^\s]+$/)) {
+          } else if (potentialId.includes("doi.org/") || potentialId.match(/^10\.\d+\/\S+$/)) {
             entityType = "works";
           }
 
@@ -898,10 +922,11 @@ export class DiskCacheWriter {
 
   /**
    * Check if a string looks like an external canonical ID
+   * @param id
    */
   private isExternalCanonicalId(id: string): boolean {
     // DOI patterns
-    if (id.includes("doi.org/") || id.match(/^10\.\d+\/[^\s]+$/)) {
+    if (id.includes("doi.org/") || id.match(/^10\.\d+\/\S+$/)) {
       return true;
     }
 
@@ -911,7 +936,7 @@ export class DiskCacheWriter {
     }
 
     // ROR patterns
-    if (id.includes("ror.org/") || id.match(/^[a-z0-9]{9}$/i)) {
+    if (id.includes("ror.org/") || id.match(/^[0-9a-z]{9}$/i)) {
       return true;
     }
 
@@ -921,10 +946,11 @@ export class DiskCacheWriter {
   /**
    * Sanitize filename to be filesystem-safe
    * Uses hash for very long filenames to avoid ENAMETOOLONG errors
+   * @param filename
    */
   private sanitizeFilename(filename: string): string {
     const sanitized = filename
-      .replace(/[<>:"/\\|?*]/g, "_") // Replace invalid characters
+      .replace(/["*/:<>?\\|]/g, "_") // Replace invalid characters
       .replace(/\s+/g, "_") // Replace spaces with underscores
       .replace(/_{2,}/g, "_") // Replace multiple underscores with single
       .replace(/^_|_$/g, ""); // Remove leading/trailing underscores
@@ -949,6 +975,7 @@ export class DiskCacheWriter {
 
   /**
    * Ensure directory structure exists
+   * @param dirPath
    */
   private async ensureDirectoryStructure(dirPath: string): Promise<void> {
     try {
@@ -966,6 +993,9 @@ export class DiskCacheWriter {
 
   /**
    * Write file atomically using temporary file
+   * @param root0
+   * @param root0.filePath
+   * @param root0.content
    */
   private async writeFileAtomic({
     filePath,
@@ -1012,6 +1042,7 @@ export class DiskCacheWriter {
    * (older than timeout) are automatically removed to prevent deadlocks from
    * crashed processes. Essential for safe concurrent writes in multi-tab
    * development or server environments.
+   * @param filePath
    */
   private async acquireFileLock(filePath: string): Promise<string> {
     if (!crypto) {
@@ -1060,6 +1091,9 @@ export class DiskCacheWriter {
 
   /**
    * Release file lock
+   * @param root0
+   * @param root0.lockId
+   * @param root0.filePath
    */
   private async releaseFileLock({
     lockId,
@@ -1087,6 +1121,7 @@ export class DiskCacheWriter {
 
   /**
    * Check available disk space
+   * @param basePath
    */
   private async ensureSufficientDiskSpace(basePath: string): Promise<void> {
     try {
@@ -1125,6 +1160,7 @@ export class DiskCacheWriter {
 
   /**
    * Format bytes for human-readable display
+   * @param bytes
    */
   private formatBytes(bytes: number): string {
     const units = ["B", "KB", "MB", "GB", "TB"];
@@ -1141,6 +1177,7 @@ export class DiskCacheWriter {
 
   /**
    * Validate intercepted data structure
+   * @param data
    */
   private validateInterceptedData(data: InterceptedData): void {
     if (!data || typeof data !== "object") {
@@ -1179,6 +1216,7 @@ export class DiskCacheWriter {
 
   /**
    * Sleep for specified milliseconds
+   * @param ms
    */
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -1186,6 +1224,16 @@ export class DiskCacheWriter {
 
   /**
    * Update hierarchical index.json files from the saved file up to the root
+   * @param entityInfo
+   * @param entityInfo.entityType
+   * @param entityInfo.entityId
+   * @param entityInfo.queryParams
+   * @param entityInfo.isQueryResponse
+   * @param filePaths
+   * @param filePaths.dataFile
+   * @param filePaths.directoryPath
+   * @param data
+   * @param skipContainingDirectory
    */
   private async updateHierarchicalIndexes(
     entityInfo: {
@@ -1238,6 +1286,16 @@ export class DiskCacheWriter {
 
   /**
    * Update a single directory's index.json file
+   * @param directoryPath
+   * @param entityInfo
+   * @param entityInfo.entityType
+   * @param entityInfo.entityId
+   * @param entityInfo.queryParams
+   * @param entityInfo.isQueryResponse
+   * @param filePaths
+   * @param filePaths.dataFile
+   * @param filePaths.directoryPath
+   * @param data
    */
   private async updateDirectoryIndex(
     directoryPath: string,
@@ -1418,7 +1476,6 @@ export const defaultDiskWriter = new DiskCacheWriter();
 
 /**
  * Convenience function to write intercepted data to cache
+ * @param data
  */
-export async function writeToDiskCache(data: InterceptedData): Promise<void> {
-  return defaultDiskWriter.writeToCache(data);
-}
+export const writeToDiskCache = async (data: InterceptedData): Promise<void> => defaultDiskWriter.writeToCache(data);

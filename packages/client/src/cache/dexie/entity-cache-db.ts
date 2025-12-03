@@ -70,7 +70,7 @@ let dbInstance: EntityCacheDB | null = null;
 /**
  * Check if IndexedDB is available in the current environment
  */
-export function isIndexedDBAvailable(): boolean {
+export const isIndexedDBAvailable = (): boolean => {
   try {
     // Check for browser environment
     if (typeof globalThis === "undefined" || !("indexedDB" in globalThis)) {
@@ -81,12 +81,12 @@ export function isIndexedDBAvailable(): boolean {
   } catch {
     return false;
   }
-}
+};
 
 /**
  * Get the database instance (lazy initialization)
  */
-export function getEntityCacheDB(): EntityCacheDB | null {
+export const getEntityCacheDB = (): EntityCacheDB | null => {
   if (!isIndexedDBAvailable()) {
     return null;
   }
@@ -101,33 +101,33 @@ export function getEntityCacheDB(): EntityCacheDB | null {
   }
 
   return dbInstance;
-}
+};
 
 /**
  * Close the database connection
  */
-export function closeEntityCacheDB(): void {
+export const closeEntityCacheDB = (): void => {
   if (dbInstance) {
     dbInstance.close();
     dbInstance = null;
   }
-}
+};
 
 /**
  * Delete the entire entity cache database
  */
-export async function deleteEntityCacheDB(): Promise<void> {
+export const deleteEntityCacheDB = async (): Promise<void> => {
   closeEntityCacheDB();
   if (isIndexedDBAvailable()) {
     await Dexie.delete(DB_NAME);
   }
-}
+};
 
 /**
  * Generate a composite cache key
+ * @param entityType
+ * @param entityId
  */
-export function generateCacheKey(entityType: StaticEntityType, entityId: string): string {
-  return `${entityType}:${entityId}`;
-}
+export const generateCacheKey = (entityType: StaticEntityType, entityId: string): string => `${entityType}:${entityId}`;
 
 export { EntityCacheDB };

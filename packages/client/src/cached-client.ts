@@ -2,7 +2,7 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import type { QueryParams, OpenAlexEntity, EntityType } from "@bibgraph/types";
+import type { EntityType,OpenAlexEntity, QueryParams } from "@bibgraph/types";
 import { isOpenAlexEntity } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
 import { z } from "zod";
@@ -21,10 +21,10 @@ import { TextAnalysisApi } from "./entities/text-analysis";
 import { TopicsApi } from "./entities/topics";
 import { WorksApi } from "./entities/works";
 import {
-  staticDataProvider,
+  type CachedEntityEntry,
   type CacheStatistics,
   type EnvironmentInfo,
-  type CachedEntityEntry,
+  staticDataProvider,
 } from "./internal/static-data-provider";
 import {
   cleanOpenAlexId,
@@ -98,6 +98,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Enhanced entity getter with static cache integration
+   * @param root0
+   * @param root0.cleanId
+   * @param root0.entityType
    */
   private async tryStaticCache({
     cleanId,
@@ -213,6 +216,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Cache entity result in static data provider
+   * @param root0
+   * @param root0.entityType
+   * @param root0.id
+   * @param root0.data
    */
   private async cacheEntityResult({
     entityType,
@@ -238,6 +245,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Detect OpenAlex entity type from ID prefix
+   * @param id
    */
   private detectEntityTypeFromId(id: string): string | null {
     if (!id) return null;
@@ -253,6 +261,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Try to get data from static cache for getById requests
+   * @param endpoint
+   * @param cleanId
+   * @param isFallback
    */
   private async tryStaticCacheForGetById<T>(
     endpoint: string,
@@ -313,6 +324,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Enhanced getById with static cache integration
+   * @param endpointOrParams
+   * @param id
+   * @param params
+   * @param schema
    */
   async getById<T = unknown>(
     endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
@@ -413,6 +428,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * - Fast relationship queries without loading full entity JSON
    * - Persistence across browser sessions
    * - Interactive node expansion in graph visualization
+   * @param root0
+   * @param root0.url
+   * @param root0.responseData
    */
   protected override async cacheResponseEntities({
     url,
@@ -464,6 +482,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Detect entity type from URL path
    * Handles endpoints like "works", "works/W123", "authors/A123/works", etc.
+   * @param url
    */
   private detectEntityTypeFromUrl(url: string): string | null {
     try {
@@ -490,6 +509,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Check if an object has a valid OpenAlex ID
    * Uses a loose check (just valid ID pattern) rather than full schema validation
    * This allows caching partial entities from list responses
+   * @param obj
    */
   private hasValidOpenAlexId(obj: unknown): obj is { id: string } {
     if (!obj || typeof obj !== 'object') return false;
@@ -503,6 +523,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Cache multiple entities from list results
    * Uses loose ID validation to allow caching partial entities
+   * @param results
+   * @param entityType
    */
   private async cacheEntitiesFromResults(
     results: unknown[],
@@ -540,6 +562,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Cache a partial entity result (from list responses)
    * Unlike cacheEntityResult, this accepts any object with a valid OpenAlex ID
+   * @param root0
+   * @param root0.entityType
+   * @param root0.id
+   * @param root0.data
    */
   private async cachePartialEntity({
     entityType,
@@ -570,6 +596,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Index a single entity in the persistent graph
    * Extracts relationships and stores nodes/edges for fast graph queries
+   * @param entityId
+   * @param entityType
+   * @param entityData
    */
   private async indexEntityInGraph(
     entityId: string,
@@ -609,6 +638,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Index multiple entities in the persistent graph
    * Used for batch indexing from list responses
+   * @param results
+   * @param entityType
    */
   private async indexEntitiesInGraph(
     results: unknown[],
@@ -675,6 +706,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Check if entity exists in static cache
+   * @param id
    */
   async hasStaticEntity(id: string): Promise<boolean> {
     if (!this.staticCacheEnabled) return false;
@@ -721,6 +753,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   /**
    * Enable or disable static caching
+   * @param enabled
    */
   setStaticCacheEnabled(enabled: boolean): void {
     this.staticCacheEnabled = enabled;
@@ -814,31 +847,30 @@ export const cachedOpenAlex: CachedOpenAlexClient = new CachedOpenAlexClient({
 
 /**
  * Create a new cached client with custom configuration
+ * @param config
  */
-export function createCachedOpenAlexClient(
-  config: CachedClientConfig = {},
-): CachedOpenAlexClient {
-  return new CachedOpenAlexClient(config);
-}
+export const createCachedOpenAlexClient = (config: CachedClientConfig = {}): CachedOpenAlexClient => new CachedOpenAlexClient(config);
 
 /**
  * Update the email configuration for the global OpenAlex client
+ * @param email
  */
-export function updateOpenAlexEmail(email: string | undefined) {
+export const updateOpenAlexEmail = (email: string | undefined) => {
   cachedOpenAlex.updateConfig({ userEmail: email });
-}
+};
 
 /**
  * Update the API key configuration for the global OpenAlex client
+ * @param apiKey
  */
-export function updateOpenAlexApiKey(apiKey: string | undefined) {
+export const updateOpenAlexApiKey = (apiKey: string | undefined) => {
   cachedOpenAlex.updateConfig({ apiKey });
-}
+};
 
 /**
  * Get comprehensive cache performance metrics
  */
-export async function getCachePerformanceMetrics(): Promise<{
+export const getCachePerformanceMetrics = async (): Promise<{
   staticCache: CacheStatistics;
   requestStats: {
     totalRequests: number;
@@ -848,7 +880,7 @@ export async function getCachePerformanceMetrics(): Promise<{
     cacheHitRate: number;
   };
   environment: EnvironmentInfo;
-}> {
+}> => {
   const staticCache = await cachedOpenAlex.getStaticCacheStats();
   const requestStats = cachedOpenAlex.getRequestStats();
   const environment = cachedOpenAlex.getStaticCacheEnvironment();
@@ -864,6 +896,6 @@ export async function getCachePerformanceMetrics(): Promise<{
     },
     environment,
   };
-}
+};
 
 // Note: staticDataProvider can be imported via @bibgraph/client/internal/static-data-provider

@@ -4,11 +4,9 @@
  */
 
 import { setupServer } from "msw/node";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { afterAll, afterEach,beforeAll, describe, expect, it } from "vitest";
 
 import { CachedOpenAlexClient } from "../../cached-client";
-
-
 import { autocompleteHandlers } from "./autocomplete-handlers";
 
 // Setup MSW server with autocomplete handlers

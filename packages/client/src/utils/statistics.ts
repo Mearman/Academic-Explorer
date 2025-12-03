@@ -104,19 +104,17 @@ export class StatisticsApi {
 	constructor(private client: OpenAlexBaseClient) {}
 
 	/**
-   * Get comprehensive database statistics
-   *
-   * @param params - Statistical analysis parameters
-   * @returns Promise resolving to database-wide statistics
-   *
-   * @example
-   * ```typescript
-   * const stats = await statisticsApi.getDatabaseStats({
-   *   timeframe: 'year',
-   *   format: 'json'
-   * });
-   * ```
-   */
+	 * Get comprehensive database statistics
+	 * @param params - Statistical analysis parameters
+	 * @returns Promise resolving to database-wide statistics
+	 * @example
+	 * ```typescript
+	 * const stats = await statisticsApi.getDatabaseStats({
+	 *   timeframe: 'year',
+	 *   format: 'json'
+	 * });
+	 * ```
+	 */
 	async getDatabaseStats(): Promise<DatabaseStats> {
 		const currentYear = new Date().getFullYear();
 
@@ -221,19 +219,17 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get detailed analytics for a specific entity type
-   *
-   * @param entityType - Type of entity to analyze
-   * @param params - Analysis parameters
-   * @returns Promise resolving to entity analytics
-   *
-   * @example
-   * ```typescript
-   * const analytics = await statisticsApi.getEntityAnalytics('works', {
-   *   timeframe: 'all'
-   * });
-   * ```
-   */
+	 * Get detailed analytics for a specific entity type
+	 * @param entityType - Type of entity to analyze
+	 * @param params - Analysis parameters
+	 * @returns Promise resolving to entity analytics
+	 * @example
+	 * ```typescript
+	 * const analytics = await statisticsApi.getEntityAnalytics('works', {
+	 *   timeframe: 'all'
+	 * });
+	 * ```
+	 */
 	getEntityAnalytics(
 		entityType: EntityType
 	): EntityAnalytics {
@@ -257,17 +253,15 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get research impact metrics
-   *
-   * @param entityType - Type of entity to analyze
-   * @param params - Analysis parameters
-   * @returns Promise resolving to impact metrics
-   *
-   * @example
-   * ```typescript
-   * const impact = await statisticsApi.getImpactMetrics();
-   * ```
-   */
+	 * Get research impact metrics
+	 * @param entityType - Type of entity to analyze
+	 * @param params - Analysis parameters
+	 * @returns Promise resolving to impact metrics
+	 * @example
+	 * ```typescript
+	 * const impact = await statisticsApi.getImpactMetrics();
+	 * ```
+	 */
 	getImpactMetrics(): ImpactMetrics {
 		// H-index distribution
 		const hIndexDistribution = this.getHIndexDistribution();
@@ -286,22 +280,20 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get comparative statistics between entity groups
-   *
-   * @param entityType - Type of entity to compare
-   * @param groupBy - Field to group by for comparison
-   * @param params - Analysis parameters
-   * @returns Promise resolving to comparative statistics
-   *
-   * @example
-   * ```typescript
-   * const comparison = await statisticsApi.getComparativeStats(
-   *   'works',
-   *   'type',
-   *   { timeframe: 'year' }
-   * );
-   * ```
-   */
+	 * Get comparative statistics between entity groups
+	 * @param entityType - Type of entity to compare
+	 * @param groupBy - Field to group by for comparison
+	 * @param params - Analysis parameters
+	 * @returns Promise resolving to comparative statistics
+	 * @example
+	 * ```typescript
+	 * const comparison = await statisticsApi.getComparativeStats(
+	 *   'works',
+	 *   'type',
+	 *   { timeframe: 'year' }
+	 * );
+	 * ```
+	 */
 	async getComparativeStats(
 		entityType: EntityType,
 		groupBy: string
@@ -434,8 +426,8 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get coverage metrics (private helper)
-   */
+	 * Get coverage metrics (private helper)
+	 */
 	private async getCoverageMetrics() {
 		try {
 			const [worksWithDoi, worksOpenAccess, authorsWithOrcid, institutionsWithRor] = await Promise.all([
@@ -462,8 +454,8 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get citation metrics (private helper)
-   */
+	 * Get citation metrics (private helper)
+	 */
 	private async getCitationMetrics() {
 		try {
 			const worksResponse = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>("works", {
@@ -494,8 +486,8 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get temporal distribution (private helper)
-   */
+	 * Get temporal distribution (private helper)
+	 */
 	private async getTemporalDistribution() {
 		try {
 			const yearGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; count: number }> }>("works", {
@@ -533,8 +525,8 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Get geographic distribution (private helper)
-   */
+	 * Get geographic distribution (private helper)
+	 */
 	private async getGeographicDistribution(): Promise<Record<string, number>> {
 		try {
 			const countryGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number }> }>("institutions", {
@@ -634,6 +626,7 @@ export class StatisticsApi {
 
 	/**
 	 * Type guard to safely extract cited_by_count from unknown objects
+	 * @param item
 	 */
 	private extractCitedByCount(item: unknown): number {
 		if (this.isObjectWithCitedByCount(item)) {
@@ -647,6 +640,7 @@ export class StatisticsApi {
 
 	/**
 	 * Type guard to check if an item has a cited_by_count property
+	 * @param item
 	 */
 	private isObjectWithCitedByCount(item: unknown): item is { cited_by_count?: unknown } {
 		return item !== null && typeof item === "object" && "cited_by_count" in item;
@@ -654,6 +648,7 @@ export class StatisticsApi {
 
 	/**
 	 * Calculate Shannon diversity index
+	 * @param counts
 	 */
 	private calculateShannonDiversity(counts: number[]): number {
 		const total = counts.reduce((sum, count) => sum + count, 0);

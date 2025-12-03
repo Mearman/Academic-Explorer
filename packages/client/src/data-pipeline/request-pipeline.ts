@@ -5,7 +5,7 @@
 
 import { logger } from "@bibgraph/utils";
 
-import { RETRY_CONFIG, calculateRetryDelay } from "../internal/rate-limit";
+import { calculateRetryDelay,RETRY_CONFIG } from "../internal/rate-limit";
 
 /**
  * Request context passed through the pipeline
@@ -167,6 +167,8 @@ export class RequestPipeline {
 
   /**
    * Execute a request through the pipeline
+   * @param url
+   * @param options
    */
   async execute(url: string, options: RequestInit = {}): Promise<Response> {
     const context: RequestContext = {
@@ -216,6 +218,9 @@ export class RequestPipeline {
 
   /**
    * Logging middleware
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async loggingMiddleware({
     context,
@@ -245,6 +250,9 @@ export class RequestPipeline {
 
   /**
    * Cache lookup middleware
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async cacheMiddleware({
     context,
@@ -297,6 +305,9 @@ export class RequestPipeline {
 
   /**
    * Request deduplication middleware
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async dedupeMiddleware({
     context,
@@ -367,6 +378,9 @@ export class RequestPipeline {
 
   /**
    * Retry middleware with exponential backoff
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async retryMiddleware({
     context,
@@ -442,6 +456,9 @@ export class RequestPipeline {
 
   /**
    * Error classification middleware
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async errorClassificationMiddleware({
     context,
@@ -470,6 +487,9 @@ export class RequestPipeline {
 
   /**
    * Actual request execution middleware
+   * @param root0
+   * @param root0.context
+   * @param root0.next
    */
   private async executionMiddleware({
     context,
@@ -543,6 +563,7 @@ export class RequestPipeline {
 
   /**
    * Sleep utility for delays
+   * @param ms
    */
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -573,11 +594,10 @@ export class RequestPipeline {
 
 /**
  * Classify an error into categories with retry recommendations
+ * @param error
+ * @param response
  */
-export function classifyError(
-  error: Error,
-  response?: Response,
-): ErrorClassification {
+export const classifyError = (error: Error, response?: Response): ErrorClassification => {
   // Network errors
   if (error.name === "TypeError" && error.message.includes("fetch")) {
     return {
@@ -645,16 +665,13 @@ export function classifyError(
     userMessage: "An unexpected error occurred. Please try again.",
     internalMessage: `Unknown error: ${error.message}`,
   };
-}
+};
 
 /**
  * Create a new request pipeline with the specified options
+ * @param options
  */
-export function createRequestPipeline(
-  options: PipelineOptions = {},
-): RequestPipeline {
-  return new RequestPipeline(options);
-}
+export const createRequestPipeline = (options: PipelineOptions = {}): RequestPipeline => new RequestPipeline(options);
 
 /**
  * Default pipeline instance

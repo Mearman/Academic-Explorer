@@ -4,13 +4,13 @@
  */
 
 import type {
+  AutocompleteResult,
+  OpenAlexResponse,
   Publisher,
   PublishersFilters,
+  QueryParams,
   Source,
   Work,
-  OpenAlexResponse,
-  QueryParams,
-  AutocompleteResult,
 } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
@@ -88,7 +88,7 @@ export class PublishersApi {
 
   /**
    * Build query parameters with proper filter processing
-   * @private
+   * @param options
    */
   private buildQueryParams(options: PublisherSearchOptions = {}): QueryParams {
     const { filters, sort, page, per_page, select, ...otherOptions } = options;
@@ -156,7 +156,6 @@ export class PublishersApi {
    * Autocomplete publishers by name for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of publisher autocomplete results
-   *
    * @example
    * ```typescript
    * const suggestions = await publishersApi.autocomplete('springer');

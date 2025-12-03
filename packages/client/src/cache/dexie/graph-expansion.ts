@@ -9,7 +9,6 @@
  * 2. Extracts and indexes all relationships
  * 3. Creates stub nodes for newly discovered entities
  * 4. Marks the node as expanded
- *
  * @module cache/dexie/graph-expansion
  */
 
@@ -19,17 +18,17 @@ import { logger } from '@bibgraph/utils';
 import {
   getAuthorById,
   getAuthors,
-  getWorkById,
-  getWorks,
   getConceptById,
+  getFunderById,
   getInstitutionById,
   getInstitutions,
-  getFunderById,
+  getKeywordById,
   getPublisherById,
   getSourceById,
   getSources,
   getTopicById,
-  getKeywordById,
+  getWorkById,
+  getWorks,
 } from '../../helpers';
 
 import { extractAndIndexRelationships } from './graph-extraction';
@@ -55,20 +54,20 @@ const ID_PREFIX_TO_TYPE: Record<string, EntityType> = {
 /**
  * Infer entity type from OpenAlex ID prefix
  * e.g., "W123456" -> "works", "A789012" -> "authors"
+ * @param id
  */
-function inferEntityTypeFromId(id: string): EntityType | undefined {
+const inferEntityTypeFromId = (id: string): EntityType | undefined => {
   if (!id || id.length < 2) return undefined;
   const prefix = id.charAt(0).toUpperCase();
   return ID_PREFIX_TO_TYPE[prefix];
-}
+};
 
 /**
  * Check if a label looks like an ID-only label (no display name resolved)
  * ID-only labels match the OpenAlex ID pattern: letter followed by digits
+ * @param label
  */
-function isIdOnlyLabel(label: string): boolean {
-  return /^[A-Z]\d+$/i.test(label);
-}
+const isIdOnlyLabel = (label: string): boolean => /^[A-Z]\d+$/i.test(label);
 
 /**
  * Maximum number of IDs to include in a single batch query
@@ -79,13 +78,10 @@ const BATCH_SIZE = 100;
 /**
  * Resolve display names for stub nodes that have ID-only labels
  * Uses batch OR syntax for efficiency (e.g., id:W1|W2|W3)
- *
  * @param stubs - Stub nodes to resolve labels for
  * @returns Map of entity ID to resolved display_name
  */
-async function resolveStubLabels(
-  stubs: Array<{ id: string; entityType: EntityType; label: string }>
-): Promise<Map<string, string>> {
+const resolveStubLabels = async (stubs: Array<{ id: string; entityType: EntityType; label: string }>): Promise<Map<string, string>> => {
   const labelMap = new Map<string, string>();
 
   // Filter to only stubs with ID-only labels
@@ -181,7 +177,7 @@ async function resolveStubLabels(
   logger.debug(LOG_PREFIX, `Resolved ${labelMap.size} of ${needsResolution.length} stub labels via batch queries`);
 
   return labelMap;
-}
+};
 
 /**
  * Node data returned from expansion (for incremental UI updates)
@@ -234,11 +230,10 @@ export interface NodeExpansionResult {
 
 /**
  * Fetch entity data by type and ID
+ * @param entityType
+ * @param entityId
  */
-async function fetchEntityData(
-  entityType: EntityType,
-  entityId: string
-): Promise<Record<string, unknown> | null> {
+const fetchEntityData = async (entityType: EntityType, entityId: string): Promise<Record<string, unknown> | null> => {
   try {
     switch (entityType) {
       case 'works':
@@ -267,7 +262,7 @@ async function fetchEntityData(
     logger.error(LOG_PREFIX, `Failed to fetch ${entityType} ${entityId}`, { error });
     return null;
   }
-}
+};
 
 /**
  * Expand a node by fetching its entity data and all relationships
@@ -278,16 +273,12 @@ async function fetchEntityData(
  * 3. Extracts and indexes all relationships
  * 4. Creates stub nodes for newly discovered entities
  * 5. Marks the node as expanded with timestamp
- *
  * @param graph - The PersistentGraph instance
  * @param nodeId - The ID of the node to expand
+ * @param entityType
  * @returns Expansion result with statistics
  */
-export async function expandNode(
-  graph: PersistentGraph,
-  nodeId: string,
-  entityType?: EntityType
-): Promise<NodeExpansionResult> {
+export const expandNode = async (graph: PersistentGraph, nodeId: string, entityType?: EntityType): Promise<NodeExpansionResult> => {
   // Get current node state
   const node = graph.getNode(nodeId);
 
@@ -465,20 +456,24 @@ export async function expandNode(
   });
 
   return result;
-}
+};
 
 /**
  * Check if a node is fully expanded (has expandedAt timestamp)
+ * @param graph
+ * @param nodeId
  */
-export function isNodeExpanded(graph: PersistentGraph, nodeId: string): boolean {
+export const isNodeExpanded = (graph: PersistentGraph, nodeId: string): boolean => {
   const node = graph.getNode(nodeId);
   return node?.expandedAt !== undefined;
-}
+};
 
 /**
  * Check if a node is a stub (completeness === 'stub')
+ * @param graph
+ * @param nodeId
  */
-export function isStubNode(graph: PersistentGraph, nodeId: string): boolean {
+export const isStubNode = (graph: PersistentGraph, nodeId: string): boolean => {
   const node = graph.getNode(nodeId);
   return node?.completeness === 'stub';
-}
+};

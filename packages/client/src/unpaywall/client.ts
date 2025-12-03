@@ -11,8 +11,8 @@
 import { logger } from "@bibgraph/utils";
 
 import type {
-  UnpaywallResponse,
   UnpaywallClientOptions,
+  UnpaywallResponse,
 } from "./types";
 
 export class UnpaywallApiError extends Error {
@@ -42,6 +42,7 @@ export class UnpaywallClient {
 
   /**
    * Normalize DOI to bare DOI format (without URL prefix)
+   * @param doi
    */
   private normalizeDoi(doi: string): string {
     // Remove common DOI URL prefixes
@@ -61,6 +62,7 @@ export class UnpaywallClient {
 
   /**
    * Look up a work by DOI
+   * @param doi
    */
   async getByDoi(doi: string): Promise<UnpaywallResponse | null> {
     const normalizedDoi = this.normalizeDoi(doi);
@@ -132,6 +134,7 @@ export class UnpaywallClient {
   /**
    * Get PDF URL for a DOI
    * Returns the best available PDF URL or null
+   * @param doi
    */
   async getPdfUrl(doi: string): Promise<string | null> {
     const data = await this.getByDoi(doi);
@@ -162,6 +165,7 @@ export class UnpaywallClient {
 
   /**
    * Update the email used for API requests
+   * @param email
    */
   updateEmail(email: string): void {
     if (!email || !email.includes('@')) {
@@ -177,8 +181,9 @@ let clientInstance: UnpaywallClient | null = null;
 /**
  * Get or create the Unpaywall client instance
  * Returns null if email is not configured
+ * @param email
  */
-export function getUnpaywallClient(email?: string): UnpaywallClient | null {
+export const getUnpaywallClient = (email?: string): UnpaywallClient | null => {
   if (email) {
     if (clientInstance) {
       clientInstance.updateEmail(email);
@@ -189,11 +194,10 @@ export function getUnpaywallClient(email?: string): UnpaywallClient | null {
   }
 
   return clientInstance;
-}
+};
 
 /**
  * Create a new Unpaywall client with the given email
+ * @param email
  */
-export function createUnpaywallClient(email: string): UnpaywallClient {
-  return new UnpaywallClient({ email });
-}
+export const createUnpaywallClient = (email: string): UnpaywallClient => new UnpaywallClient({ email });

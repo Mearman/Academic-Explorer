@@ -215,6 +215,7 @@ export class ApiInterceptor {
 
   /**
    * Extract entity type from OpenAlex URL
+   * @param url
    */
   private extractEntityType(url: string): EntityType | undefined {
     const urlObj = new URL(url);
@@ -245,6 +246,7 @@ export class ApiInterceptor {
 
   /**
    * Extract entity ID from OpenAlex URL
+   * @param url
    */
   private extractEntityId(url: string): string | undefined {
     const urlObj = new URL(url);
@@ -252,7 +254,7 @@ export class ApiInterceptor {
 
     // Look for OpenAlex ID pattern (starts with entity letter + number)
     for (const segment of pathSegments) {
-      if (/^[AWSITPFCK]\d+/.test(segment)) {
+      if (/^[ACFIKPSTW]\d+/.test(segment)) {
         return segment;
       }
     }
@@ -262,6 +264,7 @@ export class ApiInterceptor {
 
   /**
    * Parse query parameters from URL
+   * @param url
    */
   private parseQueryParams(url: string): QueryParams {
     const urlObj = new URL(url);
@@ -292,6 +295,7 @@ export class ApiInterceptor {
 
   /**
    * Generate cache key from request components
+   * @param components
    */
   private generateCacheKey(components: CacheKeyComponents): string {
     const { entityType, entityId, params, baseUrl } = components;
@@ -316,6 +320,7 @@ export class ApiInterceptor {
 
   /**
    * Check if request should be deduplicated
+   * @param cacheKey
    */
   private shouldDeduplicate(cacheKey: string): boolean {
     const now = Date.now();
@@ -338,6 +343,7 @@ export class ApiInterceptor {
 
   /**
    * Add request to deduplication map
+   * @param cacheKey
    */
   private addToDeduplication(cacheKey: string): void {
     const now = Date.now();
@@ -376,6 +382,8 @@ export class ApiInterceptor {
 
   /**
    * Intercept an outgoing request
+   * @param url
+   * @param options
    */
   public interceptRequest(
     url: string,
@@ -437,6 +445,10 @@ export class ApiInterceptor {
 
   /**
    * Intercept a response
+   * @param request
+   * @param response
+   * @param data
+   * @param responseTime
    */
   public interceptResponse(
     request: InterceptedRequest,

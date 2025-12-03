@@ -6,7 +6,6 @@
 import { logger } from "@bibgraph/utils";
 
 import type { StaticEntityType } from "../../internal/static-data-utils";
-
 import {
   type CachedEntityRecord,
   generateCacheKey,
@@ -126,6 +125,8 @@ export class DexieCacheTier {
 
   /**
    * Get an entity from the cache
+   * @param entityType
+   * @param id
    */
   async get(entityType: StaticEntityType, id: string): Promise<DexieCacheResult> {
     const startTime = Date.now();
@@ -188,6 +189,8 @@ export class DexieCacheTier {
 
   /**
    * Check if an entity exists in the cache
+   * @param entityType
+   * @param id
    */
   async has(entityType: StaticEntityType, id: string): Promise<boolean> {
     if (!(await this.ensureInitialized())) {
@@ -222,6 +225,10 @@ export class DexieCacheTier {
 
   /**
    * Store an entity in the cache
+   * @param entityType
+   * @param id
+   * @param data
+   * @param ttl
    */
   async set(entityType: StaticEntityType, id: string, data: unknown, ttl?: number): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -270,6 +277,8 @@ export class DexieCacheTier {
 
   /**
    * Delete an entity from the cache
+   * @param entityType
+   * @param id
    */
   async delete(entityType: StaticEntityType, id: string): Promise<boolean> {
     if (!(await this.ensureInitialized())) {
@@ -316,6 +325,7 @@ export class DexieCacheTier {
 
   /**
    * Clear entities of a specific type
+   * @param entityType
    */
   async clearByType(entityType: StaticEntityType): Promise<number> {
     if (!(await this.ensureInitialized())) {
@@ -446,6 +456,7 @@ export class DexieCacheTier {
 
   /**
    * Check if a cache entry is expired
+   * @param record
    */
   private isExpired(record: CachedEntityRecord): boolean {
     if (record.ttl === null) {
@@ -513,16 +524,16 @@ export class DexieCacheTier {
  */
 let dexieCacheTierInstance: DexieCacheTier | null = null;
 
-export function getDexieCacheTier(config?: DexieCacheTierConfig): DexieCacheTier {
+export const getDexieCacheTier = (config?: DexieCacheTierConfig): DexieCacheTier => {
   if (!dexieCacheTierInstance) {
     dexieCacheTierInstance = new DexieCacheTier(config);
   }
   return dexieCacheTierInstance;
-}
+};
 
 /**
  * Reset the singleton instance (for testing)
  */
-export function resetDexieCacheTier(): void {
+export const resetDexieCacheTier = (): void => {
   dexieCacheTierInstance = null;
-}
+};

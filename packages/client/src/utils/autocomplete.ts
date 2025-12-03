@@ -47,14 +47,9 @@ interface DebouncedPromiseCache {
 
 /**
  * Type guard to check if a cached promise can be safely cast to the expected type
+ * @param promise
  */
-function isValidCachedPromise<T>(
-  promise: Promise<unknown>,
-): promise is Promise<T> {
-  // Since we control the cache keys and functions, we can trust that
-  // the same cache key always maps to the same promise type
-  return promise instanceof Promise;
-}
+const isValidCachedPromise = <T>(promise: Promise<unknown>): promise is Promise<T> => promise instanceof Promise;
 
 /**
  * Base AutocompleteApi class providing shared autocomplete logic and utilities
@@ -154,6 +149,8 @@ export class BaseAutocompleteApi {
 
   /**
    * Execute function with debouncing to prevent excessive API calls
+   * @param cacheKey
+   * @param fn
    */
   protected async executeWithDebounce<T>(
     cacheKey: string,
@@ -185,6 +182,7 @@ export class BaseAutocompleteApi {
   /**
    * Perform general autocomplete request without entity type specification
    * Calls the /autocomplete endpoint which returns results across all entity types
+   * @param query
    */
   protected async performGeneralAutocomplete(
     query: string,
@@ -210,6 +208,8 @@ export class BaseAutocompleteApi {
 
   /**
    * Perform autocomplete request for a specific entity type
+   * @param query
+   * @param entityType
    */
   protected async performAutocomplete(
     query: string,
@@ -239,6 +239,7 @@ export class BaseAutocompleteApi {
 
   /**
    * Sort autocomplete results by relevance (cited_by_count, then works_count)
+   * @param results
    */
   protected sortAutocompleteResults(
     results: AutocompleteResult[],
@@ -259,6 +260,7 @@ export class BaseAutocompleteApi {
 
   /**
    * Map plural entity type to singular form for AutocompleteResult
+   * @param entityType
    */
   protected mapEntityTypeToSingular(
     entityType: EntityType,
@@ -283,6 +285,7 @@ export class BaseAutocompleteApi {
 
   /**
    * Validate autocomplete options
+   * @param options
    */
   protected validateAutocompleteOptions(options: AutocompleteOptions): void {
     if (!options.q?.trim()) {
@@ -343,6 +346,7 @@ export class BaseAutocompleteApi {
 
   /**
    * Format unknown error for safe logging using type guards
+   * @param error
    */
   protected formatErrorForLogging(error: unknown): Record<string, unknown> {
     if (error instanceof Error) {
@@ -395,7 +399,6 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
    * @param query - Search query string
    * @param options - Optional autocomplete options
    * @returns Promise resolving to array of autocomplete results across all entity types
-   *
    * @example
    * ```typescript
    * // Fast general autocomplete (single API call)
@@ -444,7 +447,6 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
    * @param query - Search query string
    * @param entityType - Optional specific entity type to search
    * @returns Promise resolving to array of autocomplete results
-   *
    * @example
    * ```typescript
    * // Search all entity types (makes 5 API calls)
@@ -618,6 +620,7 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
 
   /**
    * Infer which entity types to search based on filter keys
+   * @param filters
    */
   private inferEntityTypesFromFilters(
     filters: Record<string, unknown>,
@@ -667,6 +670,7 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
 
   /**
    * Format filters for specific entity type endpoints
+   * @param filters
    */
   private formatFiltersForEntityType(
     filters: Record<string, unknown>,

@@ -3,7 +3,7 @@
  * Provides advanced grouping and aggregation functionality
  */
 
-import type { EntityType, QueryParams, GroupParams } from "@bibgraph/types";
+import type { EntityType, GroupParams,QueryParams } from "@bibgraph/types";
 import { extractPropertyValue } from "@bibgraph/types/entities";
 
 import { OpenAlexBaseClient } from "../client";
@@ -71,6 +71,7 @@ export class GroupingApi {
 
   /**
    * Type guard to check if value is a valid performer record
+   * @param value
    */
   private isPerformerRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -78,6 +79,7 @@ export class GroupingApi {
 
   /**
    * Type guard to check if value is a number
+   * @param value
    */
   private isNumber(value: unknown): value is number {
     return typeof value === "number" && !isNaN(value);
@@ -85,12 +87,10 @@ export class GroupingApi {
 
   /**
    * Group entities by a specified field
-   *
    * @param entityType - Type of entity to group
    * @param groupBy - Field to group by
    * @param params - Grouping parameters
    * @returns Promise resolving to grouped results
-   *
    * @example
    * ```typescript
    * const groups = await groupingApi.groupBy('works', 'publication_year', {
@@ -170,13 +170,11 @@ export class GroupingApi {
 
   /**
    * Get temporal trends for grouped data
-   *
    * @param entityType - Type of entity to analyze
    * @param groupBy - Field to group by
    * @param timeField - Time field for trends (e.g., 'publication_year', 'created_date')
    * @param params - Parameters
    * @returns Promise resolving to temporal trends
-   *
    * @example
    * ```typescript
    * const trends = await groupingApi.getTemporalTrends('works', 'type', 'publication_year', {
@@ -308,11 +306,9 @@ export class GroupingApi {
 
   /**
    * Multi-dimensional grouping (cross-tabulation)
-   *
    * @param entityType - Type of entity to group
    * @param params - Multi-dimensional grouping parameters
    * @returns Promise resolving to cross-tabulated results
-   *
    * @example
    * ```typescript
    * const crossTab = await groupingApi.multiDimensionalGroup('works', {
@@ -432,13 +428,11 @@ export class GroupingApi {
 
   /**
    * Get top performers by group
-   *
    * @param entityType - Type of entity to analyze
    * @param groupBy - Field to group by
    * @param metric - Metric to rank by ('cited_by_count', 'works_count', etc.)
    * @param params - Parameters
    * @returns Promise resolving to top performers
-   *
    * @example
    * ```typescript
    * const topPerformers = await groupingApi.getTopPerformersByGroup(
@@ -559,13 +553,11 @@ export class GroupingApi {
 
   /**
    * Calculate distribution statistics for grouped data
-   *
    * @param entityType - Type of entity to analyze
    * @param groupBy - Field to group by
    * @param metric - Metric to analyze distribution of
    * @param params - Parameters
    * @returns Promise resolving to distribution statistics
-   *
    * @example
    * ```typescript
    * const distribution = await groupingApi.getDistributionStats(
@@ -683,6 +675,8 @@ export class GroupingApi {
 
   /**
    * Calculate percentile from sorted array
+   * @param sortedArray
+   * @param percentile
    */
   private percentile(sortedArray: number[], percentile: number): number {
     if (sortedArray.length === 0) return 0;
@@ -703,6 +697,8 @@ export class GroupingApi {
 
   /**
    * Extract metric value from group record with type safety
+   * @param group
+   * @param metric
    */
   private extractMetricValue(group: unknown, metric: string): number {
     if (group && typeof group === "object") {
@@ -717,6 +713,8 @@ export class GroupingApi {
 
   /**
    * Calculate basic statistics for a group
+   * @param totalMetric
+   * @param count
    */
   private calculateGroupStats(
     totalMetric: number,
@@ -730,6 +728,12 @@ export class GroupingApi {
 
   /**
    * Calculate percentiles for a group if requested
+   * @param entityType
+   * @param groupBy
+   * @param group
+   * @param metric
+   * @param params
+   * @param calculatePercentiles
    */
   private async calculatePercentilesIfNeeded(
     entityType: EntityType,

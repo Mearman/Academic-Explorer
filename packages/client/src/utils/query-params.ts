@@ -7,10 +7,9 @@ import type { QueryParams } from "@bibgraph/types";
 /**
  * Convert typed query parameters to base QueryParams
  * This is a generic utility for converting specific query param types to the base type
+ * @param params
  */
-export function toQueryParams<T extends Record<string, unknown>>(
-  params: T,
-): QueryParams {
+export const toQueryParams = <T extends Record<string, unknown>>(params: T): QueryParams => {
   const result: QueryParams = {};
 
   // Copy all properties
@@ -21,4 +20,4 @@ export function toQueryParams<T extends Record<string, unknown>>(
   });
 
   return result;
-}
+};

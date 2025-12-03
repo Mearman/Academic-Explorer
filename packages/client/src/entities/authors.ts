@@ -5,19 +5,19 @@
 
 import type {
   Author,
-  AuthorsFilters,
-  AuthorCollaboratorsFilters,
-  AuthorWorksFilters,
-  GroupByResult,
-  AuthorGroupingOptions,
   AuthorAutocompleteOptions,
+  AuthorCollaboratorsFilters,
+  AuthorGroupingOptions,
   AuthorSearchOptions,
-  GroupedResponse,
+  AuthorsFilters,
+  AuthorWorksFilters,
   AutocompleteResult,
-  QueryParams,
-  OpenAlexResponse,
-  Work,
+  GroupByResult,
+  GroupedResponse,
   OpenAlexId,
+  OpenAlexResponse,
+  QueryParams,
+  Work,
 } from "@bibgraph/types/entities";
 import { logger } from "@bibgraph/utils";
 
@@ -93,7 +93,6 @@ export class AuthorsApi {
    * @param query - Search query string (e.g., partial author name)
    * @param options - Optional parameters for autocomplete behavior
    * @returns Promise resolving to array of autocomplete results
-   *
    * @example
    * ```typescript
    * // Basic autocomplete
@@ -158,7 +157,6 @@ export class AuthorsApi {
    * @param id - Author ID (OpenAlex ID, ORCID in any format, or other supported format)
    * @param params - Query parameters for field selection and additional options
    * @returns Promise resolving to Author entity
-   *
    * @example
    * ```typescript
    * // OpenAlex ID
@@ -189,7 +187,6 @@ export class AuthorsApi {
    * Get multiple authors with optional filtering and pagination
    * @param params - Query parameters including filters, sorting, and pagination
    * @returns Promise resolving to OpenAlexResponse containing authors
-   *
    * @example
    * ```typescript
    * // Get authors with high citation counts
@@ -223,8 +220,8 @@ export class AuthorsApi {
    * @param query - Search query string
    * @param filters - Optional AuthorsFilters for refined searching
    * @param params - Additional query parameters
+   * @param options
    * @returns Promise resolving to OpenAlexResponse containing matching authors
-   *
    * @example
    * ```typescript
    * // Search authors by name
@@ -265,7 +262,6 @@ export class AuthorsApi {
    * @param institutionId - Institution ID (OpenAlex ID or ROR)
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing institution authors
-   *
    * @example
    * ```typescript
    * // Get authors from MIT
@@ -293,7 +289,6 @@ export class AuthorsApi {
    * @param countryCode - ISO 2-letter country code
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing country authors
-   *
    * @example
    * ```typescript
    * // Get authors from United States
@@ -322,7 +317,6 @@ export class AuthorsApi {
    * @param filters - Optional filters for works
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing author's works
-   *
    * @example
    * ```typescript
    * // Get all works by an author
@@ -357,7 +351,6 @@ export class AuthorsApi {
    * @param authorId - Author ID
    * @param params - Additional query parameters
    * @returns Promise resolving to array of concepts with scores
-   *
    * @example
    * ```typescript
    * const concepts = await authorsApi.getAuthorConcepts('A2208157607');
@@ -415,7 +408,6 @@ export class AuthorsApi {
    * @param authorId - Author ID
    * @param params - Additional query parameters
    * @returns Promise resolving to array of topics with counts
-   *
    * @example
    * ```typescript
    * const topics = await authorsApi.getAuthorTopics('A2208157607');
@@ -506,7 +498,6 @@ export class AuthorsApi {
    * @param filters - Optional filters for collaboration analysis
    * @param params - Additional query parameters
    * @returns Promise resolving to array of collaborator authors with collaboration stats
-   *
    * @example
    * ```typescript
    * // Get all collaborators
@@ -633,7 +624,6 @@ export class AuthorsApi {
    * @param count - Number of random authors to return (max 200)
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing random authors
-   *
    * @example
    * ```typescript
    * // Get 10 random authors
@@ -663,7 +653,6 @@ export class AuthorsApi {
    * Get authors with ORCID identifiers
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing authors with ORCIDs
-   *
    * @example
    * ```typescript
    * const authorsWithOrcid = await authorsApi.getAuthorsWithOrcid();
@@ -684,7 +673,6 @@ export class AuthorsApi {
    * @param filters - Optional filters to refine search
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing most cited authors
-   *
    * @example
    * ```typescript
    * // Get top 100 most cited authors
@@ -721,7 +709,6 @@ export class AuthorsApi {
    * @param filters - Optional filters to refine search
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing most productive authors
-   *
    * @example
    * ```typescript
    * const productiveAuthors = await authorsApi.getMostProductiveAuthors(100);
@@ -752,7 +739,6 @@ export class AuthorsApi {
    * @param params - Query parameters for filtering
    * @param batchSize - Number of authors per batch
    * @returns AsyncGenerator yielding batches of authors
-   *
    * @example
    * ```typescript
    * // Process all authors from an institution
@@ -777,7 +763,6 @@ export class AuthorsApi {
    * @param groupBy - Field to group by (e.g., 'last_known_institution.country_code', 'publication_year', 'topics.id')
    * @param filters - Optional filters to apply before grouping
    * @returns Promise resolving to array of GroupByResult with statistics
-   *
    * @example
    * ```typescript
    * // Get author counts by country
@@ -815,7 +800,6 @@ export class AuthorsApi {
    * @param field - Field to group by
    * @param options - Additional options for filtering and pagination
    * @returns Promise resolving to GroupedResponse containing grouped authors
-   *
    * @example
    * ```typescript
    * // Get authors grouped by country with full data
@@ -835,12 +819,7 @@ export class AuthorsApi {
     field: string,
     options: AuthorGroupingOptions = {},
   ): Promise<GroupedResponse<Author>> {
-    function hasValidProperties<T extends Record<string, unknown>>(
-      obj: unknown,
-      keys: (keyof T)[]
-    ): obj is T {
-      return typeof obj === "object" && obj !== null && keys.every(key => key in obj);
-    }
+    const hasValidProperties = <T extends Record<string, unknown>>(obj: unknown, keys: (keyof T)[]): obj is T => typeof obj === "object" && obj !== null && keys.every(key => key in obj);
 
     const { filters, sort, per_page = 25, page } = options;
     if (!hasValidProperties(options, ["filters", "sort", "per_page", "page"])) {

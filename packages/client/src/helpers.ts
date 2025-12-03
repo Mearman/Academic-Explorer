@@ -42,10 +42,10 @@ let _sharedClient: OpenAlexBaseClient | null = null;
  * Get or create the shared client instance
  * Uses the cached client singleton by default for IndexedDB caching
  */
-function getSharedClient(): OpenAlexBaseClient {
+const getSharedClient = (): OpenAlexBaseClient => {
   _sharedClient ??= cachedOpenAlex;
   return _sharedClient;
-}
+};
 
 // ============================================================================
 // AUTHOR HELPERS
@@ -53,26 +53,24 @@ function getSharedClient(): OpenAlexBaseClient {
 
 /**
  * Get a single author by ID
+ * @param id
+ * @param params
  */
-export async function getAuthorById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Author> {
+export const getAuthorById = async (id: string, params: QueryParams = {}): Promise<Author> => {
   const client = getSharedClient();
   const authorsApi = new AuthorsApi(client);
   return authorsApi.getAuthor(id, params);
-}
+};
 
 /**
  * Get multiple authors with optional filtering
+ * @param params
  */
-export async function getAuthors(
-  params: QueryParams = {},
-): Promise<OpenAlexResponse<Author>> {
+export const getAuthors = async (params: QueryParams = {}): Promise<OpenAlexResponse<Author>> => {
   const client = getSharedClient();
   const authorsApi = new AuthorsApi(client);
   return authorsApi.getAuthors(params);
-}
+};
 
 // ============================================================================
 // WORK HELPERS
@@ -80,26 +78,24 @@ export async function getAuthors(
 
 /**
  * Get a single work by ID
+ * @param id
+ * @param params
  */
-export async function getWorkById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Work> {
+export const getWorkById = async (id: string, params: QueryParams = {}): Promise<Work> => {
   const client = getSharedClient();
   const worksApi = new WorksApi(client);
   return worksApi.getWork(id, params);
-}
+};
 
 /**
  * Get multiple works with optional filtering
+ * @param params
  */
-export async function getWorks(
-  params: QueryParams = {},
-): Promise<OpenAlexResponse<Work>> {
+export const getWorks = async (params: QueryParams = {}): Promise<OpenAlexResponse<Work>> => {
   const client = getSharedClient();
   const worksApi = new WorksApi(client);
   return worksApi.getWorks(params);
-}
+};
 
 // ============================================================================
 // CONCEPT HELPERS
@@ -107,26 +103,24 @@ export async function getWorks(
 
 /**
  * Get a single concept by ID
+ * @param id
+ * @param params
  */
-export async function getConceptById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Concept> {
+export const getConceptById = async (id: string, params: QueryParams = {}): Promise<Concept> => {
   const client = getSharedClient();
   const conceptsApi = new ConceptsApi(client);
   return conceptsApi.getConcept(id, params);
-}
+};
 
 /**
  * Get multiple concepts with optional filtering
+ * @param params
  */
-export async function getConcepts(
-  params: QueryParams = {},
-): Promise<OpenAlexResponse<Concept>> {
+export const getConcepts = async (params: QueryParams = {}): Promise<OpenAlexResponse<Concept>> => {
   const client = getSharedClient();
   const conceptsApi = new ConceptsApi(client);
   return conceptsApi.getConcepts(params);
-}
+};
 
 // ============================================================================
 // INSTITUTION HELPERS
@@ -134,26 +128,24 @@ export async function getConcepts(
 
 /**
  * Get a single institution by ID
+ * @param id
+ * @param params
  */
-export async function getInstitutionById(
-  id: string,
-  params: QueryParams = {},
-): Promise<InstitutionEntity> {
+export const getInstitutionById = async (id: string, params: QueryParams = {}): Promise<InstitutionEntity> => {
   const client = getSharedClient();
   const institutionsApi = new InstitutionsApi(client);
   return institutionsApi.getInstitution(id, params);
-}
+};
 
 /**
  * Get multiple institutions with optional filtering
+ * @param params
  */
-export async function getInstitutions(
-  params: InstitutionSearchOptions = {},
-): Promise<OpenAlexResponse<InstitutionEntity>> {
+export const getInstitutions = async (params: InstitutionSearchOptions = {}): Promise<OpenAlexResponse<InstitutionEntity>> => {
   const client = getSharedClient();
   const institutionsApi = new InstitutionsApi(client);
   return institutionsApi.getInstitutions(params);
-}
+};
 
 // ============================================================================
 // FUNDER HELPERS
@@ -161,26 +153,24 @@ export async function getInstitutions(
 
 /**
  * Get a single funder by ID
+ * @param id
+ * @param params
  */
-export async function getFunderById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Funder> {
+export const getFunderById = async (id: string, params: QueryParams = {}): Promise<Funder> => {
   const client = getSharedClient();
   const fundersApi = new FundersApi(client);
   return fundersApi.getFunder(id, params);
-}
+};
 
 /**
  * Get multiple funders with optional filtering
+ * @param params
  */
-export async function getFunders(
-  params: QueryParams = {},
-): Promise<OpenAlexResponse<Funder>> {
+export const getFunders = async (params: QueryParams = {}): Promise<OpenAlexResponse<Funder>> => {
   const client = getSharedClient();
   const fundersApi = new FundersApi(client);
   return fundersApi.getFunders(params);
-}
+};
 
 // ============================================================================
 // PUBLISHER HELPERS
@@ -188,26 +178,24 @@ export async function getFunders(
 
 /**
  * Get a single publisher by ID
+ * @param id
+ * @param params
  */
-export async function getPublisherById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Publisher> {
+export const getPublisherById = async (id: string, params: QueryParams = {}): Promise<Publisher> => {
   const client = getSharedClient();
   const publishersApi = new PublishersApi(client);
   return publishersApi.getPublisher(id, params);
-}
+};
 
 /**
  * Get multiple publishers with optional filtering
+ * @param params
  */
-export async function getPublishers(
-  params: PublisherSearchOptions = {},
-): Promise<OpenAlexResponse<Publisher>> {
+export const getPublishers = async (params: PublisherSearchOptions = {}): Promise<OpenAlexResponse<Publisher>> => {
   const client = getSharedClient();
   const publishersApi = new PublishersApi(client);
   return publishersApi.getPublishers(params);
-}
+};
 
 // ============================================================================
 // SOURCE HELPERS
@@ -215,26 +203,24 @@ export async function getPublishers(
 
 /**
  * Get a single source by ID
+ * @param id
+ * @param params
  */
-export async function getSourceById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Source> {
+export const getSourceById = async (id: string, params: QueryParams = {}): Promise<Source> => {
   const client = getSharedClient();
   const sourcesApi = new SourcesApi(client);
   return sourcesApi.getSource(id, params);
-}
+};
 
 /**
  * Get multiple sources with optional filtering
+ * @param params
  */
-export async function getSources(
-  params: SourceSearchOptions = {},
-): Promise<OpenAlexResponse<Source>> {
+export const getSources = async (params: SourceSearchOptions = {}): Promise<OpenAlexResponse<Source>> => {
   const client = getSharedClient();
   const sourcesApi = new SourcesApi(client);
   return sourcesApi.getSources(params);
-}
+};
 
 // ============================================================================
 // TOPIC HELPERS
@@ -242,26 +228,24 @@ export async function getSources(
 
 /**
  * Get a single topic by ID
+ * @param id
+ * @param params
  */
-export async function getTopicById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Topic> {
+export const getTopicById = async (id: string, params: QueryParams = {}): Promise<Topic> => {
   const client = getSharedClient();
   const topicsApi = new TopicsApi(client);
   return topicsApi.getTopic(id, params);
-}
+};
 
 /**
  * Get multiple topics with optional filtering
+ * @param params
  */
-export async function getTopics(
-  params: TopicSearchOptions = {},
-): Promise<OpenAlexResponse<Topic>> {
+export const getTopics = async (params: TopicSearchOptions = {}): Promise<OpenAlexResponse<Topic>> => {
   const client = getSharedClient();
   const topicsApi = new TopicsApi(client);
   return topicsApi.getTopics(params);
-}
+};
 
 // ============================================================================
 // KEYWORD HELPERS
@@ -269,26 +253,24 @@ export async function getTopics(
 
 /**
  * Get a single keyword by ID
+ * @param id
+ * @param params
  */
-export async function getKeywordById(
-  id: string,
-  params: QueryParams = {},
-): Promise<Keyword> {
+export const getKeywordById = async (id: string, params: QueryParams = {}): Promise<Keyword> => {
   const client = getSharedClient();
   const keywordsApi = new KeywordsApi(client);
   return keywordsApi.getKeyword(id, params);
-}
+};
 
 /**
  * Get multiple keywords with optional filtering
+ * @param params
  */
-export async function getKeywords(
-  params: QueryParams = {},
-): Promise<OpenAlexResponse<Keyword>> {
+export const getKeywords = async (params: QueryParams = {}): Promise<OpenAlexResponse<Keyword>> => {
   const client = getSharedClient();
   const keywordsApi = new KeywordsApi(client);
   return keywordsApi.getKeywords(params);
-}
+};
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -297,14 +279,15 @@ export async function getKeywords(
 /**
  * Set a custom client instance for all helper functions
  * Useful for testing or when you need specific client configuration
+ * @param client
  */
-export function setSharedClient(client: OpenAlexBaseClient): void {
+export const setSharedClient = (client: OpenAlexBaseClient): void => {
   _sharedClient = client;
-}
+};
 
 /**
  * Reset the shared client to use default configuration
  */
-export function resetSharedClient(): void {
+export const resetSharedClient = (): void => {
   _sharedClient = null;
-}
+};

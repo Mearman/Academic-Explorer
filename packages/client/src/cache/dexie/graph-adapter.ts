@@ -9,16 +9,13 @@
  * - Edge property filtering (via EdgePropertyFilter)
  * - Configurable weight calculation (property mapping or custom function)
  * - Bidirectional traversal support
- *
  * @module cache/dexie/graph-adapter
  */
 
 import type {
-  EdgePropertyFilter,
   EntityType,
   GraphEdgeRecord,
   GraphNodeRecord,
-  TraversalDirection,
   TraversalOptions,
   WeightConfig,
   WeightFunction,
@@ -33,10 +30,9 @@ type AdapterWeightFunction = WeightFunction<GraphNodeRecord, GraphEdgeRecord>;
 
 /**
  * Build a weight function from WeightConfig
+ * @param config
  */
-function buildWeightFunction(
-  config?: WeightConfig<GraphNodeRecord, GraphEdgeRecord>
-): AdapterWeightFunction {
+const buildWeightFunction = (config?: WeightConfig<GraphNodeRecord, GraphEdgeRecord>): AdapterWeightFunction => {
   if (!config) {
     return () => 1;
   }
@@ -71,7 +67,7 @@ function buildWeightFunction(
   }
 
   return () => config.defaultWeight ?? 1;
-}
+};
 
 /**
  * PersistentGraphAdapter - Filtered, weighted access to PersistentGraph
@@ -81,7 +77,6 @@ function buildWeightFunction(
  * - Edge filtering by properties (score, authorPosition, etc.)
  * - Weight calculation from edge properties or custom functions
  * - Direction-aware traversal
- *
  * @example
  * ```typescript
  * const graph = getPersistentGraph();
@@ -120,6 +115,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Get a node by ID (filtered by node types if configured)
+   * @param id
    */
   getNode(id: string): GraphNodeRecord | undefined {
     const node = this.graph.getNode(id);
@@ -135,6 +131,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Check if node exists (respecting filters)
+   * @param id
    */
   hasNode(id: string): boolean {
     return this.getNode(id) !== undefined;
@@ -150,7 +147,8 @@ export class PersistentGraphAdapter {
       return nodes;
     }
 
-    return nodes.filter((node) => this.nodeTypeSet!.has(node.entityType));
+    const nodeTypeSet = this.nodeTypeSet;
+    return nodes.filter((node) => nodeTypeSet.has(node.entityType));
   }
 
   /**
@@ -168,6 +166,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Get neighbor node IDs (filtered and direction-aware)
+   * @param id
    */
   getNeighbors(id: string): string[] {
     const direction = this.options.direction ?? 'both';
@@ -181,9 +180,10 @@ export class PersistentGraphAdapter {
 
     // Apply node type filter
     if (this.nodeTypeSet) {
+      const nodeTypeSet = this.nodeTypeSet;
       neighbors = neighbors.filter((neighborId) => {
         const node = this.graph.getNode(neighborId);
-        return node && this.nodeTypeSet!.has(node.entityType);
+        return node && nodeTypeSet.has(node.entityType);
       });
     }
 
@@ -192,6 +192,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Get outgoing edges from a node (filtered)
+   * @param id
    */
   getOutgoingEdges(id: string): GraphEdgeRecord[] {
     const direction = this.options.direction ?? 'both';
@@ -212,10 +213,11 @@ export class PersistentGraphAdapter {
 
     // Apply node type filter to targets
     if (this.nodeTypeSet) {
+      const nodeTypeSet = this.nodeTypeSet;
       edges = edges.filter((edge) => {
         const targetId = edge.source === id ? edge.target : edge.source;
         const targetNode = this.graph.getNode(targetId);
-        return targetNode && this.nodeTypeSet!.has(targetNode.entityType);
+        return targetNode && nodeTypeSet.has(targetNode.entityType);
       });
     }
 
@@ -256,6 +258,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Calculate weight for an edge
+   * @param edge
    */
   getEdgeWeight(edge: GraphEdgeRecord): number {
     const source = this.graph.getNode(edge.source);
@@ -288,6 +291,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Create a new adapter with modified options
+   * @param newOptions
    */
   withOptions(
     newOptions: Partial<TraversalOptions<GraphNodeRecord, GraphEdgeRecord>>
@@ -304,6 +308,7 @@ export class PersistentGraphAdapter {
 
   /**
    * Apply edge property filter to edges
+   * @param edges
    */
   private applyEdgeFilter(edges: GraphEdgeRecord[]): GraphEdgeRecord[] {
     const filter = this.options.edgeFilter;
@@ -346,11 +351,9 @@ export class PersistentGraphAdapter {
 
 /**
  * Factory function to create a PersistentGraphAdapter
- *
  * @param graph - PersistentGraph instance to wrap
  * @param options - Traversal options (weight, filtering, direction)
  * @returns Configured adapter
- *
  * @example
  * ```typescript
  * const adapter = createGraphAdapter(persistentGraph, {
@@ -359,9 +362,4 @@ export class PersistentGraphAdapter {
  * });
  * ```
  */
-export function createGraphAdapter(
-  graph: PersistentGraph,
-  options?: TraversalOptions<GraphNodeRecord, GraphEdgeRecord>
-): PersistentGraphAdapter {
-  return new PersistentGraphAdapter(graph, options);
-}
+export const createGraphAdapter = (graph: PersistentGraph, options?: TraversalOptions<GraphNodeRecord, GraphEdgeRecord>): PersistentGraphAdapter => new PersistentGraphAdapter(graph, options);

@@ -4,12 +4,12 @@
  */
 
 import {
+  EDGE_INDEXES,
   GRAPH_INDEX_DB_NAME,
   GRAPH_INDEX_DB_VERSION,
-  NODE_INDEXES,
-  EDGE_INDEXES,
-  type GraphNodeRecord,
   type GraphEdgeRecord,
+  type GraphNodeRecord,
+  NODE_INDEXES,
 } from '@bibgraph/types';
 import Dexie from 'dexie';
 
@@ -42,7 +42,7 @@ let dbInstance: GraphIndexDB | null = null;
 /**
  * Check if IndexedDB is available in the current environment
  */
-export function isIndexedDBAvailableForGraph(): boolean {
+export const isIndexedDBAvailableForGraph = (): boolean => {
   try {
     // Check for browser environment
     if (typeof globalThis === 'undefined' || !('indexedDB' in globalThis)) {
@@ -53,12 +53,12 @@ export function isIndexedDBAvailableForGraph(): boolean {
   } catch {
     return false;
   }
-}
+};
 
 /**
  * Get the graph index database instance (lazy initialization)
  */
-export function getGraphIndexDB(): GraphIndexDB | null {
+export const getGraphIndexDB = (): GraphIndexDB | null => {
   if (!isIndexedDBAvailableForGraph()) {
     return null;
   }
@@ -73,40 +73,37 @@ export function getGraphIndexDB(): GraphIndexDB | null {
   }
 
   return dbInstance;
-}
+};
 
 /**
  * Close the database connection
  */
-export function closeGraphIndexDB(): void {
+export const closeGraphIndexDB = (): void => {
   if (dbInstance) {
     dbInstance.close();
     dbInstance = null;
   }
-}
+};
 
 /**
  * Delete the entire graph index database
  */
-export async function deleteGraphIndexDB(): Promise<void> {
+export const deleteGraphIndexDB = async (): Promise<void> => {
   closeGraphIndexDB();
   if (isIndexedDBAvailableForGraph()) {
     await Dexie.delete(GRAPH_INDEX_DB_NAME);
   }
-}
+};
 
 /**
  * Generate a unique edge ID from source, target, and type
  *
  * Format: `${source}-${target}-${type}`
  * This ensures edge deduplication.
+ * @param source
+ * @param target
+ * @param type
  */
-export function generateEdgeId(
-  source: string,
-  target: string,
-  type: string
-): string {
-  return `${source}-${target}-${type}`;
-}
+export const generateEdgeId = (source: string, target: string, type: string): string => `${source}-${target}-${type}`;
 
 export { GraphIndexDB };

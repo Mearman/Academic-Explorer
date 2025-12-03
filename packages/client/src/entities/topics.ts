@@ -4,13 +4,13 @@
  */
 
 import type {
+  Author,
+  AutocompleteResult,
+  OpenAlexResponse,
+  QueryParams,
   Topic,
   TopicsFilters,
   Work,
-  Author,
-  OpenAlexResponse,
-  QueryParams,
-  AutocompleteResult,
 } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
@@ -49,7 +49,6 @@ export class TopicsApi {
    *   - https://www.wikidata.org/entity/Q123456
    * @param params - Optional query parameters for additional data
    * @returns Promise resolving to the topic object
-   *
    * @example
    * ```typescript
    * // Using OpenAlex ID
@@ -122,7 +121,7 @@ export class TopicsApi {
 
   /**
    * Build query parameters with proper filter processing
-   * @private
+   * @param options
    */
   private buildQueryParams(options: TopicSearchOptions = {}): QueryParams {
     const { filters, sort, page, per_page, select, ...otherOptions } = options;
@@ -190,7 +189,6 @@ export class TopicsApi {
    * Autocomplete topics by name for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of topic autocomplete results
-   *
    * @example
    * ```typescript
    * const suggestions = await topicsApi.autocomplete('machine learning');

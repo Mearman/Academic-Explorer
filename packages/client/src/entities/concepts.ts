@@ -7,11 +7,11 @@ import type {
   AutocompleteResult,
   BaseAutocompleteOptions,
   Concept,
+  ConceptSearchOptions,
   ConceptsFilters,
+  ConceptsQueryParams,
   OpenAlexResponse,
   QueryParams,
-  ConceptsQueryParams,
-  ConceptSearchOptions,
 } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
@@ -33,6 +33,7 @@ export class ConceptsApi {
 
   /**
    * Type guard to check if params is QueryParams by checking for string sort property
+   * @param params
    */
   private isQueryParams(params: unknown): params is QueryParams {
     if (typeof params !== "object" || params === null) {
@@ -47,6 +48,7 @@ export class ConceptsApi {
 
   /**
    * Type guard to check if params is ConceptsQueryParams
+   * @param params
    */
   private isConceptsQueryParams(
     params: unknown,
@@ -59,7 +61,6 @@ export class ConceptsApi {
    * @param query - Search query string (e.g., partial concept name)
    * @param options - Optional parameters for autocomplete behavior
    * @returns Promise resolving to array of autocomplete results
-   *
    * @example
    * ```typescript
    * const suggestions = await conceptsApi.autocomplete('machine learning');
@@ -114,7 +115,6 @@ export class ConceptsApi {
 
   /**
    * Get a single concept by its OpenAlex ID or Wikidata ID
-   *
    * @param id - The concept ID (OpenAlex concept ID) or Wikidata ID in various formats:
    *   - Q123456
    *   - wikidata:Q123456
@@ -123,7 +123,6 @@ export class ConceptsApi {
    * @param params - Additional query parameters with strict typing
    * @returns Promise resolving to a concept
    * @throws {OpenAlexApiError} When the concept is not found or invalid ID format
-   *
    * @example
    * ```typescript
    * // Using OpenAlex ID
@@ -193,10 +192,8 @@ export class ConceptsApi {
 
   /**
    * Get a list of concepts with optional filtering and pagination
-   *
    * @param params - Query parameters for filtering and pagination
    * @returns Promise resolving to a paginated response of concepts
-   *
    * @example
    * ```typescript
    * const response = await conceptsApi.getConcepts({
@@ -230,12 +227,10 @@ export class ConceptsApi {
 
   /**
    * Search for concepts using text search with strict validation
-   *
    * @param query - Search query string (must be non-empty)
    * @param options - Search options including filters and pagination
    * @returns Promise resolving to search results
    * @throws {Error} When query is empty or invalid pagination parameters
-   *
    * @example
    * ```typescript
    * const results = await conceptsApi.searchConcepts('machine learning', {
@@ -292,12 +287,10 @@ export class ConceptsApi {
 
   /**
    * Get concepts by minimum works count with strict validation
-   *
    * @param minWorksCount - Minimum number of works for concepts (must be >= 0)
    * @param params - Additional query parameters
    * @returns Promise resolving to filtered concepts
    * @throws {Error} When minWorksCount is invalid
-   *
    * @example
    * ```typescript
    * const popularConcepts = await conceptsApi.getConceptsByWorksCount(100, {
@@ -326,11 +319,9 @@ export class ConceptsApi {
 
   /**
    * Get concepts by level
-   *
    * @param level - Concept level (0-5)
    * @param params - Additional query parameters
    * @returns Promise resolving to concepts at the specified level
-   *
    * @example
    * ```typescript
    * const topLevelConcepts = await conceptsApi.getConceptsByLevel(0, {
@@ -359,10 +350,8 @@ export class ConceptsApi {
 
   /**
    * Get random concepts
-   *
    * @param params - Query parameters
    * @returns Promise resolving to random concepts
-   *
    * @example
    * ```typescript
    * const randomConcepts = await conceptsApi.getRandomConcepts({
@@ -382,10 +371,8 @@ export class ConceptsApi {
 
   /**
    * Stream all concepts using cursor pagination
-   *
    * @param params - Query parameters for filtering
    * @yields Batches of concepts
-   *
    * @example
    * ```typescript
    * for await (const conceptBatch of conceptsApi.streamConcepts({ filter: { 'works_count': '>10' } })) {
@@ -416,11 +403,9 @@ export class ConceptsApi {
 
   /**
    * Get all concepts (use with caution for large datasets)
-   *
    * @param params - Query parameters for filtering
    * @param maxResults - Maximum number of results to return
    * @returns Promise resolving to array of all matching concepts
-   *
    * @example
    * ```typescript
    * const allConcepts = await conceptsApi.getAllConcepts({
@@ -441,10 +426,8 @@ export class ConceptsApi {
 
   /**
    * Get concepts statistics
-   *
    * @param params - Query parameters for filtering
    * @returns Promise resolving to aggregated statistics
-   *
    * @example
    * ```typescript
    * const stats = await conceptsApi.getConceptsStats({
@@ -500,12 +483,10 @@ export class ConceptsApi {
 
   /**
    * Get trending concepts by year range
-   *
    * @param fromYear - Start year
    * @param toYear - End year (optional, defaults to current year)
    * @param params - Additional query parameters
    * @returns Promise resolving to trending concepts
-   *
    * @example
    * ```typescript
    * const trending = await conceptsApi.getTrendingConcepts(2020, 2023, {
@@ -534,10 +515,8 @@ export class ConceptsApi {
 
   /**
    * Get highly cited concepts
-   *
    * @param params - Additional query parameters
    * @returns Promise resolving to highly cited concepts
-   *
    * @example
    * ```typescript
    * const highlyCited = await conceptsApi.getHighlyCitedConcepts({

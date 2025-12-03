@@ -5,10 +5,8 @@
 
 /**
  * Convert OpenAlex abstract_inverted_index to readable text
- *
  * @param invertedIndex - The abstract_inverted_index object from OpenAlex
  * @returns Reconstructed abstract text, or null if no index provided
- *
  * @example
  * ```typescript
  * const work = await openAlex.works.getWork('W2741809807');
@@ -16,9 +14,7 @@
  * logger.debug("general", abstract); // "Machine learning algorithms have shown..."
  * ```
  */
-export function reconstructAbstract(
-  invertedIndex: Record<string, number[]> | null | undefined,
-): string | null {
+export const reconstructAbstract = (invertedIndex: Record<string, number[]> | null | undefined): string | null => {
   if (!invertedIndex || typeof invertedIndex !== "object") {
     return null;
   }
@@ -60,29 +56,25 @@ export function reconstructAbstract(
     .join(" ");
 
   return reconstructedText.trim() || null;
-}
+};
 
 /**
  * Get abstract length statistics from inverted index
- *
  * @param invertedIndex - The abstract_inverted_index object from OpenAlex
  * @returns Statistics about the abstract
- *
  * @example
  * ```typescript
  * const stats = getAbstractStats(work.abstract_inverted_index);
  * logger.debug("general", `Abstract has ${stats.wordCount} words and ${stats.uniqueWords} unique words`);
  * ```
  */
-export function getAbstractStats(
-  invertedIndex: Record<string, number[]> | null | undefined,
-): {
+export const getAbstractStats = (invertedIndex: Record<string, number[]> | null | undefined): {
   wordCount: number;
   uniqueWords: number;
   avgWordLength: number;
   longestWord: string;
   shortestWord: string;
-} | null {
+} | null => {
   if (!invertedIndex || typeof invertedIndex !== "object") {
     return null;
   }
@@ -122,29 +114,26 @@ export function getAbstractStats(
     longestWord,
     shortestWord,
   };
-}
+};
 
 /**
  * Check if a work has an abstract available
- *
  * @param work - The work object from OpenAlex
+ * @param work.abstract_inverted_index
  * @returns True if abstract is available and reconstructable
- *
  * @example
  * ```typescript
  * const works = await openAlex.works.getWorks({ filter: { has_abstract: true } });
  * const worksWithAbstracts = works.results.filter(hasAbstract);
  * ```
  */
-export function hasAbstract(work: {
+export const hasAbstract = (work: {
   abstract_inverted_index?: Record<string, number[]> | null;
-}): boolean {
-  return !!(
+}): boolean => !!(
     work.abstract_inverted_index &&
     typeof work.abstract_inverted_index === "object" &&
     Object.keys(work.abstract_inverted_index).length > 0
   );
-}
 
 /**
  * Common stop words for keyword extraction
@@ -245,37 +234,36 @@ const STOP_WORDS = new Set([
 
 /**
  * Extract and clean words from abstract text
+ * @param abstract
+ * @param minLength
+ * @param excludeCommon
  */
-function extractWordsFromAbstract(
-  abstract: string,
-  minLength: number,
-  excludeCommon: boolean,
-): string[] {
-  return abstract
+const extractWordsFromAbstract = (abstract: string, minLength: number, excludeCommon: boolean): string[] => abstract
     .toLowerCase()
-    .replace(/[^\w\s-]/g, " ") // Keep hyphens for compound terms
+    .replace(/[^\s\w-]/g, " ") // Keep hyphens for compound terms
     .split(/\s+/)
     .filter(
       (word) =>
         word.length >= minLength && (!excludeCommon || !STOP_WORDS.has(word)),
     );
-}
 
 /**
  * Count word frequencies
+ * @param words
  */
-function countWordFrequencies(words: string[]): Map<string, number> {
+const countWordFrequencies = (words: string[]): Map<string, number> => {
   const wordCount = new Map<string, number>();
   words.forEach((word) => {
     wordCount.set(word, (wordCount.get(word) ?? 0) + 1);
   });
   return wordCount;
-}
+};
 
 /**
  * Extract compound terms from word array
+ * @param words
  */
-function extractCompoundTerms(words: string[]): Map<string, number> {
+const extractCompoundTerms = (words: string[]): Map<string, number> => {
   const compounds = new Map<string, number>();
 
   for (let i = 0; i < words.length - 1; i++) {
@@ -306,29 +294,27 @@ function extractCompoundTerms(words: string[]): Map<string, number> {
   }
 
   return compounds;
-}
+};
 
 /**
  * Extract keywords and key phrases from abstract text
- *
  * @param abstract - Reconstructed abstract text
  * @param options - Options for keyword extraction
+ * @param options.minLength
+ * @param options.maxKeywords
+ * @param options.excludeCommon
  * @returns Array of potential keywords sorted by relevance
- *
  * @example
  * ```typescript
  * const abstract = reconstructAbstract(work.abstract_inverted_index);
  * const keywords = extractKeywords(abstract, { minLength: 4, maxKeywords: 10 });
  * ```
  */
-export function extractKeywords(
-  abstract: string | null,
-  options: {
+export const extractKeywords = (abstract: string | null, options: {
     minLength?: number;
     maxKeywords?: number;
     excludeCommon?: boolean;
-  } = {},
-): string[] {
+  } = {}): string[] => {
   if (!abstract || typeof abstract !== "string") {
     return [];
   }
@@ -346,14 +332,13 @@ export function extractKeywords(
     .sort((a, b) => b[1] - a[1]) // Sort by frequency
     .slice(0, maxKeywords)
     .map(([term]) => term);
-}
+};
 
 /**
  * Extract and prepare author names for citation
+ * @param authorships
  */
-function prepareAuthors(
-  authorships: Array<{ author: { display_name?: string } }>,
-): string[] {
+const prepareAuthors = (authorships: Array<{ author: { display_name?: string } }>): string[] => {
   const authors = authorships
     .slice(0, 3) // Limit to first 3 authors
     .map((authorship) => authorship.author.display_name)
@@ -364,22 +349,21 @@ function prepareAuthors(
   }
 
   return authors;
-}
+};
 
 /**
  * Format APA style citation
+ * @param authors
+ * @param display_name
+ * @param year
+ * @param journal
+ * @param volume
+ * @param issue
+ * @param pages
+ * @param doi
+ * @param authorshipsLength
  */
-function formatAPACitation(
-  authors: string[],
-  display_name: string,
-  year: string | undefined,
-  journal: string | undefined,
-  volume: string | undefined,
-  issue: string | undefined,
-  pages: string | undefined,
-  doi: string | undefined,
-  authorshipsLength: number,
-): string {
+const formatAPACitation = (authors: string[], display_name: string, year: string | undefined, journal: string | undefined, volume: string | undefined, issue: string | undefined, pages: string | undefined, doi: string | undefined, authorshipsLength: number): string => {
   let citation = "";
 
   // Authors
@@ -412,12 +396,13 @@ function formatAPACitation(
   if (doi) citation += ` https://doi.org/${doi}`;
 
   return citation;
-}
+};
 
 /**
  * Format author names for MLA style
+ * @param authors
  */
-function formatMLAAuthors(authors: string[]): string {
+const formatMLAAuthors = (authors: string[]): string => {
   if (authors.length === 0) return "";
 
   // First author (Last, First)
@@ -431,12 +416,13 @@ function formatMLAAuthors(authors: string[]): string {
   }
 
   return citation;
-}
+};
 
 /**
  * Format a single author name for MLA style (Last, First)
+ * @param author
  */
-function formatMLASingleAuthor(author: string): string {
+const formatMLASingleAuthor = (author: string): string => {
   const nameParts = author.split(" ");
   if (nameParts.length > 1) {
     const lastName = nameParts[nameParts.length - 1];
@@ -444,18 +430,17 @@ function formatMLASingleAuthor(author: string): string {
     return `${lastName}, ${firstNames}`;
   }
   return author;
-}
+};
 
 /**
  * Format journal information for MLA style
+ * @param journal
+ * @param volume
+ * @param issue
+ * @param year
+ * @param pages
  */
-function formatMLAJournalInfo(
-  journal: string,
-  volume?: string,
-  issue?: string,
-  year?: string,
-  pages?: string,
-): string {
+const formatMLAJournalInfo = (journal: string, volume?: string, issue?: string, year?: string, pages?: string): string => {
   let journalInfo = ` *${journal}*`;
   if (volume) journalInfo += `, vol. ${volume}`;
   if (issue) journalInfo += `, no. ${issue}`;
@@ -463,20 +448,19 @@ function formatMLAJournalInfo(
   if (pages) journalInfo += `, pp. ${pages}`;
   journalInfo += ".";
   return journalInfo;
-}
+};
 
 /**
  * Format MLA style citation
+ * @param authors
+ * @param display_name
+ * @param year
+ * @param journal
+ * @param volume
+ * @param issue
+ * @param pages
  */
-function formatMLACitation(
-  authors: string[],
-  display_name: string,
-  year: string | undefined,
-  journal: string | undefined,
-  volume: string | undefined,
-  issue: string | undefined,
-  pages: string | undefined,
-): string {
+const formatMLACitation = (authors: string[], display_name: string, year: string | undefined, journal: string | undefined, volume: string | undefined, issue: string | undefined, pages: string | undefined): string => {
   let citation = formatMLAAuthors(authors);
   citation += `. "${display_name}."`;
 
@@ -485,21 +469,20 @@ function formatMLACitation(
   }
 
   return citation;
-}
+};
 
 /**
  * Format Chicago style citation
+ * @param authors
+ * @param display_name
+ * @param year
+ * @param journal
+ * @param volume
+ * @param issue
+ * @param pages
+ * @param doi
  */
-function formatChicagoCitation(
-  authors: string[],
-  display_name: string,
-  year: string | undefined,
-  journal: string | undefined,
-  volume: string | undefined,
-  issue: string | undefined,
-  pages: string | undefined,
-  doi: string | undefined,
-): string {
+const formatChicagoCitation = (authors: string[], display_name: string, year: string | undefined, journal: string | undefined, volume: string | undefined, issue: string | undefined, pages: string | undefined, doi: string | undefined): string => {
   let citation = "";
 
   // Authors
@@ -528,12 +511,25 @@ function formatChicagoCitation(
   if (doi) citation += ` https://doi.org/${doi}.`;
 
   return citation;
-}
+};
 
 /**
  * Extract citation parameters from work object
+ * @param work
+ * @param work.display_name
+ * @param work.authorships
+ * @param work.publication_year
+ * @param work.primary_location
+ * @param work.primary_location.source
+ * @param work.primary_location.source.display_name
+ * @param work.biblio
+ * @param work.biblio.volume
+ * @param work.biblio.issue
+ * @param work.biblio.first_page
+ * @param work.biblio.last_page
+ * @param work.doi
  */
-function extractCitationParams(work: {
+const extractCitationParams = (work: {
   display_name?: string;
   authorships?: Array<{
     author: {
@@ -563,7 +559,7 @@ function extractCitationParams(work: {
   pages?: string;
   doi?: string;
   authorshipsLength: number;
-} {
+} => {
   const {
     display_name = "Untitled",
     authorships = [],
@@ -594,23 +590,32 @@ function extractCitationParams(work: {
     doi,
     authorshipsLength: authorships.length,
   };
-}
+};
 
 /**
  * Format citation text from OpenAlex work data
- *
  * @param work - Work object from OpenAlex
+ * @param work.display_name
+ * @param work.authorships
+ * @param work.publication_year
+ * @param work.primary_location
+ * @param work.primary_location.source
+ * @param work.primary_location.source.display_name
+ * @param work.biblio
+ * @param work.biblio.volume
+ * @param work.biblio.issue
+ * @param work.biblio.first_page
+ * @param work.biblio.last_page
+ * @param work.doi
  * @param style - Citation style ('apa' | 'mla' | 'chicago')
  * @returns Formatted citation string
- *
  * @example
  * ```typescript
  * const work = await openAlex.works.getWork('W2741809807');
  * const citation = formatCitation(work, 'apa');
  * ```
  */
-export function formatCitation(
-  work: {
+export const formatCitation = (work: {
     display_name?: string;
     authorships?: Array<{
       author: {
@@ -630,9 +635,7 @@ export function formatCitation(
       last_page?: string;
     };
     doi?: string;
-  },
-  style: "apa" | "mla" | "chicago" = "apa",
-): string {
+  }, style: "apa" | "mla" | "chicago" = "apa"): string => {
   const params = extractCitationParams(work);
 
   switch (style) {
@@ -672,24 +675,26 @@ export function formatCitation(
     default:
       return formatCitation(work, "apa");
   }
-}
+};
 
 /**
  * Count syllables in a word (simple approximation)
+ * @param word
  */
-function countSyllables(word: string): number {
+const countSyllables = (word: string): number => {
   word = word.toLowerCase();
   if (word.length <= 3) return 1;
   const vowels = word.match(/[aeiouy]+/g);
   let syllables = vowels ? vowels.length : 1;
   if (word.endsWith("e")) syllables--;
   return Math.max(1, syllables);
-}
+};
 
 /**
  * Determine reading level from Flesch Reading Ease score
+ * @param fleschReadingEase
  */
-function determineReadingLevel(fleschReadingEase: number): string {
+const determineReadingLevel = (fleschReadingEase: number): string => {
   if (fleschReadingEase >= 90) return "Very Easy";
   if (fleschReadingEase >= 80) return "Easy";
   if (fleschReadingEase >= 70) return "Fairly Easy";
@@ -697,15 +702,14 @@ function determineReadingLevel(fleschReadingEase: number): string {
   if (fleschReadingEase >= 50) return "Fairly Difficult";
   if (fleschReadingEase >= 30) return "Difficult";
   return "Very Difficult";
-}
+};
 
 /**
  * Calculate Flesch Reading Ease and Grade Level scores
+ * @param avgWordsPerSentence
+ * @param avgSyllablesPerWord
  */
-function calculateFleschScores(
-  avgWordsPerSentence: number,
-  avgSyllablesPerWord: number,
-): { fleschReadingEase: number; fleschKincaidGrade: number } {
+const calculateFleschScores = (avgWordsPerSentence: number, avgSyllablesPerWord: number): { fleschReadingEase: number; fleschKincaidGrade: number } => {
   const fleschReadingEase =
     206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
 
@@ -713,14 +717,12 @@ function calculateFleschScores(
     0.39 * avgWordsPerSentence + 11.8 * avgSyllablesPerWord - 15.59;
 
   return { fleschReadingEase, fleschKincaidGrade };
-}
+};
 
 /**
  * Analyze abstract readability using simple metrics
- *
  * @param abstract - Reconstructed abstract text
  * @returns Readability metrics
- *
  * @example
  * ```typescript
  * const abstract = reconstructAbstract(work.abstract_inverted_index);
@@ -728,7 +730,7 @@ function calculateFleschScores(
  * logger.debug("general", `Reading level: ${readability.fleschKincaidGrade}`);
  * ```
  */
-export function analyzeReadability(abstract: string | null): {
+export const analyzeReadability = (abstract: string | null): {
   wordCount: number;
   sentenceCount: number;
   avgWordsPerSentence: number;
@@ -736,13 +738,13 @@ export function analyzeReadability(abstract: string | null): {
   fleschReadingEase: number;
   fleschKincaidGrade: number;
   readingLevel: string;
-} | null {
+} | null => {
   if (!abstract || typeof abstract !== "string") {
     return null;
   }
 
   const words = abstract.trim().split(/\s+/);
-  const sentences = abstract.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+  const sentences = abstract.split(/[!.?]+/).filter((s) => s.trim().length > 0);
 
   const wordCount = words.length;
   const sentenceCount = sentences.length;
@@ -775,4 +777,4 @@ export function analyzeReadability(abstract: string | null): {
     fleschKincaidGrade: Math.round(fleschKincaidGrade * 100) / 100,
     readingLevel,
   };
-}
+};

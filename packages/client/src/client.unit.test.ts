@@ -14,11 +14,11 @@ Object.defineProperty(global, "fetch", {
 });
 
 import type { OpenAlexResponse } from "@bibgraph/types";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach,describe, expect, it, vi } from "vitest";
 
 import {
-  OpenAlexBaseClient,
   OpenAlexApiError,
+  OpenAlexBaseClient,
   type OpenAlexClientConfig,
 } from "./client";
 

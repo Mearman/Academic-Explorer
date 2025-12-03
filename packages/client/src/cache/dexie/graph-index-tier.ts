@@ -7,16 +7,15 @@
  */
 
 import {
-  type GraphNodeRecord,
+  type CompletenessStatus,
+  type EdgePropertyFilter,
+  type GraphEdgeInput,
   type GraphEdgeRecord,
   type GraphNodeInput,
-  type GraphEdgeInput,
-  type CompletenessStatus,
+  type GraphNodeRecord,
   type RelationType,
-  type EdgePropertyFilter,
 } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
-
 
 import {
   generateEdgeId,
@@ -91,6 +90,7 @@ export class GraphIndexTier {
 
   /**
    * Add a node to the graph index
+   * @param input
    */
   async addNode(input: GraphNodeInput): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -119,6 +119,7 @@ export class GraphIndexTier {
 
   /**
    * Get a node by ID
+   * @param id
    */
   async getNode(id: string): Promise<GraphNodeRecord | undefined> {
     if (!(await this.ensureInitialized())) {
@@ -140,6 +141,7 @@ export class GraphIndexTier {
 
   /**
    * Check if a node exists
+   * @param id
    */
   async hasNode(id: string): Promise<boolean> {
     if (!(await this.ensureInitialized())) {
@@ -163,6 +165,10 @@ export class GraphIndexTier {
   /**
    * Update a node's completeness status
    * Only upgrades: stub → partial → full (never downgrades)
+   * @param id
+   * @param completeness
+   * @param label
+   * @param metadata
    */
   async updateNodeCompleteness(
     id: string,
@@ -221,6 +227,7 @@ export class GraphIndexTier {
 
   /**
    * Mark a node as expanded (relationships have been fetched)
+   * @param id
    */
   async markNodeExpanded(id: string): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -273,6 +280,7 @@ export class GraphIndexTier {
 
   /**
    * Get nodes by completeness status
+   * @param status
    */
   async getNodesByCompleteness(status: CompletenessStatus): Promise<GraphNodeRecord[]> {
     if (!(await this.ensureInitialized())) {
@@ -315,6 +323,7 @@ export class GraphIndexTier {
 
   /**
    * Delete a node
+   * @param id
    */
   async deleteNode(id: string): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -341,6 +350,7 @@ export class GraphIndexTier {
   /**
    * Add an edge to the graph index
    * Returns false if edge already exists (deduplication)
+   * @param input
    */
   async addEdge(input: GraphEdgeInput): Promise<boolean> {
     if (!(await this.ensureInitialized())) {
@@ -392,6 +402,9 @@ export class GraphIndexTier {
 
   /**
    * Check if an edge exists
+   * @param source
+   * @param target
+   * @param type
    */
   async hasEdge(source: string, target: string, type: RelationType): Promise<boolean> {
     if (!(await this.ensureInitialized())) {
@@ -416,6 +429,9 @@ export class GraphIndexTier {
 
   /**
    * Get all edges from a source node
+   * @param nodeId
+   * @param type
+   * @param filter
    */
   async getEdgesFrom(
     nodeId: string,
@@ -453,6 +469,9 @@ export class GraphIndexTier {
 
   /**
    * Get all edges to a target node
+   * @param nodeId
+   * @param type
+   * @param filter
    */
   async getEdgesTo(
     nodeId: string,
@@ -532,6 +551,9 @@ export class GraphIndexTier {
 
   /**
    * Delete an edge
+   * @param source
+   * @param target
+   * @param type
    */
   async deleteEdge(source: string, target: string, type: RelationType): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -559,6 +581,7 @@ export class GraphIndexTier {
 
   /**
    * Add multiple nodes in a batch
+   * @param inputs
    */
   async addNodes(inputs: GraphNodeInput[]): Promise<void> {
     if (!(await this.ensureInitialized())) {
@@ -587,6 +610,7 @@ export class GraphIndexTier {
 
   /**
    * Add multiple edges in a batch (with deduplication)
+   * @param inputs
    */
   async addEdges(inputs: GraphEdgeInput[]): Promise<number> {
     if (!(await this.ensureInitialized())) {
@@ -715,6 +739,8 @@ export class GraphIndexTier {
 
   /**
    * Check if completeness should be upgraded
+   * @param current
+   * @param proposed
    */
   private shouldUpgradeCompleteness(
     current: CompletenessStatus,
@@ -730,6 +756,8 @@ export class GraphIndexTier {
 
   /**
    * Apply edge property filter to edges
+   * @param edges
+   * @param filter
    */
   private applyEdgeFilter(edges: GraphEdgeRecord[], filter: EdgePropertyFilter): GraphEdgeRecord[] {
     return edges.filter((edge) => {
@@ -780,16 +808,16 @@ let graphIndexTierInstance: GraphIndexTier | null = null;
 /**
  * Get the graph index tier singleton
  */
-export function getGraphIndexTier(): GraphIndexTier {
+export const getGraphIndexTier = (): GraphIndexTier => {
   if (!graphIndexTierInstance) {
     graphIndexTierInstance = new GraphIndexTier();
   }
   return graphIndexTierInstance;
-}
+};
 
 /**
  * Reset the singleton instance (for testing)
  */
-export function resetGraphIndexTier(): void {
+export const resetGraphIndexTier = (): void => {
   graphIndexTierInstance = null;
-}
+};

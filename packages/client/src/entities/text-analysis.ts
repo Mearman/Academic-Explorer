@@ -133,7 +133,7 @@ export class TextAnalysisApi {
 
   /**
    * Validate text analysis options
-   * @private
+   * @param options
    */
   private validateOptions(options: TextAnalysisOptions): void {
     const titleLength = options.title.length;
@@ -148,7 +148,7 @@ export class TextAnalysisApi {
 
   /**
    * Build query parameters for text analysis requests
-   * @private
+   * @param options
    */
   private buildParams(options: TextAnalysisOptions): QueryParams {
     this.validateOptions(options);
@@ -172,7 +172,6 @@ export class TextAnalysisApi {
    * Analyze text and return keywords, topics, and concepts
    * @param options - Text analysis options including title and optional abstract
    * @returns Promise resolving to complete text analysis results
-   *
    * @example
    * ```typescript
    * const analysis = await textAnalysisApi.analyzeText({
@@ -203,7 +202,6 @@ export class TextAnalysisApi {
    * Extract keywords from text content
    * @param options - Text analysis options including title and optional abstract
    * @returns Promise resolving to keyword analysis results
-   *
    * @example
    * ```typescript
    * const keywords = await textAnalysisApi.getKeywords({
@@ -224,7 +222,6 @@ export class TextAnalysisApi {
    * Identify topics from text content
    * @param options - Text analysis options including title and optional abstract
    * @returns Promise resolving to topic analysis results
-   *
    * @example
    * ```typescript
    * const topics = await textAnalysisApi.getTopics({
@@ -249,7 +246,6 @@ export class TextAnalysisApi {
    * Detect concepts from text content
    * @param options - Text analysis options including title and optional abstract
    * @returns Promise resolving to concept analysis results
-   *
    * @example
    * ```typescript
    * const concepts = await textAnalysisApi.getConcepts({
@@ -274,7 +270,6 @@ export class TextAnalysisApi {
    * @param options - Text analysis options
    * @param minScore - Minimum score threshold (0-1)
    * @returns Promise resolving to filtered keywords
-   *
    * @example
    * ```typescript
    * const relevantKeywords = await textAnalysisApi.getRelevantKeywords({
@@ -295,7 +290,6 @@ export class TextAnalysisApi {
    * @param options - Text analysis options
    * @param minScore - Minimum score threshold (0-1)
    * @returns Promise resolving to filtered topics
-   *
    * @example
    * ```typescript
    * const relevantTopics = await textAnalysisApi.getRelevantTopics({
@@ -316,7 +310,6 @@ export class TextAnalysisApi {
    * @param options - Text analysis options
    * @param minScore - Minimum score threshold (0-1)
    * @returns Promise resolving to filtered concepts
-   *
    * @example
    * ```typescript
    * const relevantConcepts = await textAnalysisApi.getRelevantConcepts({
@@ -336,7 +329,6 @@ export class TextAnalysisApi {
    * Get the most relevant single result from each analysis type
    * @param options - Text analysis options
    * @returns Promise resolving to top results from each category
-   *
    * @example
    * ```typescript
    * const topResults = await textAnalysisApi.getTopResults({
@@ -370,7 +362,6 @@ export class TextAnalysisApi {
    * Get comprehensive analysis with summary statistics
    * @param options - Text analysis options
    * @returns Promise resolving to detailed analysis with statistics
-   *
    * @example
    * ```typescript
    * const analysis = await textAnalysisApi.getDetailedAnalysis({

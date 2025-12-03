@@ -5,70 +5,54 @@
 
 /**
  * Type guard to check if an entity has a specific field hydrated
+ * @param entity
+ * @param field
  */
-export function hasField<T, K extends keyof T>(
-	entity: T,
-	field: K
-): entity is T & Required<Pick<T, K>> {
-	return entity[field] !== undefined;
-}
+export const hasField = <T, K extends keyof T>(entity: T, field: K): entity is T & Required<Pick<T, K>> => entity[field] !== undefined;
 
 /**
  * Type guard to check if an entity has multiple fields hydrated
+ * @param entity
+ * @param fields
  */
-export function hasFields<T, K extends keyof T>(
-	entity: T,
-	...fields: K[]
-): entity is T & Required<Pick<T, K>> {
-	return fields.every(field => entity[field] !== undefined);
-}
+export const hasFields = <T, K extends keyof T>(entity: T, ...fields: K[]): entity is T & Required<Pick<T, K>> => fields.every(field => entity[field] !== undefined);
 
 /**
  * Get list of all hydrated fields (excluding 'id' which is always present)
+ * @param entity
  */
-export function getHydratedFields(entity: Record<string, unknown>): string[] {
-	return Object.keys(entity).filter(key =>
+export const getHydratedFields = (entity: Record<string, unknown>): string[] => Object.keys(entity).filter(key =>
 		entity[key] !== undefined && key !== "id"
 	);
-}
 
 /**
  * Check if an entity is minimally hydrated (only id and maybe display_name)
+ * @param entity
  */
-export function isMinimallyHydrated(entity: Record<string, unknown>): boolean {
-	return getHydratedFields(entity).length <= 1;
-}
+export const isMinimallyHydrated = (entity: Record<string, unknown>): boolean => getHydratedFields(entity).length <= 1;
 
 /**
  * Check if an entity appears to be fully hydrated (has many fields)
+ * @param entity
  */
-export function isFullyHydrated(entity: Record<string, unknown>): boolean {
-	return getHydratedFields(entity).length > 10;
-}
+export const isFullyHydrated = (entity: Record<string, unknown>): boolean => getHydratedFields(entity).length > 10;
 
 /**
  * Safe array operations that handle undefined arrays
+ * @param array
+ * @param start
+ * @param end
  */
-export function safeSlice<T>(array: T[] | undefined, start?: number, end?: number): T[] {
-	return array?.slice(start, end) ?? [];
-}
+export const safeSlice = <T>(array: T[] | undefined, start?: number, end?: number): T[] => array?.slice(start, end) ?? [];
 
-export function safeMap<T, R>(array: T[] | undefined, fn: (item: T, index: number) => R): R[] {
-	return array?.map(fn) ?? [];
-}
+export const safeMap = <T, R>(array: T[] | undefined, fn: (item: T, index: number) => R): R[] => array?.map(fn) ?? [];
 
-export function safeForEach<T>(array: T[] | undefined, fn: (item: T, index: number) => void): void {
+export const safeForEach = <T>(array: T[] | undefined, fn: (item: T, index: number) => void): void => {
 	array?.forEach(fn);
-}
+};
 
-export function safeLength(array: unknown[] | undefined): number {
-	return array?.length ?? 0;
-}
+export const safeLength = (array: unknown[] | undefined): number => array?.length ?? 0;
 
-export function safeFind<T>(array: T[] | undefined, predicate: (item: T) => boolean): T | undefined {
-	return array?.find(predicate);
-}
+export const safeFind = <T>(array: T[] | undefined, predicate: (item: T) => boolean): T | undefined => array?.find(predicate);
 
-export function safeFilter<T>(array: T[] | undefined, predicate: (item: T) => boolean): T[] {
-	return array?.filter(predicate) ?? [];
-}
+export const safeFilter = <T>(array: T[] | undefined, predicate: (item: T) => boolean): T[] => array?.filter(predicate) ?? [];

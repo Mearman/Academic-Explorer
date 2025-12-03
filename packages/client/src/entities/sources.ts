@@ -44,7 +44,6 @@
  * - `getSource()`: Auto-detects ISSN identifiers and resolves to sources
  * - `getSourcesByISSN()`: Direct ISSN search with format support
  * - Both methods support all ISSN format variations seamlessly
- *
  * @example ISSN Usage Examples
  * ```typescript
  * // Standard ISSN lookup
@@ -70,12 +69,12 @@
  */
 
 import type {
+  AutocompleteResult,
+  OpenAlexResponse,
+  QueryParams,
   Source,
   SourcesFilters,
-  QueryParams,
-  OpenAlexResponse,
   Work,
-  AutocompleteResult,
 } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
@@ -103,6 +102,7 @@ export class SourcesApi {
 
   /**
    * Type guard to check if value is SourcesFilters
+   * @param value
    */
   private isSourcesFilters(value: unknown): value is SourcesFilters {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -135,12 +135,12 @@ export class SourcesApi {
     const normalized = issn
       .trim()
       .toLowerCase()
-      .replace(/^(issn[:\s]*|eissn[:\s]*)/i, "")
+      .replace(/^(issn[\s:]*|eissn[\s:]*)/i, "")
       .trim();
 
     // Check for standard ISSN format (with hyphen) or bare 8-digit format
-    const standardFormat = /^\d{4}-\d{3}[\dxX]$/.test(normalized);
-    const bareFormat = /^\d{7}[\dxX]$/.test(normalized);
+    const standardFormat = /^\d{4}-\d{3}[\dX]$/i.test(normalized);
+    const bareFormat = /^\d{7}[\dX]$/i.test(normalized);
 
     return standardFormat || bareFormat;
   }
@@ -159,7 +159,7 @@ export class SourcesApi {
     const cleaned = issn
       .trim()
       .toLowerCase()
-      .replace(/^(issn[:\s]*|eissn[:\s]*)/i, "")
+      .replace(/^(issn[\s:]*|eissn[\s:]*)/i, "")
       .trim()
       .replace(/[^\d\-x]/gi, "")
       .toUpperCase();
@@ -220,7 +220,7 @@ export class SourcesApi {
     }
 
     // Check for explicit ISSN prefixes
-    if (/^(issn[:\s]*|eissn[:\s]*)/i.test(id.trim())) {
+    if (/^(issn[\s:]*|eissn[\s:]*)/i.test(id.trim())) {
       return true;
     }
 
@@ -236,6 +236,7 @@ export class SourcesApi {
    * Validates and normalizes an ISSN with full validation
    * @param issn - The ISSN to validate
    * @param options - Validation options
+   * @param options.validateChecksum
    * @returns Normalized ISSN if valid, null otherwise
    */
   private validateAndNormalizeISSN(
@@ -265,7 +266,6 @@ export class SourcesApi {
    * @param id - The OpenAlex source ID (e.g., 'S123456789'), URL, or ISSN identifier
    * @param params - Additional query parameters (select fields, etc.)
    * @returns Promise resolving to the source data
-   *
    * @example
    * ```typescript
    * // Get by OpenAlex ID
@@ -313,7 +313,6 @@ export class SourcesApi {
    * Get multiple sources with optional filters
    * @param params - Query parameters including filters, pagination, sorting
    * @returns Promise resolving to sources response with results and metadata
-   *
    * @example
    * ```typescript
    * const response = await sourcesApi.getSources({
@@ -335,8 +334,8 @@ export class SourcesApi {
    * @param query - Search query string
    * @param filters - Optional additional filters to apply
    * @param params - Additional query parameters (pagination, sorting)
+   * @param options
    * @returns Promise resolving to matching sources
-   *
    * @example
    * ```typescript
    * const results = await sourcesApi.searchSources('nature science', {
@@ -367,7 +366,6 @@ export class SourcesApi {
    * Autocomplete sources by name/title for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of source autocomplete results
-   *
    * @example
    * ```typescript
    * const suggestions = await sourcesApi.autocomplete('nature');
@@ -416,7 +414,6 @@ export class SourcesApi {
    * @param publisher - Publisher name or ID to filter by
    * @param params - Additional query parameters
    * @returns Promise resolving to sources from the publisher
-   *
    * @example
    * ```typescript
    * const springerSources = await sourcesApi.getSourcesByPublisher('Springer');
@@ -444,7 +441,6 @@ export class SourcesApi {
    * Get only open access sources
    * @param params - Additional query parameters
    * @returns Promise resolving to open access sources
-   *
    * @example
    * ```typescript
    * const oaSources = await sourcesApi.getOpenAccessSources({
@@ -475,7 +471,6 @@ export class SourcesApi {
    * @param countryCode - Two-letter ISO country code (e.g., 'US', 'GB', 'DE')
    * @param params - Additional query parameters
    * @returns Promise resolving to sources from the specified country
-   *
    * @example
    * ```typescript
    * const ukSources = await sourcesApi.getSourcesByCountry('GB', {
@@ -497,9 +492,7 @@ export class SourcesApi {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { filter, ...paramsWithoutFilter } = params;
     // Type guard function to validate sort parameter
-    function isString(value: unknown): value is string {
-      return typeof value === "string";
-    }
+    const isString = (value: unknown): value is string => typeof value === "string";
 
     const searchOptions: SourceSearchOptions = {
       ...paramsWithoutFilter,
@@ -516,7 +509,6 @@ export class SourcesApi {
    * @param sourceId - The source ID to get works for
    * @param params - Additional query parameters for works filtering
    * @returns Promise resolving to works published in this source
-   *
    * @example
    * ```typescript
    * const natureWorks = await sourcesApi.getSourceWorks('S4306400886', {
@@ -543,7 +535,6 @@ export class SourcesApi {
    * @param sourceId - The source ID to get statistics for
    * @param params - Additional parameters (select fields, etc.)
    * @returns Promise resolving to source with citation statistics
-   *
    * @example
    * ```typescript
    * const stats = await sourcesApi.getSourceStats('S4306400886', {
@@ -580,7 +571,6 @@ export class SourcesApi {
    * @param filters - Optional filters to apply to the random sample
    * @param seed - Optional seed for reproducible random results
    * @returns Promise resolving to random sources
-   *
    * @example
    * ```typescript
    * const randomOAJournals = await sourcesApi.getRandomSources(50, {
@@ -616,7 +606,6 @@ export class SourcesApi {
    * Get sources that are indexed in DOAJ (Directory of Open Access Journals)
    * @param params - Additional query parameters
    * @returns Promise resolving to DOAJ-indexed sources
-   *
    * @example
    * ```typescript
    * const doajSources = await sourcesApi.getDOAJSources({
@@ -646,7 +635,6 @@ export class SourcesApi {
    * @param type - Source type to filter by
    * @param params - Additional query parameters
    * @returns Promise resolving to sources of the specified type
-   *
    * @example
    * ```typescript
    * const conferences = await sourcesApi.getSourcesByType('conference', {
@@ -678,7 +666,6 @@ export class SourcesApi {
    * @param maxAPC - Maximum APC price in USD (optional)
    * @param params - Additional query parameters
    * @returns Promise resolving to sources with APC information
-   *
    * @example
    * ```typescript
    * const expensiveJournals = await sourcesApi.getSourcesWithAPC(2000, 5000, {
@@ -717,7 +704,6 @@ export class SourcesApi {
    * @param limit - Number of top sources to return
    * @param filters - Additional filters to apply
    * @returns Promise resolving to top cited sources
-   *
    * @example
    * ```typescript
    * const topSources2023 = await sourcesApi.getTopCitedSources(2023, 25, {
@@ -748,7 +734,6 @@ export class SourcesApi {
    * @param filters - Filters to apply
    * @param batchSize - Number of sources per batch
    * @returns AsyncGenerator yielding batches of sources
-   *
    * @example
    * ```typescript
    * for await (const batch of sourcesApi.streamSources({ 'is_oa': true })) {
@@ -780,8 +765,8 @@ export class SourcesApi {
    *   - Case insensitive: 'issn 1234-567x' (X check digit)
    * @param params - Additional query parameters
    * @param options - ISSN validation options
+   * @param options.validateChecksum
    * @returns Promise resolving to sources matching the ISSN
-   *
    * @example
    * ```typescript
    * // Standard format
@@ -838,8 +823,8 @@ export class SourcesApi {
    * Validate ISSN format and optionally verify checksum
    * @param issn - ISSN to validate
    * @param options - Validation options
+   * @param options.validateChecksum
    * @returns Validation result with normalized ISSN if valid
-   *
    * @example
    * ```typescript
    * // Basic format validation
@@ -883,11 +868,11 @@ export class SourcesApi {
       | "scheme_notation"
       | "bare"
       | "unknown" = "unknown";
-    if (/^\d{4}-\d{3}[\dxX]$/.test(trimmed)) {
+    if (/^\d{4}-\d{3}[\dX]$/i.test(trimmed)) {
       format = "standard";
-    } else if (/^(ISSN|EISSN)[:\s]/i.test(trimmed)) {
-      format = /:/i.test(trimmed) ? "scheme_notation" : "with_prefix";
-    } else if (/^\d{7}[\dxX]$/.test(trimmed)) {
+    } else if (/^(EISSN|ISSN)[\s:]/i.test(trimmed)) {
+      format = /:/.test(trimmed) ? "scheme_notation" : "with_prefix";
+    } else if (/^\d{7}[\dX]$/i.test(trimmed)) {
       format = "bare";
     }
 
@@ -921,8 +906,8 @@ export class SourcesApi {
    * @param issns - Array of ISSN identifiers (any supported format)
    * @param params - Additional query parameters
    * @param options - ISSN validation options
+   * @param options.validateChecksum
    * @returns Promise resolving to sources matching any of the ISSNs
-   *
    * @example
    * ```typescript
    * // Multiple ISSN lookup with different formats
@@ -993,7 +978,7 @@ export class SourcesApi {
   /**
    * Build filter parameters for API requests
    * Converts SourcesFilters object to query string format using standardized FilterBuilder
-   * @private
+   * @param options
    */
   private buildFilterParams(options: SourceSearchOptions = {}): QueryParams {
     const {

@@ -5,7 +5,7 @@
  * for redirected requests, ensuring proper cache key generation and metadata storage.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ApiInterceptor, type InterceptedRequest } from '../api-interceptor';
 

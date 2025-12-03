@@ -4,13 +4,13 @@
  */
 
 import type {
-  InstitutionEntity,
-  InstitutionsFilters,
-  QueryParams,
-  OpenAlexResponse,
-  Work,
   Author,
   AutocompleteResult,
+  InstitutionEntity,
+  InstitutionsFilters,
+  OpenAlexResponse,
+  QueryParams,
+  Work,
 } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
@@ -91,12 +91,10 @@ export class InstitutionsApi {
    * - ROR domain: `ror.org/05dxps055`
    *
    * ROR IDs are automatically validated and normalized before querying.
-   *
    * @param id - Institution ID (OpenAlex ID, ROR ID, etc.)
    * @param params - Optional query parameters (select fields, etc.)
    * @returns Promise resolving to institution entity
    * @throws Error if ROR ID format is invalid or fails checksum validation
-   *
    * @example
    * ```typescript
    * // OpenAlex ID
@@ -132,11 +130,9 @@ export class InstitutionsApi {
    *
    * Uses the OpenAlex institutions autocomplete endpoint to provide fast,
    * relevant suggestions for institution names and aliases.
-   *
    * @param query - Search query string for institution name or alias
    * @param options - Optional autocomplete parameters including per_page limit
    * @returns Promise resolving to array of institution autocomplete suggestions
-   *
    * @example
    * ```typescript
    * // Basic autocomplete
@@ -195,10 +191,8 @@ export class InstitutionsApi {
 
   /**
    * Get multiple institutions with optional filtering, sorting, and pagination
-   *
    * @param params - Optional query parameters including filters
    * @returns Promise resolving to paginated institutions response
-   *
    * @example
    * ```typescript
    * const institutions = await institutionsApi.getInstitutions({
@@ -220,11 +214,9 @@ export class InstitutionsApi {
 
   /**
    * Search institutions by query string with optional filters
-   *
    * @param query - Search query string
    * @param options - Optional search parameters and filters
    * @returns Promise resolving to matching institutions
-   *
    * @example
    * ```typescript
    * const results = await institutionsApi.searchInstitutions('harvard', {
@@ -246,11 +238,9 @@ export class InstitutionsApi {
 
   /**
    * Get institutions by country code
-   *
    * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB', 'CA')
    * @param options - Optional search parameters
    * @returns Promise resolving to institutions in the specified country
-   *
    * @example
    * ```typescript
    * const usInstitutions = await institutionsApi.getInstitutionsByCountry('US', {
@@ -275,11 +265,9 @@ export class InstitutionsApi {
 
   /**
    * Get institutions by institution type
-   *
    * @param type - Institution type (e.g., 'education', 'healthcare', 'company', 'government', etc.)
    * @param options - Optional search parameters
    * @returns Promise resolving to institutions of the specified type
-   *
    * @example
    * ```typescript
    * const universities = await institutionsApi.getInstitutionsByType('education', {
@@ -306,11 +294,9 @@ export class InstitutionsApi {
    * Get works published by authors affiliated with a specific institution
    *
    * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
-   *
    * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters for filtering works
    * @returns Promise resolving to works from the institution
-   *
    * @example
    * ```typescript
    * // Using OpenAlex ID
@@ -343,11 +329,9 @@ export class InstitutionsApi {
    * Get authors affiliated with a specific institution
    *
    * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
-   *
    * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters for filtering authors
    * @returns Promise resolving to authors at the institution
-   *
    * @example
    * ```typescript
    * // Using OpenAlex ID
@@ -380,11 +364,9 @@ export class InstitutionsApi {
    * Get institutions associated with a specific institution (parent, child, or related institutions)
    *
    * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
-   *
    * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters
    * @returns Promise resolving to associated institutions
-   *
    * @example
    * ```typescript
    * // Using OpenAlex ID
@@ -414,11 +396,10 @@ export class InstitutionsApi {
 
   /**
    * Get a random sample of institutions
-   *
    * @param count - Number of random institutions to retrieve (max 200)
    * @param options - Optional parameters including filters to apply before sampling
+   * @param seed
    * @returns Promise resolving to random sample of institutions
-   *
    * @example
    * ```typescript
    * const randomUniversities = await institutionsApi.getRandomInstitutions(10, {
@@ -443,10 +424,8 @@ export class InstitutionsApi {
 
   /**
    * Get institutions in the Global South
-   *
    * @param options - Optional search parameters
    * @returns Promise resolving to Global South institutions
-   *
    * @example
    * ```typescript
    * const globalSouthInstitutions = await institutionsApi.getGlobalSouthInstitutions({
@@ -470,10 +449,8 @@ export class InstitutionsApi {
 
   /**
    * Get institutions that have ROR IDs
-   *
    * @param options - Optional search parameters
    * @returns Promise resolving to institutions with ROR IDs
-   *
    * @example
    * ```typescript
    * const institutionsWithRor = await institutionsApi.getInstitutionsWithRor({
@@ -497,11 +474,9 @@ export class InstitutionsApi {
 
   /**
    * Get institutions in a specific lineage (hierarchy)
-   *
    * @param lineageId - Institution ID in the lineage
    * @param options - Optional search parameters
    * @returns Promise resolving to institutions in the lineage
-   *
    * @example
    * ```typescript
    * const systemInstitutions = await institutionsApi.getInstitutionsByLineage('I33213144');
@@ -523,10 +498,8 @@ export class InstitutionsApi {
 
   /**
    * Stream all institutions matching the criteria (use with caution for large datasets)
-   *
    * @param options - Search parameters and filters
    * @yields Arrays of institutions in batches
-   *
    * @example
    * ```typescript
    * for await (const batch of institutionsApi.streamInstitutions({
@@ -545,11 +518,9 @@ export class InstitutionsApi {
 
   /**
    * Get all institutions matching the criteria (use with caution)
-   *
    * @param options - Search parameters and filters
    * @param maxResults - Optional maximum number of results to retrieve
    * @returns Promise resolving to array of all matching institutions
-   *
    * @example
    * ```typescript
    * const allSwissUniversities = await institutionsApi.getAllInstitutions({
@@ -571,8 +542,6 @@ export class InstitutionsApi {
 
   /**
    * Validate and normalize ROR identifier if applicable
-   *
-   * @private
    * @param id - Input identifier (could be ROR, OpenAlex ID, etc.)
    * @returns Normalized identifier for OpenAlex API
    * @throws Error if ROR ID format is invalid or fails validation
@@ -600,8 +569,6 @@ export class InstitutionsApi {
 
   /**
    * Detect and normalize ROR identifiers
-   *
-   * @private
    * @param id - Input identifier
    * @returns Normalized ROR URL or null if not a valid ROR ID
    * @throws Error if identifier looks like a ROR ID but is invalid
@@ -631,9 +598,10 @@ export class InstitutionsApi {
 
   /**
    * Try to extract ROR ID from URL pattern (https://ror.org/...)
+   * @param trimmed
    */
   private tryExtractRorFromUrl(trimmed: string): string | null {
-    const urlMatch = trimmed.match(/^https?:\/\/ror\.org\/([a-z0-9]*)/i);
+    const urlMatch = trimmed.match(/^https?:\/\/ror\.org\/([0-9a-z]*)/i);
     if (!urlMatch) return null;
 
     const rorId = urlMatch[1];
@@ -645,9 +613,10 @@ export class InstitutionsApi {
 
   /**
    * Try to extract ROR ID from domain pattern (ror.org/...)
+   * @param trimmed
    */
   private tryExtractRorFromDomain(trimmed: string): string | null {
-    const domainMatch = trimmed.match(/^ror\.org\/([a-z0-9]*)/i);
+    const domainMatch = trimmed.match(/^ror\.org\/([0-9a-z]*)/i);
     if (!domainMatch) return null;
 
     const rorId = domainMatch[1];
@@ -662,9 +631,10 @@ export class InstitutionsApi {
 
   /**
    * Try to extract ROR ID from prefix pattern (ror:...)
+   * @param trimmed
    */
   private tryExtractRorFromPrefix(trimmed: string): string | null {
-    const prefixMatch = trimmed.match(/^ror:([a-z0-9]*)/i);
+    const prefixMatch = trimmed.match(/^ror:([0-9a-z]*)/i);
     if (!prefixMatch) return null;
 
     const rorId = prefixMatch[1];
@@ -679,12 +649,13 @@ export class InstitutionsApi {
 
   /**
    * Try to extract bare ROR ID
+   * @param trimmed
    */
   private tryExtractBareRor(trimmed: string): string | null {
     // Check for patterns that look like they could be intended as ROR IDs
-    if (!(/^[a-z0-9]{7,11}$/i.test(trimmed) && /[a-z]/i.test(trimmed))) {
+    if (!(/^[0-9a-z]{7,11}$/i.test(trimmed) && /[a-z]/i.test(trimmed))) {
       // Special case: all numbers (no letters) but ROR-like length
-      if (/^[0-9]{8,10}$/.test(trimmed)) {
+      if (/^\d{8,10}$/.test(trimmed)) {
         throw new Error(
           `Invalid ROR ID: ${trimmed} (ROR IDs must contain letters)`,
         );
@@ -693,7 +664,7 @@ export class InstitutionsApi {
     }
 
     // Don't treat OpenAlex IDs as ROR IDs (they start with specific prefixes)
-    if (/^[WASIPCFTKQ]/i.test(trimmed)) {
+    if (/^[ACFIKPQSTW]/i.test(trimmed)) {
       return null; // This is likely an OpenAlex ID, not a ROR ID
     }
 
@@ -711,6 +682,8 @@ export class InstitutionsApi {
 
   /**
    * Validate ROR ID length and throw if invalid
+   * @param rorId
+   * @param errorMessage
    */
   private validateRorIdLength(rorId: string, errorMessage: string): void {
     if (rorId?.length !== 9) {
@@ -720,6 +693,7 @@ export class InstitutionsApi {
 
   /**
    * Validate ROR format and throw if invalid
+   * @param rorId
    */
   private validateAndThrowIfInvalid(rorId: string): void {
     if (!this.validateRorFormat(rorId)) {
@@ -729,8 +703,6 @@ export class InstitutionsApi {
 
   /**
    * Validate ROR format
-   *
-   * @private
    * @param rorId - 9-character ROR identifier
    * @returns true if valid ROR format
    */
@@ -742,7 +714,7 @@ export class InstitutionsApi {
     const normalized = rorId.toLowerCase();
 
     // Basic format validation: exactly 9 characters, alphanumeric, must contain at least one letter
-    if (!/^[a-z0-9]{9}$/i.test(normalized) || !/[a-z]/i.test(normalized)) {
+    if (!/^[0-9a-z]{9}$/i.test(normalized) || !/[a-z]/i.test(normalized)) {
       return false;
     }
 
@@ -753,8 +725,6 @@ export class InstitutionsApi {
 
   /**
    * Build query parameters from institution search options and filters
-   *
-   * @private
    * @param options - Institution search options
    * @returns Formatted query parameters
    */
@@ -790,8 +760,6 @@ export class InstitutionsApi {
 
   /**
    * Extract safe properties from error-like objects
-   *
-   * @private
    * @param errorObj - Object to extract error properties from
    * @returns Safe error properties
    */
@@ -821,8 +789,6 @@ export class InstitutionsApi {
 
   /**
    * Format unknown error for safe logging using type guards
-   *
-   * @private
    * @param error - Unknown error object to format
    * @returns Formatted error object safe for logging
    */

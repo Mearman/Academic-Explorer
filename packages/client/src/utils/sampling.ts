@@ -4,15 +4,15 @@
  */
 
 import type {
-  OpenAlexEntity,
   EntityType,
+  OpenAlexEntity,
+  OpenAlexResponse,
   QueryParams,
   SampleParams,
-  OpenAlexResponse,
 } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
-import { logger, logError } from "../internal/logger";
+import { logError,logger } from "../internal/logger";
 
 /**
  * Advanced sampling options
@@ -36,11 +36,9 @@ export class SamplingApi {
 
   /**
    * Get random sample of entities from any entity type
-   *
    * @param entityType - Type of entity to sample
    * @param params - Sampling parameters
    * @returns Promise resolving to random sample
-   *
    * @example
    * ```typescript
    * const randomWorks = await samplingApi.randomSample('works', {
@@ -72,12 +70,10 @@ export class SamplingApi {
 
   /**
    * Get stratified random sample (balanced across specified field)
-   *
    * @param entityType - Type of entity to sample
    * @param stratifyBy - Field to stratify by
    * @param params - Sampling parameters
    * @returns Promise resolving to stratified sample
-   *
    * @example
    * ```typescript
    * const stratifiedWorks = await samplingApi.stratifiedSample('works', 'publication_year', {
@@ -187,11 +183,9 @@ export class SamplingApi {
 
   /**
    * Get temporally diverse sample (spread across time periods)
-   *
    * @param entityType - Type of entity to sample
    * @param params - Sampling parameters
    * @returns Promise resolving to temporally diverse sample
-   *
    * @example
    * ```typescript
    * const temporalSample = await samplingApi.temporallyDiverseSample('works', {
@@ -271,11 +265,9 @@ export class SamplingApi {
 
   /**
    * Get citation-weighted random sample (higher chance for highly cited entities)
-   *
    * @param entityType - Type of entity to sample
    * @param params - Sampling parameters
    * @returns Promise resolving to citation-weighted sample
-   *
    * @example
    * ```typescript
    * const weightedSample = await samplingApi.citationWeightedSample('works', {
@@ -354,12 +346,10 @@ export class SamplingApi {
 
   /**
    * Generate reproducible random samples for A/B testing
-   *
    * @param entityType - Type of entity to sample
    * @param groupA - Parameters for group A
    * @param groupB - Parameters for group B
    * @returns Promise resolving to both sample groups
-   *
    * @example
    * ```typescript
    * const { groupA, groupB } = await samplingApi.abTestSample('works',
@@ -395,11 +385,9 @@ export class SamplingApi {
 
   /**
    * Get quality sample (entities with good metadata completeness)
-   *
    * @param entityType - Type of entity to sample
    * @param params - Sampling parameters
    * @returns Promise resolving to quality sample
-   *
    * @example
    * ```typescript
    * const qualitySample = await samplingApi.qualitySample('works', {
@@ -423,6 +411,7 @@ export class SamplingApi {
 
   /**
    * Get quality filters for different entity types
+   * @param entityType
    */
   private getQualityFilters(entityType: EntityType): string {
     switch (entityType) {
@@ -441,6 +430,8 @@ export class SamplingApi {
 
   /**
    * Fisher-Yates shuffle algorithm with optional seed
+   * @param array
+   * @param seed
    */
   private shuffleArray(array: unknown[], seed?: number): void {
     // Simple seeded random number generator (not cryptographically secure)
@@ -454,10 +445,11 @@ export class SamplingApi {
 
   /**
    * Simple seeded random number generator
+   * @param seed
    */
   private seededRandom(seed: number): () => number {
     let state = seed;
-    return function () {
+    return () => {
       state = (state * 1664525 + 1013904223) % Math.pow(2, 32);
       return state / Math.pow(2, 32);
     };

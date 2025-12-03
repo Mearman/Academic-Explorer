@@ -4,27 +4,25 @@
  * Bridges relationship extraction from entity data with the PersistentGraph.
  * Extracts relationships and indexed edge properties from OpenAlex entities,
  * creating nodes and edges in the persistent graph.
- *
  * @module cache/dexie/graph-extraction
  */
 
 import {
-  type EntityType,
-  type CompletenessStatus,
-  type GraphNodeInput,
-  type GraphEdgeInput,
   type AuthorPosition,
+  type CompletenessStatus,
+  type EntityType,
+  type GraphEdgeInput,
+  type GraphNodeInput,
   type PublicationVersion,
   RelationType as RT,
 } from '@bibgraph/types';
 import {
-  extractRelationships,
   extractEntityLabel,
+  extractRelationships,
   normalizeOpenAlexId,
 } from '@bibgraph/utils';
 
 import type { StaticEntityType } from '../../internal/static-data-utils';
-
 import { generateCacheKey, getEntityCacheDB } from './entity-cache-db';
 import { type PersistentGraph } from './persistent-graph';
 
@@ -78,11 +76,10 @@ const FULL_FIELDS_BY_TYPE: Partial<Record<EntityType, string[]>> = {
  * - stub: Only has ID (or minimal deducible info)
  * - partial: Has some useful fields but not complete
  * - full: Has most/all expected fields for entity type
+ * @param entityType
+ * @param entityData
  */
-export function determineCompleteness(
-  entityType: EntityType,
-  entityData: Record<string, unknown>
-): CompletenessStatus {
+export const determineCompleteness = (entityType: EntityType, entityData: Record<string, unknown>): CompletenessStatus => {
   // Get field requirements for this type
   const partialFields = PARTIAL_FIELDS_BY_TYPE[entityType] ?? [];
   const fullFields = FULL_FIELDS_BY_TYPE[entityType] ?? [];
@@ -108,7 +105,7 @@ export function determineCompleteness(
   }
 
   return 'stub';
-}
+};
 
 // ============================================================================
 // Edge Property Extraction
@@ -117,11 +114,10 @@ export function determineCompleteness(
 /**
  * Extract author position from authorship array index
  * OpenAlex convention: first=0, last=length-1, middle=everything else
+ * @param authorshipIndex
+ * @param totalAuthorships
  */
-export function extractAuthorPosition(
-  authorshipIndex: number,
-  totalAuthorships: number
-): AuthorPosition {
+export const extractAuthorPosition = (authorshipIndex: number, totalAuthorships: number): AuthorPosition => {
   if (totalAuthorships <= 0) {
     return 'middle';
   }
@@ -132,24 +128,22 @@ export function extractAuthorPosition(
     return 'last';
   }
   return 'middle';
-}
+};
 
 /**
  * Extract corresponding author flag from authorship data
+ * @param authorship
  */
-export function extractIsCorresponding(
-  authorship: Record<string, unknown>
-): boolean | undefined {
+export const extractIsCorresponding = (authorship: Record<string, unknown>): boolean | undefined => {
   const isCorresponding = authorship.is_corresponding;
   return typeof isCorresponding === 'boolean' ? isCorresponding : undefined;
-}
+};
 
 /**
  * Extract open access status from work data
+ * @param entityData
  */
-export function extractIsOpenAccess(
-  entityData: Record<string, unknown>
-): boolean | undefined {
+export const extractIsOpenAccess = (entityData: Record<string, unknown>): boolean | undefined => {
   const openAccess = entityData.open_access as Record<string, unknown> | undefined;
   if (openAccess && typeof openAccess.is_oa === 'boolean') {
     return openAccess.is_oa;
@@ -162,7 +156,7 @@ export function extractIsOpenAccess(
   }
 
   return undefined;
-}
+};
 
 /**
  * Map OpenAlex version strings to our PublicationVersion type
@@ -175,50 +169,46 @@ const VERSION_MAP: Record<string, PublicationVersion> = {
 
 /**
  * Extract publication version from location data
+ * @param entityData
  */
-export function extractVersion(
-  entityData: Record<string, unknown>
-): PublicationVersion | undefined {
+export const extractVersion = (entityData: Record<string, unknown>): PublicationVersion | undefined => {
   const primaryLocation = entityData.primary_location as Record<string, unknown> | undefined;
   if (primaryLocation?.version) {
     const version = primaryLocation.version as string;
     return VERSION_MAP[version];
   }
   return undefined;
-}
+};
 
 /**
  * Extract topic score from topic association
+ * @param topic
  */
-export function extractTopicScore(
-  topic: Record<string, unknown>
-): number | undefined {
+export const extractTopicScore = (topic: Record<string, unknown>): number | undefined => {
   const score = topic.score;
   return typeof score === 'number' ? score : undefined;
-}
+};
 
 /**
  * Extract affiliation years from affiliation data
+ * @param affiliation
  */
-export function extractAffiliationYears(
-  affiliation: Record<string, unknown>
-): number[] | undefined {
+export const extractAffiliationYears = (affiliation: Record<string, unknown>): number[] | undefined => {
   const years = affiliation.years;
   if (Array.isArray(years) && years.length > 0 && years.every((y) => typeof y === 'number')) {
     return years as number[];
   }
   return undefined;
-}
+};
 
 /**
  * Extract award ID from grant data
+ * @param grant
  */
-export function extractAwardId(
-  grant: Record<string, unknown>
-): string | undefined {
+export const extractAwardId = (grant: Record<string, unknown>): string | undefined => {
   const awardId = grant.award_id;
   return typeof awardId === 'string' ? awardId : undefined;
-}
+};
 
 // ============================================================================
 // Cache Label Lookup
@@ -240,18 +230,16 @@ const STATIC_ENTITY_TYPES = new Set<string>([
 
 /**
  * Check if an entity type is cacheable
+ * @param entityType
  */
-function isStaticEntityType(entityType: string): entityType is StaticEntityType {
-  return STATIC_ENTITY_TYPES.has(entityType);
-}
+const isStaticEntityType = (entityType: string): entityType is StaticEntityType => STATIC_ENTITY_TYPES.has(entityType);
 
 /**
  * Look up entity labels from the IndexedDB entity cache
  * Returns a map of entityId -> display_name for entities found in cache
+ * @param entities
  */
-async function lookupLabelsFromCache(
-  entities: Array<{ id: string; entityType: EntityType }>
-): Promise<Map<string, string>> {
+const lookupLabelsFromCache = async (entities: Array<{ id: string; entityType: EntityType }>): Promise<Map<string, string>> => {
   const labelMap = new Map<string, string>();
 
   const db = getEntityCacheDB();
@@ -300,7 +288,7 @@ async function lookupLabelsFromCache(
   }
 
   return labelMap;
-}
+};
 
 // ============================================================================
 // Main Extraction Functions
@@ -330,13 +318,12 @@ export interface ExtractionResult {
  * 2. Extracts relationships using the shared relationship-extractor
  * 3. Creates stub nodes for referenced entities
  * 4. Creates edges with indexed properties
+ * @param graph
+ * @param entityType
+ * @param entityId
+ * @param entityData
  */
-export async function extractAndIndexRelationships(
-  graph: PersistentGraph,
-  entityType: EntityType,
-  entityId: string,
-  entityData: Record<string, unknown>
-): Promise<ExtractionResult> {
+export const extractAndIndexRelationships = async (graph: PersistentGraph, entityType: EntityType, entityId: string, entityData: Record<string, unknown>): Promise<ExtractionResult> => {
   const result: ExtractionResult = {
     nodesProcessed: 0,
     edgesAdded: 0,
@@ -431,19 +418,21 @@ export async function extractAndIndexRelationships(
   }
 
   return result;
-}
+};
 
 /**
  * Create edge input with indexed properties based on relationship type
+ * @param sourceId
+ * @param targetId
+ * @param relationType
+ * @param entityType
+ * @param entityData
+ * @param relationship
+ * @param relationship.targetId
+ * @param relationship.targetType
+ * @param relationship.relationType
  */
-function createEdgeInputWithProperties(
-  sourceId: string,
-  targetId: string,
-  relationType: RT,
-  entityType: EntityType,
-  entityData: Record<string, unknown>,
-  relationship: { targetId: string; targetType: EntityType; relationType: RT }
-): GraphEdgeInput {
+const createEdgeInputWithProperties = (sourceId: string, targetId: string, relationType: RT, entityType: EntityType, entityData: Record<string, unknown>, relationship: { targetId: string; targetType: EntityType; relationType: RT }): GraphEdgeInput => {
   const edgeInput: GraphEdgeInput = {
     source: sourceId,
     target: targetId,
@@ -480,16 +469,15 @@ function createEdgeInputWithProperties(
   }
 
   return edgeInput;
-}
+};
 
 /**
  * Extract authorship-specific properties (authorPosition, isCorresponding)
+ * @param edgeInput
+ * @param entityData
+ * @param authorId
  */
-function extractAuthorshipProperties(
-  edgeInput: GraphEdgeInput,
-  entityData: Record<string, unknown>,
-  authorId: string
-): void {
+const extractAuthorshipProperties = (edgeInput: GraphEdgeInput, entityData: Record<string, unknown>, authorId: string): void => {
   const authorships = entityData.authorships as Array<Record<string, unknown>> | undefined;
   if (!authorships) {
     return;
@@ -515,27 +503,25 @@ function extractAuthorshipProperties(
     // Extract corresponding author flag
     edgeInput.isCorresponding = extractIsCorresponding(authorship);
   }
-}
+};
 
 /**
  * Extract publication-specific properties (isOpenAccess, version)
+ * @param edgeInput
+ * @param entityData
  */
-function extractPublicationProperties(
-  edgeInput: GraphEdgeInput,
-  entityData: Record<string, unknown>
-): void {
+const extractPublicationProperties = (edgeInput: GraphEdgeInput, entityData: Record<string, unknown>): void => {
   edgeInput.isOpenAccess = extractIsOpenAccess(entityData);
   edgeInput.version = extractVersion(entityData);
-}
+};
 
 /**
  * Extract topic-specific properties (score)
+ * @param edgeInput
+ * @param entityData
+ * @param topicId
  */
-function extractTopicProperties(
-  edgeInput: GraphEdgeInput,
-  entityData: Record<string, unknown>,
-  topicId: string
-): void {
+const extractTopicProperties = (edgeInput: GraphEdgeInput, entityData: Record<string, unknown>, topicId: string): void => {
   const topics = entityData.topics as Array<Record<string, unknown>> | undefined;
   if (!topics) {
     return;
@@ -554,16 +540,15 @@ function extractTopicProperties(
   if (topic) {
     edgeInput.score = extractTopicScore(topic);
   }
-}
+};
 
 /**
  * Extract affiliation-specific properties (years)
+ * @param edgeInput
+ * @param entityData
+ * @param institutionId
  */
-function extractAffiliationProperties(
-  edgeInput: GraphEdgeInput,
-  entityData: Record<string, unknown>,
-  institutionId: string
-): void {
+const extractAffiliationProperties = (edgeInput: GraphEdgeInput, entityData: Record<string, unknown>, institutionId: string): void => {
   const affiliations = entityData.affiliations as Array<Record<string, unknown>> | undefined;
   if (!affiliations) {
     return;
@@ -583,16 +568,15 @@ function extractAffiliationProperties(
   if (affiliation) {
     edgeInput.years = extractAffiliationYears(affiliation);
   }
-}
+};
 
 /**
  * Extract funding-specific properties (awardId)
+ * @param edgeInput
+ * @param entityData
+ * @param funderId
  */
-function extractFundingProperties(
-  edgeInput: GraphEdgeInput,
-  entityData: Record<string, unknown>,
-  funderId: string
-): void {
+const extractFundingProperties = (edgeInput: GraphEdgeInput, entityData: Record<string, unknown>, funderId: string): void => {
   const grants = entityData.grants as Array<Record<string, unknown>> | undefined;
   if (!grants) {
     return;
@@ -612,19 +596,18 @@ function extractFundingProperties(
   if (grant) {
     edgeInput.awardId = extractAwardId(grant);
   }
-}
+};
 
 /**
  * Process multiple entities in batch
+ * @param graph
+ * @param entities
  */
-export async function extractAndIndexEntities(
-  graph: PersistentGraph,
-  entities: Array<{
+export const extractAndIndexEntities = async (graph: PersistentGraph, entities: Array<{
     entityType: EntityType;
     entityId: string;
     entityData: Record<string, unknown>;
-  }>
-): Promise<ExtractionResult> {
+  }>): Promise<ExtractionResult> => {
   const totalResult: ExtractionResult = {
     nodesProcessed: 0,
     edgesAdded: 0,
@@ -649,4 +632,4 @@ export async function extractAndIndexEntities(
   }
 
   return totalResult;
-}
+};

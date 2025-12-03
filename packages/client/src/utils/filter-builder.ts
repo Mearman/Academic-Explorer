@@ -4,7 +4,6 @@
  * This module provides a focused utility class for converting filter objects
  * to OpenAlex API query string format. It complements the existing QueryBuilder
  * by providing a simpler, specialized interface for filter conversion.
- *
  * @see https://docs.openalex.org/how-to-use-the-api/get-lists-of-entities/filter-entity-lists
  */
 
@@ -90,7 +89,6 @@ export interface FilterValidationResult {
  * This utility class provides a clean interface for building OpenAlex API filter strings
  * from various filter object formats. It supports simple key-value filters, complex
  * expressions with logical operators, and validation of filter structures.
- *
  * @example
  * ```typescript
  * const builder = new FilterBuilder();
@@ -116,7 +114,6 @@ export class FilterBuilder {
 
   /**
    * Create a new FilterBuilder instance
-   *
    * @param options - Configuration options for the builder
    */
   constructor(options: FilterBuilderOptions = {}) {
@@ -133,10 +130,8 @@ export class FilterBuilder {
    *
    * Converts a filter object with key-value pairs to OpenAlex API filter format.
    * This is the primary method for converting EntityFilters to query strings.
-   *
    * @param filters - The filter object containing field-value pairs
    * @returns Formatted filter string for the OpenAlex API
-   *
    * @example
    * ```typescript
    * const filterString = builder.buildFromObject({
@@ -164,10 +159,8 @@ export class FilterBuilder {
    *
    * Converts a structured filter expression with logical operators to OpenAlex format.
    * Supports nested expressions and complex logical combinations.
-   *
    * @param expression - The filter expression to convert
    * @returns Formatted filter string for the OpenAlex API
-   *
    * @example
    * ```typescript
    * const filterString = builder.buildFromExpression({
@@ -197,10 +190,8 @@ export class FilterBuilder {
    *
    * Converts an array of individual filter conditions to OpenAlex format,
    * combining them with the default logical operator.
-   *
    * @param conditions - Array of filter conditions
    * @returns Formatted filter string for the OpenAlex API
-   *
    * @example
    * ```typescript
    * const filterString = builder.buildFromConditions([
@@ -221,10 +212,8 @@ export class FilterBuilder {
    *
    * Checks if the provided filter object is valid for OpenAlex API usage.
    * Validates field names, value types, and overall structure.
-   *
    * @param filters - The filter object to validate
    * @returns Validation result with any error details
-   *
    * @example
    * ```typescript
    * const validation = builder.validateFilters({
@@ -251,7 +240,6 @@ export class FilterBuilder {
    *
    * Checks if the provided filter expression is valid and properly structured.
    * Validates logical operators, field names, and nested expressions.
-   *
    * @param expression - The filter expression to validate
    * @returns Validation result with any error details
    */
@@ -267,10 +255,8 @@ export class FilterBuilder {
    *
    * Escapes special characters in filter values to prevent query parsing issues.
    * Handles quotes, pipes, commas, and other OpenAlex-specific characters.
-   *
    * @param value - The filter value to escape
    * @returns Escaped value safe for use in API queries
-   *
    * @example
    * ```typescript
    * const escaped = builder.escapeValue('machine "learning" & AI');
@@ -289,10 +275,9 @@ export class FilterBuilder {
    *
    * Converts an OpenAlex API filter string back to a structured filter object.
    * Useful for parsing existing queries or reverse-engineering filters.
-   *
    * @param filterString - The OpenAlex filter string to parse
+   * @param value
    * @returns Parsed filter object
-   *
    * @example
    * ```typescript
    * const filters = builder.parseFilterString('publication_year:2023,is_oa:true');
@@ -361,7 +346,6 @@ export class FilterBuilder {
    * Update the builder options
    *
    * Allows modifying the builder configuration after instantiation.
-   *
    * @param newOptions - Partial options to update
    * @returns This FilterBuilder instance for method chaining
    */
@@ -375,7 +359,6 @@ export class FilterBuilder {
 
   /**
    * Get the current builder options
-   *
    * @returns Copy of the current options configuration
    */
   getOptions(): Required<FilterBuilderOptions> {
@@ -384,7 +367,6 @@ export class FilterBuilder {
 
   /**
    * Reset the builder to default options
-   *
    * @returns This FilterBuilder instance for method chaining
    */
   resetOptions(): this {
@@ -402,39 +384,29 @@ export class FilterBuilder {
  * Create a new FilterBuilder instance with default options
  *
  * Convenience function for creating a FilterBuilder with standard configuration.
- *
  * @param options - Optional configuration for the builder
  * @returns New FilterBuilder instance
- *
  * @example
  * ```typescript
  * const builder = createFilterBuilder();
  * const filterString = builder.buildFromObject({ 'publication_year': 2023 });
  * ```
  */
-export function createFilterBuilder(
-  options?: FilterBuilderOptions,
-): FilterBuilder {
-  return new FilterBuilder(options);
-}
+export const createFilterBuilder = (options?: FilterBuilderOptions): FilterBuilder => new FilterBuilder(options);
 
 /**
  * Internal utility function to convert a simple filter object to filter string
  *
  * This is an internal function used by query-builder.ts which wraps it as buildFilterString
  * External consumers should use the buildFilterString export from query-builder.ts
- *
  * @param filters - The filter object to convert
  * @param options - Optional builder configuration
  * @returns Formatted filter string for the OpenAlex API
  * @internal
  */
-export function buildFilterStringFromFilters(
-  filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>,
-  options?: FilterBuilderOptions,
-): string {
+export const buildFilterStringFromFilters = (filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>, options?: FilterBuilderOptions): string => {
   const builder = new FilterBuilder(options);
   return builder.buildFromObject(filters);
-}
+};
 
 // Types are already exported above - no need to re-export

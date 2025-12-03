@@ -7,24 +7,24 @@ export type StaticEntityType = 'authors' | 'works' | 'sources' | 'institutions' 
 
 const VALID_ENTITY_TYPES = new Set<string>(['authors', 'works', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts']);
 
-function isStaticEntityType(value: string): value is StaticEntityType {
-	return VALID_ENTITY_TYPES.has(value);
-}
+const isStaticEntityType = (value: string): value is StaticEntityType => VALID_ENTITY_TYPES.has(value);
 
 /**
  * Validate and return entity type for static cache lookup
+ * @param entityType
  */
-export function toStaticEntityType(entityType: string): StaticEntityType {
+export const toStaticEntityType = (entityType: string): StaticEntityType => {
 	if (isStaticEntityType(entityType)) {
 		return entityType;
 	}
 	throw new Error(`Unknown entity type: ${entityType}`);
-}
+};
 
 /**
  * Clean OpenAlex ID by removing URL prefix if present
+ * @param id
  */
-export function cleanOpenAlexId(id: string): string {
+export const cleanOpenAlexId = (id: string): string => {
 	// Handle null/undefined/empty - return as-is to preserve for error handling
 	if (!id || typeof id !== 'string') {
 		return id;
@@ -34,4 +34,4 @@ export function cleanOpenAlexId(id: string): string {
 		return id.replace('https://openalex.org/', '');
 	}
 	return id;
-}
+};

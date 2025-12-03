@@ -5,11 +5,11 @@
  * with multi-tier fallback to the OpenAlex API.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  CachedOpenAlexClient,
   type CachedClientConfig,
+  CachedOpenAlexClient,
 } from "../../cached-client";
 import { CacheTier, staticDataProvider } from "../../internal/static-data-provider";
 

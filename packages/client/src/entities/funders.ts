@@ -73,7 +73,7 @@ export class FundersApi {
 
   /**
    * Build query parameters with proper filter processing
-   * @private
+   * @param params
    */
   private buildQueryParams(
     params: QueryParams & FundersFilters & { filter?: string } = {},
@@ -126,7 +126,6 @@ export class FundersApi {
    * Autocomplete funders by name for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of funder autocomplete results
-   *
    * @example
    * ```typescript
    * const suggestions = await fundersApi.autocomplete('national science');

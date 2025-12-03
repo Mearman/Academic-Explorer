@@ -87,10 +87,4 @@ export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
   },
 };
 
-export function createAdvancedFieldSelection(
-  entityType: keyof AdvancedEntityFieldSelections,
-): string[] {
-  return (
-    ADVANCED_FIELD_SELECTIONS[entityType]?.minimal || ["id", "display_name"]
-  );
-}
+export const createAdvancedFieldSelection = (entityType: keyof AdvancedEntityFieldSelections): string[] => ADVANCED_FIELD_SELECTIONS[entityType]?.minimal || ["id", "display_name"];

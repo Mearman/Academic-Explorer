@@ -133,6 +133,7 @@ export class GitHubPagesReader {
 
   /**
    * Fetch static data from GitHub Pages with caching and retry logic
+   * @param path
    */
   async fetchStaticData<T>(path: string): Promise<T | null> {
     // Only fetch in production mode
@@ -202,6 +203,9 @@ export class GitHubPagesReader {
 
   /**
    * Fetch OpenAlex entity data from static cache
+   * @param root0
+   * @param root0.entityType
+   * @param root0.entityId
    */
   async fetchEntity<T extends OpenAlexEntity>({
     entityType,
@@ -216,6 +220,9 @@ export class GitHubPagesReader {
 
   /**
    * Fetch OpenAlex response data from static cache
+   * @param root0
+   * @param root0.entityType
+   * @param root0.queryHash
    */
   async fetchResponse<T extends OpenAlexEntity>({
     entityType,
@@ -245,6 +252,7 @@ export class GitHubPagesReader {
 
   /**
    * Update configuration
+   * @param newConfig
    */
   updateConfig(newConfig: Partial<GitHubPagesReaderConfig>): void {
     this.config = { ...this.config, ...newConfig };
@@ -257,6 +265,9 @@ export class GitHubPagesReader {
 
   /**
    * Fetch data with retry logic and exponential backoff
+   * @param root0
+   * @param root0.url
+   * @param root0.attempt
    */
   private async attemptFetch<T>({
     url,
@@ -384,6 +395,7 @@ export class GitHubPagesReader {
 
   /**
    * Fetch with timeout
+   * @param url
    */
   private async fetchWithTimeout(url: string): Promise<Response> {
     const controller = new AbortController();
@@ -414,6 +426,7 @@ export class GitHubPagesReader {
 
   /**
    * Calculate retry delay with exponential backoff
+   * @param attempt
    */
   private calculateRetryDelay(attempt: number): number {
     const baseDelay =
@@ -430,6 +443,7 @@ export class GitHubPagesReader {
 
   /**
    * Sleep for specified milliseconds
+   * @param ms
    */
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -437,6 +451,7 @@ export class GitHubPagesReader {
 
   /**
    * Validate response data structure
+   * @param data
    */
   private validateResponseData(data: unknown): ValidationResult {
     const errors: string[] = [];
@@ -463,6 +478,7 @@ export class GitHubPagesReader {
 
   /**
    * Build full URL from path
+   * @param path
    */
   private buildUrl(path: string): string {
     const cleanPath = path.startsWith("/") ? path.slice(1) : path;
@@ -475,6 +491,7 @@ export class GitHubPagesReader {
 
   /**
    * Generate cache key for path
+   * @param path
    */
   private getCacheKey(path: string): string {
     return `static:${path}`;
@@ -543,10 +560,9 @@ export const defaultGitHubPagesConfig: GitHubPagesReaderConfig = {
 
 /**
  * Create a GitHub Pages reader instance with default configuration
+ * @param config
  */
-export function createGitHubPagesReader(
-  config: Partial<GitHubPagesReaderConfig> = {},
-): GitHubPagesReader {
+export const createGitHubPagesReader = (config: Partial<GitHubPagesReaderConfig> = {}): GitHubPagesReader => {
   const fullConfig = { ...defaultGitHubPagesConfig, ...config };
   return new GitHubPagesReader(fullConfig);
-}
+};

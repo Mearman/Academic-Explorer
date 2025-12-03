@@ -5,7 +5,7 @@
  * load conditions, large datasets, and stress scenarios.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock performance measurement APIs
 let mockTime = 0;
@@ -482,7 +482,7 @@ class MockHighPerformanceCache {
 }
 
 // Test data generators
-function generateTestData(sizeKB: number) {
+const generateTestData = (sizeKB: number) => {
   const targetSize = sizeKB * 1024;
   const baseString = "A".repeat(1000); // 1KB string
   const repetitions = Math.ceil(targetSize / 1000);
@@ -496,12 +496,9 @@ function generateTestData(sizeKB: number) {
       type: "performance-test",
     },
   };
-}
+};
 
-function generateLargeDataset(
-  itemCount: number,
-  itemSizeKB: number,
-): Map<string, unknown> {
+const generateLargeDataset = (itemCount: number, itemSizeKB: number): Map<string, unknown> => {
   const dataset = new Map<string, unknown>();
 
   for (let i = 0; i < itemCount; i++) {
@@ -511,7 +508,7 @@ function generateLargeDataset(
   }
 
   return dataset;
-}
+};
 
 describe("Cache Performance Tests", () => {
   let performanceCache: MockHighPerformanceCache;
