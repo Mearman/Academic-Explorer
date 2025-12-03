@@ -258,7 +258,7 @@ export default tseslint.config([
 
             // SonarJS rules (from flat/recommended)
             ...sonarjsPlugin.configs.recommended.rules,
-            "sonarjs/cognitive-complexity": ["warn", 25], // Allow moderate complexity
+            "sonarjs/cognitive-complexity": ["warn", 50], // Allow complex business logic; only flag truly excessive complexity
             "sonarjs/no-duplicate-string": "off", // Too noisy for string literals
             "sonarjs/prefer-regexp-exec": "off", // Conflicts with unicorn/prefer-regexp-test
             "sonarjs/redundant-type-aliases": "off", // Type aliases provide semantic meaning
@@ -322,6 +322,8 @@ export default tseslint.config([
             // Disable rules that conflict with Playwright patterns
             "playwright/no-networkidle": "off", // networkidle is valid for some tests
             "playwright/no-wait-for-timeout": "off", // Legitimate for animations, async operations, and network timing in E2E tests
+            "playwright/no-wait-for-selector": "off", // Legitimate for Promise.race patterns, dynamic content, and explicit timeout handling
+            "playwright/no-force-option": "off", // Sometimes necessary for overlapping elements or animation edge cases
             "playwright/prefer-web-first-assertions": "off", // Auto-fix is broken and creates invalid TypeScript code
             "playwright/expect-expect": "off", // Many E2E tests use implicit "no crash" assertions or custom helpers
             "playwright/no-conditional-in-test": "off", // E2E tests need conditionals for feature detection, browser capabilities, optional elements
