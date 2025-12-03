@@ -356,8 +356,10 @@ const appActivityReducer = (
     }
 
     case "REMOVE_EVENT": {
-      // Extract and remove the event with the given ID using destructuring
-      const { [action.payload]: _removed, ...newEvents } = state.events;
+      // Create new events object without the removed event
+      const newEvents = Object.fromEntries(
+        Object.entries(state.events).filter(([id]) => id !== action.payload)
+      );
 
       return {
         ...state,

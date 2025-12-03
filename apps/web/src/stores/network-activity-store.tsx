@@ -179,12 +179,14 @@ const networkActivityReducer = (
     }
 
     case "REMOVE_REQUEST": {
-      // Extract and remove the request with the given ID using destructuring
-      const { [action.payload]: _removed, ...rest } = state.requests;
+      // Create new requests object without the removed request
+      const newRequests = Object.fromEntries(
+        Object.entries(state.requests).filter(([id]) => id !== action.payload)
+      );
 
       return {
         ...state,
-        requests: rest,
+        requests: newRequests,
       };
     }
 

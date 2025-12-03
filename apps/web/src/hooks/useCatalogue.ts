@@ -873,7 +873,7 @@ export const useCatalogue = (options: UseCatalogueOptions = {}): UseCatalogueRet
       const sanitizedTitle = list.title
         .replaceAll(/[^0-9a-z]/gi, '-')
         .replaceAll(/-+/g, '-')
-        .replaceAll(/^-|-$/g, '')
+        .replaceAll(/(^-|-$)/g, '')
         .toLowerCase();
       const filename = `catalogue-${sanitizedTitle}-${date}.${extension}`;
 
