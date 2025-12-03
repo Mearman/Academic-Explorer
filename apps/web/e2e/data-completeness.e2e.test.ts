@@ -152,7 +152,7 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.locator('main', { timeout: 15_000, state: 'visible' }).waitFor();
+		await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 		const mainText = page.locator('main');
 		await expect(mainText).toHaveText();
@@ -196,7 +196,7 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.locator('main', { timeout: 15_000, state: 'visible' }).waitFor();
+		await page.locator('main').waitFor({ timeout: 15_000, state: 'visible' });
 
 		const mainText = page.locator('main');
 		await expect(mainText).toHaveText();
