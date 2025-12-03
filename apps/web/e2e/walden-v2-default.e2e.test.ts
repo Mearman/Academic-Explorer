@@ -78,10 +78,12 @@ test.describe('Data Version 2 Default Behavior', () => {
     const workId = 'W2741809807';
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
 
-    // Wait for API responses
+    // Wait for page to load and API responses to complete
+    await page.waitForLoadState('load');
+
+    // Additional wait for network to settle
     await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {
       // Timeout is acceptable - we just need some responses
-      // Ignore errors from timeout
     });
 
     // Verify we received responses
@@ -128,8 +130,11 @@ test.describe('Data Version 2 Default Behavior', () => {
     const authorId = 'A5017898742';
     await page.goto(`/#/authors/${authorId}`, { waitUntil: 'domcontentloaded' });
 
-    // Wait for page to load
+    // Wait for page to fully load including network requests
     await page.waitForLoadState('load');
+    await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {
+      // Timeout is acceptable if requests complete quickly
+    });
 
     // Verify API requests were made
     expect(apiRequests.length).toBeGreaterThan(0);
@@ -162,8 +167,11 @@ test.describe('Data Version 2 Default Behavior', () => {
     const institutionId = 'I161548249';
     await page.goto(`/#/institutions/${institutionId}`, { waitUntil: 'domcontentloaded' });
 
-    // Wait for page to load
+    // Wait for page to fully load including network requests
     await page.waitForLoadState('load');
+    await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {
+      // Timeout is acceptable if requests complete quickly
+    });
 
     // Verify API requests were made
     expect(apiRequests.length).toBeGreaterThan(0);

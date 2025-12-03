@@ -785,13 +785,11 @@
   "cli": {
     "packageManager": "pnpm"
   },
-  "parallel": 3,
   "cacheDirectory": ".nx/cache",
   "maxCacheSize": "15GB",
   "compression": true,
   "defaultIteration": "prod",
   "flaky": [],
-  "parallelTasks": 3,
   "taskDependencies": {
     "build": [
       {
