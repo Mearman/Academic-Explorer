@@ -7,16 +7,10 @@ import { join } from "node:path"
 // Actual implementation would require query-cache-builder.ts (not yet implemented)
 // import { fetchAndCacheQueries } from "../../apps/web/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/web/src/lib/utils/static-data-index-generator.ts";
-const fetchAndCacheQueries = (
-	queries: Array<{ url: string; entityType: string }>,
-	outputDir: string
-) => {
-	void queries
-	void outputDir
+const fetchAndCacheQueries = () => {
 	return Promise.resolve({ success: 0, failed: 0, errors: [] as Array<{ url: string; error: string }> })
 }
-const generateAllIndexes = (outputDir: string) => {
-	void outputDir
+const generateAllIndexes = () => {
 	return Promise.resolve()
 }
 
@@ -55,7 +49,8 @@ const main = async () => {
 		console.log(`[LINK] Queries to cache: ${QUERIES_TO_CACHE.length}`)
 
 		// Fetch and cache all queries
-		const { success, failed, errors } = await fetchAndCacheQueries(QUERIES_TO_CACHE, staticDataDir)
+		// TODO: Pass QUERIES_TO_CACHE and staticDataDir when implementation is ready
+		const { success, failed, errors } = await fetchAndCacheQueries()
 
 		console.log(`[SUCCESS] Successfully cached: ${success} queries`)
 		if (failed > 0) {
@@ -68,7 +63,8 @@ const main = async () => {
 
 		// Regenerate indexes to include the new queries
 		console.log("[REFRESH] Regenerating static data indexes...")
-		await generateAllIndexes(staticDataDir)
+		// TODO: Pass staticDataDir when implementation is ready
+		await generateAllIndexes()
 
 		console.log("[CELEBRATION] Query cache generation completed successfully!")
 	} catch (error) {

@@ -174,7 +174,7 @@ const evaluate = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 				}
 			}
 			if (conditions.length % 2 === 1) {
-				return evalArg(conditions.at(-1))
+				return evalArg(conditions[conditions.length - 1])
 			}
 			return null
 		}
@@ -354,8 +354,8 @@ const evaluate = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 			const length = vals.length > 2 ? Number(vals[2]) : undefined
 			const actualStart = start < 0 ? Math.max(0, str.length + start) : start
 			if (length === undefined) return str.slice(Math.max(0, actualStart))
-			if (length < 0) return str.substring(actualStart, str.length + length)
-			return str.substring(actualStart, actualStart + length)
+			if (length < 0) return str.slice(actualStart, str.length + length)
+			return str.slice(actualStart, actualStart + length)
 		}
 
 		// ========== Miscellaneous ==========
@@ -453,7 +453,7 @@ const getRulesFromNxJson = (tree: Tree): TargetRule[] => {
  *
  * Usage:
  * - nx sync (runs automatically as global sync generator)
- * - nx generate @bibgraph/generators:sync-targets
+ * - nx generate `@bibgraph/generators:sync-targets`
  * @param tree
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention

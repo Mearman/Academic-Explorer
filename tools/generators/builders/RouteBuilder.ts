@@ -49,7 +49,7 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
    */
   private getComponentName(): string {
     const parts = this.options.component.split('/')
-    const lastPart = parts.at(-1)
+    const lastPart = parts[parts.length - 1]
     if (lastPart === undefined) {
       throw new Error('Component path cannot be empty')
     }
