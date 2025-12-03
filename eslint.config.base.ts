@@ -155,7 +155,11 @@ export default tseslint.config([
         },
         rules: {
             // TypeScript rules
-            "@typescript-eslint/no-unused-vars": "error",
+            "@typescript-eslint/no-unused-vars": ["error", {
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_"
+            }],
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
 
@@ -206,7 +210,7 @@ export default tseslint.config([
             "jsdoc/require-yields-type": "off",
             "jsdoc/require-throws-type": "off",
             "jsdoc/check-param-names": "off", // Conflicts with destructured params
-            "jsdoc/check-tag-names": ["warn", { definedTags: ["packageDocumentation", "typeParam"] }], // Allow TSDoc tags
+            "jsdoc/check-tag-names": ["warn", { definedTags: ["packageDocumentation", "typeParam", "vitest-environment", "remarks", "invariant"] }], // Allow TSDoc tags and custom tags
 
             // Node.js rules (from flat/recommended-module for ES modules)
             ...nodePlugin.configs["flat/recommended-module"].rules,
@@ -268,6 +272,7 @@ export default tseslint.config([
             "sonarjs/slow-regex": "off", // Regex performance is acceptable
             "sonarjs/no-clear-text-protocols": "off", // HTTP detection patterns are intentional
             "sonarjs/no-small-switch": "off", // Small switches improve readability
+            "sonarjs/max-switch-cases": "off", // Large switches appropriate for interpreters/parsers
         },
         settings: {
             "import/resolver": {
@@ -307,6 +312,12 @@ export default tseslint.config([
         rules: {
             // Playwright recommended rules
             ...playwrightPlugin.configs["flat/recommended"].rules,
+            // Disable rules that conflict with Playwright patterns
+            "playwright/no-networkidle": "off", // networkidle is valid for some tests
+            "unicorn/no-await-expression-member": "off", // Common in Playwright: await page.goto().then(...)
+            "sonarjs/no-nested-functions": "off", // Test helpers often nest functions
+            "promise/always-return": "off", // Not all promise chains need returns in tests
+            "sonarjs/no-unused-collection": "off", // Test arrays/objects may be used for side effects
         },
     },
     // TanStack Query rules (using flat/recommended)
@@ -359,7 +370,7 @@ export default tseslint.config([
             "n/no-missing-require": "off",
         },
     },
-    // Allow process.exit() in CLI tools and scripts
+    // Allow process.exit() and OS commands in CLI tools and scripts
     {
         files: [
             "tools/**/*.ts",
@@ -367,6 +378,8 @@ export default tseslint.config([
         ],
         rules: {
             "n/no-process-exit": "off",
+            "unicorn/no-process-exit": "off",
+            "sonarjs/no-os-command-from-path": "off", // CLI tools legitimately use execSync
         },
     },
     // Disable export sorting for barrelsby-generated index files (they have their own ordering)
