@@ -147,10 +147,10 @@ export const Route = createRootRoute({
         });
 
         // Fix collapsed https:// or http:// patterns
-        fixedSource = fixedSource.replace(collapsedHttpsPattern, '$1$2/$3');
+        fixedSource = fixedSource.replace(collapsedHttpsPattern, '$1https://$2');
 
         // Fix collapsed ror:// patterns
-        fixedSource = fixedSource.replace(collapsedRorPattern, '$1$2/$3');
+        fixedSource = fixedSource.replace(collapsedRorPattern, '$1ror://$2');
 
         logger.debug("routing", "URL fix attempt", {
           originalSource: sourceToFix,

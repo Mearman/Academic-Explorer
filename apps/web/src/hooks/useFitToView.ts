@@ -438,23 +438,7 @@ export function useFitToView({
 			const cameraDistance = calculateCameraDistance(maxDimension, 100);
 
 			// Find optimal viewing direction using PCA
-			const { viewDir, v1, v2 } = findOptimalViewDirection(matchedPositions, centroid);
-
-			// Get viewport aspect ratio to orient the view optimally
-			let aspectRatio = 16 / 9; // Default landscape
-			const renderer = graph.renderer?.();
-			if (renderer?.domElement) {
-				const w = renderer.domElement.clientWidth ?? 0;
-				const h = renderer.domElement.clientHeight ?? 0;
-				if (w > 0 && h > 0) {
-					aspectRatio = w / h;
-				}
-			}
-
-			// Determine the camera's "up" vector based on aspect ratio
-			// Landscape (aspectRatio > 1): v2 should be up (so v1/largest spread is horizontal)
-			// Portrait (aspectRatio < 1): v1 should be up (so v1/largest spread is vertical)
-			const _upVector = aspectRatio >= 1 ? v2 : v1;
+			const { viewDir } = findOptimalViewDirection(matchedPositions, centroid);
 
 			// Position camera along the optimal viewing direction
 			const camX = centroid.x + viewDir.x * cameraDistance;

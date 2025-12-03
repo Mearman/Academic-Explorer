@@ -27,6 +27,7 @@ import {
   getPerformanceLevelColor,
 } from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
+
 import { getEdgeStyle } from '../edge-styles';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
@@ -224,7 +225,6 @@ export function ForceGraph3DVisualization({
   const {
     cameraState: savedCameraState,
     updateCameraState,
-    resetCamera,
   } = useCameraPersistence({
     enabled: enableCameraPersistence,
     storageKey: cameraStorageKey,

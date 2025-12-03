@@ -49,11 +49,6 @@ export type {
 } from '../theme-contracts';
 
 /**
- * Default export - the main sprinkles function
- */
-export { sprinkles as default } from './config';
-
-/**
  * Quick start examples for developers:
  *
  * Basic usage:

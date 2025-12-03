@@ -3,10 +3,9 @@
  * Bypasses Vanilla Extract issues while maintaining API compatibility
  */
 
-import { assignInlineVars, setElementVars } from '@vanilla-extract/dynamic';
+import { setElementVars } from '@vanilla-extract/dynamic';
 
 import type { ComponentLibrary } from '../theme-contracts';
-import { themeVars } from '../theme-vars.css';
 
 /**
  * Type definitions for dynamic theme configuration
@@ -268,7 +267,7 @@ export const createButtonStyles = (
 /**
  * Apply dynamic theme to an element
  */
-export const applyDynamicTheme = (element: HTMLElement, theme: any) => {
+export const applyDynamicTheme = (element: HTMLElement, theme: DynamicThemeConfig) => {
   const vars = {
     [dynamicThemeVars.colors.primary]: theme.colors?.primary || 'var(--mantine-color-blue-6)',
     [dynamicThemeVars.spacing.md]: theme.spacing?.md || '16px',
@@ -283,7 +282,7 @@ export const applyDynamicTheme = (element: HTMLElement, theme: any) => {
  */
 export const applyColorModeTheme = (element: HTMLElement, colorMode: 'light' | 'dark') => {
   const schemeClass = colorMode === 'light' ? 'light' : 'dark';
-  element.className = element.className.replace(/color-scheme-(light|dark)/g, `color-scheme-${schemeClass}`);
+  element.className = element.className.replace(/color-scheme-(dark|light)/g, `color-scheme-${schemeClass}`);
 };
 
 /**
@@ -293,7 +292,7 @@ export const applyInteractiveProperties = (
   element: HTMLElement,
   options: { disabled?: boolean; selected?: boolean; hoverable?: boolean }
 ) => {
-  const styles: Record<string, any> = {};
+  const styles: Record<string, string> = {};
 
   if (options.hoverable !== false) {
     Object.assign(styles, interactiveStates.hoverable);
@@ -307,7 +306,7 @@ export const applyInteractiveProperties = (
 
   // Apply styles directly to the element
   Object.entries(styles).forEach(([property, value]) => {
-    (element.style as any)[property] = value;
+    element.style.setProperty(property, value);
   });
 };
 

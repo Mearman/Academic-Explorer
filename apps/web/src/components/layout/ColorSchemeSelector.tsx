@@ -1,4 +1,4 @@
-import { Menu, Box, Group, Text, useMantineTheme, ActionIcon } from '@mantine/core'
+import { Menu, Box, Group, Text, ActionIcon } from '@mantine/core'
 import {
   IconSun,
   IconMoon,
@@ -15,10 +15,6 @@ import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
 import { sprinkles } from '@/styles/sprinkles'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
-
-interface ColorSchemeSelectorProps extends Record<string, never> {
-  // No props needed - uses theme context
-}
 
 const COLOR_SCHEME_LABELS = {
   light: { icon: IconSun, label: 'Light' },
@@ -41,10 +37,9 @@ const BORDER_RADIUS_OPTIONS = [
   { value: 'xl', label: 'XL', size: 16, description: 'Extra Large' }
 ] as const
 
-export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
+export const ColorSchemeSelector = () => {
   const { config, setColorScheme, setColorMode, setComponentLibrary, setBorderRadius, resetTheme } = useTheme()
   const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>(config.colorScheme as ShadcnPalette)
-  const theme = useMantineTheme()
 
   // Update local state when theme context changes
   useEffect(() => {
@@ -54,12 +49,12 @@ export const ColorSchemeSelector = ({}: ColorSchemeSelectorProps) => {
   // Handle palette changes
   const handlePaletteChange = (palette: ShadcnPalette) => {
     setSelectedPalette(palette)
-    setColorScheme(palette as any) // Theme context expects ColorScheme type
+    setColorScheme(palette)
   }
 
   // Reset color palette to default
   const resetColorPalette = () => {
-    setColorScheme('blue' as any)
+    setColorScheme('blue')
     setSelectedPalette('blue')
   }
 
