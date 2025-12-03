@@ -254,6 +254,7 @@ export default tseslint.config([
             "unicorn/no-array-sort": "off", // In-place sort is intentional
             "unicorn/no-array-reverse": "off", // In-place reverse is intentional
             "unicorn/prefer-node-protocol": "off", // node: protocol not required
+            "unicorn/no-typeof-undefined": "off", // typeof checks are valid for cross-environment code
 
             // SonarJS rules (from flat/recommended)
             ...sonarjsPlugin.configs.recommended.rules,
