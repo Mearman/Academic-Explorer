@@ -324,6 +324,8 @@ export default tseslint.config([
             "playwright/no-wait-for-timeout": "off", // Legitimate for animations, async operations, and network timing in E2E tests
             "playwright/prefer-web-first-assertions": "off", // Auto-fix is broken and creates invalid TypeScript code
             "playwright/expect-expect": "off", // Many E2E tests use implicit "no crash" assertions or custom helpers
+            "playwright/no-conditional-in-test": "off", // E2E tests need conditionals for feature detection, browser capabilities, optional elements
+            "playwright/no-conditional-expect": "off", // Conditional assertions valid for optional UI elements and graceful degradation testing
             "unicorn/no-await-expression-member": "off", // Common in Playwright: await page.goto().then(...)
             "sonarjs/no-nested-functions": "off", // Test helpers often nest functions
             "promise/always-return": "off", // Not all promise chains need returns in tests
