@@ -19,7 +19,7 @@ export interface SPAPageObjectOptions extends BasePageObjectOptions {
 }
 
 export class BaseSPAPageObject extends BasePageObject {
-	private readonly waitForAppReady: boolean;
+	private readonly shouldWaitForAppReady: boolean;
 
 	// Common selectors for BibGraph SPA
 	protected readonly selectors = {
@@ -50,7 +50,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	constructor(page: Page, options: SPAPageObjectOptions = {}) {
 		super(page, options);
-		this.waitForAppReady = options.waitForAppReady ?? true;
+		this.shouldWaitForAppReady = options.waitForAppReady ?? true;
 	}
 
 	/**
@@ -59,7 +59,7 @@ export class BaseSPAPageObject extends BasePageObject {
 	 */
 	override async goto(path: string): Promise<void> {
 		await super.goto(path);
-		if (this.waitForAppReady) {
+		if (this.shouldWaitForAppReady) {
 			await this.waitForAppInitialized();
 		}
 	}
