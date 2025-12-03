@@ -100,10 +100,10 @@ const ComparisonResults = () => {
   const [selectedDatasetForMissingPapers, setSelectedDatasetForMissingPapers] =
     useState<string | null>(null);
 
-  const updateComparisonProgress = (datasetId: string, progress: number) => {
+  const updateComparisonProgress = (datasetId: string, progressData: ComparisonProgress) => {
     setComparisonRuns((prev) =>
       prev.map((run) =>
-        run.id === `run_${datasetId}` ? { ...run, progress } : run,
+        run.id === `run_${datasetId}` ? { ...run, progress: progressData } : run,
       ),
     );
   };
@@ -204,7 +204,7 @@ const ComparisonResults = () => {
         academicExplorerResults,
         dataset,
         DEFAULT_MATCHING_CONFIG,
-        (progress: number) => updateComparisonProgress(datasetId, progress),
+        (progress) => updateComparisonProgress(datasetId, progress),
       );
 
       const executionTime = performance.now() - startTime;
