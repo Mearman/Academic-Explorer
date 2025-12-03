@@ -23,7 +23,7 @@ export async function readFromFilesystemCache(
 ): Promise<CacheReadResult> {
   try {
     // Construct file path: /public/data/openalex/{entityType}/{id}.json
-    const sanitizedId = id.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const sanitizedId = id.replace(/[^\w-]/g, '_');
     const filePath = path.join(PUBLIC_DATA_DIR, entityType, `${sanitizedId}.json`);
 
     if (!fs.existsSync(filePath)) {
@@ -51,7 +51,7 @@ export async function writeToFilesystemCache(
 ): Promise<void> {
   try {
     // Construct file path
-    const sanitizedId = id.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const sanitizedId = id.replace(/[^\w-]/g, '_');
     const entityDir = path.join(PUBLIC_DATA_DIR, entityType);
     const filePath = path.join(entityDir, `${sanitizedId}.json`);
 
