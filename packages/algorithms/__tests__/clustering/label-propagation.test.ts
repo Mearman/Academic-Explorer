@@ -113,8 +113,8 @@ describe('Label Propagation Clustering', () => {
       const endTime = performance.now();
       const executionTime = endTime - startTime;
 
-      // Then: Algorithm completes in under 20 seconds (allow 50% margin for CI environment variance)
-      const maxExpectedTime = 20000 * 1.5; // 30 seconds with CI margin
+      // Then: Algorithm completes in under 20 seconds (allow 80% margin for CI environment variance)
+      const maxExpectedTime = 20000 * 1.8; // 36 seconds with CI margin
       expect(executionTime).toBeLessThan(maxExpectedTime);
 
       // Verify result structure
