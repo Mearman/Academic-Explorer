@@ -166,11 +166,7 @@ export default tseslint.config([
             "import/no-relative-packages": "error",
             "import/no-cycle": "error",
             "import/no-default-export": "error",
-            "import/order": ["error", {
-                "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
-                "newlines-between": "always",
-                "alphabetize": { "order": "asc", "caseInsensitive": true }
-            }],
+            "import/order": "off", // Disabled - using simple-import-sort instead (better autofix)
 
             // Promise rules (from flat/recommended)
             ...promisePlugin.configs["flat/recommended"].rules,
@@ -275,6 +271,13 @@ export default tseslint.config([
             "n/no-unsupported-features/node-builtins": "off",
             "n/no-missing-import": "off",
             "n/no-missing-require": "off",
+        },
+    },
+    // Disable export sorting for barrelsby-generated index files (they have their own ordering)
+    {
+        files: ["**/index.ts"],
+        rules: {
+            "simple-import-sort/exports": "off",
         },
     },
     // JSONC configuration (using flat/recommended-with-jsonc)
