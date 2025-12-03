@@ -10,7 +10,7 @@ type ColorScheme = ShadcnPalette
 type ColorMode = 'light' | 'dark' | 'auto'
 type BorderRadius = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-interface ThemeConfig {
+export interface ThemeConfig {
   componentLibrary: ComponentLibrary
   colorScheme: ColorScheme
   colorMode: ColorMode
