@@ -50,7 +50,7 @@ export interface UseEntityAutocompleteResult {
  */
 type AutocompleteMethod = (query: string) => Promise<AutocompleteResult[]>;
 
-function getAutocompleteMethod(entityType: EntityType): AutocompleteMethod | null {
+const getAutocompleteMethod = (entityType: EntityType): AutocompleteMethod | null => {
   const methodMap: Partial<Record<EntityType, AutocompleteMethod>> = {
     works: (q) => cachedOpenAlex.client.works.autocomplete(q),
     authors: (q) => cachedOpenAlex.client.authors.autocomplete(q),
@@ -63,16 +63,20 @@ function getAutocompleteMethod(entityType: EntityType): AutocompleteMethod | nul
   };
 
   return methodMap[entityType] ?? null;
-}
+};
 
 /**
  * Shared hook for entity-specific autocomplete pages
+ * @param root0
+ * @param root0.entityType
+ * @param root0.urlSearch
+ * @param root0.routePath
  */
-export function useEntityAutocomplete({
+export const useEntityAutocomplete = ({
   entityType,
   urlSearch,
   routePath,
-}: UseEntityAutocompleteOptions): UseEntityAutocompleteResult {
+}: UseEntityAutocompleteOptions): UseEntityAutocompleteResult => {
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
   const metadata = ENTITY_METADATA[entityType];
 
@@ -122,7 +126,7 @@ export function useEntityAutocomplete({
       return response;
     },
     enabled: query.trim().length > 0,
-    staleTime: 30000,
+    staleTime: 30_000,
   });
 
   // Handle search input changes
@@ -155,4 +159,4 @@ export function useEntityAutocomplete({
     error: error as Error | null,
     filter: urlSearch.filter,
   };
-}
+};

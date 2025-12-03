@@ -3,10 +3,10 @@ import { type Work, type WorkField } from "@bibgraph/types/entities";
 import { EntityDetectionService } from "@bibgraph/utils";
 import { logger } from "@bibgraph/utils/logger";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createLazyFileRoute,useParams, useSearch  } from "@tanstack/react-router";
+import { useEffect,useState } from "react";
 
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
+import { type DetailViewMode,ENTITY_TYPE_CONFIGS,  EntityDetailLayout, ErrorState, LoadingState } from "@/components/entity-detail";
 import { PdfViewer } from "@/components/pdf";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
@@ -17,7 +17,7 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { decodeEntityId } from "@/utils/url-decoding";
 
-function WorkRoute() {
+const WorkRoute = () => {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
@@ -48,11 +48,11 @@ function WorkRoute() {
       if (!decodedWorkId) return;
 
       // Check if this is an external canonical ID that needs processing
-      if (decodedWorkId.match(/^https?:\/\//i) ||
-          decodedWorkId.match(/^doi:/i) ||
-          decodedWorkId.match(/^orcid:/i) ||
-          decodedWorkId.match(/^ror:/i) ||
-          decodedWorkId.match(/^pmid:/i)) {
+      if (/^https?:\/\//i.test(decodedWorkId) ||
+          /^doi:/i.test(decodedWorkId) ||
+          /^orcid:/i.test(decodedWorkId) ||
+          /^ror:/i.test(decodedWorkId) ||
+          /^pmid:/i.test(decodedWorkId)) {
 
         setIsProcessingExternalId(true);
         setExternalIdError(null);
@@ -245,7 +245,7 @@ function WorkRoute() {
       <OutgoingRelationships entityId={normalizedWorkId} entityType="works" />
     </EntityDetailLayout>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/works/$_")({
   component: WorkRoute,

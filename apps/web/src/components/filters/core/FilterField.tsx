@@ -5,8 +5,8 @@
 
 import type { EntityFilters } from "@bibgraph/types";
 import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@bibgraph/utils/ui";
-import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
-import { IconX, IconAlertCircle } from "@tabler/icons-react";
+import { ActionIcon, Alert,Group, Text, Tooltip } from "@mantine/core";
+import { IconAlertCircle,IconX } from "@tabler/icons-react";
 import React, { useCallback, useMemo } from "react";
 
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -18,7 +18,7 @@ import { EntityFilter } from "../fields/EntityFilter";
 import { EnumFilter } from "../fields/EnumFilter";
 import { NumericFilter } from "../fields/NumericFilter";
 import { TextFilter } from "../fields/TextFilter";
-import type { FilterFieldProps, FilterCondition } from "../types/filter-ui";
+import type { FilterCondition,FilterFieldProps } from "../types/filter-ui";
 
 interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
   extends FilterFieldProps<T> {
@@ -27,7 +27,7 @@ interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
   error?: string;
 }
 
-export function FilterField<T extends EntityFilters = EntityFilters>({
+export const FilterField = <T,>({
   condition,
   config,
   onUpdate,
@@ -37,7 +37,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
   showRemoveButton = true,
   showLabel = true,
   error,
-}: FilterFieldWrapperProps<T>) {
+}: FilterFieldWrapperProps<T>) => {
   const { colors } = useThemeColors();
   const prefersReducedMotion = useReducedMotion();
 
@@ -272,7 +272,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
       )}
     </div>
   );
-}
+};
 
 // Export with display name for debugging
 FilterField.displayName = "FilterField";

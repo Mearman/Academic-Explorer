@@ -31,7 +31,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Check for bookmark button (ActionIcon component in header)
@@ -59,7 +59,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/works/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Check for bookmark button (ActionIcon component in header)
@@ -87,13 +87,13 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Find and click bookmark button (look for any button with SVG icon in header)
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Get initial state (should be unbookmarked)
       const initialIcon = bookmarkButton.locator('svg');
@@ -116,13 +116,13 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Find bookmark button (look for any button with SVG icon in header)
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // First bookmark the entity
       await bookmarkButton.click();
@@ -142,13 +142,13 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Find bookmark button (look for any button with SVG icon in header)
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Bookmark the entity
       await bookmarkButton.click();
@@ -162,7 +162,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Verify bookmark button is still in bookmarked state
       const reloadedBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
-      await expect(reloadedBookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(reloadedBookmarkButton).toBeVisible({ timeout: 10_000 });
     });
 
     test("should bookmark multiple entity types", async ({ page }) => {
@@ -170,13 +170,13 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       for (const entity of TEST_ENTITIES.slice(0, 2)) { // Test author and work
         await page.goto(`${BASE_URL}/${entity.type}/${entity.id}`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         // Find and click bookmark button
         const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-        await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+        await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
         await bookmarkButton.click();
         await page.waitForTimeout(1000);
@@ -185,7 +185,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Navigate to bookmarks page to verify
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for bookmarks to load
@@ -193,7 +193,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Check that we have bookmarks
       const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
-      await expect(bookmarkCards.first()).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkCards.first()).toBeVisible({ timeout: 10_000 });
     });
   });
 
@@ -201,7 +201,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
     test("should load bookmarks page", async ({ page }) => {
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Check page loaded - wait for either loading state or final state
@@ -210,7 +210,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
         const hasBookmarksContent = document.body.innerText.includes('No bookmarks') ||
                                    document.body.innerText.includes('Search bookmarks');
         return hasBookmarksContent || !hasLoadingText;
-      }, {}, { timeout: 10000 });
+      }, {}, { timeout: 10_000 });
 
       // Verify the page has loaded successfully (no 404 or error)
       expect(page.url()).toContain('#/bookmarks');
@@ -230,19 +230,19 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // First bookmark an entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
       await page.waitForTimeout(1000);
 
       // Then go to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for bookmarks to load
@@ -250,7 +250,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       // Should see bookmarked entity
       const bookmarkContent = page.locator('.mantine-Card-root').first();
-      await expect(bookmarkContent).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkContent).toBeVisible({ timeout: 10_000 });
     });
 
     test("should allow navigation from bookmark to entity", async ({ page }) => {
@@ -260,20 +260,20 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Navigate to bookmarks page and verify it loads
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
 
       // Verify we're on the bookmarks page (look for the main page header)
       const bookmarksHeader = page.locator('main').getByText('Bookmarks', { exact: true });
-      await expect(bookmarksHeader).toBeVisible({ timeout: 10000 });
+      await expect(bookmarksHeader).toBeVisible({ timeout: 10_000 });
 
       // Simulate bookmark navigation by testing the hash navigation functionality
       // Navigate to the author page directly
       await page.goto(`${BASE_URL}/#/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -303,7 +303,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Go to bookmarks page (use hash routing)
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Should show empty state (look for any text indicating no bookmarks)
@@ -325,21 +325,21 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Look for bookmark button on search page
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
 
-      if (await bookmarkButton.isVisible({ timeout: 10000 })) {
+      if (await bookmarkButton.isVisible({ timeout: 10_000 })) {
         await bookmarkButton.click();
         await page.waitForTimeout(1000);
 
         // Go to bookmarks to verify
         await page.goto(`${BASE_URL}/#/bookmarks`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(2000);
@@ -359,7 +359,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Listen for console errors
@@ -370,7 +370,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
 
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Try bookmarking multiple times rapidly
       for (let i = 0; i < 3; i++) {
@@ -391,19 +391,19 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Bookmark an entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       const buttons = page.locator('button').filter({ has: page.locator('svg') });
       const bookmarkButton = buttons.first();
-      await expect(bookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
       await bookmarkButton.click();
       await page.waitForTimeout(1000);
 
       // Navigate to different pages
       await page.goto(`${BASE_URL}/works/W2741809807`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(1000);
@@ -411,12 +411,12 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       // Go back to original entity
       await page.goto(`${BASE_URL}/authors/${entity.id}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Should still see bookmark button and bookmarked state
       const returnBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
-      await expect(returnBookmarkButton).toBeVisible({ timeout: 10000 });
+      await expect(returnBookmarkButton).toBeVisible({ timeout: 10_000 });
     });
   });
 });

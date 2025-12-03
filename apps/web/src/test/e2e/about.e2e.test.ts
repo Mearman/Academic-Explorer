@@ -3,12 +3,11 @@
  *
  * Tests the About page functionality including content display,
  * technology stack information, and OpenAlex attribution.
- *
  * @see CLAUDE.md - E2E Testing Patterns section
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
@@ -16,13 +15,13 @@ import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
 const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("@utility About Page", () => {
-	test.setTimeout(30000);
+	test.setTimeout(30_000);
 
 	test.beforeEach(async ({ page }) => {
 		// Navigate to About page
 		await page.goto(`${BASE_URL}/#/about`, {
 			waitUntil: "domcontentloaded",
-			timeout: 15000,
+			timeout: 15_000,
 		});
 		await waitForAppReady(page);
 	});
@@ -163,7 +162,7 @@ test.describe("@utility About Page", () => {
 		// Navigate to home first
 		await page.goto(BASE_URL, {
 			waitUntil: "domcontentloaded",
-			timeout: 15000,
+			timeout: 15_000,
 		});
 		await waitForAppReady(page);
 
@@ -184,7 +183,7 @@ test.describe("@utility About Page", () => {
 		// Navigate to About page
 		await page.goto(`${BASE_URL}/#/about`, {
 			waitUntil: "domcontentloaded",
-			timeout: 15000,
+			timeout: 15_000,
 		});
 		await waitForAppReady(page);
 

@@ -1,6 +1,6 @@
 import { logger } from "@bibgraph/utils/logger";
-import { Container, Alert, Text, Button, Stack, Group } from "@mantine/core";
-import { IconAlertTriangle, IconRefresh, IconHome } from "@tabler/icons-react";
+import { Alert, Button, Container, Group,Stack, Text } from "@mantine/core";
+import { IconAlertTriangle, IconHome,IconRefresh } from "@tabler/icons-react";
 import { ErrorComponentProps } from "@tanstack/react-router";
 import React from "react";
 
@@ -19,6 +19,10 @@ declare global {
  * Router Error Component
  * Handles TanStack Router errors at the route level
  * This prevents the router from intercepting errors that should go to GlobalErrorBoundary
+ * @param root0
+ * @param root0.error
+ * @param root0.reset
+ * @param root0.info
  */
 export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
   error,
@@ -59,7 +63,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
   }, [error, info]);
 
   // Utility function for user agent grouping
-  function getUserAgentGroup(): string {
+  const getUserAgentGroup = (): string => {
     if (typeof navigator === 'undefined') return 'unknown';
     const userAgent = navigator.userAgent.toLowerCase();
     if (userAgent.includes('chrome')) return 'chrome';
@@ -67,7 +71,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
     if (userAgent.includes('safari')) return 'safari';
     if (userAgent.includes('edge')) return 'edge';
     return 'other';
-  }
+  };
 
   // For context/hook errors and React Flow errors, throw to let GlobalErrorBoundary handle them
   if (

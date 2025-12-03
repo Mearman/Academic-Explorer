@@ -3,7 +3,7 @@
  * Tests what actually works rather than ideal navigation patterns
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Catalogue Realistic Functionality Tests", () => {
   test("should have accessible catalogue components in the application", async ({ page }) => {
@@ -50,8 +50,8 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
     const catalogueServicesAvailable = await page.evaluate(() => {
       try {
         // Check various ways the catalogue might be exposed
-        return typeof (window as any).catalogueService !== 'undefined' ||
-               typeof (window as any).useCatalogue !== 'undefined' ||
+        return (window as any).catalogueService !== undefined ||
+               (window as any).useCatalogue !== undefined ||
                document.body.textContent.includes('Catalogue') ||
                document.body.textContent.includes('Create New List');
       } catch {
@@ -119,7 +119,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
     const compressionAvailable = await page.evaluate(() => {
       try {
         // Check if pako (compression library) is available globally or in modules
-        return typeof (window as any).pako !== 'undefined' ||
+        return (window as any).pako !== undefined ||
                document.querySelector('script[src*="pako"]') !== null ||
                document.body.textContent.includes('compression');
       } catch {

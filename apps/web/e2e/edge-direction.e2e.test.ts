@@ -11,13 +11,14 @@
  * - Tasks: T011-T016
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 /**
  * Helper to extract graph data from page
  * Assumes graph data is exposed via window object or can be extracted from DOM
+ * @param page
  */
-async function getGraphEdges(page: any): Promise<any[]> {
+const getGraphEdges = async (page: any): Promise<any[]> => {
   // Try to get graph data from window object
   const edges = await page.evaluate(() => {
     // @ts-expect-error accessing custom window property in test environment
@@ -35,7 +36,7 @@ async function getGraphEdges(page: any): Promise<any[]> {
   // Fallback: Look for data attributes or other DOM indicators
   // This will need to be implemented based on actual graph rendering
   return [];
-}
+};
 
 test.describe('Edge Direction - Work → Author (Authorship)', () => {
   test('should have Work as source and Author as target for authorship edges', async ({ page }) => {

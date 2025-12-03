@@ -60,15 +60,22 @@ const ENTITY_AUTOCOMPLETE_ROUTES: EntityType[] = [
 
 /**
  * Autocomplete entity filter with integrated navigation
+ * @param root0
+ * @param root0.query
+ * @param root0.selectedTypes
+ * @param root0.onSelectionChange
+ * @param root0.inline
+ * @param root0.title
+ * @param root0.showButtons
  */
-export function AutocompleteEntityFilter({
+export const AutocompleteEntityFilter = ({
   query,
   selectedTypes,
   onSelectionChange,
   inline = false,
   title = "Filter by Entity Type",
   showButtons = true,
-}: AutocompleteEntityFilterProps) {
+}: AutocompleteEntityFilterProps) => {
   const handleChange = useCallback(
     (types: EntityType[]) => {
       // If all types selected, go to general autocomplete (default view)
@@ -133,4 +140,4 @@ export function AutocompleteEntityFilter({
       showButtons={showButtons}
     />
   );
-}
+};

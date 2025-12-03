@@ -3,8 +3,8 @@
  * Handles storage state persistence and HAR caching for faster e2e tests
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 import { chromium, FullConfig } from "@playwright/test";
 
@@ -21,7 +21,7 @@ const HAR_CACHE_DIR = path.join(
   "test-results/har-cache"
 );
 
-async function globalSetup(config: FullConfig) {
+const globalSetup = async (config: FullConfig) => {
   // START MSW SERVER FIRST - must intercept requests before any browser contexts created
   startMSWServer();
 
@@ -45,11 +45,11 @@ async function globalSetup(config: FullConfig) {
     process.cwd(),
     "public/data/openalex"
   );
-  if (!fs.existsSync(FILESYSTEM_CACHE_DIR)) {
+  if (fs.existsSync(FILESYSTEM_CACHE_DIR)) {
+    console.log(`✅ Filesystem cache directory exists: ${FILESYSTEM_CACHE_DIR}`);
+  } else {
     fs.mkdirSync(FILESYSTEM_CACHE_DIR, { recursive: true });
     console.log(`✅ Created filesystem cache directory: ${FILESYSTEM_CACHE_DIR}`);
-  } else {
-    console.log(`✅ Filesystem cache directory exists: ${FILESYSTEM_CACHE_DIR}`);
   }
 
   // Check if we should warm up the cache
@@ -79,9 +79,9 @@ async function globalSetup(config: FullConfig) {
 
       // Add timeout protection for the entire page load process
       await Promise.race([
-        page.goto(baseURL, { waitUntil: "networkidle", timeout: 30000 }),
+        page.goto(baseURL, { waitUntil: "networkidle", timeout: 30_000 }),
         new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new Error("Page load timeout")), 30000)
+          setTimeout(() => reject(new Error("Page load timeout")), 30_000)
         )
       ]);
 
@@ -101,7 +101,7 @@ async function globalSetup(config: FullConfig) {
           indexedDB: true // Enable IndexedDB state persistence
         }),
         new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new Error("Storage state save timeout")), 10000)
+          setTimeout(() => reject(new Error("Storage state save timeout")), 10_000)
         )
       ]);
       console.log(`✅ Storage state saved with IndexedDB support: ${STORAGE_STATE_PATH}`);
@@ -195,7 +195,7 @@ async function globalSetup(config: FullConfig) {
               request.onsuccess = () => {
                 clearTimeout(timeout);
                 const db = request.result;
-                const objectStoreNames = Array.from(db.objectStoreNames);
+                const objectStoreNames = [...db.objectStoreNames];
                 db.close();
                 resolve({
                   indexedDBStores: objectStoreNames,
@@ -260,7 +260,7 @@ async function globalSetup(config: FullConfig) {
   console.log("✨ Global setup complete!");
   console.log(`   Storage state: ${STORAGE_STATE_PATH}`);
   console.log(`   HAR cache: ${HAR_CACHE_DIR}`);
-}
+};
 
 // eslint-disable-next-line import/no-default-export -- Playwright convention
 export default globalSetup;

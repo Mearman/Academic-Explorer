@@ -1,7 +1,6 @@
 /**
  * Core-Periphery Decomposition Algorithm Item
  * Identifies densely connected core nodes and sparsely connected periphery nodes
- *
  * @module components/algorithms/items/CorePeripheryItem
  */
 
@@ -20,11 +19,11 @@ import { useCorePeriphery } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function CorePeripheryItem({
+export const CorePeripheryItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const [coreThreshold, setCoreThreshold] = useState<number>(0.7);
   const corePeriphery = useCorePeriphery(nodes, edges, coreThreshold);
 
@@ -59,7 +58,7 @@ export function CorePeripheryItem({
             <Text size="sm" c="dimmed">Fit Quality</Text>
             <Tooltip label="Correlation with ideal core-periphery structure (-1 to 1)">
               <Badge
-                color={corePeriphery.fitQuality > 0.5 ? 'green' : corePeriphery.fitQuality > 0 ? 'yellow' : 'red'}
+                color={corePeriphery.fitQuality > 0.5 ? 'green' : (corePeriphery.fitQuality > 0 ? 'yellow' : 'red')}
                 variant="light"
               >
                 {corePeriphery.fitQuality.toFixed(3)}
@@ -92,4 +91,4 @@ export function CorePeripheryItem({
       )}
     </Stack>
   );
-}
+};

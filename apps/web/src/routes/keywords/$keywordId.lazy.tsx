@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { EntityDetailLayout,  type DetailViewMode } from "@/components/entity-detail/EntityDetailLayout";
+import { type DetailViewMode,EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayout";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
@@ -14,7 +14,7 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { decodeEntityId } from "@/utils/url-decoding";
 
-function KeywordRoute() {
+const KeywordRoute = () => {
   const { keywordId: rawKeywordId } = useParams({ from: "/keywords/$keywordId" });
   const { select: selectParam } = useSearch({ from: "/keywords/$keywordId" });
   const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
@@ -82,7 +82,7 @@ function KeywordRoute() {
       <OutgoingRelationships entityId={keywordId || ""} entityType="keywords" />
     </EntityDetailLayout>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/keywords/$keywordId")({
   component: KeywordRoute,

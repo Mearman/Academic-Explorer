@@ -16,7 +16,7 @@ const conceptsColumns: ColumnConfig[] = [
   { key: "level", header: "Level" },
 ];
 
-function ConceptsListRoute() {
+const ConceptsListRoute = () => {
   const search = useSearch({ from: "/concepts/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -42,7 +42,7 @@ function ConceptsListRoute() {
       />
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/concepts/")({
   component: ConceptsListRoute,

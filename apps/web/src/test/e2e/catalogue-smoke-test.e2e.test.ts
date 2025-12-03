@@ -3,7 +3,7 @@
  * This test just verifies the catalogue page loads and basic components exist
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Catalogue Smoke Test", () => {
   test("should load catalogue page directly", async ({ page }) => {
@@ -13,10 +13,10 @@ test.describe("Catalogue Smoke Test", () => {
 
     // Wait for catalogue to load (any of these indicators)
     await Promise.race([
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 }),
-      page.waitForSelector('text="Create New List"', { timeout: 10000 }),
-      page.waitForSelector('[data-testid="catalogue-manager"]', { timeout: 10000 }),
-      page.waitForSelector('.mantine-Tabs-panel', { timeout: 10000 })
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 }),
+      page.waitForSelector('text="Create New List"', { timeout: 10_000 }),
+      page.waitForSelector('[data-testid="catalogue-manager"]', { timeout: 10_000 }),
+      page.waitForSelector('.mantine-Tabs-panel', { timeout: 10_000 })
     ]);
 
     // Check URL is correct
@@ -34,8 +34,8 @@ test.describe("Catalogue Smoke Test", () => {
 
     // Wait for page to load
     await Promise.race([
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 }),
-      page.waitForSelector('text="Create New List"', { timeout: 10000 })
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 }),
+      page.waitForSelector('text="Create New List"', { timeout: 10_000 })
     ]);
 
     // Look for create list button (try multiple selectors)
@@ -61,9 +61,9 @@ test.describe("Catalogue Smoke Test", () => {
 
     // Wait for page to load
     await Promise.race([
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 }),
-      page.waitForSelector('text="Lists"', { timeout: 10000 }),
-      page.waitForSelector('text="Bibliographies"', { timeout: 10000 })
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 }),
+      page.waitForSelector('text="Lists"', { timeout: 10_000 }),
+      page.waitForSelector('text="Bibliographies"', { timeout: 10_000 })
     ]);
 
     // Check if we can access catalogue services via browser context
@@ -71,7 +71,7 @@ test.describe("Catalogue Smoke Test", () => {
     await page.evaluate(() => {
       try {
         // Check if catalogueService is available on window
-        return typeof (window as any).catalogueService !== 'undefined';
+        return (window as any).catalogueService !== undefined;
       } catch {
         return false;
       }

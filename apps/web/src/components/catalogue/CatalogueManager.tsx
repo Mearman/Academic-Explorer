@@ -6,35 +6,35 @@
 import { logger } from "@bibgraph/utils";
 import { SPECIAL_LIST_IDS } from "@bibgraph/utils/storage/catalogue-db";
 import {
+  Badge,
+  Button,
+  Card,
   Container,
   Group,
-  Title,
-  Tabs,
-  Button,
   Modal,
-  Stack,
-  Text,
-  Badge,
-  TextInput,
-  Card,
-  SimpleGrid,
   Paper,
+  SimpleGrid,
+  Stack,
   Switch,
+  Tabs,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import {
-  IconPlus,
-  IconShare,
-  IconDownload,
-  IconUpload,
-  IconList,
   IconBook,
-  IconSearch,
-  IconEdit,
   IconDatabase,
+  IconDownload,
+  IconEdit,
+  IconList,
+  IconPlus,
+  IconSearch,
+  IconShare,
+  IconUpload,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
-import React, { useState, useEffect } from "react";
+import React, { useEffect,useState } from "react";
 
 import { CacheTierLists } from "@/components/catalogue/CacheTierLists";
 import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
@@ -53,7 +53,7 @@ interface CatalogueManagerProps {
   initialListId?: string; // Initial list to select (from sidebar navigation)
 }
 
-export function CatalogueManager({ onNavigate, shareData, initialListId }: CatalogueManagerProps) {
+export const CatalogueManager = ({ onNavigate, shareData, initialListId }: CatalogueManagerProps) => {
   const {
     lists,
     selectedList,
@@ -340,8 +340,8 @@ export function CatalogueManager({ onNavigate, shareData, initialListId }: Catal
                       // Trigger edit via the list component
                       // eslint-disable-next-line custom/no-deprecated -- querySelectorAll is not deprecated, false positive
                       const buttons = document.querySelectorAll<HTMLElement>('[data-testid^="edit-list-"]');
-                      const editButton = Array.from(buttons).find(button =>
-                        button.getAttribute('data-testid') === `edit-list-${selectedList.id}`
+                      const editButton = [...buttons].find(button =>
+                        button.dataset.testid === `edit-list-${selectedList.id}`
                       );
                       editButton?.click();
                     }
@@ -494,4 +494,4 @@ export function CatalogueManager({ onNavigate, shareData, initialListId }: Catal
       </Stack>
     </Container>
   );
-}
+};

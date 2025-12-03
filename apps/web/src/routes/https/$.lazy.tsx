@@ -2,10 +2,10 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
   useSearch,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -14,10 +14,10 @@ import { useEffect } from "react";
  * @param urlString Full URL string with potential query parameters
  * @returns Object with path and search params
  */
-function parseUrlPathAndSearch(urlString: string): {
+const parseUrlPathAndSearch = (urlString: string): {
   path: string;
   search: Record<string, string | number>;
-} {
+} => {
   try {
     const url = new URL(urlString);
     const search: Record<string, string | number> = {};
@@ -37,9 +37,9 @@ function parseUrlPathAndSearch(urlString: string): {
     // If URL parsing fails, return empty
     return { path: "", search: {} };
   }
-}
+};
 
-function HttpsRoute() {
+const HttpsRoute = () => {
   const { _splat: splat } = useParams({ from: "/https/$" });
   const externalId = splat || "";
   const routeSearch = useSearch({ from: "/https/$" });
@@ -53,8 +53,8 @@ function HttpsRoute() {
 
         // Fix collapsed double slashes in protocol (https:/ -> https://)
         if (
-          decodedId.match(/^https?:\//i) &&
-          !decodedId.match(/^https?:\/\//i)
+          /^https?:\//i.test(decodedId) &&
+          !/^https?:\/\//i.test(decodedId)
         ) {
           decodedId = decodedId.replace(/^(https?:\/?)/, "$1/");
           logger.debug(
@@ -66,7 +66,7 @@ function HttpsRoute() {
         }
 
         // Check if this is a full URL that should be handled
-        if (decodedId.match(/^https?:\/\//i)) {
+        if (/^https?:\/\//i.test(decodedId)) {
           // Parse the URL to extract query parameters
           const { search: urlSearch } = parseUrlPathAndSearch(decodedId);
 
@@ -144,7 +144,7 @@ function HttpsRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/https/$")({
   component: HttpsRoute,

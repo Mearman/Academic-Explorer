@@ -5,8 +5,8 @@
 
 import type {
   ExpansionSettings,
-  SortCriteria,
   FilterCriteria,
+  SortCriteria,
 } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 
@@ -19,21 +19,23 @@ export interface OpenAlexQueryParams {
 
 /**
  * Type guard to check if a value is an array with exactly 2 elements
+ * @param value
  */
-function isTwoElementArray(value: unknown): value is [unknown, unknown] {
-  return Array.isArray(value) && value.length === 2;
-}
+const isTwoElementArray = (value: unknown): value is [unknown, unknown] => Array.isArray(value) && value.length === 2;
 
 /**
  * Build OpenAlex query parameters from expansion settings
+ * @param root0
+ * @param root0.settings
+ * @param root0.baseSelect
  */
-function buildQueryParams({
+const buildQueryParams = ({
   settings,
   baseSelect,
 }: {
   settings: ExpansionSettings;
   baseSelect?: string[];
-}): OpenAlexQueryParams {
+}): OpenAlexQueryParams => {
   const params: OpenAlexQueryParams = {};
 
   // Always use maximum per_page for efficiency, handle total limit separately
@@ -67,13 +69,14 @@ function buildQueryParams({
   );
 
   return params;
-}
+};
 
 /**
  * Build sort string for OpenAlex API
  * Format: "property1:direction1,property2:direction2"
+ * @param sorts
  */
-function buildSortString(sorts: SortCriteria[]): string | undefined {
+const buildSortString = (sorts: SortCriteria[]): string | undefined => {
   if (sorts.length === 0) {
     return undefined;
   }
@@ -85,13 +88,14 @@ function buildSortString(sorts: SortCriteria[]): string | undefined {
   );
 
   return sortParts.length > 0 ? sortParts.join(",") : undefined;
-}
+};
 
 /**
  * Build filter string for OpenAlex API
  * Format: "property1:operator1:value1,property2:operator2:value2"
+ * @param filters
  */
-function buildFilterString(filters: FilterCriteria[]): string | undefined {
+const buildFilterString = (filters: FilterCriteria[]): string | undefined => {
   const enabledFilters = filters.filter(
     (filter) => filter.enabled && filter.property,
   );
@@ -105,12 +109,13 @@ function buildFilterString(filters: FilterCriteria[]): string | undefined {
     .filter((part) => part !== null);
 
   return filterParts.length > 0 ? filterParts.join(",") : undefined;
-}
+};
 
 /**
  * Build a single filter expression
+ * @param filter
  */
-function buildSingleFilter(filter: FilterCriteria): string | null {
+const buildSingleFilter = (filter: FilterCriteria): string | null => {
   const { property, operator, value } = filter;
 
   try {
@@ -185,19 +190,20 @@ function buildSingleFilter(filter: FilterCriteria): string | null {
     );
     return null;
   }
-}
+};
 
 /**
  * Format a value for use in OpenAlex filters
+ * @param value
  */
-function formatValue(value: unknown): string {
+const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) {
     return "";
   }
 
   if (typeof value === "string") {
     // Escape special characters and spaces
-    return value.replace(/[,:|]/g, "\\$&");
+    return value.replaceAll(/[,:|]/g, String.raw`\$&`);
   }
 
   if (typeof value === "boolean") {
@@ -228,33 +234,33 @@ function formatValue(value: unknown): string {
 
   // Fallback for any other type - return empty string to avoid [object Object]
   return "";
-}
+};
 
 // Helper functions to reduce cognitive complexity
-function validateLimit({
+const validateLimit = ({
   settings,
   errors,
 }: {
   settings: ExpansionSettings;
   errors: string[];
-}): void {
+}): void => {
   if (settings.limit !== undefined) {
     if (settings.limit < 0) {
       errors.push("Limit must be 0 (unlimited) or greater");
     }
-    if (settings.limit > 10000) {
+    if (settings.limit > 10_000) {
       errors.push("Limit cannot exceed 10000 for performance reasons");
     }
   }
-}
+};
 
-function validateSorts({
+const validateSorts = ({
   settings,
   errors,
 }: {
   settings: ExpansionSettings;
   errors: string[];
-}): void {
+}): void => {
   for (const sort of settings.sorts ?? []) {
     if (!sort.property) {
       errors.push("Sort criteria must have a property");
@@ -274,15 +280,15 @@ function validateSorts({
   if (sortProperties.length !== uniqueSortProperties.size) {
     errors.push("Duplicate sort properties are not allowed");
   }
-}
+};
 
-function validateFilters({
+const validateFilters = ({
   settings,
   errors,
 }: {
   settings: ExpansionSettings;
   errors: string[];
-}): void {
+}): void => {
   for (const filter of settings.filters ?? []) {
     if (!filter.property) {
       errors.push("Filter criteria must have a property");
@@ -308,15 +314,16 @@ function validateFilters({
       );
     }
   }
-}
+};
 
 /**
  * Validate expansion settings for OpenAlex compatibility
+ * @param settings
  */
-function validateSettings(settings: ExpansionSettings): {
+const validateSettings = (settings: ExpansionSettings): {
   valid: boolean;
   errors: string[];
-} {
+} => {
   const errors: string[] = [];
 
   validateLimit({ settings, errors });
@@ -327,12 +334,13 @@ function validateSettings(settings: ExpansionSettings): {
     valid: errors.length === 0,
     errors,
   };
-}
+};
 
 /**
  * Get example query string for preview
+ * @param settings
  */
-function getQueryPreview(settings: ExpansionSettings): string {
+const getQueryPreview = (settings: ExpansionSettings): string => {
   const params = buildQueryParams({ settings });
   const parts: string[] = [];
 
@@ -347,18 +355,21 @@ function getQueryPreview(settings: ExpansionSettings): string {
   }
 
   return parts.length > 0 ? `?${parts.join("&")}` : "";
-}
+};
 
 /**
  * Merge additional filters with expansion settings filters
+ * @param root0
+ * @param root0.baseFilters
+ * @param root0.additionalFilters
  */
-function mergeFilters({
+const mergeFilters = ({
   baseFilters,
   additionalFilters,
 }: {
   baseFilters: string | undefined;
   additionalFilters: FilterCriteria[];
-}): string | undefined {
+}): string | undefined => {
   const additionalFilterString = buildFilterString(additionalFilters);
 
   if (!baseFilters && !additionalFilterString) {
@@ -374,34 +385,38 @@ function mergeFilters({
   }
 
   return `${baseFilters},${additionalFilterString}`;
-}
+};
 
 /**
  * Create a copy of settings with modified filters (useful for context-specific queries)
+ * @param root0
+ * @param root0.settings
+ * @param root0.additionalFilters
  */
-function withAdditionalFilters({
+const withAdditionalFilters = ({
   settings,
   additionalFilters,
 }: {
   settings: ExpansionSettings;
   additionalFilters: FilterCriteria[];
-}): ExpansionSettings {
-  return {
+}): ExpansionSettings => ({
     ...settings,
     filters: [...(settings.filters ?? []), ...additionalFilters],
-  };
-}
+  });
 
 /**
  * Create a copy of settings with modified sort (useful for fallback sorting)
+ * @param root0
+ * @param root0.settings
+ * @param root0.fallbackSort
  */
-function withFallbackSort({
+const withFallbackSort = ({
   settings,
   fallbackSort,
 }: {
   settings: ExpansionSettings;
   fallbackSort: SortCriteria;
-}): ExpansionSettings {
+}): ExpansionSettings => {
   // Only add fallback if no sorts are defined
   if ((settings.sorts ?? []).length > 0) {
     return settings;
@@ -411,7 +426,7 @@ function withFallbackSort({
     ...settings,
     sorts: [{ ...fallbackSort, priority: 1 }],
   };
-}
+};
 
 // Export object with all functions
 export const ExpansionQueryBuilder = {

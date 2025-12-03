@@ -1,5 +1,5 @@
-import { Container, Stack, Button, Alert, Text, Group } from "@mantine/core";
-import { IconBug, IconAlertTriangle } from "@tabler/icons-react";
+import { Alert, Button, Container, Group,Stack, Text } from "@mantine/core";
+import { IconAlertTriangle,IconBug } from "@tabler/icons-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 
@@ -8,7 +8,7 @@ import React, { useState } from "react";
  * Used to verify that GlobalErrorBoundary is working correctly
  * Only available in development mode
  */
-function ErrorTestComponent() {
+const ErrorTestComponent = () => {
   const [shouldThrow, setShouldThrow] = useState(false);
 
   // Throw an error when shouldThrow is true
@@ -102,7 +102,7 @@ function ErrorTestComponent() {
       </Stack>
     </Container>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/error-test")({
   component: ErrorTestComponent,

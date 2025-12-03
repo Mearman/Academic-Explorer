@@ -2,10 +2,10 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
+  useNavigate,
   useParams,
   useSearch,
-  useNavigate,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -15,13 +15,10 @@ import { useEffect } from "react";
  * @param additionalSearch Additional search params to merge (from routeSearch)
  * @returns Object with path and search params
  */
-function parsePathAndSearch(
-  pathWithQuery: string,
-  additionalSearch?: Record<string, unknown>,
-): {
+const parsePathAndSearch = (pathWithQuery: string, additionalSearch?: Record<string, unknown>): {
   path: string;
   search: Record<string, string | number>;
-} {
+} => {
   const [path, queryString] = pathWithQuery.split("?");
   const search: Record<string, string | number> = {};
 
@@ -51,9 +48,9 @@ function parsePathAndSearch(
   }
 
   return { path, search };
-}
+};
 
-function ApiOpenAlexRoute() {
+const ApiOpenAlexRoute = () => {
   const { _splat: splat } = useParams({ from: "/api-openalex-org/$" });
   const externalId = splat || "";
   const routeSearch = useSearch({ from: "/api-openalex-org/$" });
@@ -254,7 +251,7 @@ function ApiOpenAlexRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/api-openalex-org/$")({
   component: ApiOpenAlexRoute,

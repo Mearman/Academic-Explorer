@@ -14,11 +14,11 @@ import {
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute,useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 
-function TextAnalysisRoute() {
+const TextAnalysisRoute = () => {
   const urlSearch = useSearch({ from: "/text/" });
   const [title, setTitle] = useState(urlSearch.title || "");
 
@@ -61,7 +61,7 @@ function TextAnalysisRoute() {
       return concepts;
     },
     enabled: title.trim().length > 0,
-    staleTime: 60000,
+    staleTime: 60_000,
   });
 
   const handleTitleChange = (value: string) => {
@@ -147,7 +147,7 @@ function TextAnalysisRoute() {
         {concepts.length > 0 && (
           <Stack gap="md">
             <Text size="sm" c="dimmed">
-              Found {concepts.length} concept{concepts.length !== 1 ? "s" : ""}
+              Found {concepts.length} concept{concepts.length === 1 ? "" : "s"}
             </Text>
             {concepts.map((concept) => (
               <Card key={concept.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
@@ -188,7 +188,7 @@ function TextAnalysisRoute() {
       </Stack>
     </Container>
   );
-}
+};
 export const Route = createLazyFileRoute("/text/")({
   component: TextAnalysisRoute,
 });

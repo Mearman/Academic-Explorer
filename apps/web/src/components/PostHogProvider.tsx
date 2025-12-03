@@ -27,10 +27,10 @@ import {
  * - Cookieless mode (no consent required)
  * - Manual event capture for academic workflow analytics
  * - Anonymous user identification
- *
  * @param children - React components that will have access to PostHog analytics
+ * @param children.children
  */
-export function PostHogProvider({ children }: { children: ReactNode }) {
+export const PostHogProvider = ({ children }: { children: ReactNode }) => {
   // Only initialize PostHog if enabled and configured
   if (!POSTHOG_ENABLED || !shouldInitializePostHog()) {
     if (import.meta.env.DEV) {
@@ -56,7 +56,7 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
     }
     return <>{children}</>
   }
-}
+};
 
 // Re-export the official usePostHog hook for convenience
 

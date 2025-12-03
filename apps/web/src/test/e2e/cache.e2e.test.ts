@@ -6,19 +6,18 @@
  * - Placeholder content display (current state)
  * - Navigation to cache page
  * - CLI tools suggestion visibility
- *
  * @category E2E
  * @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { BaseSPAPageObject } from "@/test/page-objects/BaseSPAPageObject";
 
 test.describe("@utility Cache Page", () => {
-	test.setTimeout(30000);
+	test.setTimeout(30_000);
 
 	let cachePage: BaseSPAPageObject;
 

@@ -14,7 +14,7 @@ interface DateFilterProps {
   fieldId: string;
 }
 
-export function DateFilter({
+export const DateFilter = ({
   value,
   operator,
   config,
@@ -23,7 +23,7 @@ export function DateFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: DateFilterProps) {
+}: DateFilterProps) => {
   const isRange = config.type === "dateRange";
 
   const handleValueChange = React.useCallback((newValue: string) => {
@@ -80,4 +80,4 @@ export function DateFilter({
       )}
     </BaseFilter>
   );
-}
+};

@@ -1,7 +1,6 @@
 /**
  * Community Detection Algorithm Item
  * Detects communities using various clustering algorithms
- *
  * @module components/algorithms/items/CommunityDetectionItem
  */
 
@@ -12,17 +11,17 @@ import {
   List,
   NumberInput,
   Progress,
+  rem,
   Select,
   Stack,
   Text,
   ThemeIcon,
   Tooltip,
-  rem,
 } from '@mantine/core';
 import { IconCircleDot } from '@tabler/icons-react';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useEffect,useMemo, useState } from 'react';
 
-import { useCommunityDetection, type CommunityDetectionOptions } from '@/hooks/use-graph-algorithms';
+import { type CommunityDetectionOptions,useCommunityDetection } from '@/hooks/use-graph-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
 
 import type { CommunityAlgorithmProps } from '../types';
@@ -39,16 +38,16 @@ const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
   hierarchical: 'Agglomerative clustering that builds a dendrogram. Supports different linkage methods.',
 };
 
-export function CommunityDetectionItem({
+export const CommunityDetectionItem = ({
   nodes,
   edges,
   onHighlightNodes,
   onSelectCommunity,
   onCommunitiesDetected,
-}: CommunityAlgorithmProps) {
+}: CommunityAlgorithmProps) => {
   // Community detection state
   const [communityAlgorithm, setCommunityAlgorithm] = useState<ClusteringAlgorithm>('louvain');
-  const [resolution, setResolution] = useState<number>(1.0);
+  const [resolution, setResolution] = useState<number>(1);
   const [numClusters, setNumClusters] = useState<number>(5);
   const [linkage, setLinkage] = useState<'single' | 'complete' | 'average'>('average');
 
@@ -148,9 +147,9 @@ export function CommunityDetectionItem({
           label="Resolution"
           description="Higher = more communities, Lower = fewer communities"
           value={resolution}
-          onChange={(value) => setResolution(typeof value === 'number' ? value : 1.0)}
+          onChange={(value) => setResolution(typeof value === 'number' ? value : 1)}
           min={0.1}
-          max={3.0}
+          max={3}
           step={0.1}
           decimalScale={2}
         />
@@ -190,7 +189,7 @@ export function CommunityDetectionItem({
           <Text size="sm" c="dimmed">Modularity Score</Text>
           <Tooltip label="Quality metric (higher is better, 0.3-0.7 typical)">
             <Badge
-              color={modularity > 0.4 ? 'green' : modularity > 0.2 ? 'yellow' : 'red'}
+              color={modularity > 0.4 ? 'green' : (modularity > 0.2 ? 'yellow' : 'red')}
               variant="light"
             >
               {modularity.toFixed(4)}
@@ -244,4 +243,4 @@ export function CommunityDetectionItem({
       )}
     </Stack>
   );
-}
+};

@@ -7,13 +7,12 @@
  * - ENTITY_TYPE_CONFIGS
  *
  * This ensures complete entity type coverage after migration.
- *
  * @see specs/019-full-entity-support/spec.md (User Story 3)
  */
 
 import { cachedOpenAlex } from '@bibgraph/client';
 import type { EntityType } from '@bibgraph/types';
-import { describe, it, expect } from 'vitest';
+import { describe, expect,it } from 'vitest';
 
 import { ENTITY_TYPE_CONFIGS } from '@/components/entity-detail/EntityTypeConfig';
 

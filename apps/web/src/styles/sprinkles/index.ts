@@ -4,48 +4,48 @@
  */
 
 // Core sprinkles configuration
-export { sprinkles } from './config';
 export type { Sprinkles } from './config';
+export { sprinkles } from './config';
 
 // Dynamic theming integration
-export {
-  createDynamicSpacing,
-  createDynamicBorderRadius,
-  interactiveStates,
-  colorSchemes,
-  createCardStyles,
-  createButtonStyles,
-  applyDynamicTheme,
-} from './dynamic-theme';
 export type {
+  ButtonProps,
+  CardProps,
   DynamicThemeConfig,
   InteractiveStateProps,
-  CardProps,
-  ButtonProps,
+} from './dynamic-theme';
+export {
+  applyDynamicTheme,
+  colorSchemes,
+  createButtonStyles,
+  createCardStyles,
+  createDynamicBorderRadius,
+  createDynamicSpacing,
+  interactiveStates,
 } from './dynamic-theme';
 
 // Runtime theme application
-export {
-  applyRuntimeTheme,
-  applyColorModeTheme,
-  applyInteractiveProperties,
-  initializeRuntimeTheme,
-  updateRuntimeTheme,
-  getCurrentRuntimeTheme,
-  createThemeValue,
-  getComponentLibraryTheme,
-} from './runtime-theme';
 export type {
   RuntimeThemeConfig,
+} from './runtime-theme';
+export {
+  applyColorModeTheme,
+  applyInteractiveProperties,
+  applyRuntimeTheme,
+  createThemeValue,
+  getComponentLibraryTheme,
+  getCurrentRuntimeTheme,
+  initializeRuntimeTheme,
+  updateRuntimeTheme,
 } from './runtime-theme';
 
 
 // Re-export theme contracts for convenience
 export type {
-  ComponentLibrary,
-  ColorScheme,
-  ColorMode,
   BorderRadius,
+  ColorMode,
+  ColorScheme,
+  ComponentLibrary,
 } from '../theme-contracts';
 
 /**

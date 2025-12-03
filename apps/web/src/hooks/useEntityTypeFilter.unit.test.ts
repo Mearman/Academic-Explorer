@@ -6,7 +6,7 @@
  */
 
 import type { EntityType, GraphNode } from '@bibgraph/types';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach,describe, expect, it } from 'vitest';
 
 import { applyEntityTypeFilter } from './useEntityTypeFilter';
 
@@ -247,7 +247,7 @@ describe('Entity Type Filter with Graph List Bypass (T035)', () => {
       const visible1 = applyEntityTypeFilter(allNodes, null);
       expect(visible1).toHaveLength(allNodes.length); // null = show all
 
-      const visible2 = applyEntityTypeFilter(allNodes, undefined);
+      const visible2 = applyEntityTypeFilter(allNodes);
       expect(visible2).toHaveLength(allNodes.length); // undefined = show all
     });
   });

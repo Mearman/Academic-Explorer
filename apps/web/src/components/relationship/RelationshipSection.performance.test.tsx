@@ -7,7 +7,7 @@
 import { RelationType } from '@bibgraph/types';
 import { MantineProvider } from '@mantine/core';
 import { render } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach,describe, expect, it, vi } from 'vitest';
 
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 

@@ -392,13 +392,13 @@ const getAvailableChips = (entityType: EntityType): QueryFilterChip[] => {
   return baseChips;
 };
 
-export function VisualQueryBuilder({
+export const VisualQueryBuilder = ({
   entityType,
   initialQuery,
   onQueryChange,
   onApply,
   disabled = false,
-}: VisualQueryBuilderProps) {
+}: VisualQueryBuilderProps) => {
   // Initialize with empty query or provided initial query
   const [query, setQuery] = useState<VisualQuery>(() => {
     if (initialQuery) {
@@ -707,4 +707,4 @@ export function VisualQueryBuilder({
       </Paper>
     </DndContext>
   );
-}
+};

@@ -6,11 +6,11 @@
  * Settings store unit tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  settingsStoreInstance,
   settingsActions,
+  settingsStoreInstance,
 } from "./settings-store";
 
 // Mock localStorage

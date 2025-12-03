@@ -18,9 +18,9 @@ export const sharedComponents = {
       root: {
         '--container-size': fluid
           ? '100%'
-          : size !== undefined && size in CONTAINER_SIZES
+          : (size !== undefined && size in CONTAINER_SIZES
             ? CONTAINER_SIZES[size]
-            : rem(size),
+            : rem(size)),
       },
     }),
   },
@@ -40,7 +40,7 @@ export const sharedComponents = {
             if (variant === 'white') {
               return isNeutralColor ? 'var(--mantine-color-black)' : undefined
             }
-            return undefined
+            return
           })(),
         },
       }
@@ -191,9 +191,9 @@ export const sharedComponents = {
             : props.color
           : "var(--mantine-primary-color-filled)",
         '--radio-icon-color': props.color
-          ? Object.keys(theme.colors).includes(props.color)
+          ? (Object.keys(theme.colors).includes(props.color)
             ? `var(--mantine-color-${props.color}-contrast)`
-            : props.color
+            : props.color)
           : "var(--mantine-primary-color-contrast)",
       },
     }),
@@ -293,7 +293,7 @@ export const sharedComponents = {
             if (variant === "white") {
               return isNeutralColor ? "var(--mantine-color-black)" : undefined
             }
-            return undefined
+            return
           })(),
         },
       }
@@ -328,16 +328,16 @@ export const sharedComponents = {
       return {
         root: {
           '--chip-bg':
-            variant !== "light"
-              ? colorKey
+            variant === "light"
+              ? undefined
+              : (colorKey
                 ? `var(--mantine-color-${colorKey}-filled)`
-                : "var(--mantine-primary-color-filled)"
-              : undefined,
+                : "var(--mantine-primary-color-filled)"),
           '--chip-color':
             variant === "filled"
-              ? colorKey
+              ? (colorKey
                 ? `var(--mantine-color-${colorKey}-contrast)`
-                : "var(--mantine-primary-color-contrast)"
+                : "var(--mantine-primary-color-contrast)")
               : undefined,
         },
       }
@@ -355,9 +355,9 @@ export const sharedComponents = {
         root: {
           '--avatar-bg':
             variant === "filled"
-              ? colorKey
+              ? (colorKey
                 ? `var(--mantine-color-${colorKey}-filled)`
-                : "var(--mantine-primary-color-filled)"
+                : "var(--mantine-primary-color-filled)")
               : variant === "light"
                 ? colorKey
                   ? `var(--mantine-color-${colorKey}-light)`
@@ -366,9 +366,9 @@ export const sharedComponents = {
 
           '--avatar-color':
             variant === "filled"
-              ? colorKey
+              ? (colorKey
                 ? `var(--mantine-color-${colorKey}-contrast)`
-                : "var(--mantine-primary-color-contrast)"
+                : "var(--mantine-primary-color-contrast)")
               : variant === "light"
                 ? colorKey
                   ? `var(--mantine-color-${colorKey}-light-color)`
@@ -387,9 +387,9 @@ export const sharedComponents = {
 
           '--avatar-bd':
             variant === "outline"
-              ? colorKey
+              ? (colorKey
                 ? `1px solid var(--mantine-color-${colorKey}-outline)`
-                : "1px solid var(--mantine-primary-color-filled)"
+                : "1px solid var(--mantine-primary-color-filled)")
               : undefined,
         },
       }

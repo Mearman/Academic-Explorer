@@ -1,11 +1,10 @@
 /**
  * E2E tests for incoming affiliation relationships on institution detail pages
- *
  * @module incoming-affiliations.e2e
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Incoming Relationships - Institution Affiliations', () => {
   test('should display incoming affiliations section on institution detail page', async ({ page }) => {

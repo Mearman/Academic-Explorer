@@ -1,7 +1,6 @@
 /**
  * Utility functions for filtering relationship sections
  * Used by entity detail pages to filter displayed relationships
- *
  * @module relationship-filters
  * @see specs/016-entity-relationship-viz/spec.md (User Story 3)
  */
@@ -14,15 +13,11 @@ export type EdgeDirectionFilter = 'outbound' | 'inbound' | 'both';
 
 /**
  * Filter relationship sections by relationship type
- *
  * @param sections - All relationship sections
  * @param types - Allowed relationship types (empty array = show all)
  * @returns Filtered sections containing only specified types
  */
-export function filterByType(
-  sections: RelationshipSection[],
-  types: RelationType[]
-): RelationshipSection[] {
+export const filterByType = (sections: RelationshipSection[], types: RelationType[]): RelationshipSection[] => {
   // Empty array means show all types
   if (types.length === 0) {
     return sections;
@@ -30,41 +25,35 @@ export function filterByType(
 
   // Filter to only sections whose type is in the allowed list
   return sections.filter((section) => types.includes(section.type));
-}
+};
 
 /**
  * Filter relationship sections by direction
- *
  * @param sections - All relationship sections
  * @param direction - Direction filter ('inbound', 'outbound', or 'both')
  * @returns Filtered sections matching the specified direction
  */
-export function filterByDirection(
-  sections: RelationshipSection[],
-  direction: EdgeDirectionFilter
-): RelationshipSection[] {
+export const filterByDirection = (sections: RelationshipSection[], direction: EdgeDirectionFilter): RelationshipSection[] => {
   if (direction === 'both') {
     return sections;
   }
 
   return sections.filter((section) => section.direction === direction);
-}
+};
 
 /**
  * Combined filter function
  * Applies both type and direction filters
- *
  * @param sections - All relationship sections
  * @param options - Filter options
+ * @param options.types
+ * @param options.direction
  * @returns Filtered sections
  */
-export function filterRelationshipSections(
-  sections: RelationshipSection[],
-  options: {
+export const filterRelationshipSections = (sections: RelationshipSection[], options: {
     types?: RelationType[];
     direction?: EdgeDirectionFilter;
-  }
-): RelationshipSection[] {
+  }): RelationshipSection[] => {
   let filtered = sections;
 
   if (options.types && options.types.length > 0) {
@@ -76,4 +65,4 @@ export function filterRelationshipSections(
   }
 
   return filtered;
-}
+};

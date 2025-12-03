@@ -5,43 +5,43 @@
 
 import { logger } from "@bibgraph/utils";
 import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Button,
+  Card,
   Container,
   Grid,
-  Card,
-  Title,
-  Text,
   Group,
-  Badge,
-  ActionIcon,
-  Button,
-  Stack,
   List,
-  ThemeIcon,
-  SimpleGrid,
-  TextInput,
   Select,
-  Alert,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
+  ThemeIcon,
+  Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-  IconSearch,
   IconBook,
-  IconUsers,
   IconBuilding,
-  IconTrendingUp,
-  IconClock,
-  IconDownload,
-  IconShare,
-  IconExternalLink,
-  IconDatabase,
-  IconChartBar,
-  IconFilter,
-  IconRefresh,
   IconBulb,
+  IconChartBar,
+  IconClock,
+  IconDatabase,
+  IconDownload,
+  IconExternalLink,
+  IconFilter,
   IconNews,
+  IconRefresh,
+  IconSearch,
+  IconShare,
+  IconTrendingUp,
+  IconUsers,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
-import React, { useState, useEffect } from "react";
+import React, { useEffect,useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
 
@@ -50,7 +50,7 @@ interface QuickSearchProps {
   onSearch: (query: string, entityType: string) => void;
 }
 
-function QuickSearch({ onSearch }: QuickSearchProps) {
+const QuickSearch = ({ onSearch }: QuickSearchProps) => {
   const [query, setQuery] = useState("");
   const [entityType, setEntityType] = useState("works");
 
@@ -90,7 +90,7 @@ function QuickSearch({ onSearch }: QuickSearchProps) {
       </Group>
     </Card>
   );
-}
+};
 
 interface RecentActivityProps {
   activities: Array<{
@@ -101,7 +101,7 @@ interface RecentActivityProps {
   }>;
 }
 
-function RecentActivity({ activities }: RecentActivityProps) {
+const RecentActivity = ({ activities }: RecentActivityProps) => {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "search":
@@ -146,13 +146,13 @@ function RecentActivity({ activities }: RecentActivityProps) {
       </List>
     </Card>
   );
-}
+};
 
 interface QuickActionsProps {
   onAction: (action: string) => void;
 }
 
-function QuickActions({ onAction }: QuickActionsProps) {
+const QuickActions = ({ onAction }: QuickActionsProps) => {
   const actions = [
     {
       id: "advanced-search",
@@ -225,7 +225,7 @@ function QuickActions({ onAction }: QuickActionsProps) {
       </SimpleGrid>
     </Card>
   );
-}
+};
 
 interface ResearchStatsProps {
   stats: {
@@ -236,7 +236,7 @@ interface ResearchStatsProps {
   };
 }
 
-function ResearchStats({ stats }: ResearchStatsProps) {
+const ResearchStats = ({ stats }: ResearchStatsProps) => {
   const statCards = [
     {
       label: "Total Searches",
@@ -286,7 +286,7 @@ function ResearchStats({ stats }: ResearchStatsProps) {
       </SimpleGrid>
     </Card>
   );
-}
+};
 
 interface PopularTopicsProps {
   topics: Array<{
@@ -296,7 +296,7 @@ interface PopularTopicsProps {
   }>;
 }
 
-function PopularTopics({ topics }: PopularTopicsProps) {
+const PopularTopics = ({ topics }: PopularTopicsProps) => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case "up":
@@ -331,9 +331,9 @@ function PopularTopics({ topics }: PopularTopicsProps) {
       </Stack>
     </Card>
   );
-}
+};
 
-export function ResearchDashboard() {
+export const ResearchDashboard = () => {
   const navigate = useNavigate();
   const { lists } = useCatalogue();
 
@@ -370,8 +370,8 @@ export function ResearchDashboard() {
     count: number;
     trend: "up" | "down" | "stable";
   }>>([
-    { name: "Machine Learning", count: 15420, trend: "up" },
-    { name: "Climate Change", count: 12350, trend: "up" },
+    { name: "Machine Learning", count: 15_420, trend: "up" },
+    { name: "Climate Change", count: 12_350, trend: "up" },
     { name: "COVID-19 Research", count: 9876, trend: "down" },
     { name: "Quantum Computing", count: 7234, trend: "up" },
     { name: "Renewable Energy", count: 6543, trend: "stable" },
@@ -533,4 +533,4 @@ export function ResearchDashboard() {
       </Stack>
     </Container>
   );
-}
+};

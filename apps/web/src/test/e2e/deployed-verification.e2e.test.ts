@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const DEPLOYED_URL = 'https://mearman.github.io/BibGraph';
 
@@ -13,18 +13,18 @@ const DEPLOYED_URL = 'https://mearman.github.io/BibGraph';
  */
 
 test.describe('Deployed Site - Critical Verification', () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test('should load author A5017898742 correctly', async ({ page }) => {
     await page.goto(`${DEPLOYED_URL}/#/authors/A5017898742`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: 30_000,
     });
 
-    await page.waitForSelector('main', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 15_000 });
 
-    const mainText = await page.locator('main').textContent();
-    expect(mainText).toBeTruthy();
+    const mainText = page.locator('main');
+    await expect(mainText).toHaveText();
 
     // Should show author content, not error
     expect(mainText).not.toContain('Not Found');
@@ -41,12 +41,12 @@ test.describe('Deployed Site - Critical Verification', () => {
   test('should handle ROR external ID - ror:02y3ad647', async ({ page }) => {
     const testUrl = `${DEPLOYED_URL}/#/openalex-url/institutions/ror:02y3ad647`;
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
-    await page.waitForSelector('main', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 15_000 });
 
-    const mainText = await page.locator('main').textContent();
-    expect(mainText).toBeTruthy();
+    const mainText = page.locator('main');
+    await expect(mainText).toHaveText();
 
     // Should not show error
     expect(mainText).not.toContain('Not Found');
@@ -57,12 +57,12 @@ test.describe('Deployed Site - Critical Verification', () => {
   test('should handle ROR external ID - ror:00cvxb145', async ({ page }) => {
     const testUrl = `${DEPLOYED_URL}/#/openalex-url/institutions/ror:00cvxb145`;
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
-    await page.waitForSelector('main', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 15_000 });
 
-    const mainText = await page.locator('main').textContent();
-    expect(mainText).toBeTruthy();
+    const mainText = page.locator('main');
+    await expect(mainText).toHaveText();
 
     // Should not show error
     expect(mainText).not.toContain('Not Found');
@@ -74,12 +74,12 @@ test.describe('Deployed Site - Critical Verification', () => {
   }) => {
     const testUrl = `${DEPLOYED_URL}/#/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`;
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
-    await page.waitForSelector('main', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 15_000 });
 
-    const mainText = await page.locator('main').textContent();
-    expect(mainText).toBeTruthy();
+    const mainText = page.locator('main');
+    await expect(mainText).toHaveText();
 
     // Should show bioplastics-related content
     expect(mainText!.toLowerCase()).toContain('bioplastic');
@@ -112,13 +112,13 @@ test.describe('Deployed Site - Critical Verification', () => {
       test(`should load ${type} entity - ${id}`, async ({ page }) => {
         await page.goto(`${DEPLOYED_URL}/#/${type}/${id}`, {
           waitUntil: 'networkidle',
-          timeout: 30000,
+          timeout: 30_000,
         });
 
-        await page.waitForSelector('main', { timeout: 15000 });
+        await page.waitForSelector('main', { timeout: 15_000 });
 
-        const mainText = await page.locator('main').textContent();
-        expect(mainText).toBeTruthy();
+        const mainText = page.locator('main');
+        await expect(mainText).toHaveText();
 
         // Should not show error
         expect(mainText).not.toContain('Not Found');
@@ -130,18 +130,18 @@ test.describe('Deployed Site - Critical Verification', () => {
   test('should handle full API URL format', async ({ page }) => {
     const testUrl = `${DEPLOYED_URL}/#/https://api.openalex.org/works?filter=display_name.search:bioplastics`;
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
     // Wait for content to load - could be works results or loading state
-    await page.waitForSelector('main', { timeout: 15000 });
+    await page.waitForSelector('main', { timeout: 15_000 });
 
     // Give additional time for async content loading
     await page.waitForTimeout(3000);
 
-    const mainText = await page.locator('main').textContent();
+    const mainText = page.locator('main');
 
     // Check that we have content (either results or loading state)
-    expect(mainText).toBeTruthy();
+    await expect(mainText).toHaveText();
     expect(mainText!.length).toBeGreaterThan(0);
 
     // Should not show error states

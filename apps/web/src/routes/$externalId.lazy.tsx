@@ -2,13 +2,13 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function ExternalIdRoute() {
+const ExternalIdRoute = () => {
   const { externalId } = useParams({ from: "/$externalId" });
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ function ExternalIdRoute() {
     const resolveExternalId = async () => {
       try {
         // Handle double-encoded slashes first (%252F -> %2F)
-        const processedId = externalId.replace(/%252F/gi, '%2F');
+        const processedId = externalId.replaceAll(/%252F/gi, '%2F');
         // Decode the parameter
         const decodedId = decodeURIComponent(processedId);
 
@@ -59,7 +59,7 @@ function ExternalIdRoute() {
         for (const entityType of entityTypePrefixes) {
           if (decodedId.startsWith(`${entityType}/`)) {
             // Extract the ID part after the entity type prefix
-            let extractedId = decodedId.substring(entityType.length + 1);
+            let extractedId = decodedId.slice(Math.max(0, entityType.length + 1));
 
             // Check if this is a properly formatted external canonical ID
             // If so, let the detection logic handle it instead of doing a simple redirect
@@ -71,7 +71,7 @@ function ExternalIdRoute() {
                extractedId.startsWith("https://ror.org/") ||
                extractedId.startsWith("http://ror.org/") ||
                extractedId.startsWith("issn:")) &&
-              extractedId.match(/^https?:\/\//i) // Properly formatted with double slashes
+              /^https?:\/\//i.test(extractedId) // Properly formatted with double slashes
             ) {
               // This is a properly formatted external canonical ID
               // Let the detection logic below handle it
@@ -85,10 +85,10 @@ function ExternalIdRoute() {
             }
 
             // Fix collapsed protocol slashes (https:/ -> https://)
-            if (extractedId.match(/^https?:\//i) && !extractedId.match(/^https?:\/\//i)) {
+            if (/^https?:\//i.test(extractedId) && !/^https?:\/\//i.test(extractedId)) {
               extractedId = extractedId.replace(/^(https?:\/?)/, "$1/");
             }
-            if (extractedId.match(/^ror:\//i) && !extractedId.match(/^ror:\/\//i)) {
+            if (/^ror:\//i.test(extractedId) && !/^ror:\/\//i.test(extractedId)) {
               extractedId = extractedId.replace(/^(ror:\/?)/, "$1/");
             }
 
@@ -123,8 +123,8 @@ function ExternalIdRoute() {
         const queryIndex = decodedId.indexOf("?");
         if (queryIndex !== -1) {
           // Split the ID from query parameters
-          idForDetection = decodedId.substring(0, queryIndex);
-          const queryString = decodedId.substring(queryIndex + 1);
+          idForDetection = decodedId.slice(0, Math.max(0, queryIndex));
+          const queryString = decodedId.slice(Math.max(0, queryIndex + 1));
 
           // Parse query parameters
           preservedSearchParams = {};
@@ -254,7 +254,7 @@ function ExternalIdRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/$externalId")({
   component: ExternalIdRoute,

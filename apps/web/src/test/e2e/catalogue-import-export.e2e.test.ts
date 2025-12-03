@@ -2,7 +2,7 @@
  * End-to-end tests for catalogue import/export functionality
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page,test } from "@playwright/test";
 
 test.describe("Catalogue Import/Export Functionality", () => {
   test.beforeEach(async ({ page }) => {
@@ -10,8 +10,8 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
-      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 })
+      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10_000 }),
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 })
     ]);
   });
 
@@ -25,7 +25,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Use the export button directly from the selected list details card
     const exportButton = page.locator('[data-testid="export-list-button"]');
-    await expect(exportButton).toBeVisible({ timeout: 10000 });
+    await expect(exportButton).toBeVisible({ timeout: 10_000 });
     await exportButton.click();
 
     // Should show export options modal
@@ -38,7 +38,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await page.locator('[data-testid="export-list-button"]').last().click();
 
     // Verify export notification (using Mantine notifications)
-    await expect(page.locator('text="Export Successful"')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text="Export Successful"')).toBeVisible({ timeout: 10_000 });
   });
 
   test("should export list in different formats", async ({ page }) => {
@@ -51,7 +51,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open export modal
     const exportButton = page.locator('[data-testid="export-list-button"]');
-    await expect(exportButton).toBeVisible({ timeout: 10000 });
+    await expect(exportButton).toBeVisible({ timeout: 10_000 });
     await exportButton.click();
 
     // Should show export options modal
@@ -74,7 +74,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       await page.waitForTimeout(1000);
 
       // Close and reopen modal for next format (if not last)
-      if (format !== implementedFormats[implementedFormats.length - 1]) {
+      if (format !== implementedFormats.at(-1)) {
         await page.locator('button:has-text("Done")').click();
         await page.locator('[data-testid="export-list-button"]').click();
         await expect(page.getByRole('dialog', { name: 'Export List' })).toBeVisible();
@@ -109,7 +109,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await page.locator('button:has-text("Import List")').click();
 
     // Should show error alert (using Mantine Alert component)
-    await expect(page.locator('[role="alert"]').filter({ hasText: 'Import Failed' })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[role="alert"]').filter({ hasText: 'Import Failed' })).toBeVisible({ timeout: 10_000 });
   });
 
   test("should import from file upload", async ({ page }) => {
@@ -156,10 +156,10 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await page.locator('button:has-text("Import List")').click();
 
     // Verify import success (modal should close)
-    await expect(page.getByRole('dialog', { name: 'Import List' })).not.toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('dialog', { name: 'Import List' })).not.toBeVisible({ timeout: 15_000 });
 
     // Verify the imported list appears in the catalogue
-    await expect(page.locator('text="File Import Test"')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text="File Import Test"')).toBeVisible({ timeout: 15_000 });
   });
 
   test("should validate import data structure", async ({ page }) => {
@@ -229,10 +229,10 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await importButton.click();
 
     // Verify import success (modal closes)
-    await expect(page.getByRole('dialog', { name: 'Import List' })).not.toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('dialog', { name: 'Import List' })).not.toBeVisible({ timeout: 15_000 });
 
     // Verify the imported list appears
-    await expect(page.locator('text="Preview Test List"')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text="Preview Test List"')).toBeVisible({ timeout: 15_000 });
   });
 
   test("should handle duplicate detection during import", async ({ page }) => {
@@ -246,7 +246,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
 // Helper functions
 
-async function createTestList(page: Page, listName: string): Promise<void> {
+const createTestList = async (page: Page, listName: string): Promise<void> => {
   await page.click('button:has-text("Create New List")');
   await expect(page.getByRole('dialog').filter({ hasText: 'Create' })).toBeVisible();
 
@@ -254,11 +254,11 @@ async function createTestList(page: Page, listName: string): Promise<void> {
   await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
 
   await page.click('button:has-text("Create List")');
-  await expect(page.getByRole('dialog').filter({ hasText: 'Create' })).not.toBeVisible();
-  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
-}
+  await expect(page.getByRole('dialog').filter({ hasText: 'Create' })).toBeHidden();
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10_000 });
+};
 
-async function createListWithMultipleEntities(page: Page, listName: string): Promise<void> {
+const createListWithMultipleEntities = async (page: Page, listName: string): Promise<void> => {
   // Create the list first
   await createTestList(page, listName);
 
@@ -269,15 +269,15 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   ];
 
   for (const entity of entities) {
-    await page.goto(`/#/${entity.type}/${entity.id}`, { timeout: 30000 });
-    await page.waitForLoadState("networkidle", { timeout: 30000 });
+    await page.goto(`/#/${entity.type}/${entity.id}`, { timeout: 30_000 });
+    await page.waitForLoadState("networkidle", { timeout: 30_000 });
 
     const addToCatalogueButton = page.locator('[data-testid="add-to-catalogue-button"]');
-    await expect(addToCatalogueButton).toBeVisible({ timeout: 15000 });
+    await expect(addToCatalogueButton).toBeVisible({ timeout: 15_000 });
     await addToCatalogueButton.click();
 
     // Modal opens directly with AddToListModal
-    await expect(page.getByRole('dialog').filter({ hasText: 'Add to' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('dialog').filter({ hasText: 'Add to' })).toBeVisible({ timeout: 10_000 });
 
     // Select the list from dropdown
     await page.locator('[data-testid="add-to-list-select"]').click();
@@ -292,9 +292,9 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   }
 
   // Navigate back to catalogue page
-  await page.goto("/#/catalogue", { timeout: 30000 });
-  await page.waitForLoadState("networkidle", { timeout: 30000 });
-}
+  await page.goto("/#/catalogue", { timeout: 30_000 });
+  await page.waitForLoadState("networkidle", { timeout: 30_000 });
+};
 
 // Currently unused - kept for potential future use when file download handling is implemented
 // async function exportAndGetCompressedData(page: Page): Promise<string> {

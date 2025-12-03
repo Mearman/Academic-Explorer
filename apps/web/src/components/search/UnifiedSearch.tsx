@@ -1,9 +1,9 @@
-import { Stack, Paper, Title, Tabs, Text, Center } from "@mantine/core";
+import { Center,Paper, Stack, Tabs, Text, Title } from "@mantine/core";
 import {
-  IconSearch,
+  IconBookmark,
   IconCode,
   IconEye,
-  IconBookmark,
+  IconSearch,
 } from "@tabler/icons-react";
 import { useState } from "react";
 
@@ -11,7 +11,7 @@ interface UnifiedSearchProps {
   defaultTab?: string;
 }
 
-export function UnifiedSearch({ defaultTab = "basic" }: UnifiedSearchProps) {
+export const UnifiedSearch = ({ defaultTab = "basic" }: UnifiedSearchProps) => {
   const [activeTab, setActiveTab] = useState<string | null>(defaultTab);
 
   return (
@@ -115,4 +115,4 @@ export function UnifiedSearch({ defaultTab = "basic" }: UnifiedSearchProps) {
       </Stack>
     </Paper>
   );
-}
+};

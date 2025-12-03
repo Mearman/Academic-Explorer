@@ -1,25 +1,24 @@
 /**
  * Pathfinding Tab
  * Navigation, routing, traversal, and neighborhoods
- *
  * @module components/algorithms/categories/PathfindingTab
  */
 
 import { Accordion } from '@mantine/core';
 import {
-  IconRoute,
   IconArrowsShuffle,
   IconPoint,
+  IconRoute,
 } from '@tabler/icons-react';
 
 import {
+  EgoNetworkItem,
   ShortestPathItem,
   TraversalItem,
-  EgoNetworkItem,
 } from '../items';
 import type { CategoryTabProps } from '../types';
 
-export function PathfindingTab({
+export const PathfindingTab = ({
   nodes,
   edges,
   onHighlightNodes,
@@ -28,9 +27,7 @@ export function PathfindingTab({
   pathTarget,
   onPathSourceChange,
   onPathTargetChange,
-}: CategoryTabProps) {
-  return (
-    <Accordion multiple defaultValue={['shortest-path']}>
+}: CategoryTabProps) => <Accordion multiple defaultValue={['shortest-path']}>
       <Accordion.Item value="shortest-path">
         <Accordion.Control icon={<IconRoute size={18} />}>
           Shortest Path
@@ -74,6 +71,4 @@ export function PathfindingTab({
           />
         </Accordion.Panel>
       </Accordion.Item>
-    </Accordion>
-  );
-}
+    </Accordion>;

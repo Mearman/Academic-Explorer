@@ -3,8 +3,8 @@
  */
 
 import { MantineProvider } from "@mantine/core";
-import { render, screen, cleanup } from "@testing-library/react";
-import { describe, expect, it, vi, afterEach } from "vitest";
+import { cleanup,render, screen } from "@testing-library/react";
+import { afterEach,describe, expect, it, vi } from "vitest";
 
 import { CacheBrowser } from "./CacheBrowser";
 

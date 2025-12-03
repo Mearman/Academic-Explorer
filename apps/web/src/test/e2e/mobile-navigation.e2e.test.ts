@@ -3,7 +3,7 @@
  * Tests US1: Mobile-First Header Navigation (P1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Mobile Navigation Menu - E2E', () => {
   test.describe('T013: Mobile viewport behavior (375px)', () => {

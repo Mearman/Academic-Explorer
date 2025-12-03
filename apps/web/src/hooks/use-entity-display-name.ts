@@ -23,12 +23,16 @@ interface UseEntityDisplayNameResult {
 /**
  * Fetches and returns the display_name for an OpenAlex entity
  * Uses minimal field selection to reduce bandwidth
+ * @param root0
+ * @param root0.entityId
+ * @param root0.entityType
+ * @param root0.enabled
  */
-export function useEntityDisplayName({
+export const useEntityDisplayName = ({
   entityId,
   entityType,
   enabled = true,
-}: UseEntityDisplayNameOptions): UseEntityDisplayNameResult {
+}: UseEntityDisplayNameOptions): UseEntityDisplayNameResult => {
   // Skip for special entity IDs (search-, list-, etc.)
   const isSpecialId = entityId.startsWith("search-") || entityId.startsWith("list-");
   const shouldFetch = Boolean(enabled && !isSpecialId && entityId && entityType);
@@ -75,5 +79,5 @@ export function useEntityDisplayName({
     isLoading: query.isLoading,
     isError: query.isError,
   };
-}
+};
 

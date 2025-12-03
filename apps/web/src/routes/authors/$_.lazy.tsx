@@ -1,10 +1,10 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { type Author, type AuthorField } from "@bibgraph/types/entities";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute,useParams, useSearch  } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
+import { type DetailViewMode,ENTITY_TYPE_CONFIGS,  EntityDetailLayout, ErrorState, LoadingState } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
@@ -15,7 +15,7 @@ import { decodeEntityId } from "@/utils/url-decoding";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
-function AuthorRoute() {
+const AuthorRoute = () => {
   const { _splat: rawAuthorId } = useParams({ from: "/authors/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
@@ -104,7 +104,7 @@ function AuthorRoute() {
       />
     </EntityDetailLayout>
   );
-}
+};
 
 export const Route = createLazyFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,

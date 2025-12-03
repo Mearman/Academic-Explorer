@@ -1,7 +1,6 @@
 /**
  * Motif Detection Algorithm Item
  * Detects triangles, star patterns, co-citations, and bibliographic coupling
- *
  * @module components/algorithms/items/MotifDetectionItem
  */
 
@@ -22,19 +21,19 @@ import { IconLink, IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import {
-  useTriangles,
-  useStarPatterns,
-  useCoCitations,
   useBibliographicCoupling,
+  useCoCitations,
+  useStarPatterns,
+  useTriangles,
 } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function MotifDetectionItem({
+export const MotifDetectionItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   // Motif detection hooks
   const triangles = useTriangles(nodes, edges);
   const [starMinDegree, setStarMinDegree] = useState<number>(3);
@@ -70,7 +69,7 @@ export function MotifDetectionItem({
               <Badge
                 size="xs"
                 variant="outline"
-                color={triangles.clusteringCoefficient > 0.3 ? 'green' : triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray'}
+                color={triangles.clusteringCoefficient > 0.3 ? 'green' : (triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray')}
               >
                 {(triangles.clusteringCoefficient * 100).toFixed(1)}%
               </Badge>
@@ -85,7 +84,7 @@ export function MotifDetectionItem({
                 triangles.triangles.slice(0, 10).forEach(t => {
                   t.nodes.forEach(n => uniqueNodes.add(n));
                 });
-                onHighlightNodes?.(Array.from(uniqueNodes));
+                onHighlightNodes?.([...uniqueNodes]);
               }}
             >
               Highlight First 10 Triangles
@@ -261,4 +260,4 @@ export function MotifDetectionItem({
       </Card>
     </Stack>
   );
-}
+};

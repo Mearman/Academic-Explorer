@@ -2,12 +2,12 @@
  * Repository Algorithms Panel
  * Integrates graph algorithms with the repository store data
  * Shows analysis of the current graph in the repository
- *
  * @module components/algorithms/RepositoryAlgorithmsPanel
  */
 
 import {
   Accordion,
+  Alert,
   Badge,
   Box,
   Button,
@@ -17,13 +17,12 @@ import {
   Loader,
   NumberInput,
   Progress,
+  rem,
   Select,
   Stack,
   Text,
   ThemeIcon,
   Title,
-  Alert,
-  rem,
 } from '@mantine/core';
 import {
   IconAlertCircle,
@@ -36,7 +35,7 @@ import {
   IconRoute,
   IconUsers,
 } from '@tabler/icons-react';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo,useState } from 'react';
 
 import { useRepositoryAlgorithms } from '@/hooks/use-repository-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
@@ -56,7 +55,7 @@ const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
 /**
  * Panel for analyzing repository graph with algorithms
  */
-export function RepositoryAlgorithmsPanel() {
+export const RepositoryAlgorithmsPanel = () => {
   const {
     nodes,
     // edges is available but not currently used in display
@@ -236,11 +235,11 @@ export function RepositoryAlgorithmsPanel() {
                   value={resolution}
                   onChange={(value) =>
                     updateClusteringOptions({
-                      resolution: typeof value === 'number' ? value : 1.0,
+                      resolution: typeof value === 'number' ? value : 1,
                     })
                   }
                   min={0.1}
-                  max={3.0}
+                  max={3}
                   step={0.1}
                   decimalScale={2}
                 />
@@ -459,4 +458,4 @@ export function RepositoryAlgorithmsPanel() {
       </Accordion>
     </Stack>
   );
-}
+};

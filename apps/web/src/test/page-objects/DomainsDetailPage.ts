@@ -3,7 +3,6 @@
  *
  * Page object for Domain entity detail pages in BibGraph.
  * Handles domain-specific fields, related fields/subfields, and domain metadata.
- *
  * @see spec-020 Phase 1: T010 - Domain entity E2E tests
  */
 
@@ -28,6 +27,7 @@ export class DomainsDetailPage extends BaseEntityPageObject {
 
 	/**
 	 * Navigate to a domain detail page
+	 * @param domainId
 	 */
 	async gotoDomain(domainId: string): Promise<void> {
 		await this.goto(`/domains/${domainId}`);
@@ -45,7 +45,7 @@ export class DomainsDetailPage extends BaseEntityPageObject {
 	 */
 	async getFieldCount(): Promise<number> {
 		const countText = await this.getText(this.domainSelectors.fieldCount);
-		return countText ? parseInt(countText, 10) : 0;
+		return countText ? Number.parseInt(countText, 10) : 0;
 	}
 
 	/**
@@ -53,7 +53,7 @@ export class DomainsDetailPage extends BaseEntityPageObject {
 	 */
 	async getSubfieldCount(): Promise<number> {
 		const countText = await this.getText(this.domainSelectors.subfieldCount);
-		return countText ? parseInt(countText, 10) : 0;
+		return countText ? Number.parseInt(countText, 10) : 0;
 	}
 
 	/**
@@ -65,6 +65,7 @@ export class DomainsDetailPage extends BaseEntityPageObject {
 
 	/**
 	 * Click a related field link
+	 * @param index
 	 */
 	async clickRelatedField(index: number): Promise<void> {
 		const items = this.page.locator(this.domainSelectors.relatedFields);

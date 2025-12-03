@@ -13,7 +13,7 @@ interface BooleanFilterProps {
   fieldId: string;
 }
 
-export function BooleanFilter({
+export const BooleanFilter = ({
   value,
   operator,
   config,
@@ -22,9 +22,7 @@ export function BooleanFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: BooleanFilterProps) {
-  return (
-    <BaseFilter
+}: BooleanFilterProps) => <BaseFilter
       value={value}
       operator={operator}
       config={config}
@@ -44,6 +42,4 @@ export function BooleanFilter({
           style={{ marginTop: "4px" }}
         />
       )}
-    </BaseFilter>
-  );
-}
+    </BaseFilter>;

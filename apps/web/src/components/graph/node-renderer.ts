@@ -19,16 +19,11 @@ import {
 /**
  * Canvas rendering function for react-force-graph-2d/3d
  * Renders a node on a canvas with conditional styling
- *
  * @param node - Graph node to render
  * @param ctx - Canvas 2D rendering context
  * @param globalScale - Current zoom level (for adaptive rendering)
  */
-export function renderNodeOnCanvas(
-  node: GraphNode,
-  ctx: CanvasRenderingContext2D,
-  globalScale: number
-): void {
+export const renderNodeOnCanvas = (node: GraphNode, ctx: CanvasRenderingContext2D, globalScale: number): void => {
   const NODE_RADIUS = 5;
   const style = getConditionalNodeStyle(node);
 
@@ -60,18 +55,15 @@ export function renderNodeOnCanvas(
 
   // Restore canvas state
   ctx.restore();
-}
+};
 
 /**
  * SVG element generator for SVG-based renderers
  * Returns SVG element attributes for conditional styling
- *
  * @param node - Graph node
  * @returns SVG attributes object
  */
-export function getSvgNodeAttributes(
-  node: GraphNode
-): Record<string, string | number> {
+export const getSvgNodeAttributes = (node: GraphNode): Record<string, string | number> => {
   const style = getConditionalNodeStyle(node);
 
   return {
@@ -86,18 +78,15 @@ export function getSvgNodeAttributes(
       'data-unverified-author': style['data-unverified-author'],
     }),
   };
-}
+};
 
 /**
  * DOM element styling for DOM-based renderers (e.g., XYFlow)
  * Returns CSS style object for conditional styling
- *
  * @param node - Graph node
  * @returns React CSSProperties object
  */
-export function getDomNodeStyle(
-  node: GraphNode
-): React.CSSProperties & Record<string, unknown> {
+export const getDomNodeStyle = (node: GraphNode): React.CSSProperties & Record<string, unknown> => {
   const style = getConditionalNodeStyle(node);
 
   return {
@@ -111,36 +100,32 @@ export function getDomNodeStyle(
       'data-unverified-author': style['data-unverified-author'],
     }),
   };
-}
+};
 
 /**
  * Color accessor function for react-force-graph
  * Returns the fill color for a node based on its metadata
- *
  * @param node - Graph node
  * @returns Hex color string
  */
-export function getNodeColor(node: GraphNode): string {
+export const getNodeColor = (node: GraphNode): string => {
   const style = getConditionalNodeStyle(node);
   return style.fill || 'var(--mantine-color-blue-6)';
-}
+};
 
 /**
  * Node canvas object function for react-force-graph
  * Custom canvas rendering function that replaces default node rendering
  *
  * This is the main integration point for react-force-graph-2d
- *
  * @returns Function compatible with ForceGraph2D's nodeCanvasObject property
- *
  * @example
  * <ForceGraph2D
  *   nodeCanvasObject={createNodeCanvasObjectFunction()}
  *   nodePointerAreaPaint={createNodePointerAreaPaintFunction()}
  * />
  */
-export function createNodeCanvasObjectFunction() {
-  return (node: GraphNode, ctx: CanvasRenderingContext2D, globalScale: number): void => {
+export const createNodeCanvasObjectFunction = () => (node: GraphNode, ctx: CanvasRenderingContext2D, globalScale: number): void => {
     renderNodeOnCanvas(node, ctx, globalScale);
 
     // Optionally render label at higher zoom levels
@@ -155,21 +140,17 @@ export function createNodeCanvasObjectFunction() {
       ctx.fillText(node.label, node.x, node.y + NODE_RADIUS + 2);
     }
   };
-}
 
 /**
  * Node pointer area paint function for react-force-graph
  * Defines the clickable/hoverable area for nodes
- *
  * @returns Function compatible with ForceGraph2D's nodePointerAreaPaint property
- *
  * @example
  * <ForceGraph2D
  *   nodePointerAreaPaint={createNodePointerAreaPaintFunction()}
  * />
  */
-export function createNodePointerAreaPaintFunction() {
-  return (node: GraphNode, color: string, ctx: CanvasRenderingContext2D): void => {
+export const createNodePointerAreaPaintFunction = () => (node: GraphNode, color: string, ctx: CanvasRenderingContext2D): void => {
     const NODE_RADIUS = 5;
     const HOVER_RADIUS = NODE_RADIUS + 2; // Slightly larger for easier clicking
 
@@ -178,17 +159,18 @@ export function createNodePointerAreaPaintFunction() {
     ctx.arc(node.x, node.y, HOVER_RADIUS, 0, 2 * Math.PI, false);
     ctx.fill();
   };
-}
 
 /**
  * Three.js node object generator for react-force-graph-3d
  * Creates a Three.js mesh for 3D node rendering with conditional styling
  *
  * Note: Requires three.js imports to be available
- *
  * @param node - Graph node
+ * @param THREE
+ * @param THREE.SphereGeometry
+ * @param THREE.MeshLambertMaterial
+ * @param THREE.Mesh
  * @returns Three.js Mesh (requires three.js in scope)
- *
  * @example
  * import * as THREE from 'three';
  *
@@ -196,14 +178,11 @@ export function createNodePointerAreaPaintFunction() {
  *   nodeThreeObject={(node) => createNodeThreeObject(node as GraphNode, THREE)}
  * />
  */
-export function createNodeThreeObject(
-  node: GraphNode,
-  THREE: {
+export const createNodeThreeObject = (node: GraphNode, THREE: {
     SphereGeometry: typeof import('three').SphereGeometry;
     MeshLambertMaterial: typeof import('three').MeshLambertMaterial;
     Mesh: typeof import('three').Mesh;
-  }
-): InstanceType<typeof THREE.Mesh> {
+  }): InstanceType<typeof THREE.Mesh> => {
   const style = getConditionalNodeStyle(node);
   const NODE_RADIUS = 5;
 
@@ -217,20 +196,16 @@ export function createNodeThreeObject(
   });
 
   return new THREE.Mesh(geometry, material);
-}
+};
 
 /**
  * Integration helper for applying styles to any graph node element
  * Provides a unified interface for all rendering approaches
- *
  * @param node - Graph node
  * @param rendererType - Type of renderer being used
  * @returns Style properties appropriate for the renderer
  */
-export function applyConditionalNodeStyling(
-  node: GraphNode,
-  rendererType: 'canvas' | 'svg' | 'dom' | 'three'
-): NodeStyleProperties | React.CSSProperties | Record<string, unknown> {
+export const applyConditionalNodeStyling = (node: GraphNode, rendererType: 'canvas' | 'svg' | 'dom' | 'three'): NodeStyleProperties | React.CSSProperties | Record<string, unknown> => {
   switch (rendererType) {
     case 'canvas':
       // Return render function for canvas
@@ -251,4 +226,4 @@ export function applyConditionalNodeStyling(
     default:
       return getConditionalNodeStyle(node);
   }
-}
+};

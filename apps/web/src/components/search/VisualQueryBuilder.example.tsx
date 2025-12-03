@@ -5,13 +5,13 @@
 
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
-import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
+import { Button, Code,Container, Group, Space, Title } from "@mantine/core";
 import React, { useState } from "react";
 
-import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
+import { type VisualQuery,VisualQueryBuilder } from "./VisualQueryBuilder";
 
 
-export function VisualQueryBuilderExample() {
+export const VisualQueryBuilderExample = () => {
   const [entityType, setEntityType] = useState<EntityType>("works");
   const [currentQuery, setCurrentQuery] = useState<VisualQuery | null>(null);
   const [appliedQuery, setAppliedQuery] = useState<VisualQuery | null>(null);
@@ -94,7 +94,7 @@ export function VisualQueryBuilderExample() {
       )}
     </Container>
   );
-}
+};
 
 // Usage example:
 /*

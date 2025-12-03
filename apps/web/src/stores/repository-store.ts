@@ -4,11 +4,10 @@
  * Provides separate space for search results and filtered content before adding to main graph
  */
 
-import { RelationType } from "@bibgraph/types";
 import type {
-  GraphNode,
-  GraphEdge,
- EntityType } from "@bibgraph/types";
+ EntityType,  GraphEdge,
+  GraphNode } from "@bibgraph/types";
+import { RelationType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
 
@@ -249,6 +248,7 @@ class RepositoryStore {
 
   /**
    * Set repository mode
+   * @param enabled
    */
   async setRepositoryMode(enabled: boolean): Promise<void> {
     try {
@@ -277,6 +277,8 @@ class RepositoryStore {
 
   /**
    * Add nodes and edges to repository
+   * @param nodes
+   * @param edges
    */
   async addToRepository(
     nodes: GraphNode[],
@@ -328,6 +330,8 @@ class RepositoryStore {
 
   /**
    * Remove nodes and edges from repository
+   * @param nodeIds
+   * @param edgeIds
    */
   async removeFromRepository(
     nodeIds: string[],
@@ -395,6 +399,7 @@ class RepositoryStore {
 
   /**
    * Set search query
+   * @param query
    */
   async setSearchQuery(query: string): Promise<void> {
     try {
@@ -414,6 +419,8 @@ class RepositoryStore {
 
   /**
    * Set node type filter
+   * @param entityType
+   * @param enabled
    */
   async setNodeTypeFilter(
     entityType: EntityType,
@@ -440,6 +447,8 @@ class RepositoryStore {
 
   /**
    * Set edge type filter
+   * @param relationType
+   * @param enabled
    */
   async setEdgeTypeFilter(
     relationType: RelationType,
@@ -497,6 +506,8 @@ class RepositoryStore {
 
   /**
    * Select/deselect repository node
+   * @param nodeId
+   * @param selected
    */
   async selectRepositoryNode(nodeId: string, selected: boolean): Promise<void> {
     try {
@@ -519,6 +530,8 @@ class RepositoryStore {
 
   /**
    * Select/deselect repository edge
+   * @param edgeId
+   * @param selected
    */
   async selectRepositoryEdge(edgeId: string, selected: boolean): Promise<void> {
     try {

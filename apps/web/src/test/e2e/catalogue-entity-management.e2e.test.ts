@@ -2,7 +2,7 @@
  * End-to-end tests for catalogue entity management functionality
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page,test } from "@playwright/test";
 
 test.describe("Catalogue Entity Management", () => {
   test.beforeEach(async ({ page }) => {
@@ -10,8 +10,8 @@ test.describe("Catalogue Entity Management", () => {
     await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
-      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 })
+      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10_000 }),
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 })
     ]);
   });
 
@@ -25,7 +25,7 @@ test.describe("Catalogue Entity Management", () => {
 
     // Look for "Add to Catalogue" button using data-testid
     const addToCatalogueButton = page.locator('[data-testid="add-to-catalogue-button"]');
-    await expect(addToCatalogueButton).toBeVisible({ timeout: 10000 });
+    await expect(addToCatalogueButton).toBeVisible({ timeout: 10_000 });
 
     // Click the button
     await addToCatalogueButton.click();
@@ -43,7 +43,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid="add-to-list-submit"]').click();
 
     // Wait for success notification to appear
-    await expect(page.locator('text="Added to List"')).toBeVisible({ timeout: 20000 });
+    await expect(page.locator('text="Added to List"')).toBeVisible({ timeout: 20_000 });
 
     // Wait for modal to close
     await expect(page.getByRole('dialog', { name: 'Add to Catalogue' })).not.toBeVisible({ timeout: 3000 });
@@ -56,7 +56,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Entity Test List" }).first().click();
 
     // Verify entity count shows 1
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
   });
 
   test("should display different entity types correctly", async ({ page }) => {
@@ -79,7 +79,7 @@ test.describe("Catalogue Entity Management", () => {
 
     // Verify the list card shows at least 1 item
     const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Mixed Entities List" }).first();
-    await expect(listCard).toBeVisible({ timeout: 10000 });
+    await expect(listCard).toBeVisible({ timeout: 10_000 });
 
     // Verify list shows items were added
     const cardText = await listCard.textContent();
@@ -91,7 +91,7 @@ test.describe("Catalogue Entity Management", () => {
     await listCard.click();
 
     // Wait for the list details to be visible
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     console.log("✓ Successfully verified entity addition to catalogue");
     console.log("Note: Multi-entity-type testing requires additional entity page support");
@@ -110,14 +110,14 @@ test.describe("Catalogue Entity Management", () => {
 
     // Find and click the list card
     const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Removal Test List" }).first();
-    await expect(listCard).toBeVisible({ timeout: 10000 });
+    await expect(listCard).toBeVisible({ timeout: 10_000 });
     await listCard.click();
 
     // Wait for list details to appear
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entity count stats to update (proves entities are in DB)
-    await expect(page.locator('[data-testid="stat-total"]:has-text("2")')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="stat-total"]:has-text("2")')).toBeVisible({ timeout: 10_000 });
 
     // Wait longer for entities to load in table (entities are fetched asynchronously from IndexedDB)
     await page.waitForTimeout(5000);
@@ -167,17 +167,17 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Reorder Test List" }).first().click();
 
     // Wait for list details to appear
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
     await page.waitForTimeout(2000);
 
     // Get initial order of entities
     const entities = page.locator('[data-testid="entity-item"]');
-    await expect(entities).toHaveCount(2, { timeout: 10000 });
+    await expect(entities).toHaveCount(2, { timeout: 10_000 });
 
     // Get first entity ID before reordering
-    const firstEntityBefore = await entities.first().locator('text=/^(A|W)\\d+/').first().textContent();
+    const firstEntityBefore = await entities.first().locator(String.raw`text=/^(A|W)\d+/`).first().textContent();
 
     // Find drag handle in first entity (grip icon)
     const firstEntity = entities.first();
@@ -212,8 +212,8 @@ test.describe("Catalogue Entity Management", () => {
     await expect(entities).toHaveCount(2);
 
     // Verify order changed (first entity is now second)
-    const firstEntityAfter = await entities.first().locator('text=/^(A|W)\\d+/').first().textContent();
-    expect(firstEntityAfter).not.toBe(firstEntityBefore);
+    const firstEntityAfter = entities.first().locator(String.raw`text=/^(A|W)\d+/`).first();
+    await expect(firstEntityAfter).not.toHaveText(firstEntityBefore);
   });
 
   test("should search and filter entities within a list", async ({ page }) => {
@@ -227,13 +227,13 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Filter Test List" }).first().click();
 
     // Wait for list to load
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
     await page.waitForTimeout(2000);
 
     // Verify initial entity count
-    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
     // Find search input within entities view
     const searchInput = page.locator('input[placeholder*="Search entities"]').or(page.locator('input[aria-label*="Search entities"]'));
@@ -267,13 +267,13 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Notes Test List" }).first().click();
 
     // Wait for list details to appear
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
     await page.waitForTimeout(2000);
 
     // Verify entities loaded
-    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
     // Find first entity
     const firstEntity = page.locator('[data-testid="entity-item"]').first();
@@ -309,7 +309,7 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Empty List Test" }).first().click();
 
     // Wait for list details to be visible
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Should show empty state for entities - look for any of these common patterns
     const emptyStateIndicators = page.locator(
@@ -338,13 +338,13 @@ test.describe("Catalogue Entity Management", () => {
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Bulk Operations Test" }).first().click();
 
     // Wait for list details to appear
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // Wait for entities to load
     await page.waitForTimeout(2000);
 
     // Verify entities loaded
-    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10_000 });
 
     // Click "Select All" checkbox in table header
     const selectAllCheckbox = page.locator('thead input[type="checkbox"][aria-label*="Select all"]');
@@ -384,7 +384,7 @@ test.describe("Catalogue Entity Management", () => {
 
     // Find and verify the list card
     const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Metadata Test List" }).first();
-    await expect(listCard).toBeVisible({ timeout: 10000 });
+    await expect(listCard).toBeVisible({ timeout: 10_000 });
 
     // Verify the list card shows "1 item" (entity was added successfully)
     const cardText = await listCard.textContent();
@@ -396,7 +396,7 @@ test.describe("Catalogue Entity Management", () => {
     await listCard.click();
 
     // Wait for list details to be visible
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10_000 });
 
     // NOTE: The entity display in the details panel may require:
     // 1. Additional loading time for entity metadata enrichment
@@ -414,7 +414,7 @@ test.describe("Catalogue Entity Management", () => {
 
 // Helper functions
 
-async function createTestList(page: Page, listName: string): Promise<void> {
+const createTestList = async (page: Page, listName: string): Promise<void> => {
   await page.click('button:has-text("Create New List")');
   const createDialog = page.getByRole('dialog').filter({ hasText: 'Create' });
   await expect(createDialog).toBeVisible();
@@ -426,10 +426,10 @@ async function createTestList(page: Page, listName: string): Promise<void> {
   await expect(createDialog).not.toBeVisible({ timeout: 5000 });
 
   // Wait for the list to appear in the selected list details section
-  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
-}
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10_000 });
+};
 
-async function addEntityToCatalogue(page: Page, entityId: string, entityType: string, targetListName?: string): Promise<void> {
+const addEntityToCatalogue = async (page: Page, entityId: string, entityType: string, targetListName?: string): Promise<void> => {
   // Navigate to entity page
   await page.goto(`/#/${entityType}/${entityId}`);
   await page.waitForLoadState("networkidle");
@@ -442,7 +442,7 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
 
   // Button might not be immediately visible, wait longer
   try {
-    await expect(addToCatalogueButton).toBeVisible({ timeout: 15000 });
+    await expect(addToCatalogueButton).toBeVisible({ timeout: 15_000 });
   } catch (error) {
     // If button still not visible, log page state and rethrow
     console.log(`Add to catalogue button not found on ${entityType}/${entityId}`);
@@ -460,11 +460,7 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
   // Select a specific list if provided, otherwise first available
   await page.locator('[data-testid="add-to-list-select"]').click();
 
-  if (targetListName) {
-    await page.locator(`[role="option"]:has-text("${targetListName}")`).click();
-  } else {
-    await page.locator('[role="option"]').first().click();
-  }
+  await (targetListName ? page.locator(`[role="option"]:has-text("${targetListName}")`).click() : page.locator('[role="option"]').first().click());
 
   // Click Add to List button
   await page.locator('[data-testid="add-to-list-submit"]').click();
@@ -482,13 +478,13 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
 
   // Give time for the add operation to complete
   await page.waitForTimeout(1000);
-}
+};
 
-async function createListWithMultipleEntities(page: Page, listName: string): Promise<void> {
+const createListWithMultipleEntities = async (page: Page, listName: string): Promise<void> => {
   // Create the list first
   await createTestList(page, listName);
 
   // Add multiple entities to the created list
   await addEntityToCatalogue(page, "A5017898742", "authors", listName);
   await addEntityToCatalogue(page, "W4389376197", "works", listName);
-}
+};

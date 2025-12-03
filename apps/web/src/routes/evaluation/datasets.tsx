@@ -3,34 +3,34 @@
  * Upload, manage, and process systematic literature review datasets
  */
 
-import {
-  parseSTARFile,
-  createSTARDatasetFromParseResult,
-} from "@bibgraph/utils";
 import type { STARDataset } from "@bibgraph/utils";
+import {
+  createSTARDatasetFromParseResult,
+  parseSTARFile,
+} from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import {
-  Modal,
-  FileInput,
   Button,
-  Progress,
+  Card,
+  Container,
+  FileInput,
   Group,
+  Modal,
+  Paper,
+  Progress,
+  SimpleGrid,
   Stack,
   Text,
   Title,
-  Paper,
-  Container,
-  SimpleGrid,
-  Card,
 } from "@mantine/core";
-import { IconUpload, IconChartBar } from "@tabler/icons-react";
+import { IconChartBar,IconUpload } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 
 
 // Types are imported from @bibgraph/utils
 
-function DatasetsManagement() {
+const DatasetsManagement = () => {
   const [datasets, setDatasets] = useState<STARDataset[]>([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -272,34 +272,7 @@ function DatasetsManagement() {
         radius="md"
       >
         <Stack>
-          {!uploadFile ? (
-            <FileInput
-              accept=".csv,.json,.xlsx,.xls"
-              onChange={(file) => handleFileUpload(file)}
-              placeholder={
-                <Stack align="center" gap="md" p="xl">
-                  <IconUpload size={32} style={{ color: "var(--mantine-color-blue-6)" }} />
-                  <Text size="lg" fw={500} ta="center">
-                    Upload your dataset file
-                  </Text>
-                  <Text size="sm" c="dimmed" ta="center">
-                    Supported formats: CSV, JSON, Excel (.xlsx)
-                  </Text>
-                  <Text size="sm" c="blue" ta="center" td="underline">
-                    Click to select file
-                  </Text>
-                </Stack>
-              }
-              styles={{
-                input: {
-                  borderStyle: "dashed",
-                  backgroundColor: "var(--mantine-color-gray-0)",
-                  cursor: "pointer",
-                  textAlign: "center",
-                },
-              }}
-            />
-          ) : (
+          {uploadFile ? (
             <Stack gap="md">
               <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-gray-0)">
                 <Stack gap="xs">
@@ -328,6 +301,33 @@ function DatasetsManagement() {
                 </Stack>
               )}
             </Stack>
+          ) : (
+            <FileInput
+              accept=".csv,.json,.xlsx,.xls"
+              onChange={(file) => handleFileUpload(file)}
+              placeholder={
+                <Stack align="center" gap="md" p="xl">
+                  <IconUpload size={32} style={{ color: "var(--mantine-color-blue-6)" }} />
+                  <Text size="lg" fw={500} ta="center">
+                    Upload your dataset file
+                  </Text>
+                  <Text size="sm" c="dimmed" ta="center">
+                    Supported formats: CSV, JSON, Excel (.xlsx)
+                  </Text>
+                  <Text size="sm" c="blue" ta="center" td="underline">
+                    Click to select file
+                  </Text>
+                </Stack>
+              }
+              styles={{
+                input: {
+                  borderStyle: "dashed",
+                  backgroundColor: "var(--mantine-color-gray-0)",
+                  cursor: "pointer",
+                  textAlign: "center",
+                },
+              }}
+            />
           )}
 
           <Group justify="flex-end" mt="lg">
@@ -354,7 +354,7 @@ function DatasetsManagement() {
       </Modal>
     </Container>
   );
-}
+};
 
 export const Route = createFileRoute("/evaluation/datasets")({
   component: DatasetsManagement,

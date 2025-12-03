@@ -5,7 +5,6 @@
  * Handles search queries, entity type filtering, and result navigation.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → SearchPage
- *
  * @see spec-020 Phase 1: Search page testing
  */
 
@@ -42,6 +41,7 @@ export class SearchPage extends BaseSPAPageObject {
 
 	/**
 	 * Type a search query into the search input field
+	 * @param query
 	 */
 	async enterSearchQuery(query: string): Promise<void> {
 		await this.fill(this.searchSelectors.searchInput, query);
@@ -57,6 +57,7 @@ export class SearchPage extends BaseSPAPageObject {
 
 	/**
 	 * Perform a complete search: enter query + submit
+	 * @param query
 	 */
 	async search(query: string): Promise<void> {
 		await this.enterSearchQuery(query);
@@ -79,6 +80,7 @@ export class SearchPage extends BaseSPAPageObject {
 
 	/**
 	 * Click a search result by index (0-based)
+	 * @param index
 	 */
 	async clickResult(index: number): Promise<void> {
 		const results = this.page.locator(this.searchSelectors.searchResultItem);

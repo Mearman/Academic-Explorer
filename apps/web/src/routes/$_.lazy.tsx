@@ -2,14 +2,14 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
   useSearch,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function ExternalIdRoute() {
+const ExternalIdRoute = () => {
   const { _splat: splat } = useParams({ from: "/$_" });
   const externalId = splat || "";
   const routeSearch = useSearch({ from: "/$_" });
@@ -33,7 +33,7 @@ function ExternalIdRoute() {
         }
 
         // Handle double-encoded slashes first (%252F -> %2F)
-        const processedId = externalId.replace(/%252F/gi, '%2F');
+        const processedId = externalId.replaceAll(/%252F/gi, '%2F');
         // Decode the parameter
         let decodedId = decodeURIComponent(processedId);
 
@@ -41,8 +41,8 @@ function ExternalIdRoute() {
         // This happens when URLs like https://api.openalex.org are used as route params
         // and the router normalizes consecutive slashes
         if (
-          decodedId.match(/^https?:\//i) &&
-          !decodedId.match(/^https?:\/\//i)
+          /^https?:\//i.test(decodedId) &&
+          !/^https?:\/\//i.test(decodedId)
         ) {
           decodedId = decodedId.replace(/^(https?:\/?)/, "$1/");
           logger.debug(
@@ -64,7 +64,15 @@ function ExternalIdRoute() {
           // If so, let it fall through to entity detection logic instead of doing simple redirect
           const hasExternalId = /:/.test(cleanPath);
 
-          if (!hasExternalId) {
+          if (hasExternalId) {
+            // This URL contains external IDs (like ror:), let it fall through to entity detection
+            logger.debug(
+              "routing",
+              "OpenAlex API URL contains external IDs, falling through to entity detection",
+              { original: decodedId, cleanPath },
+              "ExternalIdRoute",
+            );
+          } else {
             logger.debug(
               "routing",
               "Detected OpenAlex API URL in catch-all, redirecting",
@@ -83,20 +91,12 @@ function ExternalIdRoute() {
             // Properly concatenate query parameters
             const hasExistingParams = cleanPath.includes("?");
             const newUrl = queryParams
-              ? hasExistingParams
+              ? (hasExistingParams
                 ? `/${cleanPath}&${queryParams}`
-                : `/${cleanPath}?${queryParams}`
+                : `/${cleanPath}?${queryParams}`)
               : `/${cleanPath}`;
             window.location.replace(`#${newUrl}`);
             return;
-          } else {
-            // This URL contains external IDs (like ror:), let it fall through to entity detection
-            logger.debug(
-              "routing",
-              "OpenAlex API URL contains external IDs, falling through to entity detection",
-              { original: decodedId, cleanPath },
-              "ExternalIdRoute",
-            );
           }
         }
 
@@ -127,13 +127,13 @@ function ExternalIdRoute() {
         for (const entityType of entityTypePrefixes) {
           if (decodedId.startsWith(`${entityType}/`)) {
             // Extract the ID part after the entity type prefix
-            let extractedId = decodedId.substring(entityType.length + 1);
+            let extractedId = decodedId.slice(Math.max(0, entityType.length + 1));
 
             // Fix collapsed protocol slashes (https:/ -> https://)
-            if (extractedId.match(/^https?:\//i) && !extractedId.match(/^https?:\/\//i)) {
+            if (/^https?:\//i.test(extractedId) && !/^https?:\/\//i.test(extractedId)) {
               extractedId = extractedId.replace(/^(https?:\/?)/, "$1/");
             }
-            if (extractedId.match(/^ror:\//i) && !extractedId.match(/^ror:\/\//i)) {
+            if (/^ror:\//i.test(extractedId) && !/^ror:\/\//i.test(extractedId)) {
               extractedId = extractedId.replace(/^(ror:\/?)/, "$1/");
             }
 
@@ -181,8 +181,8 @@ function ExternalIdRoute() {
         const queryIndex = decodedId.indexOf("?");
         if (queryIndex !== -1) {
           // Split the ID from query parameters
-          idForDetection = decodedId.substring(0, queryIndex);
-          const queryString = decodedId.substring(queryIndex + 1);
+          idForDetection = decodedId.slice(0, Math.max(0, queryIndex));
+          const queryString = decodedId.slice(Math.max(0, queryIndex + 1));
 
           // Parse query parameters and merge with route search params
           const params = new URLSearchParams(queryString);
@@ -210,7 +210,7 @@ function ExternalIdRoute() {
 
         // Reject obviously invalid patterns
         const invalidPatterns = [
-          /^[^!#$%&'(\-0-9A-Za-z./:?_~@[\])*+,;=]+$/, // Contains invalid URL characters
+          /^[^!#$%&'(\-\w./:?~@[\])*+,;=]+$/, // Contains invalid URL characters
           /^\s+$/, // Only whitespace
           /^(data:|javascript:|vbscript:)/i, // Dangerous protocols
         ];
@@ -402,7 +402,7 @@ function ExternalIdRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/$_")({
   component: ExternalIdRoute,

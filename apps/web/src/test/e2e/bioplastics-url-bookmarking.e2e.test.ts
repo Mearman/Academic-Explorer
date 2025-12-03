@@ -25,11 +25,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for the redirect to complete and the works page to load
-      await page.waitForURL(`**/works**`, { timeout: 15000 });
+      await page.waitForURL(`**/works**`, { timeout: 15_000 });
 
       // Verify the current URL contains the expected route parameters
       const currentUrl = page.url();
@@ -61,7 +61,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(localTestUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for redirect and content to load
@@ -81,7 +81,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(complexUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(3000);
@@ -103,7 +103,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for redirect and page load
@@ -136,7 +136,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait for redirect and page load
@@ -146,7 +146,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
-      if (await firstBookmarkButton.isVisible({ timeout: 10000 })) {
+      if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         // Get initial state
         const initialIcon = firstBookmarkButton.locator('svg');
         await expect(initialIcon).toBeVisible();
@@ -160,8 +160,8 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
         await expect(updatedIcon).toBeVisible();
 
         // Check for any visual indication of bookmark state change
-        const buttonClasses = await firstBookmarkButton.getAttribute('class');
-        expect(buttonClasses).toBeTruthy();
+        const buttonClasses = firstBookmarkButton;
+        await expect(buttonClasses).toHaveAttribute('class', );
       }
     });
 
@@ -171,7 +171,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(4000);
@@ -180,14 +180,14 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
-      if (await firstBookmarkButton.isVisible({ timeout: 10000 })) {
+      if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
         await page.waitForTimeout(2000);
 
         // Navigate to bookmarks page to verify
         await page.goto(`${BASE_URL}/#/bookmarks`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(3000);
@@ -217,7 +217,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(4000);
@@ -226,14 +226,14 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
-      if (await firstBookmarkButton.isVisible({ timeout: 10000 })) {
+      if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
         await page.waitForTimeout(2000);
 
         // Navigate to bookmarks page
         await page.goto(`${BASE_URL}/#/bookmarks`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(3000);
@@ -244,7 +244,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
         // Now navigate back to the bioplastics works page directly
         await page.goto(`${BASE_URL}/#/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(3000);
@@ -271,7 +271,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(4000);
@@ -280,33 +280,33 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       const bookmarkButtons = page.locator('button').filter({ has: page.locator('svg') });
       const firstBookmarkButton = bookmarkButtons.first();
 
-      if (await firstBookmarkButton.isVisible({ timeout: 10000 })) {
+      if (await firstBookmarkButton.isVisible({ timeout: 10_000 })) {
         await firstBookmarkButton.click();
         await page.waitForTimeout(2000);
 
         // Navigate to the same page via direct internal route
         await page.goto(`${BASE_URL}/#/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc`, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(3000);
 
         // Should still show bookmark button
         const directBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
-        await expect(directBookmarkButton).toBeVisible({ timeout: 10000 });
+        await expect(directBookmarkButton).toBeVisible({ timeout: 10_000 });
 
         // Navigate again via OpenAlex URL
         await page.goto(redirectUrl, {
           waitUntil: "networkidle",
-          timeout: 30000,
+          timeout: 30_000,
         });
 
         await page.waitForTimeout(4000);
 
         // Should still show bookmark button
         const redirectedBookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
-        await expect(redirectedBookmarkButton).toBeVisible({ timeout: 10000 });
+        await expect(redirectedBookmarkButton).toBeVisible({ timeout: 10_000 });
       }
     });
   });
@@ -317,7 +317,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(malformedUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(3000);
@@ -346,11 +346,11 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(redirectUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       // Wait longer than usual to test timeout handling
-      await page.waitForTimeout(10000);
+      await page.waitForTimeout(10_000);
 
       // Should handle timeouts gracefully without throwing unhandled errors
       const criticalErrors = errors.filter(e =>
@@ -368,7 +368,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(encodedUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(3000);
@@ -379,8 +379,8 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
       expect(currentUrl).toContain('bioplastics');
 
       // Should not crash on encoded characters
-      const hasValidContent = await page.locator('body').isVisible();
-      expect(hasValidContent).toBe(true);
+      const hasValidContent = page.locator('body');
+      await expect(hasValidContent).toBeVisible();
     });
   });
 
@@ -391,7 +391,7 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.goto(productionSimulationUrl, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(4000);

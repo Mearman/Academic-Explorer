@@ -5,14 +5,14 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
-  Select,
+  Alert,
   Button,
   Group,
-  Stack,
-  Textarea,
-  Text,
-  Alert,
   Loader,
+  Select,
+  Stack,
+  Text,
+  Textarea,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
@@ -28,12 +28,12 @@ interface AddToListModalProps {
   onClose: () => void;
 }
 
-export function AddToListModal({
+export const AddToListModal = ({
   entityType,
   entityId,
   entityDisplayName,
   onClose
-}: AddToListModalProps) {
+}: AddToListModalProps) => {
   const { lists, isLoadingLists, addEntityToList } = useCatalogue();
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
@@ -181,4 +181,4 @@ export function AddToListModal({
       </Stack>
     </form>
   );
-}
+};

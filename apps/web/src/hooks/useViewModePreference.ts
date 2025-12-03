@@ -6,20 +6,21 @@
  */
 
 import type { ViewMode } from '@bibgraph/types';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback,useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bibgraph-view-mode-preference';
 const DEFAULT_MODE: ViewMode = '2D';
 
 /**
  * Parse stored view mode with validation
+ * @param stored
  */
-function parseStoredViewMode(stored: string | null): ViewMode {
+const parseStoredViewMode = (stored: string | null): ViewMode => {
   if (stored === '2D' || stored === '3D') {
     return stored;
   }
   return DEFAULT_MODE;
-}
+};
 
 export interface UseViewModePreferenceReturn {
   /** Current view mode */
@@ -32,10 +33,8 @@ export interface UseViewModePreferenceReturn {
 
 /**
  * Hook for managing view mode preference with localStorage persistence
- *
  * @param defaultMode - Default mode if no preference is stored
  * @returns Object with current mode, setter, and loading state
- *
  * @example
  * ```tsx
  * function AlgorithmsPage() {
@@ -49,7 +48,7 @@ export interface UseViewModePreferenceReturn {
  * }
  * ```
  */
-export function useViewModePreference(defaultMode: ViewMode = DEFAULT_MODE): UseViewModePreferenceReturn {
+export const useViewModePreference = (defaultMode: ViewMode = DEFAULT_MODE): UseViewModePreferenceReturn => {
   const [viewMode, setViewModeState] = useState<ViewMode>(defaultMode);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -78,4 +77,4 @@ export function useViewModePreference(defaultMode: ViewMode = DEFAULT_MODE): Use
   }, []);
 
   return { viewMode, setViewMode, isLoaded };
-}
+};

@@ -1,7 +1,6 @@
 /**
  * React hook for extracting entity relationships from raw entity data
  * Falls back to parsing entity fields when GraphContext is not available
- *
  * @module use-entity-relationships-from-data
  */
 
@@ -10,21 +9,22 @@ import { RelationType } from '@bibgraph/types';
 import { useMemo } from 'react';
 
 import type {
-  RelationshipSection,
-  RelationshipItem,
   PaginationState,
+  RelationshipItem,
+  RelationshipSection,
 } from '@/types/relationship';
-import { RELATIONSHIP_TYPE_LABELS, DEFAULT_PAGE_SIZE } from '@/types/relationship';
+import { DEFAULT_PAGE_SIZE,RELATIONSHIP_TYPE_LABELS } from '@/types/relationship';
 
 /**
  * Safely extract a string ID from an entity property
  * Prevents [object Object] appearing in URLs if API returns unexpected data
+ * @param value
  */
-function safeStringId(value: unknown): string {
+const safeStringId = (value: unknown): string => {
   if (typeof value === 'string') return value;
   if (value == null) return '';
   return String(value);
-}
+};
 
 export interface UseEntityRelationshipsFromDataResult {
   /** Incoming relationship sections (other entities → this entity) */
@@ -43,15 +43,11 @@ export interface UseEntityRelationshipsFromDataResult {
 /**
  * Extract relationships from raw entity data (Author, Work, etc.)
  * This provides a fallback when GraphContext is not available
- *
  * @param entityData - The raw entity data from OpenAlex API
  * @param entityType - The type of the entity
  * @returns Relationship sections extracted from entity fields
  */
-export function useEntityRelationshipsFromData(
-  entityData: Record<string, unknown> | null | undefined,
-  entityType: EntityType,
-): UseEntityRelationshipsFromDataResult {
+export const useEntityRelationshipsFromData = (entityData: Record<string, unknown> | null | undefined, entityType: EntityType): UseEntityRelationshipsFromDataResult => {
   const entityId = (entityData?.id as string) || '';
 
   const { incoming, outgoing } = useMemo(() => {
@@ -104,21 +100,19 @@ export function useEntityRelationshipsFromData(
     incomingCount,
     outgoingCount,
   };
-}
+};
 
 /**
  * Helper to create a properly structured RelationshipItem
+ * @param sourceId
+ * @param targetId
+ * @param sourceType
+ * @param targetType
+ * @param relationType
+ * @param direction
+ * @param displayName
  */
-function createRelationshipItem(
-  sourceId: string,
-  targetId: string,
-  sourceType: EntityType,
-  targetType: EntityType,
-  relationType: RelationType,
-  direction: 'outbound' | 'inbound',
-  displayName: string,
-): RelationshipItem {
-  return {
+const createRelationshipItem = (sourceId: string, targetId: string, sourceType: EntityType, targetType: EntityType, relationType: RelationType, direction: 'outbound' | 'inbound', displayName: string): RelationshipItem => ({
     id: `${sourceId}-${relationType}-${targetId}`,
     sourceId,
     targetId,
@@ -129,19 +123,17 @@ function createRelationshipItem(
     displayName,
     isSelfReference: sourceId === targetId,
     // metadata is optional - we can add typed metadata in future iterations
-  };
-}
+  });
 
 /**
  * Helper to create a properly structured RelationshipSection
+ * @param type
+ * @param direction
+ * @param label
+ * @param items
+ * @param isPartialData
  */
-function createRelationshipSection(
-  type: RelationType,
-  direction: 'outbound' | 'inbound',
-  label: string,
-  items: RelationshipItem[],
-  isPartialData: boolean = false,
-): RelationshipSection {
+const createRelationshipSection = (type: RelationType, direction: 'outbound' | 'inbound', label: string, items: RelationshipItem[], isPartialData: boolean = false): RelationshipSection => {
   const totalCount = items.length;
   
   const visibleItems = items.slice(0, DEFAULT_PAGE_SIZE);
@@ -169,16 +161,15 @@ function createRelationshipSection(
     pagination,
     isPartialData,
   };
-}
+};
 
 /**
  * Extract relationships from Author entity
+ * @param data
+ * @param authorId
+ * @param outgoing
  */
-function extractAuthorRelationships(
-  data: Record<string, unknown>,
-  authorId: string,
-  outgoing: RelationshipSection[],
-): void {
+const extractAuthorRelationships = (data: Record<string, unknown>, authorId: string, outgoing: RelationshipSection[]): void => {
   // AFFILIATION: Author → Institutions
   const affiliations = data.affiliations as Array<{
     institution?: {
@@ -251,17 +242,16 @@ function extractAuthorRelationships(
       ));
     }
   }
-}
+};
 
 /**
  * Extract relationships from Work entity
+ * @param data
+ * @param workId
+ * @param outgoing
+ * @param incoming
  */
-function extractWorkRelationships(
-  data: Record<string, unknown>,
-  workId: string,
-  outgoing: RelationshipSection[],
-  incoming: RelationshipSection[],
-): void {
+const extractWorkRelationships = (data: Record<string, unknown>, workId: string, outgoing: RelationshipSection[], incoming: RelationshipSection[]): void => {
   // AUTHORSHIP: Work → Authors
   const authorships = data.authorships as Array<{
     author?: {
@@ -503,16 +493,15 @@ function extractWorkRelationships(
       ));
     }
   }
-}
+};
 
 /**
  * Extract relationships from Institution entity
+ * @param data
+ * @param institutionId
+ * @param outgoing
  */
-function extractInstitutionRelationships(
-  data: Record<string, unknown>,
-  institutionId: string,
-  outgoing: RelationshipSection[],
-): void {
+const extractInstitutionRelationships = (data: Record<string, unknown>, institutionId: string, outgoing: RelationshipSection[]): void => {
   // LINEAGE: Institution → Parent Institutions
   const lineage = data.lineage as string[] | undefined;
   if (lineage && lineage.length > 1) {
@@ -625,9 +614,21 @@ function extractInstitutionRelationships(
         const roleName = role.role || '';
         // Infer target entity type from role
         let targetType: EntityType = 'works';
-        if (roleName === 'funder') targetType = 'funders';
-        else if (roleName === 'institution') targetType = 'institutions';
-        else if (roleName === 'publisher') targetType = 'publishers';
+        switch (roleName) {
+        case 'funder': {
+        targetType = 'funders';
+        break;
+        }
+        case 'institution': {
+        targetType = 'institutions';
+        break;
+        }
+        case 'publisher': {
+        targetType = 'publishers';
+        // No default
+        }
+        break;
+        }
 
         return createRelationshipItem(
           institutionId,
@@ -649,16 +650,15 @@ function extractInstitutionRelationships(
       ));
     }
   }
-}
+};
 
 /**
  * Extract relationships from Source entity
+ * @param data
+ * @param sourceId
+ * @param outgoing
  */
-function extractSourceRelationships(
-  data: Record<string, unknown>,
-  sourceId: string,
-  outgoing: RelationshipSection[],
-): void {
+const extractSourceRelationships = (data: Record<string, unknown>, sourceId: string, outgoing: RelationshipSection[]): void => {
   // HOST_ORGANIZATION: Source → Publisher
   const hostOrganization = data.host_organization as string | undefined;
   const hostOrganizationName = data.host_organization_name as string | undefined;
@@ -715,16 +715,15 @@ function extractSourceRelationships(
       ));
     }
   }
-}
+};
 
 /**
  * Extract relationships from Topic entity
+ * @param data
+ * @param topicId
+ * @param outgoing
  */
-function extractTopicRelationships(
-  data: Record<string, unknown>,
-  topicId: string,
-  outgoing: RelationshipSection[],
-): void {
+const extractTopicRelationships = (data: Record<string, unknown>, topicId: string, outgoing: RelationshipSection[]): void => {
   // TOPIC_PART_OF_FIELD: Topic → Field → Domain hierarchy
   const field = data.field as {
     id?: string;
@@ -771,4 +770,4 @@ function extractTopicRelationships(
       [domainItem],
     ));
   }
-}
+};

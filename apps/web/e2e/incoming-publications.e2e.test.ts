@@ -1,11 +1,10 @@
 /**
  * E2E tests for incoming publication relationships on source detail pages
- *
  * @module incoming-publications.e2e
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Incoming Relationships - Source Publications', () => {
   test('should display incoming publications section on source detail page', async ({ page }) => {

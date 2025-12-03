@@ -14,8 +14,8 @@ import {
   stat,
   unlink,
   writeFile,
-} from "fs/promises";
-import { join } from "path";
+} from "node:fs/promises";
+import { join } from "node:path";
 
 import { logger } from "@bibgraph/utils";
 import {
@@ -28,8 +28,9 @@ import { z } from "zod";
 /**
  * Simple fetch function for OpenAlex API queries
  * This is a minimal implementation for use in the build plugin
+ * @param url
  */
-async function fetchOpenAlexQuery(url: string): Promise<unknown> {
+const fetchOpenAlexQuery = async (url: string): Promise<unknown> => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -48,7 +49,7 @@ async function fetchOpenAlexQuery(url: string): Promise<unknown> {
     });
     return null;
   }
-}
+};
 
 // Import additional utilities for direct filename control
 
@@ -70,16 +71,11 @@ const IndexEntrySchema = z.object({
 });
 
 // Helper function to convert IndexEntry to UnifiedIndexEntry
-function indexEntryToUnified(
-  indexEntry: IndexEntry,
-  $ref?: string,
-): UnifiedIndexEntry {
-  return {
+const indexEntryToUnified = (indexEntry: IndexEntry, $ref?: string): UnifiedIndexEntry => ({
     $ref: $ref || "",
     lastModified: indexEntry.lastModified || "",
     contentHash: indexEntry.contentHash || "",
-  };
-}
+  });
 
 const QueryParamsSchema = z.record(z.string(), z.unknown());
 
@@ -136,8 +132,9 @@ const ENTITY_TYPES = [
 
 /**
  * Get the OpenAlex ID prefix for a given entity type
+ * @param entityType
  */
-function getEntityPrefix(entityType: string): string {
+const getEntityPrefix = (entityType: string): string => {
   const prefixMap: Record<string, string> = {
     works: "W",
     authors: "A",
@@ -150,7 +147,7 @@ function getEntityPrefix(entityType: string): string {
     autocomplete: "", // Autocomplete doesn't use entity prefixes, only queries
   };
   return prefixMap[entityType] ?? "";
-}
+};
 
 /**
  * Parse a unified index key to determine what type of resource it represents
@@ -167,8 +164,9 @@ interface ParsedKey {
 /**
  * Detect malformed filenames that should be removed from filesystem
  * Returns true if the filename represents a malformed double-encoded URL
+ * @param filename
  */
-function detectMalformedFilename(filename: string): boolean {
+const detectMalformedFilename = (filename: string): boolean => {
   // Pattern 1: Triple slashes in URL-encoded format (corrupted double-encoding)
   // Example: https%2F%2F%2Fapi%2Eopenalex%2Eorg (should be https%2F%2Fapi.openalex.org)
   if (filename.includes("%2F%2F%2F")) {
@@ -188,13 +186,14 @@ function detectMalformedFilename(filename: string): boolean {
   }
 
   return false;
-}
+};
 
 /**
  * Detect and clean malformed double-encoded keys
  * Handles cases like: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
+ * @param key
  */
-function detectAndCleanMalformedKey(key: string): string {
+const detectAndCleanMalformedKey = (key: string): string => {
   // Pattern 1: Double-encoded URLs embedded in entity paths
   // Example: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
   const doubleEncodedPattern =
@@ -226,7 +225,7 @@ function detectAndCleanMalformedKey(key: string): string {
   if (encodedEntityPattern.test(key)) {
     try {
       // Remove the prefix letter and decode
-      const withoutPrefix = key.substring(1);
+      const withoutPrefix = key.slice(1);
       let decodedUrl = decodeURIComponent(withoutPrefix);
       // Fix malformed protocol separator
       decodedUrl = decodedUrl.replace(/^https\/\/\//, "https://");
@@ -253,7 +252,7 @@ function detectAndCleanMalformedKey(key: string): string {
       const decoded = decodeURIComponent(current);
       if (
         decoded !== current &&
-        (decoded.startsWith("https://") || decoded.match(/^[A-Z]\d+$/))
+        (decoded.startsWith("https://") || /^[A-Z]\d+$/.test(decoded))
       ) {
         current = decoded;
         attempts++;
@@ -274,12 +273,13 @@ function detectAndCleanMalformedKey(key: string): string {
   }
 
   return current;
-}
+};
 
 /**
  * Parse various key formats into a standardized structure
+ * @param key
  */
-function parseIndexKey(key: string): ParsedKey | null {
+const parseIndexKey = (key: string): ParsedKey | null => {
   // Note: Malformed key detection is now handled at the caller level
   // to avoid recursive cleaning that masks the original malformed state
 
@@ -305,12 +305,12 @@ function parseIndexKey(key: string): ParsedKey | null {
 
   // Direct entity ID like "W1234"
   return parseDirectEntityId(key);
-}
+};
 
-function parseOpenAlexApiUrl(url: string): ParsedKey | null {
+const parseOpenAlexApiUrl = (url: string): ParsedKey | null => {
   try {
     const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split("/").filter((p) => p);
+    const pathParts = urlObj.pathname.split("/").filter(Boolean);
 
     if (pathParts.length === 1) {
       // Query: https://api.openalex.org/works?per_page=30&page=1
@@ -363,12 +363,12 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
     return null;
   }
   return null;
-}
+};
 
-function parseOpenAlexUrlForPlugin(url: string): ParsedKey | null {
+const parseOpenAlexUrlForPlugin = (url: string): ParsedKey | null => {
   try {
     const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split("/").filter((p) => p);
+    const pathParts = urlObj.pathname.split("/").filter(Boolean);
 
     if (pathParts.length === 1) {
       // Direct entity: https://openalex.org/W2241997964
@@ -399,9 +399,9 @@ function parseOpenAlexUrlForPlugin(url: string): ParsedKey | null {
     return null;
   }
   return null;
-}
+};
 
-function parseRelativeQuery(key: string): ParsedKey | null {
+const parseRelativeQuery = (key: string): ParsedKey | null => {
   const [path, queryString] = key.split("?");
 
   try {
@@ -422,9 +422,9 @@ function parseRelativeQuery(key: string): ParsedKey | null {
   } catch {
     return null;
   }
-}
+};
 
-function parseEntityPath(key: string): ParsedKey | null {
+const parseEntityPath = (key: string): ParsedKey | null => {
   const parts = key.split("/");
   if (parts.length === 2) {
     const [entityType, entityId] = parts;
@@ -438,9 +438,9 @@ function parseEntityPath(key: string): ParsedKey | null {
     };
   }
   return null;
-}
+};
 
-function parseDirectEntityId(key: string): ParsedKey | null {
+const parseDirectEntityId = (key: string): ParsedKey | null => {
   const entityType = inferEntityTypeFromId(key);
 
   return {
@@ -450,12 +450,13 @@ function parseDirectEntityId(key: string): ParsedKey | null {
     originalKey: key,
     canonicalUrl: `https://api.openalex.org/${entityType}/${key}`,
   };
-}
+};
 
 /**
  * Infer entity type from OpenAlex ID prefix
+ * @param id
  */
-function inferEntityTypeFromId(id: string): string {
+const inferEntityTypeFromId = (id: string): string => {
   if (id.startsWith("W")) return "works";
   if (id.startsWith("A")) return "authors";
   if (id.startsWith("I")) return "institutions";
@@ -467,18 +468,17 @@ function inferEntityTypeFromId(id: string): string {
 
   // Default fallback
   return "works";
-}
+};
 
 /**
  * Download entity directly with encoded filename (avoids temporary file creation)
  * Returns: true for success, false for non-404 errors, "not_found" for 404 errors,
  * or { redirected: true, finalUrl: string } for redirected URLs
+ * @param entityType
+ * @param entityId
+ * @param targetFilePath
  */
-async function downloadEntityWithEncodedFilename(
-  entityType: string,
-  entityId: string,
-  targetFilePath: string,
-): Promise<boolean | "not_found" | { redirected: true; finalUrl: string }> {
+const downloadEntityWithEncodedFilename = async (entityType: string, entityId: string, targetFilePath: string): Promise<boolean | "not_found" | { redirected: true; finalUrl: string }> => {
   try {
     // Entity type mapping (same as in openalex-downloader)
     const ENTITY_TYPE_TO_ENDPOINT: Record<string, string> = {
@@ -643,14 +643,13 @@ async function downloadEntityWithEncodedFilename(
     });
     return false;
   }
-}
+};
 
-export function openalexDataPlugin(): Plugin {
-  return {
+export const openalexDataPlugin = (): Plugin => ({
     name: "openalex-data-management",
     buildStart: {
       order: "pre",
-      async handler() {
+      handler: async () => {
         logger.debug(
           "general",
           "Starting comprehensive OpenAlex data management",
@@ -760,16 +759,14 @@ export function openalexDataPlugin(): Plugin {
         logger.debug("general", "OpenAlex data management completed");
       },
     },
-  };
-}
+  });
 
 /**
  * Load unified index for an entity type
+ * @param dataPath
+ * @param entityType
  */
-async function loadUnifiedIndex(
-  dataPath: string,
-  entityType: string,
-): Promise<UnifiedIndex> {
+const loadUnifiedIndex = async (dataPath: string, entityType: string): Promise<UnifiedIndex> => {
   const indexPath = join(dataPath, entityType, "index.json");
 
   try {
@@ -875,12 +872,13 @@ async function loadUnifiedIndex(
     logger.debug("general", "Creating new unified index");
     return {};
   }
-}
+};
 
 /**
  * Convert old index formats to unified format
+ * @param oldIndex
  */
-function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
+const convertOldIndexToUnified = (oldIndex: unknown): UnifiedIndex => {
   const unified: UnifiedIndex = {};
 
   // Try parsing as old entity index format
@@ -949,15 +947,14 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
   }
 
   return unified;
-}
+};
 
 /**
  * Generate canonical query key from a query definition
+ * @param query
+ * @param entityType
  */
-function generateCanonicalQueryKey(
-  query: unknown,
-  entityType: string,
-): string | null {
+const generateCanonicalQueryKey = (query: unknown, entityType: string): string | null => {
   const parsed = QueryDefinitionSchema.safeParse(query);
   if (!parsed.success) {
     return null;
@@ -983,15 +980,14 @@ function generateCanonicalQueryKey(
   }
 
   return null;
-}
+};
 
 /**
  * Generate canonical query key from old entry format
+ * @param entry
+ * @param entityType
  */
-function generateCanonicalQueryKeyFromEntry(
-  entry: unknown,
-  entityType: string,
-): string | null {
+const generateCanonicalQueryKeyFromEntry = (entry: unknown, entityType: string): string | null => {
   const parsed = QueryDefinitionSchema.safeParse(entry);
   if (!parsed.success) {
     return null;
@@ -1016,24 +1012,23 @@ function generateCanonicalQueryKeyFromEntry(
   }
 
   return null;
-}
+};
 
 /**
  * Seed missing data based on unified index entries
  * Returns updates to be applied to the index: removals and redirects
+ * @param dataPath
+ * @param entityType
+ * @param index
  */
-async function seedMissingData(
-  dataPath: string,
-  entityType: string,
-  index: UnifiedIndex,
-): Promise<{
+const seedMissingData = async (dataPath: string, entityType: string, index: UnifiedIndex): Promise<{
   keysToRemove: Set<string>;
   redirectUpdates: Array<{
     oldKey: string;
     newKey: string;
     metadata: IndexEntry;
   }>;
-}> {
+}> => {
   let downloadedEntities = 0;
   let executedQueries = 0;
   const keysToRemove = new Set<string>();
@@ -1250,12 +1245,13 @@ async function seedMissingData(
   }
 
   return { keysToRemove, redirectUpdates };
-}
+};
 
 /**
  * Ensure consistent JSON formatting for all files
+ * @param jsonContent
  */
-function formatJsonConsistently(jsonContent: string): string {
+const formatJsonConsistently = (jsonContent: string): string => {
   try {
     const parsed: unknown = JSON.parse(jsonContent);
     return JSON.stringify(parsed, null, 2);
@@ -1264,15 +1260,14 @@ function formatJsonConsistently(jsonContent: string): string {
     logger.warn("general", "Could not parse JSON for formatting");
     return jsonContent;
   }
-}
+};
 
 /**
  * Reformat existing JSON files for consistency
+ * @param dataPath
+ * @param entityType
  */
-async function reformatExistingFiles(
-  dataPath: string,
-  entityType: string,
-): Promise<void> {
+const reformatExistingFiles = async (dataPath: string, entityType: string): Promise<void> => {
   const entityDir = join(dataPath, entityType);
 
   try {
@@ -1306,29 +1301,27 @@ async function reformatExistingFiles(
   } catch {
     // Directory doesn't exist or other error - skip silently
   }
-}
+};
 
 /**
  * Convert a canonical URL to the encoded key format for consistent indexing
  * Uses standard URL encoding for safe filename generation
+ * @param url
  */
-function urlToEncodedKey(url: string): string {
-  return (
-    encodeURIComponent(url)
+const urlToEncodedKey = (url: string): string => encodeURIComponent(url)
       // Remove extra dot encoding - encodeURIComponent already handles URL safety
       // .replace(/\./g, "%2E")  // Don't double-encode dots
-      .replace(/!/g, "%21") // Encode exclamation marks
-      .replace(/'/g, "%27") // Encode single quotes
-      .replace(/\(/g, "%28") // Encode parentheses
-      .replace(/\)/g, "%29")
-      .replace(/\*/g, "%2A")
-  ); // Encode asterisks
-}
+      .replaceAll('!', "%21") // Encode exclamation marks
+      .replaceAll('\'', "%27") // Encode single quotes
+      .replaceAll('(', "%28") // Encode parentheses
+      .replaceAll(')', "%29")
+      .replaceAll('*', "%2A");
 
 /**
  * Generate filename from parsed key using URL encoding
+ * @param parsed
  */
-function generateFilenameFromParsedKey(parsed: ParsedKey): string | null {
+const generateFilenameFromParsedKey = (parsed: ParsedKey): string | null => {
   // Always use full URL encoding for both entities and queries
   const { canonicalUrl } = parsed;
   if (!canonicalUrl) return null;
@@ -1340,16 +1333,15 @@ function generateFilenameFromParsedKey(parsed: ParsedKey): string | null {
   filename = `${filename}.json`;
 
   return filename;
-}
+};
 
 /**
  * Update unified index with both entity and query file metadata
+ * @param dataPath
+ * @param entityType
+ * @param index
  */
-async function updateUnifiedIndex(
-  dataPath: string,
-  entityType: string,
-  index: UnifiedIndex,
-): Promise<UnifiedIndex> {
+const updateUnifiedIndex = async (dataPath: string, entityType: string, index: UnifiedIndex): Promise<UnifiedIndex> => {
   // Scan entity files
   const entityDir = join(dataPath, entityType);
   try {
@@ -1434,17 +1426,17 @@ async function updateUnifiedIndex(
               if (entityId.startsWith("https-:")) {
                 // This is an encoded filename - decode it carefully
                 // Remove the encoded protocol prefix
-                let withoutProtocol = entityId.substring(7); // Remove 'https-:'
+                let withoutProtocol = entityId.slice(7); // Remove 'https-:'
 
                 // Replace colons with slashes in the path part (no query params for entities)
-                withoutProtocol = withoutProtocol.replace(/:/g, "/");
+                withoutProtocol = withoutProtocol.replaceAll(':', "/");
 
                 // Replace hyphens with equals signs
-                withoutProtocol = withoutProtocol.replace(/-/g, "=");
+                withoutProtocol = withoutProtocol.replaceAll('-', "=");
 
                 // Reconstruct the full URL
                 canonicalUrl = "https://" + withoutProtocol;
-                canonicalUrl = canonicalUrl.replace(/%22/g, '"');
+                canonicalUrl = canonicalUrl.replaceAll('%22', '"');
               } else {
                 // This is a simple entity ID - construct the canonical URL
                 const prefix = getEntityPrefix(entityType);
@@ -1456,11 +1448,11 @@ async function updateUnifiedIndex(
             }
             // Use canonical URL as index key
 
-            if (!index[canonicalUrl]) {
-              index[canonicalUrl] = metadata;
-            } else {
+            if (index[canonicalUrl]) {
               // Merge properties
               index[canonicalUrl] = { ...index[canonicalUrl], ...metadata };
+            } else {
+              index[canonicalUrl] = metadata;
             }
           } else {
             // This is a query file
@@ -1488,11 +1480,11 @@ async function updateUnifiedIndex(
               }
 
               if (!isDuplicate) {
-                if (!index[canonicalQueryUrl]) {
-                  index[canonicalQueryUrl] = metadata;
-                } else {
+                if (index[canonicalQueryUrl]) {
                   // Merge properties
                   index[canonicalQueryUrl] = { ...index[canonicalQueryUrl], ...metadata };
+                } else {
+                  index[canonicalQueryUrl] = metadata;
                 }
                 logger.debug("general", "Added query to index", {
                   canonicalQueryUrl,
@@ -1523,17 +1515,16 @@ async function updateUnifiedIndex(
     entryCount: Object.keys(index).length,
   });
   return index;
-}
+};
 
 /**
  * Determine the canonical query URL for a query file
  * This tries multiple approaches to decode the filename and reconstruct the original query
+ * @param entityType
+ * @param filename
+ * @param fileContent
  */
-function determineCanonicalQueryUrl(
-  entityType: string,
-  filename: string,
-  fileContent: string,
-): string | null {
+const determineCanonicalQueryUrl = (entityType: string, filename: string, fileContent: string): string | null => {
   // Try multiple decoding approaches
 
   // Approach 1: Try standard URL decoding
@@ -1556,11 +1547,11 @@ function determineCanonicalQueryUrl(
       logger.debug("general", "Decoding legacy custom URL encoding", {
         filename,
       });
-      let withoutProtocol = filename.substring(7); // Remove 'https-:'
+      let withoutProtocol = filename.slice(7); // Remove 'https-:'
       withoutProtocol = withoutProtocol
-        .replace(/:/g, "/") // : → /
-        .replace(/-/g, "=") // - → =
-        .replace(/%22/g, '"'); // %22 → "
+        .replaceAll(':', "/") // : → /
+        .replaceAll('-', "=") // - → =
+        .replaceAll('%22', '"'); // %22 → "
       const decodedUrl = `https://${withoutProtocol}`;
       logger.debug("general", "Legacy decoded to", { decodedUrl });
       return decodedUrl;
@@ -1671,15 +1662,14 @@ function determineCanonicalQueryUrl(
   // Ultimate fallback - this shouldn't happen with proper encoding
   logger.warn("general", "Cannot reconstruct URL from filename", { filename });
   return null;
-}
+};
 
 /**
  * Try to reverse-engineer the original query URL from the results
+ * @param entityType
+ * @param queryResult
  */
-function reverseEngineerQueryUrl(
-  entityType: string,
-  queryResult: unknown,
-): string | null {
+const reverseEngineerQueryUrl = (entityType: string, queryResult: unknown): string | null => {
   if (
     !queryResult ||
     typeof queryResult !== "object" ||
@@ -1746,16 +1736,15 @@ function reverseEngineerQueryUrl(
   }
 
   return null;
-}
+};
 
 /**
  * Remove duplicate entries where both prefixed and non-prefixed versions exist
  * Keep the prefixed version (canonical) and remove the non-prefixed version
+ * @param index
+ * @param entityType
  */
-function deduplicateIndexEntries(
-  index: UnifiedIndex,
-  entityType: string,
-): UnifiedIndex {
+const deduplicateIndexEntries = (index: UnifiedIndex, entityType: string): UnifiedIndex => {
   const prefix = getEntityPrefix(entityType);
   const keysToRemove: string[] = [];
 
@@ -1791,16 +1780,15 @@ function deduplicateIndexEntries(
     ([key]) => !keysToRemove.includes(key),
   );
   return Object.fromEntries(filteredEntries);
-}
+};
 
 /**
  * Save unified index to file with requests wrapper
+ * @param dataPath
+ * @param entityType
+ * @param index
  */
-async function saveUnifiedIndex(
-  dataPath: string,
-  entityType: string,
-  index: UnifiedIndex,
-) {
+const saveUnifiedIndex = async (dataPath: string, entityType: string, index: UnifiedIndex) => {
   const indexPath = join(dataPath, entityType, "index.json");
 
   try {
@@ -1833,27 +1821,27 @@ async function saveUnifiedIndex(
   } catch (error) {
     logger.error("general", "Error saving unified index", error);
   }
-}
+};
 
 /**
  * Normalize URL by decoding URL-encoded characters for deduplication
+ * @param url
  */
-function normalizeUrlForDeduplication(url: string): string {
+const normalizeUrlForDeduplication = (url: string): string => {
   try {
     // Decode URL-encoded characters for comparison
     return decodeURIComponent(url);
   } catch {
     return url;
   }
-}
+};
 
 /**
  * Migrate query files from queries subdirectory to entity directory with simplified names
+ * @param dataPath
+ * @param entityType
  */
-async function migrateQueryFilesToEntityDirectory(
-  dataPath: string,
-  entityType: string,
-) {
+const migrateQueryFilesToEntityDirectory = async (dataPath: string, entityType: string) => {
   logger.debug("general", "Migrating query files to entity directory", {
     entityType,
   });
@@ -1940,24 +1928,26 @@ async function migrateQueryFilesToEntityDirectory(
   } else {
     logger.debug("general", "No query files found to move");
   }
-}
+};
 
 /**
  * Generate a descriptive filename from a canonical URL using proper URL encoding
+ * @param canonicalUrl
  */
-function generateDescriptiveFilename(canonicalUrl: string): string | null {
+const generateDescriptiveFilename = (canonicalUrl: string): string | null => {
   try {
     // Use the same URL encoding approach as urlToEncodedKey for consistency
     return urlToEncodedKey(canonicalUrl) + ".json";
   } catch {
     return null;
   }
-}
+};
 
 /**
  * Generate the main OpenAlex index with JSON $ref structure
+ * @param dataPath
  */
-async function generateMainIndex(dataPath: string): Promise<void> {
+const generateMainIndex = async (dataPath: string): Promise<void> => {
   const mainIndexPath = join(dataPath, "index.json");
 
   // Discover entity types by scanning directories with index.json files
@@ -2065,4 +2055,4 @@ async function generateMainIndex(dataPath: string): Promise<void> {
       entityTypeCount: discoveredEntityTypes.length,
     });
   }
-}
+};

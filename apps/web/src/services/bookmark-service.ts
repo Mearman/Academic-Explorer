@@ -4,21 +4,20 @@
  * Business logic layer for bookmark operations. This service provides
  * a high-level API for managing bookmarks, integrating storage providers,
  * URL parsing, and metadata extraction utilities.
- *
  * @module bookmark-service
  */
 
 import type { EntityType } from "@bibgraph/types";
 import type {
   AddBookmarkParams,
-  CatalogueStorageProvider,
   CatalogueEntity,
+  CatalogueStorageProvider,
 } from "@bibgraph/utils";
 import {
-  parseURL,
   detectEntityTypeFromURL,
   extractEntityId,
   logger,
+  parseURL,
 } from "@bibgraph/utils";
 
 const LOG_CATEGORY = "bookmark-service";
@@ -72,10 +71,8 @@ export class BookmarkService {
    *
    * Extracts metadata from the URL and creates appropriate bookmark parameters.
    * If entityType and entityId are not provided, attempts to detect them from the URL.
-   *
    * @param params - Page context parameters
    * @returns Bookmark parameters ready for storage
-   *
    * @example
    * ```typescript
    * const bookmarkParams = await bookmarkService.createBookmarkFromPage({
@@ -158,11 +155,9 @@ export class BookmarkService {
    *
    * Parses the URL to detect entity type, extract entity ID, and clean the URL.
    * Uses utility functions from @bibgraph/utils for detection.
-   *
    * @param url - URL to parse
    * @param title - Title for context (used in logging)
    * @returns Extracted metadata
-   *
    * @example
    * ```typescript
    * const metadata = bookmarkService.extractBookmarkMetadata(
@@ -232,10 +227,8 @@ export class BookmarkService {
    *
    * Performs validation on bookmark data to ensure it meets requirements.
    * Throws an error if validation fails.
-   *
    * @param data - Data to validate
    * @throws {Error} If validation fails
-   *
    * @example
    * ```typescript
    * bookmarkService.validateBookmarkData({
@@ -335,11 +328,9 @@ export class BookmarkService {
    *
    * Searches bookmarks for a specific entity by type and ID.
    * Returns the bookmark record if found, undefined otherwise.
-   *
    * @param entityType - Type of entity to search for
    * @param entityId - ID of entity to search for
    * @returns Bookmark entity record if found, undefined otherwise
-   *
    * @example
    * ```typescript
    * const bookmark = await bookmarkService.getBookmarkByEntity("works", "W2741809807");
@@ -408,10 +399,8 @@ export class BookmarkService {
    * Add a bookmark using the storage provider
    *
    * Convenience method that delegates to the storage provider's addBookmark method.
-   *
    * @param params - Bookmark parameters
    * @returns Promise resolving to the entity record ID
-   *
    * @example
    * ```typescript
    * const bookmarkId = await bookmarkService.addBookmark({
@@ -472,10 +461,8 @@ export class BookmarkService {
    * Remove a bookmark by entity record ID
    *
    * Convenience method that delegates to the storage provider's removeBookmark method.
-   *
    * @param entityRecordId - ID of the bookmark entity record
    * @returns Promise resolving when removal completes
-   *
    * @example
    * ```typescript
    * await bookmarkService.removeBookmark("e1f2g3h4-...");
@@ -513,11 +500,9 @@ export class BookmarkService {
    * Check if an entity is bookmarked
    *
    * Convenience method that delegates to the storage provider's isBookmarked method.
-   *
    * @param entityType - Type of entity
    * @param entityId - ID of entity
    * @returns Promise resolving to true if bookmarked, false otherwise
-   *
    * @example
    * ```typescript
    * const isBookmarked = await bookmarkService.isBookmarked("works", "W2741809807");
@@ -566,9 +551,7 @@ export class BookmarkService {
    * Get all bookmarks
    *
    * Convenience method that delegates to the storage provider's getBookmarks method.
-   *
    * @returns Promise resolving to array of bookmark entities
-   *
    * @example
    * ```typescript
    * const bookmarks = await bookmarkService.getBookmarks();
@@ -608,10 +591,8 @@ export class BookmarkService {
 
 /**
  * Factory function to create a BookmarkService instance
- *
  * @param storageProvider - Storage provider for catalogue operations
  * @returns BookmarkService instance
- *
  * @example
  * ```typescript
  * import { DexieStorageProvider } from '@bibgraph/utils/storage/dexie-storage-provider';
@@ -623,8 +604,4 @@ export class BookmarkService {
  * const bookmarkService = createBookmarkService(storageProvider);
  * ```
  */
-export function createBookmarkService(
-  storageProvider: CatalogueStorageProvider,
-): BookmarkService {
-  return new BookmarkService(storageProvider);
-}
+export const createBookmarkService = (storageProvider: CatalogueStorageProvider): BookmarkService => new BookmarkService(storageProvider);

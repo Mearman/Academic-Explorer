@@ -1,32 +1,42 @@
 /**
  * Algorithm Tabs Container
  * Organizes graph algorithms into collapsible sections
- *
  * @module components/algorithms/AlgorithmTabs
  */
 
-import { Alert, Accordion, Stack, Text } from '@mantine/core';
+import { Accordion, Alert, Stack, Text } from '@mantine/core';
 import {
-  IconUsers,
-  IconRoute,
-  IconNetwork,
-  IconSearch,
   IconAlertCircle,
+  IconNetwork,
+  IconRoute,
+  IconSearch,
+  IconUsers,
 } from '@tabler/icons-react';
 
 import {
   CommunitiesTab,
   PathfindingTab,
-  StructureTab,
   PatternsTab,
+  StructureTab,
 } from './categories';
 import type { AlgorithmTabsProps } from './types';
 
 /**
  * Main algorithm accordion container component
  * Provides categorized access to all graph algorithms via collapsible sections
+ * @param root0
+ * @param root0.nodes
+ * @param root0.edges
+ * @param root0.onHighlightNodes
+ * @param root0.onHighlightPath
+ * @param root0.onSelectCommunity
+ * @param root0.onCommunitiesDetected
+ * @param root0.pathSource
+ * @param root0.pathTarget
+ * @param root0.onPathSourceChange
+ * @param root0.onPathTargetChange
  */
-export function AlgorithmTabs({
+export const AlgorithmTabs = ({
   nodes,
   edges,
   onHighlightNodes,
@@ -37,7 +47,7 @@ export function AlgorithmTabs({
   pathTarget,
   onPathSourceChange,
   onPathTargetChange,
-}: AlgorithmTabsProps) {
+}: AlgorithmTabsProps) => {
   if (nodes.length === 0) {
     return (
       <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
@@ -137,4 +147,4 @@ export function AlgorithmTabs({
       </Accordion.Item>
     </Accordion>
   );
-}
+};

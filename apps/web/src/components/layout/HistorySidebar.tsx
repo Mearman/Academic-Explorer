@@ -5,22 +5,22 @@
 import { logError, logger } from "@bibgraph/utils/logger";
 import type { CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
-  TextInput,
+  ActionIcon,
   Card,
-  Text,
+  Divider,
   Group,
   Stack,
-  ActionIcon,
+  Text,
+  TextInput,
   Title,
-  Divider,
   Tooltip,
 } from "@mantine/core";
 import {
   IconHistory,
   IconSearch,
+  IconSettings,
   IconTrash,
   IconX,
-  IconSettings,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -34,7 +34,7 @@ interface HistorySidebarProps {
   onClose?: () => void;
 }
 
-export function HistorySidebar({ onClose }: HistorySidebarProps) {
+export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Use the refactored user interactions hook for history
@@ -222,4 +222,4 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
       )}
     </div>
   );
-}
+};

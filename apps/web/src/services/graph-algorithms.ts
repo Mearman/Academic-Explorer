@@ -1,60 +1,59 @@
 /**
  * Graph Algorithms Service
  * Bridges between web app GraphNode/GraphEdge types and the algorithms package
- *
  * @module services/graph-algorithms
  */
 
 import {
-  Graph,
-  // Analysis
-  connectedComponents,
-  detectCycle,
-  stronglyConnectedComponents,
-  topologicalSort,
-  // Clustering
-  detectCommunities as louvainDetectCommunities,
-  leiden,
-  labelPropagation,
-  infomap,
-  // Hierarchical
-  hierarchicalClustering,
-  // Partitioning
-  spectralPartition,
   // Traversal
   bfs,
+  biconnectedComponents,
+  calculateConductance,
+  calculateCoverageRatio,
+  calculateDensity,
+  // Metrics
+  calculateModularity,
+  type Community,
+  // Analysis
+  connectedComponents,
+  corePeripheryDecomposition,
+  detectBibliographicCoupling,
+  detectCoCitations,
+  // Clustering
+  detectCommunities as louvainDetectCommunities,
+  detectCycle,
+  detectStarPatterns,
+  // Motif Detection
+  detectTriangles,
   dfs,
   // Pathfinding
   dijkstra,
-  // Metrics
-  calculateModularity,
-  calculateConductance,
-  calculateDensity,
-  calculateCoverageRatio,
-  // Decomposition
-  kCoreDecomposition,
-  corePeripheryDecomposition,
-  biconnectedComponents,
+  type Edge as AlgorithmEdge,
   // Extraction
   extractEgoNetwork,
-  filterGraph,
   extractInducedSubgraph,
   extractKTruss,
-  // Motif Detection
-  detectTriangles,
-  detectStarPatterns,
-  detectCoCitations,
-  detectBibliographicCoupling,
+  filterGraph,
+  Graph,
+  // Hierarchical
+  hierarchicalClustering,
+  infomap,
+  // Decomposition
+  kCoreDecomposition,
+  labelPropagation,
+  leiden,
   // Types
   type Node as AlgorithmNode,
-  type Edge as AlgorithmEdge,
-  type Community,
+  // Partitioning
+  spectralPartition,
+  stronglyConnectedComponents,
+  topologicalSort,
 } from '@bibgraph/algorithms';
 import type {
-  GraphNode,
-  GraphEdge,
-  EntityType,
   AuthorPosition,
+  EntityType,
+  GraphEdge,
+  GraphNode,
   WeightableEdgeProperty,
 } from '@bibgraph/types';
 
@@ -314,28 +313,26 @@ export interface WeightedPathOptions {
 
 /**
  * Convert web app GraphNode to algorithm Node
+ * @param node
  */
-function toAlgorithmNode(node: GraphNode): AcademicNode {
-  return {
+const toAlgorithmNode = (node: GraphNode): AcademicNode => ({
     id: node.id,
     type: node.entityType,
     entityType: node.entityType,
     label: node.label,
-  };
-}
+  });
 
 /**
  * Convert web app GraphEdge to algorithm Edge
+ * @param edge
  */
-function toAlgorithmEdge(edge: GraphEdge): AcademicEdge {
-  return {
+const toAlgorithmEdge = (edge: GraphEdge): AcademicEdge => ({
     id: edge.id,
     source: edge.source,
     target: edge.target,
     type: edge.type,
     weight: edge.weight ?? 1,
-  };
-}
+  });
 
 /**
  * Build a weight function from WeightConfig
@@ -344,10 +341,9 @@ function toAlgorithmEdge(edge: GraphEdge): AcademicEdge {
  * 1. Custom weightFn (if provided)
  * 2. Property-based weight extraction
  * 3. Default weight (defaults to 1)
+ * @param config
  */
-function buildWeightFunction(
-  config?: WeightConfig
-): (edge: AcademicEdge, source: AcademicNode, target: AcademicNode) => number {
+const buildWeightFunction = (config?: WeightConfig): (edge: AcademicEdge, source: AcademicNode, target: AcademicNode) => number => {
   if (!config) {
     return () => 1;
   }
@@ -392,15 +388,14 @@ function buildWeightFunction(
   }
 
   return () => config.defaultWeight ?? 1;
-}
+};
 
 /**
  * Apply edge property filter to edges
+ * @param edges
+ * @param filter
  */
-function applyEdgeFilter(
-  edges: GraphEdge[],
-  filter?: EdgePropertyFilter
-): GraphEdge[] {
+const applyEdgeFilter = (edges: GraphEdge[], filter?: EdgePropertyFilter): GraphEdge[] => {
   if (!filter) return edges;
 
   return edges.filter((edge) => {
@@ -421,28 +416,26 @@ function applyEdgeFilter(
     }
     return true;
   });
-}
+};
 
 /**
  * Filter nodes by entity type
+ * @param nodes
+ * @param nodeTypes
  */
-function applyNodeTypeFilter(
-  nodes: GraphNode[],
-  nodeTypes?: EntityType[]
-): GraphNode[] {
+const applyNodeTypeFilter = (nodes: GraphNode[], nodeTypes?: EntityType[]): GraphNode[] => {
   if (!nodeTypes || nodeTypes.length === 0) return nodes;
   const typeSet = new Set(nodeTypes);
   return nodes.filter((node) => typeSet.has(node.entityType));
-}
+};
 
 /**
  * Create an algorithms Graph from web app nodes and edges
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function createGraph(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): Graph<AcademicNode, AcademicEdge> {
+export const createGraph = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): Graph<AcademicNode, AcademicEdge> => {
   const graph = new Graph<AcademicNode, AcademicEdge>(directed);
 
   // Add all nodes first
@@ -462,22 +455,25 @@ export function createGraph(
   }
 
   return graph;
-}
+};
 
 /**
  * Detect communities using various clustering algorithms
+ * @param nodes
+ * @param edges
+ * @param options
+ * @param options.algorithm
+ * @param options.resolution
+ * @param options.numClusters
+ * @param options.linkage
  */
-export function detectCommunities(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  options: {
+export const detectCommunities = (nodes: GraphNode[], edges: GraphEdge[], options: {
     algorithm?: 'louvain' | 'leiden' | 'label-propagation' | 'infomap' | 'spectral' | 'hierarchical';
     resolution?: number;
     numClusters?: number;
     linkage?: 'single' | 'complete' | 'average';
-  } = {}
-): CommunityResult[] {
-  const { algorithm = 'louvain', resolution = 1.0, numClusters = 5, linkage = 'average' } = options;
+  } = {}): CommunityResult[] => {
+  const { algorithm = 'louvain', resolution = 1, numClusters = 5, linkage = 'average' } = options;
 
   // Use undirected graph for community detection
   const graph = createGraph(nodes, edges, false);
@@ -493,7 +489,7 @@ export function detectCommunities(
         if (result.ok) {
           return result.value.communities.map((community) => ({
             id: community.id,
-            nodeIds: Array.from(community.nodes).map((node) => node.id),
+            nodeIds: [...community.nodes].map((node) => node.id),
             size: community.nodes.size,
             density: 0, // LeidenCommunity has conductance, not density
           }));
@@ -505,7 +501,7 @@ export function detectCommunities(
         if (result.ok) {
           return result.value.clusters.map((cluster, index) => ({
             id: index,
-            nodeIds: Array.from(cluster.nodes).map((node) => node.id),
+            nodeIds: [...cluster.nodes].map((node) => node.id),
             size: cluster.nodes.size,
             density: 0, // Label propagation doesn't compute density
           }));
@@ -517,7 +513,7 @@ export function detectCommunities(
         if (result.ok) {
           return result.value.modules.map((module, index) => ({
             id: index,
-            nodeIds: Array.from(module.nodes).map((node) => node.id),
+            nodeIds: [...module.nodes].map((node) => node.id),
             size: module.nodes.size,
             density: 0,
           }));
@@ -531,7 +527,7 @@ export function detectCommunities(
         if (result.ok) {
           return result.value.map((partition) => ({
             id: partition.id,
-            nodeIds: Array.from(partition.nodes).map((node) => node.id),
+            nodeIds: [...partition.nodes].map((node) => node.id),
             size: partition.size,
             density: 0,
           }));
@@ -544,7 +540,7 @@ export function detectCommunities(
           const clusters = result.value.dendrogram.getClusters(numClusters);
           return clusters.map((cluster, index) => ({
             id: index,
-            nodeIds: Array.from(cluster),
+            nodeIds: [...cluster],
             size: cluster.size,
             density: 0,
           }));
@@ -556,7 +552,7 @@ export function detectCommunities(
         const communities = louvainDetectCommunities(graph, { resolution });
         return communities.map((community: Community<AcademicNode>) => ({
           id: community.id,
-          nodeIds: Array.from(community.nodes).map((node) => node.id),
+          nodeIds: [...community.nodes].map((node) => node.id),
           size: community.size,
           density: community.density,
         }));
@@ -566,13 +562,17 @@ export function detectCommunities(
     console.error('Community detection error:', error);
     return [];
   }
-}
+};
 
 /**
  * Find shortest path between two nodes using Dijkstra's algorithm
  *
  * Supports weighted traversal with edge property filtering and node type filtering.
- *
+ * @param nodes
+ * @param edges
+ * @param sourceId
+ * @param targetId
+ * @param options
  * @example
  * ```typescript
  * // Simple unweighted path
@@ -594,13 +594,7 @@ export function detectCommunities(
  * });
  * ```
  */
-export function findShortestPath(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  sourceId: string,
-  targetId: string,
-  options?: WeightedPathOptions | boolean
-): PathResult {
+export const findShortestPath = (nodes: GraphNode[], edges: GraphEdge[], sourceId: string, targetId: string, options?: WeightedPathOptions | boolean): PathResult => {
   // Handle legacy boolean `directed` parameter for backward compatibility
   const opts: WeightedPathOptions = typeof options === 'boolean'
     ? { directed: options }
@@ -613,15 +607,13 @@ export function findShortestPath(
   const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
 
   // Verify source and target exist in filtered nodes
-  if (opts.nodeTypes && opts.nodeTypes.length > 0) {
-    if (!filteredNodeIds.has(sourceId) || !filteredNodeIds.has(targetId)) {
+  if (opts.nodeTypes && opts.nodeTypes.length > 0 && (!filteredNodeIds.has(sourceId) || !filteredNodeIds.has(targetId))) {
       return {
         path: [],
         distance: Infinity,
         found: false,
       };
     }
-  }
 
   // Apply edge filtering - also remove edges referencing filtered-out nodes
   let filteredEdges = applyEdgeFilter(edges, opts.edgeFilter);
@@ -664,16 +656,15 @@ export function findShortestPath(
     distance: pathValue.totalWeight,
     found: pathValue.nodes.length > 0,
   };
-}
+};
 
 /**
  * Find connected components in the graph
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function findComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = false
-): ComponentResult {
+export const findComponents = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = false): ComponentResult => {
   const graph = createGraph(nodes, edges, directed);
 
   const result = connectedComponents(graph);
@@ -691,15 +682,14 @@ export function findComponents(
     ),
     count: result.value.length,
   };
-}
+};
 
 /**
  * Find strongly connected components (for directed graphs)
+ * @param nodes
+ * @param edges
  */
-export function findStrongComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): ComponentResult {
+export const findStrongComponents = (nodes: GraphNode[], edges: GraphEdge[]): ComponentResult => {
   const graph = createGraph(nodes, edges, true);
 
   const result = stronglyConnectedComponents(graph);
@@ -717,16 +707,15 @@ export function findStrongComponents(
     ),
     count: result.value.length,
   };
-}
+};
 
 /**
  * Check if graph has cycles
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function hasCycles(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): boolean {
+export const hasCycles = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): boolean => {
   const graph = createGraph(nodes, edges, directed);
   const result = detectCycle(graph);
 
@@ -737,15 +726,14 @@ export function hasCycles(
   // detectCycle returns Result<Option<CycleInfo>, Error>
   // result.value.some is true if a cycle was found
   return result.value.some;
-}
+};
 
 /**
  * Get topological ordering of nodes (for DAGs)
+ * @param nodes
+ * @param edges
  */
-export function getTopologicalOrder(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): string[] | null {
+export const getTopologicalOrder = (nodes: GraphNode[], edges: GraphEdge[]): string[] | null => {
   const graph = createGraph(nodes, edges, true);
   const result = topologicalSort(graph);
 
@@ -754,16 +742,15 @@ export function getTopologicalOrder(
   }
 
   return result.value.map((node) => node.id);
-}
+};
 
 /**
  * Calculate graph statistics
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function calculateStatistics(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): GraphStatistics {
+export const calculateStatistics = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): GraphStatistics => {
   const nodeCount = nodes.length;
   const edgeCount = edges.length;
 
@@ -796,16 +783,15 @@ export function calculateStatistics(
     componentCount: components.count,
     hasCycles: cyclic,
   };
-}
+};
 
 /**
  * Calculate modularity score for a given community assignment
+ * @param nodes
+ * @param edges
+ * @param communities
  */
-export function getModularityScore(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  communities: CommunityResult[]
-): number {
+export const getModularityScore = (nodes: GraphNode[], edges: GraphEdge[], communities: CommunityResult[]): number => {
   const graph = createGraph(nodes, edges, false);
 
   // Convert CommunityResult back to node sets for modularity calculation
@@ -827,7 +813,7 @@ export function getModularityScore(
   }
 
   // Convert to Community array for modularity calculation
-  const communitiesForCalc: Community<AcademicNode>[] = Array.from(communityNodes.entries()).map(
+  const communitiesForCalc: Community<AcademicNode>[] = [...communityNodes.entries()].map(
     ([id, nodeSet]) => ({
       id,
       nodes: nodeSet,
@@ -840,16 +826,15 @@ export function getModularityScore(
   );
 
   return calculateModularity(graph, communitiesForCalc);
-}
+};
 
 /**
  * Find k-core decomposition
+ * @param nodes
+ * @param edges
+ * @param k
  */
-export function getKCore(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  k: number
-): KCoreResult {
+export const getKCore = (nodes: GraphNode[], edges: GraphEdge[], k: number): KCoreResult => {
   const graph = createGraph(nodes, edges, false);
   const result = kCoreDecomposition(graph);
 
@@ -870,21 +855,20 @@ export function getKCore(
   }
 
   return {
-    nodes: Array.from(kCore.nodes),
+    nodes: [...kCore.nodes],
     k,
   };
-}
+};
 
 /**
  * Extract ego network around a central node
+ * @param nodes
+ * @param edges
+ * @param centerId
+ * @param radius
+ * @param directed
  */
-export function getEgoNetwork(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  centerId: string,
-  radius: number = 1,
-  directed: boolean = true
-): EgoNetworkResult {
+export const getEgoNetwork = (nodes: GraphNode[], edges: GraphEdge[], centerId: string, radius: number = 1, directed: boolean = true): EgoNetworkResult => {
   const graph = createGraph(nodes, edges, directed);
   const result = extractEgoNetwork(graph, {
     seedNodes: [centerId],
@@ -915,17 +899,16 @@ export function getEgoNetwork(
     centerNodeId: centerId,
     radius,
   };
-}
+};
 
 /**
  * Filter graph by node types
+ * @param nodes
+ * @param edges
+ * @param allowedTypes
+ * @param directed
  */
-export function filterByNodeType(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  allowedTypes: EntityType[],
-  directed: boolean = true
-): { nodes: GraphNode[]; edges: GraphEdge[] } {
+export const filterByNodeType = (nodes: GraphNode[], edges: GraphEdge[], allowedTypes: EntityType[], directed: boolean = true): { nodes: GraphNode[]; edges: GraphEdge[] } => {
   const graph = createGraph(nodes, edges, directed);
 
   const allowedTypesSet = new Set(allowedTypes as string[]);
@@ -949,17 +932,16 @@ export function filterByNodeType(
   );
 
   return { nodes: filteredNodes, edges: filteredEdges };
-}
+};
 
 /**
  * Extract a subgraph containing only specified node IDs
+ * @param nodes
+ * @param edges
+ * @param nodeIds
+ * @param directed
  */
-export function getSubgraph(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  nodeIds: string[],
-  directed: boolean = true
-): { nodes: GraphNode[]; edges: GraphEdge[] } {
+export const getSubgraph = (nodes: GraphNode[], edges: GraphEdge[], nodeIds: string[], directed: boolean = true): { nodes: GraphNode[]; edges: GraphEdge[] } => {
   const graph = createGraph(nodes, edges, directed);
   const result = extractInducedSubgraph(graph, new Set(nodeIds));
 
@@ -976,17 +958,16 @@ export function getSubgraph(
   );
 
   return { nodes: subNodes, edges: subEdges };
-}
+};
 
 /**
  * Perform breadth-first search traversal
+ * @param nodes
+ * @param edges
+ * @param startId
+ * @param directed
  */
-export function performBFS(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  startId: string,
-  directed: boolean = true
-): TraversalResult | null {
+export const performBFS = (nodes: GraphNode[], edges: GraphEdge[], startId: string, directed: boolean = true): TraversalResult | null => {
   const graph = createGraph(nodes, edges, directed);
   const result = bfs(graph, startId);
 
@@ -998,17 +979,16 @@ export function performBFS(
     visitOrder: result.value.visitOrder.map((node) => node.id),
     parents: result.value.parents,
   };
-}
+};
 
 /**
  * Perform depth-first search traversal
+ * @param nodes
+ * @param edges
+ * @param startId
+ * @param directed
  */
-export function performDFS(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  startId: string,
-  directed: boolean = true
-): TraversalResult | null {
+export const performDFS = (nodes: GraphNode[], edges: GraphEdge[], startId: string, directed: boolean = true): TraversalResult | null => {
   const graph = createGraph(nodes, edges, directed);
   const result = dfs(graph, startId);
 
@@ -1022,16 +1002,15 @@ export function performDFS(
     discovered: result.value.discovered,
     finished: result.value.finished,
   };
-}
+};
 
 /**
  * Detect cycles with detailed information
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function getCycleInfo(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): CycleResult {
+export const getCycleInfo = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): CycleResult => {
   const graph = createGraph(nodes, edges, directed);
   const result = detectCycle(graph);
 
@@ -1048,16 +1027,15 @@ export function getCycleInfo(
     hasCycle: true,
     cycle: cycleInfo.nodes.map((node) => node.id),
   };
-}
+};
 
 /**
  * Perform core-periphery decomposition
+ * @param nodes
+ * @param edges
+ * @param coreThreshold
  */
-export function getCorePeriphery(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  coreThreshold: number = 0.7
-): CorePeripheryResult | null {
+export const getCorePeriphery = (nodes: GraphNode[], edges: GraphEdge[], coreThreshold: number = 0.7): CorePeripheryResult | null => {
   const graph = createGraph(nodes, edges, false);
   const result = corePeripheryDecomposition(graph, { coreThreshold });
 
@@ -1066,20 +1044,19 @@ export function getCorePeriphery(
   }
 
   return {
-    coreNodes: Array.from(result.value.structure.coreNodes),
-    peripheryNodes: Array.from(result.value.structure.peripheryNodes),
+    coreNodes: [...result.value.structure.coreNodes],
+    peripheryNodes: [...result.value.structure.peripheryNodes],
     corenessScores: result.value.structure.corenessScores,
     fitQuality: result.value.structure.fitQuality,
   };
-}
+};
 
 /**
  * Find biconnected components (for undirected graphs)
+ * @param nodes
+ * @param edges
  */
-export function getBiconnectedComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): BiconnectedResult | null {
+export const getBiconnectedComponents = (nodes: GraphNode[], edges: GraphEdge[]): BiconnectedResult | null => {
   // Create undirected graph by adding reverse edges
   const graph = createGraph(nodes, edges, false);
   const result = biconnectedComponents(graph);
@@ -1091,20 +1068,19 @@ export function getBiconnectedComponents(
   return {
     components: result.value.components.map((comp) => ({
       id: comp.id,
-      nodes: Array.from(comp.nodes),
+      nodes: [...comp.nodes],
       isBridge: comp.isBridge,
     })),
-    articulationPoints: Array.from(result.value.articulationPoints),
+    articulationPoints: [...result.value.articulationPoints],
   };
-}
+};
 
 /**
  * Detect triangle motifs in the graph
+ * @param nodes
+ * @param edges
  */
-export function getTriangles(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): TriangleResult {
+export const getTriangles = (nodes: GraphNode[], edges: GraphEdge[]): TriangleResult => {
   const graph = createGraph(nodes, edges, false);
   const result = detectTriangles(graph);
 
@@ -1144,16 +1120,17 @@ export function getTriangles(
     count: triangleCount,
     clusteringCoefficient: Math.min(1, clusteringCoefficient),
   };
-}
+};
 
 /**
  * Detect star patterns (hub nodes with many connections)
+ * @param nodes
+ * @param edges
+ * @param options
+ * @param options.minDegree
+ * @param options.type
  */
-export function getStarPatterns(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  options: { minDegree?: number; type?: 'in' | 'out' } = {}
-): StarPatternResult {
+export const getStarPatterns = (nodes: GraphNode[], edges: GraphEdge[], options: { minDegree?: number; type?: 'in' | 'out' } = {}): StarPatternResult => {
   const { minDegree = 5, type = 'out' } = options;
   const graph = createGraph(nodes, edges, true);
   const result = detectStarPatterns(graph, { minDegree, type });
@@ -1173,16 +1150,15 @@ export function getStarPatterns(
     })),
     count: result.value.length,
   };
-}
+};
 
 /**
  * Detect co-citation pairs (papers cited together)
+ * @param nodes
+ * @param edges
+ * @param minCount
  */
-export function getCoCitations(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  minCount: number = 2
-): CoCitationResult {
+export const getCoCitations = (nodes: GraphNode[], edges: GraphEdge[], minCount: number = 2): CoCitationResult => {
   const graph = createGraph(nodes, edges, true);
   const result = detectCoCitations(graph, { minCount });
 
@@ -1199,16 +1175,15 @@ export function getCoCitations(
       count: pair.count,
     })),
   };
-}
+};
 
 /**
  * Detect bibliographic coupling pairs (papers citing same references)
+ * @param nodes
+ * @param edges
+ * @param minShared
  */
-export function getBibliographicCoupling(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  minShared: number = 2
-): BibliographicCouplingResult {
+export const getBibliographicCoupling = (nodes: GraphNode[], edges: GraphEdge[], minShared: number = 2): BibliographicCouplingResult => {
   const graph = createGraph(nodes, edges, true);
   const result = detectBibliographicCoupling(graph, { minShared });
 
@@ -1225,16 +1200,15 @@ export function getBibliographicCoupling(
       sharedReferences: pair.sharedReferences,
     })),
   };
-}
+};
 
 /**
  * Extract k-truss subgraph (edges in at least k-2 triangles)
+ * @param nodes
+ * @param edges
+ * @param k
  */
-export function getKTruss(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  k: number = 3
-): KTrussResult {
+export const getKTruss = (nodes: GraphNode[], edges: GraphEdge[], k: number = 3): KTrussResult => {
   const graph = createGraph(nodes, edges, false);
   const result = extractKTruss(graph, { k });
 
@@ -1261,16 +1235,15 @@ export function getKTruss(
     nodeCount: trussNodes.length,
     edgeCount: trussEdges.length,
   };
-}
+};
 
 /**
  * Calculate cluster quality metrics for a community assignment
+ * @param nodes
+ * @param edges
+ * @param communities
  */
-export function getClusterQuality(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  communities: CommunityResult[]
-): ClusterQualityResult {
+export const getClusterQuality = (nodes: GraphNode[], edges: GraphEdge[], communities: CommunityResult[]): ClusterQualityResult => {
   const graph = createGraph(nodes, edges, false);
 
   // Convert CommunityResult to node sets for metrics
@@ -1307,7 +1280,7 @@ export function getClusterQuality(
     coverageRatio,
     numClusters: communities.length,
   };
-}
+};
 
 /**
  * Get all algorithms available

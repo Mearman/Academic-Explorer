@@ -105,7 +105,7 @@ const worksColumns: ColumnConfig[] = [
   },
 ];
 
-function WorksListRoute() {
+const WorksListRoute = () => {
   const search = useSearch({ from: "/works/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -127,7 +127,7 @@ function WorksListRoute() {
       bookmarkButtonPosition="header"
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/works/")({
   component: WorksListRoute,

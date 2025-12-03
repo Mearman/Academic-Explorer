@@ -32,9 +32,9 @@ export const Route = createFileRoute("/bookmarks")({
       entityType: typeof search.entityType === "string" ? search.entityType as EntityType : undefined,
       tags: Array.isArray(search.tags)
         ? search.tags.filter((t): t is string => typeof t === "string")
-        : typeof search.tags === "string"
+        : (typeof search.tags === "string"
           ? search.tags.split(",").map(t => t.trim()).filter(Boolean)
-          : undefined,
+          : undefined),
       matchAll: search.matchAll === "true" || search.matchAll === true,
       sortBy: search.sortBy === "date" || search.sortBy === "title" || search.sortBy === "type"
         ? search.sortBy

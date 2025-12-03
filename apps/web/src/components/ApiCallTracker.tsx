@@ -13,23 +13,27 @@ export interface ApiCallTrackerProps {
 /**
  * Component that logs API calls when rendered
  * Use this to track when API calls are made
+ * @param root0
+ * @param root0.entityType
+ * @param root0.entityId
+ * @param root0.queryParams
  */
-export function ApiCallTracker({
+export const ApiCallTracker = ({
   entityType,
   entityId,
   queryParams,
-}: ApiCallTrackerProps) {
+}: ApiCallTrackerProps) => {
   // Log the API call when component mounts
   const store = useAppActivityStore();
   store.logApiCall(entityType, entityId, queryParams);
 
   return null; // This component doesn't render anything
-}
+};
 
 /**
  * Hook to track API calls
  */
-export function useApiCallTracker() {
+export const useApiCallTracker = () => {
   const store = useAppActivityStore();
 
   return {
@@ -45,4 +49,4 @@ export function useApiCallTracker() {
       store.logApiCall(entityType, entityId, queryParams);
     },
   };
-}
+};

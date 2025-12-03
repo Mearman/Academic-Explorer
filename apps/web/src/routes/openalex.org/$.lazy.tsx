@@ -2,14 +2,14 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 
-function OpenAlexRoute() {
+const OpenAlexRoute = () => {
   const { _splat } = useParams({ from: "/openalex/org/$" });
   const navigate = useNavigate();
 
@@ -96,7 +96,7 @@ function OpenAlexRoute() {
       </div>
     </div>
   );
-}
+};
 export const Route = createLazyFileRoute("/openalex/org/$")({
   component: OpenAlexRoute,
 });

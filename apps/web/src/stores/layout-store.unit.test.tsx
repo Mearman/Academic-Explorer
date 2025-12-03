@@ -3,14 +3,13 @@
  */
 
 import type { ProviderType } from "@bibgraph/types";
-import { renderHook, act } from "@testing-library/react";
+import { act,renderHook } from "@testing-library/react";
 import React from "react";
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
 
 // Note: Dexie mock removed - fake-indexeddb is now loaded via setupFiles
 // which provides a real IndexedDB implementation for Dexie to use
-
-import { useLayoutStore, useLayoutActions, LayoutProvider } from "./layout-store";
+import { LayoutProvider,useLayoutActions, useLayoutStore } from "./layout-store";
 
 // Mock localStorage for Zustand persistence
 const localStorageMock = (() => {

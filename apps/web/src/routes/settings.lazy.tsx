@@ -1,7 +1,7 @@
 import {
-  Title,
-  Stack,
   Card,
+  Stack,
+  Title,
 } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
@@ -10,7 +10,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { pageTitle } from "../styles/layout.css";
 
-function SettingsPage() {
+const SettingsPage = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
@@ -34,7 +34,7 @@ function SettingsPage() {
       </Stack>
     </Card>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/settings")({
   component: SettingsPage,

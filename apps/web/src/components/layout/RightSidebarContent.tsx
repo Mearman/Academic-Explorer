@@ -4,7 +4,7 @@
  */
 
 import { useLocation } from '@tanstack/react-router';
-import React, { useContext } from 'react';
+import React, { use } from 'react';
 
 import { AlgorithmTabs } from '@/components/algorithms/AlgorithmTabs';
 import { RepositoryAlgorithmsPanel } from '@/components/algorithms/RepositoryAlgorithmsPanel';
@@ -14,13 +14,13 @@ import { GraphVisualizationContext } from '@/contexts/GraphVisualizationContext'
  * Context-aware right sidebar content
  * Renders different panels based on the current route
  */
-export function RightSidebarContent() {
+export const RightSidebarContent = () => {
   const location = useLocation();
   const isGraphPage = location.pathname === '/graph';
 
   // Try to get shared state from context (only available on graph page)
   // This will be null when outside the provider (non-graph pages)
-  const context = useContext(GraphVisualizationContext);
+  const context = use(GraphVisualizationContext);
 
   // If we're on the graph page, show the AlgorithmTabs
   if (isGraphPage && context) {
@@ -44,4 +44,4 @@ export function RightSidebarContent() {
 
   // For all other pages, show the repository algorithms panel
   return <RepositoryAlgorithmsPanel />;
-}
+};

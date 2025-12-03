@@ -1,11 +1,10 @@
 /**
  * E2E tests for incoming funding relationships on funder detail pages
- *
  * @module incoming-funding.e2e
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Incoming Relationships - Funder Grants', () => {
   test('should display incoming funded works section on funder detail page', async ({ page }) => {

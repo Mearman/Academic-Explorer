@@ -9,8 +9,8 @@
 import { InMemoryStorageProvider } from '@bibgraph/utils';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { cleanup,render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Mock router hooks and Link component
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -32,9 +32,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     useNavigate: vi.fn().mockReturnValue(vi.fn()),
     useSearch: vi.fn().mockReturnValue({}),
     // Forward all props including role to preserve button semantics when used with component={Link}
-    Link: React.forwardRef(({ children, ...props }: any, ref: any) =>
-      React.createElement('a', { ...props, ref }, children)
-    ),
+    Link: ({ ref, children, ...props }) =>
+      React.createElement('a', { ...props, ref }, children),
   };
 });
 

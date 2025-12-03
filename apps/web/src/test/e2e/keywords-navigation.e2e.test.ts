@@ -3,18 +3,17 @@
  *
  * Tests keywords route migration to EntityDetailLayout with relationship visualization
  * Validates navigation, component rendering, and view mode toggle functionality
- *
  * @see specs/019-full-entity-support/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 
 test.describe('Keywords Navigation and Display', () => {
   test.beforeEach(async ({ page }) => {
     // Set longer timeout for OpenAlex API calls
-    page.setDefaultTimeout(30000);
+    page.setDefaultTimeout(30_000);
   });
 
   test('should navigate to keyword detail page and display EntityDetailLayout', async ({ page }) => {
@@ -22,7 +21,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/artificial-intelligence`);
 
     // Wait for page to load (EntityDetailLayout should be visible)
-    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10_000 });
 
     // Verify entity detail layout is rendered (check for distinctive elements)
     await expect(page.getByRole('heading', { name: /artificial intelligence/i })).toBeVisible();
@@ -36,7 +35,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/artificial-intelligence`);
 
     // Wait for data to load
-    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10_000 });
 
     // Check if relationship counts are displayed
     // Note: These may not always be present if the keyword has no relationships
@@ -56,7 +55,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/machine-learning`);
 
     // Wait for page to load
-    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10_000 });
 
     // Look for view toggle button (may be labeled differently based on current mode)
     const toggleButton = page.locator('button').filter({ hasText: /Raw|Rich|View/i }).first();
@@ -92,7 +91,7 @@ test.describe('Keywords Navigation and Display', () => {
     await navigationPromise;
 
     // Verify page eventually loads
-    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10_000 });
   });
 
   test('should handle encoded keyword IDs correctly', async ({ page }) => {
@@ -100,7 +99,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/machine%20learning`);
 
     // Wait for page to load and URL to be normalized
-    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Keyword ID:')).toBeVisible({ timeout: 10_000 });
 
     // The URL should be cleaned up (decoded)
     const currentUrl = page.url();
@@ -113,7 +112,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/this-keyword-does-not-exist-12345`);
 
     // Wait for error state to appear
-    await expect(page.getByText(/Error|error|Not Found|not found/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/Error|error|Not Found|not found/i)).toBeVisible({ timeout: 10_000 });
 
     // Error should display the attempted keyword ID
     await expect(page.getByText(/this-keyword-does-not-exist-12345/i)).toBeVisible();

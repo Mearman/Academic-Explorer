@@ -1,14 +1,14 @@
 import { EntityDetectionService , logger } from "@bibgraph/utils";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 // Temporarily remove logger import to avoid potential issues
 
-function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
+const parseSearchParams = (params: URLSearchParams): Record<string, unknown> => {
   const obj: Record<string, unknown> = {};
   const numericKeys = new Set(["per_page", "page", "sample"]);
   params.forEach((value, key) => {
@@ -20,20 +20,20 @@ function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
     }
   });
   return obj;
-}
+};
 
-function buildPathWithSearch(path: string, params: URLSearchParams): string {
+const buildPathWithSearch = (path: string, params: URLSearchParams): string => {
   if (params.toString()) {
     return `${path}?${params.toString()}`;
   }
   return path;
-}
+};
 
 export const Route = createLazyFileRoute("/openalex-url/$")({
   component: OpenAlexUrlComponent,
 });
 
-function OpenAlexUrlComponent() {
+const OpenAlexUrlComponent = () => {
   logger.debug("routing", "OpenAlexUrlComponent: Component function called");
   const { _splat: splat } = useParams({ from: "/openalex-url/$" });
   logger.debug("routing", "OpenAlexUrlComponent: splat parameter:", splat);
@@ -106,7 +106,7 @@ function OpenAlexUrlComponent() {
         const rorPattern = /^ror:([0-9a-z]{9})$/i;
         const issnPattern = /^issn:(\d{4}-\d{3}[0-9X])$/i;
         const orcidPattern = /^orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i;
-        const doiPattern = /^https:\/?\/?doi\.org\/(.+)$/i;
+        const doiPattern = /^https:\/{0,2}doi\.org\/(.+)$/i;
 
         const rorMatch = id.match(rorPattern);
         if (rorMatch && entityType === "institutions") {
@@ -199,7 +199,7 @@ function OpenAlexUrlComponent() {
           // URL-encode the ID to handle external IDs with special characters
           // Use double-encoding for forward slashes to prevent TanStack Router from collapsing them
           // First encode normally, then encode any %2F (forward slash) again
-          const encodedId = encodeURIComponent(id).replace(/%2F/g, '%252F');
+          const encodedId = encodeURIComponent(id).replaceAll('%2F', '%252F');
           const targetPath = buildPathWithSearch(`/${detection.entityType}/${encodedId}`, searchParams);
           navigate({
             to: targetPath,
@@ -240,7 +240,7 @@ function OpenAlexUrlComponent() {
         `Checking autocomplete, path starts with /autocomplete/: ${path.startsWith("/autocomplete/")}`,
       );
       if (path.startsWith("/autocomplete/")) {
-        const subPath = path.substring("/autocomplete/".length);
+        const subPath = path.slice("/autocomplete/".length);
         const targetPath = buildPathWithSearch(`/autocomplete/${subPath}`, searchParams);
         logger.debug(
           "routing",
@@ -314,5 +314,5 @@ function OpenAlexUrlComponent() {
       <p>Processing {decodedSplat}...</p>
     </div>
   );
-}
+};
 export default OpenAlexUrlComponent;

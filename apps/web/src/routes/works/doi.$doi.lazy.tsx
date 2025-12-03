@@ -2,13 +2,13 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconFile } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function DOIWorkRoute() {
+const DOIWorkRoute = () => {
   const { doi } = useParams({ from: "/works/doi/$doi" });
   const navigate = useNavigate();
 
@@ -77,7 +77,7 @@ function DOIWorkRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/works/doi/$doi")({
   component: DOIWorkRoute,

@@ -1,57 +1,56 @@
 /**
  * React hooks for graph algorithms
  * Provides easy-to-use hooks for running graph algorithms on visualization data
- *
  * @module hooks/use-graph-algorithms
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
-import { useMemo, useCallback, useState } from 'react';
+import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
-  detectCommunities,
-  findShortestPath,
-  findComponents,
-  findStrongComponents,
-  hasCycles,
-  getTopologicalOrder,
+  type BibliographicCouplingResult,
+  type BiconnectedResult,
   calculateStatistics,
-  getModularityScore,
-  getKCore,
-  getEgoNetwork,
+  type ClusteringAlgorithm,
+  type ClusterQualityResult,
+  type CoCitationResult,
+  type CommunityResult,
+  type ComponentResult,
+  type CorePeripheryResult,
+  type CycleResult,
+  detectCommunities,
+  type EdgePropertyFilter,
+  type EgoNetworkResult,
   filterByNodeType,
+  findComponents,
+  findShortestPath,
+  findStrongComponents,
+  getBibliographicCoupling,
+  getBiconnectedComponents,
+  getClusterQuality,
+  getCoCitations,
+  getCorePeriphery,
+  getCycleInfo,
+  getEgoNetwork,
+  getKCore,
+  getKTruss,
+  getModularityScore,
+  getStarPatterns,
   getSubgraph,
+  getTopologicalOrder,
+  getTriangles,
+  type GraphStatistics,
+  hasCycles,
+  type KCoreResult,
+  type KTrussResult,
+  type PathResult,
   performBFS,
   performDFS,
-  getCycleInfo,
-  getCorePeriphery,
-  getBiconnectedComponents,
-  getTriangles,
-  getStarPatterns,
-  getCoCitations,
-  getBibliographicCoupling,
-  getKTruss,
-  getClusterQuality,
-  type CommunityResult,
-  type PathResult,
-  type ComponentResult,
-  type GraphStatistics,
-  type KCoreResult,
-  type EgoNetworkResult,
-  type ClusteringAlgorithm,
-  type TraversalResult,
-  type CycleResult,
-  type CorePeripheryResult,
-  type BiconnectedResult,
-  type TriangleResult,
   type StarPatternResult,
-  type CoCitationResult,
-  type BibliographicCouplingResult,
-  type KTrussResult,
-  type ClusterQualityResult,
-  type WeightedPathOptions,
+  type TraversalResult,
+  type TriangleResult,
   type WeightConfig,
-  type EdgePropertyFilter,
+  type WeightedPathOptions,
 } from '@/services/graph-algorithms';
 
 // Re-export types for consumer convenience
@@ -69,32 +68,28 @@ export interface CommunityDetectionOptions {
 /**
  * Hook for computing graph statistics
  * Automatically recomputes when nodes/edges change
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function useGraphStatistics(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): GraphStatistics {
-  return useMemo(
+export const useGraphStatistics = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): GraphStatistics => useMemo(
     () => calculateStatistics(nodes, edges, directed),
     [nodes, edges, directed]
   );
-}
 
 /**
  * Hook for community detection
  * Returns communities and a function to recompute with different options
+ * @param nodes
+ * @param edges
+ * @param options
  */
-export function useCommunityDetection(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  options: CommunityDetectionOptions = {}
-): {
+export const useCommunityDetection = (nodes: GraphNode[], edges: GraphEdge[], options: CommunityDetectionOptions = {}): {
   communities: CommunityResult[];
   modularity: number;
   isComputing: boolean;
   recompute: (newOptions?: CommunityDetectionOptions) => void;
-} {
+} => {
   const [isComputing, setIsComputing] = useState(false);
   const [currentOptions, setCurrentOptions] = useState(options);
 
@@ -116,17 +111,15 @@ export function useCommunityDetection(
   }, []);
 
   return { communities, modularity, isComputing, recompute };
-}
+};
 
 /**
  * Hook for finding shortest path between two nodes
- *
  * @param nodes - Graph nodes
  * @param edges - Graph edges
  * @param sourceId - Source node ID (null to disable)
  * @param targetId - Target node ID (null to disable)
  * @param options - Weighted path options or boolean for directed flag
- *
  * @example
  * ```typescript
  * // Simple unweighted path
@@ -144,25 +137,18 @@ export function useCommunityDetection(
  * });
  * ```
  */
-export function useShortestPath(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  sourceId: string | null,
-  targetId: string | null,
-  options?: WeightedPathOptions | boolean
-): PathResult | null {
-  return useMemo(() => {
+export const useShortestPath = (nodes: GraphNode[], edges: GraphEdge[], sourceId: string | null, targetId: string | null, options?: WeightedPathOptions | boolean): PathResult | null => useMemo(() => {
     if (!sourceId || !targetId || nodes.length === 0) return null;
     return findShortestPath(nodes, edges, sourceId, targetId, options);
   }, [nodes, edges, sourceId, targetId, options]);
-}
 
 /**
  * Hook for finding weighted shortest path with full configuration
  *
  * More explicit API for weighted pathfinding with state management for
  * source/target selection and weight configuration.
- *
+ * @param nodes
+ * @param edges
  * @example
  * ```typescript
  * const {
@@ -190,10 +176,7 @@ export function useShortestPath(
  * setTarget('B456');
  * ```
  */
-export function useWeightedPath(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): {
+export const useWeightedPath = (nodes: GraphNode[], edges: GraphEdge[]): {
   /** Computed path result */
   path: PathResult | null;
   /** Source node ID */
@@ -222,12 +205,12 @@ export function useWeightedPath(
   setDirected: (directed: boolean) => void;
   /** Clear all selections and filters */
   reset: () => void;
-} {
+} => {
   const [sourceId, setSource] = useState<string | null>(null);
   const [targetId, setTarget] = useState<string | null>(null);
-  const [weightConfig, setWeightConfig] = useState<WeightConfig | undefined>(undefined);
-  const [edgeFilter, setEdgeFilter] = useState<EdgePropertyFilter | undefined>(undefined);
-  const [nodeTypes, setNodeTypes] = useState<EntityType[] | undefined>(undefined);
+  const [weightConfig, setWeightConfig] = useState<WeightConfig | undefined>();
+  const [edgeFilter, setEdgeFilter] = useState<EdgePropertyFilter | undefined>();
+  const [nodeTypes, setNodeTypes] = useState<EntityType[] | undefined>();
   const [directed, setDirected] = useState(true);
 
   const options = useMemo(
@@ -270,16 +253,17 @@ export function useWeightedPath(
     setDirected,
     reset,
   };
-}
+};
 
 /**
  * Hook for connected components analysis
+ * @param nodes
+ * @param edges
+ * @param options
+ * @param options.directed
+ * @param options.strong
  */
-export function useConnectedComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  options: { directed?: boolean; strong?: boolean } = {}
-): ComponentResult {
+export const useConnectedComponents = (nodes: GraphNode[], edges: GraphEdge[], options: { directed?: boolean; strong?: boolean } = {}): ComponentResult => {
   const { directed = false, strong = false } = options;
 
   return useMemo(() => {
@@ -290,266 +274,217 @@ export function useConnectedComponents(
     }
     return findComponents(nodes, edges, directed);
   }, [nodes, edges, directed, strong]);
-}
+};
 
 /**
  * Hook for cycle detection
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function useCycleDetection(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): boolean {
-  return useMemo(() => {
+export const useCycleDetection = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): boolean => useMemo(() => {
     if (nodes.length === 0) return false;
     return hasCycles(nodes, edges, directed);
   }, [nodes, edges, directed]);
-}
 
 /**
  * Hook for topological sort (returns null if graph has cycles)
+ * @param nodes
+ * @param edges
  */
-export function useTopologicalSort(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): string[] | null {
-  return useMemo(() => {
+export const useTopologicalSort = (nodes: GraphNode[], edges: GraphEdge[]): string[] | null => useMemo(() => {
     if (nodes.length === 0) return [];
     return getTopologicalOrder(nodes, edges);
   }, [nodes, edges]);
-}
 
 /**
  * Hook for k-core decomposition
+ * @param nodes
+ * @param edges
+ * @param k
  */
-export function useKCore(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  k: number
-): KCoreResult {
-  return useMemo(() => {
+export const useKCore = (nodes: GraphNode[], edges: GraphEdge[], k: number): KCoreResult => useMemo(() => {
     if (nodes.length === 0 || k < 1) return { nodes: [], k };
     return getKCore(nodes, edges, k);
   }, [nodes, edges, k]);
-}
 
 /**
  * Hook for ego network extraction
+ * @param nodes
+ * @param edges
+ * @param centerId
+ * @param radius
+ * @param directed
  */
-export function useEgoNetwork(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  centerId: string | null,
-  radius: number = 1,
-  directed: boolean = true
-): EgoNetworkResult | null {
-  return useMemo(() => {
+export const useEgoNetwork = (nodes: GraphNode[], edges: GraphEdge[], centerId: string | null, radius: number = 1, directed: boolean = true): EgoNetworkResult | null => useMemo(() => {
     if (!centerId || nodes.length === 0) return null;
     return getEgoNetwork(nodes, edges, centerId, radius, directed);
   }, [nodes, edges, centerId, radius, directed]);
-}
 
 /**
  * Hook for filtering graph by node types
+ * @param nodes
+ * @param edges
+ * @param allowedTypes
+ * @param directed
  */
-export function useFilteredGraph(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  allowedTypes: EntityType[],
-  directed: boolean = true
-): { nodes: GraphNode[]; edges: GraphEdge[] } {
-  return useMemo(() => {
+export const useFilteredGraph = (nodes: GraphNode[], edges: GraphEdge[], allowedTypes: EntityType[], directed: boolean = true): { nodes: GraphNode[]; edges: GraphEdge[] } => useMemo(() => {
     if (nodes.length === 0 || allowedTypes.length === 0) {
       return { nodes: [], edges: [] };
     }
     return filterByNodeType(nodes, edges, allowedTypes, directed);
   }, [nodes, edges, allowedTypes, directed]);
-}
 
 /**
  * Hook for subgraph extraction
+ * @param nodes
+ * @param edges
+ * @param nodeIds
+ * @param directed
  */
-export function useSubgraph(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  nodeIds: string[],
-  directed: boolean = true
-): { nodes: GraphNode[]; edges: GraphEdge[] } {
-  return useMemo(() => {
+export const useSubgraph = (nodes: GraphNode[], edges: GraphEdge[], nodeIds: string[], directed: boolean = true): { nodes: GraphNode[]; edges: GraphEdge[] } => useMemo(() => {
     if (nodes.length === 0 || nodeIds.length === 0) {
       return { nodes: [], edges: [] };
     }
     return getSubgraph(nodes, edges, nodeIds, directed);
   }, [nodes, edges, nodeIds, directed]);
-}
 
 /**
  * Hook for BFS traversal
+ * @param nodes
+ * @param edges
+ * @param startId
+ * @param directed
  */
-export function useBFS(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  startId: string | null,
-  directed: boolean = true
-): TraversalResult | null {
-  return useMemo(() => {
+export const useBFS = (nodes: GraphNode[], edges: GraphEdge[], startId: string | null, directed: boolean = true): TraversalResult | null => useMemo(() => {
     if (!startId || nodes.length === 0) return null;
     return performBFS(nodes, edges, startId, directed);
   }, [nodes, edges, startId, directed]);
-}
 
 /**
  * Hook for DFS traversal
+ * @param nodes
+ * @param edges
+ * @param startId
+ * @param directed
  */
-export function useDFS(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  startId: string | null,
-  directed: boolean = true
-): TraversalResult | null {
-  return useMemo(() => {
+export const useDFS = (nodes: GraphNode[], edges: GraphEdge[], startId: string | null, directed: boolean = true): TraversalResult | null => useMemo(() => {
     if (!startId || nodes.length === 0) return null;
     return performDFS(nodes, edges, startId, directed);
   }, [nodes, edges, startId, directed]);
-}
 
 /**
  * Hook for cycle detection with details
+ * @param nodes
+ * @param edges
+ * @param directed
  */
-export function useCycleInfo(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  directed: boolean = true
-): CycleResult {
-  return useMemo(() => {
+export const useCycleInfo = (nodes: GraphNode[], edges: GraphEdge[], directed: boolean = true): CycleResult => useMemo(() => {
     if (nodes.length === 0) return { hasCycle: false, cycle: [] };
     return getCycleInfo(nodes, edges, directed);
   }, [nodes, edges, directed]);
-}
 
 /**
  * Hook for strongly connected components
+ * @param nodes
+ * @param edges
  */
-export function useStronglyConnectedComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): ComponentResult {
-  return useMemo(() => {
+export const useStronglyConnectedComponents = (nodes: GraphNode[], edges: GraphEdge[]): ComponentResult => useMemo(() => {
     if (nodes.length === 0) return { components: [], count: 0 };
     return findStrongComponents(nodes, edges);
   }, [nodes, edges]);
-}
 
 /**
  * Hook for core-periphery decomposition
+ * @param nodes
+ * @param edges
+ * @param coreThreshold
  */
-export function useCorePeriphery(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  coreThreshold: number = 0.7
-): CorePeripheryResult | null {
-  return useMemo(() => {
+export const useCorePeriphery = (nodes: GraphNode[], edges: GraphEdge[], coreThreshold: number = 0.7): CorePeripheryResult | null => useMemo(() => {
     if (nodes.length < 3) return null;
     return getCorePeriphery(nodes, edges, coreThreshold);
   }, [nodes, edges, coreThreshold]);
-}
 
 /**
  * Hook for biconnected components
+ * @param nodes
+ * @param edges
  */
-export function useBiconnectedComponents(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): BiconnectedResult | null {
-  return useMemo(() => {
+export const useBiconnectedComponents = (nodes: GraphNode[], edges: GraphEdge[]): BiconnectedResult | null => useMemo(() => {
     if (nodes.length < 2) return null;
     return getBiconnectedComponents(nodes, edges);
   }, [nodes, edges]);
-}
 
 /**
  * Hook for triangle detection
+ * @param nodes
+ * @param edges
  */
-export function useTriangles(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-): TriangleResult {
-  return useMemo(() => {
+export const useTriangles = (nodes: GraphNode[], edges: GraphEdge[]): TriangleResult => useMemo(() => {
     if (nodes.length < 3 || edges.length < 3) {
       return { triangles: [], count: 0, clusteringCoefficient: 0 };
     }
     return getTriangles(nodes, edges);
   }, [nodes, edges]);
-}
 
 /**
  * Hook for star pattern detection
+ * @param nodes
+ * @param edges
+ * @param options
+ * @param options.minDegree
+ * @param options.type
  */
-export function useStarPatterns(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  options: { minDegree?: number; type?: 'in' | 'out' } = {}
-): StarPatternResult {
+export const useStarPatterns = (nodes: GraphNode[], edges: GraphEdge[], options: { minDegree?: number; type?: 'in' | 'out' } = {}): StarPatternResult => {
   const { minDegree = 5, type = 'out' } = options;
   return useMemo(() => {
     if (nodes.length === 0) return { patterns: [], count: 0 };
     return getStarPatterns(nodes, edges, { minDegree, type });
   }, [nodes, edges, minDegree, type]);
-}
+};
 
 /**
  * Hook for co-citation detection
+ * @param nodes
+ * @param edges
+ * @param minCount
  */
-export function useCoCitations(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  minCount: number = 2
-): CoCitationResult {
-  return useMemo(() => {
+export const useCoCitations = (nodes: GraphNode[], edges: GraphEdge[], minCount: number = 2): CoCitationResult => useMemo(() => {
     if (nodes.length === 0) return { pairs: [] };
     return getCoCitations(nodes, edges, minCount);
   }, [nodes, edges, minCount]);
-}
 
 /**
  * Hook for bibliographic coupling detection
+ * @param nodes
+ * @param edges
+ * @param minShared
  */
-export function useBibliographicCoupling(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  minShared: number = 2
-): BibliographicCouplingResult {
-  return useMemo(() => {
+export const useBibliographicCoupling = (nodes: GraphNode[], edges: GraphEdge[], minShared: number = 2): BibliographicCouplingResult => useMemo(() => {
     if (nodes.length === 0) return { pairs: [] };
     return getBibliographicCoupling(nodes, edges, minShared);
   }, [nodes, edges, minShared]);
-}
 
 /**
  * Hook for k-truss extraction
+ * @param nodes
+ * @param edges
+ * @param k
  */
-export function useKTruss(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  k: number = 3
-): KTrussResult {
-  return useMemo(() => {
+export const useKTruss = (nodes: GraphNode[], edges: GraphEdge[], k: number = 3): KTrussResult => useMemo(() => {
     if (nodes.length < 3 || edges.length < 3 || k < 2) {
       return { nodes: [], edges: [], k, nodeCount: 0, edgeCount: 0 };
     }
     return getKTruss(nodes, edges, k);
   }, [nodes, edges, k]);
-}
 
 /**
  * Hook for cluster quality metrics
+ * @param nodes
+ * @param edges
+ * @param communities
  */
-export function useClusterQuality(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  communities: CommunityResult[]
-): ClusterQualityResult {
-  return useMemo(() => {
+export const useClusterQuality = (nodes: GraphNode[], edges: GraphEdge[], communities: CommunityResult[]): ClusterQualityResult => useMemo(() => {
     if (nodes.length === 0 || communities.length === 0) {
       return {
         modularity: 0,
@@ -561,23 +496,21 @@ export function useClusterQuality(
     }
     return getClusterQuality(nodes, edges, communities);
   }, [nodes, edges, communities]);
-}
 
 /**
  * Combined hook that provides access to all graph algorithm operations
  * Use this when you need multiple algorithm operations
+ * @param nodes
+ * @param edges
  */
-export function useGraphAlgorithms(
-  nodes: GraphNode[],
-  edges: GraphEdge[]
-) {
+export const useGraphAlgorithms = (nodes: GraphNode[], edges: GraphEdge[]) => {
   // Memoized statistics
   const statistics = useGraphStatistics(nodes, edges, true);
 
   // Community detection with controls
   const [communityOptions, setCommunityOptions] = useState<CommunityDetectionOptions>({
     algorithm: 'louvain',
-    resolution: 1.0,
+    resolution: 1,
   });
 
   const communities = useMemo(() => {
@@ -664,4 +597,4 @@ export function useGraphAlgorithms(
     extractSubgraph: (ids: string[]) =>
       getSubgraph(nodes, edges, ids, true),
   };
-}
+};

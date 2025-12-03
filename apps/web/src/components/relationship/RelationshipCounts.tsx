@@ -1,12 +1,11 @@
 /**
  * RelationshipCounts component
  * Displays summary count badges for all relationships (incoming, outgoing, total)
- *
  * @module RelationshipCounts
  * @see specs/016-entity-relationship-viz/spec.md (User Story 4)
  */
 
-import { Group, Badge, Paper, Text } from '@mantine/core';
+import { Badge, Group, Paper, Text } from '@mantine/core';
 import React from 'react';
 
 export interface RelationshipCountsProps {
@@ -23,6 +22,10 @@ export interface RelationshipCountsProps {
 /**
  * Displays summary badges showing relationship counts
  * Shows total incoming, outgoing, and optionally grand total
+ * @param root0
+ * @param root0.incomingCount
+ * @param root0.outgoingCount
+ * @param root0.showGrandTotal
  */
 export const RelationshipCounts: React.FC<RelationshipCountsProps> = ({
   incomingCount,

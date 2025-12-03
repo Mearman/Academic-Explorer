@@ -5,14 +5,13 @@
  * - Hydrating from IndexedDB on first access
  * - Transforming GraphNodeRecord/GraphEdgeRecord to visualization nodes/edges
  * - Tracking hydration status and statistics
- *
  * @module lib/graph-index/use-persistent-graph
  */
 
 import { getPersistentGraph, PersistentGraph } from '@bibgraph/client';
-import type { GraphNode, GraphEdge, GraphStatistics , GraphNodeRecord, GraphEdgeRecord } from '@bibgraph/types';
+import type { GraphEdge, GraphEdgeRecord,GraphNode, GraphNodeRecord, GraphStatistics  } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo,useState } from 'react';
 
 const LOG_PREFIX = 'use-persistent-graph';
 
@@ -55,9 +54,9 @@ export interface UsePersistentGraphResult {
 
 /**
  * Transform GraphNodeRecord to GraphNode for visualization
+ * @param record
  */
-function nodeRecordToGraphNode(record: GraphNodeRecord): GraphNode {
-  return {
+const nodeRecordToGraphNode = (record: GraphNodeRecord): GraphNode => ({
     id: record.id,
     entityType: record.entityType,
     entityId: record.id,
@@ -73,14 +72,13 @@ function nodeRecordToGraphNode(record: GraphNodeRecord): GraphNode {
       updatedAt: record.updatedAt,
       ...record.metadata,
     },
-  };
-}
+  });
 
 /**
  * Transform GraphEdgeRecord to GraphEdge for visualization
+ * @param record
  */
-function edgeRecordToGraphEdge(record: GraphEdgeRecord): GraphEdge {
-  return {
+const edgeRecordToGraphEdge = (record: GraphEdgeRecord): GraphEdge => ({
     id: record.id,
     source: record.source,
     target: record.target,
@@ -99,8 +97,7 @@ function edgeRecordToGraphEdge(record: GraphEdgeRecord): GraphEdge {
       role: record.role,
       discoveredAt: record.discoveredAt,
     },
-  };
-}
+  });
 
 /**
  * Hook for loading graph data from the persistent graph index
@@ -115,7 +112,7 @@ function edgeRecordToGraphEdge(record: GraphEdgeRecord): GraphEdge {
  * return <GraphVisualization nodes={nodes} edges={edges} />;
  * ```
  */
-export function usePersistentGraph(): UsePersistentGraphResult {
+export const usePersistentGraph = (): UsePersistentGraphResult => {
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,17 +199,17 @@ export function usePersistentGraph(): UsePersistentGraphResult {
     graph,
     refresh,
   };
-}
+};
 
 /**
  * Hook for getting graph statistics only (lighter weight)
  */
-export function usePersistentGraphStatistics(): {
+export const usePersistentGraphStatistics = (): {
   statistics: GraphStatistics | null;
   loading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
-} {
+} => {
   const [statistics, setStatistics] = useState<GraphStatistics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -240,4 +237,4 @@ export function usePersistentGraphStatistics(): {
   }, [refresh]);
 
   return { statistics, loading, error, refresh };
-}
+};

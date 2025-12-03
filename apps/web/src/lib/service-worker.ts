@@ -9,7 +9,7 @@ let swRegistration: ServiceWorkerRegistration | null = null;
 /**
  * Register the OpenAlex service worker
  */
-export async function registerOpenAlexServiceWorker(): Promise<boolean> {
+export const registerOpenAlexServiceWorker = async (): Promise<boolean> => {
   // Only register in browser environment
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
     logger.debug("sw", "Service Worker not supported in this environment");
@@ -74,12 +74,12 @@ export async function registerOpenAlexServiceWorker(): Promise<boolean> {
     logger.error("sw", "Failed to register Service Worker", { error });
     return false;
   }
-}
+};
 
 /**
  * Unregister the OpenAlex service worker
  */
-export async function unregisterOpenAlexServiceWorker(): Promise<boolean> {
+export const unregisterOpenAlexServiceWorker = async (): Promise<boolean> => {
   if (!swRegistration) {
     return true;
   }
@@ -95,17 +95,17 @@ export async function unregisterOpenAlexServiceWorker(): Promise<boolean> {
     logger.error("sw", "Failed to unregister Service Worker", { error });
     return false;
   }
-}
+};
 
 /**
  * Get service worker registration status
  */
-export function getServiceWorkerStatus(): {
+export const getServiceWorkerStatus = (): {
   supported: boolean;
   registered: boolean;
   active: boolean;
   scope?: string;
-} {
+} => {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
     return {
       active: false,
@@ -120,4 +120,4 @@ export function getServiceWorkerStatus(): {
     scope: swRegistration?.scope,
     supported: true,
   };
-}
+};

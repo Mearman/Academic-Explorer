@@ -9,7 +9,6 @@
 import { setupServer } from 'msw/node';
 
 import { createOpenalexHandlers } from '../../src/test/msw/handlers';
-
 import { readFromFilesystemCache, writeToFilesystemCache } from './filesystem-cache';
 
 /**
@@ -32,9 +31,9 @@ export const mswServer = setupServer(...createOpenalexHandlers(cacheUtils));
  * Start MSW server to begin intercepting requests
  * Called in Playwright globalSetup before any tests run
  */
-export function startMSWServer() {
+export const startMSWServer = () => {
   mswServer.listen({
-    onUnhandledRequest(request, print) {
+    onUnhandledRequest: (request, print) => {
       // Log all unhandled requests for debugging
       const url = new URL(request.url);
 
@@ -103,22 +102,22 @@ export function startMSWServer() {
 
   console.log('✅ MSW server started - intercepting api.openalex.org requests');
   console.log('🔍 Verbose logging enabled for debugging HTTP 403 errors');
-}
+};
 
 /**
  * Stop MSW server and clean up resources
  * Called in Playwright globalTeardown after all tests complete
  */
-export function stopMSWServer() {
+export const stopMSWServer = () => {
   mswServer.close();
   console.log('🛑 MSW server stopped');
-}
+};
 
 /**
  * Reset MSW handlers to initial state
  * Useful between test suites to clear any handler overrides
  */
-export function resetMSWHandlers() {
+export const resetMSWHandlers = () => {
   mswServer.resetHandlers();
   console.log('🔄 MSW handlers reset');
-}
+};

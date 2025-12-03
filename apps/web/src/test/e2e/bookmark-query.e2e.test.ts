@@ -86,22 +86,19 @@ const TEST_QUERIES = {
 
 /**
  * Helper function to build URL with query parameters
+ * @param path
+ * @param params
  */
-function buildQueryUrl(
-  path: string,
-  params: Record<string, string>
-): string {
+const buildQueryUrl = (path: string, params: Record<string, string>): string => {
   const searchParams = new URLSearchParams(params);
   return `${path}?${searchParams.toString()}`;
-}
+};
 
 /**
  * Helper function to extract query parameters from current URL
+ * @param page
  */
-async function extractQueryParams(
-  page: any
-): Promise<Record<string, string>> {
-  return await page.evaluate(() => {
+const extractQueryParams = async (page: any): Promise<Record<string, string>> => await page.evaluate(() => {
     const hash = window.location.hash;
     const queryStringMatch = hash.match(/\?(.+)$/);
     if (!queryStringMatch) return {};
@@ -113,7 +110,6 @@ async function extractQueryParams(
     });
     return params;
   });
-}
 
 test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
   test.beforeEach(async ({ page, context }) => {
@@ -134,7 +130,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to query page
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000); // Allow query results to load
@@ -157,7 +153,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to query page
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -193,7 +189,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(3000); // Search queries may take longer
@@ -218,7 +214,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // First, bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -235,7 +231,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -263,7 +259,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to bookmarks page
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -288,7 +284,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -305,7 +301,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate away
       await page.goto(`${BASE_URL}/#/works`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(1000);
@@ -313,7 +309,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Go to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -343,7 +339,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -361,7 +357,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to bookmarks and click the bookmark
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -394,7 +390,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(3000);
@@ -412,7 +408,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Verify in bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -433,7 +429,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -457,7 +453,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Bookmark a query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -478,7 +474,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -499,7 +495,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Bookmark a query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -520,7 +516,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Navigate to bookmarks
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -542,7 +538,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -566,7 +562,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -583,7 +579,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Verify special characters are preserved
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -608,7 +604,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -648,7 +644,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
 
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -680,7 +676,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Bookmark the query
       await page.goto(`${BASE_URL}/#${queryUrl}`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);
@@ -697,7 +693,7 @@ test.describe("Query Page Bookmarking E2E Tests (T011)", () => {
       // Check bookmark card display
       await page.goto(`${BASE_URL}/#/bookmarks`, {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       await page.waitForTimeout(2000);

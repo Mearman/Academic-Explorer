@@ -1,6 +1,6 @@
 import { EntityDetectionService } from "@bibgraph/utils";
 import { renderHook } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { Route as OpenAlexUrlRoute } from "@/routes/openalex-url/$";
 
@@ -105,7 +105,7 @@ describe("OpenAlexUrl Route Unit Tests", () => {
 
       renderComponent(url);
 
-      if (path.split("/").filter((p) => p).length === 2) {
+      if (path.split("/").filter(Boolean).length === 2) {
         // Mock for single entity
         mockDetectEntity.mockReturnValue({ entityType: "works" }); // Adjust based on ID
       }

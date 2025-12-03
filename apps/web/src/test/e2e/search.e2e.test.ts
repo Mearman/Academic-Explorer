@@ -4,13 +4,12 @@
  * Tests the Universal Search utility page functionality.
  * Focuses on UI elements, search interface interactions, and page loading.
  * Does not test actual API results (handled by integration tests).
- *
  * @see spec-020 Phase 1: Utility page testing
  * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForSearchResults } from '@/test/helpers/app-ready';
 import { SearchPage } from '@/test/page-objects/SearchPage';
@@ -66,7 +65,7 @@ test.describe('@utility Search Page', () => {
 	test('should show clear button when text is entered', async ({ page }) => {
 		// Initially, clear button should not be visible
 		const clearButton = page.getByRole('button', { name: /clear/i });
-		await expect(clearButton).not.toBeVisible();
+		await expect(clearButton).toBeHidden();
 
 		// Enter text in search input
 		await searchPage.enterSearchQuery('test query');
@@ -85,7 +84,7 @@ test.describe('@utility Search Page', () => {
 		await expect(searchInput).toHaveValue('');
 
 		// Clear button should be hidden again
-		await expect(clearButton).not.toBeVisible();
+		await expect(clearButton).toBeHidden();
 	});
 
 	test('should update search interface with loading state', async ({ page }) => {

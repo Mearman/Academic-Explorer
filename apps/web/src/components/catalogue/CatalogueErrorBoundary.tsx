@@ -10,15 +10,15 @@ import {
   Alert,
   Button,
   Card,
+  Code,
   Group,
   Stack,
   Text,
-  Code,
 } from "@mantine/core";
-import { PostHogErrorBoundary } from "@posthog/react";
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
+import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
-import React, { ReactNode, FunctionComponent } from "react";
+import React, { FunctionComponent,ReactNode } from "react";
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;
@@ -29,10 +29,12 @@ interface CatalogueErrorBoundaryProps {
 /**
  * Custom fallback component for catalogue errors
  * Provides detailed error information and recovery actions
+ * @param root0
+ * @param root0.error
  */
-function CatalogueFallback({
+const CatalogueFallback = ({
   error,
-}: PostHogErrorBoundaryFallbackProps) {
+}: PostHogErrorBoundaryFallbackProps) => {
   // Convert unknown error to Error for display
   const errorObj = error instanceof Error ? error : new Error(String(error));
 
@@ -106,24 +108,21 @@ function CatalogueFallback({
       </Stack>
     </Card>
   );
-}
+};
 
 /**
  * Catalogue Error Boundary Component
  *
  * Uses PostHog's official ErrorBoundary with custom fallback UI.
  * Automatically tracks errors to PostHog for analytics and debugging.
- *
  * @param children - Components to wrap with error boundary
+ * @param children.children
  * @param fallback - Optional custom fallback component (defaults to CatalogueFallback)
+ * @param children.fallback
  */
-export function CatalogueErrorBoundary({
+export const CatalogueErrorBoundary = ({
   children,
   fallback,
-}: CatalogueErrorBoundaryProps) {
-  return (
-    <PostHogErrorBoundary fallback={fallback || CatalogueFallback}>
+}: CatalogueErrorBoundaryProps) => <PostHogErrorBoundary fallback={fallback || CatalogueFallback}>
       {children}
-    </PostHogErrorBoundary>
-  );
-}
+    </PostHogErrorBoundary>;

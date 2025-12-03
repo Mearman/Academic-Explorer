@@ -12,7 +12,7 @@
 
 import type { EntityType, GraphNode } from '@bibgraph/types';
 import { InMemoryStorageProvider } from '@bibgraph/utils';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it } from 'vitest';
 
 import { applyEntityTypeFilter } from './useEntityTypeFilter';
 

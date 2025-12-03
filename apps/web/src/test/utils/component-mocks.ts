@@ -314,17 +314,17 @@ export const mockIndexedDB = (): any => {
 /**
  * Setup all component mocks at once
  */
-export function setupComponentMocks() {
+export const setupComponentMocks = () => {
   mockXYFlow();
   mockD3Force();
   mockWebWorker();
   mockCanvas();
   mockIndexedDB();
-}
+};
 
 /**
  * Reset all component mocks
  */
-export function resetComponentMocks() {
+export const resetComponentMocks = () => {
   vi.clearAllMocks();
-}
+};

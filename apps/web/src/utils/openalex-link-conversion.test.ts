@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect,it } from 'vitest';
 
 import {
-  isOpenAlexId,
-  getEntityTypeFromId,
   convertOpenAlexToInternalLink,
+  getEntityTypeFromId,
+  isOpenAlexId,
   isOpenAlexUrl,
 } from './openalex-link-conversion';
 

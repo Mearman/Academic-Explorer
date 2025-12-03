@@ -4,25 +4,25 @@
  */
 
 import {
-  Stack,
-  Text,
-  Paper,
+  ActionIcon,
+  Alert,
   Button,
   Group,
-  Alert,
+  Paper,
   Skeleton,
-  ActionIcon,
+  Stack,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import {
-  IconFileTypePdf,
-  IconExternalLink,
   IconAlertCircle,
-  IconRefresh,
+  IconExternalLink,
+  IconFileTypePdf,
   IconMaximize,
   IconMinimize,
+  IconRefresh,
 } from "@tabler/icons-react";
-import React, { useState, useCallback } from "react";
+import React, { useCallback,useState } from "react";
 
 export interface PdfViewerProps {
   /** URL of the PDF to display */

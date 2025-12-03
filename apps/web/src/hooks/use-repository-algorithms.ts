@@ -1,27 +1,26 @@
 /**
  * Hook to integrate graph algorithms with the repository store
  * Bridges the repository's graph data with the algorithms package
- *
  * @module hooks/use-repository-algorithms
  */
 
-import type { GraphNode, GraphEdge } from '@bibgraph/types';
+import type { GraphEdge,GraphNode } from '@bibgraph/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
-  detectCommunities,
-  findShortestPath,
   calculateStatistics,
-  getKCore,
-  getEgoNetwork,
+  type ClusteringAlgorithm,
   type CommunityResult,
-  type PathResult,
+  detectCommunities,
+  type EgoNetworkResult,
+  findShortestPath,
+  getEgoNetwork,
+  getKCore,
   type GraphStatistics,
   type KCoreResult,
-  type EgoNetworkResult,
-  type ClusteringAlgorithm,
+  type PathResult,
 } from '@/services/graph-algorithms';
-import { repositoryStore, type RepositoryState } from '@/stores/repository-store';
+import { type RepositoryState,repositoryStore } from '@/stores/repository-store';
 
 /**
  * Community assignment map for coloring graph nodes
@@ -84,7 +83,7 @@ const COMMUNITY_COLORS = [
 /**
  * Hook to run algorithms on repository graph data
  */
-export function useRepositoryAlgorithms() {
+export const useRepositoryAlgorithms = () => {
   // Repository state
   const [repositoryState, setRepositoryState] = useState<RepositoryState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,7 +98,7 @@ export function useRepositoryAlgorithms() {
 
   // Algorithm options
   const [clusteringAlgorithm, setClusteringAlgorithm] = useState<ClusteringAlgorithm>('louvain');
-  const [resolution, setResolution] = useState(1.0);
+  const [resolution, setResolution] = useState(1);
   const [kCoreK, setKCoreK] = useState(2);
 
   // Load repository state
@@ -317,4 +316,4 @@ export function useRepositoryAlgorithms() {
     isLoading,
     isComputing,
   };
-}
+};

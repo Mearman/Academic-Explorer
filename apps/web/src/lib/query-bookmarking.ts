@@ -38,9 +38,7 @@ export const QUERY_SEMANTIC_PARAMETERS = new Set([
  * @param searchParams - Full search parameters including pagination
  * @returns Query parameters excluding pagination
  */
-export function extractQueryParameters(
-  searchParams: OpenAlexSearchParams
-): Partial<OpenAlexSearchParams> {
+export const extractQueryParameters = (searchParams: OpenAlexSearchParams): Partial<OpenAlexSearchParams> => {
   const queryParams: Partial<OpenAlexSearchParams> = {};
 
   for (const [key, value] of Object.entries(searchParams)) {
@@ -50,16 +48,14 @@ export function extractQueryParameters(
   }
 
   return queryParams;
-}
+};
 
 /**
  * Extract pagination parameters from search parameters
  * @param searchParams - Full search parameters
  * @returns Pagination parameters only
  */
-export function extractPaginationParameters(
-  searchParams: OpenAlexSearchParams
-): Partial<OpenAlexSearchParams> {
+export const extractPaginationParameters = (searchParams: OpenAlexSearchParams): Partial<OpenAlexSearchParams> => {
   const paginationParams: Partial<OpenAlexSearchParams> = {};
 
   for (const [key, value] of Object.entries(searchParams)) {
@@ -69,7 +65,7 @@ export function extractPaginationParameters(
   }
 
   return paginationParams;
-}
+};
 
 /**
  * Generate a unique identifier for a query based on semantic parameters only
@@ -77,10 +73,7 @@ export function extractPaginationParameters(
  * @param searchParams - Search parameters
  * @returns Unique query identifier string
  */
-export function generateQueryId(
-  entityType: string,
-  searchParams: OpenAlexSearchParams
-): string {
+export const generateQueryId = (entityType: string, searchParams: OpenAlexSearchParams): string => {
   const queryParams = extractQueryParameters(searchParams);
 
   // Create a normalized string representation of the query
@@ -97,7 +90,7 @@ export function generateQueryId(
   }
 
   return queryParts.join('|');
-}
+};
 
 /**
  * Create a bookmark request for a query with pagination parameters filtered out
@@ -106,11 +99,7 @@ export function generateQueryId(
  * @param searchParams - Full search parameters including pagination
  * @returns StoredNormalizedRequest for query bookmarking
  */
-export function createQueryBookmarkRequest(
-  entityType: string,
-  entityId: string | undefined,
-  searchParams: OpenAlexSearchParams
-) {
+export const createQueryBookmarkRequest = (entityType: string, entityId: string | undefined, searchParams: OpenAlexSearchParams) => {
   // Filter out pagination parameters for bookmark identification
   const queryParams = extractQueryParameters(searchParams);
 
@@ -130,7 +119,7 @@ export function createQueryBookmarkRequest(
 
   // Create the bookmark request with filtered parameters
   return createApiUrlRequest(internalPath, queryParams, queryId);
-}
+};
 
 /**
  * Check if two queries are semantically equivalent (ignoring pagination)
@@ -138,10 +127,7 @@ export function createQueryBookmarkRequest(
  * @param query2 - Second query parameters
  * @returns True if queries are semantically equivalent
  */
-export function areQueriesEquivalent(
-  query1: OpenAlexSearchParams,
-  query2: OpenAlexSearchParams
-): boolean {
+export const areQueriesEquivalent = (query1: OpenAlexSearchParams, query2: OpenAlexSearchParams): boolean => {
   const params1 = extractQueryParameters(query1);
   const params2 = extractQueryParameters(query2);
 
@@ -152,8 +138,7 @@ export function areQueriesEquivalent(
     return false;
   }
 
-  for (let i = 0; i < keys1.length; i++) {
-    const key = keys1[i];
+  for (const [i, key] of keys1.entries()) {
     if (key !== keys2[i]) {
       return false;
     }
@@ -167,7 +152,7 @@ export function areQueriesEquivalent(
   }
 
   return true;
-}
+};
 
 /**
  * Generate a human-readable title for a query bookmark
@@ -175,10 +160,7 @@ export function areQueriesEquivalent(
  * @param searchParams - Search parameters
  * @returns Human-readable title
  */
-export function generateQueryTitle(
-  entityType: string,
-  searchParams: OpenAlexSearchParams
-): string {
+export const generateQueryTitle = (entityType: string, searchParams: OpenAlexSearchParams): string => {
   const queryParams = extractQueryParameters(searchParams);
   const parts: string[] = [];
 
@@ -228,19 +210,19 @@ export function generateQueryTitle(
   }
 
   return result;
-}
+};
 
 /**
  * Get current page and pagination info from search parameters
  * @param searchParams - Full search parameters
  * @returns Pagination information
  */
-export function getPaginationInfo(searchParams: OpenAlexSearchParams): {
+export const getPaginationInfo = (searchParams: OpenAlexSearchParams): {
   page: number;
   perPage: number;
   cursor?: string;
   hasPagination: boolean;
-} {
+} => {
   const page = Number(searchParams.page) || 1;
   const perPage = Number(searchParams.per_page) || 50;
   const cursor = searchParams.cursor;
@@ -251,7 +233,7 @@ export function getPaginationInfo(searchParams: OpenAlexSearchParams): {
     cursor,
     hasPagination: !!(searchParams.page || searchParams.per_page || searchParams.cursor)
   };
-}
+};
 
 /**
  * Merge query parameters with pagination defaults
@@ -259,10 +241,7 @@ export function getPaginationInfo(searchParams: OpenAlexSearchParams): {
  * @param paginationParams - Optional pagination parameters
  * @returns Complete search parameters
  */
-export function mergeQueryAndPagination(
-  queryParams: Partial<OpenAlexSearchParams>,
-  paginationParams?: Partial<OpenAlexSearchParams>
-): OpenAlexSearchParams {
+export const mergeQueryAndPagination = (queryParams: Partial<OpenAlexSearchParams>, paginationParams?: Partial<OpenAlexSearchParams>): OpenAlexSearchParams => {
   const defaults: Partial<OpenAlexSearchParams> = {
     page: 1,
     per_page: 50
@@ -273,4 +252,4 @@ export function mergeQueryAndPagination(
     ...defaults,
     ...paginationParams
   } as OpenAlexSearchParams;
-}
+};

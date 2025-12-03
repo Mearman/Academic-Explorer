@@ -19,15 +19,14 @@ interface VersionComparisonData {
 /**
  * Compare metadata between v1 and v2 for a specific work
  * Only active during the November 2025 transition period
+ * @param workId
+ * @param enabled
  */
-export function useVersionComparison(
-  workId: string | undefined,
-  enabled: boolean = true,
-): {
+export const useVersionComparison = (workId: string | undefined, enabled: boolean = true): {
   comparison: VersionComparisonData | null;
   isLoading: boolean;
   error: Error | null;
-} {
+} => {
   const queryResult = useQuery({
     queryKey: ['version-comparison', workId],
     queryFn: async (): Promise<VersionComparisonData | null> => {
@@ -89,4 +88,4 @@ export function useVersionComparison(
     isLoading: queryResult.isLoading,
     error: queryResult.error as Error | null,
   };
-}
+};

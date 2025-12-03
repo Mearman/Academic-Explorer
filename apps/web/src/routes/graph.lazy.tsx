@@ -10,51 +10,50 @@
  * - Community detection and pathfinding algorithms
  * - Interactive node exploration
  * - Toggleable data sources
- *
  * @module routes/graph
  */
 
 import {
-  Container,
-  Stack,
-  Title,
-  Text,
-  Group,
-  Card,
+  ActionIcon,
   Alert,
   Badge,
-  Loader,
-  Button,
-  SegmentedControl,
-  ActionIcon,
-  Tooltip,
   Box,
+  Button,
+  Card,
+  Container,
+  Group,
+  Loader,
+  SegmentedControl,
+  Stack,
+  Text,
+  Title,
+  Tooltip,
 } from '@mantine/core';
 import {
-  IconGraph,
-  IconRefresh,
-  IconInfoCircle,
-  IconEye,
   IconAlertTriangle,
-  IconFocusCentered,
+  IconEye,
   IconFocus2,
+  IconFocusCentered,
+  IconGraph,
+  IconInfoCircle,
   IconLoader,
+  IconRefresh,
 } from '@tabler/icons-react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
-import React, { useMemo, useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
 import {
-  NodeContextMenu,
-  INITIAL_CONTEXT_MENU_STATE,
   type ContextMenuState,
+  INITIAL_CONTEXT_MENU_STATE,
+  NodeContextMenu,
 } from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
-import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
+import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';
 
 /**
@@ -62,7 +61,7 @@ import { useNodeExpansion } from '@/lib/graph-index';
  *
  * Displays entities from multiple sources as an interactive force-directed graph
  */
-function EntityGraphPage() {
+const EntityGraphPage = () => {
   // Get shared state from context (provided by RootLayout for graph page)
   const context = useGraphVisualizationContext();
 
@@ -330,7 +329,7 @@ function EntityGraphPage() {
               <Stack gap={0}>
                 <Title order={2}>Entity Graph</Title>
                 <Text c="dimmed" size="sm">
-                  {nodes.length} nodes, {edges.length} edges from {enabledSourceCount} source{enabledSourceCount !== 1 ? 's' : ''}
+                  {nodes.length} nodes, {edges.length} edges from {enabledSourceCount} source{enabledSourceCount === 1 ? '' : 's'}
                 </Text>
               </Stack>
             </Group>
@@ -411,7 +410,7 @@ function EntityGraphPage() {
                       size="sm"
                       leftSection={<IconLoader size={12} className="animate-spin" />}
                     >
-                      Expanding {expandingNodeIds.length} node{expandingNodeIds.length !== 1 ? 's' : ''}...
+                      Expanding {expandingNodeIds.length} node{expandingNodeIds.length === 1 ? '' : 's'}...
                     </Badge>
                   )}
                 </Group>
@@ -499,7 +498,7 @@ function EntityGraphPage() {
       </Box>
     </Box>
   );
-}
+};
 
 export const Route = createLazyFileRoute('/graph')({
   component: EntityGraphPage,

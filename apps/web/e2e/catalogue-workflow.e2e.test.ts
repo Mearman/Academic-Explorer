@@ -1,13 +1,12 @@
 /**
  * E2E Workflow tests for catalogue/list management
  * Tests the complete lifecycle of creating, populating, viewing, and managing catalogue lists
- *
  * @workflow @automated-manual
  * @module catalogue-workflow.e2e
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -123,7 +122,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await submitButton.click();
 
 		// Modal should close and list should appear
-		await expect(page.getByRole('dialog')).not.toBeVisible();
+		await expect(page.getByRole('dialog')).toBeHidden();
 		await page.waitForTimeout(1000);
 
 		// Verify the list appears in the list view
@@ -170,7 +169,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await submitButton.click();
 
 		// Verify bibliography was created
-		await expect(page.getByRole('dialog')).not.toBeVisible();
+		await expect(page.getByRole('dialog')).toBeHidden();
 		await page.waitForTimeout(1000);
 
 		// Switch to Bibliographies tab
@@ -423,7 +422,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 			// Verify list no longer exists
 			const listCardAfterDelete = page.getByText(testListTitle);
-			await expect(listCardAfterDelete).not.toBeVisible();
+			await expect(listCardAfterDelete).toBeHidden();
 		}
 
 		// Clear the stored ID since we deleted it

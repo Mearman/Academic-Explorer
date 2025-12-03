@@ -7,10 +7,10 @@ import { useEffect } from "react";
  * causing https://doi.org/... to display as https:/doi.org/...
  * This hook detects and immediately corrects such display issues.
  */
-export function useUrlNormalization(): void {
+export const useUrlNormalization = (): void => {
   useEffect(() => {
     // This hook is now deprecated - URL normalization has been moved to
     // the root route's beforeLoad function for more reliable processing
     // before React components mount.
   }, []);
-}
+};

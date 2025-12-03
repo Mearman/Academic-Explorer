@@ -7,11 +7,11 @@
  * For full 276-URL testing, use data-consistency.e2e.test.ts locally.
  */
 
-import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 // Load sample URLs (30 URLs covering all entity types)
 // Use import.meta.url for reliable path resolution across all environments
@@ -27,44 +27,40 @@ const BASE_URL = process.env.BASE_URL || process.env.E2E_BASE_URL || (process.en
 const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL
-function toAppUrl(apiUrl: string): string {
+const toAppUrl = (apiUrl: string): string => {
   const relativePath = apiUrl.replace(API_BASE, '');
   return `${BASE_URL}/#${relativePath}`;
-}
+};
 
 // Helper to parse entity type from URL
-function getEntityType(url: string): string | null {
+const getEntityType = (url: string): string | null => {
   const match = url.match(/\/([a-z]+)(?:\/|$|\?)/);
   return match ? match[1] : null;
-}
+};
 
 // Helper to check if URL is an entity detail page
-function isEntityDetail(url: string): boolean {
+const isEntityDetail = (url: string): boolean => {
   const entityType = getEntityType(url);
   if (!entityType) return false;
-  const pattern = new RegExp(`/${entityType}/([A-Z]\\d+|https?://|[a-z]+:)`);
+  const pattern = new RegExp(String.raw`/${entityType}/([A-Z]\d+|https?://|[a-z]+:)`);
   return pattern.test(url);
-}
+};
 
 // Helper to check if URL is a list/search page
-function isListPage(url: string): boolean {
+const isListPage = (url: string): boolean => {
   const entityType = getEntityType(url);
   if (!entityType) return false;
   return url.includes('?') || url.endsWith(`/${entityType}`);
-}
+};
 
 // Helper to check if URL is an autocomplete endpoint
-function isAutocomplete(url: string): boolean {
-  return url.includes('/autocomplete');
-}
+const isAutocomplete = (url: string): boolean => url.includes('/autocomplete');
 
 // Helper to get dynamic timeout based on environment
-function getTimeout(): number {
-  return process.env.CI === 'true' ? 30000 : 10000; // 30s in CI, 10s locally
-}
+const getTimeout = (): number => process.env.CI === 'true' ? 30_000 : 10_000;
 
 // Helper to wait for content with fallback selectors
-async function waitForContent(page: any, timeout: number): Promise<void> {
+const waitForContent = async (page: any, timeout: number): Promise<void> => {
   try {
     // Primary selector - main content area
     await page.waitForSelector('main', { timeout });
@@ -89,10 +85,10 @@ async function waitForContent(page: any, timeout: number): Promise<void> {
     // Re-throw original error if no fallback works
     throw error;
   }
-}
+};
 
 test.describe('Sample URLs - CI Testing', () => {
-  test.setTimeout(600000); // 10 minutes for 30 URLs (20 seconds per URL with retries)
+  test.setTimeout(600_000); // 10 minutes for 30 URLs (20 seconds per URL with retries)
 
   // Add a small delay between tests to avoid overwhelming the API
   test.beforeEach(async () => {
@@ -107,7 +103,7 @@ test.describe('Sample URLs - CI Testing', () => {
       const timeout = getTimeout();
 
       // Navigate to the app URL
-      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
       // Wait for content with dynamic timeout and fallback selectors
       await waitForContent(page, timeout);
@@ -118,8 +114,8 @@ test.describe('Sample URLs - CI Testing', () => {
 
       // Get content selector that might have fallen back
       const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-      const mainContent = await page.locator(contentSelector).textContent();
-      expect(mainContent).toBeTruthy();
+      const mainContent = page.locator(contentSelector);
+      await expect(mainContent).toHaveText();
 
       // Some pages may have minimal content due to API rate limiting or sparse data
       // Just verify we have some content (more lenient check)
@@ -143,18 +139,18 @@ test.describe('Sample URLs - CI Testing', () => {
 });
 
 test.describe('Data Completeness Verification', () => {
-  test.setTimeout(60000); // 1 minute per test
+  test.setTimeout(60_000); // 1 minute per test
 
   test('Author page should display entity data', async ({ page }) => {
     const appUrl = toAppUrl('https://api.openalex.org/authors/A5017898742');
 
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Verify page loaded and has content
     const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-    const mainContent = await page.locator(contentSelector).textContent();
-    expect(mainContent).toBeTruthy();
+    const mainContent = page.locator(contentSelector);
+    await expect(mainContent).toHaveText();
 
     // Verify no error state
     const errorHeading = await page.locator('h1:has-text("Error")').count();
@@ -167,13 +163,13 @@ test.describe('Data Completeness Verification', () => {
   test('Works search page should display results', async ({ page }) => {
     const appUrl = toAppUrl('https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc');
 
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Verify page loaded and has content
     const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-    const mainContent = await page.locator(contentSelector).textContent();
-    expect(mainContent).toBeTruthy();
+    const mainContent = page.locator(contentSelector);
+    await expect(mainContent).toHaveText();
 
     // Verify no error state
     const errorHeading = await page.locator('h1:has-text("Error")').count();

@@ -29,7 +29,7 @@ export const resolveSemanticColor = (
   if (!colorKey) return ''
 
   const [palette, shade] = colorKey.split('.')
-  return shadcnPalettes[palette as ShadcnPalette][parseInt(shade) as ShadcnShade]
+  return shadcnPalettes[palette as ShadcnPalette][Number.parseInt(shade) as ShadcnShade]
 }
 
 export const generateCSSVariables = (mode: 'light' | 'dark'): ThemeColors => {
@@ -45,7 +45,7 @@ export const generateCSSVariables = (mode: 'light' | 'dark'): ThemeColors => {
   // Generate semantic variables
   Object.entries(shadcnSemanticColors[mode]).forEach(([semanticKey, colorValue]) => {
     const [palette, shade] = colorValue.split('.')
-    const color = shadcnPalettes[palette as ShadcnPalette][parseInt(shade) as ShadcnShade]
+    const color = shadcnPalettes[palette as ShadcnPalette][Number.parseInt(shade) as ShadcnShade]
     colors[`--shadcn-${semanticKey}`] = color
   })
 

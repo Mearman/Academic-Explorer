@@ -4,31 +4,30 @@
  */
 
 import type {
-  MissingPaperDetectionResults,
-  MissingPaperDetectionConfig,
   DetectionProgress,
+  MissingPaperDetectionConfig,
+  MissingPaperDetectionResults,
  STARDataset, WorkReference } from "@bibgraph/utils";
 import { logger } from "@bibgraph/utils/logger";
 import {
-  Button,
-  Group,
-  Stack,
-  Text,
-  Paper,
-  Card,
-  Title,
-  NumberInput,
-  Switch,
-  SimpleGrid,
-  Progress,
   Alert,
-  Tabs,
   Badge,
   Box,
-  rem
-} from "@mantine/core";
-import { IconClipboard, IconAlertTriangle } from "@tabler/icons-react";
-import React, { useState, useMemo } from "react";
+  Button,
+  Card,
+  Group,
+  NumberInput,
+  Paper,
+  Progress,
+  rem,
+  SimpleGrid,
+  Stack,
+  Switch,
+  Tabs,
+  Text,
+  Title} from "@mantine/core";
+import { IconAlertTriangle,IconClipboard } from "@tabler/icons-react";
+import React, { useMemo,useState } from "react";
 
 interface MissingPaperDetectionProps {
   dataset: STARDataset;
@@ -46,10 +45,10 @@ interface DetectionJob {
   endTime?: Date;
 }
 
-export function MissingPaperDetection({
+export const MissingPaperDetection = ({
   dataset,
   onDetectionComplete,
-}: MissingPaperDetectionProps) {
+}: MissingPaperDetectionProps) => {
   const [detectionJobs, setDetectionJobs] = useState<DetectionJob[]>([]);
   const [detectionConfig, setDetectionConfig] =
     useState<MissingPaperDetectionConfig>({
@@ -322,17 +321,17 @@ export function MissingPaperDetection({
       )}
     </Paper>
   );
-}
+};
 
 interface MissingPaperResultsProps {
   results: MissingPaperDetectionResults;
   executionTime: string;
 }
 
-function MissingPaperResults({
+const MissingPaperResults = ({
   results,
   executionTime,
-}: MissingPaperResultsProps) {
+}: MissingPaperResultsProps) => {
   const [activeTab, setActiveTab] = useState<
     "summary" | "candidates" | "methods" | "validation"
   >("summary");
@@ -500,7 +499,7 @@ function MissingPaperResults({
                   <Stack gap="xs" flex={1}>
                     <Text size="sm" fw={600}>
                       {method
-                        .replace(/([A-Z])/g, " $1")
+                        .replaceAll(/([A-Z])/g, " $1")
                         .replace(/^./, (str) => str.toUpperCase())}
                     </Text>
                     <Text size="xs" c="dimmed">
@@ -550,7 +549,7 @@ function MissingPaperResults({
                 {results.validationMetrics.algorithmicBias.map(
                   (bias, index) => (
                     <Alert
-                      key={`bias-${String(index)}-${bias.substring(0, 10)}`}
+                      key={`bias-${String(index)}-${bias.slice(0, 10)}`}
                       color="red"
                       variant="light"
                       icon={<IconAlertTriangle size={16} />}
@@ -566,16 +565,14 @@ function MissingPaperResults({
       </Tabs>
     </Card>
   );
-}
+};
 
 interface PaperCardProps {
   paper: WorkReference;
   rank: number;
 }
 
-function PaperCard({ paper, rank }: PaperCardProps) {
-  return (
-    <Card p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+const PaperCard = ({ paper, rank }: PaperCardProps) => <Card p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
       <Group justify="space-between" align="flex-start" mb="sm">
         <Box flex={1}>
           <Group align="center" mb="xs">
@@ -634,11 +631,9 @@ function PaperCard({ paper, rank }: PaperCardProps) {
           </Group>
         </Box>
       </Group>
-    </Card>
-  );
-}
+    </Card>;
 
-function getMethodDescription(method: string): string {
+const getMethodDescription = (method: string): string => {
   const descriptions: { [key: string]: string } = {
     temporalGapAnalysis:
       "Find papers published during review period matching search criteria",
@@ -651,4 +646,4 @@ function getMethodDescription(method: string): string {
   };
 
   return descriptions[method] || "Unknown detection method";
-}
+};

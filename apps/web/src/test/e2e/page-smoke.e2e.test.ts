@@ -8,7 +8,6 @@
  * 1. Navigates successfully (no 404, no infinite redirect loops)
  * 2. Renders without JavaScript errors
  * 3. Shows meaningful content (not a blank page)
- *
  * @module page-smoke.e2e
  */
 
@@ -36,27 +35,21 @@ const allRoutes = getAllRoutes();
 const routes = categorizeRoutes(allRoutes);
 
 // Helper to build hash routes (SPA uses hash routing)
-function buildUrl(path: string): string {
-	return `${BASE_URL}/#${path}`;
-}
+const buildUrl = (path: string): string => `${BASE_URL}/#${path}`;
 
 // Helper to check page loads without errors
-async function expectPageLoads(
-	page: import("@playwright/test").Page,
-	path: string,
-	options?: {
+const expectPageLoads = async (page: import("@playwright/test").Page, path: string, options?: {
 		expectContent?: string | RegExp;
 		skipContentCheck?: boolean;
-	}
-): Promise<void> {
+	}): Promise<void> => {
 	const errors: string[] = [];
 	page.on("pageerror", (error) => {
 		errors.push(error.message);
 	});
 
 	const url = buildUrl(path);
-	await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
-	await waitForAppReady(page, { timeout: 30000 });
+	await page.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
+	await waitForAppReady(page, { timeout: 30_000 });
 
 	// Verify no JavaScript errors
 	expect(errors, `JavaScript errors on ${path}`).toHaveLength(0);
@@ -82,7 +75,7 @@ async function expectPageLoads(
 			typeof options.expectContent === "string"
 				? page.locator(`text=${options.expectContent}`)
 				: page.locator(`text=${options.expectContent.source}`);
-		await expect(locator.first()).toBeVisible({ timeout: 10000 });
+		await expect(locator.first()).toBeVisible({ timeout: 10_000 });
 	}
 
 	// Verify no error state displayed
@@ -94,14 +87,14 @@ async function expectPageLoads(
 		expect(errorHeading, `Page ${path} should not show Error heading`).toBe(0);
 		expect(error404Count, `Page ${path} should not show 404`).toBe(0);
 	}
-}
+};
 
 // ============================================================================
 // Auto-discovered Static Routes
 // ============================================================================
 
 test.describe("Auto-discovered Static Routes", () => {
-	test.setTimeout(60000);
+	test.setTimeout(60_000);
 
 	for (const route of routes.static) {
 		const isHomepage = route === "/";
@@ -121,7 +114,7 @@ test.describe("Auto-discovered Static Routes", () => {
 // ============================================================================
 
 test.describe("Auto-discovered Entity Index Pages", () => {
-	test.setTimeout(60000);
+	test.setTimeout(60_000);
 
 	for (const route of routes.entityIndex) {
 		test(`${route} loads successfully`, async ({ page }) => {
@@ -135,7 +128,7 @@ test.describe("Auto-discovered Entity Index Pages", () => {
 // ============================================================================
 
 test.describe("Auto-discovered Entity Detail Pages", () => {
-	test.setTimeout(90000);
+	test.setTimeout(90_000);
 
 	for (const route of routes.entityDetail) {
 		const entityType = extractEntityType(route);
@@ -160,7 +153,7 @@ test.describe("Auto-discovered Entity Detail Pages", () => {
 // ============================================================================
 
 test.describe("Auto-discovered External ID Routes", () => {
-	test.setTimeout(60000);
+	test.setTimeout(60_000);
 
 	for (const route of routes.externalId) {
 		const externalIdInfo = getExternalIdInfo(route);
@@ -186,7 +179,7 @@ test.describe("Auto-discovered External ID Routes", () => {
 // ============================================================================
 
 test.describe("Auto-discovered Autocomplete Pages", () => {
-	test.setTimeout(60000);
+	test.setTimeout(60_000);
 
 	for (const route of routes.autocomplete) {
 		test(`${route} loads successfully`, async ({ page }) => {

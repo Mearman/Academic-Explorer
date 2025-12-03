@@ -56,6 +56,13 @@ export interface EntityTypeFilterProps {
 /**
  * Component for filtering by entity type
  * Displays checkboxes or chips for each EntityType
+ * @param root0
+ * @param root0.selectedTypes
+ * @param root0.onChange
+ * @param root0.availableTypes
+ * @param root0.title
+ * @param root0.inline
+ * @param root0.showButtons
  */
 export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
   selectedTypes,

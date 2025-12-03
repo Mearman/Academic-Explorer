@@ -9,15 +9,14 @@
 
 import type { GraphEdge } from '@bibgraph/types';
 import type { ReactNode } from 'react';
-import { createContext, useContext, useCallback, useState, useEffect } from 'react';
-
+import { createContext, use, useCallback, useEffect,useState } from 'react';
 
 import { useGraphAutoPopulation } from '@/hooks/use-graph-auto-population';
 import type { GraphVisualizationState } from '@/hooks/use-graph-visualization';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import type { UseMultiSourceGraphResult } from '@/hooks/use-multi-source-graph';
 import { useMultiSourceGraph } from '@/hooks/use-multi-source-graph';
-import { settingsStoreInstance, type BackgroundStrategy } from '@/stores/settings-store';
+import { type BackgroundStrategy,settingsStoreInstance } from '@/stores/settings-store';
 
 /**
  * Combined context value with both graph data and visualization state
@@ -32,8 +31,10 @@ export const GraphVisualizationContext = createContext<GraphVisualizationContext
 /**
  * Provider component that creates and shares graph visualization state
  * Also handles auto-population of labels and relationship discovery
+ * @param root0
+ * @param root0.children
  */
-export function GraphVisualizationProvider({ children }: { children: ReactNode }) {
+export const GraphVisualizationProvider = ({ children }: { children: ReactNode }) => {
   const graphData = useMultiSourceGraph();
   const visualization = useGraphVisualization();
 
@@ -76,18 +77,18 @@ export function GraphVisualizationProvider({ children }: { children: ReactNode }
   });
 
   return (
-    <GraphVisualizationContext.Provider value={{ graphData, visualization }}>
+    <GraphVisualizationContext value={{ graphData, visualization }}>
       {children}
-    </GraphVisualizationContext.Provider>
+    </GraphVisualizationContext>
   );
-}
+};
 
 /**
  * Hook to access shared graph visualization context
  * Returns null when used outside GraphVisualizationProvider (e.g., non-graph pages)
  * Only throws error in development to help catch misuse
  */
-export function useGraphVisualizationContext() {
-  const context = useContext(GraphVisualizationContext);
+export const useGraphVisualizationContext = () => {
+  const context = use(GraphVisualizationContext);
   return context;
-}
+};

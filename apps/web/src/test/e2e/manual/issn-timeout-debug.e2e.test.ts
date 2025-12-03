@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const DEPLOYED_URL = 'https://mearman.github.io/BibGraph';
 
@@ -10,7 +10,7 @@ const DEPLOYED_URL = 'https://mearman.github.io/BibGraph';
  */
 
 test.describe('ISSN Timeout Investigation', () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test('should debug ISSN timeout with full diagnostics', async ({ page }) => {
     const consoleMessages: { type: string; text: string }[] = [];
@@ -43,7 +43,7 @@ test.describe('ISSN Timeout Investigation', () => {
     try {
       await page.goto(targetUrl, {
         waitUntil: 'networkidle',
-        timeout: 30000,
+        timeout: 30_000,
       });
 
       console.log('Page loaded successfully');
@@ -51,9 +51,9 @@ test.describe('ISSN Timeout Investigation', () => {
 
       // Try to find main content
       try {
-        await page.waitForSelector('main', { timeout: 10000 });
+        await page.waitForSelector('main', { timeout: 10_000 });
         const mainText = await page.locator('main').textContent();
-        console.log('Main content found:', mainText?.substring(0, 200));
+        console.log('Main content found:', mainText?.slice(0, 200));
       } catch (mainError) {
         console.log('Main selector not found:', mainError);
       }
@@ -101,17 +101,17 @@ test.describe('ISSN Timeout Investigation', () => {
 
     await page.goto(targetUrl, {
       waitUntil: 'domcontentloaded',
-      timeout: 30000,
+      timeout: 30_000,
     });
 
     // Wait longer for potential async loading
-    await page.waitForTimeout(15000);
+    await page.waitForTimeout(15_000);
 
     const finalUrl = page.url();
     console.log('Final URL after extended wait:', finalUrl);
 
     const mainText = await page.locator('body').textContent();
-    console.log('Page content (first 500 chars):', mainText?.substring(0, 500));
+    console.log('Page content (first 500 chars):', mainText?.slice(0, 500));
 
     // Check if we got redirected to search
     const isSearchPage = finalUrl.includes('/search');
@@ -130,10 +130,10 @@ test.describe('ISSN Timeout Investigation', () => {
     // First test a working ROR
     await page.goto(`${DEPLOYED_URL}/#/institutions/ror/02y3ad647`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: 30_000,
     });
 
-    await page.waitForSelector('main', { timeout: 10000 });
+    await page.waitForSelector('main', { timeout: 10_000 });
     const rorUrl = page.url();
     const rorMain = await page.locator('main').textContent();
 
@@ -146,17 +146,17 @@ test.describe('ISSN Timeout Investigation', () => {
     // Now test the failing ISSN
     await page.goto(`${DEPLOYED_URL}/#/sources/issn/2041-1723`, {
       waitUntil: 'domcontentloaded',
-      timeout: 30000,
+      timeout: 30_000,
     });
 
-    await page.waitForTimeout(15000);
+    await page.waitForTimeout(15_000);
 
     const issnUrl = page.url();
     const issnMain = await page.locator('body').textContent();
 
     console.log('ISSN URL:', issnUrl);
     console.log('ISSN content length:', issnMain?.length);
-    console.log('ISSN content (first 500 chars):', issnMain?.substring(0, 500));
+    console.log('ISSN content (first 500 chars):', issnMain?.slice(0, 500));
 
     // Compare behaviors
     console.log('\n=== COMPARISON ===');

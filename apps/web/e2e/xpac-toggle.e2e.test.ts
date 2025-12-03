@@ -14,7 +14,7 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Xpac Toggle Functionality', () => {
   test('should show XpacToggle in Settings page', async ({ page }) => {
@@ -322,14 +322,14 @@ test.describe('Xpac Toggle Functionality', () => {
       const isChecked = await switchInput.isChecked();
       await switchInput.click();
       // Verify the state changed
-      const newIsChecked = await switchInput.isChecked();
-      expect(newIsChecked).toBe(!isChecked);
+      const newIsChecked = switchInput;
+      await expect(newIsChecked).toBeChecked({ checked:  });
       await page.waitForTimeout(200);
     }
 
     // Verify page is still responsive and no errors
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     const hasError = bodyText?.toLowerCase().includes('error') &&
                      !bodyText?.toLowerCase().includes('0 errors');

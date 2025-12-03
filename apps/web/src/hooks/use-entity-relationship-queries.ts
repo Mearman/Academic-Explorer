@@ -1,20 +1,19 @@
 /**
  * React hook for querying entity relationships via OpenAlex API
  * Uses the entity relationship query registry to fetch related entities
- *
  * @module use-entity-relationship-queries
  */
 
-import { getWorks, getAuthors, getSources, getInstitutions, getTopicById } from '@bibgraph/client';
-import { RelationType, getInboundQueries, getOutboundQueries } from '@bibgraph/types';
+import { getAuthors, getInstitutions, getSources, getTopicById,getWorks } from '@bibgraph/client';
 import type { EntityType , RelationshipQueryConfig } from '@bibgraph/types';
-import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { getInboundQueries, getOutboundQueries,RelationType } from '@bibgraph/types';
+import { type QueryClient,useQueries, useQueryClient } from '@tanstack/react-query';
+import React, { useCallback, useEffect,useRef, useState } from 'react';
 
 import type {
-  RelationshipSection,
-  RelationshipItem,
   PaginationState,
+  RelationshipItem,
+  RelationshipSection,
 } from '@/types/relationship';
 import { DEFAULT_PAGE_SIZE } from '@/types/relationship';
 
@@ -22,20 +21,20 @@ import { DEFAULT_PAGE_SIZE } from '@/types/relationship';
 /**
  * Type guard to check if a string is a valid RelationType enum value
  * This allows safe narrowing from string to the enum type
+ * @param value
  */
-function isRelationType(value: string): value is RelationType {
+const isRelationType = (value: string): value is RelationType => {
   // Get all RelationType enum values (handles duplicates from deprecated aliases)
   const validTypes = new Set(Object.values(RelationType));
   return validTypes.has(value as RelationType);
-}
+};
 
 /**
  * Check if a displayName looks like an OpenAlex ID URL
  * These need to be prefetched to get the actual display name
+ * @param displayName
  */
-function isOpenAlexIdUrl(displayName: string): boolean {
-  return displayName.startsWith('https://openalex.org/');
-}
+const isOpenAlexIdUrl = (displayName: string): boolean => displayName.startsWith('https://openalex.org/');
 
 /**
  * State for tracking loaded items per section
@@ -83,15 +82,11 @@ export interface UseEntityRelationshipQueriesResult {
 /**
  * Query for entity relationships using the relationship query registry
  * Makes parallel API calls for all configured inbound/outbound relationships
- *
  * @param entityId - The ID of the entity to query relationships for
  * @param entityType - The type of the entity
  * @returns Relationship sections from API queries with loading/error states
  */
-export function useEntityRelationshipQueries(
-  entityId: string | undefined,
-  entityType: EntityType,
-): UseEntityRelationshipQueriesResult {
+export const useEntityRelationshipQueries = (entityId: string | undefined, entityType: EntityType): UseEntityRelationshipQueriesResult => {
   const queryClient = useQueryClient();
 
   // Track additional loaded items per section (beyond initial query)
@@ -359,18 +354,17 @@ export function useEntityRelationshipQueries(
     setPageSize,
     isLoadingMore,
   };
-}
+};
 
 /**
  * Execute a single relationship query using the OpenAlex API or embedded data extraction
+ * @param entityId
+ * @param entityType
+ * @param config
+ * @param page
+ * @param customPageSize
  */
-async function executeRelationshipQuery(
-  entityId: string,
-  entityType: EntityType,
-  config: RelationshipQueryConfig,
-  page: number = 1,
-  customPageSize?: number
-): Promise<RelationshipQueryResult> {
+const executeRelationshipQuery = async (entityId: string, entityType: EntityType, config: RelationshipQueryConfig, page: number = 1, customPageSize?: number): Promise<RelationshipQueryResult> => {
   // Handle API-based queries
   if (config.source === 'api') {
     const filter = config.buildFilter(entityId);
@@ -610,7 +604,7 @@ async function executeRelationshipQuery(
   }
 
   throw new Error('Invalid relationship query configuration: missing source property');
-}
+};
 
 /**
  * Result from a relationship query
@@ -624,13 +618,12 @@ interface RelationshipQueryResult {
 
 /**
  * Create a RelationshipSection from query results
+ * @param config
+ * @param queryResult
+ * @param direction
+ * @param additionalState
  */
-function createRelationshipSection(
-  config: RelationshipQueryConfig,
-  queryResult: RelationshipQueryResult,
-  direction: 'inbound' | 'outbound',
-  additionalState?: SectionLoadState
-): RelationshipSection {
+const createRelationshipSection = (config: RelationshipQueryConfig, queryResult: RelationshipQueryResult, direction: 'inbound' | 'outbound', additionalState?: SectionLoadState): RelationshipSection => {
   const { results, totalCount, page, perPage } = queryResult;
 
   // Transform initial results into RelationshipItems
@@ -674,22 +667,21 @@ function createRelationshipSection(
     pagination,
     isPartialData: false, // API queries return complete data
   };
-}
+};
 
 /**
  * Create a RelationshipItem from an API entity result
+ * @param entity
+ * @param config
+ * @param direction
  */
-function createRelationshipItem(
-  entity: Record<string, unknown>,
-  config: RelationshipQueryConfig,
-  direction: 'inbound' | 'outbound'
-): RelationshipItem {
+const createRelationshipItem = (entity: Record<string, unknown>, config: RelationshipQueryConfig, direction: 'inbound' | 'outbound'): RelationshipItem => {
   // Safely extract ID and display_name, ensuring they are strings
   // This prevents [object Object] appearing in IDs if API returns unexpected data
   const rawId = entity.id;
-  const entityId = typeof rawId === 'string' ? rawId : (rawId != null ? String(rawId) : '');
+  const entityId = typeof rawId === 'string' ? rawId : (rawId == null ? '' : String(rawId));
   const rawDisplayName = entity.display_name;
-  const displayName = typeof rawDisplayName === 'string' ? rawDisplayName : (rawDisplayName != null ? String(rawDisplayName) : '');
+  const displayName = typeof rawDisplayName === 'string' ? rawDisplayName : (rawDisplayName == null ? '' : String(rawDisplayName));
 
   // Determine source and target based on direction
   // For inbound: target is the current entity (not in this context), source is the API result
@@ -713,18 +705,17 @@ function createRelationshipItem(
     displayName,
     isSelfReference: false,
   };
-}
+};
 
 /**
  * Prefetch an entity in the background to populate the cache
  * This is used for ID-only relationships where we only have the ID,
  * not the full entity data (e.g., Institutions parent lineage)
+ * @param queryClient
+ * @param entityId
+ * @param targetEntityType
  */
-async function prefetchEntity(
-  queryClient: QueryClient,
-  entityId: string,
-  targetEntityType: EntityType
-): Promise<void> {
+const prefetchEntity = async (queryClient: QueryClient, entityId: string, targetEntityType: EntityType): Promise<void> => {
   // Create query key for the entity
   const queryKey = ['entity', targetEntityType, entityId];
 
@@ -778,4 +769,4 @@ async function prefetchEntity(
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-}
+};

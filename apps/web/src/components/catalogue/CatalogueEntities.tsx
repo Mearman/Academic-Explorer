@@ -8,65 +8,63 @@ import { ENTITY_METADATA } from "@bibgraph/types";
 import { type CatalogueEntity } from "@bibgraph/utils"
 import { logger } from "@bibgraph/utils";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
   useSensor,
   useSensors,
-  PointerSensor,
-  KeyboardSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  verticalListSortingStrategy,
   sortableKeyboardCoordinates,
-
-  useSortable} from "@dnd-kit/sortable";
+  useSortable,  verticalListSortingStrategy} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  Card,
-  Group,
-  Text,
-  Badge,
   ActionIcon,
-  Stack,
-  Table,
-  TextInput,
-  Select,
+  Alert,
+  Badge,
+  Box,
   Button,
+  Card,
+  Checkbox,
+  Group,
+  Loader,
   Menu,
   Modal,
+  Select,
+  Stack,
+  Table,
+  Text,
   Textarea,
+  TextInput,
   Tooltip,
-  Loader,
-  Alert,
-  Checkbox,
-  Box,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-  IconExternalLink,
+  IconDots,
   IconEdit,
-  IconTrash,
+  IconExternalLink,
+  IconGripVertical,
   IconNotes,
   IconSearch,
-  IconDots,
-  IconGripVertical,
+  IconTrash,
 } from "@tabler/icons-react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import React, { useState, useRef } from "react";
+import React, { useRef,useState } from "react";
 
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import {
-  isWorkMetadata,
   isAuthorMetadata,
+  isConceptMetadata,
+  isFunderMetadata,
   isInstitutionMetadata,
+  isPublisherMetadata,
   isSourceMetadata,
   isTopicMetadata,
-  isFunderMetadata,
-  isPublisherMetadata,
-  isConceptMetadata,
+  isWorkMetadata,
 } from "@/utils/catalogue-guards";
 
 interface CatalogueEntitiesProps {
@@ -87,8 +85,9 @@ interface SortableEntityRowProps {
  * Formats entity metadata for display based on entity type
  * Note: Metadata is only available when entities are enriched with OpenAlex data.
  * For base CatalogueEntity objects from storage, this will show entity ID.
+ * @param entity
  */
-function formatEntityMetadata(entity: CatalogueEntity): string {
+const formatEntityMetadata = (entity: CatalogueEntity): string => {
   // Type guard: Check if entity has metadata property (enriched entity)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const enrichedEntity = entity as CatalogueEntity & { metadata?: any };
@@ -189,16 +188,16 @@ function formatEntityMetadata(entity: CatalogueEntity): string {
   }
 
   return 'No metadata';
-}
+};
 
-function SortableEntityRow({
+const SortableEntityRow = ({
   entity,
   onNavigate,
   onRemove,
   onEditNotes,
   isSelected,
   onToggleSelect,
-}: SortableEntityRowProps) {
+}: SortableEntityRowProps) => {
   const {
     attributes,
     listeners,
@@ -384,9 +383,9 @@ function SortableEntityRow({
       </Modal>
     </div>
   );
-}
+};
 
-export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
+export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
   // T081: Hooks must be called unconditionally, so move them before guard clause
   // Use context to share catalogue state with CatalogueManager
   const {
@@ -597,7 +596,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     if (!selectedList || !selectedList.id || selectedEntities.size === 0) return;
 
     try {
-      await bulkRemoveEntities(selectedList.id, Array.from(selectedEntities));
+      await bulkRemoveEntities(selectedList.id, [...selectedEntities]);
 
       logger.debug("catalogue-ui", "Bulk remove completed", {
         listId: selectedList.id,
@@ -629,7 +628,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     if (!selectedList || !selectedList.id || !targetListId || selectedEntities.size === 0) return;
 
     try {
-      await bulkMoveEntities(selectedList.id, targetListId, Array.from(selectedEntities));
+      await bulkMoveEntities(selectedList.id, targetListId, [...selectedEntities]);
 
       logger.debug("catalogue-ui", "Bulk move completed", {
         sourceListId: selectedList.id,
@@ -661,7 +660,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   // Get unique entity types for filter dropdown
-  const entityTypes = Array.from(new Set(entities.map((e) => e.entityType)));
+  const entityTypes = [...new Set(entities.map((e) => e.entityType))];
 
   if (!selectedList) {
     return (
@@ -962,4 +961,4 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
       </Modal>
     </Card>
   );
-}
+};

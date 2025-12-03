@@ -12,10 +12,10 @@
  * passed through to the OpenAlex API.
  */
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { beforeAll,describe, expect, it } from 'vitest';
 
 // Load test URLs from JSON file
 const urlsPath = join(__dirname, '../data/openalex-test-urls.json');
@@ -45,8 +45,9 @@ beforeAll(() => {
 
 /**
  * Generate all URL format permutations for a given OpenAlex API URL
+ * @param apiUrl
  */
-function generateUrlPermutations(apiUrl: string): Array<{ format: string; url: string; description: string }> {
+const generateUrlPermutations = (apiUrl: string): Array<{ format: string; url: string; description: string }> => {
   // Extract the path and query from the API URL
   const apiBaseUrl = 'https://api.openalex.org';
   const path = apiUrl.replace(apiBaseUrl, '');
@@ -78,17 +79,18 @@ function generateUrlPermutations(apiUrl: string): Array<{ format: string; url: s
       description: 'Direct path format'
     }
   ];
-}
+};
 
 /**
  * Parse URL to extract entity information
+ * @param url
  */
-function parseUrl(url: string): {
+const parseUrl = (url: string): {
   entityType: string;
   entityId?: string;
   hasQueryParams: boolean;
   queryParams: URLSearchParams;
-} {
+} => {
   // If it's a full URL, parse it directly; otherwise use base URL
   const urlObj = url.startsWith('http') ? new URL(url) : new URL(url, 'http://localhost');
   const pathParts = urlObj.pathname.split('/').filter(Boolean);
@@ -109,12 +111,14 @@ function parseUrl(url: string): {
     hasQueryParams,
     queryParams
   };
-}
+};
 
 /**
  * Validate URL structure and query parameters
+ * @param url
+ * @param originalApiUrl
  */
-function validateUrlStructure(url: string, originalApiUrl: string): void {
+const validateUrlStructure = (url: string, originalApiUrl: string): void => {
   const parsed = parseUrl(originalApiUrl);
 
   // Verify entity type is preserved in the hash URL
@@ -127,14 +131,14 @@ function validateUrlStructure(url: string, originalApiUrl: string): void {
 
   // If there are query parameters, verify parameter keys are preserved
   if (parsed.hasQueryParams) {
-    const queryParamKeys = Array.from(parsed.queryParams.keys());
+    const queryParamKeys = [...parsed.queryParams.keys()];
     queryParamKeys.forEach(key => {
       // Just verify the parameter key is present, not the exact value
       // (URL encoding variations make exact matching unreliable)
       expect(url).toContain(key);
     });
   }
-}
+};
 
 describe('URL Permutations - Comprehensive Format Testing', () => {
 
@@ -356,7 +360,7 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
       expect(typeof data.cited_by_count).toBe('number');
 
       console.log(`✓ Work data structure verified: ${data.display_name}`);
-    }, 10000);
+    }, 10_000);
 
     it('should verify author data structure', async () => {
       const authorUrl = 'https://api.openalex.org/authors/A5017898742';
@@ -380,7 +384,7 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
       expect(typeof data.cited_by_count).toBe('number');
 
       console.log(`✓ Author data structure verified: ${data.display_name}`);
-    }, 10000);
+    }, 10_000);
 
     it('should verify filtered query structure', async () => {
       const filteredUrl = 'https://api.openalex.org/authors?filter=display_name.search:einstein&per_page=5';
@@ -402,7 +406,7 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
       expect(firstResult).toHaveProperty('display_name');
 
       console.log(`✓ Filtered query returned ${data.results.length} results, first: ${firstResult.display_name}`);
-    }, 10000);
+    }, 10_000);
 
     it('should verify sort order structure', async () => {
       const sortedUrl = 'https://api.openalex.org/authors?filter=display_name.search:smith&sort=cited_by_count:desc&per_page=5';
@@ -421,8 +425,8 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
         expect(current).toBeGreaterThanOrEqual(next);
       }
 
-      console.log(`✓ Sort order verified: citations ${data.results[0].cited_by_count} → ${data.results[data.results.length - 1].cited_by_count}`);
-    }, 10000);
+      console.log(`✓ Sort order verified: citations ${data.results[0].cited_by_count} → ${data.results.at(-1).cited_by_count}`);
+    }, 10_000);
 
     it('should verify select parameter limits fields', async () => {
       const selectUrl = 'https://api.openalex.org/authors/A5017898742?select=id,display_name,orcid';
@@ -441,7 +445,7 @@ describe('URL Permutations - Comprehensive Format Testing', () => {
       expect(fieldCount).toBeLessThan(15); // Full response has 20+ fields
 
       console.log(`✓ Select parameter respected: returned ${fieldCount} fields instead of 20+`);
-    }, 10000);
+    }, 10_000);
 
     it('should note: Real API validation happens in E2E tests', () => {
       // This is a placeholder to document that full API integrity testing

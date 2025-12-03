@@ -15,7 +15,7 @@
  * - Cutoff date: December 1, 2025 UTC (2025-12-01T00:00:00Z)
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Data Version Selector Removal After November 2025", () => {
   test("should hide data version selector when date is December 1, 2025", async ({
@@ -29,19 +29,19 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.waitForLoadState("load");
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent("body");
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText("body", );
     expect(bodyText!.length).toBeGreaterThan(100);
 
     // Verify data version selector is NOT visible
     const dataVersionSelector = page.getByTestId("data-version-selector");
-    await expect(dataVersionSelector).not.toBeVisible();
+    await expect(dataVersionSelector).toBeHidden();
 
     // Verify description text is also not visible
     const dataVersionDescription = page.getByTestId(
       "data-version-selector-description"
     );
-    await expect(dataVersionDescription).not.toBeVisible();
+    await expect(dataVersionDescription).toBeHidden();
 
     // Verify the selector element doesn't exist in the DOM at all
     const selectorCount = await page
@@ -63,12 +63,12 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.waitForLoadState("load");
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent("body");
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText("body", );
 
     // Verify data version selector is NOT visible
     const dataVersionSelector = page.getByTestId("data-version-selector");
-    await expect(dataVersionSelector).not.toBeVisible();
+    await expect(dataVersionSelector).toBeHidden();
 
     // Verify selector element doesn't exist
     const selectorCount = await page
@@ -122,22 +122,22 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     const switchInput = xpacToggle.locator('input[type="checkbox"]');
 
     // Verify initial state is checked
-    const initialChecked = await switchInput.isChecked();
-    expect(initialChecked).toBe(true);
+    const initialChecked = switchInput;
+    await expect(initialChecked).toBeChecked();
 
     // Toggle OFF
     await switchInput.click();
 
     // Verify state changed
-    const afterToggleChecked = await switchInput.isChecked();
-    expect(afterToggleChecked).toBe(false);
+    const afterToggleChecked = switchInput;
+    await expect(afterToggleChecked).not.toBeChecked();
 
     // Toggle back ON
     await switchInput.click();
 
     // Verify state changed back
-    const finalChecked = await switchInput.isChecked();
-    expect(finalChecked).toBe(true);
+    const finalChecked = switchInput;
+    await expect(finalChecked).toBeChecked();
 
     console.log("✅ XpacToggle functions correctly when selector is hidden");
   });
@@ -257,22 +257,22 @@ test.describe("Data Version Selector Removal After November 2025", () => {
 
     // Verify selector is not visible
     const dataVersionSelector = page.getByTestId("data-version-selector");
-    await expect(dataVersionSelector).not.toBeVisible();
+    await expect(dataVersionSelector).toBeHidden();
 
     // Navigate to a work detail page
     await page.goto("/#/works/W2741809807", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page loaded (not in settings, so selector shouldn't be present)
-    const bodyText = await page.textContent("body");
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText("body", );
 
     // Navigate back to settings
     await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify selector is still not visible
-    await expect(dataVersionSelector).not.toBeVisible();
+    await expect(dataVersionSelector).toBeHidden();
 
     console.log("✅ Navigation works correctly with selector hidden");
   });
@@ -439,11 +439,11 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     const loadTime = Date.now() - startTime;
 
     // Page should load within reasonable time (< 10 seconds)
-    expect(loadTime).toBeLessThan(10000);
+    expect(loadTime).toBeLessThan(10_000);
 
     // Verify page is fully rendered
-    const bodyText = await page.textContent("body");
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText("body", );
     expect(bodyText!.length).toBeGreaterThan(100);
 
     console.log(
@@ -472,7 +472,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.waitForLoadState("load");
 
     const selectorAfter = page.getByTestId("data-version-selector");
-    await expect(selectorAfter).not.toBeVisible();
+    await expect(selectorAfter).toBeHidden();
 
     console.log(
       "✅ Data version selector is hidden on December 1, 2025 (cutoff verified)"

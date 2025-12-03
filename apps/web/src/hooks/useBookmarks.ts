@@ -5,11 +5,10 @@
 
 import type { EntityType } from "@bibgraph/types";
 import {
-  catalogueEventEmitter,
-  logger,
+  type AddBookmarkParams,
   type CatalogueEntity,
-  type AddBookmarkParams
-} from "@bibgraph/utils";
+  catalogueEventEmitter,
+  logger} from "@bibgraph/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { useStorageProvider } from "@/contexts/storage-provider-context";
@@ -47,7 +46,6 @@ export interface UseBookmarksResult {
  * - Reactive updates via catalogueEventEmitter
  * - Error handling with state
  * - Loading states during operations
- *
  * @example
  * ```tsx
  * const { bookmarks, addBookmark, removeBookmark, isBookmarked, loading, error } = useBookmarks();
@@ -67,7 +65,7 @@ export interface UseBookmarksResult {
  * await removeBookmark(entityRecordId);
  * ```
  */
-export function useBookmarks(): UseBookmarksResult {
+export const useBookmarks = (): UseBookmarksResult => {
   const storage = useStorageProvider();
 
   // State
@@ -216,4 +214,4 @@ export function useBookmarks(): UseBookmarksResult {
     error,
     refresh,
   };
-}
+};

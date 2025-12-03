@@ -3,12 +3,11 @@
  *
  * Tests the 2D/3D view mode toggle, WebGL detection, and 3D rendering
  * on the algorithms page.
- *
  * @module 3d-visualization.e2e
  * @tag @utility @3d
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 
@@ -18,7 +17,7 @@ const BASE_URL =
   (process.env.CI ? "http://localhost:4173" : "http://localhost:5173");
 
 test.describe("@utility @3d 3D Graph Visualization", () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test("should display ViewModeToggle on algorithms page", async ({ page }) => {
     const errors: string[] = [];
@@ -27,11 +26,11 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // ViewModeToggle should be visible
     const viewModeToggle = page.locator('[data-testid="view-mode-toggle"]');
-    await expect(viewModeToggle).toBeVisible({ timeout: 10000 });
+    await expect(viewModeToggle).toBeVisible({ timeout: 10_000 });
 
     // Should have 2D and 3D options
     await expect(page.getByText("2D")).toBeVisible();
@@ -42,7 +41,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
 
   test("should start in 2D mode by default", async ({ page }) => {
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Check localStorage or aria state for default mode
     const viewModePreference = await page.evaluate(() => {
@@ -67,7 +66,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Click the 3D button in ViewModeToggle
     const button3D = page.getByRole("radio", { name: "3D" });
@@ -95,7 +94,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
 
   test("should persist view mode preference across page reloads", async ({ page }) => {
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Set preference to 3D (if available)
     const button3D = page.getByRole("radio", { name: "3D" });
@@ -110,7 +109,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
 
     // Reload page
     await page.reload({ waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Verify preference persisted
     const viewModePreference = await page.evaluate(() => {
@@ -126,7 +125,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Click 2D button
     const button2D = page.getByRole("radio", { name: "2D" });
@@ -147,11 +146,11 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Generate sample data first
     const regenerateButton = page.getByRole("button", { name: "Regenerate Sample Data" });
-    await expect(regenerateButton).toBeVisible({ timeout: 10000 });
+    await expect(regenerateButton).toBeVisible({ timeout: 10_000 });
     await regenerateButton.click();
     await page.waitForTimeout(2000);
 
@@ -184,7 +183,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     // In a real WebGL-disabled browser, the 3D button would be disabled
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Check for tooltip on disabled 3D button (if WebGL unavailable)
     const button3D = page.getByRole("radio", { name: "3D" });
@@ -214,7 +213,7 @@ test.describe("@utility @3d 3D Graph Visualization", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`, { waitUntil: "networkidle" });
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Generate sample data
     const regenerateButton = page.getByRole("button", { name: "Regenerate Sample Data" });

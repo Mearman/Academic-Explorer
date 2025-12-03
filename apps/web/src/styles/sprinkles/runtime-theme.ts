@@ -3,7 +3,7 @@
  * Provides functions to apply and manage theme changes at runtime
  */
 
-import type { ComponentLibrary, ColorScheme, ColorMode, BorderRadius } from '../theme-contracts';
+import type { BorderRadius,ColorMode, ColorScheme, ComponentLibrary } from '../theme-contracts';
 import { themeVars } from '../theme-vars.css';
 
 /**
@@ -99,6 +99,7 @@ const borderRadiusValues = {
 /**
  * Apply runtime theme based on configuration
  * This updates CSS custom properties dynamically
+ * @param config
  */
 export const applyRuntimeTheme = (config: RuntimeThemeConfig) => {
   const theme = componentLibraryThemes[config.componentLibrary];
@@ -149,15 +150,16 @@ export const applyRuntimeTheme = (config: RuntimeThemeConfig) => {
 /**
  * Apply color mode (light/dark) theme
  * This handles the light/dark mode switching
+ * @param colorMode
  */
 export const applyColorModeTheme = (colorMode: ColorMode) => {
   const root = document.documentElement;
 
   if (colorMode === 'dark') {
-    root.setAttribute('data-mantine-color-scheme', 'dark');
+    root.dataset.mantineColorScheme = 'dark';
     root.style.colorScheme = 'dark';
   } else {
-    root.setAttribute('data-mantine-color-scheme', 'light');
+    root.dataset.mantineColorScheme = 'light';
     root.style.colorScheme = 'light';
   }
 };
@@ -184,6 +186,7 @@ export const applyInteractiveProperties = () => {
 /**
  * Initialize runtime theme system
  * Call this once when the application starts
+ * @param config
  */
 export const initializeRuntimeTheme = (config: RuntimeThemeConfig) => {
   // Apply the main theme
@@ -213,6 +216,7 @@ export const initializeRuntimeTheme = (config: RuntimeThemeConfig) => {
 /**
  * Update theme at runtime
  * Use this when the user changes theme settings
+ * @param newConfig
  */
 export const updateRuntimeTheme = (newConfig: Partial<RuntimeThemeConfig>) => {
   // Get current theme from localStorage or use defaults
@@ -273,6 +277,8 @@ export const getCurrentRuntimeTheme = (): RuntimeThemeConfig => {
 /**
  * Utility to create theme-aware CSS values
  * This helps components use the correct theme variables
+ * @param property
+ * @param fallback
  */
 export const createThemeValue = (property: keyof typeof themeVars, fallback?: string) => {
   const cssVar = `var(${themeVars[property]})`;
@@ -281,6 +287,7 @@ export const createThemeValue = (property: keyof typeof themeVars, fallback?: st
 
 /**
  * Get theme value for a specific component library
+ * @param library
  */
 export const getComponentLibraryTheme = (library: ComponentLibrary) => {
   return componentLibraryThemes[library];

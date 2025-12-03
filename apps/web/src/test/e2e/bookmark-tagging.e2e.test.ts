@@ -9,13 +9,14 @@
  * - User Story 3: Organize and Search Bookmarks (Priority: P3)
  */
 
-import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 /**
  * Helper to clear all bookmarks before each test
+ * @param page
  */
-async function clearBookmarks(page: Page): Promise<void> {
+const clearBookmarks = async (page: Page): Promise<void> => {
 	await page.goto("/");
 	await page.evaluate(() => {
 		return new Promise<void>((resolve) => {
@@ -26,7 +27,7 @@ async function clearBookmarks(page: Page): Promise<void> {
 	});
 	await page.reload();
 	await page.waitForLoadState("networkidle");
-}
+};
 
 /**
  * Helper to create a bookmark with tags (currently unused - for future use)

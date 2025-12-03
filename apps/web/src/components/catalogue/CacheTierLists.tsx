@@ -8,34 +8,34 @@ import type { CachedEntityEntry } from "@bibgraph/client/internal/static-data-pr
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
+  Accordion,
+  ActionIcon,
+  Badge,
+  Box,
   Card,
   Group,
-  Text,
-  Badge,
-  Stack,
-  SimpleGrid,
   Loader,
-  Box,
   Paper,
-  Accordion,
-  Table,
-  ActionIcon,
-  Tooltip,
   Progress,
+  SimpleGrid,
+  Stack,
+  Table,
+  Text,
   ThemeIcon,
+  Tooltip,
 } from "@mantine/core";
 import {
-  IconDatabase,
+  IconBrandGithub,
+  IconCloud,
   IconCpu,
+  IconDatabase,
   IconExternalLink,
+  IconFolder,
   IconRefresh,
   IconTrash,
-  IconBrandGithub,
-  IconFolder,
-  IconCloud,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback,useEffect, useState } from "react";
 
 
 
@@ -68,15 +68,15 @@ interface EntityTypeCount {
   count: number;
 }
 
-function formatBytes(bytes: number): string {
+const formatBytes = (bytes: number): string => {
   if (bytes === 0) return "0 B";
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-}
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
 
-function formatTimeAgo(timestamp: number): string {
+const formatTimeAgo = (timestamp: number): string => {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   if (seconds < 60) return `${seconds}s ago`;
   const minutes = Math.floor(seconds / 60);
@@ -85,9 +85,9 @@ function formatTimeAgo(timestamp: number): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
-}
+};
 
-function getEntityTypeColor(entityType: string): string {
+const getEntityTypeColor = (entityType: string): string => {
   const colors: Record<string, string> = {
     works: "blue",
     authors: "green",
@@ -103,9 +103,9 @@ function getEntityTypeColor(entityType: string): string {
     subfields: "violet",
   };
   return colors[entityType] || "gray";
-}
+};
 
-function groupByEntityType(entities: CachedEntityEntry[]): EntityTypeCount[] {
+const groupByEntityType = (entities: CachedEntityEntry[]): EntityTypeCount[] => {
   const counts: Record<string, number> = {};
   for (const entity of entities) {
     counts[entity.entityType] = (counts[entity.entityType] || 0) + 1;
@@ -113,7 +113,7 @@ function groupByEntityType(entities: CachedEntityEntry[]): EntityTypeCount[] {
   return Object.entries(counts)
     .map(([entityType, count]) => ({ entityType, count }))
     .sort((a, b) => b.count - a.count);
-}
+};
 
 interface CacheTierCardProps {
   title: string;
@@ -127,7 +127,7 @@ interface CacheTierCardProps {
   maxEntries?: number;
 }
 
-function CacheTierCard({
+const CacheTierCard = ({
   title,
   description,
   icon,
@@ -136,8 +136,8 @@ function CacheTierCard({
   onRefresh,
   onClear,
   isPersistent,
-  maxEntries = 10000,
-}: CacheTierCardProps) {
+  maxEntries = 10_000,
+}: CacheTierCardProps) => {
   const navigate = useNavigate();
   const entityTypeCounts = groupByEntityType(entities);
   const totalSize = entities.reduce((sum, e) => sum + e.dataSize, 0);
@@ -150,7 +150,7 @@ function CacheTierCard({
   };
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
       <Group justify="space-between" mb="md">
         <Group>
           <ThemeIcon size="lg" variant="light" color={isPersistent ? "blue" : "orange"}>
@@ -192,7 +192,7 @@ function CacheTierCard({
           <Loader size="sm" />
           <Text size="xs" c="dimmed">Loading cache data...</Text>
         </Stack>
-      ) : entities.length === 0 ? (
+      ) : (entities.length === 0 ? (
         <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
           <Text size="sm" c="dimmed" ta="center">
             No entities cached in this tier
@@ -226,7 +226,7 @@ function CacheTierCard({
               <Text size="xs" c="dimmed">Cache Usage</Text>
               <Text size="xs" c="dimmed">{entities.length.toLocaleString()} / {maxEntries.toLocaleString()}</Text>
             </Group>
-            <Progress value={usagePercent} color={usagePercent > 80 ? "red" : usagePercent > 60 ? "yellow" : "blue"} size="sm" />
+            <Progress value={usagePercent} color={usagePercent > 80 ? "red" : (usagePercent > 60 ? "yellow" : "blue")} size="sm" />
           </div>
 
           {/* Entity Type Breakdown */}
@@ -275,8 +275,7 @@ function CacheTierCard({
                       </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                      {entities
-                        .slice()
+                      {[...entities]
                         .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)
                         .slice(0, 20)
                         .map((entity, idx) => (
@@ -318,10 +317,10 @@ function CacheTierCard({
             </Accordion.Item>
           </Accordion>
         </Stack>
-      )}
+      ))}
     </Card>
   );
-}
+};
 
 interface StaticCacheTierCardProps {
   title: string;
@@ -337,7 +336,7 @@ interface StaticCacheTierCardProps {
   badges?: React.ReactNode;
 }
 
-function StaticCacheTierCard({
+const StaticCacheTierCard = ({
   title,
   description,
   icon,
@@ -349,7 +348,7 @@ function StaticCacheTierCard({
   onRefresh,
   color,
   badges,
-}: StaticCacheTierCardProps) {
+}: StaticCacheTierCardProps) => {
   const navigate = useNavigate();
   const entityTypeCounts = groupByEntityType(entities);
   const hitRate = stats && stats.requests > 0 ? (stats.hits / stats.requests) * 100 : 0;
@@ -361,7 +360,7 @@ function StaticCacheTierCard({
   };
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
       <Group justify="space-between" mb="md">
         <Group>
           <ThemeIcon size="lg" variant="light" color={color}>
@@ -382,13 +381,7 @@ function StaticCacheTierCard({
         </Group>
       </Group>
 
-      {!isConfigured ? (
-        <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
-          <Text size="sm" c="dimmed" ta="center">
-            Not configured
-          </Text>
-        </Paper>
-      ) : isLoading ? (
+      {isConfigured ? (isLoading ? (
         <Stack align="center" py="xl">
           <Loader size="sm" />
           <Text size="xs" c="dimmed">Loading cache data...</Text>
@@ -436,7 +429,7 @@ function StaticCacheTierCard({
               </Group>
               <Progress
                 value={hitRate}
-                color={hitRate > 80 ? "green" : hitRate > 50 ? "blue" : "orange"}
+                color={hitRate > 80 ? "green" : (hitRate > 50 ? "blue" : "orange")}
                 size="sm"
               />
             </div>
@@ -487,8 +480,7 @@ function StaticCacheTierCard({
                         </Table.Tr>
                       </Table.Thead>
                       <Table.Tbody>
-                        {entities
-                          .slice()
+                        {[...entities]
                           .sort((a, b) => b.cachedAt - a.cachedAt)
                           .slice(0, 20)
                           .map((entity, idx) => (
@@ -533,12 +525,18 @@ function StaticCacheTierCard({
             </Paper>
           )}
         </Stack>
+      )) : (
+        <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
+          <Text size="sm" c="dimmed" ta="center">
+            Not configured
+          </Text>
+        </Paper>
       )}
     </Card>
   );
-}
+};
 
-export function CacheTierLists() {
+export const CacheTierLists = () => {
   const [summary, setSummary] = useState<CacheTierSummary | null>(null);
   const [staticConfig, setStaticConfig] = useState<StaticCacheTierConfig | null>(null);
   const [staticCacheEntities, setStaticCacheEntities] = useState<CachedEntityEntry[]>([]);
@@ -706,7 +704,7 @@ export function CacheTierLists() {
           onRefresh={handleRefreshIndexedDB}
           onClear={handleClearIndexedDB}
           isPersistent={true}
-          maxEntries={10000}
+          maxEntries={10_000}
         />
       </SimpleGrid>
 
@@ -774,4 +772,4 @@ export function CacheTierLists() {
       </SimpleGrid>
     </Stack>
   );
-}
+};

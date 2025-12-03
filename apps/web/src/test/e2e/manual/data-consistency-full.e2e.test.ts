@@ -10,11 +10,11 @@
  * and compares it with what's displayed in the DOM.
  */
 
-import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -28,47 +28,45 @@ const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:417
 const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL
-function toAppUrl(apiUrl: string): string {
+const toAppUrl = (apiUrl: string): string => {
   // For the app, we can use either format:
   // 1. Full API URL: #/https://api.openalex.org/works/...
   // 2. Relative path: #/works/...
   // Let's use the relative path format as it's cleaner
   const relativePath = apiUrl.replace(API_BASE, '');
   return `${BASE_URL}/#${relativePath}`;
-}
+};
 
 // Helper to parse entity type from URL
-function getEntityType(url: string): string | null {
+const getEntityType = (url: string): string | null => {
   const match = url.match(/\/([a-z]+)(?:\/|$|\?)/);
   return match ? match[1] : null;
-}
+};
 
 // Helper to check if URL is an entity detail page (has ID)
-function isEntityDetail(url: string): boolean {
+const isEntityDetail = (url: string): boolean => {
   const entityType = getEntityType(url);
   if (!entityType) return false;
 
   // Check for entity ID pattern after the entity type
-  const pattern = new RegExp(`/${entityType}/([A-Z]\\d+|https?://|[a-z]+:)`);
+  const pattern = new RegExp(String.raw`/${entityType}/([A-Z]\d+|https?://|[a-z]+:)`);
   return pattern.test(url);
-}
+};
 
 // Helper to check if URL is a list/search page
-function isListPage(url: string): boolean {
+const isListPage = (url: string): boolean => {
   const entityType = getEntityType(url);
   if (!entityType) return false;
 
   // Has query parameters or is just the entity type
   return url.includes('?') || url.endsWith(`/${entityType}`);
-}
+};
 
 // Helper to check if URL is an autocomplete endpoint
-function isAutocomplete(url: string): boolean {
-  return url.includes('/autocomplete');
-}
+const isAutocomplete = (url: string): boolean => url.includes('/autocomplete');
 
 test.describe('Data Consistency - All 276 URLs', () => {
-  test.setTimeout(3600000); // 60 minutes for all URLs (276 URLs + retries, ~6.5 seconds each)
+  test.setTimeout(3_600_000); // 60 minutes for all URLs (276 URLs + retries, ~6.5 seconds each)
 
   // Test a representative sample first for faster feedback
   const sampleUrls = [
@@ -89,7 +87,7 @@ test.describe('Data Consistency - All 276 URLs', () => {
         await page.goto(appUrl, { waitUntil: 'networkidle' });
 
         // Wait for content to load (look for main content area)
-        await page.waitForSelector('main', { timeout: 10000 });
+        await page.waitForSelector('main', { timeout: 10_000 });
 
         // Wait for data to actually load - look for loading state to disappear
         // The page might show a loading skeleton or spinner initially
@@ -112,20 +110,20 @@ test.describe('Data Consistency - All 276 URLs', () => {
           const displayName = apiData.display_name || apiData.title;
           if (displayName) {
             // Check that the display name appears on the page
-            const nameElement = await page.locator(`text=${displayName.slice(0, 50)}`).first();
+            const nameElement = page.locator(`text=${displayName.slice(0, 50)}`).first();
             await expect(nameElement).toBeVisible({ timeout: 5000 });
           }
 
           // Check for entity ID
           if (apiData.id) {
             const entityId = apiData.id.split('/').pop();
-            const idText = await page.locator(`text=${entityId}`).first();
+            const idText = page.locator(`text=${entityId}`).first();
             await expect(idText).toBeVisible({ timeout: 5000 });
           }
 
           // Check for citation count if present
           if (apiData.cited_by_count !== undefined) {
-            const citationText = await page.locator(`text=/\\d+.*citation/i`).first();
+            const citationText = page.locator(String.raw`text=/\d+.*citation/i`).first();
             await expect(citationText).toBeVisible({ timeout: 5000 });
           }
         } else if (isListPage(apiUrl) && !isAutocomplete(apiUrl)) {
@@ -136,13 +134,13 @@ test.describe('Data Consistency - All 276 URLs', () => {
             const displayName = firstResult.display_name || firstResult.title;
             if (displayName) {
               // Look for the name in a table, list, or grid
-              const resultElement = await page.locator(`text=${displayName.slice(0, 30)}`).first();
+              const resultElement = page.locator(`text=${displayName.slice(0, 30)}`).first();
               await expect(resultElement).toBeVisible({ timeout: 5000 });
             }
 
             // Check that the result count is displayed
             if (apiData.meta?.count) {
-              const countText = await page.locator(`text=/${apiData.meta.count.toLocaleString()}/`).first();
+              const countText = page.locator(`text=/${apiData.meta.count.toLocaleString()}/`).first();
               await expect(countText).toBeVisible({ timeout: 5000 });
             }
           }
@@ -150,8 +148,8 @@ test.describe('Data Consistency - All 276 URLs', () => {
           // Autocomplete endpoints return { results: [...] }
           // These might be handled differently in the UI
           // For now, just verify the page loads without error
-          const mainContent = await page.locator('main').textContent();
-          expect(mainContent).toBeTruthy();
+          const mainContent = page.locator('main');
+          await expect(mainContent).toHaveText();
         }
       });
     }
@@ -173,18 +171,18 @@ test.describe('Data Consistency - All 276 URLs', () => {
             const appUrl = toAppUrl(apiUrl);
 
             // Navigate to the app URL
-            await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+            await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
 
             // Wait for main content
-            await page.waitForSelector('main', { timeout: 10000 });
+            await page.waitForSelector('main', { timeout: 10_000 });
 
             // Verify no error state
             const errorHeading = await page.locator('h1:has-text("Error")').count();
             expect(errorHeading).toBe(0);
 
             // Verify main content exists
-            const mainContent = await page.locator('main').textContent();
-            expect(mainContent).toBeTruthy();
+            const mainContent = page.locator('main');
+            await expect(mainContent).toHaveText();
             expect(mainContent!.length).toBeGreaterThan(50); // Should have substantial content
 
             // For detail pages, verify entity data is shown
@@ -243,7 +241,7 @@ test.describe('Data Consistency - All 276 URLs', () => {
             const searchValue = typeof value === 'string' ? value : String(value);
 
             // Look for the value on the page
-            const fieldElement = await page.locator(`text=/${searchValue.slice(0, 30)}/`).first();
+            const fieldElement = page.locator(`text=/${searchValue.slice(0, 30)}/`).first();
             await expect(fieldElement).toBeVisible({
               timeout: 5000,
             });

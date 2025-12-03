@@ -1,13 +1,13 @@
 import { logger } from "@bibgraph/utils";
 import {
-  Table,
-  Pagination,
-  Group,
-  TextInput,
-  Select,
-  Text,
   Box,
+  Group,
+  Pagination,
   ScrollArea,
+  Select,
+  Table,
+  Text,
+  TextInput,
 } from "@mantine/core";
 import {
   IconSearch,
@@ -15,18 +15,18 @@ import {
   IconSortDescending,
 } from "@tabler/icons-react";
 import {
-  useReactTable,
+  type ColumnDef,
+  type ColumnFiltersState,
+  flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  flexRender,
+  getSortedRowModel,
   type SortingState,
-  type ColumnFiltersState,
-  type ColumnDef,
+  useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
-import { useState, useRef, useEffect } from "react";
+import { useEffect,useRef, useState } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
 import { sprinkles } from "@/styles/sprinkles";
@@ -45,7 +45,7 @@ interface BaseTableProps<T> {
   maxHeight?: number;
 }
 
-export function BaseTable<T>({
+export const BaseTable = <T,>({
   data,
   columns,
   isLoading = false,
@@ -56,7 +56,7 @@ export function BaseTable<T>({
   enableVirtualization = false,
   estimateSize = 50,
   maxHeight = 600,
-}: BaseTableProps<T>) {
+}: BaseTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -331,7 +331,7 @@ export function BaseTable<T>({
               <TableSkeleton columnCount={columns.length} rowCount={10} />
             </Table.Tbody>
           </Table>
-        ) : rows.length === 0 ? (
+        ) : (rows.length === 0 ? (
           <div className={sprinkles({ padding: '24px', textAlign: 'center' })}>
             <Text c="dimmed">No data available</Text>
           </div>
@@ -344,7 +344,7 @@ export function BaseTable<T>({
           >
             {rowVirtualizer.getVirtualItems().map(renderVirtualRow)}
           </div>
-        )}
+        ))}
       </ScrollArea>
     </div>
   );
@@ -365,7 +365,7 @@ export function BaseTable<T>({
       <Table.Tbody>
         {isLoading
           ? renderLoadingState(columns.length)
-          : table.getRowModel().rows.length === 0
+          : (table.getRowModel().rows.length === 0
             ? renderEmptyState(columns.length)
             : table.getRowModel().rows.map((row) => {
                 // Use descriptive aria-label for row selection
@@ -415,7 +415,7 @@ export function BaseTable<T>({
                     ))}
                   </Table.Tr>
                 );
-              })}
+              }))}
       </Table.Tbody>
     </Table>
   );
@@ -469,4 +469,4 @@ export function BaseTable<T>({
       {renderPaginationInfo()}
     </Box>
   );
-}
+};

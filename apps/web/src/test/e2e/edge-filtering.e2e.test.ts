@@ -3,19 +3,19 @@
  * User Story 3 (T049): Full user flow verification
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("Edge Direction Filtering E2E Tests", () => {
-  test.setTimeout(30000);
+  test.setTimeout(30_000);
 
   test.beforeEach(async ({ page }) => {
     // Navigate to a work with relationships for testing
     // W2741809807 is "Scholarship: A Manifesto" by Jason Priem - has multiple relationship types
     await page.goto(`${BASE_URL}/#/works/W2741809807`, {
       waitUntil: "domcontentloaded",
-      timeout: 15000,
+      timeout: 15_000,
     });
 
     // Wait for page to fully load
@@ -36,7 +36,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     }
 
     // Verify direction filter section exists
-    await expect(edgeDirectionHeading).toBeVisible({ timeout: 10000 });
+    await expect(edgeDirectionHeading).toBeVisible({ timeout: 10_000 });
 
     // Verify direction filter options are present
     const outboundOption = page.getByText("Outbound", { exact: false });
@@ -56,7 +56,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
 
     // Look for "All Directions" badge indicating Both filter is active
     const allDirectionsBadge = page.getByText("All Directions");
-    await expect(allDirectionsBadge).toBeVisible({ timeout: 10000 });
+    await expect(allDirectionsBadge).toBeVisible({ timeout: 10_000 });
 
     console.log("Default filter state is 'Both' (All Directions)");
   });
@@ -69,7 +69,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     const outboundOptions = await page.getByText("Outbound").all();
     // Click the last occurrence (the one in the SegmentedControl)
     if (outboundOptions.length > 0) {
-      await outboundOptions[outboundOptions.length - 1].click();
+      await outboundOptions.at(-1).click();
     }
 
     // Wait for filter to update
@@ -90,7 +90,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     const inboundOptions = await page.getByText("Inbound").all();
     // Click the last occurrence (the one in the SegmentedControl)
     if (inboundOptions.length > 0) {
-      await inboundOptions[inboundOptions.length - 1].click();
+      await inboundOptions.at(-1).click();
     }
 
     // Wait for filter to update
@@ -108,13 +108,13 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     await page.waitForTimeout(2000);
 
     // Initial state: Both (All Directions)
-    await expect(page.getByText("All Directions")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("All Directions")).toBeVisible({ timeout: 10_000 });
     console.log("Initial state: Both");
 
     // Click Outbound
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions[outboundOptions.length - 1].click();
+      await outboundOptions.at(-1).click();
       await page.waitForTimeout(1000);
       await expect(page.getByText("outbound", { exact: true })).toBeVisible({ timeout: 5000 });
       console.log("Changed to: Outbound");
@@ -123,7 +123,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Click Inbound
     const inboundOptions = await page.getByText("Inbound").all();
     if (inboundOptions.length > 0) {
-      await inboundOptions[inboundOptions.length - 1].click();
+      await inboundOptions.at(-1).click();
       await page.waitForTimeout(1000);
       await expect(page.getByText("inbound", { exact: true })).toBeVisible({ timeout: 5000 });
       console.log("Changed to: Inbound");
@@ -143,7 +143,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
 
     // Verify description text is present
     await expect(page.getByText("Filter edges by their data ownership direction:")).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Verify outbound description
@@ -162,7 +162,7 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     // Set filter to Outbound
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions[outboundOptions.length - 1].click();
+      await outboundOptions.at(-1).click();
       await page.waitForTimeout(1000);
     }
 
@@ -188,14 +188,14 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
       // Outbound
       const outboundOptions = await page.getByText("Outbound").all();
       if (outboundOptions.length > 0) {
-        await outboundOptions[outboundOptions.length - 1].click();
+        await outboundOptions.at(-1).click();
         await page.waitForTimeout(200);
       }
 
       // Inbound
       const inboundOptions = await page.getByText("Inbound").all();
       if (inboundOptions.length > 0) {
-        await inboundOptions[inboundOptions.length - 1].click();
+        await inboundOptions.at(-1).click();
         await page.waitForTimeout(200);
       }
 
@@ -228,12 +228,12 @@ test.describe("Edge Direction Filtering E2E Tests", () => {
     await page.waitForTimeout(3000);
 
     // Verify direction filter is visible
-    await expect(page.getByText("Edge Direction")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Edge Direction")).toBeVisible({ timeout: 10_000 });
 
     // Interact with filter
     const outboundOptions = await page.getByText("Outbound").all();
     if (outboundOptions.length > 0) {
-      await outboundOptions[outboundOptions.length - 1].click();
+      await outboundOptions.at(-1).click();
       await page.waitForTimeout(1000);
     }
 

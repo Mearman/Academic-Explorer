@@ -9,7 +9,6 @@ import type { Page, Route } from '@playwright/test';
  * - Simulate network failures
  * - Mock timeout scenarios
  * - Mock specific OpenAlex entity and list endpoints
- *
  * @example
  * ```typescript
  * const mockHelper = apiMockHelper(page);
@@ -28,7 +27,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Mock an API route to return a JSON response.
-	 *
 	 * @param urlPattern - URL pattern (string or RegExp) to intercept
 	 * @param response - Response data to return (will be JSON stringified)
 	 * @param options - Optional configuration
@@ -59,7 +57,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Mock an API error response.
-	 *
 	 * @param urlPattern - URL pattern (string or RegExp) to intercept
 	 * @param status - HTTP error status code (e.g., 404, 500)
 	 * @param message - Error message
@@ -85,7 +82,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Simulate a network failure by aborting the request.
-	 *
 	 * @param urlPattern - URL pattern (string or RegExp) to intercept
 	 */
 	async mockNetworkFailure(urlPattern: string | RegExp): Promise<void> {
@@ -98,7 +94,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Simulate a timeout by delaying the response.
-	 *
 	 * @param urlPattern - URL pattern (string or RegExp) to intercept
 	 * @param delay - Delay in milliseconds before timeout
 	 */
@@ -126,7 +121,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Mock a response for a specific OpenAlex entity endpoint.
-	 *
 	 * @param entityType - Entity type (e.g., 'works', 'authors')
 	 * @param entityId - Entity ID (e.g., 'W123', 'A456')
 	 * @param data - Entity data to return
@@ -137,7 +131,7 @@ export class ApiMockHelper {
 		data: unknown
 	): Promise<void> {
 		const pattern = new RegExp(
-			`/api/openalex/${entityType}/${entityId.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&')}`
+			`/api/openalex/${entityType}/${entityId.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`)}`
 		);
 
 		await this.mockApiRoute(pattern, data);
@@ -145,7 +139,6 @@ export class ApiMockHelper {
 
 	/**
 	 * Mock a response for an OpenAlex list endpoint.
-	 *
 	 * @param entityType - Entity type (e.g., 'works', 'authors')
 	 * @param data - List response data to return
 	 */
@@ -153,7 +146,7 @@ export class ApiMockHelper {
 		entityType: string,
 		data: unknown
 	): Promise<void> {
-		const pattern = new RegExp(`/api/openalex/${entityType}(?:\\?|$)`);
+		const pattern = new RegExp(String.raw`/api/openalex/${entityType}(?:\?|$)`);
 
 		await this.mockApiRoute(pattern, data);
 	}
@@ -161,7 +154,6 @@ export class ApiMockHelper {
 
 /**
  * Factory function to create an ApiMockHelper instance.
- *
  * @param page - Playwright Page instance
  * @returns ApiMockHelper instance
  */

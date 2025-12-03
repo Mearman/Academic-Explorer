@@ -1,7 +1,7 @@
 import { useMantineColorScheme, useMantineTheme } from '@mantine/core'
 
 import { getAcademicEntityColors } from '@/styles/css-variable-resolver'
-import { shadcnPalettes, type ShadcnPalette } from '@/styles/shadcn-colors'
+import { type ShadcnPalette,shadcnPalettes } from '@/styles/shadcn-colors'
 
 export const useShadcnTheme = () => {
   const { colorScheme } = useMantineColorScheme()

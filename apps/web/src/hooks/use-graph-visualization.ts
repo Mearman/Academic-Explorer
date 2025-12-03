@@ -8,12 +8,11 @@
  * - Simulation toggle
  * - View mode (2D/3D) with localStorage persistence
  * - Path source/target selection for pathfinding
- *
  * @module hooks/use-graph-visualization
  */
 
 import type { GraphNode, ViewMode } from '@bibgraph/types';
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo,useState } from 'react';
 
 import type { DisplayMode } from '@/components/graph/types';
 
@@ -130,7 +129,6 @@ export type UseGraphVisualizationResult = GraphVisualizationState & GraphVisuali
  * - Simulation control
  * - 2D/3D view mode with localStorage persistence
  * - Path source/target selection for shortest path
- *
  * @example
  * ```tsx
  * function GraphPage() {
@@ -172,7 +170,7 @@ export type UseGraphVisualizationResult = GraphVisualizationState & GraphVisuali
  * }
  * ```
  */
-export function useGraphVisualization(): UseGraphVisualizationResult {
+export const useGraphVisualization = (): UseGraphVisualizationResult => {
   // Highlighting state
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
   const [highlightedPath, setHighlightedPath] = useState<string[]>([]);
@@ -356,4 +354,4 @@ export function useGraphVisualization(): UseGraphVisualizationResult {
     handleBackgroundClick,
     reset,
   ]);
-}
+};

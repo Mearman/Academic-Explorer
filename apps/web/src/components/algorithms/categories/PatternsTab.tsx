@@ -1,7 +1,6 @@
 /**
  * Patterns Tab
  * Motifs, triangles, and citation patterns
- *
  * @module components/algorithms/categories/PatternsTab
  *
  * ## Current Patterns
@@ -28,11 +27,11 @@ import { useTriangles } from '@/hooks/use-graph-algorithms';
 import { MotifDetectionItem } from '../items';
 import type { CategoryTabProps } from '../types';
 
-export function PatternsTab({
+export const PatternsTab = ({
   nodes,
   edges,
   onHighlightNodes,
-}: CategoryTabProps) {
+}: CategoryTabProps) => {
   // Get triangle count for badge
   const triangles = useTriangles(nodes, edges);
 
@@ -55,4 +54,4 @@ export function PatternsTab({
       </Accordion.Item>
     </Accordion>
   );
-}
+};

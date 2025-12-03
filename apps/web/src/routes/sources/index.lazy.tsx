@@ -11,7 +11,7 @@ const sourcesColumns: EntityListColumnConfig[] = [
   { key: "ids.issn", header: "ISSN" },
 ];
 
-function SourcesRoute() {
+const SourcesRoute = () => {
   const search = useSearch({ from: "/sources/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -25,7 +25,7 @@ function SourcesRoute() {
       onViewModeChange={setViewMode}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/sources/")({
   component: SourcesRoute,

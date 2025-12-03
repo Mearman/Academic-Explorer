@@ -5,12 +5,12 @@ import { AutocompletePage } from "@/components/AutocompletePage";
 import { useEntityAutocomplete } from "@/hooks/use-entity-autocomplete";
 
 const searchSchema = z.object({
-  filter: z.string().optional().catch(undefined),
-  search: z.string().optional().catch(undefined),
-  q: z.string().optional().catch(undefined),
+  filter: z.string().optional().catch(),
+  search: z.string().optional().catch(),
+  q: z.string().optional().catch(),
 });
 
-function AutocompletePublishersRoute() {
+const AutocompletePublishersRoute = () => {
   const urlSearch = Route.useSearch();
 
   const { query, handleSearch, results, isLoading, error, filter } = useEntityAutocomplete({
@@ -32,7 +32,7 @@ function AutocompletePublishersRoute() {
       description="Search for publishers with real-time suggestions from the OpenAlex database"
     />
   );
-}
+};
 
 export const Route = createFileRoute("/autocomplete/publishers/")({
   component: AutocompletePublishersRoute,

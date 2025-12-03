@@ -2,7 +2,6 @@
  * E2E tests for homepage functionality
  * Automated version of manual homepage tests
  * Tests the main BibGraph homepage with search, navigation, and basic interactions
- *
  * @automated-manual
  */
 
@@ -21,23 +20,23 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     // Navigate to homepage
     await page.goto("/", {
       waitUntil: "networkidle",
-      timeout: 30000,
+      timeout: 30_000,
     });
 
     // Wait for app to be ready
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Check that page loaded successfully - h1 title should be visible
     // Homepage is a Card component, not MainLayout with header
     const title = page.locator('h1:has-text("BibGraph")');
-    await expect(title).toBeVisible({ timeout: 15000 });
+    await expect(title).toBeVisible({ timeout: 15_000 });
 
     // Verify no errors occurred
     expect(errors).toHaveLength(0);
   });
 
   test("should display homepage content correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
+    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check main title in the homepage card
@@ -64,19 +63,19 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   test("should have working example search links", async ({ page }) => {
     await page.goto("/", {
       waitUntil: "networkidle",
-      timeout: 30000,
+      timeout: 30_000,
     });
     await waitForAppReady(page);
 
     // Check example search links exist
     const mlExample = page.locator('a:has-text("machine learning")');
-    await expect(mlExample).toBeVisible({ timeout: 15000 });
+    await expect(mlExample).toBeVisible({ timeout: 15_000 });
 
     const climateExample = page.locator('a:has-text("climate change")');
-    await expect(climateExample).toBeVisible({ timeout: 15000 });
+    await expect(climateExample).toBeVisible({ timeout: 15_000 });
 
     const orcidExample = page.locator('a:has-text("ORCID example")');
-    await expect(orcidExample).toBeVisible({ timeout: 15000 });
+    await expect(orcidExample).toBeVisible({ timeout: 15_000 });
 
     // Note: We don't click these as they would trigger searches and navigation
     // The visibility check confirms the links are rendered correctly
@@ -85,26 +84,26 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   test("should display technology stack correctly", async ({ page }) => {
     await page.goto("/", {
       waitUntil: "networkidle",
-      timeout: 30000,
+      timeout: 30_000,
     });
     await waitForAppReady(page);
 
     // Verify the technology stack indicators are visible
     const reactIndicator = page.locator("text=React 19");
-    await expect(reactIndicator).toBeVisible({ timeout: 15000 });
+    await expect(reactIndicator).toBeVisible({ timeout: 15_000 });
 
     const openAlexIndicator = page.locator("text=OpenAlex API");
-    await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
+    await expect(openAlexIndicator).toBeVisible({ timeout: 15_000 });
 
     const xyFlowIndicator = page.locator("text=XYFlow");
-    await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
+    await expect(xyFlowIndicator).toBeVisible({ timeout: 15_000 });
 
     // Note: Homepage is a landing page without navigation/theme controls
     // These elements are only available in the full app layout
   });
 
   test("should display example searches", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
+    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for example search section
@@ -123,7 +122,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should allow typing in search input", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
+    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -144,7 +143,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should handle search button states correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
+    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -166,7 +165,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   });
 
   test("should display helpful usage instructions", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle", timeout: 30000 });
+    await page.goto("/", { waitUntil: "networkidle", timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for usage instructions - the actual text from the component
@@ -179,7 +178,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
   test("should have proper accessibility features", async ({ page }) => {
     await page.goto("/", {
       waitUntil: "networkidle",
-      timeout: 30000,
+      timeout: 30_000,
     });
     await waitForAppReady(page);
 
@@ -187,12 +186,12 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     const searchInput = page.locator(
       'input[aria-label="Search academic literature"]',
     );
-    await expect(searchInput).toBeVisible({ timeout: 15000 });
+    await expect(searchInput).toBeVisible({ timeout: 15_000 });
 
     // Verify search input is focusable and has correct attributes
     await searchInput.focus();
-    const ariaLabel = await searchInput.getAttribute("aria-label");
-    expect(ariaLabel).toBe("Search academic literature");
+    const ariaLabel = searchInput;
+    await expect(ariaLabel).toHaveAttribute("aria-label", "Search academic literature");
 
     // Note: Homepage is a landing page without full app layout
     // Theme toggle and sidebar controls are only in MainLayout (non-homepage routes)
@@ -207,13 +206,13 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       // Verify content is visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Check for horizontal scrollbar by comparing scrollWidth to clientWidth
       const hasHorizontalScroll = await page.evaluate(() => {
@@ -237,13 +236,13 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 768, height: 1024 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       // Verify content is visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Verify card stays within reasonable bounds (should be centered with maxWidth)
       const card = page.locator('[class*="mantine-Card-root"]').first();
@@ -264,13 +263,13 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       // Verify content is visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Verify card respects maxWidth (should be constrained, not full width)
       const card = page.locator('[class*="mantine-Card-root"]').first();
@@ -291,13 +290,13 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 3840, height: 2160 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       // Verify content is visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Verify card remains width-constrained with maxWidth
       const card = page.locator('[class*="mantine-Card-root"]').first();
@@ -319,14 +318,14 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     }) => {
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       const searchInput = page.locator(
         'input[aria-label="Search academic literature"]',
       );
-      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await expect(searchInput).toBeVisible({ timeout: 15_000 });
 
       const inputBox = await searchInput.boundingBox();
       expect(inputBox).toBeTruthy();
@@ -341,12 +340,12 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     }) => {
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       const searchButton = page.locator('button:has-text("Search & Visualize")');
-      await expect(searchButton).toBeVisible({ timeout: 15000 });
+      await expect(searchButton).toBeVisible({ timeout: 15_000 });
 
       const buttonBox = await searchButton.boundingBox();
       expect(buttonBox).toBeTruthy();
@@ -362,7 +361,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     }) => {
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
@@ -371,8 +370,8 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       );
       const searchButton = page.locator('button:has-text("Search & Visualize")');
 
-      await expect(searchInput).toBeVisible({ timeout: 15000 });
-      await expect(searchButton).toBeVisible({ timeout: 15000 });
+      await expect(searchInput).toBeVisible({ timeout: 15_000 });
+      await expect(searchButton).toBeVisible({ timeout: 15_000 });
 
       const inputBox = await searchInput.boundingBox();
       const buttonBox = await searchButton.boundingBox();
@@ -394,13 +393,13 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
       // Check that example links are visible
       const mlExample = page.locator('a:has-text("machine learning")');
-      await expect(mlExample).toBeVisible({ timeout: 15000 });
+      await expect(mlExample).toBeVisible({ timeout: 15_000 });
 
       // Verify example links container doesn't overflow
       const examplesCard = page.locator('text=Try these examples:').locator("..");
@@ -420,7 +419,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
     }) => {
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
@@ -429,9 +428,9 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       const openAlexIndicator = page.locator("text=OpenAlex API");
       const xyFlowIndicator = page.locator("text=XYFlow");
 
-      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
-      await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
-      await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
+      await expect(reactIndicator).toBeVisible({ timeout: 15_000 });
+      await expect(openAlexIndicator).toBeVisible({ timeout: 15_000 });
+      await expect(xyFlowIndicator).toBeVisible({ timeout: 15_000 });
 
       // Get bounding boxes for spacing verification
       const reactBox = await reactIndicator.boundingBox();
@@ -463,7 +462,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       await page.setViewportSize({ width: 320, height: 568 });
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
@@ -472,9 +471,9 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       const openAlexIndicator = page.locator("text=OpenAlex API");
       const xyFlowIndicator = page.locator("text=XYFlow");
 
-      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
-      await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
-      await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
+      await expect(reactIndicator).toBeVisible({ timeout: 15_000 });
+      await expect(openAlexIndicator).toBeVisible({ timeout: 15_000 });
+      await expect(xyFlowIndicator).toBeVisible({ timeout: 15_000 });
 
       // Verify no horizontal overflow
       const hasHorizontalScroll = await page.evaluate(() => {
@@ -504,7 +503,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // appropriate for zoom level verification.
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
@@ -515,23 +514,23 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
       // Verify main content is still visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Verify search input is still visible and functional
       const searchInput = page.locator(
         'input[aria-label="Search academic literature"]',
       );
-      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await expect(searchInput).toBeVisible({ timeout: 15_000 });
 
       // Verify usage instructions are still visible
       const instructions = page.locator(
         "text=Use the sidebar to search and filter • Click nodes to navigate • Double-click to expand relationships",
       );
-      await expect(instructions).toBeVisible({ timeout: 15000 });
+      await expect(instructions).toBeVisible({ timeout: 15_000 });
 
       // Verify card is visible
       const card = page.locator('[class*="mantine-Card-root"]').first();
-      await expect(card).toBeVisible({ timeout: 15000 });
+      await expect(card).toBeVisible({ timeout: 15_000 });
     });
 
     test("should maintain layout integrity at 200% zoom level", async ({
@@ -542,7 +541,7 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
       // and viewport adjustment behaviors.
       await page.goto("/", {
         waitUntil: "networkidle",
-        timeout: 30000,
+        timeout: 30_000,
       });
       await waitForAppReady(page);
 
@@ -553,25 +552,25 @@ test.describe("Homepage E2E Tests @automated-manual", () => {
 
       // Verify main content is still visible
       const title = page.locator('h1:has-text("BibGraph")');
-      await expect(title).toBeVisible({ timeout: 15000 });
+      await expect(title).toBeVisible({ timeout: 15_000 });
 
       // Verify search button is still visible and clickable
       const searchButton = page.locator('button:has-text("Search & Visualize")');
-      await expect(searchButton).toBeVisible({ timeout: 15000 });
+      await expect(searchButton).toBeVisible({ timeout: 15_000 });
 
       // Verify technology stack indicators are visible
       const reactIndicator = page.locator("text=React 19");
-      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
+      await expect(reactIndicator).toBeVisible({ timeout: 15_000 });
 
       // Verify card is visible
       const card = page.locator('[class*="mantine-Card-root"]').first();
-      await expect(card).toBeVisible({ timeout: 15000 });
+      await expect(card).toBeVisible({ timeout: 15_000 });
 
       // Verify search input is still functional at 200% zoom
       const searchInput = page.locator(
         'input[aria-label="Search academic literature"]',
       );
-      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await expect(searchInput).toBeVisible({ timeout: 15_000 });
       await searchInput.fill("test query");
       await expect(searchInput).toHaveValue("test query");
     });

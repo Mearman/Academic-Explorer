@@ -8,7 +8,7 @@
  * Actual integration into EntityDetailLayout will be done in a future commit.
  */
 
-import { Stack, Title, Text } from "@mantine/core";
+import { Stack, Text,Title } from "@mantine/core";
 
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 
@@ -18,7 +18,7 @@ import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
  * This shows the simplest integration - just pass the work object
  * and the component handles everything else.
  */
-export function BasicUsageExample() {
+export const BasicUsageExample = () => {
 	// Example work with improved metadata
 	const work = {
 		id: "https://openalex.org/W2741809807",
@@ -39,7 +39,7 @@ export function BasicUsageExample() {
 			<Text>Work content goes here...</Text>
 		</Stack>
 	);
-}
+};
 
 /**
  * Example 2: Integration suggestion for EntityDetailLayout
@@ -47,8 +47,7 @@ export function BasicUsageExample() {
  * This shows where the badges would fit in the existing EntityDetailLayout structure.
  * The badges should appear prominently near the title for works with improvements.
  */
-export function EntityDetailLayoutIntegrationExample() {
-	return `
+export const EntityDetailLayoutIntegrationExample = () => `
     {/* In EntityDetailLayout.tsx, after the entity type badge: */}
 
     <Stack gap="lg" flex={1}>
@@ -78,7 +77,6 @@ export function EntityDetailLayoutIntegrationExample() {
       </Paper>
     </Stack>
   `;
-}
 
 /**
  * Example 3: Conditional rendering based on improvements
@@ -86,7 +84,7 @@ export function EntityDetailLayoutIntegrationExample() {
  * This shows how to use the component with conditional rendering logic
  * if you need to show/hide surrounding UI elements.
  */
-export function ConditionalRenderingExample() {
+export const ConditionalRenderingExample = () => {
 	const work = {
 		referenced_works_count: 15,
 		locations_count: 2,
@@ -107,14 +105,14 @@ export function ConditionalRenderingExample() {
 			{/* Component returns null if no improvements, so no empty space is rendered */}
 		</Stack>
 	);
-}
+};
 
 /**
  * Example 4: Integration in a work list view
  *
  * Shows how badges can be used in list views alongside work titles
  */
-export function WorkListItemExample() {
+export const WorkListItemExample = () => {
 	const work = {
 		id: "https://openalex.org/W2741809807",
 		display_name: "Machine Learning Approaches for Cultural Heritage",
@@ -136,4 +134,4 @@ export function WorkListItemExample() {
 			</Text>
 		</Stack>
 	);
-}
+};

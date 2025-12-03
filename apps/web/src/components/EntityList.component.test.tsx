@@ -3,6 +3,8 @@
  * @vitest-environment jsdom
  */
 
+import "@testing-library/jest-dom";
+
 import { cachedOpenAlex } from "@bibgraph/client";
 import type {
   Funder,
@@ -14,7 +16,6 @@ import { MantineProvider } from "@mantine/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import "@testing-library/jest-dom";
 import { EntityList, type EntityListColumnConfig } from "./EntityList";
 
 // Mock the cached OpenAlex client
@@ -68,11 +69,11 @@ const mockFundersData = createMockResponse<Funder>([
     country_code: "US",
     grants_count: 1000,
     works_count: 5000,
-    cited_by_count: 50000,
+    cited_by_count: 50_000,
     ids: { openalex: "F123456789" },
     counts_by_year: [
-      { year: 2023, cited_by_count: 50000, works_count: 5000 },
-      { year: 2022, cited_by_count: 45000, works_count: 4500 },
+      { year: 2023, cited_by_count: 50_000, works_count: 5000 },
+      { year: 2022, cited_by_count: 45_000, works_count: 4500 },
     ],
     works_api_url:
       "https://api.openalex.org/works?filter=institutions.id:F123456789",
@@ -90,11 +91,11 @@ const mockFundersData = createMockResponse<Funder>([
     country_code: "US",
     grants_count: 800,
     works_count: 4000,
-    cited_by_count: 40000,
+    cited_by_count: 40_000,
     ids: { openalex: "F234567890" },
     counts_by_year: [
-      { year: 2023, cited_by_count: 40000, works_count: 4000 },
-      { year: 2022, cited_by_count: 35000, works_count: 3500 },
+      { year: 2023, cited_by_count: 40_000, works_count: 4000 },
+      { year: 2022, cited_by_count: 35_000, works_count: 3500 },
     ],
     works_api_url:
       "https://api.openalex.org/works?filter=institutions.id:F234567890",
@@ -116,13 +117,13 @@ const mockPublishersData = createMockResponse<Publisher>([
     country_codes: ["US"],
     hierarchy_level: 1,
     lineage: ["P123456789"],
-    works_count: 10000,
-    cited_by_count: 100000,
+    works_count: 10_000,
+    cited_by_count: 100_000,
     sources_count: 100,
     ids: { openalex: "P123456789" },
     counts_by_year: [
-      { year: 2023, cited_by_count: 100000, works_count: 10000 },
-      { year: 2022, cited_by_count: 90000, works_count: 9000 },
+      { year: 2023, cited_by_count: 100_000, works_count: 10_000 },
+      { year: 2022, cited_by_count: 90_000, works_count: 9000 },
     ],
     works_api_url:
       "https://api.openalex.org/works?filter=primary_location.source.publisher_lineage:P123456789",
@@ -138,12 +139,12 @@ const mockPublishersData = createMockResponse<Publisher>([
     hierarchy_level: 1,
     lineage: ["P234567890"],
     works_count: 8000,
-    cited_by_count: 80000,
+    cited_by_count: 80_000,
     sources_count: 80,
     ids: { openalex: "P234567890" },
     counts_by_year: [
-      { year: 2023, cited_by_count: 80000, works_count: 8000 },
-      { year: 2022, cited_by_count: 70000, works_count: 7000 },
+      { year: 2023, cited_by_count: 80_000, works_count: 8000 },
+      { year: 2022, cited_by_count: 70_000, works_count: 7000 },
     ],
     works_api_url:
       "https://api.openalex.org/works?filter=primary_location.source.publisher_lineage:P234567890",
@@ -162,13 +163,13 @@ const mockSourcesData = createMockResponse<Source>([
     issn: ["0000-0001"],
     publisher: "Test Publisher 1",
     works_count: 1000,
-    cited_by_count: 10000,
+    cited_by_count: 10_000,
     is_oa: true,
     is_in_doaj: true,
     type: "journal",
     ids: { openalex: "S123456789" },
     counts_by_year: [
-      { year: 2023, cited_by_count: 10000, works_count: 1000 },
+      { year: 2023, cited_by_count: 10_000, works_count: 1000 },
       { year: 2022, cited_by_count: 9000, works_count: 900 },
     ],
     works_api_url:
@@ -200,7 +201,7 @@ const mockSourcesData = createMockResponse<Source>([
     works_api_url:
       "https://api.openalex.org/works?filter=primary_location.source.id:S234567890",
     summary_stats: {
-      "2yr_mean_citedness": 3.0,
+      "2yr_mean_citedness": 3,
       h_index: 22,
       i10_index: 18,
     },

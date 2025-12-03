@@ -12,7 +12,7 @@
 
 import { RelationType } from '@bibgraph/types';
 import type { GraphSourceEntity } from '@bibgraph/utils';
-import { describe, it, expect } from 'vitest';
+import { describe, expect,it } from 'vitest';
 
 import { deduplicateEntities } from './use-multi-source-graph';
 

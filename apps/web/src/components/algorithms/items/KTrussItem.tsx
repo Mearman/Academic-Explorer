@@ -1,7 +1,6 @@
 /**
  * K-Truss Decomposition Algorithm Item
  * Finds the k-truss subgraph where every edge is in at least k-2 triangles
- *
  * @module components/algorithms/items/KTrussItem
  */
 
@@ -20,11 +19,11 @@ import { useKTruss } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function KTrussItem({
+export const KTrussItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const [kTrussK, setKTrussK] = useState<number>(3);
   const kTruss = useKTruss(nodes, edges, kTrussK);
 
@@ -70,4 +69,4 @@ export function KTrussItem({
       )}
     </Stack>
   );
-}
+};

@@ -4,13 +4,12 @@
  * Tests the Browse utility page which serves as an entry point displaying
  * all 12 OpenAlex entity types as clickable cards. This page allows users
  * to navigate to different entity index pages.
- *
  * @category @utility
  * @see spec-020 Phase 2: Utility page E2E tests
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';
@@ -34,7 +33,7 @@ const EXPECTED_ENTITY_TYPES = [
 ] as const;
 
 test.describe('@utility Browse Page', () => {
-	test.setTimeout(60000); // 1 minute timeout
+	test.setTimeout(60_000); // 1 minute timeout
 
 	test.beforeEach(async ({ page }) => {
 		// Set up console error listener for debugging

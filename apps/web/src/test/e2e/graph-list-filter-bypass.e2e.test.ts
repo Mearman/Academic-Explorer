@@ -7,16 +7,15 @@
  * - User expands graph nodes that have relationships to other entity types
  * - Graph list nodes (from expansion) should remain visible despite filters
  * - Collection nodes should respect entity type filters
- *
  * @see spec-038 Phase 4: T037
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import {
 	waitForAppReady,
-	waitForGraphReady,
 	waitForEntityData,
+	waitForGraphReady,
 } from '@/test/helpers/app-ready';
 
 // Test entities with known relationships
@@ -24,7 +23,7 @@ const TEST_WORK_ID = 'W2741809807'; // Work with author and institution relation
 const TEST_AUTHOR_ID = 'A5017898742'; // Author with affiliations and works
 
 test.describe('@workflow Graph List Filter Bypass', () => {
-	test.setTimeout(60000); // 60 seconds for graph operations
+	test.setTimeout(60_000); // 60 seconds for graph operations
 
 	test.beforeEach(async ({ page }) => {
 		// Console error listener

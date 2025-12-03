@@ -2,8 +2,8 @@ import { cachedOpenAlex } from "@bibgraph/client";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useParams, useSearch } from "@tanstack/react-router";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup,fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock cachedOpenAlex client
 vi.mock("@bibgraph/client", async (importOriginal) => {
@@ -45,7 +45,7 @@ const mockSourceData = {
   issn_l: "1234-5678",
   type: "journal",
   works_count: 5000,
-  cited_by_count: 10000,
+  cited_by_count: 10_000,
 };
 
 describe("SourceRoute Integration Tests", () => {

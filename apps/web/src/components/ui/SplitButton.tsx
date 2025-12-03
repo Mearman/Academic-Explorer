@@ -1,4 +1,4 @@
-import { Button, ActionIcon, Group, GroupProps, Menu } from '@mantine/core'
+import { ActionIcon, Button, Group, GroupProps, Menu } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { forwardRef } from 'react'
 
@@ -33,14 +33,7 @@ interface SplitButtonProps {
   height?: number
 }
 
-export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
-  ({
-    mainButtonProps,
-    dropdownButtonProps,
-    groupProps,
-    dropdownItems,
-    height = 34
-  }, ref) => {
+export const SplitButton = ({ ref, mainButtonProps, dropdownButtonProps, groupProps, dropdownItems, height = 34 }: SplitButtonProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
     const { config } = useTheme()
 
     // Get current theme border radius value
@@ -239,6 +232,5 @@ export const SplitButton = forwardRef<HTMLDivElement, SplitButtonProps>(
       </>
     )
   }
-)
 
 SplitButton.displayName = 'SplitButton'

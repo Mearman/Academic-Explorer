@@ -1,9 +1,9 @@
-import { MantineProvider, createTheme, type MantineTheme } from "@mantine/core";
+import { createTheme, MantineProvider, type MantineTheme } from "@mantine/core";
 import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
-import React, { createContext, useContext } from "react";
+import React, { createContext, use } from "react";
 
 import type { ShadcnPalette } from '@/styles/shadcn-colors'
-import { mantineTheme, shadcnTheme, radixTheme } from "@/styles/themes";
+import { mantineTheme, radixTheme,shadcnTheme } from "@/styles/themes";
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'
 type ColorScheme = ShadcnPalette
@@ -39,7 +39,7 @@ const defaultThemeConfig: ThemeConfig = {
 };
 
 // Theme provider component
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const systemColorMode = useColorScheme();
   const [config, setConfig] = useLocalStorage<ThemeConfig>({
     key: "theme-config",
@@ -131,7 +131,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const effectiveColorScheme = config.colorMode === 'auto' ? systemColorMode : config.colorMode;
 
   return (
-    <ThemeContext.Provider value={contextValue}>
+    <ThemeContext value={contextValue}>
       <MantineProvider
         theme={currentMantineTheme}
         defaultColorScheme={effectiveColorScheme}
@@ -139,18 +139,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       >
         {children}
       </MantineProvider>
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
-}
+};
 
 // Hook to use theme context
-export function useTheme() {
-  const context = useContext(ThemeContext);
+export const useTheme = () => {
+  const context = use(ThemeContext);
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
-}
+};
 
 // Export theme context for use in components
 export { ThemeContext };

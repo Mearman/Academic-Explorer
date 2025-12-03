@@ -5,8 +5,8 @@ import type {
 } from "@bibgraph/utils/ui";
 import {
   BaseFilter,
-  createEnumOptions,
   type BaseFilterRenderProps,
+  createEnumOptions,
 } from "@bibgraph/utils/ui/filter-base";
 import { MultiSelect, Select } from "@mantine/core";
 
@@ -22,7 +22,7 @@ interface EnumFilterProps {
   fieldId: string;
 }
 
-export function EnumFilter({
+export const EnumFilter = ({
   value,
   operator,
   config,
@@ -31,7 +31,7 @@ export function EnumFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: EnumFilterProps) {
+}: EnumFilterProps) => {
   // Cast to utils type for compatibility with createEnumOptions
   const selectOptions = createEnumOptions(
     (config.options || []) as UtilsFilterFieldOption[],
@@ -82,4 +82,4 @@ export function EnumFilter({
       )}
     </BaseFilter>
   );
-}
+};

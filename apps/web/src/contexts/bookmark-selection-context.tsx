@@ -2,7 +2,7 @@
  * Bookmark selection context for bulk operations
  */
 
-import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
+import React, { createContext, type ReactNode,use, useCallback, useReducer } from "react";
 
 export type BookmarkSelectionState = {
   selectedIds: Set<string>;
@@ -143,15 +143,15 @@ export const BookmarkSelectionProvider: React.FC<{ children: ReactNode }> = ({
   const [state, dispatch] = useReducer(bookmarkSelectionReducer, initialState);
 
   return (
-    <BookmarkSelectionContext.Provider value={{ state, dispatch }}>
+    <BookmarkSelectionContext value={{ state, dispatch }}>
       {children}
-    </BookmarkSelectionContext.Provider>
+    </BookmarkSelectionContext>
   );
 };
 
 // Hook for using bookmark selection state
 export const useBookmarkSelection = () => {
-  const context = useContext(BookmarkSelectionContext);
+  const context = use(BookmarkSelectionContext);
   if (!context) {
     throw new Error(
       "useBookmarkSelection must be used within a BookmarkSelectionProvider",

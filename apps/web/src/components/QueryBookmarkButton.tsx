@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@bibgraph/utils/logger";
-import { ActionIcon, Tooltip, Text } from "@mantine/core";
+import { ActionIcon, Text,Tooltip } from "@mantine/core";
 import {
   IconBookmark,
   IconBookmarkFilled,
@@ -26,7 +26,7 @@ interface QueryBookmarkButtonProps {
   onUnbookmark?: () => void;
 }
 
-export function QueryBookmarkButton({
+export const QueryBookmarkButton = ({
   entityType,
   entityId,
   size = "sm",
@@ -35,7 +35,7 @@ export function QueryBookmarkButton({
   disabled = false,
   onBookmark,
   onUnbookmark
-}: QueryBookmarkButtonProps) {
+}: QueryBookmarkButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -100,11 +100,11 @@ export function QueryBookmarkButton({
         >
           {isLoading ? (
             <IconLoader size={16} />
-          ) : isQueryBookmarked ? (
+          ) : (isQueryBookmarked ? (
             <IconBookmarkFilled size={16} />
           ) : (
             <IconBookmark size={16} />
-          )}
+          ))}
         </ActionIcon>
 
         {showLabel && (
@@ -115,4 +115,4 @@ export function QueryBookmarkButton({
       </div>
     </Tooltip>
   );
-}
+};

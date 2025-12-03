@@ -14,7 +14,7 @@ const institutionsColumns: ColumnConfig[] = [
   { key: "cited_by_count", header: "Citations" },
 ];
 
-function InstitutionsListRoute() {
+const InstitutionsListRoute = () => {
   const search = useSearch({ from: "/institutions/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -28,7 +28,7 @@ function InstitutionsListRoute() {
       onViewModeChange={setViewMode}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/institutions/")({
   component: InstitutionsListRoute,

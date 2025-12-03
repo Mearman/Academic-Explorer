@@ -23,13 +23,13 @@ export interface FieldSelectorProps<
   description?: string;
 }
 
-export function FieldSelector<T extends readonly string[] = readonly string[]>({
+export const FieldSelector = <T,>({
   availableFields,
   selectedFields,
   onFieldsChange,
   title = "Select Fields",
   description = "Choose which fields to include in the response",
-}: FieldSelectorProps<T>) {
+}: FieldSelectorProps<T>) => {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
@@ -141,7 +141,7 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
                         event.preventDefault();
                         if (selectedFields.length > 0) {
                           handleValueRemove(
-                            selectedFields[selectedFields.length - 1],
+                            selectedFields.at(-1),
                           );
                         }
                       }
@@ -169,11 +169,11 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
           <Group gap="xs">
             <Badge size="sm" variant="light">
               {selectedFields.length} field
-              {selectedFields.length !== 1 ? "s" : ""} selected
+              {selectedFields.length === 1 ? "" : "s"} selected
             </Badge>
           </Group>
         )}
       </Stack>
     </Card>
   );
-}
+};

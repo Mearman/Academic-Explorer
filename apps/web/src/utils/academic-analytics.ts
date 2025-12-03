@@ -5,7 +5,7 @@
  * Designed to provide insights while maintaining user privacy and GDPR compliance.
  */
 
-import type { AcademicEventType, AcademicEventProperties, EntityTypeType } from '@/lib/posthog';
+import type { AcademicEventProperties, AcademicEventType, EntityTypeType } from '@/lib/posthog';
 
 /**
  * PostHog instance type definition
@@ -44,6 +44,8 @@ class AcademicAnalytics {
 
   /**
    * Capture academic-specific analytics event
+   * @param eventName
+   * @param properties
    */
   static capture(eventName: AcademicEventType, properties?: AcademicEventProperties): void {
     if (!this.posthogAvailable()) {
@@ -74,6 +76,9 @@ class AcademicAnalytics {
 
   /**
    * Track search events with privacy protection
+   * @param entityType
+   * @param resultCount
+   * @param hasFilters
    */
   static trackSearchPerformed(entityType: string, resultCount: number, hasFilters: boolean): void {
     this.capture('search_performed', {
@@ -87,6 +92,7 @@ class AcademicAnalytics {
 
   /**
    * Track entity detail page views
+   * @param entityType
    */
   static trackEntityView(entityType: string): void {
     this.capture('entity_view', {
@@ -97,6 +103,8 @@ class AcademicAnalytics {
 
   /**
    * Track graph interaction events
+   * @param nodeCount
+   * @param edgeCount
    */
   static trackGraphLoaded(nodeCount: number, edgeCount: number): void {
     this.capture('graph_loaded', {
@@ -108,6 +116,7 @@ class AcademicAnalytics {
 
   /**
    * Track node selection in graphs
+   * @param nodeType
    */
   static trackNodeSelected(nodeType: string): void {
     this.capture('node_selected', {
@@ -129,6 +138,7 @@ class AcademicAnalytics {
 
   /**
    * Track relationship exploration
+   * @param entityType
    */
   static trackRelationshipExplored(entityType: string): void {
     this.capture('relationship_explored', {
@@ -149,6 +159,7 @@ class AcademicAnalytics {
 
   /**
    * Track bookmark addition
+   * @param entityType
    */
   static trackBookmarkAdded(entityType: string): void {
     this.capture('bookmark_added', {
@@ -197,6 +208,7 @@ class AcademicAnalytics {
 
   /**
    * Track research workflow deepening
+   * @param stepNumber
    */
   static trackInvestigationDeepened(stepNumber: number): void {
     this.capture('investigation_deepened', {
@@ -229,6 +241,7 @@ class AcademicAnalytics {
 
   /**
    * Get entity category for analytics (privacy-safe grouping)
+   * @param entityType
    */
   private static getEntityCategory(entityType: string): string {
     const workTypes = ['works'];
@@ -258,7 +271,7 @@ class AcademicAnalytics {
 
     let sessionId = sessionStorage.getItem(SESSION_KEY);
     if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
       sessionStorage.setItem(SESSION_KEY, sessionId);
     }
 
@@ -293,7 +306,7 @@ class AcademicAnalytics {
   private static generateAnonymousId(): string {
     // Create a hash from browser features (not fingerprinting for tracking, but for session consistency)
     const features = [
-      navigator.userAgent?.substring(0, 100) || '', // Limited UA slice
+      navigator.userAgent?.slice(0, 100) || '', // Limited UA slice
       navigator.language || '',
       new Date().getTimezoneOffset().toString(),
     ].join('|');
@@ -335,8 +348,7 @@ export { AcademicAnalytics };
 /**
  * Hook for easy access to academic analytics in React components
  */
-export function useAcademicAnalytics() {
-  return {
+export const useAcademicAnalytics = () => ({
     trackSearchPerformed: AcademicAnalytics.trackSearchPerformed.bind(AcademicAnalytics),
     trackEntityView: AcademicAnalytics.trackEntityView.bind(AcademicAnalytics),
     trackGraphLoaded: AcademicAnalytics.trackGraphLoaded.bind(AcademicAnalytics),
@@ -354,5 +366,4 @@ export function useAcademicAnalytics() {
     trackWorkFundingRelationshipsExplored: AcademicAnalytics.trackWorkFundingRelationshipsExplored.bind(AcademicAnalytics),
     identifyAnonymousUser: AcademicAnalytics.identifyAnonymousUser.bind(AcademicAnalytics),
     resetUser: AcademicAnalytics.resetUser.bind(AcademicAnalytics),
-  };
-}
+  });

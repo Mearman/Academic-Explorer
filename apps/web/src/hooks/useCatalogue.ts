@@ -5,15 +5,15 @@
 
 import type { EntityType } from "@bibgraph/types";
 import {
+  type CatalogueEntity,
   catalogueEventEmitter,
   type CatalogueList,
-  type CatalogueEntity,
-  type ListType,
+  type CompressedListData,
   compressListData,
   createShareUrl,
-  validateListData,
-  type CompressedListData,
   decompressListData,
+  type ListType,
+  validateListData,
 } from "@bibgraph/utils";
 import { logger } from "@bibgraph/utils/logger";
 import QRCode from "qrcode";
@@ -27,7 +27,7 @@ import { validateExportFormat } from "@/utils/catalogue-validation";
 const CATALOGUE_LOGGER_CONTEXT = "catalogue-hook";
 
 // T079: User-friendly error message mapping
-function getUserFriendlyErrorMessage(error: unknown): string {
+const getUserFriendlyErrorMessage = (error: unknown): string => {
   const errorMessage = error instanceof Error ? error.message : String(error);
   const lowerMessage = errorMessage.toLowerCase();
 
@@ -73,7 +73,7 @@ function getUserFriendlyErrorMessage(error: unknown): string {
 
   // Default fallback
   return `An error occurred: ${errorMessage}`;
-}
+};
 
 export interface UseCatalogueOptions {
   /** Auto-refresh on list changes */
@@ -166,7 +166,7 @@ export interface UseCatalogueReturn {
   }>;
 }
 
-export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueReturn {
+export const useCatalogue = (options: UseCatalogueOptions = {}): UseCatalogueReturn => {
   const { autoRefresh = true, listId: focusedListId } = options;
 
   // Get storage provider from context
@@ -871,9 +871,9 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       // Create filename: catalogue-{listTitle}-{date}.{format}
       const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       const sanitizedTitle = list.title
-        .replace(/[^0-9a-z]/gi, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
+        .replaceAll(/[^0-9a-z]/gi, '-')
+        .replaceAll(/-+/g, '-')
+        .replaceAll(/^-|-$/g, '')
         .toLowerCase();
       const filename = `catalogue-${sanitizedTitle}-${date}.${extension}`;
 
@@ -889,11 +889,11 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       link.style.display = "none";
 
       // Trigger download
-      document.body.appendChild(link);
+      document.body.append(link);
       link.click();
 
       // Cleanup
-      document.body.removeChild(link);
+      link.remove();
       URL.revokeObjectURL(url);
 
       logger.debug(CATALOGUE_LOGGER_CONTEXT, "List file download triggered", {
@@ -1145,9 +1145,9 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       const jsonString = JSON.stringify(data);
       const estimatedSize = jsonString.length < 1024
         ? `${jsonString.length} bytes`
-        : jsonString.length < 1024 * 1024
+        : (jsonString.length < 1024 * 1024
         ? `${(jsonString.length / 1024).toFixed(1)} KB`
-        : `${(jsonString.length / (1024 * 1024)).toFixed(1)} MB`;
+        : `${(jsonString.length / (1024 * 1024)).toFixed(1)} MB`);
 
       return {
         listTitle,
@@ -1219,4 +1219,4 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     validateImportData,
     previewImport,
   };
-}
+};

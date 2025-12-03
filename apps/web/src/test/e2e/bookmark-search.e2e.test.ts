@@ -9,10 +9,10 @@
  * - User Story 3: Organize and Search Bookmarks (Priority: P3)
  */
 
-import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
-async function clearBookmarks(page: Page): Promise<void> {
+const clearBookmarks = async (page: Page): Promise<void> => {
 	await page.goto("/");
 	await page.evaluate(() => {
 		return new Promise<void>((resolve) => {
@@ -23,20 +23,16 @@ async function clearBookmarks(page: Page): Promise<void> {
 	});
 	await page.reload();
 	await page.waitForLoadState("networkidle");
-}
+};
 
-async function createBookmark(
-	page: Page,
-	entityType: string,
-	entityId: string
-): Promise<void> {
+const createBookmark = async (page: Page, entityType: string, entityId: string): Promise<void> => {
 	await page.goto(`/${entityType}/${entityId}`);
 	await page.waitForLoadState("networkidle");
 	const btn = page.locator('[data-testid="entity-bookmark-button"]');
 	await expect(btn).toBeVisible();
 	await btn.click();
 	await page.waitForTimeout(300);
-}
+};
 
 test.describe("Bookmark Search", () => {
 	test.beforeEach(async ({ page }) => {

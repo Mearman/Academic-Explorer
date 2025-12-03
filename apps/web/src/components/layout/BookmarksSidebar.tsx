@@ -4,29 +4,29 @@
 
 import { logger } from "@bibgraph/utils/logger";
 import {
-  TextInput,
-  Card,
-  Text,
-  Group,
-  Stack,
-  Loader,
   ActionIcon,
-  Tooltip,
-  Title,
-  Divider,
+  Card,
   Collapse,
+  Divider,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+  Tooltip,
 } from "@mantine/core";
 import {
+  IconBook,
   IconBookmark,
   IconBookmarkOff,
-  IconSearch,
-  IconX,
-  IconBook,
-  IconSettings,
-  IconList,
   IconChevronDown,
   IconChevronRight,
+  IconList,
   IconPlus,
+  IconSearch,
+  IconSettings,
+  IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -42,7 +42,7 @@ interface BookmarksSidebarProps {
   onClose?: () => void;
 }
 
-export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
+export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
   // Simplified data loading without timeout fallback
   const safeUseUserInteractions = () => {
     try {
@@ -200,7 +200,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                 <Loader size="xs" />
                 <Text size="xs" c="dimmed">Loading lists...</Text>
               </Group>
-            ) : userLists.length === 0 ? (
+            ) : (userLists.length === 0 ? (
               <Card withBorder p="sm">
                 <Text size="xs" c="dimmed" ta="center">
                   No lists yet. Create one from the Catalogue page.
@@ -216,7 +216,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                   />
                 ))}
               </Stack>
-            )}
+            ))}
           </Collapse>
         </div>
 
@@ -273,7 +273,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                 <Loader size="xs" />
                 <Text size="xs" c="dimmed">Loading bookmarks...</Text>
               </Group>
-            ) : filteredBookmarks.length === 0 ? (
+            ) : (filteredBookmarks.length === 0 ? (
               <Card withBorder p="sm">
                 <div className={styles.emptyState} style={{ padding: "1rem" }}>
                   <IconBookmarkOff size={24} />
@@ -298,7 +298,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                   />
                 ))}
               </Stack>
-            )}
+            ))}
           </Collapse>
         </div>
       </div>
@@ -309,4 +309,4 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
       </Text>
     </div>
   );
-}
+};

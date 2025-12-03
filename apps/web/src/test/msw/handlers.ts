@@ -5,7 +5,7 @@
  * In E2E tests: Check filesystem cache first, then fall back to API or mocks
  */
 
-import type { Work, Author, Institution, Authorship } from "@bibgraph/types";
+import type { Author, Authorship,Institution, Work } from "@bibgraph/types";
 import { http, HttpResponse, passthrough } from "msw";
 
 const API_BASE = "https://api.openalex.org";
@@ -20,6 +20,7 @@ interface FilesystemCacheUtils {
 
 /**
  * Mock data factories for OpenAlex entities
+ * @param id
  */
 const createMockWork = (id: string): Work => {
   const mockWork: Work = {
@@ -74,7 +75,7 @@ const createMockWork = (id: string): Work => {
   corresponding_institution_ids: [`https://openalex.org/I${id.slice(1)}`],
   apc_list: undefined,
   apc_paid: undefined,
-  fwci: 1.0,
+  fwci: 1,
   has_fulltext: false,
   fulltext_origin: undefined,
   cited_by_count: 10,
@@ -141,12 +142,12 @@ const createMockWork = (id: string): Work => {
   versions: [],
   referenced_works_count: 2,
   referenced_works: [
-    `https://openalex.org/W${(parseInt(id.slice(1)) + 1000).toString()}`,
-    `https://openalex.org/W${(parseInt(id.slice(1)) + 2000).toString()}`,
+    `https://openalex.org/W${(Number.parseInt(id.slice(1)) + 1000).toString()}`,
+    `https://openalex.org/W${(Number.parseInt(id.slice(1)) + 2000).toString()}`,
   ],
   related_works: [
-    `https://openalex.org/W${(parseInt(id.slice(1)) + 3000).toString()}`,
-    `https://openalex.org/W${(parseInt(id.slice(1)) + 4000).toString()}`,
+    `https://openalex.org/W${(Number.parseInt(id.slice(1)) + 3000).toString()}`,
+    `https://openalex.org/W${(Number.parseInt(id.slice(1)) + 4000).toString()}`,
   ],
   abstract_inverted_index: {
     This: [0],
@@ -198,7 +199,7 @@ const createMockAuthor = (id: string): Author => ({
   updated_date: "2023-01-01",
   created_date: "2023-01-01",
   summary_stats: {
-    "2yr_mean_citedness": 5.0,
+    "2yr_mean_citedness": 5,
     h_index: 10,
     i10_index: 5,
   },
@@ -216,12 +217,15 @@ const createMockInstitution = (id: string): Institution => ({
 
 /**
  * Create filesystem cache helper functions with injected utilities
+ * @param cacheUtils
  */
-function createCacheHelpers(cacheUtils?: FilesystemCacheUtils) {
+const createCacheHelpers = (cacheUtils?: FilesystemCacheUtils) => {
   /**
    * Attempt to read from filesystem cache (E2E only)
+   * @param entityType
+   * @param id
    */
-  async function tryFilesystemCache(entityType: string, id: string): Promise<unknown | null> {
+  const tryFilesystemCache = async (entityType: string, id: string): Promise<unknown | null> => {
     if (!cacheUtils) return null;
 
     try {
@@ -236,12 +240,15 @@ function createCacheHelpers(cacheUtils?: FilesystemCacheUtils) {
     }
 
     return null;
-  }
+  };
 
   /**
    * Write to filesystem cache (E2E only)
+   * @param entityType
+   * @param id
+   * @param data
    */
-  async function writeToCache(entityType: string, id: string, data: unknown): Promise<void> {
+  const writeToCache = async (entityType: string, id: string, data: unknown): Promise<void> => {
     if (!cacheUtils) return;
 
     try {
@@ -250,15 +257,16 @@ function createCacheHelpers(cacheUtils?: FilesystemCacheUtils) {
     } catch (error) {
       console.error(`❌ Failed to write ${entityType}/${id} to cache:`, error);
     }
-  }
+  };
 
   return { tryFilesystemCache, writeToCache, isE2EMode: !!cacheUtils };
-}
+};
 
 /**
  * Create MSW handlers with optional filesystem cache support
+ * @param cacheUtils
  */
-export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
+export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
   const { tryFilesystemCache, isE2EMode } = createCacheHelpers(cacheUtils);
 
   return [
@@ -415,7 +423,7 @@ export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
     const perPage = Number(url.searchParams.get("per_page")) || 25;
 
     const works = Array.from({ length: Math.min(perPage, 10) }, (_, i) =>
-      createMockWork(`W${(1000000000 + i).toString()}`),
+      createMockWork(`W${(1_000_000_000 + i).toString()}`),
     );
 
     return HttpResponse.json(
@@ -444,7 +452,7 @@ export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
     const perPage = Number(url.searchParams.get("per_page")) || 25;
 
     const authors = Array.from({ length: Math.min(perPage, 10) }, (_, i) =>
-      createMockAuthor(`A${(1000000000 + i).toString()}`),
+      createMockAuthor(`A${(1_000_000_000 + i).toString()}`),
     );
 
     return HttpResponse.json(
@@ -473,7 +481,7 @@ export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
     const perPage = Number(url.searchParams.get("per_page")) || 25;
 
     const institutions = Array.from({ length: Math.min(perPage, 10) }, (_, i) =>
-      createMockInstitution(`I${(1000000000 + i).toString()}`),
+      createMockInstitution(`I${(1_000_000_000 + i).toString()}`),
     );
 
     return HttpResponse.json(
@@ -597,7 +605,7 @@ export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
       );
     }),
   ];
-}
+};
 
 /**
  * Default handlers for non-E2E tests (no filesystem cache)

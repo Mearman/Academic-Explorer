@@ -19,6 +19,7 @@ export class PerformanceHelper {
 
 	/**
 	 * Start a performance timer with a label
+	 * @param label
 	 */
 	startTimer(label: string): void {
 		this.timers.set(label, Date.now());
@@ -26,6 +27,7 @@ export class PerformanceHelper {
 
 	/**
 	 * Stop a timer and return elapsed time in milliseconds
+	 * @param label
 	 * @throws Error if timer was not started
 	 */
 	stopTimer(label: string): number {
@@ -68,6 +70,7 @@ export class PerformanceHelper {
 
 	/**
 	 * Navigate to a URL and measure page load performance
+	 * @param url
 	 */
 	async measurePageLoad(url: string): Promise<PerformanceMetrics> {
 		await this.page.goto(url, { waitUntil: "load" });
@@ -76,6 +79,7 @@ export class PerformanceHelper {
 
 	/**
 	 * Assert that page load time is under a threshold
+	 * @param maxMs
 	 * @throws Error if load time exceeds threshold
 	 */
 	async assertLoadTimeUnder(maxMs: number): Promise<void> {
@@ -94,7 +98,7 @@ export class PerformanceHelper {
 	async getMemoryUsage(): Promise<MemoryUsage | null> {
 		const memory = await this.page.evaluate(() => {
 			// @ts-expect-error - performance.memory is Chrome-specific
-			if (typeof performance.memory === "undefined") {
+			if (performance.memory === undefined) {
 				return null;
 			}
 
@@ -111,6 +115,7 @@ export class PerformanceHelper {
 
 	/**
 	 * Log current timer value to console
+	 * @param label
 	 * @throws Error if timer was not started
 	 */
 	logPerformance(label: string): void {
@@ -125,6 +130,7 @@ export class PerformanceHelper {
 
 /**
  * Factory function to create a PerformanceHelper instance
+ * @param page
  */
 export const performanceHelper = (page: Page): PerformanceHelper => {
 	return new PerformanceHelper(page);

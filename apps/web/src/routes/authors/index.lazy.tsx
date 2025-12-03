@@ -23,7 +23,7 @@ const authorsColumns: ColumnConfig[] = [
   },
 ];
 
-function AuthorsListRoute() {
+const AuthorsListRoute = () => {
   const search = useSearch({ from: "/authors/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -39,7 +39,7 @@ function AuthorsListRoute() {
       bookmarkButtonPosition="header"
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/authors/")({
   component: AuthorsListRoute,

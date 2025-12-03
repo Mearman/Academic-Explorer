@@ -7,8 +7,10 @@ import { writeToFilesystemCache } from './filesystem-cache';
 
 /**
  * Intercept and cache successful API responses
+ * @param url
+ * @param responseData
  */
-export async function cacheApiResponse(url: string, responseData: unknown): Promise<void> {
+export const cacheApiResponse = async (url: string, responseData: unknown): Promise<void> => {
   try {
     // Only cache in E2E environment
     const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
@@ -30,13 +32,13 @@ export async function cacheApiResponse(url: string, responseData: unknown): Prom
   } catch (error) {
     console.error(`❌ Failed to cache API response for ${url}:`, error);
   }
-}
+};
 
 /**
  * Setup fetch interceptor to automatically cache responses
  * This runs globally to capture all fetch requests
  */
-export function setupResponseCacheInterceptor(): void {
+export const setupResponseCacheInterceptor = (): void => {
   const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
   if (!isE2E) return;
 
@@ -44,11 +46,9 @@ export function setupResponseCacheInterceptor(): void {
   const originalFetch = global.fetch;
 
   // Override global fetch
-  global.fetch = async function interceptedFetch(
-    ...args: Parameters<typeof fetch>
-  ): Promise<Response> {
+  global.fetch = async (...args: Parameters<typeof fetch>): Promise<Response> => {
     const [url] = args;
-    const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : '';
+    const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : '');
 
     // Call original fetch
     const response = await originalFetch(...args);
@@ -75,12 +75,12 @@ export function setupResponseCacheInterceptor(): void {
   };
 
   console.log('✅ API response cache interceptor enabled');
-}
+};
 
 /**
  * Restore original fetch
  */
-export function teardownResponseCacheInterceptor(): void {
+export const teardownResponseCacheInterceptor = (): void => {
   // Fetch interception is handled by MSW, no teardown needed
   console.log('🛑 API response cache interceptor disabled');
-}
+};

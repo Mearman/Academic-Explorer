@@ -1,18 +1,18 @@
 /**
  * E2E test helper to populate graph store with test relationship data
  * Used by relationship visualization E2E tests (spec 016)
- *
  * @module populate-graph
  */
 
-import type { GraphNode, GraphEdge } from '@bibgraph/types';
+import type { GraphEdge,GraphNode } from '@bibgraph/types';
 import type { Page } from '@playwright/test';
 
 /**
  * Populate graph with citation relationships for work W2741809807
  * Creates 3 citing works (incoming REFERENCE edges)
+ * @param page
  */
-export async function populateWorkCitations(page: Page): Promise<void> {
+export const populateWorkCitations = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
     // Access the global graph store actions (exposed in development/test mode)
     const graphStore = (window as any).graphStoreActions;
@@ -116,13 +116,15 @@ export async function populateWorkCitations(page: Page): Promise<void> {
     graphStore.addNodes(citingWorks);
     graphStore.addEdges(citationEdges);
   });
-}
+};
 
 /**
  * Populate graph with authorship relationships for author A123
  * Creates 2 authored works (incoming AUTHORSHIP edges from works to author)
+ * @param page
+ * @param authorId
  */
-export async function populateAuthorWorks(page: Page, authorId: string = 'A123'): Promise<void> {
+export const populateAuthorWorks = async (page: Page, authorId: string = 'A123'): Promise<void> => {
   await page.evaluate((aid) => {
     const graphStore = (window as any).graphStoreActions;
     if (!graphStore) throw new Error('Graph store actions not available');
@@ -182,16 +184,17 @@ export async function populateAuthorWorks(page: Page, authorId: string = 'A123')
     graphStore.addNodes(works);
     graphStore.addEdges(authorshipEdges);
   }, authorId);
-}
+};
 
 /**
  * Clear all graph data (useful for test isolation)
+ * @param page
  */
-export async function clearGraph(page: Page): Promise<void> {
+export const clearGraph = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
     const graphStoreActions = (window as any).graphStoreActions;
     if (graphStoreActions) {
       graphStoreActions.clear();
     }
   });
-}
+};

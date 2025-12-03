@@ -1,36 +1,36 @@
-import type { EntityType, Bookmark } from "@bibgraph/types";
-import { BookmarkList, BookmarkSearchFilters, BookmarkTable, BookmarkGrid } from "@bibgraph/ui";
-import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@bibgraph/utils";
-import type { ExportFormat, ExportOptions, CatalogueEntity } from "@bibgraph/utils";
+import type { Bookmark,EntityType } from "@bibgraph/types";
+import { BookmarkGrid,BookmarkList, BookmarkSearchFilters, BookmarkTable } from "@bibgraph/ui";
+import type { CatalogueEntity,ExportFormat, ExportOptions } from "@bibgraph/utils";
+import { applyFilters, downloadExport, exportBookmarks, logger, SPECIAL_LIST_IDS } from "@bibgraph/utils";
 import {
-	Container,
-	Title,
-	Text,
-	Paper,
-	Stack,
-	Group,
+	Alert,
 	Badge,
 	Button,
-	Alert,
+	Checkbox,
+	Container,
+	Group,
 	Menu,
 	Modal,
-	Checkbox,
-	Select,
+	Paper,
 	SegmentedControl,
+	Select,
+	Stack,
+	Text,
+	Title,
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import {
-	IconBookmark,
 	IconAlertCircle,
+	IconBookmark,
 	IconFileExport,
-	IconSortDescending,
-	IconSortAscending,
-	IconList,
-	IconTable,
 	IconLayoutGrid,
+	IconList,
+	IconSortAscending,
+	IconSortDescending,
+	IconTable,
 } from "@tabler/icons-react";
 import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useCallback,useEffect, useMemo, useState } from "react";
 
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -39,8 +39,9 @@ import type { BookmarksSearch, BookmarkViewMode } from "./bookmarks";
 
 /**
  * Convert CatalogueEntity to Bookmark type
+ * @param entity
  */
-function convertToBookmark(entity: CatalogueEntity): Bookmark {
+const convertToBookmark = (entity: CatalogueEntity): Bookmark => {
 	// Extract metadata from notes field (legacy format)
 	const notesLines = (entity.notes || "").split("\n");
 	const urlLine = notesLines.find((line) => line.startsWith("URL: "));
@@ -68,7 +69,7 @@ function convertToBookmark(entity: CatalogueEntity): Bookmark {
 			tags,
 		},
 	};
-}
+};
 
 /**
  * Bookmarks Index Route Component
@@ -77,7 +78,7 @@ function convertToBookmark(entity: CatalogueEntity): Bookmark {
  * Uses the useBookmarks hook for reactive bookmark state.
  * Synchronizes filter state with URL parameters for shareable links.
  */
-function BookmarksIndexPage() {
+const BookmarksIndexPage = () => {
 	const navigate = useNavigate();
 	const storage = useStorageProvider();
 	const { bookmarks: catalogueBookmarks, removeBookmark, loading, error } = useBookmarks();
@@ -155,7 +156,7 @@ function BookmarksIndexPage() {
 		bookmarks.forEach((bookmark) => {
 			bookmark.metadata.tags?.forEach((tag) => tagsSet.add(tag));
 		});
-		return Array.from(tagsSet).sort();
+		return [...tagsSet].sort();
 	}, [bookmarks]);
 
 	// Apply filters to bookmarks
@@ -443,7 +444,7 @@ function BookmarksIndexPage() {
 			>
 				<Stack gap="md">
 					<Text size="sm" c="dimmed">
-						Export {filteredBookmarks.length} bookmark{filteredBookmarks.length !== 1 ? "s" : ""} to a file
+						Export {filteredBookmarks.length} bookmark{filteredBookmarks.length === 1 ? "" : "s"} to a file
 					</Text>
 
 					<Select
@@ -510,7 +511,7 @@ function BookmarksIndexPage() {
 			</Modal>
 		</Container>
 	);
-}
+};
 
 export const Route = createLazyFileRoute("/bookmarks")({
 	component: BookmarksIndexPage,

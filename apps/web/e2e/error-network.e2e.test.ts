@@ -2,13 +2,12 @@
  * E2E tests for network failure scenarios
  *
  * Tests handling of network disconnection, connection failures, and offline mode
- *
  * @module error-network.e2e
  * @tag @error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -49,7 +48,7 @@ test.describe('@error Network Errors', () => {
 
     // Should show error state
     const errorText = page.getByText(/connection|error|failed|try again/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should handle internet disconnected error', async ({ page }) => {
@@ -62,7 +61,7 @@ test.describe('@error Network Errors', () => {
 
     // Should show offline/connection error
     const errorText = page.getByText(/connection|disconnected|error|offline/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should provide retry option on network failure', async ({ page }) => {
@@ -106,7 +105,7 @@ test.describe('@error Network Errors', () => {
 
     // Verify error state
     const errorText = page.getByText(/connection|error|failed/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
 
     // "Restore" network
     blockNetwork = false;
@@ -120,7 +119,7 @@ test.describe('@error Network Errors', () => {
 
     // After reload with network, should either show content or be in loading state
     const contentOrLoading = page.locator('h1, [data-testid="entity-title"], .skeleton, [data-testid="loading"]');
-    await expect(contentOrLoading.first()).toBeVisible({ timeout: 15000 });
+    await expect(contentOrLoading.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should handle DNS resolution failure', async ({ page }) => {
@@ -133,7 +132,7 @@ test.describe('@error Network Errors', () => {
 
     // Should show error
     const errorText = page.getByText(/error|failed|unavailable/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should handle timeout errors gracefully', async ({ page }) => {
@@ -146,7 +145,7 @@ test.describe('@error Network Errors', () => {
 
     // Should show timeout or connection error
     const errorText = page.getByText(/connection|error|timed out|timeout|unavailable/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should handle slow network connections', async ({ page }) => {
@@ -188,7 +187,7 @@ test.describe('@error Network Errors', () => {
     // Should handle intermittent failures
     // Either show error with retry, or successfully load (depending on retry logic)
     const errorOrContent = page.locator('h1, [data-testid="entity-title"], [role="alert"]');
-    await expect(errorOrContent.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorOrContent.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should maintain app functionality with cached data on network failure', async ({ page }) => {
@@ -295,6 +294,6 @@ test.describe('@error Network Errors', () => {
       /failed to load|unable to connect/i.test(bodyText || ''),
     ];
 
-    expect(friendlyPatterns.some(pattern => pattern)).toBe(true);
+    expect(friendlyPatterns.some(Boolean)).toBe(true);
   });
 });

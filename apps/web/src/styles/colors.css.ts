@@ -1,5 +1,5 @@
 import { componentLibraries } from "./component-libraries.css";
-import { shadcnPalettes, type ShadcnPalette } from './shadcn-colors';
+import { type ShadcnPalette,shadcnPalettes } from './shadcn-colors';
 import type { ColorMode, ColorScheme } from "./theme-contracts";
 
 // Helper function to create color scheme from shadcn palette
@@ -63,12 +63,10 @@ const colorSchemes = {
 } as const;
 
 // Export color scheme function to get colors by scheme and mode
-export function getColorScheme(scheme: ColorScheme, mode: ColorMode) {
-  return colorSchemes[scheme][mode];
-}
+export const getColorScheme = (scheme: ColorScheme, mode: ColorMode) => colorSchemes[scheme][mode];
 
 // Helper function to get colors by scheme and mode
-export function getColorThemeTokens(scheme: ColorScheme, mode: ColorMode) {
+export const getColorThemeTokens = (scheme: ColorScheme, mode: ColorMode) => {
   const colors = getColorScheme(scheme, mode);
   const mantineTokens = componentLibraries.mantine; // Use mantine tokens for spacing/borders/shadows
 
@@ -78,4 +76,4 @@ export function getColorThemeTokens(scheme: ColorScheme, mode: ColorMode) {
     borders: mantineTokens.borders,
     shadows: mantineTokens.shadows,
   };
-}
+};

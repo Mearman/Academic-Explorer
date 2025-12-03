@@ -2,13 +2,12 @@
  * E2E tests for 500 (Server Error) scenarios
  *
  * Tests handling of server-side errors using route interception
- *
  * @module error-500.e2e
  * @tag @error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -40,7 +39,7 @@ test.describe('@error 500 Server Errors', () => {
     const errorText = page.getByText(/error|failed|try again|unavailable/i);
 
     // Wait for error to be displayed
-    await expect(errorIndicators.or(errorText).first()).toBeVisible({ timeout: 15000 });
+    await expect(errorIndicators.or(errorText).first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should show retry option on server error', async ({ page }) => {
@@ -114,7 +113,7 @@ test.describe('@error 500 Server Errors', () => {
 
     // Should handle 502 similar to 500
     const errorText = page.getByText(/error|failed|unavailable/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test('should handle 503 Service Unavailable error', async ({ page }) => {
@@ -131,6 +130,6 @@ test.describe('@error 500 Server Errors', () => {
 
     // Should handle 503 gracefully
     const errorText = page.getByText(/error|maintenance|unavailable/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 });

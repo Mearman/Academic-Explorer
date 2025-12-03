@@ -3,9 +3,9 @@
  * Handles cleanup after all tests complete
  */
 
-import fs from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path, { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { stopMSWServer } from "./test/setup/msw-setup";
 
@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 
 const HAR_CACHE_DIR = path.join(__dirname, "test-results/har-cache");
 
-async function globalTeardown() {
+const globalTeardown = async () => {
   console.log("🧹 Starting Playwright global teardown...");
 
   // Log HAR cache statistics
@@ -43,7 +43,7 @@ async function globalTeardown() {
   stopMSWServer();
 
   console.log("✨ Global teardown complete!");
-}
+};
 
 // eslint-disable-next-line import/no-default-export -- Playwright convention
 export default globalTeardown;

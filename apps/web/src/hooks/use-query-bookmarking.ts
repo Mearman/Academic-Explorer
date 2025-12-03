@@ -8,12 +8,12 @@ import { useLocation, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 
 import {
-  extractQueryParameters,
-  createQueryBookmarkRequest,
-  generateQueryTitle,
-  generateQueryId,
-  getPaginationInfo,
   areQueriesEquivalent,
+  createQueryBookmarkRequest,
+  extractQueryParameters,
+  generateQueryId,
+  generateQueryTitle,
+  getPaginationInfo,
 } from "@/lib/query-bookmarking";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { serializeSearch } from "@/utils/url-decoding";
@@ -58,11 +58,11 @@ export interface UseQueryBookmarkingReturn {
   generateDefaultTitle: () => string;
 }
 
-export function useQueryBookmarking({
+export const useQueryBookmarking = ({
   entityType,
   entityId,
   disabled = false
-}: UseQueryBookmarkingOptions): UseQueryBookmarkingReturn {
+}: UseQueryBookmarkingOptions): UseQueryBookmarkingReturn => {
 
   // Get current route search parameters
   const searchParams = useSearch({ strict: false }) as OpenAlexSearchParams;
@@ -276,4 +276,4 @@ export function useQueryBookmarking({
     isCurrentQueryEquivalent,
     generateDefaultTitle
   };
-}
+};

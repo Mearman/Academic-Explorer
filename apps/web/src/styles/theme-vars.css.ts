@@ -1,4 +1,4 @@
-import { createVar, createThemeContract } from "@vanilla-extract/css";
+import { createThemeContract,createVar } from "@vanilla-extract/css";
 
 // CSS custom properties for theme switching
 export const themeVars = {

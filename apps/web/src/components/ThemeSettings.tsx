@@ -1,30 +1,30 @@
 import {
-  Card,
-  Text,
-  Select,
-  Group,
-  Stack,
-  SegmentedControl,
-  Divider,
   Badge,
   Button,
+  Card,
+  Divider,
+  Group,
+  SegmentedControl,
+  Select,
+  Stack,
+  Text,
 } from "@mantine/core";
 import {
+  IconDeviceDesktop,
+  IconMoon,
   IconPalette,
   IconSun,
-  IconMoon,
-  IconDeviceDesktop,
 } from "@tabler/icons-react";
 import React from "react";
 
 import { useTheme } from "@/contexts/theme-context";
-import type { ComponentLibrary, ColorScheme, BorderRadius } from "@/styles/theme-contracts";
+import type { BorderRadius,ColorScheme, ComponentLibrary } from "@/styles/theme-contracts";
 
 interface ThemeSettingsProps {
   onClose?: () => void;
 }
 
-export function ThemeSettings({ onClose }: ThemeSettingsProps) {
+export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
   const { config, setComponentLibrary, setColorScheme, setColorMode, setBorderRadius, resetTheme } = useTheme();
 
   const componentLibraryData = [
@@ -262,4 +262,4 @@ export function ThemeSettings({ onClose }: ThemeSettingsProps) {
       </Group>
     </Stack>
   );
-}
+};

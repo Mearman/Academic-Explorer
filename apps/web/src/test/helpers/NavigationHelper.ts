@@ -40,7 +40,7 @@ export class NavigationHelper {
 					window.__tanstack_router__ !== undefined
 				);
 			},
-			{ timeout: 10000 }
+			{ timeout: 10_000 }
 		);
 	}
 
@@ -73,7 +73,7 @@ export class NavigationHelper {
 	 * Uses deterministic wait for router ready state.
 	 * @param timeout - Optional timeout in milliseconds (default: 10000)
 	 */
-	async waitForNavigation(timeout = 10000): Promise<void> {
+	async waitForNavigation(timeout = 10_000): Promise<void> {
 		await this.page.waitForFunction(
 			() => {
 				// Check router is ready and document is in ready state
@@ -92,6 +92,7 @@ export class NavigationHelper {
 /**
  * Singleton pattern factory for NavigationHelper.
  * Usage: const nav = navigationHelper(page);
+ * @param page
  */
 export const navigationHelper = (page: Page): NavigationHelper =>
 	new NavigationHelper(page);

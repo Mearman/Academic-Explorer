@@ -131,7 +131,7 @@ describe("SearchInterface", () => {
     const searchButton = screen.getByRole("button", { name: /search/i });
 
     expect((searchInput as HTMLInputElement).disabled).toBe(true);
-    expect(searchButton.getAttribute("data-loading")).toBe("true");
+    expect(searchButton.dataset.loading).toBe("true");
   });
 
   

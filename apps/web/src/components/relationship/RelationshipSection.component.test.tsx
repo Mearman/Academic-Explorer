@@ -5,8 +5,8 @@
 
 import { RelationType } from '@bibgraph/types';
 import { MantineProvider } from '@mantine/core';
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { cleanup,render, screen } from '@testing-library/react';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 
@@ -157,7 +157,7 @@ describe('RelationshipSection', () => {
 
     // Should only show label text
     const textElements = container.querySelectorAll('p');
-    const hasIcon = Array.from(textElements).some(el => el.textContent?.includes('👤'));
+    const hasIcon = [...textElements].some(el => el.textContent?.includes('👤'));
     expect(hasIcon).toBe(false);
   });
 

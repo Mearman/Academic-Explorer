@@ -12,7 +12,7 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('xpac Works Default Inclusion', () => {
   test('should include include_xpac=true parameter by default', async ({ page }) => {
@@ -38,8 +38,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
     expect(bodyText!.length).toBeGreaterThan(100);
 
     // Verify API requests were made (or check for page content indicating success)
@@ -80,14 +80,14 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
 
     // Wait for API responses
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {
       // Timeout is acceptable - we just need some responses
       // Ignore errors from timeout
     });
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for xpac-specific field: is_xpac
     if (apiResponses.length > 0) {
@@ -147,8 +147,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Verify API requests were made (or page loaded with content)
     if (apiRequests.length > 0) {
@@ -188,30 +188,30 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
 
     // Wait for API responses
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {
       // Timeout is acceptable
       // Ignore errors from timeout
     });
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for xpac work types (dataset, software, specimen, other)
     if (apiResponses.length > 0) {
-      const xpacWorkTypes = ['dataset', 'software', 'specimen', 'other'];
+      const xpacWorkTypes = new Set(['dataset', 'software', 'specimen', 'other']);
       const responsesWithXpacTypes = apiResponses.filter(resp => {
         const data = resp.data as Record<string, unknown>;
 
         // Check if response has type field matching xpac types
         if (data && 'type' in data) {
-          return xpacWorkTypes.includes(String(data.type).toLowerCase());
+          return xpacWorkTypes.has(String(data.type).toLowerCase());
         }
 
         // Check if response has results array with xpac types
         if (data && 'results' in data && Array.isArray(data.results)) {
           return data.results.some((result: Record<string, unknown>) =>
-            result.type && xpacWorkTypes.includes(String(result.type).toLowerCase())
+            result.type && xpacWorkTypes.has(String(result.type).toLowerCase())
           );
         }
 
@@ -239,8 +239,8 @@ test.describe('xpac Works Default Inclusion', () => {
     await page.waitForLoadState('load');
 
     // Verify page renders without errors
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for no error messages
     const hasError = bodyText?.toLowerCase().includes('error') &&

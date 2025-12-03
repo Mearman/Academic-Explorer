@@ -6,12 +6,11 @@
  *
  * Bug: "Cannot read properties of undefined (reading 'map')" error
  * occurs in GraphAlgorithmsPanel when Select component receives undefined data.
- *
  * @module algorithms-crash.e2e
  * @tag @error @utility
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 
@@ -21,7 +20,7 @@ const BASE_URL =
   (process.env.CI ? "http://localhost:4173" : "http://localhost:5173");
 
 test.describe("@utility @error Algorithms Page Crash Detection", () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test("should load algorithms page without crashing", async ({ page }) => {
     const errors: string[] = [];
@@ -36,11 +35,11 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
 
     // Check for ErrorBoundary indicators (React catches errors before they become pageerrors)
     const navigationError = page.locator("text=Navigation Error");
-    const hasNavigationError = await navigationError.isVisible();
+    const hasNavigationError = navigationError;
 
     // Fail if either uncaught errors or ErrorBoundary is shown
     expect(errors, "JavaScript errors detected on algorithms page").toHaveLength(0);
-    expect(hasNavigationError, "ErrorBoundary Navigation Error detected - page crashed").toBe(false);
+    await expect(hasNavigationError, "ErrorBoundary Navigation Error detected - page crashed").toBeHidden();
   });
 
   test("should not show error boundary crash message", async ({ page }) => {
@@ -58,15 +57,15 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     await expect(
       navigationError,
       "Navigation Error should not be visible"
-    ).not.toBeVisible();
+    ).toBeHidden();
     await expect(
       cannotReadError,
       "Cannot read properties error should not be visible"
-    ).not.toBeVisible();
+    ).toBeHidden();
     await expect(
       errorBoundary,
       "Error boundary message should not be visible"
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 
   test("should render algorithms panel successfully", async ({ page }) => {
@@ -76,14 +75,14 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`);
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // First check no errors occurred
     expect(errors, "JavaScript errors detected").toHaveLength(0);
 
     // Verify main content renders - use heading role to be more specific
     await expect(page.getByRole("heading", { name: "Graph Algorithms" })).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
     await expect(page.getByRole("heading", { name: "Graph Statistics" })).toBeVisible();
 
@@ -101,12 +100,12 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`);
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // First check that page didn't crash on load
     const navigationError = page.locator("text=Navigation Error");
-    const hasNavigationError = await navigationError.isVisible();
-    expect(hasNavigationError, "Page crashed on load - cannot test accordion interaction").toBe(false);
+    const hasNavigationError = navigationError;
+    await expect(hasNavigationError, "Page crashed on load - cannot test accordion interaction").toBeHidden();
 
     // Check no initial errors
     expect(errors, "Initial JavaScript errors detected").toHaveLength(0);
@@ -136,11 +135,11 @@ test.describe("@utility @error Algorithms Page Crash Detection", () => {
     });
 
     await page.goto(`${BASE_URL}/#/algorithms`);
-    await waitForAppReady(page, { timeout: 30000 });
+    await waitForAppReady(page, { timeout: 30_000 });
 
     // Check for graph visualization heading
     await expect(page.getByRole("heading", { name: "Graph Visualization" })).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Check for regenerate button (indicates page rendered successfully)

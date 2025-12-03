@@ -1,10 +1,10 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { type Publisher, type PublisherField } from "@bibgraph/types/entities";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearch , createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute,useParams, useSearch  } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS,  type DetailViewMode } from "@/components/entity-detail";
+import { type DetailViewMode,ENTITY_TYPE_CONFIGS,  EntityDetailLayout, ErrorState, LoadingState } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
@@ -12,7 +12,7 @@ import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-qu
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { decodeEntityId } from "@/utils/url-decoding";
 
-function PublisherRoute() {
+const PublisherRoute = () => {
   const { publisherId: rawPublisherId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<DetailViewMode>("rich");
@@ -82,7 +82,7 @@ function PublisherRoute() {
       <OutgoingRelationships entityId={publisherId} entityType="publishers" />
     </EntityDetailLayout>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/publishers/$publisherId")({
   component: PublisherRoute,

@@ -22,15 +22,21 @@ interface EntityDisplayNameProps extends Omit<TextProps, "children"> {
 /**
  * Renders an entity's display name, automatically fetching it from OpenAlex if needed.
  * Handles loading and error states gracefully.
+ * @param root0
+ * @param root0.entityId
+ * @param root0.entityType
+ * @param root0.fallback
+ * @param root0.showSkeleton
+ * @param root0.lineClamp
  */
-export function EntityDisplayName({
+export const EntityDisplayName = ({
   entityId,
   entityType,
   fallback,
   showSkeleton = false,
   lineClamp = 2,
   ...textProps
-}: EntityDisplayNameProps) {
+}: EntityDisplayNameProps) => {
   // Skip fetching for special IDs
   const isSpecialId = entityId.startsWith("search-") || entityId.startsWith("list-");
 
@@ -68,4 +74,4 @@ export function EntityDisplayName({
       {displayText}
     </Text>
   );
-}
+};

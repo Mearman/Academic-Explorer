@@ -1,7 +1,7 @@
-import { debouncedSearch, normalizeSearchQuery, isValidSearchQuery } from "@bibgraph/utils";
-import { Group, TextInput, Button, Stack, Paper, Title } from "@mantine/core";
+import { debouncedSearch, isValidSearchQuery,normalizeSearchQuery } from "@bibgraph/utils";
+import { Button, Group, Paper, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { useState, useCallback } from "react";
+import { useCallback,useState } from "react";
 
 interface SearchFilters {
   query: string;
@@ -13,11 +13,11 @@ interface SearchInterfaceProps {
   placeholder?: string;
 }
 
-export function SearchInterface({
+export const SearchInterface = ({
   onSearch,
   isLoading = false,
   placeholder = "Search academic works, authors, institutions..."
-}: SearchInterfaceProps) {
+}: SearchInterfaceProps) => {
   const [query, setQuery] = useState("");
 
   const handleSearch = useCallback(() => {
@@ -78,4 +78,4 @@ export function SearchInterface({
       </Stack>
     </Paper>
   );
-}
+};

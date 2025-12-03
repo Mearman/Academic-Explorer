@@ -35,16 +35,16 @@ const THRESHOLDS = {
 
 type Rating = "good" | "needs-improvement" | "poor";
 
-function getRating(metric: Metric): Rating {
+const getRating = (metric: Metric): Rating => {
   const threshold = THRESHOLDS[metric.name as keyof typeof THRESHOLDS];
   if (!threshold) return "good";
 
   if (metric.value <= threshold.good) return "good";
   if (metric.value <= threshold.needsImprovement) return "needs-improvement";
   return "poor";
-}
+};
 
-function reportMetric(metric: Metric) {
+const reportMetric = (metric: Metric) => {
   const rating = getRating(metric);
 
   logger.debug("performance", `Web Vital: ${metric.name}`, {
@@ -98,12 +98,12 @@ function reportMetric(metric: Metric) {
   } catch (analyticsError) {
     console.warn('Failed to send performance metric to PostHog:', analyticsError);
   }
-}
+};
 
 /**
  * Get user agent group for analytics (privacy-friendly grouping)
  */
-function getUserAgentGroup(): string {
+const getUserAgentGroup = (): string => {
   if (typeof navigator === 'undefined') return 'unknown';
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.includes('chrome')) return 'chrome';
@@ -111,13 +111,13 @@ function getUserAgentGroup(): string {
   if (userAgent.includes('safari')) return 'safari';
   if (userAgent.includes('edge')) return 'edge';
   return 'other';
-}
+};
 
 /**
  * Initialize Web Vitals monitoring
  * Call this once when the app starts
  */
-export async function initWebVitals() {
+export const initWebVitals = async () => {
   if (typeof window === "undefined") return;
 
   try {
@@ -135,12 +135,12 @@ export async function initWebVitals() {
   } catch (error) {
     logger.error("performance", "Failed to initialize Web Vitals", { error });
   }
-}
+};
 
 /**
  * Get all recorded Web Vitals metrics
  */
-export function getWebVitalsMetrics() {
+export const getWebVitalsMetrics = () => {
   if (typeof window === "undefined" || !("performance" in window)) {
     return [];
   }
@@ -150,15 +150,15 @@ export function getWebVitalsMetrics() {
     .filter((entry) => entry.name.startsWith("web-vital:"))
     .map((entry) => ({
       name: entry.name.replace("web-vital:", ""),
-      ...((entry as PerformanceMark).detail || {}),
+      ...(entry as PerformanceMark).detail,
       timestamp: entry.startTime,
     }));
-}
+};
 
 /**
  * Get Web Vitals summary statistics
  */
-export function getWebVitalsSummary() {
+export const getWebVitalsSummary = () => {
   const metrics = getWebVitalsMetrics();
 
   if (metrics.length === 0) {
@@ -187,4 +187,4 @@ export function getWebVitalsSummary() {
   }
 
   return summary;
-}
+};

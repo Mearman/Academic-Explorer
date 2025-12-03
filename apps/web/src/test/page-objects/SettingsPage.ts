@@ -5,7 +5,6 @@
  * Handles theme toggling, xpac works inclusion, and settings management.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → SettingsPage
- *
  * @see spec-020 Phase 1: Settings page testing
  */
 
@@ -72,7 +71,7 @@ export class SettingsPage extends BaseSPAPageObject {
 	async getCurrentTheme(): Promise<string> {
 		// Check the data-mantine-color-scheme attribute on html element
 		const theme = await this.page.evaluate(() => {
-			return document.documentElement.getAttribute("data-mantine-color-scheme");
+			return document.documentElement.dataset.mantineColorScheme;
 		});
 		return theme || "light";
 	}

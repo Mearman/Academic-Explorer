@@ -2,13 +2,13 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconBuilding } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function RORInstitutionRoute() {
+const RORInstitutionRoute = () => {
   const { ror } = useParams({ from: "/institutions/ror/$ror" });
   const navigate = useNavigate();
 
@@ -83,7 +83,7 @@ function RORInstitutionRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/institutions/ror/$ror")({
   component: RORInstitutionRoute,

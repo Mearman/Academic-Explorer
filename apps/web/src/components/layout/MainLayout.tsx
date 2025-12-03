@@ -5,30 +5,30 @@
 
 import { getBuildInfo, getReleaseUrl } from "@bibgraph/utils";
 import {
+  ActionIcon,
+  Anchor,
   AppShell,
+  Badge,
+  Box,
   Button,
   Group,
-  Text,
-  ActionIcon,
-  Stack,
-  Title,
-  Box,
-  rem,
   Menu,
-  Anchor,
-  Badge,
+  rem,
+  Stack,
+  Text,
+  Title,
 } from "@mantine/core";
 import {
   IconLayoutSidebar,
   IconLayoutSidebarRight,
-  IconPinned,
-  IconPin,
   IconMenu,
+  IconPin,
+  IconPinned,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useCallback, useRef,useState } from "react";
 
 import { useLayoutStore } from "@/stores/layout-store";
 import { sprinkles } from "@/styles/sprinkles";
@@ -209,16 +209,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 flex: mobileSearchExpanded ? 1 : 'none'
               }}
             >
-              {!mobileSearchExpanded ? (
-                <ActionIcon
-                  onClick={() => setMobileSearchExpanded(true)}
-                  variant="subtle"
-                  size="lg"
-                  aria-label="Open search"
-                >
-                  <IconSearch size={18} />
-                </ActionIcon>
-              ) : (
+              {mobileSearchExpanded ? (
                 <>
                   <Box className={sprinkles({ flex: '1', minWidth: '0' })} style={{}}>
                     <HeaderSearchInput />
@@ -233,6 +224,15 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     <IconX size={18} />
                   </ActionIcon>
                 </>
+              ) : (
+                <ActionIcon
+                  onClick={() => setMobileSearchExpanded(true)}
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Open search"
+                >
+                  <IconSearch size={18} />
+                </ActionIcon>
               )}
             </Box>
 

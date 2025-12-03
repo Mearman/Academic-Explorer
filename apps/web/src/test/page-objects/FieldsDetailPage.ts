@@ -5,7 +5,6 @@
  * Fields are mid-level academic classifications between Domains and Subfields.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → FieldsDetailPage
- *
  * @see spec-020 E2E Test Coverage
  */
 
@@ -30,6 +29,7 @@ export class FieldsDetailPage extends BaseEntityPageObject {
 
 	/**
 	 * Navigate to a specific field detail page
+	 * @param fieldId
 	 */
 	async gotoField(fieldId: string): Promise<void> {
 		await this.gotoEntity(fieldId);
@@ -55,7 +55,7 @@ export class FieldsDetailPage extends BaseEntityPageObject {
 	 */
 	async getSubfieldCount(): Promise<number> {
 		const countText = await this.getText(this.fieldSelectors.subfieldCount);
-		return countText ? parseInt(countText, 10) : 0;
+		return countText ? Number.parseInt(countText, 10) : 0;
 	}
 
 	/**
@@ -93,6 +93,7 @@ export class FieldsDetailPage extends BaseEntityPageObject {
 
 	/**
 	 * Click a related subfield link by index
+	 * @param index
 	 */
 	async clickRelatedSubfield(index: number): Promise<void> {
 		const subfieldItems = this.page.locator(

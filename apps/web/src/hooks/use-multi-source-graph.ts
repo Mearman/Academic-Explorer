@@ -3,30 +3,29 @@
  *
  * Manages multiple data sources (catalogue lists, caches) and combines them
  * into a unified graph visualization with toggleable visibility per source.
- *
  * @module hooks/use-multi-source-graph
  */
 
 import { getPersistentGraph } from '@bibgraph/client';
-import type { GraphNode, GraphEdge, RelationType, AuthorPosition } from '@bibgraph/types';
-import { logger } from '@bibgraph/utils';
+import type { AuthorPosition,GraphEdge, GraphNode, RelationType } from '@bibgraph/types';
 import type {
   GraphDataSource,
   GraphDataSourceState,
   GraphSourceEntity,
 } from '@bibgraph/utils';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { logger } from '@bibgraph/utils';
+import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
 
 import { useStorageProvider } from '@/contexts/storage-provider-context';
 import {
   createBookmarksSource,
-  createHistorySource,
-  createGraphListSource,
   createCatalogueListSource,
+  createGraphListSource,
+  createHistorySource,
   createIndexedDBCacheSource,
   createMemoryCacheSource,
-  createStaticCacheSource,
   createPersistentGraphSource,
+  createStaticCacheSource,
 } from '@/lib/graph-sources';
 
 const STORAGE_KEY = 'bibgraph:graph-source-toggles';
@@ -35,7 +34,7 @@ const LOG_PREFIX = 'multi-source-graph';
 /**
  * Load enabled source IDs from localStorage
  */
-function loadEnabledSources(): Set<string> {
+const loadEnabledSources = (): Set<string> => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -47,13 +46,14 @@ function loadEnabledSources(): Set<string> {
   }
   // Default: only bookmarks enabled
   return new Set(['catalogue:bookmarks']);
-}
+};
 
 /**
  * Check if an entity is from the graph list source
  * T041: Graph list nodes take priority during deduplication
+ * @param entity
  */
-function isGraphListEntity(entity: GraphSourceEntity): boolean {
+const isGraphListEntity = (entity: GraphSourceEntity): boolean => {
   // Check sourceId first (most reliable)
   if (entity.sourceId === 'catalogue:graph-list') {
     return true;
@@ -65,18 +65,15 @@ function isGraphListEntity(entity: GraphSourceEntity): boolean {
   }
 
   return false;
-}
+};
 
 /**
  * Deduplicate entities with graph list priority
  * T041: When same entity exists in multiple sources, prioritize graph list version
- *
  * @param entities - Array of entities from multiple sources
  * @returns Deduplicated array with graph list nodes taking priority
  */
-export function deduplicateEntities(
-  entities: GraphSourceEntity[]
-): GraphSourceEntity[] {
+export const deduplicateEntities = (entities: GraphSourceEntity[]): GraphSourceEntity[] => {
   const entityMap = new Map<string, GraphSourceEntity>();
 
   for (const entity of entities) {
@@ -102,25 +99,26 @@ export function deduplicateEntities(
     // If both are graph list or both are collection, keep first occurrence
   }
 
-  return Array.from(entityMap.values());
-}
+  return [...entityMap.values()];
+};
 
 /**
  * Save enabled source IDs to localStorage
+ * @param enabledIds
  */
-function saveEnabledSources(enabledIds: Set<string>): void {
+const saveEnabledSources = (enabledIds: Set<string>): void => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...enabledIds]));
   } catch (error) {
     logger.debug(LOG_PREFIX, 'Failed to save source toggles to localStorage', { error });
   }
-}
+};
 
 /**
  * Convert GraphSourceEntity to GraphNode
+ * @param entity
  */
-function sourceEntityToNode(entity: GraphSourceEntity): GraphNode {
-  return {
+const sourceEntityToNode = (entity: GraphSourceEntity): GraphNode => ({
     id: entity.entityId,
     entityType: entity.entityType,
     entityId: entity.entityId,
@@ -132,18 +130,16 @@ function sourceEntityToNode(entity: GraphSourceEntity): GraphNode {
       ...entity.entityData,
       sourceId: entity.sourceId, // Track which source provided this node
     },
-  };
-}
+  });
 
 /**
  * Build edges from entity relationships
  * Only creates edges where both endpoints exist in the entity map
  * Preserves edge properties (score, authorPosition, etc.) for weighted traversal
+ * @param entities
+ * @param entityIds
  */
-function buildEdges(
-  entities: GraphSourceEntity[],
-  entityIds: Set<string>
-): GraphEdge[] {
+const buildEdges = (entities: GraphSourceEntity[], entityIds: Set<string>): GraphEdge[] => {
   const edges: GraphEdge[] = [];
   const seenEdges = new Set<string>();
 
@@ -174,7 +170,7 @@ function buildEdges(
   }
 
   return edges;
-}
+};
 
 /**
  * Result of the useMultiSourceGraph hook
@@ -235,7 +231,7 @@ export interface UseMultiSourceGraphResult {
 /**
  * Hook for managing multi-source graph data
  */
-export function useMultiSourceGraph(): UseMultiSourceGraphResult {
+export const useMultiSourceGraph = (): UseMultiSourceGraphResult => {
   const storage = useStorageProvider();
 
   // Available sources
@@ -705,4 +701,4 @@ export function useMultiSourceGraph(): UseMultiSourceGraphResult {
     updateNodeLabels,
     addDiscoveredEdges,
   };
-}
+};

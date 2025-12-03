@@ -7,7 +7,6 @@
  *
  * Unlike cache sources which rebuild relationships on-demand, the persistent
  * graph stores pre-computed relationships that persist across sessions.
- *
  * @module lib/graph-sources/persistent-graph-source
  */
 
@@ -30,14 +29,13 @@ const SOURCE_ID = 'graph:persistent';
  * - Partial entities (completeness = 'partial')
  * - Stub entities (completeness = 'stub') - referenced but not yet fetched
  */
-export function createPersistentGraphSource(): GraphDataSource {
-  return {
+export const createPersistentGraphSource = (): GraphDataSource => ({
     id: SOURCE_ID,
     label: 'Persistent Graph',
     category: 'graph',
     description: 'All discovered entity relationships (persists across sessions)',
 
-    async getEntities(): Promise<GraphSourceEntity[]> {
+    getEntities: async (): Promise<GraphSourceEntity[]> => {
       const graph = getPersistentGraph();
 
       // Ensure graph is hydrated
@@ -99,16 +97,12 @@ export function createPersistentGraphSource(): GraphDataSource {
       return entities;
     },
 
-    async getEntityCount(): Promise<number> {
+    getEntityCount: async (): Promise<number> => {
       const graph = getPersistentGraph();
       await graph.initialize();
       const stats = graph.getStatistics();
       return stats.nodeCount;
     },
 
-    async isAvailable(): Promise<boolean> {
-      // PersistentGraph is always available (uses IndexedDB)
-      return typeof indexedDB !== 'undefined';
-    },
-  };
-}
+    isAvailable: async (): Promise<boolean> => typeof indexedDB !== 'undefined',
+  });

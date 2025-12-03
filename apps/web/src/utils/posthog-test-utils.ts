@@ -5,7 +5,7 @@
  * and verifying privacy compliance.
  */
 
-import { POSTHOG_API_KEY, POSTHOG_HOST, POSTHOG_ENABLED } from '@/lib/posthog';
+import { POSTHOG_API_KEY, POSTHOG_ENABLED,POSTHOG_HOST } from '@/lib/posthog';
 
 /**
  * PostHog instance type definition
@@ -24,13 +24,13 @@ interface WindowWithPostHog {
 /**
  * Test PostHog configuration and privacy settings
  */
-export function testPostHogConfiguration(): {
+export const testPostHogConfiguration = (): {
   isConfigured: boolean;
   hasApiKey: boolean;
   hasValidHost: boolean;
   isPrivacyCompliant: boolean;
   issues: string[];
-} {
+} => {
   const issues: string[] = [];
 
   // Check if PostHog is enabled
@@ -63,16 +63,16 @@ export function testPostHogConfiguration(): {
     isPrivacyCompliant,
     issues,
   };
-}
+};
 
 /**
  * Test PostHog availability in browser
  */
-export function testPostHogAvailability(): {
+export const testPostHogAvailability = (): {
   isAvailable: boolean;
   isInitialized: boolean;
   issues: string[];
-} {
+} => {
   const issues: string[] = [];
 
   if (typeof window === 'undefined') {
@@ -105,12 +105,12 @@ export function testPostHogAvailability(): {
     isInitialized,
     issues,
   };
-}
+};
 
 /**
  * Test privacy compliance of current implementation
  */
-export function testPrivacyCompliance(): {
+export const testPrivacyCompliance = (): {
   isCompliant: boolean;
   checks: {
     usesEuHost: boolean;
@@ -119,7 +119,7 @@ export function testPrivacyCompliance(): {
     hasPropertyBlacklist: boolean;
   };
   issues: string[];
-} {
+} => {
   const issues: string[] = [];
 
   // Check EU host
@@ -148,17 +148,16 @@ export function testPrivacyCompliance(): {
     },
     issues,
   };
-}
+};
 
 /**
  * Test PostHog event capture functionality
  */
-export function testPostHogEventCapture(): Promise<{
+export const testPostHogEventCapture = (): Promise<{
   canCapture: boolean;
   eventSent: boolean;
   issues: string[];
-}> {
-  return new Promise((resolve) => {
+}> => new Promise((resolve) => {
     const issues: string[] = [];
 
     if (typeof window === 'undefined') {
@@ -219,12 +218,11 @@ export function testPostHogEventCapture(): Promise<{
       });
     }
   });
-}
 
 /**
  * Comprehensive PostHog integration test
  */
-export async function runPostHogIntegrationTest(): Promise<{
+export const runPostHogIntegrationTest = async (): Promise<{
   passed: boolean;
   results: {
     configuration: ReturnType<typeof testPostHogConfiguration>;
@@ -237,7 +235,7 @@ export async function runPostHogIntegrationTest(): Promise<{
     criticalIssues: string[];
     recommendations: string[];
   };
-}> {
+}> => {
   const configuration = testPostHogConfiguration();
   const availability = testPostHogAvailability();
   const privacy = testPrivacyCompliance();
@@ -292,12 +290,12 @@ export async function runPostHogIntegrationTest(): Promise<{
       recommendations,
     },
   };
-}
+};
 
 /**
  * Development helper to log test results
  */
-export async function testAndLogPostHogIntegration(): Promise<void> {
+export const testAndLogPostHogIntegration = async (): Promise<void> => {
   if (import.meta.env.PROD) {
     console.warn('PostHog integration test should only be run in development');
     return;
@@ -341,7 +339,7 @@ export async function testAndLogPostHogIntegration(): Promise<void> {
   }
 
   console.groupEnd();
-}
+};
 
 // Auto-run test in development mode
 if (import.meta.env.DEV && typeof window !== 'undefined') {

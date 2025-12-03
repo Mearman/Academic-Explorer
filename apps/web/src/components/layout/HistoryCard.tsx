@@ -5,13 +5,13 @@
 
 import type { EntityType } from "@bibgraph/types";
 import { logError, logger } from "@bibgraph/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
+import { type CatalogueEntity,catalogueService } from "@bibgraph/utils/storage/catalogue-db";
 import {
+  ActionIcon,
   Card,
-  Text,
   Group,
   Stack,
-  ActionIcon,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
@@ -28,7 +28,7 @@ interface HistoryCardProps {
   formatDate: (date: Date) => string;
 }
 
-export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
+export const HistoryCard = ({ entry, onClose, formatDate }: HistoryCardProps) => {
   // Check if this is a special ID (search or list)
   const isSpecialId = entry.entityId.startsWith("search-") || entry.entityId.startsWith("list-");
 
@@ -47,11 +47,7 @@ export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
   if (titleFromNotes) {
     title = titleFromNotes;
   } else if (isSpecialId) {
-    if (entry.entityId.startsWith("search-")) {
-      title = `Search: ${entry.entityId.replace("search-", "").split("-")[0]}`;
-    } else {
-      title = `List: ${entry.entityId.replace("list-", "")}`;
-    }
+    title = entry.entityId.startsWith("search-") ? `Search: ${entry.entityId.replace("search-", "").split("-")[0]}` : `List: ${entry.entityId.replace("list-", "")}`;
   } else if (displayName) {
     title = displayName;
   } else if (isLoading) {
@@ -166,4 +162,4 @@ export function HistoryCard({ entry, onClose, formatDate }: HistoryCardProps) {
       </Group>
     </Card>
   );
-}
+};

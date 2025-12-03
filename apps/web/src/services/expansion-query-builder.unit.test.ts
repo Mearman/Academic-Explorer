@@ -5,8 +5,8 @@
 
 import type {
   ExpansionSettings,
-  SortCriteria,
   FilterCriteria,
+  SortCriteria,
 } from "@bibgraph/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -454,7 +454,7 @@ describe("ExpansionQueryBuilder", () => {
       const params = ExpansionQueryBuilder.buildQueryParams({
         settings: settingsWithFilter,
       });
-      expect(params.filter).toBe("title:test\\:value\\,with\\|special");
+      expect(params.filter).toBe(String.raw`title:test\:value\,with\|special`);
     });
 
     it("should format boolean values", () => {
@@ -567,7 +567,7 @@ describe("ExpansionQueryBuilder", () => {
     it("should reject limit exceeding maximum", () => {
       const invalidSettings: ExpansionSettings = {
         ...baseSettings,
-        limit: 10001,
+        limit: 10_001,
       };
 
       const result = ExpansionQueryBuilder.validateSettings(invalidSettings);

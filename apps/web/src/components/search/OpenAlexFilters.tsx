@@ -31,12 +31,12 @@ const OPEN_ACCESS_OPTIONS = [
   { value: "false", label: "Non-Open Access Only" },
 ] as const;
 
-export function OpenAlexFilters({
+export const OpenAlexFilters = ({
   filters,
   onFiltersChange,
   disabled = false,
   compact = false,
-}: OpenAlexFiltersProps) {
+}: OpenAlexFiltersProps) => {
   // Publication date range handlers
   const handleFromDateChange = (value: string | null) => {
     onFiltersChange({
@@ -185,4 +185,4 @@ export function OpenAlexFilters({
       </Group>
     </Stack>
   );
-}
+};

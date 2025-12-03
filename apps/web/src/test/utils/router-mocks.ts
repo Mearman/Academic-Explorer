@@ -8,6 +8,7 @@ import { vi } from "vitest";
 
 /**
  * Mock router with commonly used methods and properties
+ * @param overrides
  */
 export const createMockRouter = (overrides: Record<string, unknown> = {}): any => ({
   navigate: vi.fn(),
@@ -63,6 +64,7 @@ export const createMockRouter = (overrides: Record<string, unknown> = {}): any =
 
 /**
  * Mock navigation context for TanStack Router
+ * @param overrides
  */
 export const createMockNavigation = (
   overrides: Record<string, unknown> = {},
@@ -74,6 +76,8 @@ export const createMockNavigation = (
 
 /**
  * Mock route context for specific routes
+ * @param routeId
+ * @param params
  */
 export const createMockRouteContext = (
   routeId: string,
@@ -92,6 +96,7 @@ export const createMockRouteContext = (
 
 /**
  * Mock match object for route matching
+ * @param overrides
  */
 export const createMockMatch = (overrides: Record<string, unknown> = {}): any => ({
   id: "test-route",
@@ -114,17 +119,19 @@ export const createMockMatch = (overrides: Record<string, unknown> = {}): any =>
 
 /**
  * Higher-order component to wrap components with mock router context
+ * @param Component
+ * @param routerOptions
+ * @param routerOptions.pathname
+ * @param routerOptions.search
+ * @param routerOptions.params
+ * @param routerOptions.navigate
  */
-export function withMockRouter<P extends Record<string, unknown>>(
-  Component: React.ComponentType<P>,
-  routerOptions?: {
+export const withMockRouter = <P extends Record<string, unknown>>(Component: React.ComponentType<P>, routerOptions?: {
     pathname?: string;
     search?: string;
     params?: Record<string, string>;
     navigate?: typeof vi.fn;
-  },
-) {
-  return function MockedRouterComponent(props: P) {
+  }) => (props: P) => {
     const mockRouter = createMockRouter({
       state: {
         location: {
@@ -156,7 +163,6 @@ export function withMockRouter<P extends Record<string, unknown>>(
 
     return React.createElement(Component, props);
   };
-}
 
 /**
  * Mock TanStack Router hooks for testing
@@ -177,7 +183,7 @@ export const mockRouterHooks: any = {
   useMatches: () => [createMockMatch()],
   useMatch: () => createMockMatch(),
   useRouteContext: () => ({}),
-  useLoaderData: () => undefined,
+  useLoaderData: () => {},
   useRouterState: () => ({
     status: "idle" as const,
     isFetching: false,
@@ -204,7 +210,7 @@ export const mockRouterHooks: any = {
  * Setup function to mock all TanStack Router modules
  * Call this in your test setup to mock router dependencies
  */
-export function setupRouterMocks() {
+export const setupRouterMocks = () => {
   // Mock @tanstack/react-router with vi.mock (top-level mocking)
   vi.mock("@tanstack/react-router", async () => {
     const actual = await vi.importActual("@tanstack/react-router");
@@ -270,7 +276,7 @@ export function setupRouterMocks() {
       useMatches: () => [createMockMatch()],
       useMatch: () => createMockMatch(),
       useRouteContext: () => ({}),
-      useLoaderData: () => undefined,
+      useLoaderData: () => {},
     };
   });
 
@@ -278,15 +284,15 @@ export function setupRouterMocks() {
   vi.mock("@/lib/router", () => ({
     router: createMockRouter(),
   }));
-}
+};
 
 /**
  * Reset all router mocks to their initial state
  */
-export function resetRouterMocks() {
+export const resetRouterMocks = () => {
   Object.values(mockRouterHooks).forEach((hook) => {
     if (typeof hook === "function" && "mockReset" in hook) {
       (hook as { mockReset: () => void }).mockReset();
     }
   });
-}
+};

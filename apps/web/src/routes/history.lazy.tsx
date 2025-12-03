@@ -2,9 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { HistoryManager } from "@/components/HistoryManager";
 
-function HistoryPage() {
-  return (
-    <div className="min-h-screen bg-gray-50">
+const HistoryPage = () => <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-8">
         <HistoryManager
           onNavigate={(url) => {
@@ -13,9 +11,7 @@ function HistoryPage() {
           }}
         />
       </div>
-    </div>
-  );
-}
+    </div>;
 
 export const Route = createLazyFileRoute("/history")({
   component: HistoryPage,

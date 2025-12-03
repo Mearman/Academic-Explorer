@@ -4,18 +4,18 @@
  */
 
 import {
-  getBuildInfo,
   formatBuildTimestamp,
+  getBuildInfo,
   getCommitUrl,
-  getReleaseUrl,
   getRelativeBuildTime,
+  getReleaseUrl,
 } from "@bibgraph/utils";
-import { Text, Group, Tooltip, Paper, Anchor } from "@mantine/core";
+import { Anchor,Group, Paper, Text, Tooltip } from "@mantine/core";
 import {
   IconBrandGithub,
-  IconTag,
-  IconGitCommit,
   IconClock,
+  IconGitCommit,
+  IconTag,
 } from "@tabler/icons-react";
 import React from "react";
 

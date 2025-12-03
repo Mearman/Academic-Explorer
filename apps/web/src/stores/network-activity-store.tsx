@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@bibgraph/utils/logger";
-import React, { createContext, useContext, useReducer, useCallback, useMemo, type ReactNode } from "react";
+import React, { createContext, type ReactNode,use, useCallback, useMemo, useReducer } from "react";
 
 export interface NetworkRequest {
   id: string;
@@ -295,15 +295,15 @@ export const NetworkActivityProvider: React.FC<{ children: ReactNode }> = ({ chi
 
   const value = { state, dispatch };
   return (
-    <NetworkActivityContext.Provider value={value}>
+    <NetworkActivityContext value={value}>
       {children}
-    </NetworkActivityContext.Provider>
+    </NetworkActivityContext>
   );
 };
 
 // Hook for using network activity state
 export const useNetworkActivityState = () => {
-  const context = useContext(NetworkActivityContext);
+  const context = use(NetworkActivityContext);
   if (!context) {
     throw new Error("useNetworkActivityState must be used within NetworkActivityProvider");
   }
@@ -312,7 +312,7 @@ export const useNetworkActivityState = () => {
 
 // Hook for using network activity actions
 export const useNetworkActivityActions = () => {
-  const context = useContext(NetworkActivityContext);
+  const context = use(NetworkActivityContext);
   if (!context) {
     throw new Error("useNetworkActivityActions must be used within NetworkActivityProvider");
   }

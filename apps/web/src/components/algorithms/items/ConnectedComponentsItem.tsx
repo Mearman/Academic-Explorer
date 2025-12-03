@@ -1,7 +1,6 @@
 /**
  * Connected Components Algorithm Item
  * Analyzes graph connectivity and finds connected components
- *
  * @module components/algorithms/items/ConnectedComponentsItem
  */
 
@@ -19,11 +18,11 @@ import { useConnectedComponents } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function ConnectedComponentsItem({
+export const ConnectedComponentsItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const connectedComponents = useConnectedComponents(nodes, edges, { directed: false });
 
   return (
@@ -53,4 +52,4 @@ export function ConnectedComponentsItem({
       )}
     </Stack>
   );
-}
+};

@@ -2,7 +2,7 @@
  * End-to-end test for bulk bookmarks delete functionality
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Bulk Bookmarks Management", () => {
   test.beforeEach(async ({ page }) => {
@@ -17,13 +17,13 @@ test.describe("Bulk Bookmarks Management", () => {
 
     // Wait for bookmarks to load (look for bookmark cards or empty state)
     await Promise.race([
-      page.waitForSelector('[data-testid="bookmark-card"], .mantine-Card-style={{ border: "1px solid var(--mantine-color-gray-3)" }}', { timeout: 10000 }),
-      page.waitForSelector('text="No bookmarks yet"', { timeout: 10000 })
+      page.waitForSelector('[data-testid="bookmark-card"], .mantine-Card-style={{ border: "1px solid var(--mantine-color-gray-3)" }}', { timeout: 10_000 }),
+      page.waitForSelector('text="No bookmarks yet"', { timeout: 10_000 })
     ]);
   });
 
   // Helper function to create test bookmarks
-  async function createTestBookmarks(page: any): Promise<void> {
+  const createTestBookmarks = async (page: any): Promise<void> => {
     // Navigate to author page first to ensure context is loaded
     await page.goto("/#/authors/A5017898742");
     await page.waitForLoadState("networkidle");
@@ -74,7 +74,7 @@ test.describe("Bulk Bookmarks Management", () => {
 
     // Wait a moment for bookmarks to be saved
     await page.waitForTimeout(1000);
-  }
+  };
 
   test("should display bookmarks management interface", async ({ page }) => {
     // Check that bookmarks section is visible in main content
@@ -169,7 +169,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await expect(selectedCards).toHaveCount(0);
 
     // Verify selection counter disappears
-    await expect(page.locator('text=selected')).not.toBeVisible();
+    await expect(page.locator('text=selected')).toBeHidden();
   });
 
   test("should perform bulk delete operation", async ({ page }) => {
@@ -210,7 +210,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await confirmButton.click();
 
     // Wait for operation to complete (modal should disappear)
-    await page.waitForSelector('text=Delete Selected Bookmarks', { state: 'detached', timeout: 10000 });
+    await page.waitForSelector('text=Delete Selected Bookmarks', { state: 'detached', timeout: 10_000 });
 
     // Wait a bit for the UI to update
     await page.waitForTimeout(1000);
@@ -245,10 +245,10 @@ test.describe("Bulk Bookmarks Management", () => {
     expect(count).toBeGreaterThan(0);
 
     // Get the title of the first bookmark for searching
-    const firstTitle = await bookmarkCards.first().locator('[data-testid="bookmark-title-link"]').textContent();
+    const firstTitle = bookmarkCards.first().locator('[data-testid="bookmark-title-link"]');
 
     // Require title to exist
-    expect(firstTitle).toBeTruthy();
+    await expect(firstTitle).toHaveText();
 
     // Search for the first bookmark title (use main content to avoid sidebar conflicts)
     const searchInput = page.locator('main input[placeholder="Search bookmarks..."]');
@@ -300,7 +300,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await expect(page.locator('main:has-text("Bookmark entities you want to revisit later")')).toBeVisible();
 
     // Select All button should not be visible
-    await expect(page.locator('button:has-text("Select All")')).not.toBeVisible();
+    await expect(page.locator('button:has-text("Select All")')).toBeHidden();
   });
 
   test("should sync bookmark deletions between main page and sidebar", async ({ page }) => {

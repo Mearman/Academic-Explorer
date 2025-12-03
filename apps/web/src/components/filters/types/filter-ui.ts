@@ -4,14 +4,14 @@
  */
 
 import type {
-  EntityFilters,
-  WorksFilters,
   AuthorsFilters,
+  EntityFilters,
   EntityType,
+  WorksFilters,
 } from "@bibgraph/types";
 import type {
-  FilterOperator,
   FilterFieldConfig,
+  FilterOperator,
 } from "@bibgraph/utils/ui";
 
 export type LogicalOperator = "AND" | "OR" | "NOT";

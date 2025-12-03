@@ -12,7 +12,7 @@
  * - 013-walden-research specification
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Data Version 2 Default Behavior', () => {
   test('should fetch work without data-version parameter (v2 is default)', async ({ page }) => {
@@ -38,8 +38,8 @@ test.describe('Data Version 2 Default Behavior', () => {
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
     expect(bodyText!.length).toBeGreaterThan(100);
 
     // Verify API requests were made
@@ -78,7 +78,7 @@ test.describe('Data Version 2 Default Behavior', () => {
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
 
     // Wait for API responses
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {
       // Timeout is acceptable - we just need some responses
       // Ignore errors from timeout
     });
@@ -186,8 +186,8 @@ test.describe('Data Version 2 Default Behavior', () => {
     await page.waitForLoadState('load');
 
     // Verify page renders without errors regardless of is_xpac value
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for no error messages
     const hasError = bodyText?.toLowerCase().includes('error') &&

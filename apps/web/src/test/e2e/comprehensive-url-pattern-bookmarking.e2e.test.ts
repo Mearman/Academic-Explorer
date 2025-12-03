@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 /**
  * Comprehensive Bookmarking URL Pattern Tests
@@ -130,7 +130,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
   test.describe('Search Parameter URL Bookmarking', () => {
     URL_PATTERNS.searchParams.forEach((url) => {
-      test(`should handle search parameter URL: ${url.split('?')[1]?.substring(0, 50)}...`, async ({ page }) => {
+      test(`should handle search parameter URL: ${url.split('?')[1]?.slice(0, 50)}...`, async ({ page }) => {
         console.log(`Testing search parameter URL: ${url}`);
 
         await page.goto(`${BASE_URL}/#/${url}`);
@@ -189,7 +189,7 @@ test.describe('Bookmarking URL Pattern Tests', () => {
 
   test.describe('Complex Parameter URL Bookmarking', () => {
     URL_PATTERNS.complexParams.forEach((url) => {
-      test(`should handle complex parameter URL: ${url.split('?')[1]?.substring(0, 60)}...`, async ({ page }) => {
+      test(`should handle complex parameter URL: ${url.split('?')[1]?.slice(0, 60)}...`, async ({ page }) => {
         console.log(`Testing complex parameter URL: ${url}`);
 
         await page.goto(`${BASE_URL}/#/${url}`);
@@ -355,14 +355,14 @@ test.describe('Bookmarking URL Pattern Tests', () => {
             const pageTitle = await page.title();
             const hasError = pageTitle.includes('404') || pageTitle.includes('Error');
 
-            if (!hasError) {
-              testResults.successful++;
-              testResults.patterns[category].successful++;
-              console.log(`✓ ${category}: ${url.split('/').pop()}`);
-            } else {
+            if (hasError) {
               testResults.failed++;
               testResults.patterns[category].failed++;
               console.log(`❌ ${category}: ${url.split('/').pop()} - ${pageTitle}`);
+            } else {
+              testResults.successful++;
+              testResults.patterns[category].successful++;
+              console.log(`✓ ${category}: ${url.split('/').pop()}`);
             }
           } catch (error) {
             testResults.failed++;

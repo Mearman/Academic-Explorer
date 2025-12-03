@@ -1,34 +1,33 @@
 /**
  * Structure Tab
  * Connectivity, components, and ordering analysis
- *
  * @module components/algorithms/categories/StructureTab
  */
 
 import { Accordion, Badge } from '@mantine/core';
 import {
-  IconNetwork,
+  IconArrowsSort,
   IconCircles,
   IconLink,
-  IconArrowsSort,
+  IconNetwork,
 } from '@tabler/icons-react';
 
-import { useConnectedComponents, useStronglyConnectedComponents, useCycleInfo } from '@/hooks/use-graph-algorithms';
+import { useConnectedComponents, useCycleInfo,useStronglyConnectedComponents } from '@/hooks/use-graph-algorithms';
 
 import {
+  BiconnectedItem,
   ConnectedComponentsItem,
   SCCItem,
-  BiconnectedItem,
   TopologicalSortItem,
 } from '../items';
 import type { CategoryTabProps } from '../types';
 
-export function StructureTab({
+export const StructureTab = ({
   nodes,
   edges,
   onHighlightNodes,
   onHighlightPath,
-}: CategoryTabProps) {
+}: CategoryTabProps) => {
   // Get counts for badges
   const connectedComponents = useConnectedComponents(nodes, edges, { directed: false });
   const stronglyConnectedComponents = useStronglyConnectedComponents(nodes, edges);
@@ -104,4 +103,4 @@ export function StructureTab({
       </Accordion.Item>
     </Accordion>
   );
-}
+};

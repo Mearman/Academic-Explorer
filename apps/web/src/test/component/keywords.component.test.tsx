@@ -2,8 +2,8 @@ import { cachedOpenAlex } from '@bibgraph/client';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useParams, useSearch } from '@tanstack/react-router';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { cleanup,render, screen, waitFor } from '@testing-library/react';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock cachedOpenAlex client
 vi.mock('@bibgraph/client', async (importOriginal) => {
@@ -96,8 +96,8 @@ import KeywordRoute from '@/routes/keywords/$keywordId.lazy';
 const mockKeyword = {
   id: 'https://openalex.org/keywords/artificial-intelligence',
   display_name: 'Artificial Intelligence',
-  cited_by_count: 50000,
-  works_count: 10000,
+  cited_by_count: 50_000,
+  works_count: 10_000,
   counts_by_year: [],
 };
 

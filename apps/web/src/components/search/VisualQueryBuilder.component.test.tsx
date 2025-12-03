@@ -8,7 +8,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
+import { type VisualQuery,VisualQueryBuilder } from "./VisualQueryBuilder";
 
 // Mock ResizeObserver before importing Mantine
 global.ResizeObserver = vi.fn().mockImplementation(() => ({

@@ -2,19 +2,18 @@
  * E2E tests for timeout error scenarios
  *
  * Tests handling of slow/hanging requests that exceed timeout limits
- *
  * @module error-timeout.e2e
  * @tag @error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
 test.describe('@error Timeout Errors', () => {
   // Set shorter test timeout for timeout tests
-  test.setTimeout(90000);
+  test.setTimeout(90_000);
 
   test('should handle request timeout gracefully', async ({ page }) => {
     // Simulate a very slow response that will timeout
@@ -24,7 +23,7 @@ test.describe('@error Timeout Errors', () => {
     });
 
     // Set a shorter timeout for the navigation
-    await page.goto('/works/W2741809807', { timeout: 30000 }).catch(() => {
+    await page.goto('/works/W2741809807', { timeout: 30_000 }).catch(() => {
       // Navigation may timeout, which is expected
     });
 
@@ -77,7 +76,7 @@ test.describe('@error Timeout Errors', () => {
     await page.route('**/api.openalex.org/**', async (route) => {
       try {
         // Long delay
-        await new Promise(resolve => setTimeout(resolve, 30000));
+        await new Promise(resolve => setTimeout(resolve, 30_000));
         await route.continue();
       } catch {
         // Request was aborted, which is expected behavior
@@ -133,6 +132,6 @@ test.describe('@error Timeout Errors', () => {
 
     // Should show error indicating timeout or general failure
     const errorText = page.getByText(/timeout|timed out|taking.*long|error|failed/i);
-    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
+    await expect(errorText.first()).toBeVisible({ timeout: 15_000 });
   });
 });

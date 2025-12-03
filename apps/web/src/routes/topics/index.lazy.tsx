@@ -24,7 +24,7 @@ const topicsColumns: ColumnConfig[] = [
   },
 ];
 
-function TopicsListRoute() {
+const TopicsListRoute = () => {
   const search = useSearch({ from: "/topics/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -38,7 +38,7 @@ function TopicsListRoute() {
       onViewModeChange={setViewMode}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/topics/")({
   component: TopicsListRoute,

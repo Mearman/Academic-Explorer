@@ -60,7 +60,6 @@ export interface UseGraphListResult {
  * - Error handling with state
  * - Loading states during operations
  * - Optimistic updates for better UX (T030)
- *
  * @example
  * ```tsx
  * const { nodes, addNode, removeNode, isInGraphList, loading, error, size } = useGraphList();
@@ -80,7 +79,7 @@ export interface UseGraphListResult {
  * await removeNode("W2741809807");
  * ```
  */
-export function useGraphList(): UseGraphListResult {
+export const useGraphList = (): UseGraphListResult => {
   const storage = useStorageProvider();
 
   // State
@@ -219,7 +218,10 @@ export function useGraphList(): UseGraphListResult {
         const existsIndex = newNodes.findIndex(
           n => n.entityId === optNode.entityId && n.entityType === optNode.entityType
         );
-        if (existsIndex >= 0) {
+        if (existsIndex === -1) {
+          // Add new
+          newNodes.push(optNode);
+        } else {
           // Update existing
           newNodes[existsIndex] = {
             ...newNodes[existsIndex],
@@ -227,9 +229,6 @@ export function useGraphList(): UseGraphListResult {
             provenance: optNode.provenance,
             addedAt: new Date()
           };
-        } else {
-          // Add new
-          newNodes.push(optNode);
         }
       }
       return newNodes;
@@ -381,4 +380,4 @@ export function useGraphList(): UseGraphListResult {
     error,
     refresh,
   };
-}
+};

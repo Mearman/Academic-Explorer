@@ -3,32 +3,32 @@
  *
  * Bridges the catalogue storage (bookmarks) to graph visualization components.
  * Converts CatalogueEntity[] to GraphNode[] and extracts relationships as GraphEdge[].
- *
  * @module hooks/use-repository-graph
  */
 
 import {
   getAuthorById,
-  getWorkById,
+  getFunderById,
   getInstitutionById,
+  getPublisherById,
   getSourceById,
   getTopicById,
-  getFunderById,
-  getPublisherById,
+  getWorkById,
 } from '@bibgraph/client';
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
-import { catalogueEventEmitter, logger } from '@bibgraph/utils';
 import type { CatalogueEntity } from '@bibgraph/utils';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { catalogueEventEmitter, logger } from '@bibgraph/utils';
+import { useCallback, useEffect, useRef,useState } from 'react';
 
 import { useStorageProvider } from '@/contexts/storage-provider-context';
 
 /**
  * Normalize an OpenAlex ID by extracting the short ID from a URL if needed.
  * e.g., "https://openalex.org/A5048491430" -> "A5048491430"
+ * @param id
  */
-function normalizeOpenAlexId(id: string): string {
+const normalizeOpenAlexId = (id: string): string => {
   if (!id) return id;
   // If it's a URL, extract just the ID part
   const urlMatch = id.match(/openalex\.org\/([ACDFIKPQSTW]\d+)$/i);
@@ -37,7 +37,7 @@ function normalizeOpenAlexId(id: string): string {
   }
   // Already a short ID
   return id.toUpperCase();
-}
+};
 
 /**
  * Result of fetching a bookmark's entity data and extracting relationships
@@ -54,8 +54,9 @@ interface BookmarkFetchResult {
 
 /**
  * Fetch entity data and extract relationships for a Work bookmark
+ * @param entityId
  */
-async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchWorkBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const work = await getWorkById(entityId);
     const relationships: BookmarkFetchResult['relationships'] = [];
@@ -120,12 +121,13 @@ async function fetchWorkBookmark(entityId: string): Promise<BookmarkFetchResult 
     logger.debug('repository-graph', 'Failed to fetch work', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data and extract relationships for an Author bookmark
+ * @param entityId
  */
-async function fetchAuthorBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchAuthorBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const author = await getAuthorById(entityId);
     const relationships: BookmarkFetchResult['relationships'] = [];
@@ -161,12 +163,13 @@ async function fetchAuthorBookmark(entityId: string): Promise<BookmarkFetchResul
     logger.debug('repository-graph', 'Failed to fetch author', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data and extract relationships for an Institution bookmark
+ * @param entityId
  */
-async function fetchInstitutionBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchInstitutionBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const institution = await getInstitutionById(entityId);
     const relationships: BookmarkFetchResult['relationships'] = [];
@@ -202,12 +205,13 @@ async function fetchInstitutionBookmark(entityId: string): Promise<BookmarkFetch
     logger.debug('repository-graph', 'Failed to fetch institution', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data and extract relationships for a Source bookmark
+ * @param entityId
  */
-async function fetchSourceBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchSourceBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const source = await getSourceById(entityId);
     const relationships: BookmarkFetchResult['relationships'] = [];
@@ -241,12 +245,13 @@ async function fetchSourceBookmark(entityId: string): Promise<BookmarkFetchResul
     logger.debug('repository-graph', 'Failed to fetch source', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data and extract relationships for a Topic bookmark
+ * @param entityId
  */
-async function fetchTopicBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchTopicBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const topic = await getTopicById(entityId);
     const relationships: BookmarkFetchResult['relationships'] = [];
@@ -278,12 +283,13 @@ async function fetchTopicBookmark(entityId: string): Promise<BookmarkFetchResult
     logger.debug('repository-graph', 'Failed to fetch topic', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data for a Funder bookmark (no relationships extracted)
+ * @param entityId
  */
-async function fetchFunderBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchFunderBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const funder = await getFunderById(entityId);
     return {
@@ -295,12 +301,13 @@ async function fetchFunderBookmark(entityId: string): Promise<BookmarkFetchResul
     logger.debug('repository-graph', 'Failed to fetch funder', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data for a Publisher bookmark (no relationships extracted)
+ * @param entityId
  */
-async function fetchPublisherBookmark(entityId: string): Promise<BookmarkFetchResult | null> {
+const fetchPublisherBookmark = async (entityId: string): Promise<BookmarkFetchResult | null> => {
   try {
     const publisher = await getPublisherById(entityId);
     return {
@@ -312,14 +319,13 @@ async function fetchPublisherBookmark(entityId: string): Promise<BookmarkFetchRe
     logger.debug('repository-graph', 'Failed to fetch publisher', { entityId, error });
     return null;
   }
-}
+};
 
 /**
  * Fetch entity data and relationships for a bookmark based on entity type
+ * @param bookmark
  */
-async function fetchBookmarkData(
-  bookmark: CatalogueEntity
-): Promise<BookmarkFetchResult | null> {
+const fetchBookmarkData = async (bookmark: CatalogueEntity): Promise<BookmarkFetchResult | null> => {
   switch (bookmark.entityType) {
     case 'works':
       return fetchWorkBookmark(bookmark.entityId);
@@ -338,7 +344,7 @@ async function fetchBookmarkData(
     default:
       return null;
   }
-}
+};
 
 /**
  * Return type of the useRepositoryGraph hook
@@ -368,12 +374,10 @@ export interface UseRepositoryGraphResult {
 
 /**
  * Convert a CatalogueEntity (bookmark) to a GraphNode for visualization
+ * @param entity
+ * @param fetchResult
  */
-function catalogueEntityToGraphNode(
-  entity: CatalogueEntity,
-  fetchResult: BookmarkFetchResult | null
-): GraphNode {
-  return {
+const catalogueEntityToGraphNode = (entity: CatalogueEntity, fetchResult: BookmarkFetchResult | null): GraphNode => ({
     id: entity.entityId,
     entityType: entity.entityType,
     entityId: entity.entityId,
@@ -384,10 +388,9 @@ function catalogueEntityToGraphNode(
     entityData: {
       notes: entity.notes,
       addedAt: entity.addedAt,
-      ...(fetchResult?.entityData ?? {}),
+      ...fetchResult?.entityData,
     },
-  };
-}
+  });
 
 /**
  * Hook that bridges bookmarks to graph visualization.
@@ -397,7 +400,6 @@ function catalogueEntityToGraphNode(
  * - Subscribes to catalogue events for reactive updates
  * - Converts CatalogueEntity to GraphNode format
  * - Handles errors gracefully without crashing
- *
  * @example
  * ```tsx
  * function GraphPage() {
@@ -411,7 +413,7 @@ function catalogueEntityToGraphNode(
  * }
  * ```
  */
-export function useRepositoryGraph(): UseRepositoryGraphResult {
+export const useRepositoryGraph = (): UseRepositoryGraphResult => {
   const storage = useStorageProvider();
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
@@ -455,8 +457,7 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
         const edgeArray: GraphEdge[] = [];
         const seenEdges = new Set<string>();
 
-        for (let i = 0; i < bookmarks.length; i++) {
-          const bookmark = bookmarks[i];
+        for (const [i, bookmark] of bookmarks.entries()) {
           const fetchResult = fetchResults[i];
 
           if (fetchResult) {
@@ -547,4 +548,4 @@ export function useRepositoryGraph(): UseRepositoryGraphResult {
     lastUpdated,
     refresh,
   };
-}
+};

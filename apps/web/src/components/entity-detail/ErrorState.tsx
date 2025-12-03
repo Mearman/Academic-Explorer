@@ -1,4 +1,4 @@
-import { Text, Code, Stack, Container, Paper, Title, Alert, Group, Flex } from "@mantine/core";
+import { Alert, Code, Container, Flex,Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import React from "react";
 
@@ -8,9 +8,7 @@ interface ErrorStateProps {
   error: unknown;
 }
 
-export function ErrorState({ entityType, entityId, error }: ErrorStateProps) {
-  return (
-    <Container size="md" p="xl" data-testid="error-state">
+export const ErrorState = ({ entityType, entityId, error }: ErrorStateProps) => <Container size="md" p="xl" data-testid="error-state">
       <Flex h="100vh" justify="center" align="center">
         <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }} w="100%" maw="48rem">
           <Stack gap="lg">
@@ -45,6 +43,4 @@ export function ErrorState({ entityType, entityId, error }: ErrorStateProps) {
           </Stack>
         </Paper>
       </Flex>
-    </Container>
-  );
-}
+    </Container>;

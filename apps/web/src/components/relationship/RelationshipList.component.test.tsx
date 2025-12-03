@@ -5,11 +5,11 @@
 
 import { RelationType } from '@bibgraph/types';
 import { MantineProvider } from '@mantine/core';
-import { render, screen, cleanup } from '@testing-library/react';
+import { cleanup,render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { RelationshipSection, RelationshipItem } from '@/types/relationship';
+import type { RelationshipItem,RelationshipSection } from '@/types/relationship';
 
 import { RelationshipList } from './RelationshipList';
 
@@ -137,7 +137,7 @@ describe('RelationshipList', () => {
 
     // Find and click the next page button (page 2)
     const pageButtons = screen.getAllByRole('button');
-    const nextButton = pageButtons.find(btn => btn.getAttribute('data-page') === '2');
+    const nextButton = pageButtons.find(btn => btn.dataset.page === '2');
 
     if (nextButton) {
       await user.click(nextButton);

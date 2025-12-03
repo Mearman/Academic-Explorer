@@ -3,53 +3,52 @@
  *
  * Provides graph data sources from the IndexedDB and memory caches.
  * Since entities are already cached, fetching their data is instant.
- *
  * @module lib/graph-sources/cache-source
  */
 
 import {
   cachedOpenAlex,
   getAuthorById,
-  getWorkById,
+  getFunderById,
   getInstitutionById,
+  getPublisherById,
   getSourceById,
   getTopicById,
-  getFunderById,
-  getPublisherById,
+  getWorkById,
 } from '@bibgraph/client';
 import type { EntityType } from '@bibgraph/types';
-import {
-  extractRelationships,
-  extractEntityLabel,
-  normalizeOpenAlexId,
-  logger,
-} from '@bibgraph/utils';
 import type {
   GraphDataSource,
   GraphSourceCategory,
   GraphSourceEntity,
 } from '@bibgraph/utils';
+import {
+  extractEntityLabel,
+  extractRelationships,
+  logger,
+  normalizeOpenAlexId,
+} from '@bibgraph/utils';
 
 /**
  * Map StaticEntityType to EntityType
  * StaticEntityType is a subset used by the cache
+ * @param staticType
  */
-function staticToEntityType(staticType: string): EntityType | null {
+const staticToEntityType = (staticType: string): EntityType | null => {
   const validTypes: EntityType[] = [
     'works', 'authors', 'sources', 'institutions',
     'topics', 'publishers', 'funders', 'concepts',
     'keywords', 'domains', 'fields', 'subfields',
   ];
   return validTypes.includes(staticType as EntityType) ? (staticType as EntityType) : null;
-}
+};
 
 /**
  * Fetch entity data - will be a cache hit since we're loading from cache
+ * @param entityType
+ * @param entityId
  */
-async function fetchEntityData(
-  entityType: EntityType,
-  entityId: string
-): Promise<Record<string, unknown> | null> {
+const fetchEntityData = async (entityType: EntityType, entityId: string): Promise<Record<string, unknown> | null> => {
   try {
     switch (entityType) {
       case 'works':
@@ -73,12 +72,12 @@ async function fetchEntityData(
     logger.debug('cache-source', `Failed to fetch ${entityType} ${entityId}`, { error });
     return null;
   }
-}
+};
 
 /**
  * Create a graph data source from the IndexedDB cache
  */
-export function createIndexedDBCacheSource(): GraphDataSource {
+export const createIndexedDBCacheSource = (): GraphDataSource => {
   const sourceId = 'cache:indexeddb';
 
   return {
@@ -87,7 +86,7 @@ export function createIndexedDBCacheSource(): GraphDataSource {
     category: 'cache' as GraphSourceCategory,
     description: 'Entities cached in browser IndexedDB (persistent)',
 
-    async getEntities(): Promise<GraphSourceEntity[]> {
+    getEntities: async (): Promise<GraphSourceEntity[]> => {
       const entries = await cachedOpenAlex.enumerateIndexedDBEntities();
       const results: GraphSourceEntity[] = [];
 
@@ -131,12 +130,12 @@ export function createIndexedDBCacheSource(): GraphDataSource {
       return results;
     },
 
-    async getEntityCount(): Promise<number> {
+    getEntityCount: async (): Promise<number> => {
       const entries = await cachedOpenAlex.enumerateIndexedDBEntities();
       return entries.length;
     },
 
-    async isAvailable(): Promise<boolean> {
+    isAvailable: async (): Promise<boolean> => {
       try {
         // Check if IndexedDB is available
         return typeof indexedDB !== 'undefined';
@@ -145,12 +144,12 @@ export function createIndexedDBCacheSource(): GraphDataSource {
       }
     },
   };
-}
+};
 
 /**
  * Create a graph data source from the memory cache
  */
-export function createMemoryCacheSource(): GraphDataSource {
+export const createMemoryCacheSource = (): GraphDataSource => {
   const sourceId = 'cache:memory';
 
   return {
@@ -159,7 +158,7 @@ export function createMemoryCacheSource(): GraphDataSource {
     category: 'cache' as GraphSourceCategory,
     description: 'Entities cached in memory (session only)',
 
-    async getEntities(): Promise<GraphSourceEntity[]> {
+    getEntities: async (): Promise<GraphSourceEntity[]> => {
       const entries = cachedOpenAlex.enumerateMemoryCacheEntities();
       const results: GraphSourceEntity[] = [];
 
@@ -196,20 +195,16 @@ export function createMemoryCacheSource(): GraphDataSource {
       return results;
     },
 
-    async getEntityCount(): Promise<number> {
-      return cachedOpenAlex.getMemoryCacheSize();
-    },
+    getEntityCount: async (): Promise<number> => cachedOpenAlex.getMemoryCacheSize(),
 
-    async isAvailable(): Promise<boolean> {
-      return true; // Memory cache is always available
-    },
+    isAvailable: async (): Promise<boolean> => true,
   };
-}
+};
 
 /**
  * Create a graph data source from the static cache (GitHub Pages)
  */
-export function createStaticCacheSource(): GraphDataSource {
+export const createStaticCacheSource = (): GraphDataSource => {
   const sourceId = 'cache:static';
 
   return {
@@ -218,7 +213,7 @@ export function createStaticCacheSource(): GraphDataSource {
     category: 'cache' as GraphSourceCategory,
     description: 'Pre-cached entities from static files',
 
-    async getEntities(): Promise<GraphSourceEntity[]> {
+    getEntities: async (): Promise<GraphSourceEntity[]> => {
       const entries = await cachedOpenAlex.enumerateStaticCacheEntities();
       const results: GraphSourceEntity[] = [];
 
@@ -257,14 +252,14 @@ export function createStaticCacheSource(): GraphDataSource {
       return results;
     },
 
-    async getEntityCount(): Promise<number> {
+    getEntityCount: async (): Promise<number> => {
       const entries = await cachedOpenAlex.enumerateStaticCacheEntities();
       return entries.length;
     },
 
-    async isAvailable(): Promise<boolean> {
+    isAvailable: async (): Promise<boolean> => {
       const config = cachedOpenAlex.getStaticCacheTierConfig();
       return config.gitHubPages.isConfigured || config.localStatic.isAvailable;
     },
   };
-}
+};

@@ -5,16 +5,16 @@
 import type { ListType } from "@bibgraph/utils";
 import { logger } from "@bibgraph/utils";
 import {
-  TextInput,
-  Textarea,
-  TagsInput,
-  Button,
-  Group,
-  Stack,
-  Radio,
   Box,
+  Button,
   Checkbox,
+  Group,
+  Radio,
+  Stack,
+  TagsInput,
   Text as MantineText,
+  Textarea,
+  TextInput,
 } from "@mantine/core";
 import React, { useState } from "react";
 
@@ -30,7 +30,7 @@ interface CreateListModalProps {
   }) => Promise<void>;
 }
 
-export function CreateListModal({ onClose, onSubmit }: CreateListModalProps) {
+export const CreateListModal = ({ onClose, onSubmit }: CreateListModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<ListType>("list");
@@ -159,4 +159,4 @@ export function CreateListModal({ onClose, onSubmit }: CreateListModalProps) {
       </Stack>
     </Box>
   );
-}
+};

@@ -20,7 +20,7 @@
  */
 
 import AxeBuilder from "@axe-core/playwright";
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Data Version Selector November Availability", () => {
   test("should show data version selector when date is in November 2025", async ({
@@ -234,8 +234,8 @@ test.describe("Data Version Selector November Availability", () => {
     await page.waitForTimeout(500);
 
     // Verify it changed to Auto
-    const autoValue = await selector.inputValue();
-    expect(autoValue).toBeTruthy();
+    const autoValue = selector;
+    await expect(autoValue).toHaveValue();
 
     console.log("✅ Successfully changed data version back to Auto");
   });

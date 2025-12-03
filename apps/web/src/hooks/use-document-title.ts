@@ -21,10 +21,8 @@ interface UseDocumentTitleOptions {
 
 /**
  * Hook to set the document title dynamically
- *
  * @param title - The main title to set (entity name, page name, etc.)
  * @param options - Configuration options
- *
  * @example
  * ```typescript
  * // Set title for entity page
@@ -101,16 +99,14 @@ export const useDocumentTitle = (
         }
       };
     }
-    return undefined;
+    return;
   }, [restoreOnUnmount]);
 };
 
 /**
  * Hook specifically for entity pages that extracts display_name from entity data
- *
  * @param entity - OpenAlex entity with display_name property
  * @param options - Configuration options
- *
  * @example
  * ```typescript
  * const { data: author } = useRawEntityData({ entityId: authorId });

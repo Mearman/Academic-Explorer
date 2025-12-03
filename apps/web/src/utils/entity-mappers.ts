@@ -26,11 +26,10 @@ export type EntityListItem = EntityGridItem
 
 /**
  * Base entity mapper that provides common transformation logic
+ * @param entity
+ * @param entityType
  */
-export function createBaseEntityMapper<T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(
-  entity: T,
-  entityType: EntityType,
-): EntityGridItem {
+export const createBaseEntityMapper = <T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(entity: T, entityType: EntityType): EntityGridItem => {
   const baseItem = {
     id: entity.id.replace("https://openalex.org/", ""),
     displayName: entity.display_name,
@@ -40,7 +39,7 @@ export function createBaseEntityMapper<T extends Work | Author | InstitutionEnti
   }
 
   return baseItem
-}
+};
 
 /**
  * Specialized entity mappers for each type
@@ -104,11 +103,10 @@ export const entityMappers = {
 
 /**
  * Generic entity transformation function
+ * @param entity
+ * @param entityType
  */
-export function transformEntityToGridItem<T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(
-  entity: T,
-  entityType: EntityType,
-): EntityGridItem {
+export const transformEntityToGridItem = <T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(entity: T, entityType: EntityType): EntityGridItem => {
   const mapper = entityMappers[entityType as keyof typeof entityMappers]
   if (!mapper) {
     throw new Error(`Unsupported entity type: ${entityType}`)
@@ -116,17 +114,14 @@ export function transformEntityToGridItem<T extends Work | Author | InstitutionE
   // Use type assertion with `any` as intermediate to avoid type mismatch
   // The mapper functions are properly typed but TypeScript can't narrow the union type
   return mapper(entity as never)
-}
+};
 
 /**
  * Transform entity to list item (currently same as grid item)
+ * @param entity
+ * @param entityType
  */
-export function transformEntityToListItem<T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(
-  entity: T,
-  entityType: EntityType,
-): EntityListItem {
-  return transformEntityToGridItem(entity, entityType)
-}
+export const transformEntityToListItem = <T extends Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept>(entity: T, entityType: EntityType): EntityListItem => transformEntityToGridItem(entity, entityType);
 
 /**
  * Map from singular entity_type (autocomplete) to plural EntityType
@@ -148,10 +143,9 @@ const singularToPluralEntityType: Record<string, EntityType> = {
 
 /**
  * Transform AutocompleteResult to EntityGridItem for use in grid/list views
+ * @param result
  */
-export function transformAutocompleteResultToGridItem(
-  result: AutocompleteResult,
-): EntityGridItem {
+export const transformAutocompleteResultToGridItem = (result: AutocompleteResult): EntityGridItem => {
   const entityType = singularToPluralEntityType[result.entity_type] || (result.entity_type as EntityType)
 
   return {
@@ -162,4 +156,4 @@ export function transformAutocompleteResultToGridItem(
     citedByCount: result.cited_by_count,
     description: result.hint,
   }
-}
+};

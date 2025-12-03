@@ -5,8 +5,8 @@
  */
 
 import { MantineProvider } from "@mantine/core";
-import { render, screen, cleanup } from "@testing-library/react";
-import { describe, it, expect, afterEach } from "vitest";
+import { cleanup,render, screen } from "@testing-library/react";
+import { afterEach,describe, expect, it } from "vitest";
 
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 
@@ -17,9 +17,7 @@ afterEach(() => {
 });
 
 // Wrapper component for Mantine context
-function renderWithMantine(component: React.ReactElement) {
-	return render(<MantineProvider>{component}</MantineProvider>);
-}
+const renderWithMantine = (component: React.ReactElement) => render(<MantineProvider>{component}</MantineProvider>);
 
 describe("MetadataImprovementBadges", () => {
 	it("renders badges for works with improved references", () => {

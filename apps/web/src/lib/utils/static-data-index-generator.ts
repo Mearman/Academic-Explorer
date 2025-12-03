@@ -4,11 +4,11 @@
  */
 
 import {
-  generateContentHash,
-  isValidOpenAlexEntity,
   type DirectoryEntry,
   type DirectoryIndex,
   type FileEntry,
+  generateContentHash,
+  isValidOpenAlexEntity,
 } from "@bibgraph/utils/static-data/cache-utilities";
 
 // Local type definition (not exported from @bibgraph/client)
@@ -21,7 +21,7 @@ let path: typeof import("node:path");
 /**
  * Initialize Node.js modules (required before using any file operations)
  */
-async function initializeNodeModules(): Promise<void> {
+const initializeNodeModules = async (): Promise<void> => {
   if (!fs || !path) {
     const [fsModule, pathModule] = await Promise.all([
       import("node:fs/promises"),
@@ -30,19 +30,20 @@ async function initializeNodeModules(): Promise<void> {
     fs = fsModule;
     path = pathModule;
   }
-}
+};
 
 /**
  * Check if file exists (using dynamic import)
+ * @param filePath
  */
-async function fileExists(filePath: string): Promise<boolean> {
+const fileExists = async (filePath: string): Promise<boolean> => {
   try {
     const { existsSync } = await import("node:fs");
     return existsSync(filePath);
   } catch {
     return false;
   }
-}
+};
 
 export interface IndexGenerationOptions {
   autoDownload?: boolean;
@@ -64,11 +65,10 @@ const INDEX_FILENAME = "index.json";
 
 /**
  * Generate index for all entity types in the static data directory
+ * @param staticDataDir
+ * @param options
  */
-export async function generateAllIndexes(
-  staticDataDir: string,
-  options: IndexGenerationOptions = {},
-): Promise<void> {
+export const generateAllIndexes = async (staticDataDir: string, options: IndexGenerationOptions = {}): Promise<void> => {
   await initializeNodeModules();
   try {
     console.log(`Generating indexes for all entity types in ${staticDataDir}`);
@@ -132,19 +132,23 @@ export async function generateAllIndexes(
     console.error("Failed to generate static data indexes:", error);
     throw error;
   }
-}
+};
 
 /**
  * Generate index for a specific entity type with auto-download support
+ * @param root0
+ * @param root0.entityDir
+ * @param root0.entityType
+ * @param root0.staticDataDir
  */
-export async function generateIndexWithAutoDownload({
+export const generateIndexWithAutoDownload = async ({
   entityDir,
   entityType,
 }: {
   entityDir: string;
   entityType: StaticEntityType;
   staticDataDir?: string;
-}): Promise<void> {
+}): Promise<void> => {
   await initializeNodeModules();
   try {
     console.log(`Auto-download enabled for ${entityType}`);
@@ -162,16 +166,15 @@ export async function generateIndexWithAutoDownload({
     );
     throw error;
   }
-}
+};
 
 /**
  * Generate index for a specific entity type directory
+ * @param entityDir
+ * @param entityType
+ * @param recursive
  */
-export async function generateIndexForEntityType(
-  entityDir: string,
-  entityType: StaticEntityType,
-  recursive?: boolean,
-): Promise<void> {
+export const generateIndexForEntityType = async (entityDir: string, entityType: StaticEntityType, recursive?: boolean): Promise<void> => {
   const shouldRecurse = recursive ?? true;
   await initializeNodeModules();
   try {
@@ -213,9 +216,7 @@ export async function generateIndexForEntityType(
     }
 
     const overallLastUpdated =
-      maxLastUpdated > new Date().toISOString()
-        ? maxLastUpdated
-        : new Date().toISOString();
+      Math.max(maxLastUpdated, new Date().toISOString());
 
     // Read existing index to check if content has changed
     const indexPath = path.join(entityDir, INDEX_FILENAME);
@@ -223,7 +224,7 @@ export async function generateIndexForEntityType(
 
     try {
       if (await fileExists(indexPath)) {
-        const existingContent = await fs.readFile(indexPath, "utf-8");
+        const existingContent = await fs.readFile(indexPath, "utf8");
         existingIndex = JSON.parse(existingContent);
       }
     } catch (error) {
@@ -261,14 +262,13 @@ export async function generateIndexForEntityType(
     console.error(`Failed to generate index for ${entityType}:`, error);
     throw error;
   }
-}
+};
 
 /**
  * Validate static data index and entities recursively
+ * @param entityDir
  */
-export async function validateStaticDataIndex(
-  entityDir: string,
-): Promise<boolean> {
+export const validateStaticDataIndex = async (entityDir: string): Promise<boolean> => {
   try {
     const indexPath = path.join(entityDir, INDEX_FILENAME);
 
@@ -277,7 +277,7 @@ export async function validateStaticDataIndex(
       return false;
     }
 
-    const indexContent = await fs.readFile(indexPath, "utf-8");
+    const indexContent = await fs.readFile(indexPath, "utf8");
     const index: DirectoryIndex = JSON.parse(indexContent);
 
     // Validate index structure
@@ -314,14 +314,13 @@ export async function validateStaticDataIndex(
     console.error("Failed to validate index:", error);
     return false;
   }
-}
+};
 
 /**
  * Get static data index for an entity type
+ * @param entityDir
  */
-export async function getStaticDataIndex(
-  entityDir: string,
-): Promise<DirectoryIndex | null> {
+export const getStaticDataIndex = async (entityDir: string): Promise<DirectoryIndex | null> => {
   try {
     const indexPath = path.join(entityDir, INDEX_FILENAME);
 
@@ -329,18 +328,19 @@ export async function getStaticDataIndex(
       return null;
     }
 
-    const indexContent = await fs.readFile(indexPath, "utf-8");
+    const indexContent = await fs.readFile(indexPath, "utf8");
     return JSON.parse(indexContent);
   } catch (error) {
     console.error("Failed to read static data index:", error);
     return null;
   }
-}
+};
 
 /**
  * Ensure directory exists, create if it doesn't
+ * @param dirPath
  */
-async function ensureDirectoryExists(dirPath: string): Promise<void> {
+const ensureDirectoryExists = async (dirPath: string): Promise<void> => {
   try {
     if (!(await fileExists(dirPath))) {
       await fs.mkdir(dirPath, { recursive: true });
@@ -350,12 +350,16 @@ async function ensureDirectoryExists(dirPath: string): Promise<void> {
     console.error(`Failed to create directory ${dirPath}:`, error);
     throw error;
   }
-}
+};
 
 /**
  * Process JSON files in a directory and extract metadata
+ * @param root0
+ * @param root0.entityDir
+ * @param root0.jsonFiles
+ * @param root0.entityType
  */
-async function processJsonFiles({
+const processJsonFiles = async ({
   entityDir,
   jsonFiles,
   entityType,
@@ -363,7 +367,7 @@ async function processJsonFiles({
   entityDir: string;
   jsonFiles: string[];
   entityType: StaticEntityType;
-}): Promise<Record<string, FileEntry>> {
+}): Promise<Record<string, FileEntry>> => {
   const files: Record<string, FileEntry> = {};
 
   for (const fileName of jsonFiles) {
@@ -372,7 +376,7 @@ async function processJsonFiles({
     const entityId = path.basename(fileName, ".json");
 
     try {
-      const content = await fs.readFile(filePath, "utf-8");
+      const content = await fs.readFile(filePath, "utf8");
       const data = JSON.parse(content);
 
       // Basic validation - ensure it looks like an OpenAlex entity
@@ -398,12 +402,16 @@ async function processJsonFiles({
   }
 
   return files;
-}
+};
 
 /**
  * Process subdirectories and generate their indexes
+ * @param root0
+ * @param root0.entityDir
+ * @param root0.entityType
+ * @param root0.recursive
  */
-async function processSubdirectories({
+const processSubdirectories = async ({
   entityDir,
   entityType,
 }: {
@@ -413,7 +421,7 @@ async function processSubdirectories({
 }): Promise<{
   directories: Record<string, DirectoryEntry>;
   maxLastUpdated: string;
-}> {
+}> => {
   const directories: Record<string, DirectoryEntry> = {};
   let maxLastUpdated = new Date().toISOString();
 
@@ -441,7 +449,7 @@ async function processSubdirectories({
         // Read sub-index
         const subIndexPath = path.join(subPath, INDEX_FILENAME);
         if (await fileExists(subIndexPath)) {
-          const subContent = await fs.readFile(subIndexPath, "utf-8");
+          const subContent = await fs.readFile(subIndexPath, "utf8");
           const subIndex: DirectoryIndex = JSON.parse(subContent);
 
           // Track the maximum lastUpdated timestamp
@@ -467,12 +475,16 @@ async function processSubdirectories({
   }
 
   return { directories, maxLastUpdated };
-}
+};
 
 /**
  * Check if index content has changed
+ * @param root0
+ * @param root0.existingIndex
+ * @param root0.files
+ * @param root0.directories
  */
-function hasIndexContentChanged({
+const hasIndexContentChanged = ({
   existingIndex,
   files,
   directories,
@@ -480,7 +492,7 @@ function hasIndexContentChanged({
   existingIndex: DirectoryIndex | null;
   files: Record<string, FileEntry>;
   directories: Record<string, DirectoryEntry>;
-}): boolean {
+}): boolean => {
   if (!existingIndex) {
     return true;
   }
@@ -492,18 +504,21 @@ function hasIndexContentChanged({
     JSON.stringify(directories);
 
   return filesChanged || dirsChanged;
-}
+};
 
 /**
  * Validate that all files referenced in the index exist
+ * @param root0
+ * @param root0.index
+ * @param root0.entityDir
  */
-async function validateIndexFiles({
+const validateIndexFiles = async ({
   index,
   entityDir,
 }: {
   index: DirectoryIndex;
   entityDir: string;
-}): Promise<number> {
+}): Promise<number> => {
   let missingFiles = 0;
 
   if (index.files) {
@@ -518,12 +533,16 @@ async function validateIndexFiles({
   }
 
   return missingFiles;
-}
+};
 
 /**
  * Validate a single subdirectory and its index
+ * @param root0
+ * @param root0.subdirName
+ * @param root0.subdirMeta
+ * @param root0.entityDir
  */
-async function validateSubdirectory({
+const validateSubdirectory = async ({
   subdirName,
   subdirMeta,
   entityDir,
@@ -531,7 +550,7 @@ async function validateSubdirectory({
   subdirName: string;
   subdirMeta: DirectoryEntry;
   entityDir: string;
-}): Promise<boolean> {
+}): Promise<boolean> => {
   const subPath = path.join(entityDir, subdirName);
   const subIndexPath = path.join(subPath, INDEX_FILENAME);
 
@@ -543,7 +562,7 @@ async function validateSubdirectory({
 
   // Read and validate sub-index
   try {
-    const subContent = await fs.readFile(subIndexPath, "utf-8");
+    const subContent = await fs.readFile(subIndexPath, "utf8");
     const subIndex: DirectoryIndex = JSON.parse(subContent);
 
     // Check metadata consistency
@@ -563,18 +582,21 @@ async function validateSubdirectory({
     );
     return false;
   }
-}
+};
 
 /**
  * Validate all subdirectories in the index
+ * @param root0
+ * @param root0.index
+ * @param root0.entityDir
  */
-async function validateIndexDirectories({
+const validateIndexDirectories = async ({
   index,
   entityDir,
 }: {
   index: DirectoryIndex;
   entityDir: string;
-}): Promise<number> {
+}): Promise<number> => {
   let subdirIssues = 0;
 
   if (index.directories) {
@@ -591,16 +613,17 @@ async function validateIndexDirectories({
   }
 
   return subdirIssues;
-}
+};
 
 /**
  * Get entity type from directory path
+ * @param dirPath
  */
-export function getEntityTypeFromPath(dirPath: string): StaticEntityType | null {
+export const getEntityTypeFromPath = (dirPath: string): StaticEntityType | null => {
   // Use simple string operations to avoid sync Node.js imports
   const dirName =
     dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
   return VALID_ENTITY_TYPES.includes(dirName as StaticEntityType)
     ? (dirName as StaticEntityType)
     : null;
-}
+};

@@ -5,8 +5,8 @@
 
 import { logger } from "@bibgraph/utils/logger";
 
-import { networkActivityStore } from "../stores/network-activity-store";
 import type { NetworkRequest } from "../stores/network-activity-store";
+import { networkActivityStore } from "../stores/network-activity-store";
 
 interface RequestContext {
   id: string;
@@ -54,10 +54,10 @@ export class NetworkInterceptor {
         Promise.reject(
           new Error("fetch not available in Node.js"),
         )) satisfies typeof fetch;
-      this.originalXhrOpen = function (): void {
+      this.originalXhrOpen = (): void => {
         // No-op for Node.js environment
       } satisfies typeof XMLHttpRequest.prototype.open;
-      this.originalXhrSend = function (): void {
+      this.originalXhrSend = (): void => {
         // No-op for Node.js environment
       } satisfies typeof XMLHttpRequest.prototype.send;
     }
@@ -354,6 +354,10 @@ export class NetworkInterceptor {
 
   /**
    * Create request info with type and category detection
+   * @param root0
+   * @param root0.url
+   * @param root0.method
+   * @param root0.headers
    */
   private createRequestInfo({
     url,
@@ -374,6 +378,7 @@ export class NetworkInterceptor {
 
   /**
    * Detect request type based on URL
+   * @param url
    */
   private detectRequestType(url: string): NetworkRequest["entityType"] {
     if (url.includes("openalex.org") || url.includes("/api/")) {
@@ -390,6 +395,9 @@ export class NetworkInterceptor {
 
   /**
    * Detect request category (foreground vs background)
+   * @param root0
+   * @param root0.url
+   * @param root0.headers
    */
   private detectRequestCategory({
     url,
@@ -416,6 +424,9 @@ export class NetworkInterceptor {
 
   /**
    * Get header value from HeadersInit (Headers, Record, or array)
+   * @param root0
+   * @param root0.headers
+   * @param root0.key
    */
   private getHeaderValue({
     headers,
@@ -442,6 +453,10 @@ export class NetworkInterceptor {
 
   /**
    * Track cache operation (called externally by cache services)
+   * @param operation
+   * @param key
+   * @param hit
+   * @param size
    */
   trackCacheOperation(
     operation: "read" | "write" | "delete",
@@ -479,6 +494,10 @@ export class NetworkInterceptor {
 
   /**
    * Track worker operation (called externally by worker services)
+   * @param operation
+   * @param data
+   * @param entityType
+   * @param entityId
    */
   trackWorkerOperation(
     operation: string,
@@ -517,6 +536,9 @@ export class NetworkInterceptor {
 
   /**
    * Track request deduplication
+   * @param root0
+   * @param root0.url
+   * @param root0.entityId
    */
   trackDeduplication({
     url,
@@ -571,6 +593,10 @@ export const networkInterceptor = NetworkInterceptor.getInstance();
 
 /**
  * Helper functions for external services
+ * @param operation
+ * @param key
+ * @param hit
+ * @param size
  */
 export const trackCacheOperation = (
   operation: "read" | "write" | "delete",

@@ -17,7 +17,7 @@
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Metadata Improvement Badges', () => {
   test('should render badges for work with improved metadata', async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe('Metadata Improvement Badges', () => {
     // Wait for badges container to be present
     // The component may take time to render after data loads
     await page.waitForSelector('[data-testid="metadata-improvement-badges"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     }).catch(async () => {
       // If badges don't appear, check if this is due to missing data
@@ -104,14 +104,14 @@ test.describe('Metadata Improvement Badges', () => {
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
     const badgesExist = await badgesContainer.isVisible().catch(() => false);
 
-    if (!badgesExist) {
-      console.log('✅ No badges rendered for work without improvements');
-      expect(badgesExist).toBe(false);
-    } else {
+    if (badgesExist) {
       // If badges exist, verify they're appropriate
       const badgeCount = await badgesContainer.locator('> *').count();
       console.log(`ℹ️ ${badgeCount} badges rendered (work has improvements)`);
       expect(badgeCount).toBeGreaterThan(0);
+    } else {
+      console.log('✅ No badges rendered for work without improvements');
+      expect(badgesExist).toBe(false);
     }
   });
 
@@ -124,7 +124,7 @@ test.describe('Metadata Improvement Badges', () => {
 
     // Wait for badges to render
     await page.waitForSelector('[data-testid="metadata-improvement-badges"]', {
-      timeout: 10000,
+      timeout: 10_000,
     }).catch(() => {
       console.log('⚠️ Badges not rendered - work may not have improvements or data not loaded');
     });
@@ -145,8 +145,8 @@ test.describe('Metadata Improvement Badges', () => {
       // Verify each badge has text content
       for (let i = 0; i < badgeCount; i++) {
         const badge = badgeElements.nth(i);
-        const badgeText = await badge.textContent();
-        expect(badgeText).toBeTruthy();
+        const badgeText = badge;
+        await expect(badgeText).toHaveText();
         expect(badgeText!.length).toBeGreaterThan(0);
         console.log(`  - Badge ${i + 1}: "${badgeText}"`);
       }
@@ -163,7 +163,7 @@ test.describe('Metadata Improvement Badges', () => {
 
     // Wait for badges
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
-    const badgesExist = await badgesContainer.isVisible({ timeout: 10000 }).catch(() => false);
+    const badgesExist = await badgesContainer.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (badgesExist) {
       // Verify badge text follows pattern: "Improved {field} data"
@@ -203,7 +203,7 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
-    const badgesExist = await badgesContainer.isVisible({ timeout: 10000 }).catch(() => false);
+    const badgesExist = await badgesContainer.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (badgesExist) {
       // Verify badges use Mantine Badge component
@@ -236,7 +236,7 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
-    const badgesExist = await badgesContainer.isVisible({ timeout: 10000 }).catch(() => false);
+    const badgesExist = await badgesContainer.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (badgesExist) {
       // Run accessibility checks on badges using @axe-core/playwright
@@ -260,13 +260,13 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Verify work detail page structure
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check if badges are integrated into the page layout
     // Badges should be within the main content area
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
-    const badgesExist = await badgesContainer.isVisible({ timeout: 10000 }).catch(() => false);
+    const badgesExist = await badgesContainer.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (badgesExist) {
       // Verify badges are positioned within the visible viewport

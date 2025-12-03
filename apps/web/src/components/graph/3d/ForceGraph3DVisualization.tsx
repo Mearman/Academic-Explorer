@@ -12,22 +12,21 @@
  * - Frustum culling optimization for large graphs
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { detectWebGLCapabilities, GraphLODManager, LODLevel } from '@bibgraph/utils';
-import { Box, LoadingOverlay, Text, Badge, Group, Stack, useComputedColorScheme } from '@mantine/core';
-import { IconAlertTriangle, IconActivity } from '@tabler/icons-react';
-import React, { useCallback, useRef, useEffect, useMemo, useState } from 'react';
+import { Badge, Box, Group, LoadingOverlay, Stack, Text, useComputedColorScheme } from '@mantine/core';
+import { IconActivity,IconAlertTriangle } from '@tabler/icons-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 
 import { useCameraPersistence } from '../../../hooks/useCameraPersistence';
 import {
-  useGraph3DPerformance,
   getPerformanceLevelColor,
+  useGraph3DPerformance,
 } from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
-
 import { getEdgeStyle } from '../edge-styles';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
@@ -61,7 +60,7 @@ interface ForceGraphLink {
 }
 
 // Import and re-export shared types from parent directory
-import type { DisplayMode, NodeStyle, LinkStyle } from '../types';
+import type { DisplayMode, LinkStyle,NodeStyle } from '../types';
 
 export interface ForceGraph3DVisualizationProps {
   /** Graph nodes */
@@ -131,20 +130,19 @@ const DEFAULT_SEED = 42;
 
 /**
  * Simple seeded random number generator for deterministic layouts
+ * @param seed
  */
-function seededRandom(seed: number): () => number {
-  return () => {
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    return seed / 0x7fffffff;
+const seededRandom = (seed: number): () => number => () => {
+    seed = (seed * 1_103_515_245 + 12_345) & 0x7F_FF_FF_FF;
+    return seed / 0x7F_FF_FF_FF;
   };
-}
 
 /**
  * WebGL unavailable fallback component
+ * @param root0
+ * @param root0.reason
  */
-function WebGLUnavailable({ reason }: { reason: string }) {
-  return (
-    <Box
+const WebGLUnavailable = ({ reason }: { reason: string }) => <Box
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -163,11 +161,9 @@ function WebGLUnavailable({ reason }: { reason: string }) {
       <Box style={{ fontSize: 'var(--mantine-font-size-sm)' }}>
         {reason}
       </Box>
-    </Box>
-  );
-}
+    </Box>;
 
-export function ForceGraph3DVisualization({
+export const ForceGraph3DVisualization = ({
   nodes,
   edges,
   visible = true,
@@ -197,7 +193,7 @@ export function ForceGraph3DVisualization({
   onPerformanceDrop,
   onGraphReady,
   enableCursorCenteredZoom = true,
-}: ForceGraph3DVisualizationProps) {
+}: ForceGraph3DVisualizationProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   // Use any for the ref type to avoid complex generic type issues with react-force-graph-3d
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -459,7 +455,7 @@ export function ForceGraph3DVisualization({
     if (isHighlighted && lodSettings.useRing && !isExpanding) {
       const ringGeometry = new THREE.RingGeometry(baseSize * 1.2, baseSize * 1.4, lodSettings.segments * 2);
       const ringMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
+        color: 0xFF_FF_FF,
         transparent: true,
         opacity: 0.5,
         side: THREE.DoubleSide,
@@ -473,7 +469,7 @@ export function ForceGraph3DVisualization({
     if (isExpanding) {
       const spinningRingGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.15, 8, 32);
       const spinningRingMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00bfff, // Deep sky blue - loading indicator color
+        color: 0x00_BF_FF, // Deep sky blue - loading indicator color
         transparent: true,
         opacity: 0.8,
       });
@@ -486,7 +482,7 @@ export function ForceGraph3DVisualization({
       // Add a second partial ring for visual interest (loading arc effect)
       const arcGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.1, 8, 16, Math.PI);
       const arcMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
+        color: 0xFF_FF_FF,
         transparent: true,
         opacity: 0.6,
       });
@@ -866,9 +862,9 @@ export function ForceGraph3DVisualization({
                 color={
                   performanceStats.performanceLevel === 'good'
                     ? 'green'
-                    : performanceStats.performanceLevel === 'ok'
+                    : (performanceStats.performanceLevel === 'ok'
                       ? 'yellow'
-                      : 'red'
+                      : 'red')
                 }
               >
                 {performanceStats.performanceLevel.toUpperCase()}
@@ -914,9 +910,9 @@ export function ForceGraph3DVisualization({
                 <Text size="xs">
                   {lodManager.getGlobalLOD() === LODLevel.HIGH
                     ? 'HIGH'
-                    : lodManager.getGlobalLOD() === LODLevel.MEDIUM
+                    : (lodManager.getGlobalLOD() === LODLevel.MEDIUM
                       ? 'MED'
-                      : 'LOW'}
+                      : 'LOW')}
                 </Text>
               </Group>
             )}
@@ -925,17 +921,16 @@ export function ForceGraph3DVisualization({
       )}
     </Box>
   );
-}
+};
 
 /**
  * Default node styling based on entity type and highlighting
+ * @param node
+ * @param isHighlighted
+ * @param communityId
+ * @param communityColors
  */
-function getDefaultNodeStyle(
-  node: ForceGraphNode,
-  isHighlighted: boolean,
-  communityId?: number,
-  communityColors?: Map<number, string>
-): NodeStyle {
+const getDefaultNodeStyle = (node: ForceGraphNode, isHighlighted: boolean, communityId?: number, communityColors?: Map<number, string>): NodeStyle => {
   let color = ENTITY_TYPE_COLORS[node.entityType] ?? '#888888';
 
   // Use community color if available
@@ -948,16 +943,15 @@ function getDefaultNodeStyle(
     size: isHighlighted ? 8 : 6,
     opacity: 1,
   };
-}
+};
 
 /**
  * Default link styling based on edge type and highlighting
+ * @param link
+ * @param isHighlighted
+ * @param isPathHighlightMode
  */
-function getDefaultLinkStyle(
-  link: ForceGraphLink,
-  isHighlighted: boolean,
-  isPathHighlightMode: boolean
-): LinkStyle {
+const getDefaultLinkStyle = (link: ForceGraphLink, isHighlighted: boolean, isPathHighlightMode: boolean): LinkStyle => {
   const edge = link.originalEdge;
   const edgeStyle = getEdgeStyle(edge);
 
@@ -977,4 +971,4 @@ function getDefaultLinkStyle(
     opacity: edgeStyle.strokeOpacity ?? 0.6,
     dashed: edgeStyle.strokeDasharray !== undefined,
   };
-}
+};

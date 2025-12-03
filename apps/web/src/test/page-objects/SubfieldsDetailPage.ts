@@ -5,7 +5,6 @@
  * Represents the middle-lower level of OpenAlex taxonomy hierarchy (Domain → Field → Subfield → Topic).
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → SubfieldsDetailPage
- *
  * @see spec-020 Phase 6: E2E test coverage for Subfields entity
  */
 
@@ -69,7 +68,7 @@ export class SubfieldsDetailPage extends BaseEntityPageObject {
 	 */
 	async getTopicCount(): Promise<number> {
 		const countText = await this.getText(this.subfieldSelectors.topicCount);
-		return countText ? parseInt(countText, 10) : 0;
+		return countText ? Number.parseInt(countText, 10) : 0;
 	}
 
 	/**

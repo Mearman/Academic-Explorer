@@ -10,20 +10,19 @@
  *
  * This test would have caught the authorships_count bug that caused
  * https://mearman.github.io/BibGraph/#/works/W2009047091 to fail.
- *
  * @automated-manual - Promoted from manual test suite
  */
 
 import {
-	WORK_FIELDS,
 	AUTHOR_FIELDS,
-	INSTITUTION_FIELDS,
-	SOURCE_FIELDS,
-	PUBLISHER_FIELDS,
 	FUNDER_FIELDS,
+	INSTITUTION_FIELDS,
+	PUBLISHER_FIELDS,
+	SOURCE_FIELDS,
 	TOPIC_FIELDS,
+	WORK_FIELDS,
 } from '@bibgraph/types/entities';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const API_BASE = 'https://api.openalex.org';
 
@@ -51,8 +50,9 @@ interface FieldValidationResult {
 
 /**
  * Get expected fields for an entity type
+ * @param entityType
  */
-function getExpectedFields(entityType: EntityType): readonly string[] {
+const getExpectedFields = (entityType: EntityType): readonly string[] => {
 	switch (entityType) {
 		case 'work':
 			return WORK_FIELDS;
@@ -71,23 +71,22 @@ function getExpectedFields(entityType: EntityType): readonly string[] {
 		default:
 			throw new Error(`Unknown entity type: ${entityType}`);
 	}
-}
+};
 
 /**
  * Validate that all expected fields are present in the API response
+ * @param entityType
+ * @param entityId
+ * @param data
+ * @param expectedFields
  */
-function validateFields(
-	entityType: EntityType,
-	entityId: string,
-	data: Record<string, unknown>,
-	expectedFields: readonly string[]
-): FieldValidationResult {
+const validateFields = (entityType: EntityType, entityId: string, data: Record<string, unknown>, expectedFields: readonly string[]): FieldValidationResult => {
 	const actualFields = Object.keys(data);
 	const expectedFieldSet = new Set(expectedFields);
 	const actualFieldSet = new Set(actualFields);
 
 	// Find fields that are in ENTITY_FIELDS but not in the API response
-	const missingFields = Array.from(expectedFields).filter(
+	const missingFields = [...expectedFields].filter(
 		field => !actualFieldSet.has(field)
 	);
 
@@ -105,10 +104,10 @@ function validateFields(
 		totalExpectedFields: expectedFields.length,
 		totalActualFields: actualFields.length,
 	};
-}
+};
 
 test.describe('API Field Validation @automated-manual', () => {
-	test.setTimeout(60000); // 1 minute per test
+	test.setTimeout(60_000); // 1 minute per test
 
 	test('Work entity should return all expected fields', async ({ request }) => {
 		const entityType = 'work';
@@ -272,7 +271,7 @@ test.describe('API Field Validation @automated-manual', () => {
 });
 
 test.describe('API Error Detection @automated-manual', () => {
-	test.setTimeout(60000); // API tests need longer timeout
+	test.setTimeout(60_000); // API tests need longer timeout
 
 	test('Invalid select parameter should return 400 error', async ({ request }) => {
 		const response = await request.get(

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 
@@ -23,7 +23,7 @@ const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:417
  */
 
 test.describe('External Canonical ID Loading', () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test('should route OpenAlex ID correctly and load work data: /#/works/W...', async ({ page }) => {
     // Test basic OpenAlex ID routing to ensure core functionality works
@@ -32,8 +32,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing OpenAlex work routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
 
     // Wait for content to load
     await page.waitForTimeout(2000);
@@ -77,8 +77,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ORCID URL routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const pageContent = await page.locator('body').textContent() || '';
@@ -122,8 +122,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ROR URL routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const pageContent = await page.locator('body').textContent() || '';
@@ -164,8 +164,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing ISSN routing: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const pageContent = await page.locator('body').textContent() || '';
@@ -205,8 +205,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing URL-encoded DOI: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const pageContent = await page.locator('body').textContent() || '';
@@ -248,8 +248,8 @@ test.describe('External Canonical ID Loading', () => {
 
     console.log(`Testing OpenAlex ID compatibility: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const pageContent = await page.locator('body').textContent() || '';

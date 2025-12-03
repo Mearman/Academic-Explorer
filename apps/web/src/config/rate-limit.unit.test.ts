@@ -3,12 +3,12 @@
  * Tests retry delay calculations, configuration constants, and edge cases
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  calculateRetryDelay,
   RATE_LIMIT_CONFIG,
   RETRY_CONFIG,
-  calculateRetryDelay,
 } from "./rate-limit";
 
 describe("rate-limit configuration", () => {
@@ -61,7 +61,7 @@ describe("rate-limit configuration", () => {
       expect(RETRY_CONFIG.rateLimited).toEqual({
         maxAttempts: 5,
         baseDelay: 2000,
-        maxDelay: 30000,
+        maxDelay: 30_000,
         exponentialBase: 2,
         jitterMs: 1000,
       });
@@ -71,7 +71,7 @@ describe("rate-limit configuration", () => {
       expect(RETRY_CONFIG.network).toEqual({
         maxAttempts: 3,
         baseDelay: 1000,
-        maxDelay: 10000,
+        maxDelay: 10_000,
         exponentialBase: 2,
         jitterMs: 500,
       });
@@ -172,7 +172,7 @@ describe("rate-limit configuration", () => {
       // High attempt index should hit the cap
       const delay = calculateRetryDelay({ attemptIndex: 10, config });
       expect(delay).toBeLessThanOrEqual(config.maxDelay);
-      expect(delay).toBe(10000); // Should be exactly maxDelay since exponential would exceed it
+      expect(delay).toBe(10_000); // Should be exactly maxDelay since exponential would exceed it
     });
 
     it("should handle different jitter values", () => {
@@ -234,7 +234,7 @@ describe("rate-limit configuration", () => {
 
     it("should prioritize Retry-After over config calculation", () => {
       const config = RETRY_CONFIG.rateLimited;
-      const retryAfterMs = 15000;
+      const retryAfterMs = 15_000;
 
       const delay = calculateRetryDelay({
         attemptIndex: 5,

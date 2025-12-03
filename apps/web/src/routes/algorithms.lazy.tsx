@@ -2,41 +2,41 @@
  * Algorithms Page - Graph algorithms demonstration and analysis
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
 import {
   ActionIcon,
-  Container,
-  Title,
-  Text,
-  Stack,
-  Grid,
-  Card,
-  Group,
-  Badge,
-  Button,
-  Paper,
-  Box,
   Alert,
-  SegmentedControl,
-  Switch,
-  NumberInput,
-  Slider,
-  RangeSlider,
+  Badge,
+  Box,
+  Button,
+  Card,
+  Container,
   Divider,
+  Grid,
+  Group,
+  NumberInput,
+  Paper,
+  RangeSlider,
+  SegmentedControl,
+  Slider,
+  Stack,
+  Switch,
+  Text,
+  Title,
   Tooltip,
 } from '@mantine/core';
 import {
+  IconFocus2,
+  IconFocusCentered,
   IconGraph,
-  IconRefresh,
   IconInfoCircle,
   IconLock,
   IconLockOpen,
-  IconFocusCentered,
-  IconFocus2,
+  IconRefresh,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef,useState } from 'react';
 
 import { AlgorithmTabs } from '@/components/algorithms';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
@@ -44,7 +44,7 @@ import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualizat
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
+import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 
 /**
  * Configuration for sample graph generation
@@ -87,30 +87,31 @@ const ENTITY_DISPLAY_NAMES: Record<EntityType, string> = {
 
 // Log scale constants for total nodes slider (5 to 10000)
 const LOG_MIN = Math.log10(5);
-const LOG_MAX = Math.log10(10000);
+const LOG_MAX = Math.log10(10_000);
 
 /**
  * Convert a linear slider position (0-100) to a log-scale node count
+ * @param linear
  */
-function linearToLogNodes(linear: number): number {
+const linearToLogNodes = (linear: number): number => {
   const logValue = LOG_MIN + (linear / 100) * (LOG_MAX - LOG_MIN);
   return Math.round(Math.pow(10, logValue));
-}
+};
 
 /**
  * Convert a log-scale node count to a linear slider position (0-100)
+ * @param nodes
  */
-function logNodesToLinear(nodes: number): number {
-  const clampedNodes = Math.max(5, Math.min(10000, nodes));
+const logNodesToLinear = (nodes: number): number => {
+  const clampedNodes = Math.max(5, Math.min(10_000, nodes));
   const logValue = Math.log10(clampedNodes);
   return ((logValue - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 100;
-}
+};
 
 type BiasMode = 'position' | 'value';
 
 /**
  * Generate a random node count range with bias towards lower values.
- *
  * @param bias - Power to apply (higher = more bias towards low values). 1 = no bias.
  * @param mode - Where to apply the bias:
  *   - 'position': Bias operates on slider position (0-100) before log transformation.
@@ -120,7 +121,7 @@ type BiasMode = 'position' | 'value';
  *              This scales proportionally with actual node count.
  *              With bias=2: 50% of values ≤ ~2500 nodes, 71% ≤ ~5000 nodes
  */
-function randomLogNodeRange(bias: number, mode: BiasMode): [number, number] {
+const randomLogNodeRange = (bias: number, mode: BiasMode): [number, number] => {
   // Default safe values in case of any calculation issues
   const DEFAULT_MIN = 5;
   const DEFAULT_MAX = 200;
@@ -134,61 +135,66 @@ function randomLogNodeRange(bias: number, mode: BiasMode): [number, number] {
       const minVal = linearToLogNodes(minPos);
       const maxVal = linearToLogNodes(maxPos);
       // Validate results are finite and in valid range
-      const safeMin = Number.isFinite(minVal) && minVal >= 5 && minVal <= 10000 ? minVal : DEFAULT_MIN;
-      const safeMax = Number.isFinite(maxVal) && maxVal >= 5 && maxVal <= 10000 ? maxVal : DEFAULT_MAX;
+      const safeMin = Number.isFinite(minVal) && minVal >= 5 && minVal <= 10_000 ? minVal : DEFAULT_MIN;
+      const safeMax = Number.isFinite(maxVal) && maxVal >= 5 && maxVal <= 10_000 ? maxVal : DEFAULT_MAX;
       return [Math.min(safeMin, safeMax), Math.max(safeMin, safeMax)];
     } else {
       // Bias on node count value - scales with actual node count
       const minNodes = 5;
-      const maxNodes = 10000;
+      const maxNodes = 10_000;
       const biasedA = Math.pow(Math.random(), bias);
       const biasedB = Math.pow(Math.random(), bias);
       const nodeA = Math.round(minNodes + biasedA * (maxNodes - minNodes));
       const nodeB = Math.round(minNodes + biasedB * (maxNodes - minNodes));
-      const safeA = Number.isFinite(nodeA) ? Math.max(5, Math.min(10000, nodeA)) : DEFAULT_MIN;
-      const safeB = Number.isFinite(nodeB) ? Math.max(5, Math.min(10000, nodeB)) : DEFAULT_MAX;
+      const safeA = Number.isFinite(nodeA) ? Math.max(5, Math.min(10_000, nodeA)) : DEFAULT_MIN;
+      const safeB = Number.isFinite(nodeB) ? Math.max(5, Math.min(10_000, nodeB)) : DEFAULT_MAX;
       return safeA <= safeB ? [safeA, safeB] : [safeB, safeA];
     }
   } catch {
     // Fallback to safe defaults if any error occurs
     return [DEFAULT_MIN, DEFAULT_MAX];
   }
-}
+};
 
 /**
  * Simple seeded pseudo-random number generator (Mulberry32)
  * Returns values in [0, 1) like Math.random()
+ * @param seed
  */
-function createSeededRandom(seed: number): () => number {
+const createSeededRandom = (seed: number): () => number => {
   let state = seed;
   return () => {
-    state |= 0;
-    state = (state + 0x6d2b79f5) | 0;
+    state = Math.trunc(state);
+    state = (state + 0x6D_2B_79_F5) | 0;
     let t = Math.imul(state ^ (state >>> 15), 1 | state);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    return ((t ^ (t >>> 14)) >>> 0) / 4_294_967_296;
   };
-}
+};
 
 /**
  * Distribute items into N buckets as evenly as possible
+ * @param items
+ * @param componentCount
  */
-function distributeToComponents<T>(items: T[], componentCount: number): T[][] {
+const distributeToComponents = <T,>(items: T[], componentCount: number): T[][] => {
   const components: T[][] = Array.from({ length: componentCount }, () => []);
   items.forEach((item, index) => {
     components[index % componentCount].push(item);
   });
   return components;
-}
+};
 
 /**
  * Get a random integer within a range [min, max] inclusive
+ * @param range
+ * @param random
  */
-function randomInRange(range: [number, number], random: () => number): number {
+const randomInRange = (range: [number, number], random: () => number): number => {
   const [min, max] = range;
   if (min === max) return min;
   return Math.floor(random() * (max - min + 1)) + min;
-}
+};
 
 /**
  * Raw entity counts from OpenAlex API (2025-11-28)
@@ -203,7 +209,7 @@ const OPENALEX_ENTITY_COUNTS: Record<EntityType, number> = {
   keywords: 65_004,
   funders: 32_437,
   publishers: 10_420,
-  topics: 4_516,
+  topics: 4516,
   subfields: 252,
   fields: 26,
   domains: 4,
@@ -231,8 +237,9 @@ const ENTITY_METADATA: Record<EntityType, { prefix: string; labelFn: (i: number)
  * Calculate log-scaled weights from raw counts
  * Compresses extreme range (works:domains = 68M:1) while preserving relative ordering
  * and ensuring all entity types appear in sample graphs.
+ * @param counts
  */
-function calculateLogScaledWeights(counts: Record<EntityType, number>): Record<EntityType, number> {
+const calculateLogScaledWeights = (counts: Record<EntityType, number>): Record<EntityType, number> => {
   const minCount = Math.min(...Object.values(counts));
   const minLog = Math.log10(minCount);
 
@@ -257,7 +264,7 @@ function calculateLogScaledWeights(counts: Record<EntityType, number>): Record<E
   }
 
   return normalized as Record<EntityType, number>;
-}
+};
 
 // Pre-calculate weights at module load
 const ENTITY_WEIGHTS = calculateLogScaledWeights(OPENALEX_ENTITY_COUNTS);
@@ -311,8 +318,9 @@ const RELATIONSHIP_DEFINITIONS: Array<{
 /**
  * Generate sample academic graph data for demonstration
  * Includes all 12 entity types and all relationship types
+ * @param config
  */
-function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { nodes: GraphNode[]; edges: GraphEdge[] } {
+const generateSampleGraph = (config: SampleGraphConfig = DEFAULT_CONFIG): { nodes: GraphNode[]; edges: GraphEdge[] } => {
   const {
     seed,
     componentCount,
@@ -322,7 +330,7 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   } = config;
 
   // Use seeded random if seed is provided, otherwise use Math.random
-  const random = seed !== null ? createSeededRandom(seed) : Math.random;
+  const random = seed === null ? Math.random : createSeededRandom(seed);
 
   // Get total node count from range
   const totalNodes = randomInRange(totalNodeCountRange, random);
@@ -487,12 +495,12 @@ function generateSampleGraph(config: SampleGraphConfig = DEFAULT_CONFIG): { node
   }
 
   return { nodes, edges };
-}
+};
 
 /**
  * Algorithms demonstration page
  */
-function AlgorithmsPage() {
+const AlgorithmsPage = () => {
   // Sample graph configuration
   const [graphConfig, setGraphConfig] = useState<SampleGraphConfig>(DEFAULT_CONFIG);
 
@@ -683,7 +691,7 @@ function AlgorithmsPage() {
 
     setGraphConfig((prev) => ({
       ...prev,
-      seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10000),
+      seed: seedLocked ? prev.seed : Math.floor(Math.random() * 10_000),
       componentCount: componentsLocked ? prev.componentCount : Math.floor(Math.random() * 6) + 1,
       edgesPerNodeRange: edgesLocked ? prev.edgesPerNodeRange : randomRange(0, 10),
       totalNodeCountRange: totalNodesLocked ? prev.totalNodeCountRange : randomLogNodeRange(nodeBias, nodeBiasMode),
@@ -697,7 +705,7 @@ function AlgorithmsPage() {
 
     // When seed is unlocked, generate a new random seed on each regeneration
     if (!seedLocked) {
-      const newSeed = Math.floor(Math.random() * 10000);
+      const newSeed = Math.floor(Math.random() * 10_000);
       configToUse = { ...graphConfig, seed: newSeed };
       setGraphConfig(configToUse);
     }
@@ -1031,11 +1039,11 @@ function AlgorithmsPage() {
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[0]}
                           onChange={(val) => {
-                            const newMin = typeof val === 'number' ? Math.max(5, Math.min(10000, val)) : 5;
+                            const newMin = typeof val === 'number' ? Math.max(5, Math.min(10_000, val)) : 5;
                             updateConfig('totalNodeCountRange', [newMin, Math.max(newMin, graphConfig.totalNodeCountRange[1])]);
                           }}
                           min={5}
-                          max={10000}
+                          max={10_000}
                           size="xs"
                           w={70}
                           hideControls
@@ -1064,7 +1072,7 @@ function AlgorithmsPage() {
                             { value: logNodesToLinear(50), label: '50' },
                             { value: logNodesToLinear(500), label: '500' },
                             { value: logNodesToLinear(5000), label: '5k' },
-                            { value: logNodesToLinear(10000), label: '10k' },
+                            { value: logNodesToLinear(10_000), label: '10k' },
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
@@ -1073,11 +1081,11 @@ function AlgorithmsPage() {
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
                           onChange={(val) => {
-                            const newMax = typeof val === 'number' ? Math.max(5, Math.min(10000, val)) : 10000;
+                            const newMax = typeof val === 'number' ? Math.max(5, Math.min(10_000, val)) : 10_000;
                             updateConfig('totalNodeCountRange', [Math.min(graphConfig.totalNodeCountRange[0], newMax), newMax]);
                           }}
                           min={5}
-                          max={10000}
+                          max={10_000}
                           size="xs"
                           w={70}
                           hideControls
@@ -1195,7 +1203,7 @@ function AlgorithmsPage() {
         </Stack>
     </Container>
   );
-}
+};
 
 export const Route = createLazyFileRoute('/algorithms')({
   component: AlgorithmsPage,

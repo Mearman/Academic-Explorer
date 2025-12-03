@@ -1,18 +1,18 @@
 import {
-  Title,
-  Text,
-  Stack,
-  Card,
-  Button,
-  Group,
-  TextInput,
   Anchor,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import {
-  IconSearch,
-  IconGraph,
   IconBrandReact,
   IconDatabase,
+  IconGraph,
+  IconSearch,
 } from "@tabler/icons-react";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import { useState } from "react";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
-function HomePage() {
+const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const themeColors = useThemeColors();
@@ -190,7 +190,7 @@ function HomePage() {
     </Card>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,

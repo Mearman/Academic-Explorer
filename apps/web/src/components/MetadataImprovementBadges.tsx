@@ -12,10 +12,10 @@
 
 import {
 	detectMetadataImprovements,
-	type WorkMetadata,
 	type MetadataImprovement,
+	type WorkMetadata,
 } from "@bibgraph/utils";
-import { Group, Badge } from "@mantine/core";
+import { Badge,Group } from "@mantine/core";
 
 export interface MetadataImprovementBadgesProps {
 	/**
@@ -56,7 +56,9 @@ const IMPROVEMENT_COLOR_MAP: Record<
  * - Semantic color coding based on improvement type
  * - Horizontal layout with consistent spacing
  * - Returns null for cleaner rendering when no improvements exist
- *
+ * @param root0
+ * @param root0.work
+ * @param root0."data-testid"
  * @example
  * ```tsx
  * // In a work detail page
@@ -76,10 +78,10 @@ const IMPROVEMENT_COLOR_MAP: Record<
  * // Renders: null
  * ```
  */
-export function MetadataImprovementBadges({
+export const MetadataImprovementBadges = ({
 	work,
 	"data-testid": dataTestId = "metadata-improvement-badges",
-}: MetadataImprovementBadgesProps) {
+}: MetadataImprovementBadgesProps) => {
 	// Detect improvements using utility function
 	const improvements = detectMetadataImprovements(work);
 
@@ -103,4 +105,4 @@ export function MetadataImprovementBadges({
 			))}
 		</Group>
 	);
-}
+};

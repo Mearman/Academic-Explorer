@@ -2,13 +2,13 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconBook } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function ISSNSourceRoute() {
+const ISSNSourceRoute = () => {
   const { issn } = useParams({ from: "/sources/issn/$issn" });
   const navigate = useNavigate();
 
@@ -74,7 +74,7 @@ function ISSNSourceRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/sources/issn/$issn")({
   component: ISSNSourceRoute,

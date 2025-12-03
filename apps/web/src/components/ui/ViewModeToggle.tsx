@@ -7,8 +7,8 @@
 
 import type { ViewMode } from '@bibgraph/types';
 import { detectWebGLCapabilities } from '@bibgraph/utils';
-import { SegmentedControl, Tooltip, Box } from '@mantine/core';
-import { IconSquare, IconCube, IconAlertTriangle } from '@tabler/icons-react';
+import { Box,SegmentedControl, Tooltip } from '@mantine/core';
+import { IconAlertTriangle,IconCube, IconSquare } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 
 export interface ViewModeToggleProps {
@@ -24,13 +24,13 @@ export interface ViewModeToggleProps {
   fullWidth?: boolean;
 }
 
-export function ViewModeToggle({
+export const ViewModeToggle = ({
   value,
   onChange,
   disabled = false,
   size = 'sm',
   fullWidth = false,
-}: ViewModeToggleProps) {
+}: ViewModeToggleProps) => {
   const [webglAvailable, setWebglAvailable] = useState<boolean | null>(null);
   const [webglReason, setWebglReason] = useState<string>('');
 
@@ -133,4 +133,4 @@ export function ViewModeToggle({
       disabled={disabled}
     />
   );
-}
+};

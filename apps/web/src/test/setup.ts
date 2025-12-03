@@ -4,13 +4,13 @@ import "fake-indexeddb/auto";
 
 // Ensure TextEncoder/TextDecoder are available synchronously before any other code
 // This is critical for esbuild to work properly in test environments
-import { Buffer } from "buffer";
-import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "util";
+import { Buffer } from "node:buffer";
+import { TextDecoder as NodeTextDecoder,TextEncoder as NodeTextEncoder } from "node:util";
 
 // Ensure AbortSignal/AbortController are properly available in test environment
 // This fixes issues with fetch() calls that use AbortSignal in Node.js test environments
 // Note: We prefer native implementations when available to avoid compatibility issues
-if (typeof globalThis.AbortController === "undefined") {
+if (globalThis.AbortController === undefined) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { AbortController: NodeAbortController, AbortSignal: NodeAbortSignal } = require("abort-controller");
   globalThis.AbortController = NodeAbortController;
@@ -19,16 +19,16 @@ if (typeof globalThis.AbortController === "undefined") {
 
 // Ensure AbortSignal and AbortController are available globally
 // This prevents issues with type checking in test environments
-if (typeof global.AbortController === "undefined") {
+if (global.AbortController === undefined) {
   global.AbortController = globalThis.AbortController;
 }
-if (typeof global.AbortSignal === "undefined") {
+if (global.AbortSignal === undefined) {
   global.AbortSignal = globalThis.AbortSignal;
 }
 
 // Only add timeout method if not available and if we have a valid AbortSignal
 // This prevents conflicts with native AbortSignal implementations
-if (typeof global.AbortSignal !== "undefined" && typeof global.AbortSignal.timeout === "undefined") {
+if (global.AbortSignal !== undefined && global.AbortSignal.timeout === undefined) {
   // Add timeout method if not available (Node.js < 20)
   global.AbortSignal.timeout = (delay) => {
     const controller = new global.AbortController();
@@ -77,13 +77,13 @@ try {
  */
 
 // Make this a module to allow top-level await
-export {};
+
 
 // Only load Vitest in actual test environments, not during dev server startup
 if (typeof process !== "undefined" && process.env.VITEST) {
   const { vi } = await import("vitest");
 
-  if (typeof (global as unknown as { TextDecoder?: unknown }).TextDecoder === "undefined") {
+  if ((global as unknown as { TextDecoder?: unknown }).TextDecoder === undefined) {
     (global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = class TextDecoder {
       encoding = "utf-8" as const;
       fatal = false;
@@ -116,7 +116,21 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   // Immer enableMapSet() removed - not needed since we're not using Zustand/Immer anymore
 
   // Environment-aware DOM mocking (only for jsdom environment)
-  if (typeof window !== "undefined") {
+  if (typeof window === "undefined") {
+    // Mock localStorage for node environment (integration/e2e tests)
+    // This prevents Zustand persist middleware warnings
+    const mockStorage = {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+      clear: () => {},
+      length: 0,
+      key: () => null,
+    };
+
+    global.localStorage = mockStorage;
+    global.sessionStorage = mockStorage;
+  } else {
     // Mock matchMedia for component tests that use responsive hooks
     Object.defineProperty(window, "matchMedia", {
       writable: true,
@@ -131,20 +145,6 @@ if (typeof process !== "undefined" && process.env.VITEST) {
         dispatchEvent: vi.fn(),
       })),
     });
-  } else {
-    // Mock localStorage for node environment (integration/e2e tests)
-    // This prevents Zustand persist middleware warnings
-    const mockStorage = {
-      getItem: () => null,
-      setItem: () => {},
-      removeItem: () => {},
-      clear: () => {},
-      length: 0,
-      key: () => null,
-    };
-
-    global.localStorage = mockStorage;
-    global.sessionStorage = mockStorage;
   }
 
   // TextEncoder/TextDecoder setup is handled above synchronously
@@ -245,7 +245,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   // Partial module mocks to protect integration tests that expect
   // certain exports from framework libraries. These mocks are safe
   // fallbacks that preserve original behavior when available.
-  if (typeof vi !== "undefined") {
+  if (vi !== undefined) {
     // Partially mock @tanstack/react-router to ensure createFileRoute exists
     // Tests often import createFileRoute and expect it to return a route
     // factory. If the real module is present, we preserve it via importOriginal.

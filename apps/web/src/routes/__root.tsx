@@ -9,7 +9,7 @@ import { GraphVisualizationProvider } from "@/contexts/GraphVisualizationContext
 
 import { shadcnLightTheme } from "../styles/shadcn-theme.css";
 
-function RootLayout() {
+const RootLayout = () => {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
   const location = useLocation();
   const isGraphPage = location.pathname === '/graph';
@@ -35,7 +35,7 @@ function RootLayout() {
       )}
     </div>
   );
-}
+};
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -60,7 +60,7 @@ export const Route = createRootRoute({
       // Extract the raw query string from href (which doesn't include the # symbol)
       const queryIndex = href.indexOf("?");
       const rawQueryString =
-        queryIndex !== -1 ? href.substring(queryIndex + 1) : "";
+        queryIndex === -1 ? "" : href.slice(Math.max(0, queryIndex + 1));
 
       const newUrl = rawQueryString
         ? `${cleanPath}?${rawQueryString}`
@@ -159,10 +159,15 @@ export const Route = createRootRoute({
         });
 
         // If we made corrections, update the URL immediately without page reload
-        if (fixedSource !== sourceToFix) {
+        if (fixedSource === sourceToFix) {
+          logger.debug("routing", "No changes needed - URL already correct", {
+            sourceToFix,
+            fixedSource
+          });
+        } else {
           // Extract query params from current hash (after potential decoding), not from old href
           const queryIndex = updatedHash.indexOf("?");
-          const queryParams = queryIndex !== -1 ? updatedHash.substring(queryIndex) : "";
+          const queryParams = queryIndex === -1 ? "" : updatedHash.slice(Math.max(0, queryIndex));
 
           const fixedUrl = window.location.pathname + urlPrefix + fixedSource + queryParams;
 
@@ -175,11 +180,6 @@ export const Route = createRootRoute({
 
           // Use replaceState to update URL without adding to history or triggering reload
           window.history.replaceState(window.history.state, "", fixedUrl);
-        } else {
-          logger.debug("routing", "No changes needed - URL already correct", {
-            sourceToFix,
-            fixedSource
-          });
         }
       }
     }

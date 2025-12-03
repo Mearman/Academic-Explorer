@@ -1,7 +1,7 @@
 /**
  * Sample URLs from each entity type to verify deployment
  */
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const BASE_URL = 'https://mearman.github.io/BibGraph';
 
@@ -17,20 +17,20 @@ const testUrls = [
   { url: 'https://api.openalex.org/topics', type: 'topics-list', desc: 'Topics list' },
 ];
 
-function toAppUrl(apiUrl: string): string {
+const toAppUrl = (apiUrl: string): string => {
   const relativePath = apiUrl.replace('https://api.openalex.org', '');
   return `${BASE_URL}/#/openalex-url${relativePath}`;
-}
+};
 
 test.describe('Sample URLs - All Entity Types', () => {
-  test.setTimeout(30000);
+  test.setTimeout(30_000);
 
   testUrls.forEach(({ url, desc }) => {
     test(`${desc} should load`, async ({ page }) => {
       const appUrl = toAppUrl(url);
       
-      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 20000 });
-      await page.waitForSelector('main', { timeout: 10000 });
+      await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 20_000 });
+      await page.waitForSelector('main', { timeout: 10_000 });
       
       const mainText = await page.locator('main').textContent();
       

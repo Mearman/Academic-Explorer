@@ -4,13 +4,12 @@
  * Tests handling of invalid entity IDs, malformed DOIs, and broken URL formats.
  * Ensures the application gracefully handles malformed URLs without crashes,
  * blank pages, or security vulnerabilities (XSS).
- *
  * @module error-malformed-url.e2e
  * @tag @error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 
@@ -105,7 +104,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error or processing message
 		const errorOrProcessing = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle ORCID with invalid format', async ({ page }) => {
@@ -207,7 +206,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error or handle gracefully
 		const errorText = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorText.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle empty entity ID', async ({ page }) => {
@@ -217,7 +216,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should either show works list/index or handle gracefully, not crash
 		const content = page.locator('h1, [data-testid="page-title"], [data-testid="entity-list"]');
-		await expect(content.first()).toBeVisible({ timeout: 10000 });
+		await expect(content.first()).toBeVisible({ timeout: 10_000 });
 
 		// Should not show generic error
 		const hasContent = await page.locator('body').textContent();
@@ -290,7 +289,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error or handle gracefully
 		const errorText = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorText.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle SQL injection patterns', async ({ page }) => {
@@ -303,7 +302,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should not execute any SQL and should handle safely
 		const errorText = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorText.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle mixed valid and invalid entity ID components', async ({ page }) => {
@@ -316,7 +315,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error or handle gracefully
 		const errorOrProcessing = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorOrProcessing.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle entity type mismatch - work ID in author route', async ({ page }) => {
@@ -344,7 +343,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error message
 		const errorText = page.getByText(/error|invalid|not found|processing/i);
-		await expect(errorText.first()).toBeVisible({ timeout: 10000 });
+		await expect(errorText.first()).toBeVisible({ timeout: 10_000 });
 	});
 
 	test('should handle consecutive slashes in URL', async ({ page }) => {
@@ -399,7 +398,7 @@ test.describe('@error Malformed URL Error Recovery', () => {
 
 		// Should load successfully after malformed URL
 		const entityTitle = page.locator('[data-testid="entity-title"]');
-		await expect(entityTitle).toBeVisible({ timeout: 30000 });
+		await expect(entityTitle).toBeVisible({ timeout: 30_000 });
 	});
 
 	test('should maintain application state after malformed URL', async ({ page }) => {

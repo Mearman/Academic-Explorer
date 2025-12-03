@@ -18,7 +18,7 @@
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Version Metadata Comparison Display', () => {
   test('should display version comparison indicator for Works with differences', async ({ page }) => {
@@ -320,11 +320,11 @@ test.describe('Version Metadata Comparison Display', () => {
       const helperTextExists = await helperText.isVisible({ timeout: 2000 }).catch(() => false);
 
       if (helperTextExists) {
-        const text = await helperText.textContent();
+        const text = helperText;
         console.log(`Helper text: "${text}"`);
 
         // Should guide users on what the comparison means
-        expect(text).toBeTruthy();
+        await expect(text).toHaveText();
         console.log('✅ Helper text displayed');
       } else {
         console.log('ℹ️ Helper text not visible');
@@ -482,10 +482,10 @@ test.describe('Version Metadata Comparison Display', () => {
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorVisible = await indicator.isVisible({ timeout: 2000 }).catch(() => false);
 
-    if (!indicatorVisible) {
-      console.log('✅ Comparison indicator correctly hidden outside November period');
-    } else {
+    if (indicatorVisible) {
       console.log('ℹ️ Comparison indicator visible (may be always-on feature, not limited to November)');
+    } else {
+      console.log('✅ Comparison indicator correctly hidden outside November period');
     }
   });
 
@@ -502,9 +502,7 @@ test.describe('Version Metadata Comparison Display', () => {
     const indicator = page.getByTestId('version-comparison-indicator');
     const indicatorExists = await indicator.isVisible({ timeout: 2000 }).catch(() => false);
 
-    if (!indicatorExists) {
-      console.log('✅ Comparison indicator correctly not shown for work without differences');
-    } else {
+    if (indicatorExists) {
       // If indicator is shown, verify it only shows version label (no badges)
       const badges = indicator.locator('[data-testid^="version-comparison-indicator-"]');
       const badgeCount = await badges.count();
@@ -512,6 +510,8 @@ test.describe('Version Metadata Comparison Display', () => {
       if (badgeCount === 0) {
         console.log('✅ Only version label shown for work without differences');
       }
+    } else {
+      console.log('✅ Comparison indicator correctly not shown for work without differences');
     }
   });
 

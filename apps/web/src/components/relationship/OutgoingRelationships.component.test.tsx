@@ -5,8 +5,8 @@
 
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { cleanup,render, screen } from '@testing-library/react';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the hooks
 vi.mock('@/hooks/use-entity-relationship-queries', () => ({

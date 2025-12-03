@@ -10,58 +10,59 @@
  * - User Story 2: Bookmark Custom Field Views (Priority: P2)
  */
 
-import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 /**
  * Helper to navigate to an entity page with custom select parameter
+ * @param page
+ * @param entityType
+ * @param entityId
+ * @param selectFields
  */
-async function navigateToEntityWithCustomFields(
-  page: Page,
-  entityType: string,
-  entityId: string,
-  selectFields: string[]
-): Promise<void> {
+const navigateToEntityWithCustomFields = async (page: Page, entityType: string, entityId: string, selectFields: string[]): Promise<void> => {
   const selectParam = selectFields.join(",");
   const url = `/${entityType}/${entityId}?select=${selectParam}`;
   await page.goto(url);
   await page.waitForLoadState("networkidle");
-}
+};
 
 /**
  * Helper to bookmark the current page
+ * @param page
  */
-async function bookmarkCurrentPage(page: Page): Promise<void> {
+const bookmarkCurrentPage = async (page: Page): Promise<void> => {
   const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
   await expect(bookmarkButton).toBeVisible();
   await bookmarkButton.click();
   // Wait for bookmark operation to complete
   await page.waitForTimeout(500);
-}
+};
 
 /**
  * Helper to navigate to bookmarks page
+ * @param page
  */
-async function navigateToBookmarks(page: Page): Promise<void> {
+const navigateToBookmarks = async (page: Page): Promise<void> => {
   await page.goto("/bookmarks/");
   await page.waitForLoadState("networkidle");
-}
+};
 
 /**
  * Helper to get bookmark items
+ * @param page
  */
-function getBookmarkItems(page: Page) {
-  return page.locator('[data-testid="bookmark-list-item"]');
-}
+const getBookmarkItems = (page: Page) => page.locator('[data-testid="bookmark-list-item"]');
 
 /**
  * Helper to extract select parameter from URL
+ * @param url
  */
-function extractSelectParam(url: string): string[] {
+const extractSelectParam = (url: string): string[] => {
   const urlObj = new URL(url, "http://localhost");
   const selectParam = urlObj.searchParams.get("select");
   return selectParam ? selectParam.split(",") : [];
-}
+};
 
 test.describe("Bookmark Custom Field Views", () => {
   test.beforeEach(async ({ page }) => {
@@ -267,13 +268,13 @@ test.describe("Bookmark Custom Field Views", () => {
     const bookmarkItems = getBookmarkItems(page);
     await expect(bookmarkItems).toHaveCount(entities.length);
 
-    for (let i = 0; i < entities.length; i++) {
+    for (const [i, entity] of entities.entries()) {
       const bookmark = bookmarkItems.nth(i);
       const fieldPreview = bookmark.locator('[data-testid="field-selection-preview"]');
 
       if (await fieldPreview.isVisible()) {
         const previewText = await fieldPreview.textContent();
-        const expectedFieldCount = entities[i].fields.length;
+        const expectedFieldCount = entity.fields.length;
         expect(previewText).toContain(`${expectedFieldCount} field`);
       }
     }

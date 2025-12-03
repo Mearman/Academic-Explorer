@@ -1,7 +1,6 @@
 /**
  * Ego Network Algorithm Item
  * Extracts the local neighborhood around a center node
- *
  * @module components/algorithms/items/EgoNetworkItem
  */
 
@@ -14,17 +13,17 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import { useState, useMemo } from 'react';
+import { useMemo,useState } from 'react';
 
 import { useEgoNetwork } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function EgoNetworkItem({
+export const EgoNetworkItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const [egoCenter, setEgoCenter] = useState<string | null>(null);
   const [egoRadius, setEgoRadius] = useState<number>(1);
   const egoNetwork = useEgoNetwork(nodes, edges, egoCenter, egoRadius, true);
@@ -84,4 +83,4 @@ export function EgoNetworkItem({
       )}
     </Stack>
   );
-}
+};

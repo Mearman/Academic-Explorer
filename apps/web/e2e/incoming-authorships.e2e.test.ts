@@ -1,11 +1,10 @@
 /**
  * E2E tests for incoming authorship relationships on author detail pages
- *
  * @module incoming-authorships.e2e
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Incoming Relationships - Author Authorships', () => {
   test('should display incoming authorships section on author detail page', async ({ page }) => {
@@ -71,8 +70,8 @@ test.describe('Incoming Relationships - Author Authorships', () => {
     const metadata = firstItem.locator('[data-testid="relationship-metadata"]');
     if (await metadata.count() > 0) {
       // Metadata should contain position or corresponding indicator
-      const metadataText = await metadata.textContent();
-      expect(metadataText).toBeTruthy();
+      const metadataText = metadata;
+      await expect(metadataText).toHaveText();
     }
   });
 });

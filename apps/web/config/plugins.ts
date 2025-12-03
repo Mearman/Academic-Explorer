@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { existsSync,mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,11 +16,10 @@ const appRoot = resolve(__dirname, "..");
 /**
  * GitHub Pages plugin - creates .nojekyll file for proper asset serving
  */
-function githubPagesPlugin(): Plugin {
-  return {
+const githubPagesPlugin = (): Plugin => ({
     name: "github-pages",
     apply: "build",
-    closeBundle() {
+    closeBundle: () => {
       const outputDir = resolve(appRoot, "dist");
       // Ensure output directory exists
       if (!existsSync(outputDir)) {
@@ -29,8 +28,7 @@ function githubPagesPlugin(): Plugin {
       const nojekyllPath = resolve(outputDir, ".nojekyll");
       writeFileSync(nojekyllPath, "");
     },
-  };
-}
+  });
 
 /**
  * Plugin configuration for the web app

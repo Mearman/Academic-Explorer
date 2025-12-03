@@ -13,7 +13,7 @@ interface NumericFilterProps {
   fieldId: string;
 }
 
-export function NumericFilter({
+export const NumericFilter = ({
   value,
   operator,
   config,
@@ -22,9 +22,7 @@ export function NumericFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: NumericFilterProps) {
-  return (
-    <BaseFilter
+}: NumericFilterProps) => <BaseFilter
       value={value}
       operator={operator}
       config={config}
@@ -45,6 +43,4 @@ export function NumericFilter({
           flex={1}
         />
       )}
-    </BaseFilter>
-  );
-}
+    </BaseFilter>;

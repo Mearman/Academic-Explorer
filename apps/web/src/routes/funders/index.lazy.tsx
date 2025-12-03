@@ -12,7 +12,7 @@ const fundersColumns: EntityListColumnConfig[] = [
   { key: "international", header: "International" },
 ];
 
-function FundersRoute() {
+const FundersRoute = () => {
   const search = useSearch({ from: "/funders/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -26,7 +26,7 @@ function FundersRoute() {
       onViewModeChange={setViewMode}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/funders/")({
   component: FundersRoute,

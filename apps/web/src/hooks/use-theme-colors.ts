@@ -5,11 +5,11 @@
 
 import { detectEntityType, getEntityColor as getTaxonomyColorName } from "@bibgraph/types";
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
-import { useMemo, useCallback } from "react";
+import { useCallback,useMemo } from "react";
 
 import { getAcademicEntityColors } from "@/styles/css-variable-resolver";
 
-export function useThemeColors() {
+export const useThemeColors = () => {
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
 
@@ -206,4 +206,4 @@ export function useThemeColors() {
     theme,
     resolvedColorScheme,
   };
-}
+};

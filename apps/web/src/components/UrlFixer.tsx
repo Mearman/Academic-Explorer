@@ -5,7 +5,7 @@ import { useEffect } from 'react';
  * Component that fixes URL display issues immediately when mounted.
  * Handles both double hash issues and collapsed protocol slashes.
  */
-export function UrlFixer() {
+export const UrlFixer = () => {
   useEffect(() => {
     const fixUrl = () => {
       const currentHash = window.location.hash;
@@ -16,14 +16,14 @@ export function UrlFixer() {
 
       // Fix double hash (##/... should become #/...)
       if (currentHash.startsWith('##')) {
-        fixedHash = '#' + currentHash.substring(2);
+        fixedHash = '#' + currentHash.slice(2);
         needsUpdate = true;
       }
 
       // Fix collapsed protocol slashes (https:/doi.org should become https://doi.org)
-      const collapsedRegex = new RegExp('(^|\\/)(https?:\\/\\/)([^/])', 'g');
+      const collapsedRegex = new RegExp(String.raw`(^|\/)(https?:\/\/)([^/])`, 'g');
       if (collapsedRegex.test(fixedHash)) {
-        fixedHash = fixedHash.replace(collapsedRegex, '$1$2$3');
+        fixedHash = fixedHash.replaceAll(collapsedRegex, '$1$2$3');
         needsUpdate = true;
       }
 
@@ -46,4 +46,4 @@ export function UrlFixer() {
 
   // This component doesn't render anything
   return null;
-}
+};

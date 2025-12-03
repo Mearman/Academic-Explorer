@@ -5,15 +5,15 @@
 
 import type { GraphEdge } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
-import { describe, it, expect } from 'vitest';
+import { describe, expect,it } from 'vitest';
 
 import {
-  getEdgeStyle,
-  getOutboundStyle,
-  getInboundStyle,
-  getTypeColor,
-  getEdgeHoverStyle,
   getEdgeFilteredStyle,
+  getEdgeHoverStyle,
+  getEdgeStyle,
+  getInboundStyle,
+  getOutboundStyle,
+  getTypeColor,
   TYPE_COLORS,
 } from './edge-styles';
 

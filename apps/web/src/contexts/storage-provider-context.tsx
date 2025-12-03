@@ -4,7 +4,7 @@
  */
 
 import type { CatalogueStorageProvider } from '@bibgraph/utils';
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, type ReactNode,use } from 'react';
 
 /**
  * Context for providing storage implementation
@@ -21,7 +21,9 @@ export interface StorageProviderWrapperProps {
 
 /**
  * Provider component that wraps the app with a storage implementation
- *
+ * @param root0
+ * @param root0.provider
+ * @param root0.children
  * @example
  * ```tsx
  * // Production setup
@@ -32,7 +34,6 @@ export interface StorageProviderWrapperProps {
  *   <App />
  * </StorageProviderWrapper>
  * ```
- *
  * @example
  * ```tsx
  * // Test setup
@@ -43,19 +44,13 @@ export interface StorageProviderWrapperProps {
  * </StorageProviderWrapper>
  * ```
  */
-export function StorageProviderWrapper({ provider, children }: StorageProviderWrapperProps) {
-	return (
-		<StorageProviderContext.Provider value={provider}>
+export const StorageProviderWrapper = ({ provider, children }: StorageProviderWrapperProps) => <StorageProviderContext value={provider}>
 			{children}
-		</StorageProviderContext.Provider>
-	);
-}
+		</StorageProviderContext>;
 
 /**
  * Hook to access the storage provider
- *
  * @throws {Error} If used outside of StorageProviderWrapper
- *
  * @example
  * ```tsx
  * function CatalogueManager() {
@@ -72,8 +67,8 @@ export function StorageProviderWrapper({ provider, children }: StorageProviderWr
  * }
  * ```
  */
-export function useStorageProvider(): CatalogueStorageProvider {
-	const context = useContext(StorageProviderContext);
+export const useStorageProvider = (): CatalogueStorageProvider => {
+	const context = use(StorageProviderContext);
 
 	if (!context) {
 		throw new Error(
@@ -83,4 +78,4 @@ export function useStorageProvider(): CatalogueStorageProvider {
 	}
 
 	return context;
-}
+};

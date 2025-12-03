@@ -1,14 +1,13 @@
 /**
  * E2E tests for incoming relationship visualization
  * Tests viewing incoming citations, authorships, affiliations, publications, and funding
- *
  * @module incoming-relationships.e2e
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
-import { populateWorkCitations, clearGraph } from './helpers/populate-graph';
+import { clearGraph,populateWorkCitations } from './helpers/populate-graph';
 
 test.describe('Incoming Relationships - Work Citations', () => {
   test.beforeEach(async ({ page }) => {
@@ -75,8 +74,8 @@ test.describe('Incoming Relationships - Work Citations', () => {
     const citationLink = firstCitation.locator('a').first();
 
     // Get the link text before clicking
-    const citationTitle = await citationLink.textContent();
-    expect(citationTitle).toBeTruthy();
+    const citationTitle = citationLink;
+    await expect(citationTitle).toHaveText();
 
     // Click the citation link
     await citationLink.click();
@@ -99,7 +98,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
     await expect(citationsSection).toBeVisible();
 
     // Check for count display
-    const countText = citationsSection.locator('text=/showing \\d+ of \\d+/i');
+    const countText = citationsSection.locator(String.raw`text=/showing \d+ of \d+/i`);
 
     // If count exists, verify it shows correct format
     if (await countText.count() > 0) {
@@ -129,7 +128,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
       // Should see more items loaded
       // Count should update
-      const countText = citationsSection.locator('text=/showing \\d+ of \\d+/i');
+      const countText = citationsSection.locator(String.raw`text=/showing \d+ of \d+/i`);
       await expect(countText).toBeVisible();
     }
   });

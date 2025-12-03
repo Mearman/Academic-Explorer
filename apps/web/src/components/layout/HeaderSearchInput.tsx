@@ -1,9 +1,9 @@
 import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
-import { useState, useCallback, useEffect } from "react";
+import { useLocation,useNavigate, useSearch } from "@tanstack/react-router";
+import { useCallback, useEffect,useState } from "react";
 
-export function HeaderSearchInput() {
+export const HeaderSearchInput = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = useSearch({ strict: false });
@@ -63,4 +63,4 @@ export function HeaderSearchInput() {
       aria-label="Global search input"
     />
   );
-}
+};

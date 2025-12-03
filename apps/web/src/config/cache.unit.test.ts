@@ -3,13 +3,13 @@
  * Tests cache configuration constants, entity-specific settings, and utility functions
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect,it } from "vitest";
 
 import {
   CACHE_CONFIG,
+  type CacheKeyType,
   ENTITY_CACHE_TIMES,
   getCacheConfig,
-  type CacheKeyType,
 } from "./cache";
 
 describe("cache configuration", () => {
@@ -26,10 +26,10 @@ describe("cache configuration", () => {
 
     it("should have reasonable cache size limits", () => {
       // Max age should be 7 days
-      expect(CACHE_CONFIG.maxAge).toBe(604800000); // 7 * 24 * 60 * 60 * 1000
+      expect(CACHE_CONFIG.maxAge).toBe(604_800_000); // 7 * 24 * 60 * 60 * 1000
 
       // Max size should be 100MB
-      expect(CACHE_CONFIG.maxSize).toBe(104857600); // 100 * 1024 * 1024
+      expect(CACHE_CONFIG.maxSize).toBe(104_857_600); // 100 * 1024 * 1024
 
       // Compression threshold should be 1KB
       expect(CACHE_CONFIG.compressionThreshold).toBe(1024);
@@ -38,7 +38,7 @@ describe("cache configuration", () => {
       expect(CACHE_CONFIG.defaultRetries).toBe(3);
 
       // Default stale time should be 5 minutes
-      expect(CACHE_CONFIG.defaultStaleTime).toBe(300000); // 5 * 60 * 1000
+      expect(CACHE_CONFIG.defaultStaleTime).toBe(300_000); // 5 * 60 * 1000
     });
   });
 
@@ -193,20 +193,20 @@ describe("cache configuration", () => {
 
     it("should have reasonable time values", () => {
       // Works: 1 day stale, 7 days gc
-      expect(ENTITY_CACHE_TIMES.works.stale).toBe(86400000); // 1 day
-      expect(ENTITY_CACHE_TIMES.works.gc).toBe(604800000); // 7 days
+      expect(ENTITY_CACHE_TIMES.works.stale).toBe(86_400_000); // 1 day
+      expect(ENTITY_CACHE_TIMES.works.gc).toBe(604_800_000); // 7 days
 
       // Authors: 12 hours stale, 3 days gc
-      expect(ENTITY_CACHE_TIMES.authors.stale).toBe(43200000); // 12 hours
-      expect(ENTITY_CACHE_TIMES.authors.gc).toBe(259200000); // 3 days
+      expect(ENTITY_CACHE_TIMES.authors.stale).toBe(43_200_000); // 12 hours
+      expect(ENTITY_CACHE_TIMES.authors.gc).toBe(259_200_000); // 3 days
 
       // Search: 5 minutes stale, 1 hour gc (most dynamic)
-      expect(ENTITY_CACHE_TIMES.search.stale).toBe(300000); // 5 minutes
-      expect(ENTITY_CACHE_TIMES.search.gc).toBe(3600000); // 1 hour
+      expect(ENTITY_CACHE_TIMES.search.stale).toBe(300_000); // 5 minutes
+      expect(ENTITY_CACHE_TIMES.search.gc).toBe(3_600_000); // 1 hour
 
       // Institutions: 30 days stale, 90 days gc (most stable)
-      expect(ENTITY_CACHE_TIMES.institutions.stale).toBe(2592000000); // 30 days
-      expect(ENTITY_CACHE_TIMES.institutions.gc).toBe(7776000000); // 90 days
+      expect(ENTITY_CACHE_TIMES.institutions.stale).toBe(2_592_000_000); // 30 days
+      expect(ENTITY_CACHE_TIMES.institutions.gc).toBe(7_776_000_000); // 90 days
     });
   });
 

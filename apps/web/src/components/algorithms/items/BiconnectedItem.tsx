@@ -1,7 +1,6 @@
 /**
  * Biconnected Components Algorithm Item
  * Finds biconnected components and articulation points using Tarjan's algorithm
- *
  * @module components/algorithms/items/BiconnectedItem
  */
 
@@ -22,11 +21,11 @@ import { useBiconnectedComponents } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function BiconnectedItem({
+export const BiconnectedItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const biconnectedComponents = useBiconnectedComponents(nodes, edges);
 
   return (
@@ -121,4 +120,4 @@ export function BiconnectedItem({
       )}
     </Stack>
   );
-}
+};

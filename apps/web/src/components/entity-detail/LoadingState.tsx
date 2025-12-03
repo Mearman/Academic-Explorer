@@ -1,8 +1,7 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
-import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
+import { Code, Container, Flex, Loader, Paper, Stack, Text,Title } from "@mantine/core";
 import React from "react";
-
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
@@ -14,7 +13,7 @@ interface LoadingStateProps {
 }
 
 // Helper function to map entity types to Mantine colors
-function getMantineColor(entityType: EntityType): string {
+const getMantineColor = (entityType: EntityType): string => {
   const colorMap: Record<EntityType, string> = {
     authors: 'blue',
     works: 'violet',
@@ -30,9 +29,9 @@ function getMantineColor(entityType: EntityType): string {
     keywords: 'red',
   };
   return colorMap[entityType] || 'blue';
-}
+};
 
-export function LoadingState({ entityType, entityId, config }: LoadingStateProps) {
+export const LoadingState = ({ entityType, entityId, config }: LoadingStateProps) => {
   const loaderColor = getMantineColor(config.colorKey as EntityType);
 
   // Debug logging
@@ -60,4 +59,4 @@ export function LoadingState({ entityType, entityId, config }: LoadingStateProps
       </Flex>
     </Container>
   );
-}
+};

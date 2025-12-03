@@ -3,18 +3,17 @@
  *
  * Tests the D3 force simulation graph visualization page at /explore.
  * Verifies graph rendering, zoom controls, node interactions, and empty state handling.
- *
  * @see spec-020 Phase 1: Utility pages
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForGraphReady } from '@/test/helpers/app-ready';
 import { ExplorePage } from '@/test/page-objects/ExplorePage';
 
 test.describe('@utility Explore Page', () => {
-	test.setTimeout(60000); // 60 seconds for graph rendering
+	test.setTimeout(60_000); // 60 seconds for graph rendering
 
 	let explorePage: ExplorePage;
 
@@ -62,12 +61,12 @@ test.describe('@utility Explore Page', () => {
 		const graphContainer = page.locator(explorePage['exploreSelectors'].graphContainer);
 		const primaryVisible = await graphContainer.isVisible().catch(() => false);
 
-		if (!primaryVisible) {
+		if (primaryVisible) {
+			await expect(graphContainer).toBeVisible();
+		} else {
 			// Fall back to SVG element
 			const svgContainer = page.locator('svg');
 			await expect(svgContainer).toBeVisible();
-		} else {
-			await expect(graphContainer).toBeVisible();
 		}
 
 		// Verify SVG has graph groups
@@ -229,8 +228,8 @@ test.describe('@utility Explore Page', () => {
 		expect(criticalErrors).toHaveLength(0);
 
 		// Verify page didn't crash
-		const pageVisible = await page.locator('main').isVisible();
-		expect(pageVisible).toBeTruthy();
+		const pageVisible = page.locator('main');
+		await expect(pageVisible).toBeVisible();
 	});
 
 	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {

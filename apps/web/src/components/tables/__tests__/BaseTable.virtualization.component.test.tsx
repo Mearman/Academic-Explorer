@@ -1,9 +1,10 @@
 /**
  * @vitest-environment jsdom
  */
+import "@testing-library/jest-dom/vitest";
+
 import { MantineProvider } from "@mantine/core";
 import { type ColumnDef } from "@tanstack/react-table";
-import "@testing-library/jest-dom/vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 

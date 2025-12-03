@@ -5,12 +5,11 @@
  * - Expand (fetch relationships)
  * - View details (navigate to entity page)
  * - Set as path source/target
- *
  * @module components/graph/NodeContextMenu
  */
 
-import type { GraphNode, EntityType } from '@bibgraph/types';
-import { Menu, Portal, Text, Loader } from '@mantine/core';
+import type { EntityType,GraphNode } from '@bibgraph/types';
+import { Loader,Menu, Portal, Text } from '@mantine/core';
 import {
   IconArrowsMaximize,
   IconExternalLink,
@@ -70,8 +69,9 @@ export interface NodeContextMenuProps {
 
 /**
  * Get route path for an entity type
+ * @param entityType
  */
-function getEntityRoute(entityType: EntityType): string {
+const getEntityRoute = (entityType: EntityType): string => {
   const routes: Record<EntityType, string> = {
     works: '/works',
     authors: '/authors',
@@ -87,15 +87,25 @@ function getEntityRoute(entityType: EntityType): string {
     subfields: '/subfields',
   };
   return routes[entityType] || '/works';
-}
+};
 
 /**
  * Context menu for graph nodes
  *
  * Renders a Mantine Menu positioned at the click location.
  * Uses Portal to ensure proper stacking above the graph canvas.
+ * @param root0
+ * @param root0.state
+ * @param root0.onClose
+ * @param root0.onExpand
+ * @param root0.onSetPathSource
+ * @param root0.onSetPathTarget
+ * @param root0.isExpanding
+ * @param root0.isExpanded
+ * @param root0.pathSource
+ * @param root0.pathTarget
  */
-export function NodeContextMenu({
+export const NodeContextMenu = ({
   state,
   onClose,
   onExpand,
@@ -105,7 +115,7 @@ export function NodeContextMenu({
   isExpanded,
   pathSource,
   pathTarget,
-}: NodeContextMenuProps) {
+}: NodeContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const { opened, x, y, node } = state;
 
@@ -228,9 +238,9 @@ export function NodeContextMenu({
             >
               {nodeIsExpanding
                 ? 'Expanding...'
-                : nodeIsExpanded
+                : (nodeIsExpanded
                   ? 'Already expanded'
-                  : 'Expand relationships'}
+                  : 'Expand relationships')}
             </Menu.Item>
 
             {/* View details */}
@@ -289,4 +299,4 @@ export function NodeContextMenu({
       </div>
     </Portal>
   );
-}
+};

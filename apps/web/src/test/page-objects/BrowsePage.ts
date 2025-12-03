@@ -5,7 +5,6 @@
  * This is a utility page, not an entity detail page.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BrowsePage
- *
  * @see spec-020 Phase 2: Browse page E2E tests
  */
 
@@ -55,6 +54,7 @@ export class BrowsePage extends BaseSPAPageObject {
 
 	/**
 	 * Click an entity type card by entity type name
+	 * @param entityType
 	 */
 	async clickEntityType(entityType: string): Promise<void> {
 		const card = this.page
@@ -84,6 +84,7 @@ export class BrowsePage extends BaseSPAPageObject {
 
 	/**
 	 * Check if entity type card is visible
+	 * @param entityType
 	 */
 	async isEntityTypeVisible(entityType: string): Promise<boolean> {
 		const card = this.page
@@ -111,6 +112,7 @@ export class BrowsePage extends BaseSPAPageObject {
 
 	/**
 	 * Assert page title contains expected text
+	 * @param expectedTitle
 	 */
 	async expectPageTitle(expectedTitle: string): Promise<void> {
 		const title = await this.getPageTitle();
@@ -119,6 +121,7 @@ export class BrowsePage extends BaseSPAPageObject {
 
 	/**
 	 * Assert specific entity type card is visible
+	 * @param entityType
 	 */
 	async expectEntityTypeVisible(entityType: string): Promise<void> {
 		const card = this.page
@@ -129,6 +132,7 @@ export class BrowsePage extends BaseSPAPageObject {
 
 	/**
 	 * Assert minimum number of entity type cards are displayed
+	 * @param minCount
 	 */
 	async expectMinimumEntityTypes(minCount: number): Promise<void> {
 		const count = await this.getEntityTypeCount();

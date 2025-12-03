@@ -22,11 +22,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 
 import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
-
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
-import { TableViewModeToggle, type TableViewMode } from "./TableViewModeToggle";
+import { type TableViewMode,TableViewModeToggle } from "./TableViewModeToggle";
 import type { ColumnConfig as BaseColumnConfig } from "./types";
 
 type Entity =
@@ -69,7 +68,7 @@ export interface EntityListProps {
 
 // Entity transformation functions are now provided by @bibgraph/utils
 
-export function EntityList({
+export const EntityList = ({
   viewMode = "table",
   onViewModeChange,
   entityType,
@@ -78,7 +77,7 @@ export function EntityList({
   title,
   urlFilters,
   searchParams,
-}: EntityListProps) {
+}: EntityListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const onError = React.useCallback((error: Error) => {
@@ -324,4 +323,4 @@ export function EntityList({
       }}
     </DataState>
   );
-}
+};

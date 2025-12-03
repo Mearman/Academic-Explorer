@@ -12,7 +12,6 @@ import type { ExportFormat } from '../types/catalogue';
 
 /**
  * Validates export format data structure
- *
  * @param data - Unknown data to validate
  * @throws Error if validation fails with descriptive message
  */
@@ -32,14 +31,14 @@ export function validateExportFormat(data: unknown): asserts data is ExportForma
   }
 
   if (!Array.isArray(format.entities)) {
-    throw new Error('Invalid format: entities must be array');
+    throw new TypeError('Invalid format: entities must be array');
   }
 
   if (format.entities.length !== format.listMetadata.entityCount) {
     throw new Error('Invalid format: entity count mismatch');
   }
 
-  if (format.entities.length > 10000) {
+  if (format.entities.length > 10_000) {
     throw new Error('Invalid format: too many entities (max 10,000)');
   }
 

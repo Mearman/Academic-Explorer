@@ -15,7 +15,7 @@
  * - Test requirements: Mock date to November, intercept API requests, verify parameter
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 interface InterceptedRequest {
   url: string;

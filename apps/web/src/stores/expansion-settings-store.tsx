@@ -7,12 +7,12 @@
 import type {
   ExpansionSettings,
   ExpansionTarget,
-  SortCriteria,
   FilterCriteria,
+  SortCriteria,
 } from "@bibgraph/types";
 import { getDefaultSettingsForTarget , RelationType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
-import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
+import React, { createContext, type ReactNode,use, useCallback, useReducer } from "react";
 
 interface ExpansionSettingsState {
   /** Settings per target type */
@@ -335,9 +335,7 @@ const expansionSettingsReducer = (
       // Copy only valid expansion targets (entity types or relation types)
       Object.entries(action.payload).forEach(([key, value]) => {
         // Type guard for entity types
-        function isEntityType(
-          k: string,
-        ): k is
+        const isEntityType = (k: string): k is
           | "works"
           | "authors"
           | "sources"
@@ -349,8 +347,7 @@ const expansionSettingsReducer = (
           | "keywords"
           | "domains"
           | "fields"
-          | "subfields" {
-          return [
+          | "subfields" => [
             "works",
             "authors",
             "sources",
@@ -364,13 +361,12 @@ const expansionSettingsReducer = (
             "fields",
             "subfields",
           ].includes(k);
-        }
 
         // Type guard for relation types
-        function isRelationType(k: string): k is RelationType {
+        const isRelationType = (k: string): k is RelationType => {
           const relationTypes: string[] = Object.values(RelationType);
           return relationTypes.includes(k);
-        }
+        };
 
         if (isEntityType(key) || isRelationType(key)) {
           newSettings[key] = value;
@@ -400,15 +396,15 @@ export const ExpansionSettingsProvider: React.FC<{ children: ReactNode }> = ({ c
 
   const value = { state, dispatch };
   return (
-    <ExpansionSettingsContext.Provider value={value}>
+    <ExpansionSettingsContext value={value}>
       {children}
-    </ExpansionSettingsContext.Provider>
+    </ExpansionSettingsContext>
   );
 };
 
 // Hook for using expansion settings state
 export const useExpansionSettingsState = () => {
-  const context = useContext(ExpansionSettingsContext);
+  const context = use(ExpansionSettingsContext);
   if (!context) {
     throw new Error("useExpansionSettingsState must be used within ExpansionSettingsProvider");
   }
@@ -417,7 +413,7 @@ export const useExpansionSettingsState = () => {
 
 // Hook for using expansion settings actions
 export const useExpansionSettingsActions = () => {
-  const context = useContext(ExpansionSettingsContext);
+  const context = use(ExpansionSettingsContext);
   if (!context) {
     throw new Error("useExpansionSettingsActions must be used within ExpansionSettingsProvider");
   }

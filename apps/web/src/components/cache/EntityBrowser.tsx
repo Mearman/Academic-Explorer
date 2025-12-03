@@ -1,11 +1,9 @@
-import { Title, Text, Container, Paper } from "@mantine/core";
+import { Container, Paper,Text, Title } from "@mantine/core";
 
 /**
  * Placeholder component for the removed EntityBrowser functionality
  */
-export function EntityBrowser() {
-  return (
-    <Container size="lg" py="xl">
+export const EntityBrowser = () => <Container size="lg" py="xl">
       <Paper p="xl">
         <Title order={1}>Entity Browser</Title>
         <Text mt="md" c="dimmed">
@@ -16,6 +14,4 @@ export function EntityBrowser() {
           For entity exploration, please use the main search functionality.
         </Text>
       </Paper>
-    </Container>
-  );
-}
+    </Container>;

@@ -11,28 +11,27 @@ import { isDataVersionSelectorVisible } from "@bibgraph/utils";
 import {
   Anchor,
   Badge,
+  Box,
   Code,
-  Text,
   Flex,
   Group,
-  Box
-} from "@mantine/core";
+  Text} from "@mantine/core";
 import {
-  IconExternalLink,
-  IconLink,
+  IconCalendar,
+  IconChartBar,
   IconCheck,
-  IconX,
+  IconClipboard,
+  IconExternalLink,
+  IconFile,
   IconInfoCircle,
   IconKey,
-  IconChartBar,
+  IconLink,
   IconNetwork,
-  IconCalendar,
   IconWorld,
-  IconClipboard,
-  IconFile,
+  IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React, { useLayoutEffect, useRef, useState, useMemo, useCallback } from "react";
+import React, { useCallback,useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
@@ -204,7 +203,13 @@ class OccupancyGrid {
     return this.canPlace(col, row, colSpan, rowSpan);
   }
 
-  /** Count occupied cells adjacent to a placement (measures gap-filling) */
+  /**
+   * Count occupied cells adjacent to a placement (measures gap-filling)
+   * @param colStart
+   * @param rowStart
+   * @param colSpan
+   * @param rowSpan
+   */
   countAdjacentOccupied(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
     let count = 0;
 
@@ -237,7 +242,13 @@ class OccupancyGrid {
     return count;
   }
 
-  /** Check if placing here would create isolated single-cell gaps */
+  /**
+   * Check if placing here would create isolated single-cell gaps
+   * @param colStart
+   * @param rowStart
+   * @param colSpan
+   * @param rowSpan
+   */
   countIsolatedGapsCreated(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
     let isolatedGaps = 0;
 
@@ -286,7 +297,17 @@ class OccupancyGrid {
     return isolatedGaps;
   }
 
-  /** Check if placement completes any row slices within bounds */
+  /**
+   * Check if placement completes any row slices within bounds
+   * @param colStart
+   * @param rowStart
+   * @param colSpan
+   * @param rowSpan
+   * @param bounds
+   * @param bounds.colStart
+   * @param bounds.colEnd
+   * @param bounds.rowStart
+   */
   checkRowCompletion(
     colStart: number,
     rowStart: number,
@@ -311,7 +332,13 @@ class OccupancyGrid {
     return completedRows;
   }
 
-  /** Check for edge alignment with existing items */
+  /**
+   * Check for edge alignment with existing items
+   * @param colStart
+   * @param rowStart
+   * @param colSpan
+   * @param rowSpan
+   */
   countEdgeAlignments(colStart: number, rowStart: number, colSpan: number, rowSpan: number): number {
     let alignments = 0;
 
@@ -348,7 +375,14 @@ class OccupancyGrid {
     return alignments;
   }
 
-  /** Score a placement candidate */
+  /**
+   * Score a placement candidate
+   * @param position
+   * @param bounds
+   * @param bounds.colStart
+   * @param bounds.colEnd
+   * @param bounds.rowStart
+   */
   scorePlacement(
     position: GridPosition,
     bounds: { colStart: number; colEnd: number; rowStart: number }
@@ -384,7 +418,11 @@ class OccupancyGrid {
     return score;
   }
 
-  /** Generate valid orientations for an item */
+  /**
+   * Generate valid orientations for an item
+   * @param flex
+   * @param maxCols
+   */
   generateOrientations(flex: ItemFlexibility, maxCols: number): Array<{ cols: number; rows: number }> {
     const orientations: Array<{ cols: number; rows: number }> = [];
     const area = flex.preferredCols * flex.preferredRows;
@@ -449,7 +487,15 @@ class OccupancyGrid {
     return orientations;
   }
 
-  /** Find the best placement for an item with orientation optimization */
+  /**
+   * Find the best placement for an item with orientation optimization
+   * @param flex
+   * @param bounds
+   * @param bounds.colStart
+   * @param bounds.colEnd
+   * @param bounds.rowStart
+   * @param maxRow
+   */
   findBestFitWithin(
     flex: ItemFlexibility,
     bounds: { colStart: number; colEnd: number; rowStart: number },
@@ -496,7 +542,11 @@ class OccupancyGrid {
     return bestPosition;
   }
 
-  /** Find the best fit globally (not within bounds) */
+  /**
+   * Find the best fit globally (not within bounds)
+   * @param flex
+   * @param maxRow
+   */
   findBestFit(flex: ItemFlexibility, maxRow: number = 1000): GridPosition | null {
     return this.findBestFitWithin(
       flex,
@@ -540,7 +590,7 @@ class OccupancyGrid {
 // Value Rendering (creates React nodes, not grid items)
 // ============================================================================
 
-function renderPrimitiveValue(value: unknown): React.ReactNode {
+const renderPrimitiveValue = (value: unknown): React.ReactNode => {
   if (value === null || value === undefined) {
     return <Text c="dimmed" fs="italic" size="sm">null</Text>;
   }
@@ -625,7 +675,7 @@ function renderPrimitiveValue(value: unknown): React.ReactNode {
   }
 
   return <Text c="dimmed" fs="italic" size="sm">{String(value)}</Text>;
-}
+};
 
 // ============================================================================
 // Data Flattening & Layout Algorithm
@@ -661,7 +711,7 @@ interface SizeEstimate {
   maxAspectRatio: number;
 }
 
-function estimateValueSize(value: unknown): SizeEstimate {
+const estimateValueSize = (value: unknown): SizeEstimate => {
   // Default flexibility settings
   const baseFlexibility = {
     canRotate: true,
@@ -793,9 +843,9 @@ function estimateValueSize(value: unknown): SizeEstimate {
   }
 
   return { rows: 2, cols: 1, ...baseFlexibility };
-}
+};
 
-function groupFields(data: Record<string, unknown>): SectionData[] {
+const groupFields = (data: Record<string, unknown>): SectionData[] => {
   const groups: Record<string, Record<string, unknown>> = {
     "Identifiers": {},
     "Basic Information": {},
@@ -856,13 +906,13 @@ function groupFields(data: Record<string, unknown>): SectionData[] {
         };
       }),
     }));
-}
+};
 
 // ============================================================================
 // Recursive Value Renderer (for complex nested content)
 // ============================================================================
 
-function renderValueContent(value: unknown, depth: number, colors?: ThemeColors): React.ReactNode {
+const renderValueContent = (value: unknown, depth: number, colors?: ThemeColors): React.ReactNode => {
   // Primitives
   if (value === null || value === undefined || typeof value === "boolean" ||
       typeof value === "number" || typeof value === "string") {
@@ -942,7 +992,7 @@ function renderValueContent(value: unknown, depth: number, colors?: ThemeColors)
   }
 
   return <Text c="dimmed" fs="italic" size="sm">{String(value)}</Text>;
-}
+};
 
 // ============================================================================
 // Main Layout Component
@@ -953,7 +1003,7 @@ interface GlobalGridProps {
   colors?: ThemeColors;
 }
 
-function GlobalGrid({ sections, colors }: GlobalGridProps) {
+const GlobalGrid = ({ sections, colors }: GlobalGridProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [gridItems, setGridItems] = useState<FlatGridItem[]>([]);
   const [numCols, setNumCols] = useState(4);
@@ -1097,7 +1147,7 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
           content: (
             <Box p={GROUP_PADDING}>
               <Text size="xs" fw={600} c="blue.7" mb={4}>
-                {field.key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                {field.key.replaceAll('_', " ").replaceAll(/\b\w/g, l => l.toUpperCase())}
               </Text>
               <Box>
                 {renderValueContent(field.value, 0, colors)}
@@ -1247,7 +1297,7 @@ function GlobalGrid({ sections, colors }: GlobalGridProps) {
         ))}
     </Box>
   );
-}
+};
 
 // ============================================================================
 // Stacked Layout (Original vertical layout)
@@ -1258,9 +1308,7 @@ interface StackedLayoutProps {
   colors?: ThemeColors;
 }
 
-function StackedLayout({ sections, colors }: StackedLayoutProps) {
-  return (
-    <Box>
+const StackedLayout = ({ sections, colors }: StackedLayoutProps) => <Box>
       {sections.map((section) => (
         <Box
           key={section.name}
@@ -1299,7 +1347,7 @@ function StackedLayout({ sections, colors }: StackedLayoutProps) {
                 }}
               >
                 <Text size="sm" fw={600} c="blue.7" mb="xs">
-                  {field.key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                  {field.key.replaceAll('_', " ").replaceAll(/\b\w/g, l => l.toUpperCase())}
                 </Text>
                 {renderValueContent(field.value, 0, colors)}
               </Box>
@@ -1307,9 +1355,7 @@ function StackedLayout({ sections, colors }: StackedLayoutProps) {
           </Box>
         </Box>
       ))}
-    </Box>
-  );
-}
+    </Box>;
 
 // ============================================================================
 // Main Export
@@ -1322,7 +1368,7 @@ interface EntityDataDisplayProps {
   layout?: LayoutMode;
 }
 
-export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDataDisplayProps) {
+export const EntityDataDisplay = ({ data, title, layout = "stacked" }: EntityDataDisplayProps) => {
   const { colors } = useThemeColors();
 
   // Group and prepare data
@@ -1360,4 +1406,4 @@ export function EntityDataDisplay({ data, title, layout = "stacked" }: EntityDat
       )}
     </Box>
   );
-}
+};

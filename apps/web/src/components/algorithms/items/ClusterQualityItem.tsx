@@ -1,7 +1,6 @@
 /**
  * Cluster Quality Metrics Algorithm Item
  * Displays quality metrics for the current community detection results
- *
  * @module components/algorithms/items/ClusterQualityItem
  */
 
@@ -23,11 +22,11 @@ interface ClusterQualityItemProps extends AlgorithmItemBaseProps {
   communities: CommunityResult[];
 }
 
-export function ClusterQualityItem({
+export const ClusterQualityItem = ({
   nodes,
   edges,
   communities,
-}: ClusterQualityItemProps) {
+}: ClusterQualityItemProps) => {
   const clusterQuality = useClusterQuality(nodes, edges, communities);
 
   return (
@@ -43,7 +42,7 @@ export function ClusterQualityItem({
             <Text size="sm" c="dimmed">Modularity</Text>
             <Tooltip label="Community structure quality (-0.5 to 1.0, higher is better)">
               <Badge
-                color={clusterQuality.modularity > 0.4 ? 'green' : clusterQuality.modularity > 0.2 ? 'yellow' : 'red'}
+                color={clusterQuality.modularity > 0.4 ? 'green' : (clusterQuality.modularity > 0.2 ? 'yellow' : 'red')}
                 variant="light"
               >
                 {clusterQuality.modularity.toFixed(4)}
@@ -55,7 +54,7 @@ export function ClusterQualityItem({
             <Text size="sm" c="dimmed">Avg. Conductance</Text>
             <Tooltip label="Ratio of boundary to internal edges (0-1, lower is better)">
               <Badge
-                color={clusterQuality.avgConductance < 0.3 ? 'green' : clusterQuality.avgConductance < 0.5 ? 'yellow' : 'red'}
+                color={clusterQuality.avgConductance < 0.3 ? 'green' : (clusterQuality.avgConductance < 0.5 ? 'yellow' : 'red')}
                 variant="light"
               >
                 {clusterQuality.avgConductance.toFixed(4)}
@@ -67,7 +66,7 @@ export function ClusterQualityItem({
             <Text size="sm" c="dimmed">Avg. Density</Text>
             <Tooltip label="Internal edge density of clusters (0-1, higher is better)">
               <Badge
-                color={clusterQuality.avgDensity > 0.5 ? 'green' : clusterQuality.avgDensity > 0.2 ? 'yellow' : 'gray'}
+                color={clusterQuality.avgDensity > 0.5 ? 'green' : (clusterQuality.avgDensity > 0.2 ? 'yellow' : 'gray')}
                 variant="light"
               >
                 {(clusterQuality.avgDensity * 100).toFixed(1)}%
@@ -79,7 +78,7 @@ export function ClusterQualityItem({
             <Text size="sm" c="dimmed">Coverage Ratio</Text>
             <Tooltip label="Fraction of edges within clusters (0-1, higher is better)">
               <Badge
-                color={clusterQuality.coverageRatio > 0.7 ? 'green' : clusterQuality.coverageRatio > 0.4 ? 'yellow' : 'gray'}
+                color={clusterQuality.coverageRatio > 0.7 ? 'green' : (clusterQuality.coverageRatio > 0.4 ? 'yellow' : 'gray')}
                 variant="light"
               >
                 {(clusterQuality.coverageRatio * 100).toFixed(1)}%
@@ -99,4 +98,4 @@ export function ClusterQualityItem({
       )}
     </Stack>
   );
-}
+};

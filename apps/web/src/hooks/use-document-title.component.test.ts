@@ -3,7 +3,7 @@
  */
 
 import { renderHook } from "@testing-library/react";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach,beforeEach, describe, expect, it } from "vitest";
 
 import { useDocumentTitle, useEntityDocumentTitle } from "./use-document-title";
 
@@ -52,7 +52,7 @@ describe("useDocumentTitle", () => {
 
   it("should reset to base title when title is undefined", () => {
     renderHook(() => {
-      useDocumentTitle(undefined);
+      useDocumentTitle();
     });
 
     expect(document.title).toBe("BibGraph");
@@ -137,7 +137,7 @@ describe("useEntityDocumentTitle", () => {
 
   it("should handle undefined entity", () => {
     renderHook(() => {
-      useEntityDocumentTitle(undefined);
+      useEntityDocumentTitle();
     });
 
     expect(document.title).toBe("BibGraph");

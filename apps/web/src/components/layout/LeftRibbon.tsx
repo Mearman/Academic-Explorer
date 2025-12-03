@@ -4,9 +4,7 @@ import { IconLayoutSidebar } from "@tabler/icons-react";
 /**
  * Placeholder component for the removed LeftRibbon functionality
  */
-export function LeftRibbon() {
-  return (
-    <Tooltip label="Left Ribbon (temporarily disabled)">
+export const LeftRibbon = () => <Tooltip label="Left Ribbon (temporarily disabled)">
       <ActionIcon
         variant="subtle"
         size="lg"
@@ -15,6 +13,4 @@ export function LeftRibbon() {
       >
         <IconLayoutSidebar size={18} />
       </ActionIcon>
-    </Tooltip>
-  );
-}
+    </Tooltip>;

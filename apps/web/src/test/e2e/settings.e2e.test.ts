@@ -8,12 +8,11 @@
  * - Settings persistence across page reloads
  * - Reset preferences functionality
  * - Clear cache functionality
- *
  * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { SettingsPage } from "@/test/page-objects/SettingsPage";
@@ -41,7 +40,7 @@ test.describe("@utility Settings Page", () => {
 
 		// Wait for Settings heading to be visible
 		const heading = page.locator("h1", { hasText: "Settings" });
-		await expect(heading).toBeVisible({ timeout: 10000 });
+		await expect(heading).toBeVisible({ timeout: 10_000 });
 
 		// Verify User Preferences section
 		await expect(page.getByText("User Preferences")).toBeVisible();
@@ -88,15 +87,11 @@ test.describe("@utility Settings Page", () => {
 
 		// Verify notification message
 		const notification = page.locator(".mantine-Notification-root");
-		if (newState) {
-			await expect(notification).toContainText(
+		await (newState ? await expect(notification).toContainText(
 				"Extended research outputs (xpac) enabled",
-			);
-		} else {
-			await expect(notification).toContainText(
+			) : await expect(notification).toContainText(
 				"Extended research outputs (xpac) disabled",
-			);
-		}
+			));
 	});
 
 	test("should display theme controls and allow theme switching", async ({
@@ -124,9 +119,7 @@ test.describe("@utility Settings Page", () => {
 
 		// Verify the data-mantine-color-scheme attribute changed
 		const colorScheme = await page.evaluate(() => {
-			return document.documentElement.getAttribute(
-				"data-mantine-color-scheme",
-			);
+			return document.documentElement.dataset.mantineColorScheme;
 		});
 		expect(colorScheme).toBe(newTheme);
 	});
@@ -254,7 +247,7 @@ test.describe("@utility Settings Page", () => {
 
 		// Wait for notification indicating completion
 		await page.waitForSelector(".mantine-Notification-root", {
-			timeout: 10000,
+			timeout: 10_000,
 		});
 
 		// Verify success notification

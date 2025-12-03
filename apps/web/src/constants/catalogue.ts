@@ -27,7 +27,7 @@ export const MAX_ENTITY_NOTE_LENGTH = 5000;
 /**
  * Maximum number of entities per list
  */
-export const MAX_ENTITIES_PER_LIST = 10000;
+export const MAX_ENTITIES_PER_LIST = 10_000;
 
 /**
  * Export format version identifier

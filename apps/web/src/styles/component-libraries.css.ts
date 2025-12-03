@@ -195,7 +195,7 @@ export const radixInput = style({
 });
 
 // Helper function to get component library theme
-export function getComponentLibraryTheme(library: ComponentLibrary) {
+export const getComponentLibraryTheme = (library: ComponentLibrary) => {
   switch (library) {
     case "mantine":
       return mantineTheme;
@@ -206,10 +206,10 @@ export function getComponentLibraryTheme(library: ComponentLibrary) {
     default:
       return mantineTheme;
   }
-}
+};
 
 // Helper function to get button class for component library
-export function getButtonClass(library: ComponentLibrary) {
+export const getButtonClass = (library: ComponentLibrary) => {
   switch (library) {
     case "mantine":
       return mantineButton;
@@ -220,10 +220,10 @@ export function getButtonClass(library: ComponentLibrary) {
     default:
       return mantineButton;
   }
-}
+};
 
 // Helper function to get card class for component library
-export function getCardClass(library: ComponentLibrary) {
+export const getCardClass = (library: ComponentLibrary) => {
   switch (library) {
     case "mantine":
       return mantineCard;
@@ -234,10 +234,10 @@ export function getCardClass(library: ComponentLibrary) {
     default:
       return mantineCard;
   }
-}
+};
 
 // Helper function to get input class for component library
-export function getInputClass(library: ComponentLibrary) {
+export const getInputClass = (library: ComponentLibrary) => {
   switch (library) {
     case "mantine":
       return mantineInput;
@@ -248,4 +248,4 @@ export function getInputClass(library: ComponentLibrary) {
     default:
       return mantineInput;
   }
-}
+};

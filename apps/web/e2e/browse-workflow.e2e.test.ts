@@ -1,14 +1,13 @@
 /**
  * E2E tests for Browse Workflow
  * Tests the complete browse workflow: browse → select entity type → view index → select entity → view detail
- *
  * @module browse-workflow.e2e
  * @see BrowsePage page object
  * @see spec-020 Phase 2: Browse page E2E tests
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { BrowsePage } from '@/test/page-objects/BrowsePage';
@@ -44,7 +43,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify index page loaded with list
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
 		const pageTitle = page.locator('h1, [data-testid="page-title"]');
@@ -54,8 +53,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstWorkLink = page.locator('a[href*="/works/W"]').first();
 		await expect(firstWorkLink).toBeVisible();
 
-		const workTitle = await firstWorkLink.textContent();
-		expect(workTitle).toBeTruthy();
+		const workTitle = firstWorkLink;
+		await expect(workTitle).toHaveText();
 
 		await firstWorkLink.click();
 
@@ -69,8 +68,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify work title is displayed
-		const displayedTitle = await entityTitle.textContent();
-		expect(displayedTitle).toBeTruthy();
+		const displayedTitle = entityTitle;
+		await expect(displayedTitle).toHaveText();
 	});
 
 	test('should complete full workflow: browse → authors index → author detail', async ({ page }) => {
@@ -90,7 +89,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify index page loaded with list
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
 		const pageTitle = page.locator('h1, [data-testid="page-title"]');
@@ -100,8 +99,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstAuthorLink = page.locator('a[href*="/authors/A"]').first();
 		await expect(firstAuthorLink).toBeVisible();
 
-		const authorName = await firstAuthorLink.textContent();
-		expect(authorName).toBeTruthy();
+		const authorName = firstAuthorLink;
+		await expect(authorName).toHaveText();
 
 		await firstAuthorLink.click();
 
@@ -115,8 +114,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify author name is displayed
-		const displayedName = await entityTitle.textContent();
-		expect(displayedName).toBeTruthy();
+		const displayedName = entityTitle;
+		await expect(displayedName).toHaveText();
 	});
 
 	test('should complete full workflow: browse → institutions index → institution detail', async ({ page }) => {
@@ -136,7 +135,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify index page loaded with list
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
 		const pageTitle = page.locator('h1, [data-testid="page-title"]');
@@ -146,8 +145,8 @@ test.describe('@workflow Browse Workflow', () => {
 		const firstInstitutionLink = page.locator('a[href*="/institutions/I"]').first();
 		await expect(firstInstitutionLink).toBeVisible();
 
-		const institutionName = await firstInstitutionLink.textContent();
-		expect(institutionName).toBeTruthy();
+		const institutionName = firstInstitutionLink;
+		await expect(institutionName).toHaveText();
 
 		await firstInstitutionLink.click();
 
@@ -161,8 +160,8 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityTitle).toBeVisible();
 
 		// Verify institution name is displayed
-		const displayedName = await entityTitle.textContent();
-		expect(displayedName).toBeTruthy();
+		const displayedName = entityTitle;
+		await expect(displayedName).toHaveText();
 	});
 
 	test('should support browser back navigation from detail to index', async ({ page }) => {
@@ -177,7 +176,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await waitForAppReady(page);
 
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		const firstWorkLink = page.locator('a[href*="/works/W"]').first();
 		await firstWorkLink.click();
@@ -194,7 +193,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await waitForAppReady(page);
 
 		// Verify entity list is still visible
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
 		const pageTitle = page.locator('h1, [data-testid="page-title"]');
@@ -216,7 +215,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await waitForAppReady(page);
 
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Use browser back button to return to browse page
 		await page.goBack();
@@ -294,7 +293,7 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify multiple work items are displayed
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		const workLinks = page.locator('a[href*="/works/W"]');
 		const workCount = await workLinks.count();
@@ -304,8 +303,8 @@ test.describe('@workflow Browse Workflow', () => {
 
 		// Verify each link has text content
 		for (let i = 0; i < Math.min(5, workCount); i++) {
-			const linkText = await workLinks.nth(i).textContent();
-			expect(linkText).toBeTruthy();
+			const linkText = workLinks.nth(i);
+			await expect(linkText).toHaveText();
 			expect(linkText?.trim().length).toBeGreaterThan(0);
 		}
 	});
@@ -425,7 +424,7 @@ test.describe('@workflow @desktop Browse Workflow - Desktop Viewport', () => {
 
 		// Verify entity list displays with desktop layout
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// On desktop, should see multiple work items without scrolling
 		const workLinks = page.locator('a[href*="/works/W"]');
@@ -477,7 +476,7 @@ test.describe('@workflow @desktop Browse Workflow - Desktop Viewport', () => {
 		await waitForAppReady(page);
 
 		const entityList = page.locator('[data-testid="entity-list"]');
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Step 3: Navigate to author detail
 		const firstAuthorLink = page.locator('a[href*="/authors/A"]').first();
@@ -496,7 +495,7 @@ test.describe('@workflow @desktop Browse Workflow - Desktop Viewport', () => {
 		await page.goBack();
 		await expect(page).toHaveURL(/\/authors\/?/);
 		await waitForAppReady(page);
-		await expect(entityList).toBeVisible({ timeout: 30000 });
+		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Step 5: Navigate back to browse
 		await page.goBack();

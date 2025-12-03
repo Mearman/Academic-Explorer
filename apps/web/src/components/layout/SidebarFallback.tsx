@@ -4,10 +4,10 @@
  */
 
 import {
-  TextInput,
+  ActionIcon,
   Card,
   Text,
-  ActionIcon,
+  TextInput,
   Title,
 } from "@mantine/core";
 import {
@@ -25,7 +25,7 @@ interface SidebarFallbackProps {
   onClose?: () => void;
 }
 
-export function SidebarFallback({ title, type, onClose }: SidebarFallbackProps) {
+export const SidebarFallback = ({ title, type, onClose }: SidebarFallbackProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -73,4 +73,4 @@ export function SidebarFallback({ title, type, onClose }: SidebarFallbackProps) 
       </div>
     </div>
   );
-}
+};

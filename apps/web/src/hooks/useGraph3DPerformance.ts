@@ -5,7 +5,7 @@
  * to help diagnose rendering issues and optimize the visualization.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef,useState } from 'react';
 
 export interface PerformanceStats {
   /** Current frames per second */
@@ -59,8 +59,9 @@ const DEFAULT_STATS: PerformanceStats = {
 /**
  * Calculate jank score based on frame time variance
  * Higher variance = more stuttering/jank
+ * @param frameTimes
  */
-function calculateJankScore(frameTimes: number[]): number {
+const calculateJankScore = (frameTimes: number[]): number => {
   if (frameTimes.length < 2) return 0;
 
   const avg = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
@@ -79,28 +80,29 @@ function calculateJankScore(frameTimes: number[]): number {
   const jankFromVariance = Math.min(50, stdDev / targetFrameTime * 25);
 
   return Math.round(jankFromRatio + jankFromVariance);
-}
+};
 
 /**
  * Get memory usage if Performance API is available
  */
-function getMemoryUsage(): number | null {
+const getMemoryUsage = (): number | null => {
   // @ts-expect-error - memory is non-standard
   if (performance.memory) {
     // @ts-expect-error - memory is non-standard
     return Math.round(performance.memory.usedJSHeapSize / 1024 / 1024 * 100) / 100;
   }
   return null;
-}
+};
 
 /**
  * Determine performance level from FPS
+ * @param fps
  */
-function getPerformanceLevel(fps: number): 'good' | 'ok' | 'poor' {
+const getPerformanceLevel = (fps: number): 'good' | 'ok' | 'poor' => {
   if (fps >= 55) return 'good';
   if (fps >= 30) return 'ok';
   return 'poor';
-}
+};
 
 export interface UseGraph3DPerformanceReturn {
   /** Current performance statistics */
@@ -121,10 +123,8 @@ export interface UseGraph3DPerformanceReturn {
 
 /**
  * Hook for monitoring 3D graph visualization performance
- *
  * @param options - Configuration options
  * @returns Performance monitoring functions and stats
- *
  * @example
  * ```tsx
  * function Graph3DViewer() {
@@ -149,9 +149,7 @@ export interface UseGraph3DPerformanceReturn {
  * }
  * ```
  */
-export function useGraph3DPerformance(
-  options: UseGraph3DPerformanceOptions = {}
-): UseGraph3DPerformanceReturn {
+export const useGraph3DPerformance = (options: UseGraph3DPerformanceOptions = {}): UseGraph3DPerformanceReturn => {
   const {
     enabled = true,
     sampleSize = 60,
@@ -277,7 +275,7 @@ export function useGraph3DPerformance(
     startMonitoring,
     stopMonitoring,
   };
-}
+};
 
 /**
  * Performance overlay component props
@@ -290,8 +288,9 @@ export interface PerformanceOverlayProps {
 
 /**
  * Get CSS styles for performance level indicator
+ * @param level
  */
-export function getPerformanceLevelColor(level: 'good' | 'ok' | 'poor'): string {
+export const getPerformanceLevelColor = (level: 'good' | 'ok' | 'poor'): string => {
   switch (level) {
     case 'good':
       return '#4caf50'; // Green
@@ -302,12 +301,13 @@ export function getPerformanceLevelColor(level: 'good' | 'ok' | 'poor'): string 
     default:
       return '#888888';
   }
-}
+};
 
 /**
  * Format performance stats for display
+ * @param stats
  */
-export function formatPerformanceStats(stats: PerformanceStats): string[] {
+export const formatPerformanceStats = (stats: PerformanceStats): string[] => {
   const lines: string[] = [
     `FPS: ${stats.fps}`,
     `Frame Time: ${stats.avgFrameTime.toFixed(2)}ms`,
@@ -321,4 +321,4 @@ export function formatPerformanceStats(stats: PerformanceStats): string[] {
   }
 
   return lines;
-}
+};

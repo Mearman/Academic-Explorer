@@ -3,7 +3,7 @@
  * Uses Playwright's built-in test runner and web server management
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 
 import { defineConfig, devices } from "@playwright/test";
 
@@ -54,8 +54,8 @@ export default defineConfig({
     userAgent: "BibGraph-E2E-Tests/1.0 Playwright",
 
     // Timeout settings
-    actionTimeout: 10000,
-    navigationTimeout: 20000,
+    actionTimeout: 10_000,
+    navigationTimeout: 20_000,
 
     // Browser launch options for IndexedDB support
     launchOptions: {
@@ -74,7 +74,7 @@ export default defineConfig({
   },
 
   // Test timeout
-  timeout: 60000,
+  timeout: 60_000,
 
   // Global setup and teardown for cache warming and cleanup
   globalSetup: "./playwright.global-setup.ts",
@@ -128,7 +128,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
-    timeout: 120000,
+    timeout: 120_000,
     env: {
       NODE_ENV: process.env.CI ? "production" : "development",
       RUNNING_E2E: "true",

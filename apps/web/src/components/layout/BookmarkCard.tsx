@@ -5,14 +5,14 @@
 
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
+import { type CatalogueEntity,catalogueService } from "@bibgraph/utils/storage/catalogue-db";
 import {
+  ActionIcon,
+  Badge,
   Card,
-  Text,
   Group,
   Stack,
-  Badge,
-  ActionIcon,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
@@ -29,7 +29,7 @@ interface BookmarkCardProps {
   onDeleted?: () => void;
 }
 
-export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps) {
+export const BookmarkCard = ({ bookmark, onClose, onDeleted }: BookmarkCardProps) => {
   // Check if this is a special ID (search or list)
   const isSpecialId = bookmark.entityId.startsWith("search-") || bookmark.entityId.startsWith("list-");
 
@@ -48,11 +48,7 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
   if (titleFromNotes) {
     title = titleFromNotes;
   } else if (isSpecialId) {
-    if (bookmark.entityId.startsWith("search-")) {
-      title = `Search: ${bookmark.entityId.replace("search-", "").split("-")[0]}`;
-    } else {
-      title = `List: ${bookmark.entityId.replace("list-", "")}`;
-    }
+    title = bookmark.entityId.startsWith("search-") ? `Search: ${bookmark.entityId.replace("search-", "").split("-")[0]}` : `List: ${bookmark.entityId.replace("list-", "")}`;
   } else if (displayName) {
     title = displayName;
   } else if (isLoading) {
@@ -170,4 +166,4 @@ export function BookmarkCard({ bookmark, onClose, onDeleted }: BookmarkCardProps
       </Group>
     </Card>
   );
-}
+};

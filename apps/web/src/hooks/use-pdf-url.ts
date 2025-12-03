@@ -50,12 +50,13 @@ interface WorkData {
 
 /**
  * Extract PDF URL from OpenAlex work data
+ * @param work
  */
-function extractOpenAlexPdfUrl(work: WorkData): {
+const extractOpenAlexPdfUrl = (work: WorkData): {
   pdfUrl: string | null;
   landingPageUrl: string | null;
   oaStatus: string | null;
-} {
+} => {
   // Try best_oa_location first (best quality OA version)
   if (work.best_oa_location?.pdf_url) {
     return {
@@ -111,22 +112,21 @@ function extractOpenAlexPdfUrl(work: WorkData): {
     landingPageUrl,
     oaStatus: work.open_access?.oa_status ?? null,
   };
-}
+};
 
 /**
  * Hook to get PDF URL for a work
  * @param work - Work data from OpenAlex
  * @param options - Configuration options
+ * @param options.enableUnpaywallFallback
+ * @param options.skip
  */
-export function usePdfUrl(
-  work: WorkData | null | undefined,
-  options: {
+export const usePdfUrl = (work: WorkData | null | undefined, options: {
     /** Whether to enable Unpaywall fallback (default: true) */
     enableUnpaywallFallback?: boolean;
     /** Whether to skip the lookup entirely */
     skip?: boolean;
-  } = {}
-): PdfUrlResult {
+  } = {}): PdfUrlResult => {
   const { enableUnpaywallFallback = true, skip = false } = options;
 
   // State for email from settings
@@ -148,11 +148,7 @@ export function usePdfUrl(
 
   // Create/update Unpaywall client when email changes
   useEffect(() => {
-    if (email) {
-      unpaywallClientRef.current = createUnpaywallClient(email);
-    } else {
-      unpaywallClientRef.current = null;
-    }
+    unpaywallClientRef.current = email ? createUnpaywallClient(email) : null;
   }, [email]);
 
   // Extract DOI from work
@@ -335,4 +331,4 @@ export function usePdfUrl(
   ]);
 
   return result;
-}
+};

@@ -7,9 +7,9 @@
  */
 
 
-import type { GraphNode, GraphProvenance, GraphListNode } from '@bibgraph/types';
+import type { GraphListNode,GraphNode, GraphProvenance } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback,useEffect, useState } from 'react';
 
 import { useStorageProvider } from '@/contexts/storage-provider-context';
 
@@ -28,7 +28,7 @@ export interface UseGraphListReturn {
  * Hook for managing graph list with optimistic updates
  * T042-T044: Add node operations with provenance tracking
  */
-export function useGraphList(): UseGraphListReturn {
+export const useGraphList = (): UseGraphListReturn => {
 	const storage = useStorageProvider();
 	const [nodes, setNodes] = useState<GraphListNode[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -88,7 +88,7 @@ export function useGraphList(): UseGraphListReturn {
 			setNodes((prev) => {
 				// Check if node already exists
 				const existingIndex = prev.findIndex((n) => n.entityId === node.entityId);
-				if (existingIndex >= 0) {
+				if (existingIndex !== -1) {
 					// Update existing node's provenance
 					const updated = [...prev];
 					updated[existingIndex] = newEntry;
@@ -184,4 +184,4 @@ export function useGraphList(): UseGraphListReturn {
 		removeNode,
 		clearList,
 	};
-}
+};

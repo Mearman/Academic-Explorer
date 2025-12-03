@@ -9,7 +9,7 @@ import type { CatalogueSearch } from "./catalogue";
 
 // T078: Wrap CatalogueManager in error boundary for graceful error handling
 // T082: Wrap in CatalogueProvider to share useCatalogue state between components
-function CataloguePage() {
+const CataloguePage = () => {
   // T064: Get search params from router
   const search = Route.useSearch() as CatalogueSearch;
 
@@ -27,7 +27,7 @@ function CataloguePage() {
       </CatalogueErrorBoundary>
     </CatalogueProvider>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/catalogue")({
   component: CataloguePage,

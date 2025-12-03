@@ -6,7 +6,6 @@
  * - Weight configuration (edge property or custom)
  * - Node type filtering (e.g., "path through authors only")
  * - Edge property filtering (score thresholds)
- *
  * @module components/algorithms/items/ShortestPathItem
  */
 
@@ -36,13 +35,13 @@ import {
   IconRoute,
   IconSettings,
 } from '@tabler/icons-react';
-import { useState, useMemo } from 'react';
+import { useMemo,useState } from 'react';
 
 import {
+  type EdgePropertyFilter,
   findShortestPath,
   type PathResult,
   type WeightConfig,
-  type EdgePropertyFilter,
 } from '@/services/graph-algorithms';
 
 import type { PathAlgorithmProps } from '../types';
@@ -60,7 +59,7 @@ const NODE_TYPE_OPTIONS = ENTITY_TYPES.map((entityType) => ({
   label: ENTITY_METADATA[entityType].plural,
 }));
 
-export function ShortestPathItem({
+export const ShortestPathItem = ({
   nodes,
   edges,
   onHighlightPath,
@@ -68,7 +67,7 @@ export function ShortestPathItem({
   pathTarget: controlledPathTarget,
   onPathSourceChange,
   onPathTargetChange,
-}: PathAlgorithmProps) {
+}: PathAlgorithmProps) => {
   // Path finding state - supports both controlled and uncontrolled modes
   const [internalPathSource, setInternalPathSource] = useState<string | null>(null);
   const [internalPathTarget, setInternalPathTarget] = useState<string | null>(null);
@@ -83,8 +82,8 @@ export function ShortestPathItem({
   const [nodeTypes, setNodeTypes] = useState<EntityType[]>([]);
 
   // Edge filter state
-  const [scoreMin, setScoreMin] = useState<number | undefined>(undefined);
-  const [scoreMax, setScoreMax] = useState<number | undefined>(undefined);
+  const [scoreMin, setScoreMin] = useState<number | undefined>();
+  const [scoreMax, setScoreMax] = useState<number | undefined>();
 
   // Use controlled values if provided, otherwise use internal state
   const isControlled = controlledPathSource !== undefined || controlledPathTarget !== undefined;
@@ -320,4 +319,4 @@ export function ShortestPathItem({
       )}
     </Stack>
   );
-}
+};

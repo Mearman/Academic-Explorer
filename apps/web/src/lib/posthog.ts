@@ -24,7 +24,7 @@ export const POSTHOG_ENABLED = Boolean(POSTHOG_API_KEY && POSTHOG_API_KEY !== 'y
 if (import.meta.env.DEV) {
   console.debug('📊 PostHog Configuration:', {
     POSTHOG_ENABLED,
-    POSTHOG_API_KEY: POSTHOG_API_KEY ? `${POSTHOG_API_KEY.substring(0, 10)}...` : 'NOT SET',
+    POSTHOG_API_KEY: POSTHOG_API_KEY ? `${POSTHOG_API_KEY.slice(0, 10)}...` : 'NOT SET',
     POSTHOG_HOST,
     shouldInitialize: POSTHOG_ENABLED && typeof window !== 'undefined' && POSTHOG_API_KEY.length > 10 && POSTHOG_HOST.includes('posthog.com')
   });
@@ -209,8 +209,9 @@ export interface AcademicEventProperties {
 
 /**
  * Validate event properties to prevent accidental personal data capture
+ * @param properties
  */
-export function validateEventProperties(properties: AcademicEventProperties): AcademicEventProperties {
+export const validateEventProperties = (properties: AcademicEventProperties): AcademicEventProperties => {
   // Remove any potential personal data that might accidentally be included
   const sanitized = { ...properties }
 
@@ -221,15 +222,13 @@ export function validateEventProperties(properties: AcademicEventProperties): Ac
   })
 
   return sanitized
-}
+};
 
 /**
  * PostHog initialization check
  * Returns true if PostHog should be initialized with valid configuration
  */
-export function shouldInitializePostHog(): boolean {
-  return POSTHOG_ENABLED &&
+export const shouldInitializePostHog = (): boolean => POSTHOG_ENABLED &&
          typeof window !== 'undefined' &&
          POSTHOG_API_KEY.length > 10 && // Basic validation
-         POSTHOG_HOST.includes('posthog.com')
-}
+         POSTHOG_HOST.includes('posthog.com');

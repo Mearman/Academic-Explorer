@@ -3,11 +3,11 @@
  * Provides HAR recording and cache management utilities
  */
 
-import crypto from "crypto";
-import fs from "fs";
-import path from "path";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 
-import { test as base, Page } from "@playwright/test";
+import { Page,test as base } from "@playwright/test";
 
 interface CacheFixtures {
   cachedPage: Page;
@@ -22,11 +22,9 @@ const HAR_CACHE_DIR = path.join(__dirname, "../../test-results/har-cache");
 
 /**
  * Generate a stable cache key for a test
+ * @param testTitle
  */
-function getCacheKey(testTitle: string): string {
-  // Create a hash of the test title for a stable filename
-  return crypto.createHash("md5").update(testTitle).digest("hex").substring(0, 8);
-}
+const getCacheKey = (testTitle: string): string => crypto.createHash("md5").update(testTitle).digest("hex").slice(0, 8);
 
 /**
  * Extended test with caching capabilities
@@ -34,6 +32,11 @@ function getCacheKey(testTitle: string): string {
 export const test = base.extend<CacheFixtures>({
   /**
    * Enhanced page with HAR caching
+   * @param root0
+   * @param root0.page
+   * @param root0.context
+   * @param use
+   * @param testInfo
    */
   cachedPage: async ({ page, context }, use, testInfo) => {
     const cacheKey = getCacheKey(testInfo.title);
@@ -82,6 +85,10 @@ export const test = base.extend<CacheFixtures>({
 
   /**
    * Cache statistics for monitoring
+   * @param root0
+   * @param root0.page
+   * @param use
+   * @param testInfo
    */
   cacheStats: async ({ page }, use, testInfo) => {
     const stats = {

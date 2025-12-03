@@ -20,13 +20,13 @@ interface EntityGridProps {
   emptyMessage?: string;
 }
 
-export function EntityGrid({
+export const EntityGrid = ({
   items,
   onNavigate,
   cols = 3,
   spacing = "md",
   emptyMessage = "No items to display",
-}: EntityGridProps) {
+}: EntityGridProps) => {
   if (items.length === 0) {
     return (
       <Stack align="center" gap="md" p="xl">
@@ -54,4 +54,4 @@ export function EntityGrid({
       ))}
     </SimpleGrid>
   );
-}
+};

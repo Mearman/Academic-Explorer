@@ -1,36 +1,35 @@
 /**
  * Communities Tab
  * Find clusters, communities, and dense regions
- *
  * @module components/algorithms/categories/CommunitiesTab
  */
 
 import { Accordion } from '@mantine/core';
 import {
-  IconUsers,
-  IconHierarchy,
+  IconChartBar,
   IconChartDonut,
   IconFocusCentered,
-  IconChartBar,
+  IconHierarchy,
+  IconUsers,
 } from '@tabler/icons-react';
-import { useState, useCallback } from 'react';
+import { useCallback,useState } from 'react';
 
 import {
+  ClusterQualityItem,
   CommunityDetectionItem,
+  CorePeripheryItem,
   KCoreItem,
   KTrussItem,
-  CorePeripheryItem,
-  ClusterQualityItem,
 } from '../items';
 import type { CategoryTabProps, CommunityResult } from '../types';
 
-export function CommunitiesTab({
+export const CommunitiesTab = ({
   nodes,
   edges,
   onHighlightNodes,
   onSelectCommunity,
   onCommunitiesDetected,
-}: CategoryTabProps) {
+}: CategoryTabProps) => {
   // Track communities for cluster quality metrics
   const [communities, setCommunities] = useState<CommunityResult[]>([]);
 
@@ -114,4 +113,4 @@ export function CommunitiesTab({
       </Accordion.Item>
     </Accordion>
   );
-}
+};

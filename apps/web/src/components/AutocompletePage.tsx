@@ -52,18 +52,30 @@ export interface AutocompletePageProps {
 
 /**
  * Extract error message for display
+ * @param error
+ * @param entityType
  */
-function formatErrorMessage(error: Error, entityType: EntityType): string {
+const formatErrorMessage = (error: Error, entityType: EntityType): string => {
   const metadata = ENTITY_METADATA[entityType];
   const pattern = new RegExp(`(?:${metadata.plural}|${metadata.displayName}) autocomplete failed: (.+)`, "i");
   const match = error.message.match(pattern);
   return match ? match[1] : error.message;
-}
+};
 
 /**
  * Shared autocomplete page component
+ * @param root0
+ * @param root0.entityType
+ * @param root0.query
+ * @param root0.onSearch
+ * @param root0.results
+ * @param root0.isLoading
+ * @param root0.error
+ * @param root0.filter
+ * @param root0.placeholder
+ * @param root0.description
  */
-export function AutocompletePage({
+export const AutocompletePage = ({
   entityType,
   query,
   onSearch,
@@ -73,7 +85,7 @@ export function AutocompletePage({
   filter,
   placeholder,
   description,
-}: AutocompletePageProps) {
+}: AutocompletePageProps) => {
   const metadata = ENTITY_METADATA[entityType];
 
   const defaultPlaceholder = `Search for ${metadata.plural.toLowerCase()}...`;
@@ -168,7 +180,7 @@ export function AutocompletePage({
         {results.length > 0 && (
           <Stack gap="md">
             <Text size="sm" c="dimmed">
-              Found {results.length} suggestion{results.length !== 1 ? "s" : ""}
+              Found {results.length} suggestion{results.length === 1 ? "" : "s"}
             </Text>
             {results.map((result) => (
               <AutocompleteResultCard
@@ -182,7 +194,7 @@ export function AutocompletePage({
       </Stack>
     </Container>
   );
-}
+};
 
 /**
  * Individual result card component
@@ -192,7 +204,7 @@ interface AutocompleteResultCardProps {
   entityType: EntityType;
 }
 
-function AutocompleteResultCard({ result, entityType }: AutocompleteResultCardProps) {
+const AutocompleteResultCard = ({ result, entityType }: AutocompleteResultCardProps) => {
   const metadata = ENTITY_METADATA[entityType];
   const cleanId = result.id.replace("https://openalex.org/", "");
   const href = `#${metadata.routePath}/${cleanId}`;
@@ -234,4 +246,4 @@ function AutocompleteResultCard({ result, entityType }: AutocompleteResultCardPr
       </Stack>
     </Card>
   );
-}
+};

@@ -1,13 +1,12 @@
 /**
  * Filter component for relationship types
  * Allows filtering relationship sections by RelationType with checkboxes
- *
  * @module RelationshipTypeFilter
  * @see specs/016-entity-relationship-viz/spec.md (User Story 3)
  */
 
 import { RelationType } from '@bibgraph/types';
-import { Stack, Checkbox, Group, Button, Paper, Title } from '@mantine/core';
+import { Button, Checkbox, Group, Paper, Stack, Title } from '@mantine/core';
 import React from 'react';
 
 import { RELATIONSHIP_TYPE_LABELS } from '@/types/relationship';
@@ -26,6 +25,10 @@ export interface RelationshipTypeFilterProps {
 /**
  * Component for filtering relationships by type
  * Displays checkboxes for each RelationType with "Clear all" button
+ * @param root0
+ * @param root0.selectedTypes
+ * @param root0.onChange
+ * @param root0.title
  */
 export const RelationshipTypeFilter: React.FC<RelationshipTypeFilterProps> = ({
   selectedTypes,

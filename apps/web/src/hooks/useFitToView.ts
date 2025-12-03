@@ -89,16 +89,17 @@ export interface UseFitToViewReturn {
  * @param maxDimension - Largest dimension of the bounding box
  * @param minDistance - Minimum camera distance (default: 100)
  */
-function calculateCameraDistance(maxDimension: number, minDistance: number = 100): number {
+const calculateCameraDistance = (maxDimension: number, minDistance: number = 100): number => {
 	// FOV factor approximates 1 / tan(37.5 degrees) with padding
 	const FOV_FACTOR = 1.5;
 	return Math.max(maxDimension, 50) * FOV_FACTOR + minDistance;
-}
+};
 
 /**
  * Calculate 3D bounding box from node positions.
+ * @param positions
  */
-function calculate3DBoundingBox(positions: Array<{ x: number; y: number; z: number }>) {
+const calculate3DBoundingBox = (positions: Array<{ x: number; y: number; z: number }>) => {
 	let minX = Infinity,
 		maxX = -Infinity;
 	let minY = Infinity,
@@ -129,12 +130,13 @@ function calculate3DBoundingBox(positions: Array<{ x: number; y: number; z: numb
 			depth: maxZ - minZ,
 		},
 	};
-}
+};
 
 /**
  * Calculate centroid of positions.
+ * @param positions
  */
-function calculateCentroid(positions: Array<{ x: number; y: number; z: number }>) {
+const calculateCentroid = (positions: Array<{ x: number; y: number; z: number }>) => {
 	const n = positions.length;
 	if (n === 0) return { x: 0, y: 0, z: 0 };
 
@@ -148,21 +150,23 @@ function calculateCentroid(positions: Array<{ x: number; y: number; z: number }>
 	});
 
 	return { x: sumX / n, y: sumY / n, z: sumZ / n };
-}
+};
 
 /**
  * Find optimal viewing direction using PCA (Principal Component Analysis).
  * Returns the direction perpendicular to the plane of maximum spread,
  * which shows the largest cross-sectional area of the nodes.
+ * @param positions
+ * @param centroid
+ * @param centroid.x
+ * @param centroid.y
+ * @param centroid.z
  */
-function findOptimalViewDirection(
-	positions: Array<{ x: number; y: number; z: number }>,
-	centroid: { x: number; y: number; z: number }
-): {
+const findOptimalViewDirection = (positions: Array<{ x: number; y: number; z: number }>, centroid: { x: number; y: number; z: number }): {
 	viewDir: { x: number; y: number; z: number };
 	v1: { x: number; y: number; z: number };
 	v2: { x: number; y: number; z: number };
-} {
+} => {
 	const n = positions.length;
 	const defaultResult = {
 		viewDir: { x: 0, y: 0, z: 1 },
@@ -205,7 +209,7 @@ function findOptimalViewDirection(
 		const newX = cxx * vx + cxy * vy + cxz * vz;
 		const newY = cxy * vx + cyy * vy + cyz * vz;
 		const newZ = cxz * vx + cyz * vy + czz * vz;
-		const mag = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
+		const mag = Math.hypot(newX, newY, newZ);
 		if (mag > 0.0001) {
 			vx = newX / mag;
 			vy = newY / mag;
@@ -223,7 +227,7 @@ function findOptimalViewDirection(
 	ux -= dot1 * vx;
 	uy -= dot1 * vy;
 	uz -= dot1 * vz;
-	let mag = Math.sqrt(ux * ux + uy * uy + uz * uz);
+	let mag = Math.hypot(ux, uy, uz);
 	if (mag > 0.0001) {
 		ux /= mag;
 		uy /= mag;
@@ -239,7 +243,7 @@ function findOptimalViewDirection(
 		newX -= dot * vx;
 		newY -= dot * vy;
 		newZ -= dot * vz;
-		mag = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
+		mag = Math.hypot(newX, newY, newZ);
 		if (mag > 0.0001) {
 			ux = newX / mag;
 			uy = newY / mag;
@@ -257,7 +261,7 @@ function findOptimalViewDirection(
 	};
 
 	// Normalize
-	mag = Math.sqrt(viewDir.x ** 2 + viewDir.y ** 2 + viewDir.z ** 2);
+	mag = Math.hypot(viewDir.x, viewDir.y, viewDir.z);
 	if (mag > 0.0001) {
 		viewDir.x /= mag;
 		viewDir.y /= mag;
@@ -270,16 +274,20 @@ function findOptimalViewDirection(
 	}
 
 	return { viewDir, v1, v2 };
-}
+};
 
 /**
  * Hook for fit-to-view operations in graph visualizations.
+ * @param root0
+ * @param root0.graphMethodsRef
+ * @param root0.viewMode
+ * @param root0.highlightedNodes
  */
-export function useFitToView({
+export const useFitToView = ({
 	graphMethodsRef,
 	viewMode,
 	highlightedNodes,
-}: UseFitToViewOptions): UseFitToViewReturn {
+}: UseFitToViewOptions): UseFitToViewReturn => {
 	/**
 	 * Fit all nodes to view with proper centering.
 	 */
@@ -456,4 +464,4 @@ export function useFitToView({
 		fitToViewAll,
 		fitToViewSelected,
 	};
-}
+};

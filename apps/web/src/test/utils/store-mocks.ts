@@ -9,17 +9,16 @@ import { vi } from "vitest";
 /**
  * Creates a mock Zustand store for testing
  * Provides a consistent way to mock store state and actions
+ * @param initialState
  */
-export function createMockStore<T extends Record<string, unknown>>(
-  initialState: Partial<T> = {},
-): T & {
+export const createMockStore = <T extends Record<string, unknown>>(initialState: Partial<T> = {}): T & {
   __mockReset: () => void;
   __mockUpdate: (update: Partial<T>) => void;
-} {
+} => {
   const state = { ...initialState } as T;
 
   const mockStore = new Proxy(state, {
-    get(target, prop) {
+    get: (target, prop) => {
       if (prop === "__mockReset") {
         return () => {
           Object.keys(target).forEach((key) => {
@@ -37,7 +36,7 @@ export function createMockStore<T extends Record<string, unknown>>(
 
       return target[prop as keyof T];
     },
-    set(target, prop, value) {
+    set: (target, prop, value) => {
       (target as Record<string, unknown>)[prop as string] = value;
       return true;
     },
@@ -47,7 +46,7 @@ export function createMockStore<T extends Record<string, unknown>>(
     __mockReset: () => void;
     __mockUpdate: (update: Partial<T>) => void;
   };
-}
+};
 
 
 /**
@@ -104,29 +103,32 @@ export const createMockExpansionSettingsStore = (): any =>
 /**
  * Utility to mock a store module completely
  * Use this to replace entire store modules in tests
+ * @param storeName
+ * @param mockStore
  */
-export function mockStoreModule<T>(storeName: string, mockStore: T): void {
+export const mockStoreModule = <T>(storeName: string, mockStore: T): void => {
   vi.doMock(`@/stores/${storeName}`, () => ({
     [`use${storeName.charAt(0).toUpperCase() + storeName.slice(1)}`]: () =>
       mockStore,
   }));
-}
+};
 
 /**
  * Higher-order function to create store test wrapper
  * Provides consistent store mocking setup for component tests
+ * @param Component
+ * @param stores
+ * @param stores.layoutStore
+ * @param stores.settingsStore
+ * @param stores.expansionSettingsStore
  */
-export function withMockStores<P extends Record<string, unknown>>(
-  Component: React.ComponentType<P>,
-  stores?: {
+export const withMockStores = <P extends Record<string, unknown>>(Component: React.ComponentType<P>, stores?: {
     layoutStore?: ReturnType<typeof createMockLayoutStore>;
     settingsStore?: ReturnType<typeof createMockSettingsStore>;
     expansionSettingsStore?: ReturnType<
       typeof createMockExpansionSettingsStore
     >;
-  },
-) {
-  return function MockedComponent(props: P) {
+  }) => (props: P) => {
     // Mock stores before rendering
     if (stores?.layoutStore) {
       vi.doMock("@/stores/layout-store", () => ({
@@ -148,12 +150,12 @@ export function withMockStores<P extends Record<string, unknown>>(
 
     return React.createElement(Component, props);
   };
-}
 
 /**
  * Reset all mocked stores to their initial state
  * Call this in beforeEach to ensure clean test state
+ * @param stores
  */
-export function resetMockStores(...stores: Array<{ __mockReset: () => void }>) {
+export const resetMockStores = (...stores: Array<{ __mockReset: () => void }>) => {
   stores.forEach((store) => store.__mockReset());
-}
+};

@@ -45,14 +45,10 @@ const COLORS = HASH_BASED_COLORS;
 /**
  * Get styling for xpac works
  * Applies dashed border and muted colors to visually distinguish non-traditional works
- *
  * @param baseStyle - Base style properties to extend
  * @returns Style properties with xpac-specific styling
  */
-export function getXpacWorkStyle(
-  baseStyle: NodeStyleProperties = {}
-): NodeStyleProperties {
-  return {
+export const getXpacWorkStyle = (baseStyle: NodeStyleProperties = {}): NodeStyleProperties => ({
     ...baseStyle,
 
     // SVG properties
@@ -70,20 +66,15 @@ export function getXpacWorkStyle(
 
     // Test attribute
     'data-xpac': 'true',
-  };
-}
+  });
 
 /**
  * Get styling for works with unverified authors
  * Applies warning indicators (orange/yellow tints) to flag potential data quality issues
- *
  * @param baseStyle - Base style properties to extend
  * @returns Style properties with unverified author warning styling
  */
-export function getUnverifiedAuthorStyle(
-  baseStyle: NodeStyleProperties = {}
-): NodeStyleProperties {
-  return {
+export const getUnverifiedAuthorStyle = (baseStyle: NodeStyleProperties = {}): NodeStyleProperties => ({
     ...baseStyle,
 
     // SVG properties
@@ -99,19 +90,15 @@ export function getUnverifiedAuthorStyle(
 
     // Test attribute
     'data-unverified-author': 'true',
-  };
-}
+  });
 
 /**
  * Get combined styling for xpac works with unverified authors
  * Applies both xpac muted styling and warning indicators
- *
  * @param baseStyle - Base style properties to extend
  * @returns Combined style properties
  */
-export function getXpacUnverifiedStyle(
-  baseStyle: NodeStyleProperties = {}
-): NodeStyleProperties {
+export const getXpacUnverifiedStyle = (baseStyle: NodeStyleProperties = {}): NodeStyleProperties => {
   // Start with xpac styling
   const xpacStyle = getXpacWorkStyle(baseStyle);
 
@@ -130,25 +117,20 @@ export function getXpacUnverifiedStyle(
     'data-xpac': 'true',
     'data-unverified-author': 'true',
   };
-}
+};
 
 /**
  * Get node styling based on node metadata flags
  * Main entry point for conditional styling logic
- *
  * @param node - Graph node with metadata
  * @param baseStyle - Base style properties to extend
  * @returns Conditional style properties based on node flags
- *
  * @example
  * const style = getConditionalNodeStyle(node);
  * // Apply to SVG: <circle {...style} />
  * // Apply to DOM: <div style={style} />
  */
-export function getConditionalNodeStyle(
-  node: Pick<GraphNode, 'isXpac' | 'hasUnverifiedAuthor'>,
-  baseStyle: NodeStyleProperties = {}
-): NodeStyleProperties {
+export const getConditionalNodeStyle = (node: Pick<GraphNode, 'isXpac' | 'hasUnverifiedAuthor'>, baseStyle: NodeStyleProperties = {}): NodeStyleProperties => {
   const { isXpac, hasUnverifiedAuthor } = node;
 
   // Both conditions: xpac + unverified
@@ -179,18 +161,15 @@ export function getConditionalNodeStyle(
     backgroundColor: COLORS.standard.fill,
     opacity: 1,
   };
-}
+};
 
 /**
  * Get accessible label text for node styling
  * Provides screen reader context for visual styling differences
- *
  * @param node - Graph node with metadata
  * @returns Descriptive label for accessibility
  */
-export function getNodeAccessibilityLabel(
-  node: Pick<GraphNode, 'isXpac' | 'hasUnverifiedAuthor' | 'label'>
-): string {
+export const getNodeAccessibilityLabel = (node: Pick<GraphNode, 'isXpac' | 'hasUnverifiedAuthor' | 'label'>): string => {
   const { isXpac, hasUnverifiedAuthor, label } = node;
 
   const flags: string[] = [];
@@ -208,7 +187,7 @@ export function getNodeAccessibilityLabel(
   }
 
   return `${label} (${flags.join(', ')})`;
-}
+};
 
 /**
  * Export color palette for external use (e.g., legend components)

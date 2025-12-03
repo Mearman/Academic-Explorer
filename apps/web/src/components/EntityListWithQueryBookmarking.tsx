@@ -4,7 +4,7 @@
  */
 
 import type { EntityType } from "@bibgraph/types";
-import { Group, Stack, Title, Text } from "@mantine/core";
+import { Group, Stack, Text,Title } from "@mantine/core";
 
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 
@@ -21,7 +21,7 @@ interface EntityListWithQueryBookmarkingProps extends Omit<EntityListProps, "tit
   customHeader?: React.ReactNode;
 }
 
-export function EntityListWithQueryBookmarking({
+export const EntityListWithQueryBookmarking = ({
   entityType,
   entityId,
   title,
@@ -30,7 +30,7 @@ export function EntityListWithQueryBookmarking({
   bookmarkButtonSize = "sm",
   customHeader,
   ...entityListProps
-}: EntityListWithQueryBookmarkingProps) {
+}: EntityListWithQueryBookmarkingProps) => {
 
   const {
     currentQueryParams,
@@ -134,4 +134,4 @@ export function EntityListWithQueryBookmarking({
       )}
     </Stack>
   );
-}
+};

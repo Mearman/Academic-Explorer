@@ -5,36 +5,36 @@
 
 import { logger } from "@bibgraph/utils";
 import {
+  Accordion,
+  ActionIcon,
+  Badge,
+  Button,
   Card,
-  TextInput,
-  Select,
+  Divider,
+  Group,
   MultiSelect,
   NumberInput,
-  Switch,
-  Group,
-  Button,
-  Stack,
-  Accordion,
   RangeSlider,
+  Select,
+  Stack,
+  Switch,
   TagsInput,
-  Badge,
-  ActionIcon,
   Text,
+  TextInput,
   Title,
-  Divider,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-  IconSearch,
-  IconFilter,
-  IconRefresh,
+  IconAdjustmentsHorizontal,
   IconBookmark,
   IconDownload,
+  IconFilter,
+  IconRefresh,
+  IconSearch,
   IconShare,
-  IconAdjustmentsHorizontal,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect,useState } from "react";
 
 
 
@@ -60,7 +60,7 @@ interface EnhancedSearchInterfaceProps {
   loading?: boolean;
 }
 
-export function EnhancedSearchInterface({ onSearch, loading = false }: EnhancedSearchInterfaceProps) {
+export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedSearchInterfaceProps) => {
   const [filters, setFilters] = useState<SearchFilters>({
     query: "",
     entityType: "works",
@@ -433,4 +433,4 @@ export function EnhancedSearchInterface({ onSearch, loading = false }: EnhancedS
       </Stack>
     </Card>
   );
-}
+};

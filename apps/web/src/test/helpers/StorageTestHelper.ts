@@ -5,7 +5,6 @@ import type { Page } from '@playwright/test';
  *
  * Provides methods to clear and manage browser storage in Playwright tests.
  * Ensures test isolation by clearing all storage between tests.
- *
  * @example
  * ```typescript
  * const helper = storageTestHelper(page);
@@ -73,6 +72,8 @@ export class StorageTestHelper {
 
 	/**
 	 * Set a localStorage item
+	 * @param key
+	 * @param value
 	 */
 	async setLocalStorageItem(key: string, value: string): Promise<void> {
 		await this.page.evaluate(
@@ -85,6 +86,7 @@ export class StorageTestHelper {
 
 	/**
 	 * Get a localStorage item
+	 * @param key
 	 */
 	async getLocalStorageItem(key: string): Promise<string | null> {
 		return await this.page.evaluate(
@@ -97,6 +99,7 @@ export class StorageTestHelper {
 
 	/**
 	 * Seed localStorage with test data (JSON stringified)
+	 * @param data
 	 */
 	async seedTestData(data: Record<string, unknown>): Promise<void> {
 		await this.page.evaluate(
@@ -138,6 +141,7 @@ export class StorageTestHelper {
 
 /**
  * Factory function to create StorageTestHelper instance
+ * @param page
  */
 export const storageTestHelper = (page: Page): StorageTestHelper => {
 	return new StorageTestHelper(page);

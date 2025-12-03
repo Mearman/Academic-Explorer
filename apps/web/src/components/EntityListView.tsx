@@ -19,12 +19,12 @@ interface EntityListViewProps {
   emptyMessage?: string;
 }
 
-export function EntityListView({
+export const EntityListView = ({
   items,
   onNavigate,
   spacing = "sm",
   emptyMessage = "No items to display",
-}: EntityListViewProps) {
+}: EntityListViewProps) => {
   if (items.length === 0) {
     return (
       <Stack align="center" gap="md" p="xl">
@@ -52,4 +52,4 @@ export function EntityListView({
       ))}
     </Stack>
   );
-}
+};

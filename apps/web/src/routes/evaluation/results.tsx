@@ -4,37 +4,35 @@
  */
 
 
+import type {
+  ComparisonProgress,
+  ComparisonResults as ComparisonResultsType,
+  MissingPaperDetectionResults,
+  STARDataset,
+  WorkReference,
+} from "@bibgraph/utils";
 import {
+  calculateSearchCoverage,
   compareBibGraphResults,
   DEFAULT_MATCHING_CONFIG,
   searchBasedOnSTARDataset,
-  calculateSearchCoverage,
-} from "@bibgraph/utils";
-import type {
-  STARDataset,
-  ComparisonResults as ComparisonResultsType,
-  WorkReference,
-  ComparisonProgress,
-  MissingPaperDetectionResults,
 } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
-import { IconChartBar, IconSearch, IconBulb } from "@tabler/icons-react";
+import { IconBulb,IconChartBar, IconSearch } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect,useMemo, useState } from "react";
 
 import {
-  PerformanceComparisonChart,
-  PrecisionRecallScatterPlot,
   ConfusionMatrixHeatmap,
   DatasetStatisticsOverview,
+  PerformanceComparisonChart,
+  PrecisionRecallScatterPlot,
 } from "@/components/evaluation/MetaAnalysisCharts";
 import { MissingPaperDetection } from "@/components/evaluation/MissingPaperDetection";
 import { BORDER_DEFAULT } from "@/constants/styles";
 
 // Type guard for STARDataset array
-function isSTARDatasetArray(data: unknown): data is STARDataset[] {
-  return (
-    Array.isArray(data) &&
+const isSTARDatasetArray = (data: unknown): data is STARDataset[] => Array.isArray(data) &&
     data.every(
       (item) =>
         typeof item === "object" &&
@@ -44,9 +42,7 @@ function isSTARDatasetArray(data: unknown): data is STARDataset[] {
         "reviewTopic" in item &&
         "originalPaperCount" in item &&
         "includedPapers" in item,
-    )
-  );
-}
+    );
 
 export const Route = createFileRoute("/evaluation/results")({
   component: ComparisonResults,
@@ -94,7 +90,7 @@ interface LegacyResult {
   executionTime: number;
 }
 
-function ComparisonResults() {
+const ComparisonResults = () => {
   const [starDatasets, setStarDatasets] = useState<STARDataset[]>([]);
   const [comparisonRuns, setComparisonRuns] = useState<ComparisonRun[]>([]);
   const [isRunningComparison, setIsRunningComparison] = useState(false);
@@ -276,7 +272,7 @@ function ComparisonResults() {
           query: "machine learning systematic review",
           entityTypes: ["works", "authors"],
         },
-        executionTime: 45000,
+        executionTime: 45_000,
       },
     ],
     [],
@@ -458,9 +454,9 @@ function ComparisonResults() {
                       padding: "8px 16px",
                       backgroundColor: isCompleted
                         ? "var(--mantine-color-green-6)"
-                        : isRunning
+                        : (isRunning
                           ? "var(--mantine-color-yellow-6)"
-                          : "var(--mantine-primary-color-filled)",
+                          : "var(--mantine-primary-color-filled)"),
                       color: "var(--mantine-primary-color-contrast)",
                       border: "none",
                       borderRadius: "6px",
@@ -475,9 +471,9 @@ function ComparisonResults() {
                   >
                     {isCompleted
                       ? "Re-run"
-                      : isRunning
+                      : (isRunning
                         ? "Running..."
-                        : "Run Comparison"}
+                        : "Run Comparison")}
                   </button>
                 </div>
               );
@@ -1288,4 +1284,4 @@ function ComparisonResults() {
       )}
     </div>
   );
-}
+};

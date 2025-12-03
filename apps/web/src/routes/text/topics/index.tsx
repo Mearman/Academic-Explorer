@@ -19,12 +19,12 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 const textTopicsSearchSchema = z.object({
-  title: z.string().optional().catch(undefined),
-  abstract: z.string().optional().catch(undefined),
+  title: z.string().optional().catch(),
+  abstract: z.string().optional().catch(),
 });
 
 
-function TextTopicsRoute() {
+const TextTopicsRoute = () => {
   const urlSearch = Route.useSearch();
   const [title, setTitle] = useState(urlSearch.title || "");
 
@@ -67,7 +67,7 @@ function TextTopicsRoute() {
       return topics;
     },
     enabled: title.trim().length > 0,
-    staleTime: 60000,
+    staleTime: 60_000,
   });
 
   const handleTitleChange = (value: string) => {
@@ -150,7 +150,7 @@ function TextTopicsRoute() {
         {topics.length > 0 && (
           <Stack gap="md">
             <Text size="sm" c="dimmed">
-              Found {topics.length} topic{topics.length !== 1 ? "s" : ""}
+              Found {topics.length} topic{topics.length === 1 ? "" : "s"}
             </Text>
             {topics.map((topic) => (
               <Card key={topic.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
@@ -198,7 +198,7 @@ function TextTopicsRoute() {
       </Stack>
     </Container>
   );
-}
+};
 
 export const Route = createFileRoute("/text/topics/")({
   component: TextTopicsRoute,

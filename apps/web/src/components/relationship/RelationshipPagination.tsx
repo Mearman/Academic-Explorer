@@ -1,7 +1,6 @@
 /**
  * RelationshipPagination component
  * Provides pagination controls with page navigation and page size selector
- *
  * @module RelationshipPagination
  * @see specs/016-entity-relationship-viz/spec.md
  */
@@ -42,6 +41,13 @@ const PAGE_SIZE_OPTIONS = [
 /**
  * Pagination controls for relationship lists
  * Includes page navigation and page size selector
+ * @param root0
+ * @param root0.pagination
+ * @param root0.totalCount
+ * @param root0.loadedCount
+ * @param root0.onPageChange
+ * @param root0.onPageSizeChange
+ * @param root0.disabled
  */
 export const RelationshipPagination: React.FC<RelationshipPaginationProps> = ({
   pagination,
@@ -65,7 +71,7 @@ export const RelationshipPagination: React.FC<RelationshipPaginationProps> = ({
 
   const handlePageSizeChange = (value: string | null) => {
     if (value) {
-      onPageSizeChange?.(parseInt(value, 10));
+      onPageSizeChange?.(Number.parseInt(value, 10));
     }
   };
 

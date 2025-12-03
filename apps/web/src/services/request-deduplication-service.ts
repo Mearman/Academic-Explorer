@@ -8,7 +8,7 @@ import { isOpenAlexEntity } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 
-import { trackDeduplication, trackCacheOperation } from "./network-interceptor";
+import { trackCacheOperation,trackDeduplication } from "./network-interceptor";
 
 
 interface RequestCacheEntry {
@@ -35,6 +35,9 @@ export class RequestDeduplicationService {
 
   /**
    * Get entity with request deduplication and cache-first strategy
+   * @param root0
+   * @param root0.entityId
+   * @param root0.fetcher
    */
   async getEntity({
     entityId,
@@ -110,6 +113,9 @@ export class RequestDeduplicationService {
 
   /**
    * Create a dedicated request with proper cleanup
+   * @param root0
+   * @param root0.entityId
+   * @param root0.fetcher
    */
   private async createDedicatedRequest({
     entityId,
@@ -176,6 +182,7 @@ export class RequestDeduplicationService {
 
   /**
    * Check TanStack Query cache for entity
+   * @param entityId
    */
   private getCachedEntity(entityId: string): OpenAlexEntity | null {
     try {
@@ -247,6 +254,7 @@ export class RequestDeduplicationService {
 
   /**
    * Simple entity type detection for logging
+   * @param entityId
    */
   private detectEntityType(entityId: string): string {
     if (entityId.includes("/W")) return "works";
@@ -272,7 +280,7 @@ export class RequestDeduplicationService {
     }>;
   } {
     const now = Date.now();
-    const requestDetails = Array.from(this.ongoingRequests.entries()).map(
+    const requestDetails = [...this.ongoingRequests.entries()].map(
       ([entityId, entry]) => ({
         entityId,
         ageMs: now - entry.timestamp,
@@ -305,6 +313,9 @@ export class RequestDeduplicationService {
 
   /**
    * Force refresh an entity by clearing its cache and ongoing request
+   * @param root0
+   * @param root0.entityId
+   * @param root0.fetcher
    */
   async refreshEntity({
     entityId,
@@ -337,9 +348,6 @@ export class RequestDeduplicationService {
 
 /**
  * Create a request deduplication service instance
+ * @param queryClient
  */
-export function createRequestDeduplicationService(
-  queryClient: QueryClient,
-): RequestDeduplicationService {
-  return new RequestDeduplicationService(queryClient);
-}
+export const createRequestDeduplicationService = (queryClient: QueryClient): RequestDeduplicationService => new RequestDeduplicationService(queryClient);

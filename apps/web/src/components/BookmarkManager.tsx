@@ -5,36 +5,36 @@
 import { logger } from "@bibgraph/utils/logger";
 import { type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
 import {
-  TextInput,
+  ActionIcon,
+  Badge,
   Button,
   Card,
-  Text,
+  Checkbox,
+  Divider,
   Group,
-  Stack,
-  Badge,
   Loader,
   SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
   Tooltip,
-  Checkbox,
-  ActionIcon,
-  Divider,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
   IconBookmark,
   IconBookmarkOff,
-  IconSearch,
   IconExternalLink,
+  IconSearch,
   IconTrash,
 } from "@tabler/icons-react";
-import { useState, useEffect } from "react";
+import { useEffect,useState } from "react";
 
 import {
   BookmarkSelectionProvider,
   useBookmarkSelection,
   useBookmarkSelectionActions,
-  useSelectionCount,
   useSelectedBookmarks,
+  useSelectionCount,
 } from "@/contexts/bookmark-selection-context";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
@@ -43,7 +43,7 @@ interface BookmarkManagerProps {
 }
 
 // Bookmark card component with selection
-function BookmarkCard({
+const BookmarkCard = ({
   bookmark,
   isSelected,
   onToggleSelection,
@@ -53,7 +53,7 @@ function BookmarkCard({
   isSelected: boolean;
   onToggleSelection: () => void;
   onNavigate: (url: string) => void;
-}) {
+}) => {
   // Helper functions to extract data from CatalogueEntity
   const extractTitle = (bookmark: CatalogueEntity): string => {
     const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
@@ -132,10 +132,10 @@ function BookmarkCard({
       </Group>
     </Card>
   );
-}
+};
 
 // Inner component that uses selection context
-function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
+const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
   const {
     bookmarks,
     isLoadingBookmarks,
@@ -165,7 +165,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
   useEffect(() => {
     logger.debug("bookmarks", "Selection state updated:", {
       selectionCount,
-      selectedBookmarks: Array.from(selectedBookmarks),
+      selectedBookmarks: [...selectedBookmarks],
       isAllSelected: selectionState.isAllSelected,
       totalCount: selectionState.totalCount
     });
@@ -192,7 +192,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
 
   // Bulk operation handlers
   const handleBulkDelete = () => {
-    const selectedIds = Array.from(selectedBookmarks);
+    const selectedIds = [...selectedBookmarks];
 
     if (selectedIds.length === 0) {
       return;
@@ -203,7 +203,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete {selectedIds.length} selected bookmark{selectedIds.length !== 1 ? "s" : ""}? This action cannot be undone.
+          Are you sure you want to delete {selectedIds.length} selected bookmark{selectedIds.length === 1 ? "" : "s"}? This action cannot be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
@@ -218,8 +218,8 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
             children: (
               <Text size="sm">
                 {result.failed > 0
-                  ? `Successfully deleted ${result.success} bookmark${result.success !== 1 ? "s" : ""}, but ${result.failed} failed.`
-                  : `Successfully deleted ${result.success} bookmark${result.success !== 1 ? "s" : ""}.`
+                  ? `Successfully deleted ${result.success} bookmark${result.success === 1 ? "" : "s"}, but ${result.failed} failed.`
+                  : `Successfully deleted ${result.success} bookmark${result.success === 1 ? "" : "s"}.`
                 }
               </Text>
             ),
@@ -371,13 +371,9 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       )}
     </Stack>
   );
-}
+};
 
 // Main component that provides the selection context
-export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
-  return (
-    <BookmarkSelectionProvider>
+export const BookmarkManager = ({ onNavigate }: BookmarkManagerProps) => <BookmarkSelectionProvider>
       <BookmarkManagerInner onNavigate={onNavigate} />
-    </BookmarkSelectionProvider>
-  );
-}
+    </BookmarkSelectionProvider>;

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173');
 
@@ -14,7 +14,7 @@ const BASE_URL = process.env.BASE_URL || (process.env.CI ? 'http://localhost:417
  */
 
 test.describe('Pretty URL Display', () => {
-  test.setTimeout(90000);
+  test.setTimeout(90_000);
 
   test('should display pretty (decoded) DOI URL in address bar', async ({ page }) => {
     const encodedDoi = 'https%3A%2F%2Fdoi.org%2F10.7717%2Fpeerj.4375';
@@ -23,8 +23,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('main', { timeout: 40000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('main', { timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
     await page.waitForTimeout(3000);
@@ -52,8 +52,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('main', { timeout: 40000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('main', { timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
     await page.waitForTimeout(3000);
@@ -77,8 +77,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to encoded URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('main', { timeout: 40000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('main', { timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
     await page.waitForTimeout(3000);
@@ -102,8 +102,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to encoded URL with query params: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('main', { timeout: 40000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('main', { timeout: 40_000 });
 
     // Wait for URL to update (2s timeout + buffer)
     await page.waitForTimeout(3000);
@@ -130,8 +130,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to already-decoded URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('main', { timeout: 40000 });
+    await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('main', { timeout: 40_000 });
 
     // Wait for URL processing to complete (may be encoded then decoded by hook)
     await page.waitForTimeout(3000);
@@ -153,8 +153,8 @@ test.describe('Pretty URL Display', () => {
 
     console.log(`Navigating to OpenAlex ID URL: ${testUrl}`);
 
-    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForSelector('main', { timeout: 20000 });
+    await page.goto(testUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.waitForSelector('main', { timeout: 20_000 });
     await page.waitForTimeout(2000);
 
     const currentUrl = page.url();

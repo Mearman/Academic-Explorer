@@ -12,7 +12,7 @@ const keywordsColumns: ColumnConfig[] = [
 ];
 
 
-function KeywordsListRoute() {
+const KeywordsListRoute = () => {
   const search = useSearch({ from: "/keywords/" }) as { filter?: string };
   const filterBuilder = createFilterBuilder();
   const urlFilters = search.filter
@@ -27,7 +27,7 @@ function KeywordsListRoute() {
       urlFilters={urlFilters}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/keywords/")({
   component: KeywordsListRoute,

@@ -1,30 +1,30 @@
 import {
-  Menu,
   ActionIcon,
-  Modal,
-  Group,
-  Text,
   Badge,
+  Group,
+  Menu,
+  Modal,
+  Text,
 } from "@mantine/core";
 import {
-  IconPalette,
   IconColorPicker,
-  IconSun,
-  IconMoon,
   IconDeviceDesktop,
+  IconMoon,
+  IconPalette,
+  IconSun,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import { ThemeSettings } from "@/components/ThemeSettings";
 import { useTheme } from "@/contexts/theme-context";
-import type { ComponentLibrary, ColorScheme } from "@/styles/theme-contracts";
+import type { ColorScheme,ComponentLibrary } from "@/styles/theme-contracts";
 
 interface ThemeDropdownProps {
   variant?: "dropdown" | "action-icon";
   size?: "sm" | "md" | "lg";
 }
 
-export function ThemeDropdown({ variant = "action-icon", size = "lg" }: ThemeDropdownProps) {
+export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDropdownProps) => {
   const { config } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -161,4 +161,4 @@ export function ThemeDropdown({ variant = "action-icon", size = "lg" }: ThemeDro
       </Modal>
     </>
   );
-}
+};

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
  * Hook that returns true if the user prefers reduced motion
  * @returns boolean indicating if reduced motion is preferred
  */
-export function useReducedMotion(): boolean {
+export const useReducedMotion = (): boolean => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
     // Check initial preference on mount
     if (typeof window === "undefined") return false;
@@ -33,4 +33,4 @@ export function useReducedMotion(): boolean {
   }, []);
 
   return prefersReducedMotion;
-}
+};

@@ -10,19 +10,18 @@
  *
  * This is separate from explicit node expansion which adds NEW nodes.
  * Auto-population only works with nodes already in the graph.
- *
  * @module hooks/use-graph-auto-population
  */
 
-import { getWorks, getAuthors, getInstitutions, getSources, getTopicById } from '@bibgraph/client';
-import { RelationType, getEntityRelationshipQueries } from '@bibgraph/types';
-import type { EntityType, GraphNode, GraphEdge , RelationshipQueryConfig } from '@bibgraph/types';
+import { getAuthors, getInstitutions, getSources, getTopicById,getWorks } from '@bibgraph/client';
+import type { EntityType, GraphEdge , GraphNode, RelationshipQueryConfig } from '@bibgraph/types';
+import { getEntityRelationshipQueries,RelationType } from '@bibgraph/types';
 import {
-  logger,
-  getBackgroundTaskExecutor,
   type BackgroundStrategy,
+  getBackgroundTaskExecutor,
+  logger,
 } from '@bibgraph/utils';
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
 
 const LOG_PREFIX = 'graph-auto-population';
 
@@ -77,17 +76,15 @@ export interface UseGraphAutoPopulationOptions {
 
 /**
  * Check if a label looks like an ID-only label
+ * @param label
  */
-function isIdOnlyLabel(label: string): boolean {
-  return /^[A-Z]\d+$/i.test(label);
-}
+const isIdOnlyLabel = (label: string): boolean => /^[A-Z]\d+$/i.test(label);
 
 /**
  * Normalize an OpenAlex ID to short form
+ * @param id
  */
-function normalizeId(id: string): string {
-  return id.replace('https://openalex.org/', '').toUpperCase();
-}
+const normalizeId = (id: string): string => id.replace('https://openalex.org/', '').toUpperCase();
 
 /**
  * Hook for automatic graph population
@@ -97,15 +94,22 @@ function normalizeId(id: string): string {
  * - Discovers relationships between existing nodes
  *
  * Uses background task execution to avoid blocking UI
+ * @param root0
+ * @param root0.nodes
+ * @param root0.edges
+ * @param root0.onLabelsResolved
+ * @param root0.onEdgesDiscovered
+ * @param root0.enabled
+ * @param root0.strategy
  */
-export function useGraphAutoPopulation({
+export const useGraphAutoPopulation = ({
   nodes,
   edges,
   onLabelsResolved,
   onEdgesDiscovered,
   enabled = true,
   strategy = 'idle',
-}: UseGraphAutoPopulationOptions): AutoPopulationResult {
+}: UseGraphAutoPopulationOptions): AutoPopulationResult => {
   const [isPopulating, setIsPopulating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [labelsResolved, setLabelsResolved] = useState(0);
@@ -290,7 +294,8 @@ export function useGraphAutoPopulation({
         for (const query of queries.inbound) {
           logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for inbound ${query.type} (${query.source})`);
 
-          if (query.source === 'api') {
+          switch (query.source) {
+          case 'api': {
             const discoveredEdges = await discoverRelationshipsForQuery(
               nodes,
               query,
@@ -300,7 +305,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
-          } else if (query.source === 'embedded') {
+          
+          break;
+          }
+          case 'embedded': {
             const discoveredEdges = await discoverEmbeddedRelationships(
               nodes,
               query,
@@ -311,7 +319,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
-          } else if (query.source === 'embedded-with-resolution') {
+          
+          break;
+          }
+          case 'embedded-with-resolution': {
             const discoveredEdges = await discoverEmbeddedWithResolutionRelationships(
               nodes,
               query,
@@ -322,6 +333,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
+          
+          break;
+          }
+          // No default
           }
         }
 
@@ -329,7 +344,8 @@ export function useGraphAutoPopulation({
         for (const query of queries.outbound) {
           logger.debug(LOG_PREFIX, `Processing ${nodes.length} ${entityType} nodes for outbound ${query.type} (${query.source})`);
 
-          if (query.source === 'api') {
+          switch (query.source) {
+          case 'api': {
             const discoveredEdges = await discoverRelationshipsForQuery(
               nodes,
               query,
@@ -339,7 +355,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
-          } else if (query.source === 'embedded') {
+          
+          break;
+          }
+          case 'embedded': {
             const discoveredEdges = await discoverEmbeddedRelationships(
               nodes,
               query,
@@ -350,7 +369,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
-          } else if (query.source === 'embedded-with-resolution') {
+          
+          break;
+          }
+          case 'embedded-with-resolution': {
             const discoveredEdges = await discoverEmbeddedWithResolutionRelationships(
               nodes,
               query,
@@ -361,6 +383,10 @@ export function useGraphAutoPopulation({
               signal
             );
             newEdges.push(...discoveredEdges);
+          
+          break;
+          }
+          // No default
           }
         }
       }
@@ -374,8 +400,12 @@ export function useGraphAutoPopulation({
   /**
    * Discover relationships for a specific query configuration
    * Creates edges only when both endpoints exist in the graph
-   *
+   * @param sourceNodes
+   * @param query
+   * @param allNodeIds
+   * @param existingEdgeKeys
    * @param direction - 'inbound' means results point TO batch nodes, 'outbound' means batch nodes point TO results
+   * @param signal
    */
   const discoverRelationshipsForQuery = async (
     sourceNodes: GraphNode[],
@@ -517,6 +547,13 @@ export function useGraphAutoPopulation({
   /**
    * Discover relationships from embedded data in entity objects
    * Fetches entity data if needed, extracts embedded relationships, creates edges for targets in graph
+   * @param sourceNodes
+   * @param query
+   * @param sourceEntityType
+   * @param allNodeIds
+   * @param existingEdgeKeys
+   * @param direction
+   * @param signal
    */
   const discoverEmbeddedRelationships = async (
     sourceNodes: GraphNode[],
@@ -659,6 +696,13 @@ export function useGraphAutoPopulation({
   /**
    * Discover relationships from embedded IDs with batch resolution
    * Fetches entity data, extracts IDs, batch-fetches display names, creates edges for targets in graph
+   * @param sourceNodes
+   * @param query
+   * @param sourceEntityType
+   * @param allNodeIds
+   * @param existingEdgeKeys
+   * @param direction
+   * @param signal
    */
   const discoverEmbeddedWithResolutionRelationships = async (
     sourceNodes: GraphNode[],
@@ -867,4 +911,4 @@ export function useGraphAutoPopulation({
     error,
     currentStrategy: executor.currentStrategy,
   };
-}
+};

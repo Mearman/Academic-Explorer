@@ -6,32 +6,32 @@ import type { EntityType } from "@bibgraph/types";
 import { type CatalogueList } from "@bibgraph/utils"
 import { logger } from "@bibgraph/utils";
 import {
+  ActionIcon,
+  Badge,
+  Box,
+  Button,
   Card,
   Group,
-  Text,
-  Badge,
-  Button,
-  ActionIcon,
-  Stack,
-  SimpleGrid,
-  Tooltip,
   Loader,
   Modal,
-  TextInput,
-  Textarea,
+  SimpleGrid,
+  Stack,
   TagsInput,
-  Box,
+  Text,
+  Textarea,
+  TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
-  IconExternalLink,
-  IconEdit,
-  IconTrash,
   IconBook,
-  IconList,
-  IconCopy,
   IconCheck,
+  IconCopy,
+  IconEdit,
+  IconExternalLink,
+  IconList,
+  IconTrash,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
@@ -56,7 +56,7 @@ interface ListCardProps {
   onShare: () => void;
 }
 
-function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare }: ListCardProps) {
+const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: ListCardProps) => {
   const [stats, setStats] = useState<{
     totalEntities: number;
     entityCounts: Record<EntityType, number>;
@@ -232,9 +232,9 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
       </Group>
     </Card>
   );
-}
+};
 
-function EditListModal({
+const EditListModal = ({
   list,
   opened,
   onClose,
@@ -244,7 +244,7 @@ function EditListModal({
   opened: boolean;
   onClose: () => void;
   onSave: (updates: Partial<Pick<CatalogueList, "title" | "description" | "tags" | "isPublic">>) => Promise<void>;
-}) {
+}) => {
   const [title, setTitle] = useState(list.title);
   const [description, setDescription] = useState(list.description || "");
   const [tags, setTags] = useState(list.tags || []);
@@ -343,16 +343,16 @@ function EditListModal({
       </Stack>
     </Modal>
   );
-}
+};
 
-export function CatalogueListComponent({
+export const CatalogueListComponent = ({
   lists,
   selectedListId,
   onSelectList,
   onDeleteList,
   isLoading,
   listType,
-}: CatalogueListProps) {
+}: CatalogueListProps) => {
   const [editingList, setEditingList] = useState<CatalogueList | null>(null);
   const { generateShareUrl } = useCatalogue();
 
@@ -489,4 +489,4 @@ export function CatalogueListComponent({
       )}
     </>
   );
-}
+};

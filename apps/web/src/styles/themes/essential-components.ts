@@ -20,9 +20,9 @@ export const essentialComponents = {
       root: {
         '--container-size': fluid
           ? '100%'
-          : size !== undefined && size in CONTAINER_SIZES
+          : (size !== undefined && size in CONTAINER_SIZES
             ? CONTAINER_SIZES[size]
-            : rem(size),
+            : rem(size)),
       },
     }),
   },
@@ -43,7 +43,7 @@ export const essentialComponents = {
             if (variant === 'white') {
               return isNeutralColor ? 'var(--mantine-color-black)' : undefined
             }
-            return undefined
+            return
           })(),
         },
       }
@@ -133,9 +133,9 @@ export const essentialComponents = {
             : props.color
           : "var(--mantine-primary-color-filled)",
         '--radio-icon-color': props.color
-          ? Object.keys(theme.colors).includes(props.color)
+          ? (Object.keys(theme.colors).includes(props.color)
             ? `var(--mantine-color-${props.color}-contrast)`
-            : props.color
+            : props.color)
           : "var(--mantine-primary-color-contrast)",
       },
     }),
@@ -186,7 +186,7 @@ export const essentialComponents = {
             if (variant === "white") {
               return isNeutralColor ? "var(--mantine-color-black)" : undefined
             }
-            return undefined
+            return
           })(),
         },
       }

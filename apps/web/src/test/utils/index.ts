@@ -16,25 +16,25 @@ export * from "./component-mocks";
 
 // Re-export React Testing Library utilities with common patterns
 export {
+  act,
+  cleanup,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
-  cleanup,
-  act,
 } from "@testing-library/react";
 export { userEvent } from "@testing-library/user-event";
 
 // Re-export Vitest utilities
 export {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
+  afterAll,
   afterEach,
   beforeAll,
-  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
 } from "vitest";
 
 import { MantineProvider } from "@mantine/core";
@@ -47,6 +47,9 @@ import { setupRouterMocks } from "./router-mocks";
 
 /**
  * Test wrapper component that provides common providers
+ * @param root0
+ * @param root0.children
+ * @param root0.queryClient
  */
 const TestProviders: React.FC<{
   children: React.ReactNode;
@@ -75,6 +78,8 @@ const TestProviders: React.FC<{
 
 /**
  * Custom render function with providers
+ * @param ui
+ * @param options
  */
 export const renderWithProviders = (
   ui: React.ReactElement,
@@ -121,11 +126,11 @@ export const testUtils: {
  * Setup function to initialize all test mocks
  * Call this in your test setup files
  */
-export function setupAllTestMocks() {
+export const setupAllTestMocks = () => {
   // Setup all mocks directly
   setupComponentMocks();
   setupRouterMocks();
-}
+};
 
 /**
  * Reset function to clean all test mocks

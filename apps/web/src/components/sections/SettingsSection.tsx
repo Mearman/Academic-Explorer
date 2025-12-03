@@ -2,37 +2,37 @@
  * Settings section for user preferences and data management
  */
 
-import { updateOpenAlexEmail, updateOpenAlexApiKey } from "@bibgraph/client";
-import { XpacToggle, DataVersionSelector, BackgroundStrategySelector } from "@bibgraph/ui";
+import { updateOpenAlexApiKey,updateOpenAlexEmail } from "@bibgraph/client";
+import { BackgroundStrategySelector,DataVersionSelector, XpacToggle } from "@bibgraph/ui";
 import { isDataVersionSelectorVisible } from "@bibgraph/utils";
 import { clearAllCacheLayers , clearAppMetadata } from "@bibgraph/utils/cache";
 import { logger } from "@bibgraph/utils/logger";
 import {
+  Alert,
   Button,
+  Divider,
+  Group,
   Stack,
   Text,
-  Alert,
-  Group,
   TextInput,
   Tooltip,
-  Divider,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-  IconTrash,
+  IconAlertTriangle,
+  IconCheck,
+  IconInfoCircle,
+  IconKey,
+  IconMail,
   IconRefresh,
   IconSettings,
-  IconAlertTriangle,
-  IconMail,
-  IconKey,
-  IconCheck,
+  IconTrash,
   IconX,
-  IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance, type BackgroundStrategy } from "@/stores/settings-store";
+import { type BackgroundStrategy,settingsStoreInstance, usePolitePoolEmail, useSettingsStore } from "@/stores/settings-store";
 
 
 interface ResetState {
@@ -56,10 +56,10 @@ export const SettingsSection: React.FC = () => {
   const [includeXpac, setIncludeXpac] = React.useState<boolean>(true);
 
   // Local state for data version setting
-  const [dataVersion, setDataVersion] = React.useState<'1' | '2' | undefined>(undefined);
+  const [dataVersion, setDataVersion] = React.useState<'1' | '2' | undefined>();
 
   // Local state for API key
-  const [apiKey, setApiKeyState] = React.useState<string | undefined>(undefined);
+  const [apiKey, setApiKeyState] = React.useState<string | undefined>();
 
   // Local state for background strategy
   const [backgroundStrategy, setBackgroundStrategyState] = React.useState<BackgroundStrategy>('idle');
@@ -247,7 +247,7 @@ export const SettingsSection: React.FC = () => {
     await settingsStoreInstance.setDataVersion(value);
     logger.debug("settings", "Data version setting updated", { dataVersion: value });
 
-    const versionLabel = value === '1' ? "Version 1 (legacy)" : value === '2' ? "Version 2 (current)" : "Auto (v2 default)";
+    const versionLabel = value === '1' ? "Version 1 (legacy)" : (value === '2' ? "Version 2 (current)" : "Auto (v2 default)");
     notifications.show({
       title: "Data Version Updated",
       message: `OpenAlex data version set to ${versionLabel}`,
@@ -485,22 +485,7 @@ export const SettingsSection: React.FC = () => {
           </Tooltip>
         </Group>
 
-        {!isEditingEmail ? (
-          <Group gap="sm">
-            <Text size="sm" {...(hasStoredEmail ? {} : { c: "dimmed" })}>
-              {hasStoredEmail ? politePoolEmail : "No email configured"}
-            </Text>
-            <Button
-              variant="subtle"
-              size="xs"
-              onClick={() => {
-                setIsEditingEmail(true);
-              }}
-            >
-              {hasStoredEmail ? "Edit" : "Configure"}
-            </Button>
-          </Group>
-        ) : (
+        {isEditingEmail ? (
           <Stack gap="xs">
             <TextInput
               className="ph-no-capture"
@@ -549,6 +534,21 @@ export const SettingsSection: React.FC = () => {
               </Button>
             </Group>
           </Stack>
+        ) : (
+          <Group gap="sm">
+            <Text size="sm" {...(hasStoredEmail ? {} : { c: "dimmed" })}>
+              {hasStoredEmail ? politePoolEmail : "No email configured"}
+            </Text>
+            <Button
+              variant="subtle"
+              size="xs"
+              onClick={() => {
+                setIsEditingEmail(true);
+              }}
+            >
+              {hasStoredEmail ? "Edit" : "Configure"}
+            </Button>
+          </Group>
         )}
 
         <Text size="xs" c="dimmed">
@@ -580,22 +580,7 @@ export const SettingsSection: React.FC = () => {
           </Tooltip>
         </Group>
 
-        {!isEditingApiKey ? (
-          <Group gap="sm">
-            <Text size="sm" {...(apiKey ? {} : { c: "dimmed" })}>
-              {apiKey ? "••••••••••••••••" : "No API key configured"}
-            </Text>
-            <Button
-              variant="subtle"
-              size="xs"
-              onClick={() => {
-                setIsEditingApiKey(true);
-              }}
-            >
-              {apiKey ? "Edit" : "Configure"}
-            </Button>
-          </Group>
-        ) : (
+        {isEditingApiKey ? (
           <Stack gap="xs">
             <TextInput
               className="ph-no-capture"
@@ -624,6 +609,21 @@ export const SettingsSection: React.FC = () => {
               </Button>
             </Group>
           </Stack>
+        ) : (
+          <Group gap="sm">
+            <Text size="sm" {...(apiKey ? {} : { c: "dimmed" })}>
+              {apiKey ? "••••••••••••••••" : "No API key configured"}
+            </Text>
+            <Button
+              variant="subtle"
+              size="xs"
+              onClick={() => {
+                setIsEditingApiKey(true);
+              }}
+            >
+              {apiKey ? "Edit" : "Configure"}
+            </Button>
+          </Group>
         )}
 
         <Text size="xs" c="dimmed">

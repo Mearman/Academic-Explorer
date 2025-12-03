@@ -3,13 +3,12 @@
  *
  * Tests field entity pages including title display, metadata rendering,
  * related subfields, parent domain navigation, and error handling.
- *
  * @module fields.e2e
  * @see spec-020 E2E Test Coverage
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { FieldsDetailPage } from '@/test/page-objects/FieldsDetailPage';
@@ -53,7 +52,7 @@ test.describe('@entity Fields Detail Page', () => {
 
 		// Should display works count
 		const worksCount = page.locator('text=/works count/i').or(
-			page.locator('text=/\\d+ works/i')
+			page.locator(String.raw`text=/\d+ works/i`)
 		);
 		const worksCountVisible = await worksCount.count();
 		if (worksCountVisible > 0) {
@@ -124,8 +123,8 @@ test.describe('@entity Fields Detail Page', () => {
 			await expect(heading).toBeVisible();
 
 			// Should display domain name
-			const domainName = await heading.textContent();
-			expect(domainName).toBeTruthy();
+			const domainName = heading;
+			await expect(domainName).toHaveText();
 			expect(domainName).not.toBe('');
 		}
 	});
@@ -191,8 +190,8 @@ test.describe('@entity Fields Detail Page', () => {
 			await expect(heading).toBeVisible();
 
 			// Should display subfield name
-			const subfieldPageName = await heading.textContent();
-			expect(subfieldPageName).toBeTruthy();
+			const subfieldPageName = heading;
+			await expect(subfieldPageName).toHaveText();
 		}
 	});
 

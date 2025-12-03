@@ -8,16 +8,11 @@ import { useEffect } from "react";
  * For example:
  * - Encoded: /#/works/https%3A%2F%2Fdoi.org%2F10.7717%2Fpeerj.4375
  * - Pretty:  /#/works/https://doi.org/10.7717/peerj.4375
- *
  * @param entityType - The entity type (works, authors, institutions, etc.)
  * @param rawId - The raw (potentially encoded) entity ID from route params (Note: TanStack Router auto-decodes this)
  * @param decodedId - The decoded entity ID (after additional processing like fixing collapsed slashes)
  */
-export function usePrettyUrl(
-  entityType: string,
-  rawId: string | undefined,
-  decodedId: string | undefined,
-): void {
+export const usePrettyUrl = (entityType: string, rawId: string | undefined, decodedId: string | undefined): void => {
 
   useEffect(() => {
     if (!rawId || !decodedId) return;
@@ -39,9 +34,9 @@ export function usePrettyUrl(
           let queryParams = "";
           const queryIndex = latestHash.indexOf("?");
           if (queryIndex !== -1) {
-            queryParams = latestHash.substring(queryIndex);
+            queryParams = latestHash.slice(Math.max(0, queryIndex));
             // Fix duplicated query parameters like ?select=x?select=x by parsing and rebuilding
-            const queryString = queryParams.substring(1); // Remove the ?
+            const queryString = queryParams.slice(1); // Remove the ?
             const uniqueParams = new URLSearchParams(queryString).toString();
             queryParams = uniqueParams ? "?" + uniqueParams : "";
           }
@@ -67,4 +62,4 @@ export function usePrettyUrl(
       return () => clearTimeout(timeoutId);
     }
   }, [entityType, rawId, decodedId]);
-}
+};

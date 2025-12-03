@@ -5,15 +5,14 @@
  * - Click a node to fetch its relationships from OpenAlex
  * - Track expansion state (loading, expanded, error)
  * - Integrate with PersistentGraph for persistent storage
- *
  * @module lib/graph-index/use-node-expansion
  */
 
 import type { NodeExpansionResult } from '@bibgraph/client';
-import { getPersistentGraph, expandNode as expandNodeFromGraph } from '@bibgraph/client';
+import { expandNode as expandNodeFromGraph,getPersistentGraph } from '@bibgraph/client';
 import type { EntityType } from '@bibgraph/types';
 import { logger } from '@bibgraph/utils';
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo,useState } from 'react';
 
 const LOG_PREFIX = 'use-node-expansion';
 
@@ -108,7 +107,7 @@ export interface UseNodeExpansionResult {
  * };
  * ```
  */
-export function useNodeExpansion(): UseNodeExpansionResult {
+export const useNodeExpansion = (): UseNodeExpansionResult => {
   // Track expansion state per node
   const [expansionStates, setExpansionStates] = useState<Map<string, NodeExpansionState>>(
     () => new Map()
@@ -301,4 +300,4 @@ export function useNodeExpansion(): UseNodeExpansionResult {
     clearExpansionState,
     clearAllExpansionStates,
   };
-}
+};

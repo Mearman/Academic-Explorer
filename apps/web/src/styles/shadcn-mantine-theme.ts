@@ -206,9 +206,9 @@ export const shadcnMantineTheme = createTheme({
         root: {
           '--container-size': fluid
             ? '100%'
-            : size !== undefined && size in CONTAINER_SIZES
+            : (size !== undefined && size in CONTAINER_SIZES
               ? CONTAINER_SIZES[size]
-              : rem(size),
+              : rem(size)),
         },
       }),
     },
@@ -228,7 +228,7 @@ export const shadcnMantineTheme = createTheme({
               if (variant === 'white') {
                 return isNeutralColor ? 'var(--mantine-color-black)' : undefined
               }
-              return undefined
+              return
             })(),
           },
         }
@@ -372,14 +372,14 @@ export const shadcnMantineTheme = createTheme({
       vars: (theme, props) => ({
         root: {
           '--radio-color': props.color
-            ? Object.keys(theme.colors).includes(props.color)
+            ? (Object.keys(theme.colors).includes(props.color)
               ? `var(--mantine-color-${props.color}-filled)`
-              : props.color
+              : props.color)
             : "var(--mantine-primary-color-filled)",
           '--radio-icon-color': props.color
-            ? Object.keys(theme.colors).includes(props.color)
+            ? (Object.keys(theme.colors).includes(props.color)
               ? `var(--mantine-color-${props.color}-contrast)`
-              : props.color
+              : props.color)
             : "var(--mantine-primary-color-contrast)",
         },
       }),
@@ -479,7 +479,7 @@ export const shadcnMantineTheme = createTheme({
               if (variant === "white") {
                 return isNeutralColor ? "var(--mantine-color-black)" : undefined
               }
-              return undefined
+              return
             })(),
           },
         }
@@ -514,16 +514,16 @@ export const shadcnMantineTheme = createTheme({
         return {
           root: {
             '--chip-bg':
-              variant !== "light"
-                ? colorKey
+              variant === "light"
+                ? undefined
+                : (colorKey
                   ? `var(--mantine-color-${colorKey}-filled)`
-                  : "var(--mantine-primary-color-filled)"
-                : undefined,
+                  : "var(--mantine-primary-color-filled)"),
             '--chip-color':
               variant === "filled"
-                ? colorKey
+                ? (colorKey
                   ? `var(--mantine-color-${colorKey}-contrast)`
-                  : "var(--mantine-primary-color-contrast)"
+                  : "var(--mantine-primary-color-contrast)")
                 : undefined,
           },
         }
@@ -541,9 +541,9 @@ export const shadcnMantineTheme = createTheme({
           root: {
             '--avatar-bg':
               variant === "filled"
-                ? colorKey
+                ? (colorKey
                   ? `var(--mantine-color-${colorKey}-filled)`
-                  : "var(--mantine-primary-color-filled)"
+                  : "var(--mantine-primary-color-filled)")
                 : variant === "light"
                   ? colorKey
                     ? `var(--mantine-color-${colorKey}-light)`
@@ -552,9 +552,9 @@ export const shadcnMantineTheme = createTheme({
 
             '--avatar-color':
               variant === "filled"
-                ? colorKey
+                ? (colorKey
                   ? `var(--mantine-color-${colorKey}-contrast)`
-                  : "var(--mantine-primary-color-contrast)"
+                  : "var(--mantine-primary-color-contrast)")
                 : variant === "light"
                   ? colorKey
                     ? `var(--mantine-color-${colorKey}-light-color)`
@@ -573,9 +573,9 @@ export const shadcnMantineTheme = createTheme({
 
             '--avatar-bd':
               variant === "outline"
-                ? colorKey
+                ? (colorKey
                   ? `1px solid var(--mantine-color-${colorKey}-outline)`
-                  : "1px solid var(--mantine-primary-color-filled)"
+                  : "1px solid var(--mantine-primary-color-filled)")
                 : undefined,
           },
         }
@@ -604,7 +604,7 @@ export const shadcnMantineTheme = createTheme({
         return {
           root: {
             '--nl-color':
-              variant === "filled" ? colorKey ? `var(--mantine-color-${colorKey}-contrast)` : 'var(--mantine-primary-color-contrast)' : undefined,
+              variant === "filled" ? (colorKey ? `var(--mantine-color-${colorKey}-contrast)` : 'var(--mantine-primary-color-contrast)') : undefined,
           },
           children: {},
         }
@@ -649,9 +649,9 @@ export const shadcnMantineTheme = createTheme({
           root: {
             '--alert-color':
               variant === "filled"
-                ? colorKey
+                ? (colorKey
                   ? `var(--mantine-color-${colorKey}-contrast)`
-                  : "var(--mantine-primary-color-contrast)"
+                  : "var(--mantine-primary-color-contrast)")
                 : variant === "white"
                   ? (isNeutralColor
                     ? `var(--mantine-color-black)`
@@ -831,7 +831,7 @@ export const shadcnMantineTheme = createTheme({
     Text: {
       vars: (theme, props) => ({
         root: {
-          '--text-font-size': props.size ? `var(--mantine-font-size-${props.size})` : undefined,
+          '--text-font-size': props.size > 0 ? `var(--mantine-font-size-${props.size})` : undefined,
           '--text-font-weight': props.fw?.toString() || undefined,
           '--text-line-height': props.lh ? `var(--mantine-line-height-${props.lh})` : undefined,
           '--text-letter-spacing': props.ls ? `${props.ls}` : undefined,

@@ -4,9 +4,7 @@ import { IconLayoutSidebarRight } from "@tabler/icons-react";
 /**
  * Placeholder component for the removed RightRibbon functionality
  */
-export function RightRibbon() {
-  return (
-    <Tooltip label="Right Ribbon (temporarily disabled)">
+export const RightRibbon = () => <Tooltip label="Right Ribbon (temporarily disabled)">
       <ActionIcon
         variant="subtle"
         size="lg"
@@ -15,6 +13,4 @@ export function RightRibbon() {
       >
         <IconLayoutSidebarRight size={18} />
       </ActionIcon>
-    </Tooltip>
-  );
-}
+    </Tooltip>;

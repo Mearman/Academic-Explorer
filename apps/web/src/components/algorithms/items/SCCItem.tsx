@@ -1,7 +1,6 @@
 /**
  * Strongly Connected Components Algorithm Item
  * Finds strongly connected components in directed graphs using Tarjan's algorithm
- *
  * @module components/algorithms/items/SCCItem
  */
 
@@ -19,11 +18,11 @@ import { useStronglyConnectedComponents } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function SCCItem({
+export const SCCItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const stronglyConnectedComponents = useStronglyConnectedComponents(nodes, edges);
 
   return (
@@ -59,4 +58,4 @@ export function SCCItem({
       )}
     </Stack>
   );
-}
+};

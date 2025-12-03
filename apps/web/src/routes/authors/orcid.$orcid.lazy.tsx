@@ -2,13 +2,13 @@ import { EntityDetectionService } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconUser } from "@tabler/icons-react";
 import {
+  createLazyFileRoute,
   useNavigate,
   useParams,
-  createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-function ORCIDAuthorRoute() {
+const ORCIDAuthorRoute = () => {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
   const navigate = useNavigate();
 
@@ -77,7 +77,7 @@ function ORCIDAuthorRoute() {
       </div>
     </div>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/authors/orcid/$orcid")({
   component: ORCIDAuthorRoute,

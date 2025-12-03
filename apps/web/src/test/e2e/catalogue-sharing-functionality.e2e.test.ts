@@ -2,7 +2,7 @@
  * End-to-end tests for catalogue sharing functionality
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page,test } from "@playwright/test";
 
 test.describe("Catalogue Sharing Functionality", () => {
   test.beforeEach(async ({ page }) => {
@@ -10,8 +10,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.goto("/#/catalogue");
     await page.waitForLoadState("networkidle");
     await Promise.race([
-      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
-      page.waitForSelector('text="Catalogue"', { timeout: 10000 })
+      page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10_000 }),
+      page.waitForSelector('text="Catalogue"', { timeout: 10_000 })
     ]);
   });
 
@@ -42,7 +42,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('[data-testid="share-list-button"]');
 
     // Wait for share URL to be generated
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
     await expect(page.locator('text="Share URL"')).toBeVisible();
 
     // Verify URL contains localhost and catalogue path
@@ -59,7 +59,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('[data-testid="share-list-button"]');
 
     // Wait for share URL to be generated
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
 
     // Click copy button
     const copyButton = page.locator('[data-testid="copy-share-url-button"]');
@@ -81,13 +81,13 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('[data-testid="share-list-button"]');
 
     // Wait for share URL to be generated
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
 
     // Click QR code button
     await page.click('[data-testid="toggle-qr-code-button"]');
 
     // Verify QR code is displayed
-    await expect(page.locator('img[alt*="QR"], img[src*="data:image"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('img[alt*="QR"], img[src*="data:image"]')).toBeVisible({ timeout: 10_000 });
     await expect(page.locator('text="QR Code"')).toBeVisible();
   });
 
@@ -99,7 +99,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('[data-testid="share-list-button"]');
 
     // Wait for share URL generation
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
 
     // Copy the share URL
     const shareUrlInput = page.locator('input[value*="catalogue/shared/"]');
@@ -123,10 +123,10 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import List")');
 
     // Wait for import to complete (modal should close or show success)
-    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible({ timeout: 10_000 });
 
     // Verify imported list appears
-    await expect(page.locator('text="Original Shared List (Imported)"')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text="Original Shared List (Imported)"')).toBeVisible({ timeout: 15_000 });
 
     // Verify it has the imported tag
     await expect(page.locator('text="imported"')).toBeVisible();
@@ -142,7 +142,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.waitForLoadState("networkidle");
 
     // Should show import modal automatically
-    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible({ timeout: 10_000 });
     await expect(page.locator('text="Import Catalogue List"')).toBeVisible();
 
     // URL should be pre-filled
@@ -153,8 +153,8 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import List")');
 
     // Verify import is successful
-    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
-    await expect(page.locator('text="(Imported)"')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeHidden();
+    await expect(page.locator('text="(Imported)"')).toBeVisible({ timeout: 15_000 });
   });
 
   test("should handle invalid shared URLs", async ({ page }) => {
@@ -169,7 +169,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import List")');
 
     // Should show error message in Alert component (may have multiple alerts, look for specific one)
-    await expect(page.getByRole('alert', { name: 'Import Failed' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('alert', { name: 'Import Failed' })).toBeVisible({ timeout: 10_000 });
   });
 
   test("should make list public when sharing", async ({ page }) => {
@@ -184,7 +184,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('[data-testid="share-list-button"]');
 
     // Wait for share URL generation
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
 
     // Close share modal and check if list is now public
     await page.keyboard.press('Escape');
@@ -211,13 +211,13 @@ test.describe("Catalogue Sharing Functionality", () => {
     await expect(page.getByRole('dialog', { name: /Share/i })).toBeVisible();
     // The modal title should say "Share List" or similar (not necessarily "Share Bibliography")
     await expect(page.locator('h2', { hasText: /Share/i })).toBeVisible();
-    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
   });
 });
 
 // Helper functions
 
-async function createTestListWithEntities(page: Page, listName: string): Promise<void> {
+const createTestListWithEntities = async (page: Page, listName: string): Promise<void> => {
   // Create the list
   await page.click('button:has-text("Create New List")');
   await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).toBeVisible();
@@ -226,8 +226,8 @@ async function createTestListWithEntities(page: Page, listName: string): Promise
   await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
 
   await page.click('button:has-text("Create List")');
-  await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).not.toBeVisible();
-  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).toBeHidden();
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10_000 });
 
   // Add some test entities by navigating to author pages first
   await page.goto("/#/authors/A5017898742");
@@ -252,9 +252,9 @@ async function createTestListWithEntities(page: Page, listName: string): Promise
   // Return to catalogue
   await page.goto("/#/catalogue");
   await page.waitForLoadState("networkidle");
-}
+};
 
-async function createTestBibliography(page: Page, bibName: string): Promise<void> {
+const createTestBibliography = async (page: Page, bibName: string): Promise<void> => {
   await page.click('button:has-text("Create New List")');
   await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).toBeVisible();
 
@@ -265,11 +265,11 @@ async function createTestBibliography(page: Page, bibName: string): Promise<void
   await page.click('input[value="bibliography"], label:has-text("Bibliography")');
 
   await page.click('button:has-text("Create Bibliography")');
-  await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).not.toBeVisible();
-  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + bibName + '")')).toBeVisible({ timeout: 10000 });
-}
+  await expect(page.getByRole('dialog').filter({ hasText: /Create|Title/i })).toBeHidden();
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + bibName + '")')).toBeVisible({ timeout: 10_000 });
+};
 
-async function createAndGetShareUrl(page: Page): Promise<string> {
+const createAndGetShareUrl = async (page: Page): Promise<string> => {
   // Create list and get share URL
   await createTestListWithEntities(page, "URL Test List");
 
@@ -277,8 +277,8 @@ async function createAndGetShareUrl(page: Page): Promise<string> {
   await page.click('[data-testid="share-list-button"]');
 
   // Wait for share URL generation
-  await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15_000 });
 
   const shareUrlInput = page.locator('input[value*="catalogue/shared/"]');
   return await shareUrlInput.inputValue();
-}
+};

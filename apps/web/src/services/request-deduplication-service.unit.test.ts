@@ -8,8 +8,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  RequestDeduplicationService,
   createRequestDeduplicationService,
+  RequestDeduplicationService,
 } from "./request-deduplication-service";
 
 

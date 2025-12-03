@@ -1,7 +1,6 @@
 /**
  * Topological Sort and Cycle Detection Algorithm Item
  * Detects cycles and computes topological ordering for DAGs
- *
  * @module components/algorithms/items/TopologicalSortItem
  */
 
@@ -21,12 +20,12 @@ import { useCycleInfo, useTopologicalSort } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function TopologicalSortItem({
+export const TopologicalSortItem = ({
   nodes,
   edges,
   onHighlightNodes,
   onHighlightPath,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const cycleInfo = useCycleInfo(nodes, edges, true);
   const topologicalOrder = useTopologicalSort(nodes, edges);
 
@@ -109,4 +108,4 @@ export function TopologicalSortItem({
       )}
     </Stack>
   );
-}
+};

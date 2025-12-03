@@ -6,9 +6,9 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import {
-  catalogueService,
-  catalogueEventEmitter,
   type CatalogueEntity,
+  catalogueEventEmitter,
+  catalogueService,
   SPECIAL_LIST_IDS,
 } from "@bibgraph/utils/storage/catalogue-db";
 import { useLocation } from "@tanstack/react-router";
@@ -91,9 +91,7 @@ export interface UseUserInteractionsReturn {
   refreshData: () => Promise<void>;
 }
 
-export function useUserInteractions(
-  options: UseUserInteractionsOptions = {},
-): UseUserInteractionsReturn {
+export const useUserInteractions = (options: UseUserInteractionsOptions = {}): UseUserInteractionsReturn => {
   const {
     entityId,
     entityType,
@@ -154,7 +152,7 @@ export function useUserInteractions(
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
         reject(new Error('User interactions data loading timed out after 10 seconds'));
-      }, 10000); // 10 second timeout
+      }, 10_000); // 10 second timeout
     });
 
     try {
@@ -718,4 +716,4 @@ export function useUserInteractions(
     // Actions
     refreshData,
   };
-}
+};

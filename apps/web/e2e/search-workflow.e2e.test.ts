@@ -8,19 +8,18 @@
  * 3. Wait for and verify results
  * 4. Interact with results (clicking, filtering)
  * 5. Navigate to entity detail pages
- *
  * @category @workflow
  * @see spec-020 Phase 1: Search workflow testing
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import {
 	waitForAppReady,
-	waitForSearchResults,
 	waitForEntityData,
 	waitForNoLoading,
+	waitForSearchResults,
 } from '@/test/helpers/app-ready';
 import { SearchPage } from '@/test/page-objects/SearchPage';
 
@@ -304,7 +303,7 @@ test.describe('@workflow Search Workflow', () => {
 
 		// Log entity types found (for debugging)
 		const uniqueTypes = new Set(badgeTexts);
-		console.log(`Found ${uniqueTypes.size} unique entity types:`, Array.from(uniqueTypes));
+		console.log(`Found ${uniqueTypes.size} unique entity types:`, [...uniqueTypes]);
 
 		// Verify at least one valid entity type is present
 		const hasValidEntityType = badgeTexts.some((text) =>

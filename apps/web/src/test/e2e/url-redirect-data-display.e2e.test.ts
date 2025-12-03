@@ -6,7 +6,7 @@
  * 2. All data from the API response is displayed in the UI
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("URL Redirect and Data Display", () => {
   test("should redirect bioplastics URL and display all data", async ({ page }) => {
@@ -15,7 +15,7 @@ test.describe("URL Redirect and Data Display", () => {
     await page.goto(`${fullUrl}`);
 
     // Wait for redirect to complete - use more flexible URL check
-    await page.waitForURL(/\/#\/works/, { timeout: 10000 });
+    await page.waitForURL(/\/#\/works/, { timeout: 10_000 });
 
     // Verify the URL was redirected correctly
     const currentUrl = page.url();
@@ -23,7 +23,7 @@ test.describe("URL Redirect and Data Display", () => {
     expect(currentUrl).toContain("bioplastics");
 
     // Wait for table data to load - the app uses Mantine table
-    await page.waitForSelector('table tbody tr', { timeout: 15000 });
+    await page.waitForSelector('table tbody tr', { timeout: 15_000 });
 
     // Verify that results are displayed in the table
     const tableRows = await page.locator('table tbody tr').count();
@@ -38,7 +38,7 @@ test.describe("URL Redirect and Data Display", () => {
     await page.goto("/#/authors/A5017898742");
 
     // Wait for author name to be displayed
-    await page.waitForSelector('h1', { timeout: 15000 });
+    await page.waitForSelector('h1', { timeout: 15_000 });
 
     // Verify the author name is displayed
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Joseph Mearman');
@@ -75,7 +75,7 @@ test.describe("URL Redirect and Data Display", () => {
     for (const urlTest of testUrls) {
       await page.goto(`${urlTest.input}`);
       // Wait for redirect to complete
-      await page.waitForURL(new RegExp(urlTest.expected.replace(/[?]/g, "\\?")), { timeout: 10000 });
+      await page.waitForURL(new RegExp(urlTest.expected.replaceAll('?', String.raw`\?`)), { timeout: 10_000 });
       const currentUrl = page.url();
       expect(currentUrl).toContain(urlTest.expected);
     }

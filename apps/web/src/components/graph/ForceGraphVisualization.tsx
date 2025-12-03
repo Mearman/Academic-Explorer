@@ -6,13 +6,12 @@
  * keeping this component focused on rendering.
  */
 
-import type { GraphNode, GraphEdge, EntityType } from '@bibgraph/types';
+import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { Box, LoadingOverlay, useComputedColorScheme } from '@mantine/core';
-import React, { useCallback, useRef, useEffect, useMemo } from 'react';
-import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject } from 'react-force-graph-2d';
+import React, { useCallback, useEffect, useMemo,useRef } from 'react';
+import ForceGraph2D, { type ForceGraphMethods, type LinkObject,type NodeObject } from 'react-force-graph-2d';
 
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
-
 import { getEdgeStyle } from './edge-styles';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
@@ -44,7 +43,7 @@ interface ForceGraphLink extends LinkObject {
 }
 
 // Import and re-export shared types
-import type { DisplayMode, NodeStyle, LinkStyle } from './types';
+import type { DisplayMode, LinkStyle,NodeStyle } from './types';
 
 export interface ForceGraphVisualizationProps {
   /** Graph nodes */
@@ -96,16 +95,14 @@ const DEFAULT_SEED = 42;
 
 /**
  * Simple seeded random number generator for deterministic layouts
+ * @param seed
  */
-function seededRandom(seed: number): () => number {
-  
-  return () => {
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    return seed / 0x7fffffff;
+const seededRandom = (seed: number): () => number => () => {
+    seed = (seed * 1_103_515_245 + 12_345) & 0x7F_FF_FF_FF;
+    return seed / 0x7F_FF_FF_FF;
   };
-}
 
-export function ForceGraphVisualization({
+export const ForceGraphVisualization = ({
   nodes,
   edges,
   visible = true,
@@ -127,7 +124,7 @@ export function ForceGraphVisualization({
   enableSimulation = true,
   seed,
   onGraphReady,
-}: ForceGraphVisualizationProps) {
+}: ForceGraphVisualizationProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphMethods | undefined>(undefined);
   const colorScheme = useComputedColorScheme('light');
@@ -366,7 +363,7 @@ export function ForceGraphVisualization({
       const dx = target.x - source.x;
       const dy = target.y - source.y;
       const angle = Math.atan2(dy, dx);
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dist = Math.hypot(dx, dy);
 
       // Position arrow at target node edge (offset by node radius)
       const arrowTipX = source.x + (dist - targetNodeSize) * Math.cos(angle);
@@ -479,17 +476,16 @@ export function ForceGraphVisualization({
       />
     </Box>
   );
-}
+};
 
 /**
  * Default node styling based on entity type and highlighting
+ * @param node
+ * @param isHighlighted
+ * @param communityId
+ * @param communityColors
  */
-function getDefaultNodeStyle(
-  node: ForceGraphNode,
-  isHighlighted: boolean,
-  communityId?: number,
-  communityColors?: Map<number, string>
-): NodeStyle {
+const getDefaultNodeStyle = (node: ForceGraphNode, isHighlighted: boolean, communityId?: number, communityColors?: Map<number, string>): NodeStyle => {
   let color = ENTITY_TYPE_COLORS[node.entityType] ?? 'var(--mantine-color-dimmed)';
 
   // Use community color if available
@@ -504,17 +500,16 @@ function getDefaultNodeStyle(
     borderColor: isHighlighted ? 'var(--mantine-color-body)' : undefined,
     borderWidth: isHighlighted ? 2 : 0,
   };
-}
+};
 
 /**
  * Default link styling based on edge type, direction, and highlighting
  * Uses edge-styles.ts for consistent relationship type colors
+ * @param link
+ * @param isHighlighted
+ * @param isPathHighlightMode
  */
-function getDefaultLinkStyle(
-  link: ForceGraphLink,
-  isHighlighted: boolean,
-  isPathHighlightMode: boolean
-): LinkStyle {
+const getDefaultLinkStyle = (link: ForceGraphLink, isHighlighted: boolean, isPathHighlightMode: boolean): LinkStyle => {
   const edge = link.originalEdge;
   const edgeStyle = getEdgeStyle(edge);
   const isDirected = edge.direction !== undefined;
@@ -537,4 +532,4 @@ function getDefaultLinkStyle(
     dashed: edgeStyle.strokeDasharray !== undefined,
     directed: isDirected,
   };
-}
+};

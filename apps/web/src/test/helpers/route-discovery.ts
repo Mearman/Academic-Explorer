@@ -47,7 +47,7 @@ const SKIP_PATTERNS = [
 /**
  * Entity types that have index pages
  */
-const ENTITY_INDEX_PATHS = [
+const ENTITY_INDEX_PATHS = new Set([
 	"/works",
 	"/authors",
 	"/sources",
@@ -57,7 +57,7 @@ const ENTITY_INDEX_PATHS = [
 	"/funders",
 	"/concepts",
 	"/keywords",
-];
+]);
 
 /**
  * External ID route patterns and their entity types
@@ -74,9 +74,9 @@ const EXTERNAL_ID_ROUTES: Record<string, { entityType: EntityType; idType: strin
  *
  * Parses the FileRoutesByFullPath interface to get all defined routes.
  */
-export function getAllRoutes(): string[] {
+export const getAllRoutes = (): string[] => {
 	const routeTreePath = path.resolve(__dirname, "../../routeTree.gen.ts");
-	const content = fs.readFileSync(routeTreePath, "utf-8");
+	const content = fs.readFileSync(routeTreePath, "utf8");
 
 	// Extract routes from FileRoutesByFullPath interface
 	const interfaceMatch = content.match(
@@ -95,12 +95,13 @@ export function getAllRoutes(): string[] {
 	}
 
 	return routes.sort();
-}
+};
 
 /**
  * Categorize routes by their testing requirements
+ * @param routes
  */
-export function categorizeRoutes(routes: string[]): CategorizedRoutes {
+export const categorizeRoutes = (routes: string[]): CategorizedRoutes => {
 	const result: CategorizedRoutes = {
 		static: [],
 		entityIndex: [],
@@ -130,7 +131,7 @@ export function categorizeRoutes(routes: string[]): CategorizedRoutes {
 		}
 
 		// Entity index pages (exact match)
-		if (ENTITY_INDEX_PATHS.includes(route)) {
+		if (ENTITY_INDEX_PATHS.has(route)) {
 			result.entityIndex.push(route);
 			continue;
 		}
@@ -146,15 +147,15 @@ export function categorizeRoutes(routes: string[]): CategorizedRoutes {
 	}
 
 	return result;
-}
+};
 
 /**
  * Extract entity type from a route path
- *
+ * @param route
  * @example extractEntityType('/works/$') -> 'works'
  * @example extractEntityType('/authors/$') -> 'authors'
  */
-export function extractEntityType(route: string): EntityType | null {
+export const extractEntityType = (route: string): EntityType | null => {
 	// Match /entityType/$ or /entityType/$paramName patterns
 	const match = route.match(/^\/([a-z]+)\/\$/);
 	if (match) {
@@ -168,39 +169,36 @@ export function extractEntityType(route: string): EntityType | null {
 	}
 
 	return null;
-}
+};
 
 /**
  * Get external ID info for a route
+ * @param route
  */
-export function getExternalIdInfo(
-	route: string
-): { entityType: EntityType; idType: string } | null {
-	return EXTERNAL_ID_ROUTES[route] || null;
-}
+export const getExternalIdInfo = (route: string): { entityType: EntityType; idType: string } | null => EXTERNAL_ID_ROUTES[route] || null;
 
 /**
  * Resolve a dynamic route with an actual entity ID
- *
+ * @param route
+ * @param id
  * @example resolveRoute('/works/$', 'W123') -> '/works/W123'
  * @example resolveRoute('/topics/$topicId', 'T456') -> '/topics/T456'
  */
-export function resolveRoute(route: string, id: string): string {
+export const resolveRoute = (route: string, id: string): string => {
 	// Replace $_ or $ with the ID
 	if (route.endsWith("/$")) {
 		return route.slice(0, -1) + id;
 	}
 
 	// Replace $paramName patterns
-	return route.replace(/\$[A-Za-z]+$/, id);
-}
+	return route.replace(/\$[A-Z]+$/i, id);
+};
 
 /**
  * Resolve an external ID route with the appropriate identifier
- *
+ * @param route
+ * @param externalId
  * @example resolveExternalIdRoute('/authors/orcid/$orcid', '0000-0002-1234-5678')
  *          -> '/authors/orcid/0000-0002-1234-5678'
  */
-export function resolveExternalIdRoute(route: string, externalId: string): string {
-	return route.replace(/\$[a-z]+$/, externalId);
-}
+export const resolveExternalIdRoute = (route: string, externalId: string): string => route.replace(/\$[a-z]+$/, externalId);

@@ -1,17 +1,16 @@
-import { Menu, Box, Group, Text, ActionIcon } from '@mantine/core'
+import { ActionIcon,Box, Group, Menu, Text } from '@mantine/core'
 import {
-  IconSun,
-  IconMoon,
-  IconDeviceDesktop,
-  IconPalette,
   IconCheck,
-  IconRotate
-} from '@tabler/icons-react'
-import { useState, useEffect } from 'react'
+  IconDeviceDesktop,
+  IconMoon,
+  IconPalette,
+  IconRotate,
+  IconSun} from '@tabler/icons-react'
+import { useEffect,useState } from 'react'
 
 import { SplitButton } from '@/components/ui/SplitButton'
 import { useTheme } from '@/contexts/theme-context'
-import { shadcnPaletteNames, type ShadcnPalette } from '@/styles/shadcn-colors'
+import { type ShadcnPalette,shadcnPaletteNames } from '@/styles/shadcn-colors'
 import { sprinkles } from '@/styles/sprinkles'
 
 type ComponentLibrary = 'mantine' | 'shadcn' | 'radix'

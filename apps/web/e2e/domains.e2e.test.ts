@@ -1,13 +1,12 @@
 /**
  * E2E tests for Domains Detail Page
  * Tests domain entity detail pages, metadata display, and relationships
- *
  * @module domains.e2e
  * @see spec-020 Phase 1: T010 - Domain entity E2E tests
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { DomainsDetailPage } from '@/test/page-objects/DomainsDetailPage';

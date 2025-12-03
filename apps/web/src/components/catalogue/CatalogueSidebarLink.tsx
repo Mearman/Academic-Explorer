@@ -10,7 +10,7 @@ interface CatalogueSidebarLinkProps {
   onClose?: () => void;
 }
 
-export function CatalogueSidebarLink({ onClose }: CatalogueSidebarLinkProps) {
+export const CatalogueSidebarLink = ({ onClose }: CatalogueSidebarLinkProps) => {
   const handleClick = () => {
     // Navigate to catalogue page
     window.location.hash = "/catalogue";
@@ -33,4 +33,4 @@ export function CatalogueSidebarLink({ onClose }: CatalogueSidebarLinkProps) {
       </ActionIcon>
     </Tooltip>
   );
-}
+};

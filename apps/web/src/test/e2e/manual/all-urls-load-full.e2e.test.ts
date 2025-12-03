@@ -9,11 +9,11 @@
  * This is a smoke test to ensure all routing and data fetching works.
  */
 
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { dirname,join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,24 +29,24 @@ const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL
 // Uses the /openalex-url/ route which handles API URL conversion internally
-function toAppUrl(apiUrl: string): string {
+const toAppUrl = (apiUrl: string): string => {
   // Remove API base and use the openalex-url route which handles all conversions
   // The openalex-url route will detect entity types, normalize IDs, and route appropriately
   const relativePath = apiUrl.replace(API_BASE, '');
   // URL-encode colons to prevent TanStack Router from misinterpreting them
   // Colons in hash routes can be treated as delimiters
-  const encodedPath = relativePath.replace(/:/g, '%3A');
+  const encodedPath = relativePath.replaceAll(':', '%3A');
   return `${BASE_URL}/#/openalex-url${encodedPath}`;
-}
+};
 
 // Helper to get entity type from URL
-function getEntityType(url: string): string | null {
+const getEntityType = (url: string): string | null => {
   const match = url.match(/\/([a-z]+)(?:\/|$|\?)/);
   return match ? match[1] : null;
-}
+};
 
 test.describe('All OpenAlex URLs - Load Test', () => {
-  test.setTimeout(3600000); // 60 minutes for all URLs (276 URLs + retries, ~6.5 seconds each)
+  test.setTimeout(3_600_000); // 60 minutes for all URLs (276 URLs + retries, ~6.5 seconds each)
 
   // Group URLs by type for better organization
   const urlsByType: Record<string, string[]> = {};
@@ -78,20 +78,20 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // Navigate to the app URL
           await page.goto(appUrl, {
             waitUntil: 'networkidle',
-            timeout: 30000
+            timeout: 30_000
           });
 
           // Wait for main content
-          await page.waitForSelector('main', { timeout: 10000 });
+          await page.waitForSelector('main', { timeout: 10_000 });
 
           // Wait a bit for data to load
           await page.waitForTimeout(3000);
 
           // Get page content
-          const mainContent = await page.locator('main').textContent();
+          const mainContent = page.locator('main');
 
           // Basic checks
-          expect(mainContent).toBeTruthy();
+          await expect(mainContent).toHaveText();
 
           // Adaptive content threshold based on URL type
           // Pages with ?select= parameters or list pages may have minimal content

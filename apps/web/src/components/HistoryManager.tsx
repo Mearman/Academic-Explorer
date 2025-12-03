@@ -4,24 +4,24 @@
  */
 
 import { logError, logger } from "@bibgraph/utils/logger";
-import { catalogueService, type CatalogueEntity } from "@bibgraph/utils/storage/catalogue-db";
+import { type CatalogueEntity,catalogueService } from "@bibgraph/utils/storage/catalogue-db";
 import {
-  TextInput,
+  ActionIcon,
   Button,
   Card,
-  Text,
+  Divider,
   Group,
   Stack,
-  ActionIcon,
+  Text,
+  TextInput,
   Title,
-  Divider,
   Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
+  IconExternalLink,
   IconHistory,
   IconSearch,
-  IconExternalLink,
   IconTrash,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -33,7 +33,7 @@ interface HistoryManagerProps {
   onNavigate?: (url: string) => void;
 }
 
-export function HistoryManager({ onNavigate }: HistoryManagerProps) {
+export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -320,4 +320,4 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
       )}
     </Stack>
   );
-}
+};

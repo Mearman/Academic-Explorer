@@ -21,7 +21,7 @@ import {
   IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch , createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -226,7 +226,7 @@ const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
   },
 ];
 
-function SearchPage() {
+const SearchPage = () => {
   const searchParams = useSearch({ from: "/search" });
 
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -371,7 +371,7 @@ function SearchPage() {
       </Stack>
     </Container>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/search")({
   component: SearchPage,

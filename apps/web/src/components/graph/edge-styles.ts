@@ -9,7 +9,7 @@
  * to meet WCAG 2.1 Level AA standards
  */
 
-import type { GraphEdge, EdgeDirection } from "@bibgraph/types";
+import type { EdgeDirection,GraphEdge } from "@bibgraph/types";
 import { RelationType } from "@bibgraph/types";
 
 import { RELATIONSHIP_TYPE_COLORS as HASH_BASED_COLORS } from "../../styles/hash-colors";
@@ -63,7 +63,7 @@ const STYLE_CONSTANTS = {
 
   // Opacity
   DEFAULT_OPACITY: 0.8,
-  HOVER_OPACITY: 1.0,
+  HOVER_OPACITY: 1,
   FILTERED_OPACITY: 0.2,
 
   // Arrow markers
@@ -73,22 +73,18 @@ const STYLE_CONSTANTS = {
 
 /**
  * Get color for a relationship type
- *
  * @param type - Relationship type
  * @returns Hex color string
  */
-export function getTypeColor(type: RelationType): string {
-  return TYPE_COLORS[type] || TYPE_COLORS.RELATED_TO;
-}
+export const getTypeColor = (type: RelationType): string => TYPE_COLORS[type] || TYPE_COLORS.RELATED_TO;
 
 /**
  * Get styling for outbound edges (solid lines)
  * Outbound edges represent relationships stored directly on the source entity
- *
  * @param type - Relationship type
  * @returns Style properties for outbound edges
  */
-export function getOutboundStyle(type: RelationType): EdgeStyleProperties {
+export const getOutboundStyle = (type: RelationType): EdgeStyleProperties => {
   const color = getTypeColor(type);
 
   return {
@@ -111,16 +107,15 @@ export function getOutboundStyle(type: RelationType): EdgeStyleProperties {
     'data-direction': 'outbound',
     'data-relation-type': type,
   };
-}
+};
 
 /**
  * Get styling for inbound edges (dashed lines)
  * Inbound edges represent relationships discovered via reverse lookup
- *
  * @param type - Relationship type
  * @returns Style properties for inbound edges
  */
-export function getInboundStyle(type: RelationType): EdgeStyleProperties {
+export const getInboundStyle = (type: RelationType): EdgeStyleProperties => {
   const color = getTypeColor(type);
 
   return {
@@ -143,7 +138,7 @@ export function getInboundStyle(type: RelationType): EdgeStyleProperties {
     'data-direction': 'inbound',
     'data-relation-type': type,
   };
-}
+};
 
 /**
  * Get complete styling for an edge based on its direction and type
@@ -153,10 +148,8 @@ export function getInboundStyle(type: RelationType): EdgeStyleProperties {
  * 1. Line style: Solid (outbound) vs Dashed (inbound)
  * 2. Color: Type-specific colors
  * 3. Arrow style: Different marker styles for outbound/inbound
- *
  * @param edge - Graph edge to style
  * @returns Style properties with multi-modal visual distinction
- *
  * @example
  * ```typescript
  * const edge: GraphEdge = {
@@ -170,7 +163,7 @@ export function getInboundStyle(type: RelationType): EdgeStyleProperties {
  * // Returns: { stroke: '#4A90E2', strokeDasharray: undefined, ... }
  * ```
  */
-export function getEdgeStyle(edge: GraphEdge): EdgeStyleProperties {
+export const getEdgeStyle = (edge: GraphEdge): EdgeStyleProperties => {
   const { type, direction } = edge;
 
   // Use direction field if available, otherwise default to outbound
@@ -181,16 +174,15 @@ export function getEdgeStyle(edge: GraphEdge): EdgeStyleProperties {
   }
 
   return getOutboundStyle(type);
-}
+};
 
 /**
  * Get hover styling for an edge
  * Increases stroke width and opacity for better visibility
- *
  * @param edge - Graph edge to style
  * @returns Style properties for hover state
  */
-export function getEdgeHoverStyle(edge: GraphEdge): EdgeStyleProperties {
+export const getEdgeHoverStyle = (edge: GraphEdge): EdgeStyleProperties => {
   const baseStyle = getEdgeStyle(edge);
 
   return {
@@ -199,16 +191,15 @@ export function getEdgeHoverStyle(edge: GraphEdge): EdgeStyleProperties {
     strokeOpacity: STYLE_CONSTANTS.HOVER_OPACITY,
     opacity: STYLE_CONSTANTS.HOVER_OPACITY,
   };
-}
+};
 
 /**
  * Get filtered/dimmed styling for an edge
  * Used when edge is not currently visible/active
- *
  * @param edge - Graph edge to style
  * @returns Style properties for filtered state
  */
-export function getEdgeFilteredStyle(edge: GraphEdge): EdgeStyleProperties {
+export const getEdgeFilteredStyle = (edge: GraphEdge): EdgeStyleProperties => {
   const baseStyle = getEdgeStyle(edge);
 
   return {
@@ -216,4 +207,4 @@ export function getEdgeFilteredStyle(edge: GraphEdge): EdgeStyleProperties {
     strokeOpacity: STYLE_CONSTANTS.FILTERED_OPACITY,
     opacity: STYLE_CONSTANTS.FILTERED_OPACITY,
   };
-}
+};

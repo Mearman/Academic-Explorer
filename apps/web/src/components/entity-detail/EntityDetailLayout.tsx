@@ -1,7 +1,7 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
-import { Text, Code, Badge, Paper, Stack, Group, Box, Title, Tooltip, ActionIcon, Modal, SegmentedControl } from "@mantine/core";
-import { IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
+import { ActionIcon, Badge, Box, Code, Group, Modal, Paper, SegmentedControl,Stack, Text, Title, Tooltip } from "@mantine/core";
+import { IconBookmark, IconBookmarkFilled, IconBookmarkOff, IconCode, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
 
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
@@ -10,7 +10,6 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 export type DetailViewMode = "rich" | "raw";
@@ -29,7 +28,7 @@ interface EntityDetailLayoutProps {
 }
 
 // Helper function to map entity types to Mantine colors
-function getMantineColor(entityType: EntityType): string {
+const getMantineColor = (entityType: EntityType): string => {
   const colorMap: Record<EntityType, string> = {
     authors: 'blue',
     works: 'violet',
@@ -45,9 +44,9 @@ function getMantineColor(entityType: EntityType): string {
     keywords: 'red',
   };
   return colorMap[entityType] || 'blue';
-}
+};
 
-export function EntityDetailLayout({
+export const EntityDetailLayout = ({
   config,
   entityType,
   entityId,
@@ -58,7 +57,7 @@ export function EntityDetailLayout({
   onViewModeChange,
   data,
   children,
-}: EntityDetailLayoutProps) {
+}: EntityDetailLayoutProps) => {
   // Initialize theme colors hook
   useThemeColors();
 
@@ -80,15 +79,11 @@ export function EntityDetailLayout({
 
   const handleBookmarkToggle = async () => {
     try {
-      if (userInteractions.isBookmarked) {
-        await userInteractions.unbookmarkEntity();
-      } else {
-        await userInteractions.bookmarkEntity({
+      await (userInteractions.isBookmarked ? userInteractions.unbookmarkEntity() : userInteractions.bookmarkEntity({
           title: displayName,
           notes: `${config.name} from OpenAlex`,
           tags: [config.name.toLowerCase(), "openalex"],
-        });
-      }
+        }));
     } catch (error) {
       logger.error("ui", "Failed to toggle bookmark", { error, entityType, entityId });
     }
@@ -96,15 +91,11 @@ export function EntityDetailLayout({
 
   const handleQueryBookmarkToggle = async () => {
     try {
-      if (queryBookmarking.isQueryBookmarked) {
-        await queryBookmarking.unbookmarkCurrentQuery();
-      } else {
-        await queryBookmarking.bookmarkCurrentQuery({
+      await (queryBookmarking.isQueryBookmarked ? queryBookmarking.unbookmarkCurrentQuery() : queryBookmarking.bookmarkCurrentQuery({
           title: `${displayName} (Query)`,
           notes: `Query bookmark for ${config.name} with specific parameters`,
           tags: [config.name.toLowerCase(), "query", "entity-query"]
-        });
-      }
+        }));
     } catch (error) {
       logger.error("ui", "Failed to toggle query bookmark", { error, entityType, entityId });
     }
@@ -277,4 +268,4 @@ export function EntityDetailLayout({
       </Modal>
     </Box>
   );
-}
+};

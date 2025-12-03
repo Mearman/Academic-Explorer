@@ -1,23 +1,23 @@
-/* eslint-disable import/order */
+ 
 import { cachedOpenAlex } from "@bibgraph/client";
 import { DexieStorageProvider } from "@bibgraph/utils";
-import { setupGlobalErrorHandling, logger } from "@bibgraph/utils/logger";
+import { logger,setupGlobalErrorHandling } from "@bibgraph/utils/logger";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  createHashHistory,
   createRouter,
   RouterProvider,
-  createHashHistory,
 } from "@tanstack/react-router";
 import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
 
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
+import { ThemeProvider } from "@/contexts/theme-context";
 import { AppActivityProvider } from "@/stores/app-activity-store";
 import { LayoutProvider } from "@/stores/layout-store";
-import { ThemeProvider } from "@/contexts/theme-context";
 import { initWebVitals } from "@/utils/web-vitals";
 
 import { routeTree } from "./routeTree.gen";
@@ -39,7 +39,7 @@ if (typeof window !== "undefined") {
 
     // First, fix double hash issue (##/... should become #/...)
     if (currentHash.startsWith("##")) {
-      fixedHash = "#" + currentHash.substring(2);
+      fixedHash = "#" + currentHash.slice(2);
       needsUpdate = true;
       logger.debug("routing", "Fixed double hash:", { original: currentHash, clean: fixedHash });
     }
@@ -53,7 +53,7 @@ if (typeof window !== "undefined") {
 
       // Only decode if this is NOT an external canonical ID URL pattern
       // External canonical IDs will be handled by the usePrettyUrl hook in React components
-      if (entityType && encodedId && !encodedId.match(/^(https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i)) {
+      if (entityType && encodedId && !/^(https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i.test(encodedId)) {
         try {
           const decodedId = decodeURIComponent(encodedId);
 
@@ -87,9 +87,9 @@ if (typeof window !== "undefined") {
       if (collapsedPattern.test(fixedHash)) {
         // Fix collapsed patterns in the hash portion only
         fixedHash = fixedHash
-          .replace(/https?:\/(?!\/)/g, 'https://')
-          .replace(/http?:\/(?!\/)/g, 'http://')
-          .replace(/ror:\/(?!\/)/g, 'ror://');
+          .replaceAll(/https?:\/(?!\/)/g, 'https://')
+          .replaceAll(/http?:\/(?!\/)/g, 'http://')
+          .replaceAll(/ror:\/(?!\/)/g, 'ror://');
 
         needsUpdate = true;
 
@@ -143,7 +143,7 @@ if (typeof window !== "undefined") {
 
     // Fix double hash
     if (currentHash.startsWith("##")) {
-      fixedHash = "#" + currentHash.substring(2);
+      fixedHash = "#" + currentHash.slice(2);
       needsUpdate = true;
     }
 
@@ -279,7 +279,7 @@ storageProvider.initializeSpecialLists().catch((error) => {
   }
 })();
 
-const rootElement = document.getElementById("root");
+const rootElement = document.querySelector("#root");
 if (!rootElement) {
   throw new Error("Root element not found");
 }

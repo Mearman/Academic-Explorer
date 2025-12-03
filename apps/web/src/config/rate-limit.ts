@@ -47,7 +47,7 @@ export const RETRY_CONFIG = {
   rateLimited: {
     maxAttempts: 5,
     baseDelay: 2000, // Start with 2 seconds
-    maxDelay: 30000, // Cap at 30 seconds
+    maxDelay: 30_000, // Cap at 30 seconds
     exponentialBase: 2, // Double delay each retry
     jitterMs: 1000, // Add random jitter up to 1 second
   },
@@ -56,7 +56,7 @@ export const RETRY_CONFIG = {
   network: {
     maxAttempts: 3,
     baseDelay: 1000, // Start with 1 second
-    maxDelay: 10000, // Cap at 10 seconds
+    maxDelay: 10_000, // Cap at 10 seconds
     exponentialBase: 2,
     jitterMs: 500, // Add random jitter up to 500ms
   },
@@ -78,8 +78,12 @@ export const RETRY_CONFIG = {
 
 /**
  * Calculate retry delay with exponential backoff and jitter
+ * @param root0
+ * @param root0.attemptIndex
+ * @param root0.config
+ * @param root0.retryAfterMs
  */
-export function calculateRetryDelay({
+export const calculateRetryDelay = ({
   attemptIndex,
   config,
   retryAfterMs,
@@ -90,7 +94,7 @@ export function calculateRetryDelay({
     | typeof RETRY_CONFIG.network
     | typeof RETRY_CONFIG.server;
   retryAfterMs?: number;
-}): number {
+}): number => {
   // If server provides Retry-After header, respect it
   if (retryAfterMs) {
     return retryAfterMs;
@@ -113,4 +117,4 @@ export function calculateRetryDelay({
   const jitter = Math.random() * config.jitterMs;
 
   return Math.min(exponentialDelay + jitter, config.maxDelay);
-}
+};

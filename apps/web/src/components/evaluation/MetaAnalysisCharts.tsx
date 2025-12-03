@@ -36,10 +36,12 @@ interface DatasetPerformanceData {
 /**
  * Performance Comparison Bar Chart
  * Shows precision, recall, and F1-score across all datasets
+ * @param root0
+ * @param root0.comparisonResults
  */
-export function PerformanceComparisonChart({
+export const PerformanceComparisonChart = ({
   comparisonResults,
-}: MetaAnalysisChartsProps) {
+}: MetaAnalysisChartsProps) => {
   const chartData = useMemo(() => {
     return comparisonResults.map(
       (result): DatasetPerformanceData => ({
@@ -275,15 +277,17 @@ export function PerformanceComparisonChart({
       </div>
     </div>
   );
-}
+};
 
 /**
  * Precision-Recall Scatter Plot
  * Shows the precision-recall trade-off across datasets
+ * @param root0
+ * @param root0.comparisonResults
  */
-export function PrecisionRecallScatterPlot({
+export const PrecisionRecallScatterPlot = ({
   comparisonResults,
-}: MetaAnalysisChartsProps) {
+}: MetaAnalysisChartsProps) => {
   const plotData = useMemo(() => {
     return comparisonResults.map((result, index) => ({
       id: index,
@@ -426,7 +430,7 @@ export function PrecisionRecallScatterPlot({
           })}
 
           {/* Scale indicators */}
-          {[0, 0.25, 0.5, 0.75, 1.0].map((tick) => (
+          {[0, 0.25, 0.5, 0.75, 1].map((tick) => (
             <g key={`scale-${String(tick)}`}>
               {/* X-axis ticks */}
               <line
@@ -533,15 +537,17 @@ export function PrecisionRecallScatterPlot({
       </div>
     </div>
   );
-}
+};
 
 /**
  * Confusion Matrix Heatmap
  * Visual representation of true/false positives/negatives
+ * @param root0
+ * @param root0.comparisonResults
  */
-export function ConfusionMatrixHeatmap({
+export const ConfusionMatrixHeatmap = ({
   comparisonResults,
-}: MetaAnalysisChartsProps) {
+}: MetaAnalysisChartsProps) => {
   const aggregatedData = useMemo(() => {
     if (comparisonResults.length === 0) return null;
 
@@ -859,15 +865,17 @@ export function ConfusionMatrixHeatmap({
       </div>
     </div>
   );
-}
+};
 
 /**
  * Dataset Statistics Overview
  * Shows key statistics about the datasets being compared
+ * @param root0
+ * @param root0.comparisonResults
  */
-export function DatasetStatisticsOverview({
+export const DatasetStatisticsOverview = ({
   comparisonResults,
-}: MetaAnalysisChartsProps) {
+}: MetaAnalysisChartsProps) => {
   const statisticsData = useMemo(() => {
     if (comparisonResults.length === 0) return null;
 
@@ -1165,4 +1173,4 @@ export function DatasetStatisticsOverview({
       </div>
     </div>
   );
-}
+};

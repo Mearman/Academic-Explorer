@@ -11,11 +11,11 @@
  * Tests a representative sample to balance coverage with execution time.
  */
 
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { dirname,join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -31,8 +31,9 @@ const API_BASE = 'https://api.openalex.org';
 
 /**
  * Generate all URL format permutations for a given OpenAlex API URL
+ * @param apiUrl
  */
-function generateUrlPermutations(apiUrl: string): Array<{ format: string; url: string }> {
+const generateUrlPermutations = (apiUrl: string): Array<{ format: string; url: string }> => {
   const path = apiUrl.replace(API_BASE, '');
 
   return [
@@ -57,16 +58,17 @@ function generateUrlPermutations(apiUrl: string): Array<{ format: string; url: s
       url: `${BASE_URL}/#/https://openalex.org${path}`
     }
   ];
-}
+};
 
 /**
  * Parse URL to extract entity information
+ * @param url
  */
-function parseUrl(url: string): {
+const parseUrl = (url: string): {
   entityType: string;
   entityId?: string;
   hasQueryParams: boolean;
-} {
+} => {
   const urlObj = url.startsWith('http') ? new URL(url) : new URL(url, 'http://localhost');
   const pathParts = urlObj.pathname.split('/').filter(Boolean);
 
@@ -79,37 +81,39 @@ function parseUrl(url: string): {
     entityId,
     hasQueryParams
   };
-}
+};
 
 /**
  * Check if URL is an entity detail page
+ * @param url
  */
-function isEntityDetail(url: string): boolean {
+const isEntityDetail = (url: string): boolean => {
   const { entityType, entityId } = parseUrl(url);
   if (!entityType || !entityId) return false;
   // Entity IDs start with capital letter + digits, or contain colons (external IDs)
   return /^[A-Z]\d+/.test(entityId) || entityId.includes(':');
-}
+};
 
 /**
  * Check if URL is a list/search page
+ * @param url
  */
-function isListPage(url: string): boolean {
+const isListPage = (url: string): boolean => {
   const { hasQueryParams, entityId } = parseUrl(url);
   return hasQueryParams || !entityId;
-}
+};
 
 /**
  * Get dynamic timeout based on environment
  */
-function getTimeout(): number {
-  return process.env.CI === 'true' ? 30000 : 10000;
-}
+const getTimeout = (): number => process.env.CI === 'true' ? 30_000 : 10_000;
 
 /**
  * Wait for content with fallback selectors - optimized to prevent hanging
+ * @param page
+ * @param timeout
  */
-async function waitForContent(page: any, timeout: number): Promise<void> {
+const waitForContent = async (page: any, timeout: number): Promise<void> => {
   const shortTimeout = Math.min(timeout, 5000); // Use max 5s for primary selector
   const fallbackSelectors = ['body', '[role="main"]', '#root', '[data-testid="app"]', '.app'];
 
@@ -137,12 +141,13 @@ async function waitForContent(page: any, timeout: number): Promise<void> {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
-}
+};
 
 /**
  * Group URLs by entity type for organized testing
+ * @param urls
  */
-function groupUrlsByEntityType(urls: string[]): Record<string, string[]> {
+const groupUrlsByEntityType = (urls: string[]): Record<string, string[]> => {
   const grouped: Record<string, string[]> = {};
   urls.forEach(url => {
     const { entityType } = parseUrl(url);
@@ -152,7 +157,7 @@ function groupUrlsByEntityType(urls: string[]): Record<string, string[]> {
     grouped[entityType].push(url);
   });
   return grouped;
-}
+};
 
 // Select sample URLs for testing (to keep test suite manageable)
 const urlsByEntityType = groupUrlsByEntityType(testData.urls);
@@ -169,7 +174,7 @@ Object.entries(urlsByEntityType).forEach(([entityType, urls]) => {
 });
 
 test.describe('URL Permutations - E2E Browser Tests', () => {
-  test.setTimeout(300000); // 5 minutes total
+  test.setTimeout(300_000); // 5 minutes total
 
   test.beforeEach(async () => {
     // Small delay to avoid overwhelming API
@@ -185,7 +190,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -194,8 +199,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
-        expect(mainContent).toBeTruthy();
+        const mainContent = page.locator(contentSelector);
+        await expect(mainContent).toHaveText();
         // Some pages may show "Not Found" which is valid - just verify content exists
         expect(mainContent!.trim().length).toBeGreaterThan(0);
       });
@@ -211,7 +216,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${apiDomainUrl.url}`);
 
-        await page.goto(apiDomainUrl.url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(apiDomainUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -220,8 +225,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
-        expect(mainContent).toBeTruthy();
+        const mainContent = page.locator(contentSelector);
+        await expect(mainContent).toHaveText();
         // Some pages may show "Not Found" which is valid - just verify content exists
         expect(mainContent!.trim().length).toBeGreaterThan(0);
       });
@@ -237,7 +242,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${fullHttpsUrl.url}`);
 
-        await page.goto(fullHttpsUrl.url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(fullHttpsUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -246,8 +251,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
-        expect(mainContent).toBeTruthy();
+        const mainContent = page.locator(contentSelector);
+        await expect(mainContent).toHaveText();
         // Some pages may show "Not Found" which is valid - just verify content exists
         expect(mainContent!.trim().length).toBeGreaterThan(0);
       });
@@ -269,7 +274,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing query params: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -278,8 +283,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
-        expect(mainContent).toBeTruthy();
+        const mainContent = page.locator(contentSelector);
+        await expect(mainContent).toHaveText();
         // Some pages may show "Not Found" which is valid - just verify content exists
         expect(mainContent!.trim().length).toBeGreaterThan(0);
 
@@ -308,13 +313,13 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
       for (const { format, url } of permutations.slice(0, 3)) { // Test first 3 formats
         console.log(`Testing format ${format}: ${url}`);
 
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
+        const mainContent = page.locator(contentSelector);
 
-        expect(mainContent).toBeTruthy();
+        await expect(mainContent).toHaveText();
         contents.push(mainContent!.trim());
 
         // Small delay between requests
@@ -350,7 +355,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing ${entityType}: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -359,8 +364,8 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         // Verify content exists
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
-        const mainContent = await page.locator(contentSelector).textContent();
-        expect(mainContent).toBeTruthy();
+        const mainContent = page.locator(contentSelector);
+        await expect(mainContent).toHaveText();
         // Some pages may show "Not Found" which is valid - just verify content exists
         expect(mainContent!.trim().length).toBeGreaterThan(0);
 
@@ -376,7 +381,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 // instead of testing UI behavior with mocked responses. They verify UI
 // displays data correctly and can be used for integration testing.
 test.describe('Data Integrity - API vs Displayed Content', () => {
-  test.setTimeout(60000);
+  test.setTimeout(60_000);
 
   test.beforeEach(async () => {
     // Small delay to avoid overwhelming API
@@ -388,12 +393,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     const appUrl = `${BASE_URL}/#/works/${workId}`;
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify work page displays expected content (MSW returns mock data with ID in title)
     // MSW mock factory creates works with display_name: "Mock Work {id}"
@@ -410,12 +415,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     const appUrl = `${BASE_URL}/#/authors/${authorId}`;
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify author page displays expected content (MSW returns mock data with ID in title)
     // MSW mock factory creates authors with display_name: "Mock Author {id}"
@@ -441,12 +446,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API returned ${apiData.results.length} results`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify at least the first few results are displayed
     const firstResults = apiData.results.slice(0, 3);
@@ -476,12 +481,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API order (citations): ${apiCitations.join(' → ')}`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify the names appear in the page content
     for (const name of apiNames) {
@@ -507,12 +512,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API returned ${apiData.results.length} autocomplete suggestions`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify at least some suggestions are displayed
     const firstSuggestions = apiData.results.slice(0, 3);
@@ -537,12 +542,12 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API Data (select=${select}): ${apiData.display_name}`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
-    const pageText = await page.locator('main').first().textContent();
-    expect(pageText).toBeTruthy();
+    const pageText = page.locator('main').first();
+    await expect(pageText).toHaveText();
 
     // Verify selected fields are displayed
     expect(pageText).toContain(apiData.display_name);
@@ -557,7 +562,7 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
 });
 
 test.describe('URL Permutations - Summary', () => {
-  test('test coverage summary', () => {
+  test('coverage summary', () => {
     const totalUrls = testData.urls.length;
     const totalPermutations = totalUrls * 5;
     const entityTypeCount = Object.keys(urlsByEntityType).length;

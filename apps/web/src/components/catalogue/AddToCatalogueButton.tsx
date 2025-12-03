@@ -7,24 +7,24 @@ import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
   ActionIcon,
-  Menu,
+  Badge,
   Button,
+  Checkbox,
+  Divider,
+  Group,
+  Menu,
   Modal,
   Stack,
   Text,
-  Group,
-  Badge,
-  Divider,
-  TextInput,
   Textarea,
-  Checkbox,
+  TextInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
-  IconPlus,
+  IconBook,
   IconBookmark,
   IconList,
-  IconBook,
+  IconPlus,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
@@ -54,14 +54,14 @@ interface CreateAndAddModalProps {
   onSuccess: () => void;
 }
 
-function CreateAndAddModal({
+const CreateAndAddModal = ({
   opened,
   onClose,
   entityType,
   entityId,
   entityTitle,
   onSuccess,
-}: CreateAndAddModalProps) {
+}: CreateAndAddModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   // Tags feature not yet implemented - using empty array for now
@@ -188,16 +188,16 @@ function CreateAndAddModal({
       </Stack>
     </Modal>
   );
-}
+};
 
-export function AddToCatalogueButton({
+export const AddToCatalogueButton = ({
   entityType,
   entityId,
   entityTitle,
   size = "sm",
   variant = "icon",
   className,
-}: AddToCatalogueButtonProps) {
+}: AddToCatalogueButtonProps) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const { lists, addEntityToList } = useCatalogue();
 
@@ -408,4 +408,4 @@ export function AddToCatalogueButton({
       />
     </>
   );
-}
+};

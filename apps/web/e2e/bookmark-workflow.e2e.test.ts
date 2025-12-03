@@ -9,13 +9,12 @@
  * 5. Verify entity appears in bookmarks list
  * 6. Remove bookmark
  * 7. Verify entity removed from bookmarks
- *
  * @module bookmark-workflow.e2e
  * @tag @workflow
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '../src/test/helpers/app-ready';
 
@@ -81,16 +80,16 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await waitForEntityData(page);
 
 		// Get the actual entity title for verification
-		const entityTitle = await page.locator('h1').first().textContent();
-		expect(entityTitle).toBeTruthy();
+		const entityTitle = page.locator('h1').first();
+		await expect(entityTitle).toHaveText();
 
 		// 2. Verify bookmark button is not bookmarked initially
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');
 		await expect(bookmarkButton).toBeVisible();
 
 		// Check initial state - button should not be in "filled" variant
-		const initialVariant = await bookmarkButton.getAttribute('data-variant');
-		expect(initialVariant).not.toBe('filled');
+		const initialVariant = bookmarkButton;
+		await expect(initialVariant).not.toHaveAttribute('data-variant', 'filled');
 
 		// 3. Click bookmark button to bookmark entity
 		await bookmarkButton.click();
@@ -156,8 +155,8 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await waitForEntityData(page);
 
 		// Get entity title
-		const entityTitle = await page.locator('h1').first().textContent();
-		expect(entityTitle).toBeTruthy();
+		const entityTitle = page.locator('h1').first();
+		await expect(entityTitle).toHaveText();
 
 		// Click bookmark button
 		const bookmarkButton = page.locator('[data-testid="entity-bookmark-button"]');

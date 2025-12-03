@@ -4,17 +4,16 @@
  */
 
 import type { CSSProperties } from 'react';
-import { useMemo, useCallback } from 'react';
+import { useCallback,useMemo } from 'react';
 
 import { useTheme } from '../contexts/theme-context';
-import { sprinkles } from '../styles/sprinkles';
 import type { Sprinkles } from '../styles/sprinkles';
+import { sprinkles } from '../styles/sprinkles';
 import {
-  createDynamicSpacing,
-  interactiveStates,
+  createButtonStyles,
   createCardStyles,
-  createButtonStyles
-} from '../styles/sprinkles/dynamic-theme';
+  createDynamicSpacing,
+  interactiveStates} from '../styles/sprinkles/dynamic-theme';
 import type { ComponentLibrary } from '../styles/theme-contracts';
 
 /**
@@ -41,12 +40,14 @@ export const useSprinkles = () => {
 
     /**
      * Helper for creating theme-aware spacing
+     * @param size
      */
     spacing: (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') =>
       `var(--mantine-spacing-${size})`,
 
     /**
      * Helper for creating theme-aware border radius
+     * @param size
      */
     radius: (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') =>
       `var(--mantine-radius-${size})`,
@@ -105,6 +106,10 @@ export const useDynamicSpacing = () => {
 /**
  * Hook for interactive states (hover, active, disabled, selected)
  * Returns dynamic styles and utilities for interactive components
+ * @param options
+ * @param options.disabled
+ * @param options.selected
+ * @param options.hoverable
  */
 export const useInteractiveStates = (options?: {
   disabled?: boolean;
@@ -146,6 +151,9 @@ export const useInteractiveStates = (options?: {
 /**
  * Hook for dynamic card styling
  * Returns card styles that adapt to the current component library
+ * @param options
+ * @param options.elevated
+ * @param options.library
  */
 export const useDynamicCard = (options?: {
   elevated?: boolean;
@@ -170,6 +178,10 @@ export const useDynamicCard = (options?: {
 /**
  * Hook for dynamic button styling
  * Returns button styles that adapt to the current component library
+ * @param options
+ * @param options.variant
+ * @param options.size
+ * @param options.library
  */
 export const useDynamicButton = (options?: {
   variant?: 'solid' | 'subtle' | 'outline' | 'ghost';
@@ -220,9 +232,9 @@ export const useResponsiveDesign = () => {
   return {
     breakpoints,
     responsiveSprinkles,
-    isMobile: () => window.innerWidth < parseInt(breakpoints.tablet),
-    isTablet: () => window.innerWidth >= parseInt(breakpoints.tablet) && window.innerWidth < parseInt(breakpoints.desktop),
-    isDesktop: () => window.innerWidth >= parseInt(breakpoints.desktop),
+    isMobile: () => window.innerWidth < Number.parseInt(breakpoints.tablet),
+    isTablet: () => window.innerWidth >= Number.parseInt(breakpoints.tablet) && window.innerWidth < Number.parseInt(breakpoints.desktop),
+    isDesktop: () => window.innerWidth >= Number.parseInt(breakpoints.desktop),
   };
 };
 

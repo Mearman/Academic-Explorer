@@ -1,4 +1,4 @@
-import { Stack, Skeleton, Group } from "@mantine/core";
+import { Group,Skeleton, Stack } from "@mantine/core";
 
 interface ContentSkeletonProps {
   variant?: "text" | "card" | "list" | "detail";
@@ -8,11 +8,14 @@ interface ContentSkeletonProps {
 /**
  * Flexible skeleton loading component for various content types
  * Improves perceived performance during data loading
+ * @param root0
+ * @param root0.variant
+ * @param root0.count
  */
-export function ContentSkeleton({
+export const ContentSkeleton = ({
   variant = "text",
   count = 3,
-}: ContentSkeletonProps) {
+}: ContentSkeletonProps) => {
   if (variant === "text") {
     return (
       <Stack gap="sm">
@@ -69,4 +72,4 @@ export function ContentSkeleton({
   }
 
   return null;
-}
+};

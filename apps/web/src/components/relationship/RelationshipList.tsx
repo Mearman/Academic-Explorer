@@ -1,7 +1,6 @@
 /**
  * RelationshipList component
  * Displays a paginated list of relationship items with full pagination controls
- *
  * @module RelationshipList
  * @see specs/016-entity-relationship-viz/data-model.md
  */
@@ -31,6 +30,11 @@ export interface RelationshipListProps {
 /**
  * Displays a paginated list of relationship items
  * Shows items with pagination controls for navigation and page size selection
+ * @param root0
+ * @param root0.section
+ * @param root0.onPageChange
+ * @param root0.onPageSizeChange
+ * @param root0.isLoading
  */
 export const RelationshipList: React.FC<RelationshipListProps> = ({
   section,

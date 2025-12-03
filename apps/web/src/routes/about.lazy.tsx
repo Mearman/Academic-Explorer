@@ -1,20 +1,20 @@
 import {
-  Title,
-  Text,
-  Stack,
-  List,
-  Card,
   Badge,
-  Group,
+  Card,
   Divider,
+  Group,
+  List,
+  Stack,
+  Text,
+  Title,
 } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
-import { pageTitle, pageDescription } from "../styles/layout.css";
+import { pageDescription,pageTitle } from "../styles/layout.css";
 
-function AboutPage() {
+const AboutPage = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
   const techStack = [
@@ -147,7 +147,7 @@ function AboutPage() {
       </Stack>
     </Card>
   );
-}
+};
 
 export const Route = createLazyFileRoute("/about")({
   component: AboutPage,

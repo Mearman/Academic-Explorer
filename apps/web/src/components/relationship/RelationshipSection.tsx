@@ -2,12 +2,11 @@
  * RelationshipSection component
  * Displays a grouped section of relationships by type (e.g., "Citations", "Authors", "Affiliations")
  * Shows relationship type label, count badge, and list of relationship items
- *
  * @module RelationshipSection
  * @see specs/016-entity-relationship-viz/spec.md
  */
 
-import { Stack, Group, Text, Badge, Paper, Alert } from '@mantine/core';
+import { Alert,Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import React from 'react';
 
@@ -33,6 +32,11 @@ export interface RelationshipSectionProps {
 /**
  * Displays a section of grouped relationships
  * Shows type label, count, and paginated list of relationship items
+ * @param root0
+ * @param root0.section
+ * @param root0.onPageChange
+ * @param root0.onPageSizeChange
+ * @param root0.isLoading
  */
 export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
   section,

@@ -9,45 +9,29 @@
  */
 
 import type {
-  EntityMetadata,
-  WorkMetadata,
   AuthorMetadata,
+  ConceptMetadata,
+  EntityMetadata,
+  FunderMetadata,
   InstitutionMetadata,
+  PublisherMetadata,
   SourceMetadata,
   TopicMetadata,
-  FunderMetadata,
-  PublisherMetadata,
-  ConceptMetadata,
+  WorkMetadata,
 } from '../types/catalogue';
 
-export function isWorkMetadata(metadata: EntityMetadata): metadata is WorkMetadata {
-  return metadata.type === 'work';
-}
+export const isWorkMetadata = (metadata: EntityMetadata): metadata is WorkMetadata => metadata.type === 'work';
 
-export function isAuthorMetadata(metadata: EntityMetadata): metadata is AuthorMetadata {
-  return metadata.type === 'author';
-}
+export const isAuthorMetadata = (metadata: EntityMetadata): metadata is AuthorMetadata => metadata.type === 'author';
 
-export function isInstitutionMetadata(metadata: EntityMetadata): metadata is InstitutionMetadata {
-  return metadata.type === 'institution';
-}
+export const isInstitutionMetadata = (metadata: EntityMetadata): metadata is InstitutionMetadata => metadata.type === 'institution';
 
-export function isSourceMetadata(metadata: EntityMetadata): metadata is SourceMetadata {
-  return metadata.type === 'source';
-}
+export const isSourceMetadata = (metadata: EntityMetadata): metadata is SourceMetadata => metadata.type === 'source';
 
-export function isTopicMetadata(metadata: EntityMetadata): metadata is TopicMetadata {
-  return metadata.type === 'topic';
-}
+export const isTopicMetadata = (metadata: EntityMetadata): metadata is TopicMetadata => metadata.type === 'topic';
 
-export function isFunderMetadata(metadata: EntityMetadata): metadata is FunderMetadata {
-  return metadata.type === 'funder';
-}
+export const isFunderMetadata = (metadata: EntityMetadata): metadata is FunderMetadata => metadata.type === 'funder';
 
-export function isPublisherMetadata(metadata: EntityMetadata): metadata is PublisherMetadata {
-  return metadata.type === 'publisher';
-}
+export const isPublisherMetadata = (metadata: EntityMetadata): metadata is PublisherMetadata => metadata.type === 'publisher';
 
-export function isConceptMetadata(metadata: EntityMetadata): metadata is ConceptMetadata {
-  return metadata.type === 'concept';
-}
+export const isConceptMetadata = (metadata: EntityMetadata): metadata is ConceptMetadata => metadata.type === 'concept';

@@ -6,7 +6,7 @@
 import type { ProviderType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
+import React, { createContext, type ReactNode,use, useEffect, useReducer } from "react";
 
 // Database schema for layout persistence
 interface LayoutRecord {
@@ -105,6 +105,8 @@ class LayoutPersistenceService {
 
   /**
    * Persist a layout state property
+   * @param key
+   * @param value
    */
   async setLayoutProperty<K extends keyof LayoutPersistedState>(
     key: K,
@@ -432,15 +434,15 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const value = { state, dispatch };
   return (
-    <LayoutContext.Provider value={value}>
+    <LayoutContext value={value}>
       {children}
-    </LayoutContext.Provider>
+    </LayoutContext>
   );
 };
 
 // Hook for using layout state
 export const useLayoutState = () => {
-  const context = useContext(LayoutContext);
+  const context = use(LayoutContext);
   if (!context) {
     // Log warning in development but return safe defaults to prevent hook ordering violations
     if (import.meta.env.DEV) {
@@ -482,7 +484,7 @@ const fallbackActions = createFallbackActions();
 
 // Hook for using layout actions
 export const useLayoutActions = () => {
-  const context = useContext(LayoutContext);
+  const context = use(LayoutContext);
   if (!context) {
     // Log warning in development but return safe no-op actions to prevent hook ordering violations
     if (import.meta.env.DEV) {

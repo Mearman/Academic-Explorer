@@ -2,16 +2,16 @@
  * E2E tests for sidebar functionality - bookmarks and history management
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
 
 test.describe("Sidebar Functionality E2E Tests", () => {
-  test.setTimeout(30000); // Reduced timeout for faster execution
+  test.setTimeout(30_000); // Reduced timeout for faster execution
 
   test.beforeEach(async ({ page }) => {
     // Navigate to the home page with shorter timeout
-    await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 15_000 });
   });
 
   test("should display bookmarks sidebar with basic functionality", async ({ page }) => {
@@ -123,7 +123,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
   test("should track navigation history", async ({ page }) => {
     // Navigate to a work page to build history
     const workUrl = `${BASE_URL}/#/works/W2741809807`;
-    await page.goto(workUrl, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(workUrl, { waitUntil: "domcontentloaded", timeout: 15_000 });
 
     // Wait for navigation to complete
     await page.waitForTimeout(2000);
@@ -145,7 +145,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Navigate to another page
-    await page.goto(`${BASE_URL}/#/about`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(`${BASE_URL}/#/about`, { waitUntil: "domcontentloaded", timeout: 15_000 });
 
     // Check if sidebars remain open (they should)
     const bookmarksSidebar = page.getByRole('heading', { name: /bookmarks/i });

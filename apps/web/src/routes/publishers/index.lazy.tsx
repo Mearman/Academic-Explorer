@@ -14,7 +14,7 @@ const publishersColumns: EntityListColumnConfig[] = [
   },
 ];
 
-function PublishersRoute() {
+const PublishersRoute = () => {
   const search = useSearch({ from: "/publishers/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<TableViewMode>("table");
 
@@ -28,7 +28,7 @@ function PublishersRoute() {
       onViewModeChange={setViewMode}
     />
   );
-}
+};
 
 export const Route = createLazyFileRoute("/publishers/")({
   component: PublishersRoute,

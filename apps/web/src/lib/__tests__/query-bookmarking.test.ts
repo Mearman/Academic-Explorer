@@ -3,11 +3,11 @@
  */
 
 import {
-  extractQueryParameters,
-  extractPaginationParameters,
-  generateQueryId,
-  createQueryBookmarkRequest,
   areQueriesEquivalent,
+  createQueryBookmarkRequest,
+  extractPaginationParameters,
+  extractQueryParameters,
+  generateQueryId,
   generateQueryTitle,
   PAGINATION_PARAMETERS,
 } from "../query-bookmarking";

@@ -1,4 +1,4 @@
-import { Center, Text, Stack } from "@mantine/core";
+import { Center, Stack,Text } from "@mantine/core";
 import { IconLoader } from "@tabler/icons-react";
 import React, { Suspense } from "react";
 
@@ -10,6 +10,9 @@ interface LazyRouteProps {
 /**
  * Wrapper component for lazy-loaded routes with consistent loading states
  * Provides a centered loading spinner with optional custom fallback
+ * @param root0
+ * @param root0.children
+ * @param root0.fallback
  */
 export const LazyRoute: React.FC<LazyRouteProps> = ({ children, fallback }) => {
   const defaultFallback = (

@@ -4,7 +4,7 @@
 
 import { EntityDetectionService } from "@bibgraph/utils";
 import { useLocation } from "@tanstack/react-router";
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo,useRef } from "react";
 
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { decodeEntityId, serializeSearch } from "@/utils/url-decoding";
@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-export function NavigationTracker() {
+export const NavigationTracker = () => {
   const location = useLocation();
   const { logNavigation, addEvent } = useAppActivityStore();
   const previousLocationRef = useRef<string | null>(null);
@@ -119,7 +119,7 @@ export function NavigationTracker() {
       ) {
         logNavigation(previousLocationRef.current, currentLocation, {
           searchParams: location.search || undefined,
-          ...(pageInfo?.metadata || {}),
+          ...pageInfo?.metadata,
         });
       }
     }, 100); // 100ms debounce
@@ -142,7 +142,7 @@ export function NavigationTracker() {
     // Remove leading slash and split by /
     const parts = pathname.replace(/^\//, "").split("/");
 
-    if (parts.length >= 1) {
+    if (parts.length > 0) {
       const pageType = parts[0];
 
       // Validate that this is a known entity type
@@ -236,12 +236,12 @@ export function NavigationTracker() {
   };
 
   return null; // This component doesn't render anything
-}
+};
 
 /**
  * Get user agent group for analytics (privacy-friendly grouping)
  */
-function getUserAgentGroup(): string {
+const getUserAgentGroup = (): string => {
   if (typeof navigator === 'undefined') return 'unknown';
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.includes('chrome')) return 'chrome';
@@ -249,5 +249,5 @@ function getUserAgentGroup(): string {
   if (userAgent.includes('safari')) return 'safari';
   if (userAgent.includes('edge')) return 'edge';
   return 'other';
-}
+};
 

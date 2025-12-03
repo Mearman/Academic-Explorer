@@ -4,11 +4,10 @@
  * Automated tests promoting manual data completeness verification.
  * Tests that the styled view displays ALL data from API responses.
  * Compares field count and content between direct API response and rendered page.
- *
  * @automated-manual
  */
 
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import {
 	waitForAppReady,
@@ -18,7 +17,7 @@ import {
 const BASE_URL = process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173';
 
 test.describe('Data Completeness - Styled View vs API @automated-manual', () => {
-	test.setTimeout(60000);
+	test.setTimeout(60_000);
 
 	test('works search - bioplastics filter should display all API data', async ({
 		page,
@@ -46,15 +45,15 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		];
 
 		for (const url of urlFormats) {
-			await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-			await waitForAppReady(page, { timeout: 30000 });
-			await waitForNoLoading(page, { timeout: 30000 });
+			await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+			await waitForAppReady(page, { timeout: 30_000 });
+			await waitForNoLoading(page, { timeout: 30_000 });
 
 			// Wait for main content to be visible
-			await page.waitForSelector('main', { timeout: 15000, state: 'visible' });
+			await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
 
-			const mainText = await page.locator('main').textContent();
-			expect(mainText).toBeTruthy();
+			const mainText = page.locator('main');
+			await expect(mainText).toHaveText();
 
 			// Verify first result is present
 			expect(mainText).toContain(firstResult.display_name);
@@ -93,16 +92,16 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		// Navigate to author page
 		await page.goto(`${BASE_URL}/#/authors/${authorId}`, {
 			waitUntil: 'domcontentloaded',
-			timeout: 30000,
+			timeout: 30_000,
 		});
-		await waitForAppReady(page, { timeout: 30000 });
-		await waitForNoLoading(page, { timeout: 30000 });
+		await waitForAppReady(page, { timeout: 30_000 });
+		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15000, state: 'visible' });
+		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
 
-		const mainText = await page.locator('main').textContent();
-		expect(mainText).toBeTruthy();
+		const mainText = page.locator('main');
+		await expect(mainText).toHaveText();
 
 		// Verify essential fields are displayed
 		expect(mainText).toContain(apiData.display_name);
@@ -147,16 +146,16 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		// Navigate to concepts list
 		await page.goto(`${BASE_URL}/#/concepts?sort=cited_by_count:desc`, {
 			waitUntil: 'domcontentloaded',
-			timeout: 30000,
+			timeout: 30_000,
 		});
-		await waitForAppReady(page, { timeout: 30000 });
-		await waitForNoLoading(page, { timeout: 30000 });
+		await waitForAppReady(page, { timeout: 30_000 });
+		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15000, state: 'visible' });
+		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
 
-		const mainText = await page.locator('main').textContent();
-		expect(mainText).toBeTruthy();
+		const mainText = page.locator('main');
+		await expect(mainText).toHaveText();
 
 		// Verify first concept is displayed
 		expect(mainText).toContain(firstConcept.display_name);
@@ -191,16 +190,16 @@ test.describe('Data Completeness - Styled View vs API @automated-manual', () => 
 		// Navigate to works with select
 		await page.goto(`${BASE_URL}/#/works?select=${selectFields}`, {
 			waitUntil: 'domcontentloaded',
-			timeout: 30000,
+			timeout: 30_000,
 		});
-		await waitForAppReady(page, { timeout: 30000 });
-		await waitForNoLoading(page, { timeout: 30000 });
+		await waitForAppReady(page, { timeout: 30_000 });
+		await waitForNoLoading(page, { timeout: 30_000 });
 
 		// Wait for main content to be visible
-		await page.waitForSelector('main', { timeout: 15000, state: 'visible' });
+		await page.waitForSelector('main', { timeout: 15_000, state: 'visible' });
 
-		const mainText = await page.locator('main').textContent();
-		expect(mainText).toBeTruthy();
+		const mainText = page.locator('main');
+		await expect(mainText).toHaveText();
 
 		// Verify first work is displayed
 		expect(mainText).toContain(firstWork.display_name);

@@ -4,25 +4,25 @@
 
 import { logger } from "@bibgraph/utils";
 import {
+  ActionIcon,
+  Box,
   Button,
+  CopyButton,
   Group,
+  Loader,
   Stack,
   Text,
   TextInput,
-  CopyButton,
-  ActionIcon,
   Tooltip,
-  Loader,
-  Box,
 } from "@mantine/core";
 import {
-  IconCopy,
   IconCheck,
-  IconQrcode,
+  IconCopy,
   IconExternalLink,
+  IconQrcode,
 } from "@tabler/icons-react";
 import QRCode from "qrcode";
-import React, { useState, useEffect } from "react";
+import React, { useEffect,useState } from "react";
 
 
 interface ShareModalProps {
@@ -31,7 +31,7 @@ interface ShareModalProps {
   onClose: () => void;
 }
 
-export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
+export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) => {
   const [showQR, setShowQR] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [isGeneratingQR, setIsGeneratingQR] = useState(false); // T077: Loading state for QR generation
@@ -166,4 +166,4 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
       </Stack>
     </>
   );
-}
+};

@@ -1,77 +1,76 @@
 /**
  * Graph Algorithms Panel
  * UI component for running and displaying graph algorithm results
- *
  * @module components/algorithms/GraphAlgorithmsPanel
  */
 
-import type { GraphNode, GraphEdge } from '@bibgraph/types';
+import type { GraphEdge,GraphNode } from '@bibgraph/types';
 import {
   Accordion,
+  Alert,
   Badge,
   Box,
   Button,
   Card,
   Group,
+  List,
   NumberInput,
   Progress,
+  rem,
   Select,
   Stack,
   Switch,
   Text,
+  ThemeIcon,
   Title,
   Tooltip,
-  List,
-  ThemeIcon,
-  rem,
-  Alert,
 } from '@mantine/core';
 import {
-  IconCircleCheck,
-  IconCircleDot,
-  IconGraph,
-  IconRoute,
-  IconUsers,
-  IconNetwork,
   IconAlertCircle,
-  IconChartDonut,
-  IconHierarchy,
   IconArrowsShuffle,
   IconArrowsSort,
+  IconChartBar,
+  IconChartDonut,
   IconCircle,
+  IconCircleCheck,
+  IconCircleDot,
   IconCircles,
   IconFocusCentered,
+  IconGraph,
+  IconHierarchy,
   IconLink,
+  IconNetwork,
   IconPoint,
-  IconTriangle,
+  IconRoute,
   IconStar,
-  IconChartBar,
+  IconTriangle,
+  IconUsers,
 } from '@tabler/icons-react';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo,useState } from 'react';
 
 import {
-  useGraphStatistics,
+  type CommunityDetectionOptions,
+  useBFS,
+  useBibliographicCoupling,
+  useBiconnectedComponents,
+  useClusterQuality,
+  useCoCitations,
   useCommunityDetection,
   useConnectedComponents,
+  useCorePeriphery,
   useCycleDetection,
-  useKCore,
-  useBFS,
-  useDFS,
   useCycleInfo,
+  useDFS,
+  useEgoNetwork,
+  useGraphStatistics,
+  useKCore,
+  useKTruss,
+  useStarPatterns,
   useStronglyConnectedComponents,
   useTopologicalSort,
-  useCorePeriphery,
-  useBiconnectedComponents,
-  useEgoNetwork,
   useTriangles,
-  useStarPatterns,
-  useCoCitations,
-  useBibliographicCoupling,
-  useKTruss,
-  useClusterQuality,
-  type CommunityDetectionOptions,
 } from '@/hooks/use-graph-algorithms';
-import { findShortestPath, type PathResult, type ClusteringAlgorithm } from '@/services/graph-algorithms';
+import { type ClusteringAlgorithm,findShortestPath, type PathResult } from '@/services/graph-algorithms';
 
 import type { CommunityResult } from './types';
 
@@ -107,8 +106,19 @@ const ALGORITHM_INFO: Record<ClusteringAlgorithm, string> = {
 
 /**
  * Panel for running and displaying graph algorithm results
+ * @param root0
+ * @param root0.nodes
+ * @param root0.edges
+ * @param root0.onHighlightNodes
+ * @param root0.onHighlightPath
+ * @param root0.onSelectCommunity
+ * @param root0.onCommunitiesDetected
+ * @param root0.pathSource
+ * @param root0.pathTarget
+ * @param root0.onPathSourceChange
+ * @param root0.onPathTargetChange
  */
-export function GraphAlgorithmsPanel({
+export const GraphAlgorithmsPanel = ({
   nodes,
   edges,
   onHighlightNodes,
@@ -119,13 +129,13 @@ export function GraphAlgorithmsPanel({
   pathTarget: controlledPathTarget,
   onPathSourceChange,
   onPathTargetChange,
-}: GraphAlgorithmsPanelProps) {
+}: GraphAlgorithmsPanelProps) => {
   // Statistics hook
   const statistics = useGraphStatistics(nodes, edges, true);
 
   // Community detection state and hook
   const [communityAlgorithm, setCommunityAlgorithm] = useState<ClusteringAlgorithm>('louvain');
-  const [resolution, setResolution] = useState<number>(1.0);
+  const [resolution, setResolution] = useState<number>(1);
   const [numClusters, setNumClusters] = useState<number>(5);
   const [linkage, setLinkage] = useState<'single' | 'complete' | 'average'>('average');
 
@@ -413,9 +423,9 @@ export function GraphAlgorithmsPanel({
                   label="Resolution"
                   description="Higher = more communities, Lower = fewer communities"
                   value={resolution}
-                  onChange={(value) => setResolution(typeof value === 'number' ? value : 1.0)}
+                  onChange={(value) => setResolution(typeof value === 'number' ? value : 1)}
                   min={0.1}
-                  max={3.0}
+                  max={3}
                   step={0.1}
                   decimalScale={2}
                 />
@@ -455,7 +465,7 @@ export function GraphAlgorithmsPanel({
                   <Text size="sm" c="dimmed">Modularity Score</Text>
                   <Tooltip label="Quality metric (higher is better, 0.3-0.7 typical)">
                     <Badge
-                      color={modularity > 0.4 ? 'green' : modularity > 0.2 ? 'yellow' : 'red'}
+                      color={modularity > 0.4 ? 'green' : (modularity > 0.2 ? 'yellow' : 'red')}
                       variant="light"
                     >
                       {modularity.toFixed(4)}
@@ -983,7 +993,7 @@ export function GraphAlgorithmsPanel({
                     <Text size="sm" c="dimmed">Fit Quality</Text>
                     <Tooltip label="Correlation with ideal core-periphery structure (-1 to 1)">
                       <Badge
-                        color={corePeriphery.fitQuality > 0.5 ? 'green' : corePeriphery.fitQuality > 0 ? 'yellow' : 'red'}
+                        color={corePeriphery.fitQuality > 0.5 ? 'green' : (corePeriphery.fitQuality > 0 ? 'yellow' : 'red')}
                         variant="light"
                       >
                         {corePeriphery.fitQuality.toFixed(3)}
@@ -1221,7 +1231,7 @@ export function GraphAlgorithmsPanel({
                       <Badge
                         size="xs"
                         variant="outline"
-                        color={triangles.clusteringCoefficient > 0.3 ? 'green' : triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray'}
+                        color={triangles.clusteringCoefficient > 0.3 ? 'green' : (triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray')}
                       >
                         {(triangles.clusteringCoefficient * 100).toFixed(1)}%
                       </Badge>
@@ -1236,7 +1246,7 @@ export function GraphAlgorithmsPanel({
                         triangles.triangles.slice(0, 10).forEach(t => {
                           t.nodes.forEach(n => uniqueNodes.add(n));
                         });
-                        onHighlightNodes?.(Array.from(uniqueNodes));
+                        onHighlightNodes?.([...uniqueNodes]);
                       }}
                     >
                       Highlight First 10 Triangles
@@ -1491,7 +1501,7 @@ export function GraphAlgorithmsPanel({
                     <Text size="sm" c="dimmed">Modularity</Text>
                     <Tooltip label="Community structure quality (-0.5 to 1.0, higher is better)">
                       <Badge
-                        color={clusterQuality.modularity > 0.4 ? 'green' : clusterQuality.modularity > 0.2 ? 'yellow' : 'red'}
+                        color={clusterQuality.modularity > 0.4 ? 'green' : (clusterQuality.modularity > 0.2 ? 'yellow' : 'red')}
                         variant="light"
                       >
                         {clusterQuality.modularity.toFixed(4)}
@@ -1503,7 +1513,7 @@ export function GraphAlgorithmsPanel({
                     <Text size="sm" c="dimmed">Avg. Conductance</Text>
                     <Tooltip label="Ratio of boundary to internal edges (0-1, lower is better)">
                       <Badge
-                        color={clusterQuality.avgConductance < 0.3 ? 'green' : clusterQuality.avgConductance < 0.5 ? 'yellow' : 'red'}
+                        color={clusterQuality.avgConductance < 0.3 ? 'green' : (clusterQuality.avgConductance < 0.5 ? 'yellow' : 'red')}
                         variant="light"
                       >
                         {clusterQuality.avgConductance.toFixed(4)}
@@ -1515,7 +1525,7 @@ export function GraphAlgorithmsPanel({
                     <Text size="sm" c="dimmed">Avg. Density</Text>
                     <Tooltip label="Internal edge density of clusters (0-1, higher is better)">
                       <Badge
-                        color={clusterQuality.avgDensity > 0.5 ? 'green' : clusterQuality.avgDensity > 0.2 ? 'yellow' : 'gray'}
+                        color={clusterQuality.avgDensity > 0.5 ? 'green' : (clusterQuality.avgDensity > 0.2 ? 'yellow' : 'gray')}
                         variant="light"
                       >
                         {(clusterQuality.avgDensity * 100).toFixed(1)}%
@@ -1527,7 +1537,7 @@ export function GraphAlgorithmsPanel({
                     <Text size="sm" c="dimmed">Coverage Ratio</Text>
                     <Tooltip label="Fraction of edges within clusters (0-1, higher is better)">
                       <Badge
-                        color={clusterQuality.coverageRatio > 0.7 ? 'green' : clusterQuality.coverageRatio > 0.4 ? 'yellow' : 'gray'}
+                        color={clusterQuality.coverageRatio > 0.7 ? 'green' : (clusterQuality.coverageRatio > 0.4 ? 'yellow' : 'gray')}
                         variant="light"
                       >
                         {(clusterQuality.coverageRatio * 100).toFixed(1)}%
@@ -1551,4 +1561,4 @@ export function GraphAlgorithmsPanel({
       </Accordion>
     </Stack>
   );
-}
+};

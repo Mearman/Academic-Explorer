@@ -11,10 +11,8 @@
  * TanStack Router collapses consecutive slashes in URL paths, so
  * https://orcid.org becomes https:/orcid.org after routing.
  * This function decodes the parameter and fixes the collapsed slashes.
- *
  * @param encodedId - The URL-encoded entity ID from route params
  * @returns Decoded ID with fixed protocol slashes
- *
  * @example
  * ```typescript
  * // Input: "https%3A%2Forcid.org%2F0000-0002-1298-3089"
@@ -22,7 +20,7 @@
  * const id = decodeEntityId(rawId);
  * ```
  */
-export function decodeEntityId(encodedId: string | undefined): string | undefined {
+export const decodeEntityId = (encodedId: string | undefined): string | undefined => {
   if (!encodedId) {
     return encodedId;
   }
@@ -30,7 +28,7 @@ export function decodeEntityId(encodedId: string | undefined): string | undefine
   // Handle double-encoded slashes first (%252F -> %2F)
   // This is needed because we double-encode slashes in the openalex-url route
   // to prevent TanStack Router from collapsing them
-  const processedId = encodedId.replace(/%252F/gi, '%2F');
+  const processedId = encodedId.replaceAll(/%252F/gi, '%2F');
 
   // Decode URL encoding
   let decodedId = decodeURIComponent(processedId);
@@ -38,41 +36,33 @@ export function decodeEntityId(encodedId: string | undefined): string | undefine
   // Fix collapsed protocol slashes (https:/ -> https://)
   // This happens when TanStack Router processes splat routes with forward slashes
   // and normalizes consecutive slashes during parsing
-  if (decodedId.match(/^https?:\//i) && !decodedId.match(/^https?:\/\//i)) {
+  if (/^https?:\//i.test(decodedId) && !/^https?:\/\//i.test(decodedId)) {
     decodedId = decodedId.replace(/^(https?:\/?)/, "$1/");
   }
 
   // Also fix ror:/ -> ror:// (fallback for legacy URLs)
-  if (decodedId.match(/^ror:\//i) && !decodedId.match(/^ror:\/\//i)) {
+  if (/^ror:\//i.test(decodedId) && !/^ror:\/\//i.test(decodedId)) {
     decodedId = decodedId.replace(/^(ror:\/?)/, "$1/");
   }
 
   return decodedId;
-}
+};
 
 /**
  * Decode and fix entity ID, ensuring it's never undefined
- *
  * @param encodedId - The URL-encoded entity ID from route params
  * @param fallback - Fallback value if ID is undefined (default: empty string)
  * @returns Decoded ID with fixed protocol slashes, never undefined
  */
-export function decodeEntityIdOrDefault(
-  encodedId: string | undefined,
-  fallback: string = ""
-): string {
-  return decodeEntityId(encodedId) ?? fallback;
-}
+export const decodeEntityIdOrDefault = (encodedId: string | undefined, fallback: string = ""): string => decodeEntityId(encodedId) ?? fallback;
 
 /**
  * Serialize TanStack Router's parsed search object to a URL query string
  *
  * TanStack Router parses query strings into objects (e.g., { q: "test", page: 1 }).
  * This function converts them back to URL query strings for storage or display.
- *
  * @param search - The parsed search object from TanStack Router's useLocation()
  * @returns URL query string with leading "?" or empty string if no params
- *
  * @example
  * ```typescript
  * const location = useLocation();
@@ -84,7 +74,7 @@ export function decodeEntityIdOrDefault(
  * // Returns: "/authors?q=test&page=1"
  * ```
  */
-export function serializeSearch(search: Record<string, unknown> | string): string {
+export const serializeSearch = (search: Record<string, unknown> | string): string => {
   // Handle case where search is already a string (fallback/test environments)
   if (typeof search === 'string') {
     return search.startsWith('?') ? search : (search ? `?${search}` : '');
@@ -104,4 +94,4 @@ export function serializeSearch(search: Record<string, unknown> | string): strin
 
   const queryString = params.toString();
   return queryString ? `?${queryString}` : '';
-}
+};

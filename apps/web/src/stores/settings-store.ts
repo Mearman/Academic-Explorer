@@ -41,9 +41,7 @@ type BackgroundStrategy = 'idle' | 'scheduler' | 'worker' | 'sync';
 
 const VALID_BACKGROUND_STRATEGIES: readonly BackgroundStrategy[] = ['idle', 'scheduler', 'worker', 'sync'];
 
-function isBackgroundStrategy(value: unknown): value is BackgroundStrategy {
-  return typeof value === 'string' && VALID_BACKGROUND_STRATEGIES.includes(value as BackgroundStrategy);
-}
+const isBackgroundStrategy = (value: unknown): value is BackgroundStrategy => typeof value === 'string' && VALID_BACKGROUND_STRATEGIES.includes(value as BackgroundStrategy);
 
 // Settings state interface
 interface SettingsState {
@@ -72,7 +70,7 @@ const DEFAULT_SETTINGS: SettingsState = {
 };
 
 // Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+(?:\.[^\s@]+)+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
 
 // Settings keys for storage
 const SETTINGS_KEYS = {
@@ -120,11 +118,9 @@ class SettingsStore {
         if (record.key === SETTINGS_KEYS.SHOW_SYSTEM_CATALOGUES) {
           settings.showSystemCatalogues = record.value === "true";
         }
-        if (record.key === SETTINGS_KEYS.BACKGROUND_STRATEGY) {
-          if (isBackgroundStrategy(record.value)) {
+        if (record.key === SETTINGS_KEYS.BACKGROUND_STRATEGY && isBackgroundStrategy(record.value)) {
             settings.backgroundStrategy = record.value;
           }
-        }
       }
 
       return settings as SettingsState;
@@ -136,6 +132,7 @@ class SettingsStore {
 
   /**
    * Update polite pool email
+   * @param email
    */
   async setPolitePoolEmail(email: string | undefined): Promise<void> {
     try {
@@ -161,6 +158,7 @@ class SettingsStore {
 
   /**
    * Update OpenAlex API key
+   * @param apiKey
    */
   async setApiKey(apiKey: string | undefined): Promise<void> {
     try {
@@ -183,6 +181,7 @@ class SettingsStore {
 
   /**
    * Update include Xpac setting
+   * @param value
    */
   async setIncludeXpac(value: boolean): Promise<void> {
     try {
@@ -204,6 +203,7 @@ class SettingsStore {
 
   /**
    * Update data version setting
+   * @param value
    */
   async setDataVersion(value: '1' | '2' | undefined): Promise<void> {
     try {
@@ -225,6 +225,7 @@ class SettingsStore {
 
   /**
    * Update show system catalogues setting
+   * @param value
    */
   async setShowSystemCatalogues(value: boolean): Promise<void> {
     try {
@@ -246,6 +247,7 @@ class SettingsStore {
 
   /**
    * Update background processing strategy
+   * @param value
    */
   async setBackgroundStrategy(value: BackgroundStrategy): Promise<void> {
     try {
@@ -288,6 +290,7 @@ class SettingsStore {
 
   /**
    * Validate email format
+   * @param email
    */
   isValidEmail(email: string | undefined): boolean {
     if (!email) return false;

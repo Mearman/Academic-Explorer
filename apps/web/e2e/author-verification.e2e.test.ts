@@ -15,7 +15,7 @@
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 test.describe('Author Verification Indicators', () => {
   test('should show indicator for unverified authors without Author IDs', async ({ page }) => {
@@ -29,7 +29,7 @@ test.describe('Author Verification Indicators', () => {
     // Wait for work data to load and authorship section to render
     // Use catch handler to gracefully handle test environment variability
     await page.waitForSelector('[data-testid="rich-entity-display-title"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     }).catch(async () => {
       // If title doesn't appear, it may be due to test environment delays
@@ -52,8 +52,8 @@ test.describe('Author Verification Indicators', () => {
 
       // Verify indicator has tooltip attribute
       const firstIndicator = unverifiedIndicators.first();
-      const titleAttribute = await firstIndicator.getAttribute('title');
-      expect(titleAttribute).toBe('Unverified author (no Author ID)');
+      const titleAttribute = firstIndicator;
+      await expect(titleAttribute).toHaveAttribute('title', 'Unverified author (no Author ID)');
 
       console.log('✅ Unverified author indicator has correct tooltip');
     } else {
@@ -77,9 +77,9 @@ test.describe('Author Verification Indicators', () => {
       // Check each indicator has the correct tooltip
       for (let i = 0; i < indicatorCount; i++) {
         const indicator = unverifiedIndicators.nth(i);
-        const tooltip = await indicator.getAttribute('title');
+        const tooltip = indicator;
 
-        expect(tooltip).toBe('Unverified author (no Author ID)');
+        await expect(tooltip).toHaveAttribute('title', 'Unverified author (no Author ID)');
         console.log(`✅ Indicator ${i + 1} has correct tooltip text`);
       }
     } else {
@@ -199,8 +199,8 @@ test.describe('Author Verification Indicators', () => {
 
       // The component uses color="orange" variant="light" for unverified indicators
       // We can verify it's styled by checking it has dimensions and is visible
-      const isVisible = await firstIndicator.isVisible();
-      expect(isVisible).toBe(true);
+      const isVisible = firstIndicator;
+      await expect(isVisible).toBeVisible();
 
       console.log('✅ Unverified author indicator has semantic styling');
     } else {
@@ -223,9 +223,9 @@ test.describe('Author Verification Indicators', () => {
       // Verify each indicator has title attribute for tooltip
       for (let i = 0; i < indicatorCount; i++) {
         const indicator = unverifiedIndicators.nth(i);
-        const titleAttr = await indicator.getAttribute('title');
+        const titleAttr = indicator;
 
-        expect(titleAttr).toBeTruthy();
+        await expect(titleAttr).toHaveAttribute('title', );
         expect(titleAttr).toBe('Unverified author (no Author ID)');
       }
 

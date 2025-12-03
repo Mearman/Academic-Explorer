@@ -5,7 +5,7 @@
  * using localStorage for cross-session persistence.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef,useState } from 'react';
 
 export interface CameraState {
   /** Camera position in 3D space */
@@ -36,8 +36,9 @@ const DEFAULT_CAMERA_STATE: CameraState = {
 
 /**
  * Parse stored camera state with validation
+ * @param stored
  */
-function parseStoredCameraState(stored: string | null): CameraState | null {
+const parseStoredCameraState = (stored: string | null): CameraState | null => {
   if (!stored) return null;
 
   try {
@@ -75,7 +76,7 @@ function parseStoredCameraState(stored: string | null): CameraState | null {
   }
 
   return null;
-}
+};
 
 export interface UseCameraPersistenceReturn {
   /** Current camera state */
@@ -92,10 +93,8 @@ export interface UseCameraPersistenceReturn {
 
 /**
  * Hook for managing 3D camera state with localStorage persistence
- *
  * @param options - Configuration options
  * @returns Object with camera state, update functions, and loading state
- *
  * @example
  * ```tsx
  * function Graph3DViewer() {
@@ -113,9 +112,7 @@ export interface UseCameraPersistenceReturn {
  * }
  * ```
  */
-export function useCameraPersistence(
-  options: UseCameraPersistenceOptions = {}
-): UseCameraPersistenceReturn {
+export const useCameraPersistence = (options: UseCameraPersistenceOptions = {}): UseCameraPersistenceReturn => {
   const {
     storageKey = DEFAULT_STORAGE_KEY,
     debounceMs = DEFAULT_DEBOUNCE_MS,
@@ -222,4 +219,4 @@ export function useCameraPersistence(
     isLoaded,
     saveImmediate,
   };
-}
+};

@@ -3,8 +3,8 @@
  * Shows cached values or clickable placeholders for missing data
  */
 
-import { Group, Text, Skeleton, ActionIcon, Tooltip } from "@mantine/core";
-import { IconRefresh, IconClick } from "@tabler/icons-react";
+import { ActionIcon, Group, Skeleton, Text, Tooltip } from "@mantine/core";
+import { IconClick,IconRefresh } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import type { CacheKeyType } from "@/config/cache";
@@ -22,6 +22,7 @@ interface FieldDisplayProps {
 
 /**
  * Checks if a value is considered "empty" (undefined, null, empty string, empty array)
+ * @param value
  */
 const isEmpty = (value: unknown): boolean => {
   if (value === undefined || value === null) return true;
@@ -32,6 +33,7 @@ const isEmpty = (value: unknown): boolean => {
 
 /**
  * Default formatter for field values
+ * @param value
  */
 const defaultFormatter = (value: unknown): React.ReactNode => {
   if (isEmpty(value)) return null;
@@ -96,7 +98,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
 
       {isFetching ? (
         <Skeleton height={20} width="100%" />
-      ) : hasValue ? (
+      ) : (hasValue ? (
         <Text size="sm" style={{ flex: 1, wordBreak: "break-word" }}>
           {formatter(currentValue)}
         </Text>
@@ -132,7 +134,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
             </Tooltip>
           )}
         </Group>
-      )}
+      ))}
     </Group>
   );
 };

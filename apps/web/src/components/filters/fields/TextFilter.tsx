@@ -13,7 +13,7 @@ interface TextFilterProps {
   fieldId: string;
 }
 
-export function TextFilter({
+export const TextFilter = ({
   value,
   operator,
   config,
@@ -22,9 +22,7 @@ export function TextFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: TextFilterProps) {
-  return (
-    <BaseFilter
+}: TextFilterProps) => <BaseFilter
       value={value}
       operator={operator}
       config={config}
@@ -45,6 +43,4 @@ export function TextFilter({
           flex={1}
         />
       )}
-    </BaseFilter>
-  );
-}
+    </BaseFilter>;

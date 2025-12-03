@@ -5,30 +5,30 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import {
-  TextInput,
-  Button,
-  Group,
-  Stack,
-  Text,
   Alert,
-  Modal,
-  Divider,
   Badge,
+  Button,
+  Divider,
   FileButton,
-  Paper,
-  Textarea,
-  Table,
+  Group,
   Loader,
+  Modal,
+  Paper,
+  Stack,
+  Table,
+  Text,
+  Textarea,
+  TextInput,
 } from "@mantine/core";
 import {
   IconAlertTriangle,
+  IconCheck,
   IconDownload,
+  IconFile,
   IconLink,
   IconUpload,
-  IconFile,
-  IconCheck,
 } from "@tabler/icons-react";
-import React, { useState, useCallback } from "react";
+import React, { useCallback,useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
 import type { ExportFormat } from "@/types/catalogue";
@@ -48,7 +48,7 @@ interface ImportPreview {
   estimatedSize: string;
 }
 
-export function ImportModal({ onClose, onImport, initialShareData }: ImportModalProps) {
+export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModalProps) => {
   const {
     importListFromFile,
     importListCompressed,
@@ -472,4 +472,4 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
       </Stack>
     </Modal>
   );
-}
+};

@@ -13,7 +13,7 @@ interface EntityFilterProps {
   fieldId: string;
 }
 
-export function EntityFilter({
+export const EntityFilter = ({
   value,
   operator,
   config,
@@ -22,7 +22,7 @@ export function EntityFilter({
   disabled = false,
   compact = false,
   fieldId,
-}: EntityFilterProps) {
+}: EntityFilterProps) => {
   const selectOptions = (config.options || []).map((option) => ({
     value: String(option.value),
     label: option.label,
@@ -85,4 +85,4 @@ export function EntityFilter({
       )}
     </BaseFilter>
   );
-}
+};

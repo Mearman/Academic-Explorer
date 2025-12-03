@@ -7,7 +7,7 @@
  * where different components have different selectedList/entities state.
  */
 
-import React, { createContext, useContext, type ReactNode } from "react";
+import React, { createContext, type ReactNode,use } from "react";
 
 import { useCatalogue, type UseCatalogueReturn } from "@/hooks/useCatalogue";
 
@@ -21,27 +21,29 @@ interface CatalogueProviderProps {
 /**
  * Catalogue Provider Component
  * Wraps catalogue-related components to share a single useCatalogue instance
+ * @param root0
+ * @param root0.children
  */
-export function CatalogueProvider({ children }: CatalogueProviderProps) {
+export const CatalogueProvider = ({ children }: CatalogueProviderProps) => {
   const catalogueState = useCatalogue();
 
   return (
-    <CatalogueContext.Provider value={catalogueState}>
+    <CatalogueContext value={catalogueState}>
       {children}
-    </CatalogueContext.Provider>
+    </CatalogueContext>
   );
-}
+};
 
 /**
  * Hook to access catalogue context
  * Must be used within a CatalogueProvider
  */
-export function useCatalogueContext(): UseCatalogueReturn {
-  const context = useContext(CatalogueContext);
+export const useCatalogueContext = (): UseCatalogueReturn => {
+  const context = use(CatalogueContext);
 
   if (context === undefined) {
     throw new Error("useCatalogueContext must be used within a CatalogueProvider");
   }
 
   return context;
-}
+};

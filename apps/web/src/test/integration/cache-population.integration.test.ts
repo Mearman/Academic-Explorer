@@ -2,8 +2,8 @@
  * @vitest-environment node
  */
 
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { createServer, defineConfig } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -139,7 +139,7 @@ describe("Cache Population Integration Tests", () => {
       return (
         /^(authors|funders|institutions|publishers|sources|topics|works)(\?|$)/.test(
           path,
-        ) && !entityUrls.some((entityUrl) => entityUrl === url)
+        ) && !entityUrls.includes(url)
       );
     });
 
@@ -214,7 +214,7 @@ describe("Cache Population Integration Tests", () => {
       console.log(`✅ Server listening on port ${DEV_SERVER_PORT}`);
 
       console.log("✅ Cache middleware configuration verified");
-    }, 30000); // 30 second timeout
+    }, 30_000); // 30 second timeout
   });
 
   // Note: Cache hit verification test removed due to middleware registration issues

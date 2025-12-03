@@ -1,12 +1,11 @@
 /**
  * E2E tests for History/Catalogue utility page
  * Tests history page functionality including empty state and populated state
- *
  * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady } from '@/test/helpers/app-ready';
 import { BaseSPAPageObject } from '@/test/page-objects/BaseSPAPageObject';
@@ -40,7 +39,7 @@ test.describe('@utility History Page', () => {
 
 		// Check for the main heading
 		const heading = page.getByRole('heading', { name: /navigation history/i });
-		await expect(heading).toBeVisible({ timeout: 10000 });
+		await expect(heading).toBeVisible({ timeout: 10_000 });
 
 		// Verify URL contains history
 		expect(page.url()).toContain('history');
@@ -61,7 +60,7 @@ test.describe('@utility History Page', () => {
 
 		// Should show empty state message
 		const emptyStateText = page.getByText(/no navigation history yet/i);
-		await expect(emptyStateText).toBeVisible({ timeout: 10000 });
+		await expect(emptyStateText).toBeVisible({ timeout: 10_000 });
 
 		// Should show descriptive message
 		const descriptiveMessage = page.getByText(
@@ -95,11 +94,11 @@ test.describe('@utility History Page', () => {
 
 		// Should no longer show empty state
 		const emptyState = page.getByText(/no navigation history yet/i);
-		await expect(emptyState).not.toBeVisible();
+		await expect(emptyState).toBeHidden();
 
 		// Should show history cards
 		const historyCards = page.locator('.mantine-Card-root');
-		await expect(historyCards.first()).toBeVisible({ timeout: 10000 });
+		await expect(historyCards.first()).toBeVisible({ timeout: 10_000 });
 
 		// Should have multiple history entries (at least as many as entities visited)
 		const cardCount = await historyCards.count();
@@ -133,11 +132,11 @@ test.describe('@utility History Page', () => {
 			.filter({ hasText: entity.id })
 			.or(page.locator('.mantine-Card-root').filter({ hasText: entity.type }));
 
-		await expect(historyCard.first()).toBeVisible({ timeout: 10000 });
+		await expect(historyCard.first()).toBeVisible({ timeout: 10_000 });
 
 		// Verify entity type is mentioned
-		const cardContent = await historyCard.first().textContent();
-		expect(cardContent).toBeTruthy();
+		const cardContent = historyCard.first();
+		await expect(cardContent).toHaveText();
 		// Should contain either the entity ID or type information
 		expect(
 			cardContent!.includes(entity.id) || cardContent!.includes(entity.type)
@@ -165,7 +164,7 @@ test.describe('@utility History Page', () => {
 		const navigateButton = page
 			.locator('[aria-label*="Navigate to"]')
 			.first();
-		await expect(navigateButton).toBeVisible({ timeout: 10000 });
+		await expect(navigateButton).toBeVisible({ timeout: 10_000 });
 
 		// Click the navigate button
 		await navigateButton.click();
@@ -200,7 +199,7 @@ test.describe('@utility History Page', () => {
 
 		// Find the search input
 		const searchInput = page.getByPlaceholder(/search history/i);
-		await expect(searchInput).toBeVisible({ timeout: 10000 });
+		await expect(searchInput).toBeVisible({ timeout: 10_000 });
 
 		// Get initial number of history cards
 		const initialCards = page.locator('.mantine-Card-root');
@@ -259,7 +258,7 @@ test.describe('@utility History Page', () => {
 
 		// Should show "no history found" message
 		const noResultsText = page.getByText(/no history found/i);
-		await expect(noResultsText).toBeVisible({ timeout: 10000 });
+		await expect(noResultsText).toBeVisible({ timeout: 10_000 });
 
 		// Should show suggestion text
 		const suggestionText = page.getByText(/try adjusting your search terms/i);
@@ -288,7 +287,7 @@ test.describe('@utility History Page', () => {
 
 		// Find and click delete button for first entry
 		const deleteButton = page.locator('[aria-label*="Delete"]').first();
-		await expect(deleteButton).toBeVisible({ timeout: 10000 });
+		await expect(deleteButton).toBeVisible({ timeout: 10_000 });
 		await deleteButton.click();
 
 		// Confirm deletion in modal
@@ -306,7 +305,7 @@ test.describe('@utility History Page', () => {
 		// Should have one less card, or show empty state if it was the last one
 		if (initialCount === 1) {
 			const emptyState = page.getByText(/no navigation history yet/i);
-			await expect(emptyState).toBeVisible({ timeout: 10000 });
+			await expect(emptyState).toBeVisible({ timeout: 10_000 });
 		} else {
 			expect(remainingCount).toBe(initialCount - 1);
 		}

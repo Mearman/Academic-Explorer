@@ -1,7 +1,6 @@
 /**
  * Graph Traversal Algorithm Item
  * Breadth-First Search and Depth-First Search traversals
- *
  * @module components/algorithms/items/TraversalItem
  */
 
@@ -16,18 +15,18 @@ import {
   Text,
   Tooltip,
 } from '@mantine/core';
-import { useState, useMemo } from 'react';
+import { useMemo,useState } from 'react';
 
 import { useBFS, useDFS } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function TraversalItem({
+export const TraversalItem = ({
   nodes,
   edges,
   onHighlightNodes,
   onHighlightPath,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const [traversalStartNode, setTraversalStartNode] = useState<string | null>(null);
   const [traversalDirected, setTraversalDirected] = useState<boolean>(true);
 
@@ -156,4 +155,4 @@ export function TraversalItem({
       )}
     </Stack>
   );
-}
+};

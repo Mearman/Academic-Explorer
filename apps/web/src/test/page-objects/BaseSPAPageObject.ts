@@ -5,7 +5,6 @@
  * Handles TanStack Router navigation, React hydration, and app initialization.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → BaseEntityPageObject → [Entity]Page
- *
  * @see spec-020 Phase 1: T005
  */
 
@@ -56,6 +55,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	/**
 	 * Navigate to a path and wait for SPA to be ready
+	 * @param path
 	 */
 	override async goto(path: string): Promise<void> {
 		await super.goto(path);
@@ -73,7 +73,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 		// Wait for React hydration to complete
 		await this.page.waitForFunction(() => {
-			const root = document.getElementById("root");
+			const root = document.querySelector("#root");
 			return root && root.hasChildNodes();
 		});
 
@@ -83,6 +83,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	/**
 	 * Wait for loading spinners/skeletons to disappear
+	 * @param timeout
 	 */
 	async waitForLoadingComplete(timeout?: number): Promise<void> {
 		const loadingTimeout = timeout || this.defaultTimeout;
@@ -106,6 +107,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	/**
 	 * Navigate using SPA router (client-side navigation)
+	 * @param path
 	 */
 	async navigateTo(path: string): Promise<void> {
 		// Use client-side navigation if possible
@@ -144,6 +146,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	/**
 	 * Search using the header search input
+	 * @param query
 	 */
 	async search(query: string): Promise<void> {
 		await this.fill(this.selectors.searchInput, query);
@@ -190,6 +193,7 @@ export class BaseSPAPageObject extends BasePageObject {
 
 	/**
 	 * Click a navigation link by text
+	 * @param text
 	 */
 	async clickNavLink(text: string): Promise<void> {
 		await this.page.getByRole("link", { name: text }).click();

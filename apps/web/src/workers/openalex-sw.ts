@@ -8,8 +8,9 @@ const OPENALEX_DOMAIN = "api.openalex.org";
 
 /**
  * Validate that data appears to be a valid OpenAlex entity
+ * @param data
  */
-function isValidOpenAlexEntity(data: unknown): boolean {
+const isValidOpenAlexEntity = (data: unknown): boolean => {
   if (!data || typeof data !== "object") {
     return false;
   }
@@ -18,12 +19,13 @@ function isValidOpenAlexEntity(data: unknown): boolean {
 
   // OpenAlex entities should have id and display_name
   return typeof obj.id === "string" && typeof obj.display_name === "string";
-}
+};
 
 /**
  * Validate that data appears to be a valid OpenAlex query result
+ * @param data
  */
-function isValidOpenAlexQueryResult(data: unknown): boolean {
+const isValidOpenAlexQueryResult = (data: unknown): boolean => {
   if (!data || typeof data !== "object") {
     return false;
   }
@@ -32,7 +34,7 @@ function isValidOpenAlexQueryResult(data: unknown): boolean {
 
   // OpenAlex query results should have results array and meta object
   return Array.isArray(obj.results) && typeof obj.meta === "object";
-}
+};
 
 /**
  * Parse OpenAlex URL into structured information
@@ -42,7 +44,7 @@ interface ParsedOpenAlexUrl {
   entityId?: string;
 }
 
-function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
+const parseOpenAlexUrl = (url: string): ParsedOpenAlexUrl | null => {
   try {
     const urlObj = new URL(url);
     if (urlObj.hostname !== "api.openalex.org") {
@@ -62,7 +64,7 @@ function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
   } catch {
     return null;
   }
-}
+};
 
 // Cast self for service worker functionality
 interface ServiceWorkerGlobalScope {
@@ -127,24 +129,23 @@ self.addEventListener("fetch", (event) => {
 /**
  * Check if we're in development environment
  */
-function isDevelopmentEnvironment(): boolean {
-  return (
-    self.location.hostname === "localhost" ||
+const isDevelopmentEnvironment = (): boolean => self.location.hostname === "localhost" ||
     self.location.hostname === "127.0.0.1" ||
-    self.location.port === "5173"
-  );
-}
+    self.location.port === "5173";
 
 /**
  * Handle development proxy requests
+ * @param root0
+ * @param root0.request
+ * @param root0.url
  */
-async function handleDevelopmentRequest({
+const handleDevelopmentRequest = async ({
   request,
   url: devUrl,
 }: {
   request: Request;
   url: URL;
-}): Promise<Response> {
+}): Promise<Response> => {
   const proxyUrl = `/api/openalex${devUrl.pathname}${devUrl.search}`;
   // In development, proxy OpenAlex API requests to local development server
 
@@ -155,12 +156,13 @@ async function handleDevelopmentRequest({
   });
 
   return fetch(proxyRequest);
-}
+};
 
 /**
  * Try to serve static data file
+ * @param url
  */
-async function tryStaticFile(url: URL): Promise<Response | null> {
+const tryStaticFile = async (url: URL): Promise<Response | null> => {
   const staticPath = `/data/openalex${url.pathname}.json`;
   try {
     // Attempt to fetch pre-generated static JSON file for this OpenAlex endpoint
@@ -173,17 +175,20 @@ async function tryStaticFile(url: URL): Promise<Response | null> {
     // Static file not available or failed to load
   }
   return null;
-}
+};
 
 /**
  * Try to get cached response
+ * @param root0
+ * @param root0.request
+ * @param root0.url
  */
-async function tryCache({
+const tryCache = async ({
   request,
 }: {
   request: Request;
   url?: URL;
-}): Promise<Response | null> {
+}): Promise<Response | null> => {
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
@@ -191,19 +196,23 @@ async function tryCache({
     return cachedResponse;
   }
   return null;
-}
+};
 
 /**
  * Validate and cache response if valid
+ * @param root0
+ * @param root0.request
+ * @param root0.response
+ * @param root0.url
  */
-async function validateAndCacheResponse({
+const validateAndCacheResponse = async ({
   request,
   response,
 }: {
   request: Request;
   response: Response;
   url?: URL;
-}): Promise<Response> {
+}): Promise<Response> => {
   if (!response.ok) return response;
 
   try {
@@ -227,28 +236,32 @@ async function validateAndCacheResponse({
   }
 
   return response;
-}
+};
 
 /**
  * Validate OpenAlex response structure
+ * @param root0
+ * @param root0.data
+ * @param root0.parsedUrl
  */
-function isValidOpenAlexResponse({
+const isValidOpenAlexResponse = ({
   data,
   parsedUrl,
 }: {
   data: unknown;
   parsedUrl: ParsedOpenAlexUrl;
-}): boolean {
+}): boolean => {
   const isEntity = !!parsedUrl.entityId;
   return isEntity
     ? isValidOpenAlexEntity(data)
     : isValidOpenAlexQueryResult(data);
-}
+};
 
 /**
  * Handle OpenAlex API requests with caching
+ * @param request
  */
-async function handleOpenAlexRequest(request: Request): Promise<Response> {
+const handleOpenAlexRequest = async (request: Request): Promise<Response> => {
   try {
     const url = new URL(request.url);
     // Intercepting OpenAlex API request for caching and optimization
@@ -275,4 +288,4 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
     // Fallback to normal fetch
     return fetch(request);
   }
-}
+};

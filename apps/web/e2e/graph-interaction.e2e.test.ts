@@ -7,19 +7,18 @@
  * - Node selection and navigation
  * - Edge filtering by relationship type
  * - Graph rendering and simulation stability
- *
  * @see spec-020 Phase 4: Workflow tests
  * @see spec-016 Entity relationship visualization
  * @see spec-014 Edge direction correction
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import {
 	waitForAppReady,
-	waitForGraphReady,
 	waitForEntityData,
+	waitForGraphReady,
 } from '@/test/helpers/app-ready';
 
 // Use a known entity with rich relationship data for testing
@@ -27,7 +26,7 @@ const TEST_WORK_ID = 'W2741809807'; // Known work with multiple relationships
 const TEST_AUTHOR_ID = 'A5017898742'; // Known author with affiliations and works
 
 test.describe('@workflow Graph Interaction', () => {
-	test.setTimeout(60000); // 60 seconds for graph rendering and interactions
+	test.setTimeout(60_000); // 60 seconds for graph rendering and interactions
 
 	test.beforeEach(async ({ page }) => {
 		// Set up console error listener for debugging
@@ -118,7 +117,9 @@ test.describe('@workflow Graph Interaction', () => {
 			}
 		}
 
-		if (zoomInButton !== null) {
+		if (zoomInButton === null) {
+			console.log('⚠️  Zoom controls not found - graph may not have zoom UI');
+		} else {
 			// Get initial transform state
 			const svgContainer = page.locator('svg').first();
 			const initialTransform = await svgContainer
@@ -150,8 +151,6 @@ test.describe('@workflow Graph Interaction', () => {
 			expect(errorCount).toBe(0);
 
 			console.log(`✅ Zoom in ${transformChanged ? 'changed transform' : 'completed without errors'}`);
-		} else {
-			console.log('⚠️  Zoom controls not found - graph may not have zoom UI');
 		}
 	});
 
@@ -182,7 +181,9 @@ test.describe('@workflow Graph Interaction', () => {
 			}
 		}
 
-		if (zoomOutButton !== null) {
+		if (zoomOutButton === null) {
+			console.log('⚠️  Zoom controls not found - graph may not have zoom UI');
+		} else {
 			// Click zoom out button
 			await zoomOutButton.click();
 			await page.waitForTimeout(500); // Allow zoom animation
@@ -193,8 +194,6 @@ test.describe('@workflow Graph Interaction', () => {
 			expect(errorCount).toBe(0);
 
 			console.log('✅ Zoom out completed successfully');
-		} else {
-			console.log('⚠️  Zoom controls not found - graph may not have zoom UI');
 		}
 	});
 
@@ -225,7 +224,9 @@ test.describe('@workflow Graph Interaction', () => {
 			}
 		}
 
-		if (resetButton !== null) {
+		if (resetButton === null) {
+			console.log('⚠️  Reset zoom control not found - graph may not have reset UI');
+		} else {
 			// Click reset button
 			await resetButton.click();
 			await page.waitForTimeout(500); // Allow reset animation
@@ -236,8 +237,6 @@ test.describe('@workflow Graph Interaction', () => {
 			expect(errorCount).toBe(0);
 
 			console.log('✅ Reset zoom completed successfully');
-		} else {
-			console.log('⚠️  Reset zoom control not found - graph may not have reset UI');
 		}
 	});
 
@@ -268,7 +267,9 @@ test.describe('@workflow Graph Interaction', () => {
 			}
 		}
 
-		if (clickableNode !== null) {
+		if (clickableNode === null) {
+			console.log('⚠️  No clickable nodes found in graph');
+		} else {
 			// Get current URL before click
 			const initialUrl = page.url();
 
@@ -309,8 +310,6 @@ test.describe('@workflow Graph Interaction', () => {
 			const errorMessages = page.locator('[role="alert"]');
 			const errorCount = await errorMessages.count();
 			expect(errorCount).toBe(0);
-		} else {
-			console.log('⚠️  No clickable nodes found in graph');
 		}
 	});
 
@@ -519,7 +518,7 @@ test.describe('@workflow Graph Interaction', () => {
 
 test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 	test.use({ viewport: { width: 768, height: 1024 } });
-	test.setTimeout(60000); // 60 seconds for graph rendering and interactions
+	test.setTimeout(60_000); // 60 seconds for graph rendering and interactions
 
 	test.beforeEach(async ({ page }) => {
 		page.on('console', (msg) => {
@@ -733,7 +732,9 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 			}
 		}
 
-		if (clickableNode !== null) {
+		if (clickableNode === null) {
+			console.log('⚠️  No clickable nodes found for touch interaction test');
+		} else {
 			// Get node bounding box for touch interaction
 			const nodeBox = await clickableNode.boundingBox();
 
@@ -776,8 +777,6 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 			} else {
 				console.log('⚠️  Could not get node bounding box for touch test');
 			}
-		} else {
-			console.log('⚠️  No clickable nodes found for touch interaction test');
 		}
 	});
 });

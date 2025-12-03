@@ -1,7 +1,6 @@
 /**
  * Graph Statistics Card
  * Displays basic graph statistics in a card format
- *
  * @module components/algorithms/items/GraphStatisticsCard
  */
 
@@ -15,14 +14,14 @@ import {
 } from '@mantine/core';
 import { IconGraph } from '@tabler/icons-react';
 
-import { useGraphStatistics, useCycleDetection } from '@/hooks/use-graph-algorithms';
+import { useCycleDetection,useGraphStatistics } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function GraphStatisticsCard({
+export const GraphStatisticsCard = ({
   nodes,
   edges,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const statistics = useGraphStatistics(nodes, edges, true);
   const hasCycles = useCycleDetection(nodes, edges, true);
 
@@ -71,4 +70,4 @@ export function GraphStatisticsCard({
       </Stack>
     </Card>
   );
-}
+};

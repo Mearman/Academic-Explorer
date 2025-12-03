@@ -5,7 +5,6 @@
  * Handles D3 force simulation graph interactions, zoom controls, and node interactions.
  *
  * Hierarchy: BasePageObject → BaseSPAPageObject → ExplorePage
- *
  * @see spec-020 Phase 1: Utility pages
  */
 
@@ -13,7 +12,6 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 import { waitForGraphReady } from "../helpers/app-ready";
-
 import { BaseSPAPageObject } from "./BaseSPAPageObject";
 
 export class ExplorePage extends BaseSPAPageObject {
@@ -78,6 +76,7 @@ export class ExplorePage extends BaseSPAPageObject {
 
 	/**
 	 * Click a graph node by index
+	 * @param index
 	 */
 	async clickNode(index: number): Promise<void> {
 		// Try primary selector first
@@ -171,8 +170,10 @@ export class ExplorePage extends BaseSPAPageObject {
 
 	/**
 	 * Wait for graph to have at least a minimum number of nodes
+	 * @param minCount
+	 * @param timeout
 	 */
-	async waitForMinimumNodes(minCount: number, timeout = 10000): Promise<void> {
+	async waitForMinimumNodes(minCount: number, timeout = 10_000): Promise<void> {
 		const startTime = Date.now();
 
 		while (Date.now() - startTime < timeout) {

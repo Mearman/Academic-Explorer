@@ -91,7 +91,6 @@ export type CacheKeyType = keyof typeof ENTITY_CACHE_TIMES;
 
 /**
  * Get cache configuration for a specific cache key
+ * @param cacheKey
  */
-export function getCacheConfig(cacheKey: CacheKeyType) {
-  return ENTITY_CACHE_TIMES[cacheKey];
-}
+export const getCacheConfig = (cacheKey: CacheKeyType) => ENTITY_CACHE_TIMES[cacheKey];

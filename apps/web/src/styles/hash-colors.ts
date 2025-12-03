@@ -7,20 +7,22 @@
 /**
  * Simple string hash function (djb2 algorithm)
  * Produces consistent hash values across different platforms
+ * @param str
  */
-function stringHash(str: string): number {
+const stringHash = (str: string): number => {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
     hash = (hash * 33) ^ str.charCodeAt(i);
   }
   return hash >>> 0; // Convert to unsigned 32-bit integer
-}
+};
 
 /**
  * Generate hue from string hash
  * Returns a value between 0-360 for consistent color mapping
+ * @param str
  */
-function hashToHue(str: string): number {
+const hashToHue = (str: string): number => {
   const hash = stringHash(str);
 
   // Convert hash to hue range (0-360)
@@ -28,12 +30,15 @@ function hashToHue(str: string): number {
   const hue = hash % 360;
 
   return hue;
-}
+};
 
 /**
  * Convert HSL to hex color string
+ * @param h
+ * @param s
+ * @param l
  */
-function hslToHex(h: number, s: number, l: number): string {
+const hslToHex = (h: number, s: number, l: number): string => {
   l /= 100;
   const a = s * Math.min(l, 1 - l) / 100;
   const f = (n: number) => {
@@ -42,37 +47,41 @@ function hslToHex(h: number, s: number, l: number): string {
     return Math.round(255 * color).toString(16).padStart(2, '0');
   };
   return `#${f(0)}${f(8)}${f(4)}`;
-}
+};
 
 /**
  * Generate consistent color for entity type
  * Uses higher saturation and lightness for clear distinction
+ * @param entityType
  */
-export function getEntityTypeColor(entityType: string): string {
+export const getEntityTypeColor = (entityType: string): string => {
   // Use moderately high saturation for vibrant but professional colors
   const hue = hashToHue(entityType);
   const saturation = 65; // Professional but vibrant
   const lightness = 50;   // Good contrast for both light/dark themes
 
   return hslToHex(hue, saturation, lightness);
-}
+};
 
 /**
  * Generate consistent color for relationship type
  * Uses slightly different saturation/lightness to distinguish from entity types
+ * @param relationshipType
  */
-export function getRelationshipTypeColor(relationshipType: string): string {
+export const getRelationshipTypeColor = (relationshipType: string): string => {
   const hue = hashToHue(relationshipType);
   const saturation = 75; // More saturated for relationship types
   const lightness = 45;   // Slightly darker for better visibility
 
   return hslToHex(hue, saturation, lightness);
-}
+};
 
 /**
  * Generate muted colors for special states (xpac, warning, etc.)
+ * @param baseString
+ * @param stateType
  */
-export function getSpecialStateColor(baseString: string, stateType: 'muted' | 'warning' | 'highlight'): string {
+export const getSpecialStateColor = (baseString: string, stateType: 'muted' | 'warning' | 'highlight'): string => {
   const hue = hashToHue(baseString);
 
   switch (stateType) {
@@ -85,7 +94,7 @@ export function getSpecialStateColor(baseString: string, stateType: 'muted' | 'w
     default:
       return hslToHex(hue, 50, 50);
   }
-}
+};
 
 /**
  * Pre-computed entity type colors using hash-based generation

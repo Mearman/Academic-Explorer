@@ -5,7 +5,7 @@
 
 import { logger } from "@bibgraph/utils/logger";
 import Dexie, { type Table } from "dexie";
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
+import React, { createContext, ReactNode,use, useCallback, useReducer } from "react";
 
 // Dexie database for persistent app activity storage
 interface StoredAppActivityEvent extends Omit<AppActivityEvent, "id"> {
@@ -122,7 +122,7 @@ type AppActivityAction =
   | { type: "RECOMPUTE_STATE" };
 
 const generateEventId = () =>
-  `evt_${Date.now().toString()}_${Math.random().toString(36).substring(2, 11)}`;
+  `evt_${Date.now().toString()}_${Math.random().toString(36).slice(2, 11)}`;
 
 const computeRecentEvents = (
   events: Record<string, AppActivityEvent>,
@@ -376,7 +376,7 @@ const appActivityReducer = (
       const toKeep = sorted.slice(0, state.maxHistorySize);
       const toRemove = sorted.slice(state.maxHistorySize);
       const idsToRemove = toRemove
-        .map((event) => parseInt(event.id.split("_")[2] || "0"))
+        .map((event) => Number.parseInt(event.id.split("_")[2] || "0"))
         .filter((id) => !isNaN(id));
 
       if (idsToRemove.length > 0) {
@@ -920,15 +920,15 @@ export const AppActivityProvider: React.FC<AppActivityProviderProps> = ({
   };
 
   return (
-    <AppActivityContext.Provider value={contextValue}>
+    <AppActivityContext value={contextValue}>
       {children}
-    </AppActivityContext.Provider>
+    </AppActivityContext>
   );
 };
 
 // Hooks for consuming the context
 export const useAppActivityState = (): AppActivityState => {
-  const context = useContext(AppActivityContext);
+  const context = use(AppActivityContext);
   if (!context) {
     throw new Error("useAppActivityState must be used within an AppActivityProvider");
   }
@@ -978,7 +978,7 @@ const createFallbackAppActivityActions = () => {
 const fallbackAppActivityActions = createFallbackAppActivityActions();
 
 export const useAppActivityActions = () => {
-  const context = useContext(AppActivityContext);
+  const context = use(AppActivityContext);
   if (!context) {
     // Return stable fallback instead of throwing error to prevent Fast Refresh issues
     if (import.meta.env.DEV) {
@@ -1012,7 +1012,7 @@ export const useAppActivityActions = () => {
 };
 
 export const useAppActivityStore = (): AppActivityContextType => {
-  const context = useContext(AppActivityContext);
+  const context = use(AppActivityContext);
   if (!context) {
     throw new Error("useAppActivityStore must be used within an AppActivityProvider");
   }

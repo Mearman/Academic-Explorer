@@ -3,8 +3,8 @@
  */
 
 import type { CatalogueList } from "@bibgraph/utils";
-import { Card, Text, Group, Badge, Tooltip } from "@mantine/core";
-import { IconList, IconBook2 } from "@tabler/icons-react";
+import { Badge, Card, Group, Text, Tooltip } from "@mantine/core";
+import { IconBook2,IconList } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 
 import * as styles from "./sidebar.css";
@@ -14,7 +14,7 @@ interface CatalogueListCardProps {
   onClose?: () => void;
 }
 
-export function CatalogueListCard({ list, onClose }: CatalogueListCardProps) {
+export const CatalogueListCard = ({ list, onClose }: CatalogueListCardProps) => {
   const isBibliography = list.type === "bibliography";
   const Icon = isBibliography ? IconBook2 : IconList;
   const navigate = useNavigate();
@@ -60,4 +60,4 @@ export function CatalogueListCard({ list, onClose }: CatalogueListCardProps) {
       </Group>
     </Card>
   );
-}
+};

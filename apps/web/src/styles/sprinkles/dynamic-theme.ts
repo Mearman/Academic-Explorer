@@ -69,7 +69,7 @@ if (typeof document !== 'undefined') {
       --border-primary: var(--mantine-color-dark-4);
     }
   `;
-  document.head.appendChild(style);
+  document.head.append(style);
 }
 
 /**
@@ -154,6 +154,7 @@ export const colorSchemes = {
 
 /**
  * Component library-specific spacing values
+ * @param library
  */
 export const createDynamicSpacing = (library: ComponentLibrary) => {
   const spacingScales = {
@@ -167,6 +168,7 @@ export const createDynamicSpacing = (library: ComponentLibrary) => {
 
 /**
  * Dynamic border radius that adapts to component library
+ * @param library
  */
 export const createDynamicBorderRadius = (library: ComponentLibrary) => {
   const radiusScales = {
@@ -180,6 +182,8 @@ export const createDynamicBorderRadius = (library: ComponentLibrary) => {
 
 /**
  * Dynamic card styles that adapt to component library
+ * @param library
+ * @param elevated
  */
 export const createCardStyles = (library: ComponentLibrary, elevated: boolean = false) => {
   const baseStyle = {
@@ -214,6 +218,9 @@ export const createCardStyles = (library: ComponentLibrary, elevated: boolean = 
 
 /**
  * Dynamic button styles that adapt to component library
+ * @param library
+ * @param variant
+ * @param size
  */
 export const createButtonStyles = (
   library: ComponentLibrary,
@@ -266,6 +273,8 @@ export const createButtonStyles = (
 
 /**
  * Apply dynamic theme to an element
+ * @param element
+ * @param theme
  */
 export const applyDynamicTheme = (element: HTMLElement, theme: DynamicThemeConfig) => {
   const vars = {
@@ -279,14 +288,21 @@ export const applyDynamicTheme = (element: HTMLElement, theme: DynamicThemeConfi
 
 /**
  * Apply color mode theme (light/dark) to an element
+ * @param element
+ * @param colorMode
  */
 export const applyColorModeTheme = (element: HTMLElement, colorMode: 'light' | 'dark') => {
   const schemeClass = colorMode === 'light' ? 'light' : 'dark';
-  element.className = element.className.replace(/color-scheme-(dark|light)/g, `color-scheme-${schemeClass}`);
+  element.className = element.className.replaceAll(/color-scheme-(dark|light)/g, `color-scheme-${schemeClass}`);
 };
 
 /**
  * Apply interactive properties to an element
+ * @param element
+ * @param options
+ * @param options.disabled
+ * @param options.selected
+ * @param options.hoverable
  */
 export const applyInteractiveProperties = (
   element: HTMLElement,
@@ -324,6 +340,7 @@ export const initializeRuntimeTheme = () => {
 
 /**
  * Update runtime theme
+ * @param colorMode
  */
 export const updateRuntimeTheme = (colorMode: 'light' | 'dark') => {
   const root = document.documentElement;
@@ -340,6 +357,8 @@ export const getCurrentRuntimeTheme = (): 'light' | 'dark' => {
 
 /**
  * Create theme value for CSS variables
+ * @param key
+ * @param value
  */
 export const createThemeValue = (key: string, value: string) => {
   return `var(--${key}, ${value})`;
@@ -348,6 +367,7 @@ export const createThemeValue = (key: string, value: string) => {
 /**
  * Get component library theme configuration
  * Uses CSS variables for proper theme/dark mode support
+ * @param library
  */
 export const getComponentLibraryTheme = (library: ComponentLibrary) => {
   const themes = {

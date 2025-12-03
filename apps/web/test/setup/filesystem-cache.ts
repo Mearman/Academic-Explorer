@@ -3,8 +3,8 @@
  * Reads from and writes to /public/data/openalex/ directory
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 // Note: When running E2E tests, cwd is already 'apps/web'
 const PUBLIC_DATA_DIR = path.join(process.cwd(), 'public/data/openalex');
@@ -16,21 +16,20 @@ export interface CacheReadResult {
 
 /**
  * Read entity from filesystem cache
+ * @param entityType
+ * @param id
  */
-export async function readFromFilesystemCache(
-  entityType: string,
-  id: string
-): Promise<CacheReadResult> {
+export const readFromFilesystemCache = async (entityType: string, id: string): Promise<CacheReadResult> => {
   try {
     // Construct file path: /public/data/openalex/{entityType}/{id}.json
-    const sanitizedId = id.replace(/[^\w-]/g, '_');
+    const sanitizedId = id.replaceAll(/[^\w-]/g, '_');
     const filePath = path.join(PUBLIC_DATA_DIR, entityType, `${sanitizedId}.json`);
 
     if (!fs.existsSync(filePath)) {
       return { found: false };
     }
 
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
     const data = JSON.parse(fileContent);
 
     console.log(`✅ Filesystem cache hit: ${entityType}/${id}`);
@@ -39,19 +38,18 @@ export async function readFromFilesystemCache(
     console.warn(`⚠️ Filesystem cache read error: ${entityType}/${id}`, error);
     return { found: false };
   }
-}
+};
 
 /**
  * Write entity to filesystem cache
+ * @param entityType
+ * @param id
+ * @param data
  */
-export async function writeToFilesystemCache(
-  entityType: string,
-  id: string,
-  data: unknown
-): Promise<void> {
+export const writeToFilesystemCache = async (entityType: string, id: string, data: unknown): Promise<void> => {
   try {
     // Construct file path
-    const sanitizedId = id.replace(/[^\w-]/g, '_');
+    const sanitizedId = id.replaceAll(/[^\w-]/g, '_');
     const entityDir = path.join(PUBLIC_DATA_DIR, entityType);
     const filePath = path.join(entityDir, `${sanitizedId}.json`);
 
@@ -66,7 +64,7 @@ export async function writeToFilesystemCache(
   } catch (error) {
     console.error(`❌ Filesystem cache write error: ${entityType}/${id}`, error);
   }
-}
+};
 
 /**
  * Extract entity ID from OpenAlex URL
@@ -74,8 +72,9 @@ export async function writeToFilesystemCache(
  *  - https://openalex.org/W123 -> W123
  *  - https://api.openalex.org/works/W123 -> W123
  *  - W123 -> W123
+ * @param idOrUrl
  */
-export function extractEntityId(idOrUrl: string): string {
+export const extractEntityId = (idOrUrl: string): string => {
   if (!idOrUrl) return '';
 
   // Extract from full OpenAlex URL
@@ -88,12 +87,13 @@ export function extractEntityId(idOrUrl: string): string {
 
   // Already clean ID
   return idOrUrl;
-}
+};
 
 /**
  * Detect entity type from ID prefix
+ * @param id
  */
-export function detectEntityType(id: string): string | null {
+export const detectEntityType = (id: string): string | null => {
   const cleanId = extractEntityId(id);
   if (!cleanId) return null;
 
@@ -107,4 +107,4 @@ export function detectEntityType(id: string): string | null {
   if (cleanId.startsWith('C')) return 'concepts';
 
   return null;
-}
+};

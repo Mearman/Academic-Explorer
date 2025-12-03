@@ -4,19 +4,15 @@ interface WaitOptions {
 	timeout?: number;
 }
 
-const DEFAULT_TIMEOUT = 30000;
+const DEFAULT_TIMEOUT = 30_000;
 
 /**
  * Wait for the application to be fully initialized and ready for interaction.
  * Checks for root element, and waits for loading indicators to disappear.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForAppReady(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForAppReady = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	// Wait for root element to exist and have children
@@ -41,19 +37,15 @@ export async function waitForAppReady(
 	} catch {
 		// Skeleton loaders may not be present, continue
 	}
-}
+};
 
 /**
  * Wait for entity detail page data to be loaded and visible.
  * Checks for entity title and metadata elements.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForEntityData(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForEntityData = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	// Wait for entity title to be visible
@@ -71,37 +63,29 @@ export async function waitForEntityData(
 	} catch {
 		// Entity metadata may not be present for all entity types, continue
 	}
-}
+};
 
 /**
  * Wait for search results to be loaded and visible.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForSearchResults(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForSearchResults = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	await page.waitForSelector('[data-testid="search-results"]', {
 		timeout,
 		state: 'visible',
 	});
-}
+};
 
 /**
  * Wait for D3 force simulation graph to be ready.
  * Checks for SVG element with nodes and stable simulation state.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForGraphReady(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForGraphReady = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	// Wait for SVG element to exist with g.nodes children
@@ -115,7 +99,7 @@ export async function waitForGraphReady(
 				if (!svgElement) return false;
 
 				const simulationRunning =
-					svgElement.getAttribute('data-simulation-running');
+					svgElement.dataset.simulationRunning;
 				return simulationRunning === 'false' || simulationRunning === null;
 			},
 			{ timeout }
@@ -123,41 +107,33 @@ export async function waitForGraphReady(
 	} catch {
 		// Simulation status attribute may not be implemented, continue
 	}
-}
+};
 
 /**
  * Wait for TanStack Router to be ready.
  * Checks for router instance on window object.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForRouterReady(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForRouterReady = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	await page.waitForFunction(
 		() => {
-			return typeof (window as unknown as { __tanstack_router__?: unknown })
-				.__tanstack_router__ !== 'undefined';
+			return (window as unknown as { __tanstack_router__?: unknown })
+				.__tanstack_router__ !== undefined;
 		},
 		{ timeout }
 	);
-}
+};
 
 /**
  * Wait for all loading indicators to disappear from the page.
  * Includes loading spinners, skeleton loaders, and loading states.
- *
  * @param page - Playwright page object
  * @param options - Optional timeout configuration
  */
-export async function waitForNoLoading(
-	page: Page,
-	options?: WaitOptions
-): Promise<void> {
+export const waitForNoLoading = async (page: Page, options?: WaitOptions): Promise<void> => {
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	// Wait for all common loading indicators to be hidden
@@ -178,4 +154,4 @@ export async function waitForNoLoading(
 			// Loading indicator may not be present, continue
 		}
 	}
-}
+};

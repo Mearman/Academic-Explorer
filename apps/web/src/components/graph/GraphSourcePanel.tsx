@@ -3,7 +3,6 @@
  *
  * Displays available data sources (catalogue lists, caches) with toggle switches
  * and entity counts. Sources are grouped by category.
- *
  * @module components/graph/GraphSourcePanel
  */
 
@@ -32,7 +31,7 @@ import {
   IconRefresh,
   IconServer,
 } from '@tabler/icons-react';
-import { useState, useCallback } from 'react';
+import { useCallback,useState } from 'react';
 
 export interface GraphSourcePanelProps {
   /** Available data sources with their state */
@@ -59,8 +58,9 @@ export interface GraphSourcePanelProps {
 
 /**
  * Get icon for a source based on its ID
+ * @param sourceId
  */
-function getSourceIcon(sourceId: string) {
+const getSourceIcon = (sourceId: string) => {
   if (sourceId === 'catalogue:bookmarks') return IconBookmark;
   if (sourceId === 'catalogue:history') return IconClock;
   if (sourceId.startsWith('catalogue:')) return IconList;
@@ -68,12 +68,16 @@ function getSourceIcon(sourceId: string) {
   if (sourceId === 'cache:memory') return IconServer;
   if (sourceId === 'cache:static') return IconServer;
   return IconList;
-}
+};
 
 /**
  * Single source toggle row
+ * @param root0
+ * @param root0.state
+ * @param root0.enabled
+ * @param root0.onToggle
  */
-function SourceToggle({
+const SourceToggle = ({
   state,
   enabled,
   onToggle,
@@ -81,7 +85,7 @@ function SourceToggle({
   state: GraphDataSourceState;
   enabled: boolean;
   onToggle: () => void;
-}) {
+}) => {
   const Icon = getSourceIcon(state.source.id);
   const count = state.entityCount;
 
@@ -108,12 +112,17 @@ function SourceToggle({
       </Group>
     </Group>
   );
-}
+};
 
 /**
  * Source category section
+ * @param root0
+ * @param root0.title
+ * @param root0.sources
+ * @param root0.enabledIds
+ * @param root0.onToggle
  */
-function SourceCategory({
+const SourceCategory = ({
   title,
   sources,
   enabledIds,
@@ -123,7 +132,7 @@ function SourceCategory({
   sources: GraphDataSourceState[];
   enabledIds: Set<string>;
   onToggle: (sourceId: string) => void;
-}) {
+}) => {
   if (sources.length === 0) return null;
 
   return (
@@ -141,12 +150,20 @@ function SourceCategory({
       ))}
     </Stack>
   );
-}
+};
 
 /**
  * Collapsible panel for graph data source toggles
+ * @param root0
+ * @param root0.sources
+ * @param root0.enabledSourceIds
+ * @param root0.onToggleSource
+ * @param root0.onEnableAll
+ * @param root0.onDisableAll
+ * @param root0.onRefresh
+ * @param root0.loading
  */
-export function GraphSourcePanel({
+export const GraphSourcePanel = ({
   sources,
   enabledSourceIds,
   onToggleSource,
@@ -154,7 +171,7 @@ export function GraphSourcePanel({
   onDisableAll,
   onRefresh,
   loading = false,
-}: GraphSourcePanelProps) {
+}: GraphSourcePanelProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const toggleCollapsed = useCallback(() => {
@@ -286,4 +303,4 @@ export function GraphSourcePanel({
       </Box>
     </Paper>
   );
-}
+};

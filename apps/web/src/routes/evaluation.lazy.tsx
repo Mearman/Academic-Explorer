@@ -1,15 +1,15 @@
 import { logger } from "@bibgraph/utils/logger";
 import {
-  Container,
-  Title,
-  Text,
-  Card,
-  Group,
-  Stack,
   Button,
-  ThemeIcon,
-  SimpleGrid,
+  Card,
+  Container,
+  Group,
   Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
 } from "@mantine/core";
 import {
   IconBulb,
@@ -25,10 +25,7 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 
 
 
-function EvaluationDashboard() {
-
-  return (
-    <Container size="xl" p="xl" mx="auto">
+const EvaluationDashboard = () => <Container size="xl" p="xl" mx="auto">
       {/* Header */}
       <Stack mb="xl">
         <Title order={1} fw={700} c="gray.9" mb="sm">
@@ -232,9 +229,7 @@ function EvaluationDashboard() {
           </Text>
         </Paper>
       </Paper>
-    </Container>
-  );
-}
+    </Container>;
 
 export const Route = createLazyFileRoute("/evaluation")({
   component: EvaluationDashboard,

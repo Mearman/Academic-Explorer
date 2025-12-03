@@ -1,7 +1,6 @@
 /**
  * K-Core Decomposition Algorithm Item
  * Finds the k-core subgraph where every node has at least k neighbors
- *
  * @module components/algorithms/items/KCoreItem
  */
 
@@ -20,11 +19,11 @@ import { useKCore } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
 
-export function KCoreItem({
+export const KCoreItem = ({
   nodes,
   edges,
   onHighlightNodes,
-}: AlgorithmItemBaseProps) {
+}: AlgorithmItemBaseProps) => {
   const [kCoreValue, setKCoreValue] = useState<number>(2);
   const kCore = useKCore(nodes, edges, kCoreValue);
 
@@ -68,4 +67,4 @@ export function KCoreItem({
       )}
     </Stack>
   );
-}
+};

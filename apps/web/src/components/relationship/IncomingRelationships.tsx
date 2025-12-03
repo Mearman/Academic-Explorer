@@ -1,15 +1,14 @@
 /**
  * IncomingRelationships component
  * Displays all incoming relationship sections for an entity
- *
  * @module IncomingRelationships
  * @see specs/016-entity-relationship-viz/spec.md (User Story 1, User Story 3)
  */
 
 import type { EntityType } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
-import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
-import React, { useState, useEffect } from 'react';
+import { Button, Group,Paper, Skeleton, Stack, Text, Title } from '@mantine/core';
+import React, { useEffect,useState } from 'react';
 
 import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
@@ -31,6 +30,10 @@ export interface IncomingRelationshipsProps {
 /**
  * Displays incoming relationship sections for an entity
  * Shows all types of relationships where other entities point to this entity
+ * @param root0
+ * @param root0.entityId
+ * @param root0.entityType
+ * @param root0.entityData
  */
 export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
   entityId,

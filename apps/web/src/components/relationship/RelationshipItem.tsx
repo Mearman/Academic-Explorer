@@ -1,12 +1,11 @@
 /**
  * RelationshipItem component
  * Displays an individual relationship connection with clickable entity link and optional metadata
- *
  * @module RelationshipItem
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import { Anchor, Text, Group, Stack } from '@mantine/core';
+import { Anchor, Group, Stack,Text } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
 import React from 'react';
 
@@ -20,6 +19,8 @@ export interface RelationshipItemProps {
 /**
  * Displays a single relationship connection
  * Shows the related entity name as a clickable link, with optional subtitle and metadata
+ * @param root0
+ * @param root0.item
  */
 export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
   const navigate = useNavigate();

@@ -2,13 +2,12 @@
  * E2E tests for 404 (Not Found) error scenarios
  *
  * Tests handling of non-existent entities and routes
- *
  * @module error-404.e2e
  * @tag @error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 import { waitForAppReady } from "@/test/helpers/app-ready";
 import { ErrorPage } from "@/test/page-objects/ErrorPage";
@@ -40,7 +39,7 @@ test.describe("@error 404 Not Found Errors", () => {
 		await errorPage.gotoNonExistentEntity("authors", "A9999999999999");
 
 		const notFoundText = page.getByText(/404|does not exist|not found/i);
-		await expect(notFoundText).toBeVisible({ timeout: 10000 });
+		await expect(notFoundText).toBeVisible({ timeout: 10_000 });
 	});
 
 	test("should display 404 error for non-existent institution", async ({
@@ -49,7 +48,7 @@ test.describe("@error 404 Not Found Errors", () => {
 		await errorPage.gotoNonExistentEntity("institutions", "I9999999999999");
 
 		const notFoundText = page.getByText(/404|does not exist|not found/i);
-		await expect(notFoundText).toBeVisible({ timeout: 10000 });
+		await expect(notFoundText).toBeVisible({ timeout: 10_000 });
 	});
 
 	test("should display 404 error for non-existent source", async () => {
@@ -122,14 +121,14 @@ test.describe("@error 404 Not Found Errors", () => {
 		await errorPage.gotoNonExistentEntity("works", "INVALID_ID");
 
 		const notFoundText = page.getByText(/404|does not exist|invalid|not found/i);
-		await expect(notFoundText).toBeVisible({ timeout: 10000 });
+		await expect(notFoundText).toBeVisible({ timeout: 10_000 });
 	});
 
 	test("should display 404 error for malformed author ID", async ({ page }) => {
 		await errorPage.gotoNonExistentEntity("authors", "INVALID_ID");
 
 		const notFoundText = page.getByText(/404|does not exist|invalid|not found/i);
-		await expect(notFoundText).toBeVisible({ timeout: 10000 });
+		await expect(notFoundText).toBeVisible({ timeout: 10_000 });
 	});
 
 	test("should handle 404 error with retry button if available", async () => {

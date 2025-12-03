@@ -6,13 +6,12 @@
  * - Parent field and domain navigation
  * - Related topics section
  * - Page loading and error handling
- *
  * @module subfields.e2e
  * @see spec-020 Phase 6: E2E test coverage for Subfields entity
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 import { waitForAppReady, waitForEntityData } from '@/test/helpers/app-ready';
 import { SubfieldsDetailPage } from '@/test/page-objects/SubfieldsDetailPage';
@@ -99,8 +98,8 @@ test.describe('@entity Subfields Detail Page', () => {
 		await expect(page).toHaveURL(/\/fields\/\d+/);
 
 		// Verify field title is displayed
-		const fieldTitle = await page.locator('[data-testid="entity-title"]').textContent();
-		expect(fieldTitle).toBeTruthy();
+		const fieldTitle = page.locator('[data-testid="entity-title"]');
+		await expect(fieldTitle).toHaveText();
 	});
 
 	test('should load page without errors', async ({ page }) => {

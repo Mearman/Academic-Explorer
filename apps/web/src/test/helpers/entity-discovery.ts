@@ -22,11 +22,10 @@ const externalIdCache = new Map<string, string>();
  *
  * Fetches the first result from the entity type's list endpoint.
  * Caches results for the test session to minimize API calls.
- *
  * @param type - The entity type to fetch
  * @returns The discovered entity ID, or null if discovery fails
  */
-export async function discoverEntityId(type: EntityType): Promise<string | null> {
+export const discoverEntityId = async (type: EntityType): Promise<string | null> => {
 	// Check cache first
 	if (entityCache.has(type)) {
 		return entityCache.get(type)!;
@@ -61,27 +60,25 @@ export async function discoverEntityId(type: EntityType): Promise<string | null>
 		console.warn(`Error discovering ${type}:`, error);
 		return null;
 	}
-}
+};
 
 /**
  * Get an entity ID, preferring runtime discovery with fallback to sample
- *
  * @param type - The entity type
  * @returns A valid entity ID (from API or fallback)
  */
-export async function getEntityId(type: EntityType): Promise<string> {
+export const getEntityId = async (type: EntityType): Promise<string> => {
 	const discovered = await discoverEntityId(type);
 	return discovered ?? SAMPLE_ENTITIES[type];
-}
+};
 
 /**
  * Discover external IDs from OpenAlex API
  *
  * Fetches entities with specific external identifiers (ORCID, DOI, ISSN, ROR).
+ * @param idType
  */
-export async function discoverExternalId(
-	idType: "orcid" | "issn" | "ror" | "doi"
-): Promise<string | null> {
+export const discoverExternalId = async (idType: "orcid" | "issn" | "ror" | "doi"): Promise<string | null> => {
 	// Check cache first
 	if (externalIdCache.has(idType)) {
 		return externalIdCache.get(idType)!;
@@ -154,32 +151,31 @@ export async function discoverExternalId(
 		console.warn(`Error discovering ${idType}:`, error);
 		return null;
 	}
-}
+};
 
 /**
  * Get an external ID, preferring runtime discovery with fallback to sample
+ * @param idType
  */
-export async function getExternalId(
-	idType: "orcid" | "issn" | "ror" | "doi"
-): Promise<string> {
+export const getExternalId = async (idType: "orcid" | "issn" | "ror" | "doi"): Promise<string> => {
 	const discovered = await discoverExternalId(idType);
 	return discovered ?? SAMPLE_EXTERNAL_IDS[idType];
-}
+};
 
 /**
  * Clear the entity cache (useful between test runs)
  */
-export function clearEntityCache(): void {
+export const clearEntityCache = (): void => {
 	entityCache.clear();
 	externalIdCache.clear();
-}
+};
 
 /**
  * Pre-warm the cache by discovering all entity types in parallel
  *
  * Call this in test setup to minimize latency during tests.
  */
-export async function prewarmEntityCache(): Promise<void> {
+export const prewarmEntityCache = async (): Promise<void> => {
 	const entityTypes: EntityType[] = [
 		"works",
 		"authors",
@@ -207,4 +203,4 @@ export async function prewarmEntityCache(): Promise<void> {
 		...entityTypes.map((type) => discoverEntityId(type)),
 		...externalIdTypes.map((type) => discoverExternalId(type)),
 	]);
-}
+};

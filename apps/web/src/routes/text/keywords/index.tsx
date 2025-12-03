@@ -19,12 +19,12 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 const textKeywordsSearchSchema = z.object({
-  title: z.string().optional().catch(undefined),
-  abstract: z.string().optional().catch(undefined),
+  title: z.string().optional().catch(),
+  abstract: z.string().optional().catch(),
 });
 
 
-function TextKeywordsRoute() {
+const TextKeywordsRoute = () => {
   const urlSearch = Route.useSearch();
   const [title, setTitle] = useState(urlSearch.title || "");
 
@@ -67,7 +67,7 @@ function TextKeywordsRoute() {
       return keywords;
     },
     enabled: title.trim().length > 0,
-    staleTime: 60000,
+    staleTime: 60_000,
   });
 
   const handleTitleChange = (value: string) => {
@@ -150,7 +150,7 @@ function TextKeywordsRoute() {
         {keywords.length > 0 && (
           <Stack gap="md">
             <Text size="sm" c="dimmed">
-              Found {keywords.length} keyword{keywords.length !== 1 ? "s" : ""}
+              Found {keywords.length} keyword{keywords.length === 1 ? "" : "s"}
             </Text>
             {keywords.map((keyword) => (
               <Card key={keyword.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
@@ -183,7 +183,7 @@ function TextKeywordsRoute() {
       </Stack>
     </Container>
   );
-}
+};
 
 export const Route = createFileRoute("/text/keywords/")({
   component: TextKeywordsRoute,

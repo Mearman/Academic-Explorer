@@ -15,7 +15,7 @@
  */
 
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
+import { expect,test } from '@playwright/test';
 
 /**
  * Test work IDs for different types
@@ -44,7 +44,7 @@ test.describe('Work Type Display', () => {
 
     // Wait for work content to load
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     }).catch(async () => {
       console.log('⚠️ Work detail page not loaded properly');
@@ -59,8 +59,8 @@ test.describe('Work Type Display', () => {
 
     if (badgeExists) {
       // Verify badge has text content
-      const badgeText = await workTypeBadge.textContent();
-      expect(badgeText).toBeTruthy();
+      const badgeText = workTypeBadge;
+      await expect(badgeText).toHaveText();
       expect(badgeText!.length).toBeGreaterThan(0);
 
       console.log(`✅ Work type badge found: "${badgeText}"`);
@@ -119,14 +119,14 @@ test.describe('Work Type Display', () => {
 
     // Wait for entity detail page to load
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     });
 
     // Verify the page displays the work type "dataset" somewhere in the content
     // The work type is part of OpenAlex API response
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -150,13 +150,13 @@ test.describe('Work Type Display', () => {
 
     // Wait for entity detail page to load
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     });
 
     // Verify the page displays content
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -185,7 +185,7 @@ test.describe('Work Type Display', () => {
 
     // Verify the page loads successfully
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     });
 
@@ -206,13 +206,13 @@ test.describe('Work Type Display', () => {
 
     // Wait for entity detail page to load
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
       state: 'visible',
     });
 
     // Verify the page displays content
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Check for XPAC badge if it exists (feature may not be implemented)
     const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
@@ -235,7 +235,7 @@ test.describe('Work Type Display', () => {
 
     // Wait for page content
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Find work type badge
@@ -279,8 +279,8 @@ test.describe('Work Type Display', () => {
       expect(boundingBox!.height).toBeGreaterThan(0);
 
       // Verify badge has text content
-      const badgeText = await workTypeBadge.textContent();
-      expect(badgeText).toBeTruthy();
+      const badgeText = workTypeBadge;
+      await expect(badgeText).toHaveText();
 
       console.log(`✅ Work type badge has proper Mantine styling: "${badgeText}"`);
     } else {
@@ -296,7 +296,7 @@ test.describe('Work Type Display', () => {
 
     // Wait for page content
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Find work type badge
@@ -330,7 +330,7 @@ test.describe('Work Type Display', () => {
 
     // Wait for page content
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Find work type badge
@@ -339,10 +339,10 @@ test.describe('Work Type Display', () => {
 
     if (badgeVisible) {
       // Check for other publication metadata badges (year, open access, etc.)
-      const bodyText = await page.textContent('body');
+      const bodyText = page;
 
       // Work detail page should have publication information
-      expect(bodyText).toBeTruthy();
+      await expect(bodyText).toHaveText('body', );
       expect(bodyText!.length).toBeGreaterThan(100);
 
       // Verify work type badge is part of cohesive publication details
@@ -370,8 +370,8 @@ test.describe('Work Type Display', () => {
     });
 
     // Verify page loads without critical errors
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
+    const bodyText = page;
+    await expect(bodyText).toHaveText('body', );
 
     // Work type badge may or may not be present - both are valid
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -397,7 +397,7 @@ test.describe('Work Type Badge Integration', () => {
 
     // Wait for RichEntityDisplay to render
     const richDisplayTitle = page.locator('[data-testid="entity-detail-layout"]');
-    await expect(richDisplayTitle).toBeVisible({ timeout: 10000 });
+    await expect(richDisplayTitle).toBeVisible({ timeout: 10_000 });
 
     // Verify work type badge is present
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -418,7 +418,7 @@ test.describe('Work Type Badge Integration', () => {
 
     // Wait for page content
     await page.waitForSelector('[data-testid="entity-detail-layout"]', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Find work type badge

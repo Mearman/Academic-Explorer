@@ -5,15 +5,12 @@
 
 import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@bibgraph/utils";
 import { useParams, useSearch } from "@tanstack/react-router";
-import { useState, useCallback } from "react";
+import { useCallback,useState } from "react";
 
 import { useRawEntityData } from "./use-raw-entity-data";
 import { useUserInteractions } from "./use-user-interactions";
 
-export function useEntityRoute<T = unknown>(
-  config: EntityRouteConfig,
-  options: UseEntityRouteOptions = {}
-): UseEntityRouteResult<T> {
+export const useEntityRoute = <T = unknown>(config: EntityRouteConfig, options: UseEntityRouteOptions = {}): UseEntityRouteResult<T> => {
   const params = useParams({ strict: false }) as Record<string, string>;
   const search = useSearch({ strict: false }) as Record<string, unknown>;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -21,7 +18,7 @@ export function useEntityRoute<T = unknown>(
   // Extract entity ID from params using the config's paramKey
   const rawId = params[config.paramKey] || "";
   // Safely clean the entity ID - handle undefined/null cases
-  const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/(?:.*?)openalex\.org\//, "") : "";
+  const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/.*?openalex\.org\//, "") : "";
 
   // Fetch raw entity data using the real hook
   const rawEntityData = useRawEntityData({
@@ -86,4 +83,4 @@ export function useEntityRoute<T = unknown>(
     loadEntityIntoGraph: wrappedLoadEntityIntoGraph,
     routeSearch: search,
   };
-}
+};

@@ -4,12 +4,12 @@
 
 import { logger } from "@bibgraph/utils";
 import {
-  Radio,
+  Alert,
   Button,
   Group,
+  Radio,
   Stack,
   Text,
-  Alert,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck, IconDownload } from "@tabler/icons-react";
@@ -26,7 +26,7 @@ interface ExportModalProps {
   onClose: () => void;
 }
 
-export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
+export const ExportModal = ({ listId, listTitle, onClose }: ExportModalProps) => {
   const { exportListAsFile } = useCatalogue();
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("json");
   const [isExporting, setIsExporting] = useState(false);
@@ -158,4 +158,4 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
       </Group>
     </Stack>
   );
-}
+};

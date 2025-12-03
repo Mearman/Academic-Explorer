@@ -1,5 +1,5 @@
 import { logger } from "@bibgraph/utils/logger";
-import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
+import { type Metric,onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals";
 
 /**
  * Chrome-specific Performance interface with memory property
@@ -81,7 +81,7 @@ class PerformanceMonitor {
   constructor(config: Partial<PerformanceConfig> = {}) {
     this.config = {
       enabled: true,
-      sampleRate: 1.0, // Monitor all users in development
+      sampleRate: 1, // Monitor all users in development
       thresholds: {
         LCP: 2500, // Good: <2.5s
         FID: 100,  // Good: <100ms
@@ -219,7 +219,7 @@ class PerformanceMonitor {
             increase: this.formatBytes(memoryDiff),
           });
         }
-      }, 30000); // Check every 30 seconds
+      }, 30_000); // Check every 30 seconds
     }
   }
 
@@ -303,6 +303,8 @@ class PerformanceMonitor {
 
   /**
    * Analyze individual metric against thresholds
+   * @param metric
+   * @param value
    */
   private analyzeMetric(metric: string, value: Metric): void {
     const threshold = this.config.thresholds[metric as keyof typeof this.config.thresholds];
@@ -326,6 +328,7 @@ class PerformanceMonitor {
 
   /**
    * Analyze resource timing performance
+   * @param resource
    */
   private analyzeResourceTiming(resource: PerformanceResourceTiming): void {
     const loadTime = resource.responseEnd - resource.requestStart;
@@ -352,6 +355,8 @@ class PerformanceMonitor {
 
   /**
    * Get metric status based on threshold
+   * @param value
+   * @param threshold
    */
   private getMetricStatus(value: number, threshold: number): 'good' | 'needs-improvement' | 'poor' {
     if (value <= threshold) return 'good';
@@ -361,6 +366,8 @@ class PerformanceMonitor {
 
   /**
    * Format metric value for display
+   * @param metric
+   * @param value
    */
   private formatMetricValue(metric: string, value: number): string {
     switch (metric) {
@@ -379,13 +386,14 @@ class PerformanceMonitor {
 
   /**
    * Format bytes for display
+   * @param bytes
    */
   private formatBytes(bytes: number): string {
     if (bytes === 0) return '0 B';
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   }
 
   /**
@@ -442,8 +450,9 @@ class PerformanceMonitor {
 
 /**
  * Initialize performance monitoring
+ * @param config
  */
-export function initPerformanceMonitoring(config?: Partial<PerformanceConfig>): PerformanceMonitor | null {
+export const initPerformanceMonitoring = (config?: Partial<PerformanceConfig>): PerformanceMonitor | null => {
   if (typeof window === 'undefined') return null;
 
   try {
@@ -452,28 +461,28 @@ export function initPerformanceMonitoring(config?: Partial<PerformanceConfig>): 
     logger.error("performance", "Failed to initialize performance monitoring", { error });
     return null;
   }
-}
+};
 
 /**
  * Get performance metrics for debugging
  */
-export function getPerformanceMetrics(): PerformanceMetrics | null {
+export const getPerformanceMetrics = (): PerformanceMetrics | null => {
   const windowWithMonitor = window as unknown as WindowWithPerformanceMonitor;
   if (typeof window === 'undefined' || !windowWithMonitor.performanceMonitor) {
     return null;
   }
 
   return windowWithMonitor.performanceMonitor.getMetrics();
-}
+};
 
 /**
  * Performance monitoring singleton
  */
 let performanceMonitor: PerformanceMonitor | null = null;
 
-export function usePerformanceMonitoring(): PerformanceMonitor | null {
+export const usePerformanceMonitoring = (): PerformanceMonitor | null => {
   if (!performanceMonitor && typeof window !== 'undefined') {
     performanceMonitor = initPerformanceMonitoring();
   }
   return performanceMonitor;
-}
+};

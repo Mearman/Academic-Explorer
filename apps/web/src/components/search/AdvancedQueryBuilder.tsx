@@ -1,20 +1,20 @@
 import {
-  Stack,
-  Group,
-  TextInput,
-  Select,
-  Button,
   ActionIcon,
-  Paper,
-  Text,
-  Divider,
   Box,
+  Button,
+  Divider,
+  Group,
+  Paper,
+  Select,
+  Stack,
+  Text,
+  TextInput,
 } from "@mantine/core";
-import { IconPlus, IconTrash, IconSearch } from "@tabler/icons-react";
-import React, { useState, useCallback } from "react";
+import { IconPlus, IconSearch,IconTrash } from "@tabler/icons-react";
+import React, { useCallback,useState } from "react";
 // Simple ID generator for query terms
 const generateId = () =>
-  `query-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  `query-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
 // TypeScript interfaces for query structure
 export interface QueryTerm {

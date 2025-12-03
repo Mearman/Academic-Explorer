@@ -1,5 +1,5 @@
 import { EntityDetectionService } from "@bibgraph/utils";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach,describe, expect, it, vi } from "vitest";
 
 // Mock the route for testing
 vi.mock("@/routes/openalex-url/$", async (importOriginal) => {

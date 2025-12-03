@@ -1,10 +1,9 @@
 /**
  * Shared types for algorithm components
- *
  * @module components/algorithms/types
  */
 
-import type { GraphNode, GraphEdge } from '@bibgraph/types';
+import type { GraphEdge,GraphNode } from '@bibgraph/types';
 
 /**
  * Community result from community detection algorithms

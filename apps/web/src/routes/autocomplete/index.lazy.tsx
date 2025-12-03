@@ -27,24 +27,25 @@ import {
   EntityTypeFilter,
 } from "@/components/EntityTypeFilter";
 import { BaseTable } from "@/components/tables/BaseTable";
-import { TableViewModeToggle, type TableViewMode } from "@/components/TableViewModeToggle";
+import { type TableViewMode,TableViewModeToggle } from "@/components/TableViewModeToggle";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
 /**
  * Parse comma-separated entity types from URL
  * Returns null if no types param, empty array if "none", or parsed types
+ * @param typesParam
  */
-function parseEntityTypes(typesParam: string | undefined): EntityType[] | null {
+const parseEntityTypes = (typesParam: string | undefined): EntityType[] | null => {
   if (!typesParam) return null; // No param = use default (all types)
   if (typesParam === "none") return []; // Explicitly cleared
   return typesParam
     .split(",")
     .map((t) => t.trim() as EntityType)
     .filter((t) => AUTOCOMPLETE_ENTITY_TYPES.includes(t));
-}
+};
 
-function AutocompleteGeneralRoute() {
+const AutocompleteGeneralRoute = () => {
   const urlSearch = useSearch({ from: "/autocomplete/" });
   const navigate = useNavigate();
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
@@ -262,7 +263,7 @@ function AutocompleteGeneralRoute() {
       return response;
     },
     enabled: query.trim().length > 0 && selectedTypes.length > 0,
-    staleTime: 30000,
+    staleTime: 30_000,
   });
 
   const handleSearch = (value: string) => {
@@ -302,9 +303,9 @@ function AutocompleteGeneralRoute() {
           <Text c="dimmed" size="sm" mt="xs">
             {selectedTypes.length === 0
               ? "Select at least one entity type to search"
-              : allTypesSelected
+              : (allTypesSelected
                 ? "Search across all entity types with real-time suggestions from the OpenAlex database"
-                : `Searching ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`}
+                : `Searching ${selectedTypes.map((t) => ENTITY_METADATA[t].plural).join(", ")}`)}
           </Text>
         </div>
 
@@ -407,7 +408,7 @@ function AutocompleteGeneralRoute() {
           <Stack gap="md">
             <Group justify="space-between" align="center">
               <Text size="sm" c="dimmed">
-                Found {results.length} suggestion{results.length !== 1 ? "s" : ""}
+                Found {results.length} suggestion{results.length === 1 ? "" : "s"}
               </Text>
               <TableViewModeToggle value={viewMode} onChange={setViewMode} />
             </Group>
@@ -439,7 +440,7 @@ function AutocompleteGeneralRoute() {
       </Stack>
     </Container>
   );
-}
+};
 export const Route = createLazyFileRoute("/autocomplete/")({
   component: AutocompleteGeneralRoute,
 });
