@@ -351,12 +351,15 @@ export default tseslint.config([
             "**/eslint.config.*.ts",
             "**/.storybook/**/*",
             "**/routes/**/*.tsx",
+            "**/route-schemas.ts",
             "**/routeTree.gen.ts",
             "**/config/**/*",
         ],
         rules: {
             "import/no-default-export": "off",
             "import/no-relative-packages": "off",
+            // Zod's .catch() method requires explicit undefined argument
+            "unicorn/no-useless-undefined": "off",
         },
     },
     // Disable Node.js-specific rules for browser code and CLI (uses modern Node features)
