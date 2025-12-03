@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
 /**
  * OpenAlex CLI Client
@@ -9,19 +9,18 @@
 // Commander.js methods flagged as deprecated are actually the correct modern API
 // The deprecation warnings are due to type definition complexities, not actual API deprecation
 
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
-
 import type { EntityType } from "@bibgraph/types"
 import { Command } from "commander"
+import { dirname, join, resolve } from "path"
+import { fileURLToPath } from "url"
 import { z } from "zod"
 
 import { StaticCacheManager } from "./cache/static-cache-manager.js"
-import { detectEntityType, SUPPORTED_ENTITIES, type StaticEntityType } from "./entity-detection.js"
+import { detectEntityType, type StaticEntityType,SUPPORTED_ENTITIES } from "./entity-detection.js"
 import {
+	type CacheOptions,
 	OpenAlexCLI,
 	type QueryOptions,
-	type CacheOptions,
 } from "./openalex-cli-class.js"
 
 // Common CLI option strings
@@ -56,7 +55,7 @@ interface EntitySummary {
 	country_code?: string
 }
 
-function printAuthorSummary(entity: EntitySummary): void {
+const printAuthorSummary = (entity: EntitySummary): void => {
 	if ("works_count" in entity) {
 		const worksCount = typeof entity["works_count"] === "number" ? entity["works_count"] : "Unknown"
 		console.log(`Works Count: ${worksCount.toString()}`)
@@ -64,9 +63,9 @@ function printAuthorSummary(entity: EntitySummary): void {
 
 	const citedBy = typeof entity["cited_by_count"] === "number" ? entity["cited_by_count"] : 0
 	console.log(`Cited By Count: ${citedBy.toString()}`)
-}
+};
 
-function printWorkSummary(entity: EntitySummary): void {
+const printWorkSummary = (entity: EntitySummary): void => {
 	if ("publication_year" in entity) {
 		const pubYear =
 			typeof entity["publication_year"] === "number" ? entity["publication_year"] : "Unknown"
@@ -75,9 +74,9 @@ function printWorkSummary(entity: EntitySummary): void {
 
 	const citedBy = typeof entity["cited_by_count"] === "number" ? entity["cited_by_count"] : 0
 	console.log(`Cited By Count: ${citedBy.toString()}`)
-}
+};
 
-function printInstitutionSummary(entity: EntitySummary): void {
+const printInstitutionSummary = (entity: EntitySummary): void => {
 	if ("works_count" in entity) {
 		const worksCount = typeof entity["works_count"] === "number" ? entity["works_count"] : "Unknown"
 		console.log(`Works Count: ${worksCount.toString()}`)
@@ -88,9 +87,9 @@ function printInstitutionSummary(entity: EntitySummary): void {
 			? entity["country_code"]
 			: "Unknown"
 	console.log(`Country: ${country}`)
-}
+};
 
-function validateEntityType(entityType: string): StaticEntityType {
+const validateEntityType = (entityType: string): StaticEntityType => {
 	const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType)
 	if (!entityTypeValidation.success) {
 		console.error(`Unsupported entity type: ${entityType}`)
@@ -98,28 +97,26 @@ function validateEntityType(entityType: string): StaticEntityType {
 		process.exit(1)
 	}
 	return entityTypeValidation.data
-}
+};
 
 type GetTypedCommandOptions = z.infer<typeof GetTypedCommandOptionsSchema>
 
-function validateGetCommandOptions(options: unknown): GetTypedCommandOptions {
+const validateGetCommandOptions = (options: unknown): GetTypedCommandOptions => {
 	const optionsValidation = GetTypedCommandOptionsSchema.safeParse(options)
 	if (!optionsValidation.success) {
 		console.error(`Invalid options: ${optionsValidation.error.message}`)
 		process.exit(1)
 	}
 	return optionsValidation.data
-}
+};
 
-function buildCacheOptions(validatedOptions: GetTypedCommandOptions): CacheOptions {
-	return {
+const buildCacheOptions = (validatedOptions: GetTypedCommandOptions): CacheOptions => ({
 		useCache: !validatedOptions.noCache,
 		saveToCache: !validatedOptions.noSave,
 		cacheOnly: validatedOptions.cacheOnly ?? false,
-	}
-}
+	});
 
-function detectAndValidateEntityType(entityId: string): StaticEntityType {
+const detectAndValidateEntityType = (entityId: string): StaticEntityType => {
 	try {
 		const entityType = detectEntityType(entityId)
 		return toStaticEntityType(entityType)
@@ -132,20 +129,20 @@ function detectAndValidateEntityType(entityId: string): StaticEntityType {
 		console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`)
 		process.exit(1)
 	}
-}
+};
 
 type FetchCommandOptions = z.infer<typeof FetchCommandOptionsSchema>
 
-function validateFetchCommandOptions(options: unknown): FetchCommandOptions {
+const validateFetchCommandOptions = (options: unknown): FetchCommandOptions => {
 	const optionsValidation = FetchCommandOptionsSchema.safeParse(options)
 	if (!optionsValidation.success) {
 		console.error(`Invalid options: ${optionsValidation.error.message}`)
 		process.exit(1)
 	}
 	return optionsValidation.data
-}
+};
 
-function buildQueryOptions(validatedOptions: FetchCommandOptions): QueryOptions {
+const buildQueryOptions = (validatedOptions: FetchCommandOptions): QueryOptions => {
 	const perPage =
 		typeof validatedOptions.perPage === "string" ? parseInt(validatedOptions.perPage, 10) : 25
 	const page = typeof validatedOptions.page === "string" ? parseInt(validatedOptions.page, 10) : 1
@@ -161,9 +158,9 @@ function buildQueryOptions(validatedOptions: FetchCommandOptions): QueryOptions 
 	if (validatedOptions.sort) queryOptions.sort = validatedOptions.sort
 
 	return queryOptions
-}
+};
 
-function outputQueryResult({
+const outputQueryResult = ({
 	result,
 	staticEntityType,
 	format,
@@ -171,7 +168,7 @@ function outputQueryResult({
 	result: unknown
 	staticEntityType: StaticEntityType
 	format?: string
-}): void {
+}): void => {
 	if (format === "json") {
 		console.log(JSON.stringify(result, null, 2))
 	} else {
@@ -197,9 +194,9 @@ function outputQueryResult({
 			console.log("Unexpected result format")
 		}
 	}
-}
+};
 
-function outputEntity({
+const outputEntity = ({
 	entity,
 	staticEntityType,
 	format,
@@ -209,21 +206,21 @@ function outputEntity({
 	staticEntityType: StaticEntityType
 	format?: string
 	pretty?: boolean
-}): void {
+}): void => {
 	if (format === "json") {
 		console.log(JSON.stringify(entity, null, pretty ? 2 : 0))
 	} else {
 		printEntitySummary({ entity, entityType: staticEntityType })
 	}
-}
+};
 
-function printEntitySummary({
+const printEntitySummary = ({
 	entity,
 	entityType,
 }: {
 	entity: EntitySummary
 	entityType: string
-}): void {
+}): void => {
 	console.log(`\n${entityType.toUpperCase()}: ${entity.display_name}`)
 	console.log(`ID: ${entity.id}`)
 
@@ -239,7 +236,7 @@ function printEntitySummary({
 			printInstitutionSummary(entity)
 			break
 	}
-}
+};
 
 // Zod schemas for CLI validation
 const StaticEntityTypeSchema = z.enum([
@@ -358,7 +355,7 @@ const FetchCommandOptionsSchema = z.object({
 })
 
 // Helper function to validate and convert EntityType to StaticEntityType
-function toStaticEntityType(entityType: EntityType): StaticEntityType {
+const toStaticEntityType = (entityType: EntityType): StaticEntityType => {
 	const validation = StaticEntityTypeSchema.safeParse(entityType)
 	if (validation.success) {
 		return validation.data
@@ -366,7 +363,7 @@ function toStaticEntityType(entityType: EntityType): StaticEntityType {
 	throw new Error(
 		`Entity type ${entityType} is not supported by CLI. Supported types: ${SUPPORTED_ENTITIES.join(", ")}`
 	)
-}
+};
 
 // CLI Commands
 const program = new Command()

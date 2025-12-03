@@ -176,9 +176,8 @@ vi.mock("@bibgraph/utils/logger", async (importOriginal) => {
 })
 
 // Import after mocks are set up
-import { readFile, access, writeFile, mkdir } from "fs/promises"
-
-import { logger, logError } from "@bibgraph/utils/logger"
+import { logError,logger } from "@bibgraph/utils/logger"
+import { access, mkdir,readFile, writeFile } from "fs/promises"
 
 import type { StaticEntityType } from "./entity-detection.js"
 import { OpenAlexCLI } from "./openalex-cli-class.js"
@@ -196,7 +195,7 @@ describe("OpenAlexCLI", () => {
 		await setupTestData()
 	})
 
-	async function setupTestData() {
+	const setupTestData = async () => {
 		// Ensure writeFile and mkdir never actually write to filesystem
 		vi.mocked(writeFile).mockImplementation(async () => {
 			// Silently succeed but don't write to real filesystem
@@ -311,7 +310,7 @@ describe("OpenAlexCLI", () => {
 			// Deny access to all other paths
 			throw new NodeJSError("ENOENT: no such file or directory", "ENOENT", -2, "access", "")
 		})
-	}
+	};
 
 	afterEach(() => {
 		vi.restoreAllMocks()

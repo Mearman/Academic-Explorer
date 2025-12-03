@@ -3,26 +3,25 @@
  * Separated for better testability
  */
 
-import { existsSync, readFileSync } from "fs"
-import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
-
 import { cachedOpenAlex, CachedOpenAlexClient } from "@bibgraph/client/cached-client"
 import { staticDataProvider } from "@bibgraph/client/internal/static-data-provider"
 import { logError, logger } from "@bibgraph/utils/logger"
 import {
 	getStaticDataCachePath,
 	readIndexAsUnified,
-	type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
 	type UnifiedIndex,
+	type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
 } from "@bibgraph/utils/static-data/cache-utilities"
+import { existsSync, readFileSync } from "fs"
+import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises"
+import { dirname, join, resolve } from "path"
+import { fileURLToPath } from "url"
 import { z } from "zod"
 
-import { SUPPORTED_ENTITIES, type StaticEntityType } from "./entity-detection.js"
+import { type StaticEntityType,SUPPORTED_ENTITIES } from "./entity-detection.js"
 
 // Simple hash function for content hashing
-function generateContentHash(content: string): string {
+const generateContentHash = (content: string): string => {
 	let hash = 0
 	for (let i = 0; i < content.length; i++) {
 		const char = content.charCodeAt(i)
@@ -30,7 +29,7 @@ function generateContentHash(content: string): string {
 		hash = hash & hash // Convert to 32bit integer
 	}
 	return hash.toString(36)
-}
+};
 
 // Zod schemas for safe type validation
 const EntityIndexEntrySchema = z.object({
@@ -215,16 +214,16 @@ const FAILED_TO_LIST_CACHED_QUERIES_MESSAGE = "Failed to list cached queries"
 const FAILED_TO_CLEAR_SYNTHETIC_CACHE_MESSAGE = "Failed to clear synthetic cache"
 
 // Helper functions for canonical URL handling
-function generateCanonicalEntityUrl({
+const generateCanonicalEntityUrl = ({
 	entityType,
 	entityId,
 }: {
 	entityType: StaticEntityType
 	entityId: string
-}): string {
+}): string => {
 	const cleanId = entityId.replace("https://openalex.org/", "")
 	return `${OPENALEX_API_BASE_URL}${entityType}/${cleanId}`
-}
+};
 
 // function _extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
 //   const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/[^/]+\/(.+)$/);
@@ -257,7 +256,7 @@ const projectRoot = resolve(__dirname, "../../..")
 /**
  * Check if running in development mode within the repo
  */
-function isDevelopmentMode(): boolean {
+const isDevelopmentMode = (): boolean => {
 	// Check NODE_ENV first (most reliable)
 	if (typeof process !== "undefined" && process.env.NODE_ENV) {
 		const nodeEnv = process.env.NODE_ENV.toLowerCase()
@@ -293,12 +292,12 @@ function isDevelopmentMode(): boolean {
 
 	// Default to false for production/distribution mode
 	return false
-}
+};
 
 /**
  * Get the appropriate static data path based on environment
  */
-function getStaticDataPath(): string {
+const getStaticDataPath = (): string => {
 	if (isDevelopmentMode()) {
 		// In development, save to apps/web/public/data/openalex so the web app can read it
 		return getStaticDataCachePath()
@@ -306,7 +305,7 @@ function getStaticDataPath(): string {
 		// In production/distribution, use the standard path
 		return getStaticDataCachePath()
 	}
-}
+};
 
 export class OpenAlexCLI {
 	private static instance: OpenAlexCLI | undefined
@@ -321,6 +320,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Make API call to OpenAlex
+	 * @param entityType
+	 * @param options
 	 */
 	async fetchFromAPI(entityType: StaticEntityType, options: QueryOptions = {}): Promise<unknown> {
 		const url = this.buildQueryUrl(entityType, options)
@@ -342,6 +343,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get entity by ID with cache control
+	 * @param entityType
+	 * @param entityId
+	 * @param cacheOptions
 	 */
 	async getEntityWithCache(
 		entityType: StaticEntityType,
@@ -408,6 +412,10 @@ export class OpenAlexCLI {
 
 	/**
 	 * Save entity to static cache and update unified index
+	 * @param entityType
+	 * @param entity
+	 * @param entity.id
+	 * @param entity.display_name
 	 */
 	async saveEntityToCache(
 		entityType: StaticEntityType,
@@ -478,6 +486,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Query with cache control
+	 * @param entityType
+	 * @param queryOptions
+	 * @param cacheOptions
 	 */
 	async queryWithCache(
 		entityType: StaticEntityType,
@@ -519,6 +530,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Save query result to cache
+	 * @param entityType
+	 * @param url
+	 * @param result
 	 */
 	async saveQueryToCache(entityType: StaticEntityType, url: string, result: unknown): Promise<void> {
 		try {
@@ -597,6 +611,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Build query URL from options
+	 * @param entityType
+	 * @param options
 	 */
 	buildQueryUrl(entityType: StaticEntityType, options: QueryOptions): string {
 		const baseUrl = "https://api.openalex.org"
@@ -621,6 +637,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if static data exists for entity type
+	 * @param entityType
 	 */
 	async hasStaticData(entityType: StaticEntityType): Promise<boolean> {
 		try {
@@ -634,6 +651,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load index for entity type (returns raw unified index)
+	 * @param entityType
 	 */
 	async loadIndex(entityType: StaticEntityType): Promise<UnifiedIndex | null> {
 		return this.loadUnifiedIndex(entityType)
@@ -641,6 +659,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get entity summary for integration tests
+	 * @param entityType
 	 */
 	async getEntitySummary(
 		entityType: StaticEntityType
@@ -655,7 +674,7 @@ export class OpenAlexCLI {
 			for (const [key, _entry] of Object.entries(unifiedIndex)) {
 				void _entry // Acknowledge unused variable
 				// Extract entity IDs from the unified index keys
-				const match = key.match(/\/([AWISTPFC]\d+)(?:\?|$)/)
+				const match = key.match(/\/([ACFIPSTW]\d+)(?:\?|$)/)
 				if (match) {
 					const entityId = match[1]
 					if (entityId && !entities.includes(entityId)) {
@@ -678,6 +697,7 @@ export class OpenAlexCLI {
 	/**
 	 * Load unified index for entity type
 	 * Automatically handles both DirectoryIndex and UnifiedIndex formats
+	 * @param entityType
 	 */
 	async loadUnifiedIndex(entityType: StaticEntityType): Promise<UnifiedIndex | null> {
 		try {
@@ -714,6 +734,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Save unified index for entity type
+	 * @param entityType
+	 * @param index
 	 */
 	async saveUnifiedIndex(entityType: StaticEntityType, index: UnifiedIndex): Promise<void> {
 		try {
@@ -738,6 +760,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Update unified index with new entry
+	 * @param entityType
+	 * @param canonicalUrl
+	 * @param entry
 	 */
 	async updateUnifiedIndex(
 		entityType: StaticEntityType,
@@ -753,6 +778,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load entity by ID
+	 * @param entityType
+	 * @param entityId
 	 */
 	async loadEntity(
 		entityType: StaticEntityType,
@@ -781,6 +808,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load unified index for entity loading
+	 * @param entityType
+	 * @param entityId
 	 */
 	private async loadUnifiedIndexForEntity(
 		entityType: StaticEntityType,
@@ -801,6 +830,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Find entity entry in unified index
+	 * @param unifiedIndex
+	 * @param entityType
+	 * @param entityId
 	 */
 	private findEntityEntry(
 		unifiedIndex: UnifiedIndex,
@@ -823,6 +855,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if entity entry is valid
+	 * @param validationResult
 	 */
 	private isValidEntityEntry(
 		validationResult: ReturnType<typeof EntityIndexEntrySchema.safeParse>
@@ -837,6 +870,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Search for entity by ID in index keys
+	 * @param unifiedIndex
+	 * @param entityId
 	 */
 	private searchEntityById(
 		unifiedIndex: UnifiedIndex,
@@ -845,7 +880,7 @@ export class OpenAlexCLI {
 		for (const key in unifiedIndex) {
 			if (Object.prototype.hasOwnProperty.call(unifiedIndex, key)) {
 				const data = unifiedIndex[key]
-				const match = key.match(/[WASITCPFKG]\d{8,10}/)
+				const match = key.match(/[ACFGIKPSTW]\d{8,10}/)
 				if (match && match?.[0] === entityId) {
 					const validationResult = EntityIndexEntrySchema.safeParse(data)
 					if (this.isValidEntityEntry(validationResult)) {
@@ -859,6 +894,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load entity data from file
+	 * @param entityType
+	 * @param entityEntry
+	 * @param entityId
 	 */
 	private async loadEntityFromFile(
 		entityType: StaticEntityType,
@@ -891,6 +929,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Handle entity load errors
+	 * @param error
+	 * @param entityId
 	 */
 	private handleEntityLoadError(error: unknown, entityId: string): null {
 		const nodeError = NodeErrorSchema.safeParse(error)
@@ -904,6 +944,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load query result by matching query parameters (transparently reads both formats)
+	 * @param entityType
+	 * @param queryUrl
 	 */
 	async loadQuery(entityType: StaticEntityType, queryUrl: string): Promise<unknown> {
 		try {
@@ -923,6 +965,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Try to load query from index
+	 * @param entityType
+	 * @param queryUrl
 	 */
 	private async tryLoadFromQueryIndex(
 		entityType: StaticEntityType,
@@ -944,6 +988,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Scan directory for matching query files
+	 * @param entityType
+	 * @param targetParams
 	 */
 	private async scanDirectoryForQuery(
 		entityType: StaticEntityType,
@@ -969,6 +1015,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Try to match and load a query file
+	 * @param queryDir
+	 * @param filename
+	 * @param targetParams
 	 */
 	private async tryMatchQueryFile(
 		queryDir: string,
@@ -991,6 +1040,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load query file from path
+	 * @param entityType
+	 * @param filename
+	 * @param source
 	 */
 	private async loadQueryFile(
 		entityType: StaticEntityType,
@@ -1003,6 +1055,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load query file from specific path
+	 * @param queryPath
+	 * @param filename
+	 * @param source
 	 */
 	private async loadQueryFileFromPath(
 		queryPath: string,
@@ -1025,6 +1080,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Normalize query parameters for comparison
+	 * @param url
 	 */
 	private normalizeQueryParams(url: string): Record<string, unknown> {
 		try {
@@ -1053,6 +1109,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if two parameter objects match (ignoring order differences)
+	 * @param target
+	 * @param candidate
 	 */
 	private paramsMatch(target: Record<string, unknown>, candidate: Record<string, unknown>): boolean {
 		const targetKeys = Object.keys(target).sort()
@@ -1089,6 +1147,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Flexible query matching that handles params, encoded, or URL formats
+	 * @param targetUrl
+	 * @param queryDef
 	 */
 	private queryMatches(targetUrl: string, queryDef: QueryDefinition): boolean {
 		const targetParams = this.normalizeQueryParams(targetUrl)
@@ -1126,6 +1186,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Decode base64url encoded query string back to parameters
+	 * @param encoded
 	 */
 	private decodeQueryString(encoded: string): unknown | null {
 		try {
@@ -1142,6 +1203,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Validate and convert decoded result to Record<string, unknown>
+	 * @param decoded
 	 */
 	private validateQueryParams(decoded: unknown): Record<string, unknown> | null {
 		const QueryParamsSchema = z.record(z.string(), z.unknown())
@@ -1151,6 +1213,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Generate filename from query definition, using encoded if available, otherwise params or URL
+	 * @param queryDef
 	 */
 	private generateFilenameFromQuery(queryDef: QueryDefinition): string | null {
 		// If encoded is available, use it directly
@@ -1184,6 +1247,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Load query index for an entity type (legacy format)
+	 * @param entityType
 	 */
 	async loadQueryIndex(
 		entityType: StaticEntityType
@@ -1230,6 +1294,10 @@ export class OpenAlexCLI {
 
 	/**
 	 * Save query index for an entity type (legacy format)
+	 * @param entityType
+	 * @param queryIndex
+	 * @param queryIndex.entityType
+	 * @param queryIndex.queries
 	 */
 	async saveQueryIndex(
 		entityType: StaticEntityType,
@@ -1252,6 +1320,11 @@ export class OpenAlexCLI {
 
 	/**
 	 * Update query index when adding a new cached query
+	 * @param _entityType
+	 * @param _queryDef
+	 * @param _metadata
+	 * @param _metadata.lastModified
+	 * @param _metadata.contentHash
 	 */
 	updateQueryIndex(
 		_entityType: StaticEntityType,
@@ -1269,6 +1342,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if two query definitions match (for duplicate detection)
+	 * @param def1
+	 * @param def2
 	 */
 	private queryDefinitionsMatch(def1: QueryDefinition, def2: QueryDefinition): boolean {
 		// Direct format matching
@@ -1282,6 +1357,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check for direct format matches (same format type)
+	 * @param def1
+	 * @param def2
 	 */
 	private directFormatMatch(def1: QueryDefinition, def2: QueryDefinition): boolean {
 		if (def1.params && def2.params) {
@@ -1301,6 +1378,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check for cross-format matches (different format types)
+	 * @param def1
+	 * @param def2
 	 */
 	private crossFormatMatch(def1: QueryDefinition, def2: QueryDefinition): boolean {
 		if (def1.params && def2.encoded) {
@@ -1324,6 +1403,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Match params with encoded string
+	 * @param params
+	 * @param encoded
 	 */
 	private matchParamsWithEncoded(params: Record<string, unknown>, encoded: string): boolean {
 		const decoded = this.decodeQueryString(encoded)
@@ -1333,6 +1414,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Match params with URL
+	 * @param params
+	 * @param url
 	 */
 	private matchParamsWithUrl(params: Record<string, unknown>, url: string): boolean {
 		const urlParams = this.normalizeQueryParams(url)
@@ -1341,6 +1424,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * List all cached queries with decoded information
+	 * @param entityType
 	 */
 	async listCachedQueries(entityType: StaticEntityType): Promise<
 		Array<{
@@ -1364,6 +1448,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process query index entries
+	 * @param queries
 	 */
 	private processQueryIndexEntries(queries: QueryIndexEntry[]): Array<{
 		filename: string
@@ -1386,6 +1471,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Extract query parameters from query definition
+	 * @param queryDef
 	 */
 	private extractQueryParams(queryDef: QueryDefinition): Record<string, unknown> | null {
 		if (queryDef.params) {
@@ -1403,6 +1489,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Scan query files from filesystem
+	 * @param entityType
 	 */
 	private async scanQueryFilesFromFilesystem(entityType: StaticEntityType): Promise<
 		Array<{
@@ -1433,6 +1520,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process individual query file
+	 * @param queryDir
+	 * @param file
 	 */
 	private async processQueryFile(
 		queryDir: string,
@@ -1459,6 +1548,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * List all available entities of a type
+	 * @param entityType
 	 */
 	async listEntities(entityType: StaticEntityType): Promise<string[]> {
 		const index = await this.loadUnifiedIndex(entityType)
@@ -1498,6 +1588,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Search entities by display name
+	 * @param entityType
+	 * @param searchTerm
 	 */
 	async searchEntities(
 		entityType: StaticEntityType,
@@ -1522,6 +1614,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Calculate total size of JSON files in an entity directory
+	 * @param entityType
 	 */
 	private async calculateEntityDirectorySize(entityType: string): Promise<number> {
 		try {
@@ -1546,6 +1639,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Find the most recent lastModified date from index entries
+	 * @param entries
 	 */
 	private findLatestLastModified(entries: UnifiedIndexEntry[]): string {
 		const lastModified = entries.reduce<string | null>((latest: string | null, entry: UnifiedIndexEntry) => {
@@ -1609,6 +1703,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get field coverage for an entity across all cache tiers
+	 * @param _entityType
+	 * @param _entityId
 	 */
 	getFieldCoverage(_entityType: StaticEntityType, _entityId: string): Promise<FieldCoverageByTier> {
 		void _entityType // Acknowledge unused parameters
@@ -1626,6 +1722,8 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get well-populated entities with extensive field coverage
+	 * @param _entityType
+	 * @param _limit
 	 */
 	getWellPopulatedEntities(
 		_entityType: StaticEntityType,
@@ -1653,6 +1751,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get popular cached collections with high entity counts
+	 * @param _limit
 	 */
 	getPopularCollections(_limit: number): Promise<
 		Array<{
@@ -1749,6 +1848,10 @@ export class OpenAlexCLI {
 
 	/**
 	 * Generate optimized static data cache from usage patterns
+	 * @param entityType
+	 * @param options
+	 * @param options.dryRun
+	 * @param options.force
 	 */
 	async generateStaticDataFromPatterns(
 		entityType?: StaticEntityType,
@@ -1793,6 +1896,15 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process entity type for generation
+	 * @param type
+	 * @param options
+	 * @param options.dryRun
+	 * @param options.force
+	 * @param result
+	 * @param result.filesProcessed
+	 * @param result.entitiesCached
+	 * @param result.queriesCached
+	 * @param result.errors
 	 */
 	private async processEntityTypeForGeneration(
 		type: StaticEntityType,
@@ -1814,6 +1926,15 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process well-populated entities
+	 * @param type
+	 * @param options
+	 * @param options.dryRun
+	 * @param options.force
+	 * @param result
+	 * @param result.filesProcessed
+	 * @param result.entitiesCached
+	 * @param result.queriesCached
+	 * @param result.errors
 	 */
 	private async processWellPopulatedEntities(
 		type: StaticEntityType,
@@ -1841,6 +1962,19 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process entity for caching
+	 * @param type
+	 * @param entityData
+	 * @param entityData.entityId
+	 * @param entityData.fieldCount
+	 * @param entityData.fields
+	 * @param options
+	 * @param options.dryRun
+	 * @param options.force
+	 * @param result
+	 * @param result.filesProcessed
+	 * @param result.entitiesCached
+	 * @param result.queriesCached
+	 * @param result.errors
 	 */
 	private async processEntityForCaching(
 		type: StaticEntityType,
@@ -1872,6 +2006,11 @@ export class OpenAlexCLI {
 
 	/**
 	 * Fetch entity for caching (placeholder until client is fixed)
+	 * @param _type
+	 * @param _entityData
+	 * @param _entityData.entityId
+	 * @param _entityData.fieldCount
+	 * @param _entityData.fields
 	 */
 	private async fetchEntityForCaching(
 		_type: StaticEntityType,
@@ -1891,6 +2030,7 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if entity is valid for caching
+	 * @param entity
 	 */
 	private isValidEntityForCaching(entity: unknown): entity is {
 		id: string
@@ -1909,6 +2049,9 @@ export class OpenAlexCLI {
 
 	/**
 	 * Normalize entity for caching
+	 * @param entity
+	 * @param entity.id
+	 * @param entity.display_name
 	 */
 	private normalizeEntityForCaching(entity: {
 		id: string
@@ -1930,6 +2073,15 @@ export class OpenAlexCLI {
 
 	/**
 	 * Process popular collections
+	 * @param type
+	 * @param options
+	 * @param options.dryRun
+	 * @param options.force
+	 * @param result
+	 * @param result.filesProcessed
+	 * @param result.entitiesCached
+	 * @param result.queriesCached
+	 * @param result.errors
 	 */
 	private async processPopularCollections(
 		type: StaticEntityType,
@@ -1958,6 +2110,11 @@ export class OpenAlexCLI {
 
 	/**
 	 * Check if collection is for the specified entity type
+	 * @param collection
+	 * @param collection.queryKey
+	 * @param collection.entityCount
+	 * @param collection.pageCount
+	 * @param type
 	 */
 	private isCollectionForEntityType(
 		collection: { queryKey: string; entityCount: number; pageCount: number },

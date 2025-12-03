@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 /**
  * Simple OpenAlex CLI - Temporary working version
@@ -8,7 +7,7 @@
 /* eslint-disable custom/no-deprecated */
 // Commander.js methods flagged as deprecated are actually the correct modern API
 
-import { logger, logError } from "@bibgraph/utils/logger"
+import { logError,logger } from "@bibgraph/utils/logger"
 import { Command } from "commander"
 
 import { detectEntityType, SUPPORTED_ENTITIES } from "./entity-detection.js"

@@ -3,14 +3,13 @@
  * Handles environment-aware static data cache operations
  */
 
+import { logError, logger } from "@bibgraph/utils/logger"
 import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "fs/promises"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
-
-import { logError, logger } from "@bibgraph/utils/logger"
 import { z } from "zod"
 
-import { SUPPORTED_ENTITIES, type StaticEntityType } from "../entity-detection.js"
+import { type StaticEntityType,SUPPORTED_ENTITIES } from "../entity-detection.js"
 
 // Environment detection
 type CacheMode = "development" | "production"
@@ -184,6 +183,9 @@ export class StaticCacheManager {
 
 	/**
 	 * Validate a specific entity type
+	 * @param root0
+	 * @param root0.entityType
+	 * @param root0.result
 	 */
 	private async validateEntityType({
 		entityType,
@@ -249,6 +251,7 @@ export class StaticCacheManager {
 
 	/**
 	 * Generate static cache from current data patterns
+	 * @param options
 	 */
 	async generateStaticCache(options: CacheGenerationOptions = {}): Promise<void> {
 		if (this.config.mode === "production") {
@@ -283,6 +286,9 @@ export class StaticCacheManager {
 
 	/**
 	 * Generate cache for a specific entity type
+	 * @param root0
+	 * @param root0.entityType
+	 * @param root0.options
 	 */
 	private async generateEntityTypeCache({
 		entityType,
@@ -318,6 +324,7 @@ export class StaticCacheManager {
 
 	/**
 	 * Clear static cache data
+	 * @param entityTypes
 	 */
 	async clearStaticCache(entityTypes?: StaticEntityType[]): Promise<void> {
 		if (this.config.mode === "production") {
@@ -347,6 +354,7 @@ export class StaticCacheManager {
 
 	/**
 	 * Get entity count for a specific type
+	 * @param entityType
 	 */
 	private async getEntityCount(entityType: StaticEntityType): Promise<number> {
 		if (this.config.mode === "production") {
@@ -390,6 +398,7 @@ export class StaticCacheManager {
 
 	/**
 	 * Calculate directory size recursively
+	 * @param dirPath
 	 */
 	private async getDirectorySize(dirPath: string): Promise<number> {
 		let totalSize = 0
@@ -423,6 +432,7 @@ export class StaticCacheManager {
 
 	/**
 	 * Update cache configuration
+	 * @param newConfig
 	 */
 	updateConfig(newConfig: Partial<StaticCacheConfig>): void {
 		this.config = { ...this.config, ...newConfig }
