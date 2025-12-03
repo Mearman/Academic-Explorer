@@ -101,7 +101,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 	}
 
 	componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-		const errorId = Math.random().toString(36).substring(7)
+		const errorId = Math.random().toString(36).slice(7)
 
 		// Generate debug info
 		const debugInfo: DebugInfo = {

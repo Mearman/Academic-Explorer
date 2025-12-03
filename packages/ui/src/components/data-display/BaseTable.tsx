@@ -143,7 +143,7 @@ export const BaseTable = <T,>({
                 <Text c="dimmed">Loading...</Text>
               </Table.Td>
             </Table.Tr>
-          ) : table.getRowModel().rows.length === 0 ? (
+          ) : (table.getRowModel().rows.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} style={{ textAlign: 'center', padding: '2rem' }}>
                 <Text c="dimmed">No data available</Text>
@@ -165,7 +165,7 @@ export const BaseTable = <T,>({
                 ))}
               </Table.Tr>
             ))
-          )}
+          ))}
         </Table.Tbody>
       </Table>
 

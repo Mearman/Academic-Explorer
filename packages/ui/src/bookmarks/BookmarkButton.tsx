@@ -101,11 +101,11 @@ export const BookmarkButton = ({
 			>
 				{loading ? (
 					<Loader size={iconSize} />
-				) : isBookmarked ? (
+				) : (isBookmarked ? (
 					<IconBookmarkFilled size={iconSize} />
 				) : (
 					<IconBookmark size={iconSize} />
-				)}
+				))}
 			</ActionIcon>
 		</Tooltip>
 	)

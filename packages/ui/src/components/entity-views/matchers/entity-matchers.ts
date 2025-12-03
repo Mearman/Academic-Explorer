@@ -10,9 +10,9 @@ export interface EntityMatcher {
 export const createMatcher = (pattern: string | RegExp | ((entity: OpenAlexEntity) => boolean)): EntityMatcher => {
 	const test = typeof pattern === "string"
 		? (entity: OpenAlexEntity) => entity.display_name?.includes(pattern)
-		: pattern instanceof RegExp
+		: (pattern instanceof RegExp
 		? (entity: OpenAlexEntity) => pattern.test(entity.display_name || "")
-		: pattern;
+		: pattern);
 
 	return {
 		test,

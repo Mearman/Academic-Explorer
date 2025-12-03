@@ -50,9 +50,9 @@ export const VersionComparisonIndicator: React.FC<
 }) => {
   const versionLabel = currentVersion === '1'
     ? "Data Version 1 (legacy)"
-    : currentVersion === '2'
+    : (currentVersion === '2'
     ? "Data Version 2 (current)"
-    : "Data Version 2 (default)";
+    : "Data Version 2 (default)");
 
   const hasReferences = referencesCount && referencesCount.difference !== 0;
   const hasLocations = locationsCount && locationsCount.difference !== 0;
