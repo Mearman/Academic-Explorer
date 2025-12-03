@@ -40,19 +40,16 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
       const createButtonVisible = await createButton.first().isVisible().catch(() => false);
 
-      // The test passes if either catalogue navigation exists OR create functionality is accessible
-      // In production builds with aggressive caching, these elements may not be present on initial load
-      // This is acceptable - the test verifies the app loads without errors
-      if (!createButtonVisible && !catalogueButtonVisible) {
+      // Cache-tolerance: if create button not visible, verify page loaded
+      if (!createButtonVisible) {
         console.log('⚠️ No catalogue navigation or create buttons visible (acceptable in cached builds)');
-        // At minimum, verify the page loaded successfully
         const bodyText = await page.locator('body').textContent();
         expect(bodyText).toBeTruthy();
-        expect(bodyText && bodyText.length).toBeGreaterThan(100);
+        expect(bodyText?.length).toBeGreaterThan(100);
         return;
       }
 
-      expect(createButtonVisible || catalogueButtonVisible).toBeTruthy();
+      expect(createButtonVisible).toBeTruthy();
     }
   });
 
@@ -167,13 +164,12 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
     // Should have UI components available for catalogue interface
     // In production builds with aggressive caching, specific Mantine classes may not be rendered
-    // If no Mantine components found, at minimum verify the page loaded
+    // Cache-tolerance: if no Mantine components found, verify page loaded
     if (mantineComponents.buttons === 0 && mantineComponents.inputs === 0) {
       console.log('⚠️ No Mantine buttons or inputs visible (acceptable in cached builds)');
-      // Verify the page has basic content
       const bodyText = await page.locator('body').textContent();
       expect(bodyText).toBeTruthy();
-      expect(bodyText && bodyText.length).toBeGreaterThan(100);
+      expect(bodyText?.length).toBeGreaterThan(100);
       return;
     }
 
