@@ -44,7 +44,7 @@ export class FileBuilder {
     // Replace template variables
     if (this.options.templateVars) {
       Object.entries(this.options.templateVars).forEach(([key, value]) => {
-        const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g')
+        const regex = new RegExp(String.raw`{{\s*${key}\s*}}`, 'g')
         content = content.replace(regex, String(value))
       })
     }

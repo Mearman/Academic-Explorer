@@ -174,7 +174,7 @@ const evaluate = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 				}
 			}
 			if (conditions.length % 2 === 1) {
-				return evalArg(conditions[conditions.length - 1])
+				return evalArg(conditions.at(-1))
 			}
 			return null
 		}
@@ -353,7 +353,7 @@ const evaluate = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 			const start = Number(vals[1])
 			const length = vals.length > 2 ? Number(vals[2]) : undefined
 			const actualStart = start < 0 ? Math.max(0, str.length + start) : start
-			if (length === undefined) return str.substring(actualStart)
+			if (length === undefined) return str.slice(Math.max(0, actualStart))
 			if (length < 0) return str.substring(actualStart, str.length + length)
 			return str.substring(actualStart, actualStart + length)
 		}

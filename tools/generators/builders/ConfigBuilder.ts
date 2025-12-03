@@ -249,8 +249,8 @@ export class VitestConfigBuilder {
   private globals: boolean = true
   private watch: boolean = false
   private setupFiles: string[] = []
-  private testTimeout: number = 10000
-  private hookTimeout: number = 10000
+  private testTimeout: number = 10_000
+  private hookTimeout: number = 10_000
   private coverageOptions: Record<string, unknown>
 
   constructor(testEnvironment: 'node' | 'jsdom' | 'happy-dom' = 'node') {

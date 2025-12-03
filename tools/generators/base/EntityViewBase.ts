@@ -1,8 +1,9 @@
+import { join } from 'node:path'
+
 import {
   GeneratorCallback,
   names,
 } from '@nx/devkit'
-import { join } from 'path'
 
 import { BaseGenerator, NormalizedOptions } from './BaseGenerator'
 

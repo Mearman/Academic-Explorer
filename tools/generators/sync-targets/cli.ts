@@ -13,9 +13,9 @@
  *   - typecheck: {} - Projects with tsconfig.json (unless custom config exists)
  */
 
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 interface ProjectJson {
 	name?: string

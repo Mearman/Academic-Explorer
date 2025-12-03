@@ -7,8 +7,8 @@
  * @see spec-020 Phase 7: T085-T089 Coverage Reporting
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 /**
  * All application routes defined in the TanStack Router
@@ -137,7 +137,7 @@ const findTestFiles = (baseDir: string): string[] => {
 const isRouteCovered = (route: { route: string; pattern: RegExp }, testFiles: string[]): { covered: boolean; matchingFiles: string[] } => {
 	const matchingFiles = testFiles.filter((file) => {
 		const fileName = path.basename(file).toLowerCase();
-		const content = fs.readFileSync(file, 'utf-8').toLowerCase();
+		const content = fs.readFileSync(file, 'utf8').toLowerCase();
 		return route.pattern.test(fileName) || route.pattern.test(content);
 	});
 
@@ -217,7 +217,7 @@ const generateReport = (coverage: CoverageSummary): string => {
 `;
 
 	for (const [category, stats] of Object.entries(coverage.byCategory)) {
-		const emoji = stats.percentage === 100 ? '✅' : stats.percentage >= 80 ? '🟡' : '🔴';
+		const emoji = stats.percentage === 100 ? '✅' : (stats.percentage >= 80 ? '🟡' : '🔴');
 		report += `| ${category} | ${stats.total} | ${stats.covered} | ${emoji} ${stats.percentage}% |\n`;
 	}
 

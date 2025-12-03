@@ -1,6 +1,6 @@
 
-import { join } from "path"
-import { fileURLToPath } from "url"
+import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { generateAllIndexes } from "@/lib/utils/static-data-index-generator.js"
 

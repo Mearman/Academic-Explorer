@@ -17,7 +17,7 @@ class UtilityLibrary extends LibraryBase {
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
     const name = this.names.fileName
     const projectDirectory = this.options.directory || name
-    const projectName = name.replace(/-/g, '')
+    const projectName = name.replaceAll('-', '')
     const projectRoot = `packages/${projectDirectory}`
 
     const parsedTags = [
@@ -74,7 +74,7 @@ class FeatureLibrary extends LibraryBase {
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
     const name = this.names.fileName
     const projectDirectory = this.options.directory || name
-    const projectName = name.replace(/-/g, '')
+    const projectName = name.replaceAll('-', '')
     const projectRoot = `packages/${projectDirectory}`
 
     const parsedTags = [
@@ -131,7 +131,7 @@ class DataLibrary extends LibraryBase {
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
     const name = this.names.fileName
     const projectDirectory = this.options.directory || name
-    const projectName = name.replace(/-/g, '')
+    const projectName = name.replaceAll('-', '')
     const projectRoot = `packages/${projectDirectory}`
 
     const parsedTags = [
@@ -213,7 +213,7 @@ class UILibrary extends LibraryBase {
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
     const name = this.names.fileName
     const projectDirectory = this.options.directory || name
-    const projectName = name.replace(/-/g, '')
+    const projectName = name.replaceAll('-', '')
     const projectRoot = `packages/${projectDirectory}`
 
     const parsedTags = [

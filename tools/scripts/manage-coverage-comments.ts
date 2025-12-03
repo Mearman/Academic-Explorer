@@ -1,7 +1,8 @@
 
+import { exec } from "node:child_process"
+import { promisify } from "node:util"
+
 import { Octokit } from "@octokit/rest"
-import { exec } from "child_process"
-import { promisify } from "util"
 
 const execAsync = promisify(exec)
 
@@ -26,7 +27,7 @@ const main = async (): Promise<void> => {
 		const { data: comments } = await octokit.rest.issues.listComments({
 			owner,
 			repo,
-			issue_number: parseInt(prNumber, 10),
+			issue_number: Number.parseInt(prNumber, 10),
 		})
 
 		const coverageComments = comments.filter(
@@ -55,7 +56,7 @@ const main = async (): Promise<void> => {
 		await octokit.rest.issues.createComment({
 			owner,
 			repo,
-			issue_number: parseInt(prNumber, 10),
+			issue_number: Number.parseInt(prNumber, 10),
 			body: stdout,
 		})
 

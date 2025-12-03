@@ -41,7 +41,7 @@ const checkLicenses = (): void => {
 			"monorepo-license-checker --json --exclude-private-packages --timeout 20000",
 			{
 				encoding: "utf8",
-				timeout: 25000, // 25 second timeout (slightly more than tool timeout)
+				timeout: 25_000, // 25 second timeout (slightly more than tool timeout)
 				maxBuffer: 1024 * 1024 * 20, // 20MB buffer for large monorepos
 				stdio: ["ignore", "pipe", "pipe"], // Suppress stdin, capture stdout/stderr
 			}

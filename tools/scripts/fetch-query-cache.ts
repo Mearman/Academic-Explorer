@@ -2,7 +2,7 @@
  * Script to automatically fetch and cache OpenAlex queries
  */
 
-import { join } from "path"
+import { join } from "node:path"
 // NOTE: This script uses stub functions for query caching
 // Actual implementation would require query-cache-builder.ts (not yet implemented)
 // import { fetchAndCacheQueries } from "../../apps/web/src/lib/utils/query-cache-builder.ts";

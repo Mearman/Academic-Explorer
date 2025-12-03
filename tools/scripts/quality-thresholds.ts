@@ -41,7 +41,7 @@ export const qualityThresholds: QualityThresholds = {
 		minStatementsCoverage: 70,
 	},
 	performance: {
-		maxBuildTimeMs: 300000, // 5 minutes
+		maxBuildTimeMs: 300_000, // 5 minutes
 		maxBundleSizeKb: 1024, // 1MB
 		maxLcpScore: 2.5, // Largest Contentful Paint
 	},
@@ -77,7 +77,7 @@ export const validateThresholds = (): boolean => {
 	}
 
 	// Validate performance thresholds
-	if (qualityThresholds.performance.maxBuildTimeMs > 600000) {
+	if (qualityThresholds.performance.maxBuildTimeMs > 600_000) {
 		issues.push("Build time threshold seems too high (10+ minutes)")
 	}
 

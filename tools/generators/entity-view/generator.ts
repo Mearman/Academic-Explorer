@@ -26,9 +26,9 @@ class OpenAlexEntityView extends EntityViewBase {
     const projectRoot =
       this.options.project === "web"
         ? "apps/web"
-        : this.options.project?.startsWith("@")
+        : (this.options.project?.startsWith("@")
         ? `packages/${this.options.project.replace("@bibgraph/", "")}`
-        : `packages/${this.options.project || "web"}`
+        : `packages/${this.options.project || "web"}`)
 
     const routesDirectory = `${projectRoot}/src/routes/${entityPlural}`
     const componentsDirectory = `${projectRoot}/src/components/entities/${entityPlural}`

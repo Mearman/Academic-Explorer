@@ -22,9 +22,9 @@ class ReactComponent extends ComponentBase {
     const projectRoot =
       this.options.project === "web"
         ? "apps/web"
-        : this.options.project?.startsWith("@")
+        : (this.options.project?.startsWith("@")
         ? `packages/${this.options.project.replace("@bibgraph/", "")}`
-        : `packages/${this.options.project || "web"}`
+        : `packages/${this.options.project || "web"}`)
 
     const isUiPackage = this.options.project === "ui" || (this.options.project?.includes("ui") ?? false)
 
@@ -53,8 +53,7 @@ class ReactComponent extends ComponentBase {
     const props = this.options.story ? 'Props' : ''
     const hookName = `use${this.normalizedOptions.className}`
 
-    if (this.options.withHook) {
-      return `import { useState, useEffect } from 'react'
+    return this.options.withHook ? `import { useState, useEffect } from 'react'
 
 export interface ${this.normalizedOptions.className}Props${props} {
   className?: string
@@ -90,9 +89,7 @@ export function ${this.normalizedOptions.className}({
     </div>
   )
 }
-`
-    } else {
-      return `import { type } from 'react'
+` : `import { type } from 'react'
 
 export interface ${this.normalizedOptions.className}Props${props} {
   className?: string
@@ -113,8 +110,7 @@ export function ${this.normalizedOptions.className}({
     </div>
   )
 }
-`
-    }
+`;
   }
 
   protected generateHookContent(): string {

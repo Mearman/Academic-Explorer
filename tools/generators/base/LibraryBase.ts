@@ -1,8 +1,9 @@
+import { join } from 'node:path'
+
 import {
   GeneratorCallback,
   ProjectConfiguration,
 } from '@nx/devkit'
-import { join } from 'path'
 
 import { BaseGenerator } from './BaseGenerator'
 // Nx library generator available for future use

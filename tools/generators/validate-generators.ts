@@ -4,9 +4,9 @@
  * This script validates that all generator files and configurations are properly set up
  */
 
-import { existsSync,readFileSync } from "fs"
-import { dirname,join } from "path"
-import { fileURLToPath } from "url"
+import { existsSync,readFileSync } from "node:fs"
+import { dirname,join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -125,10 +125,7 @@ const main = () => {
       const nxJson = JSON.parse(readFileSync(nxJsonPath, "utf-8"))
       const generators = nxJson.generators
 
-      if (!generators) {
-        overallResult.success = false
-        overallResult.errors.push("No generators configuration found in nx.json")
-      } else {
+      if (generators) {
         const academicGenerators = Object.keys(generators).filter(key =>
           key.startsWith("@bibgraph/generators:")
         )
@@ -138,6 +135,9 @@ const main = () => {
         } else {
           console.log(`✅ Found ${academicGenerators.length} BibGraph generators in nx.json`)
         }
+      } else {
+        overallResult.success = false
+        overallResult.errors.push("No generators configuration found in nx.json")
       }
     } catch (error) {
       overallResult.success = false

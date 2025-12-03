@@ -1,4 +1,5 @@
-import { join } from 'path'
+import { join } from 'node:path'
+
 import {
   addProjectConfiguration,
   ProjectConfiguration,
@@ -55,11 +56,7 @@ export class ProjectBuilder {
    * Get default targets based on project type
    */
   private getDefaultTargets(): Record<string, unknown> {
-    if (this.options.type === 'library') {
-      return this.getLibraryTargets()
-    } else {
-      return this.getApplicationTargets()
-    }
+    return this.options.type === 'library' ? this.getLibraryTargets() : this.getApplicationTargets();
   }
 
   /**

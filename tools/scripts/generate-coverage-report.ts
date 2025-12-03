@@ -3,7 +3,7 @@
  * Reads coverage-summary.json and outputs formatted report
  */
 
-import fs from "fs"
+import fs from "node:fs"
 
 const THRESHOLDS = {
 	lines: 80,
