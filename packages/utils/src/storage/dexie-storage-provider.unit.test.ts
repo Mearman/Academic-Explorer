@@ -3,7 +3,7 @@
  * Tests use InMemoryStorageProvider for fast, isolated test execution
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it } from 'vitest';
 
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
 import type { CatalogueStorageProvider } from './catalogue-storage-provider.js';
@@ -970,8 +970,7 @@ describe('Bookmark Storage Operations', () => {
 
 				// Simulate old timestamp by directly manipulating storage
 				// (In real implementation, would need to wait 24h or use mock time)
-				const nodes = await provider.getGraphList();
-				const autoNode = nodes.find((n) => n.entityId === 'W2');
+				await provider.getGraphList();
 
 				// For this test, we'll verify the method exists and returns correct structure
 				const result = await provider.pruneGraphList();

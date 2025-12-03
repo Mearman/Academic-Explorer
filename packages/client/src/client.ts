@@ -9,7 +9,7 @@ import { logger } from "@bibgraph/utils";
 import { z } from "zod";
 
 import { apiInterceptor, type InterceptedRequest } from "./interceptors/api-interceptor";
-import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
+import { calculateRetryDelay,RETRY_CONFIG } from "./internal/rate-limit";
 import {
   validateApiResponse,
 } from "./internal/type-helpers";
@@ -263,6 +263,7 @@ export class OpenAlexBaseClient {
 
   /**
    * Sleep for the specified number of milliseconds
+   * @param ms
    */
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -329,6 +330,8 @@ export class OpenAlexBaseClient {
 
   /**
    * Build URL with query parameters
+   * @param endpoint
+   * @param params
    */
   private buildUrl(endpoint: string, params: QueryParams = {}): string {
     const normalizedEndpoint = endpoint.startsWith("/")
@@ -405,6 +408,7 @@ export class OpenAlexBaseClient {
 
   /**
    * Parse error response from OpenAlex API
+   * @param response
    */
   private async parseError(response: Response): Promise<OpenAlexApiError> {
     // Type guard for OpenAlexError
@@ -446,6 +450,10 @@ export class OpenAlexBaseClient {
 
   /**
    * Make a request with retries and error handling
+   * @param root0
+   * @param root0.url
+   * @param root0.options
+   * @param root0.retryCount
    */
   private logRealApiCall({
     url,
@@ -599,6 +607,10 @@ export class OpenAlexBaseClient {
   /**
    * Handle response interception for caching and logging
    * Protected to allow subclasses to extend caching behavior
+   * @param root0
+   * @param root0.interceptedRequest
+   * @param root0.response
+   * @param root0.responseTime
    */
   protected async handleResponseInterception({
     interceptedRequest,
@@ -685,12 +697,17 @@ export class OpenAlexBaseClient {
    * Hook for caching entities from response data
    * Override in subclasses to implement entity-level caching (e.g., IndexedDB, memory)
    * Called for all successful API responses with parsed JSON data
+   * @param params
+   * @param params.url
+   * @param params.responseData
    */
-  protected async cacheResponseEntities(_params: {
+  protected async cacheResponseEntities(params: {
     url: string;
     responseData: unknown;
   }): Promise<void> {
     // Base implementation does nothing - override in subclasses
+    // params is intentionally unused in base class but required for subclass implementations
+    void params;
   }
 
   private async makeRequest({
@@ -817,6 +834,9 @@ export class OpenAlexBaseClient {
   /**
    * GET request that returns parsed JSON with schema-based validation
    * Returns typed result when schema is provided, otherwise unknown
+   * @param endpoint
+   * @param params
+   * @param schema
    */
   public async get<T = unknown>(
     endpoint: string,
@@ -850,6 +870,8 @@ export class OpenAlexBaseClient {
 
   /**
    * GET request that returns an OpenAlex response with results and metadata
+   * @param endpoint
+   * @param params
    */
   public async getResponse<T>(
     endpoint: string,
@@ -861,6 +883,10 @@ export class OpenAlexBaseClient {
   /**
    * GET request for a single entity by ID
    * Supports both legacy signature (endpoint, id, params) and new signature ({ endpoint, id, params })
+   * @param endpointOrParams
+   * @param id
+   * @param params
+   * @param schema
    */
   public async getById<T = unknown>(
     endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
@@ -884,6 +910,9 @@ export class OpenAlexBaseClient {
 
   /**
    * Stream all results using cursor pagination
+   * @param endpoint
+   * @param params
+   * @param batchSize
    */
   public async *stream<T>(
     endpoint: string,
@@ -925,6 +954,9 @@ export class OpenAlexBaseClient {
 
   /**
    * Get all results (use with caution for large datasets)
+   * @param endpoint
+   * @param params
+   * @param maxResults
    */
   public async getAll<T>(
     endpoint: string,
@@ -949,6 +981,7 @@ export class OpenAlexBaseClient {
 
   /**
    * Update client configuration
+   * @param config
    */
   public updateConfig(config: Partial<OpenAlexClientConfig>): void {
     this.config = {
@@ -989,10 +1022,9 @@ export class OpenAlexBaseClient {
 /**
  * Parse Retry-After header value into milliseconds.
  * Accepts either integer seconds or HTTP-date formats. Returns undefined if unparsable.
+ * @param value
  */
-function parseRetryAfterToMs(
-  value: string | null | undefined,
-): number | undefined {
+const parseRetryAfterToMs = (value: string | null | undefined): number | undefined => {
   if (!value) return undefined;
   // If it's an integer number of seconds
   const seconds = Number(value);
@@ -1008,7 +1040,7 @@ function parseRetryAfterToMs(
   }
 
   return undefined;
-}
+};
 
 // Default client instance
 export const defaultClient = new OpenAlexBaseClient();
