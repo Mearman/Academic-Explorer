@@ -135,10 +135,10 @@ test.describe('@utility History Page', () => {
 
 		// Verify entity type is mentioned
 		const cardContent = historyCard.first();
-		await expect(cardContent).toHaveText();
+		const cardText = await cardContent.textContent();
 		// Should contain either the entity ID or type information
 		expect(
-			cardContent!.includes(entity.id) || cardContent!.includes(entity.type)
+			cardText?.includes(entity.id) || cardText?.includes(entity.type)
 		).toBe(true);
 	});
 

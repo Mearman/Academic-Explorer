@@ -77,9 +77,7 @@ test.describe("@utility Settings Page", () => {
 		await settingsPage.toggleXpac();
 
 		// Wait for notification
-		await page.locator(".mantine-Notification-root", {
-			timeout: 5000,
-		}).waitFor();
+		await page.locator(".mantine-Notification-root").waitFor({ timeout: 5000 });
 
 		// Verify state changed
 		const newState = await settingsPage.isXpacEnabled();
@@ -174,9 +172,7 @@ test.describe("@utility Settings Page", () => {
 		await settingsPage.toggleXpac();
 
 		// Wait for notification to confirm save
-		await page.locator(".mantine-Notification-root", {
-			timeout: 5000,
-		}).waitFor();
+		await page.locator(".mantine-Notification-root").waitFor({ timeout: 5000 });
 
 		// Verify state changed
 		const changedState = await settingsPage.isXpacEnabled();
@@ -244,9 +240,7 @@ test.describe("@utility Settings Page", () => {
 		});
 
 		// Wait for notification indicating completion
-		await page.locator(".mantine-Notification-root", {
-			timeout: 10_000,
-		}).waitFor();
+		await page.locator(".mantine-Notification-root").waitFor({ timeout: 10_000 });
 
 		// Verify success notification
 		const notification = page.locator(".mantine-Notification-root");

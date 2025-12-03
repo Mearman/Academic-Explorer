@@ -88,9 +88,10 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // Removed: waitForTimeout - use locator assertions instead
           // Get page content
           const mainContent = page.locator('main');
+          const mainText = await mainContent.textContent();
 
           // Basic checks
-          await expect(mainContent).toHaveText();
+          expect(mainText).toBeTruthy();
 
           // Adaptive content threshold based on URL type
           // Pages with ?select= parameters or list pages may have minimal content
@@ -102,7 +103,7 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           const isExternalId = apiUrl.includes('orcid:') || apiUrl.includes('issn:') || apiUrl.includes('ror:');
           const minContentLength = hasSelectParam ? 50 : (isListPage ? 50 : (isExternalId ? 75 : 100));
 
-          expect(mainContent!.length).toBeGreaterThan(minContentLength);
+          expect(mainText!.length).toBeGreaterThan(minContentLength);
 
           // Verify not showing generic error page
           const errorHeading = await page.locator('h1:has-text("Error"), h1:has-text("404"), h1:has-text("Not Found")').count();

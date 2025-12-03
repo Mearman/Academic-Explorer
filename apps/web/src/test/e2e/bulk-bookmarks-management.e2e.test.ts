@@ -210,7 +210,7 @@ test.describe("Bulk Bookmarks Management", () => {
     await confirmButton.click();
 
     // Wait for operation to complete (modal should disappear)
-    await page.locator('text=Delete Selected Bookmarks', { state: 'detached', timeout: 10_000 }).waitFor();
+    await page.locator('text=Delete Selected Bookmarks').waitFor({ state: 'detached', timeout: 10_000 });
 
     // Wait a bit for the UI to update
     // Removed: waitForTimeout - use locator assertions instead
@@ -242,14 +242,17 @@ test.describe("Bulk Bookmarks Management", () => {
     expect(count).toBeGreaterThan(0);
 
     // Get the title of the first bookmark for searching
-    const firstTitle = bookmarkCards.first().locator('[data-testid="bookmark-title-link"]');
+    const firstTitleLocator = bookmarkCards.first().locator('[data-testid="bookmark-title-link"]');
+    const firstTitle = await firstTitleLocator.textContent();
 
     // Require title to exist
-    await expect(firstTitle).toHaveText();
+    if (!firstTitle) {
+      throw new Error("First bookmark title is null or empty");
+    }
 
     // Search for the first bookmark title (use main content to avoid sidebar conflicts)
     const searchInput = page.locator('main input[placeholder="Search bookmarks..."]');
-    await searchInput.fill(firstTitle!);
+    await searchInput.fill(firstTitle);
 
     // Wait for search to filter
     // Removed: waitForTimeout - use locator assertions instead

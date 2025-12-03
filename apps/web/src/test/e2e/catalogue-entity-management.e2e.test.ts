@@ -208,6 +208,9 @@ test.describe("Catalogue Entity Management", () => {
 
     // Verify order changed (first entity is now second)
     const firstEntityAfter = entities.first().locator(String.raw`text=/^(A|W)\d+/`).first();
+    if (!firstEntityBefore) {
+      throw new Error("First entity ID before reorder is null");
+    }
     await expect(firstEntityAfter).not.toHaveText(firstEntityBefore);
   });
 
