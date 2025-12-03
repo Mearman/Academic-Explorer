@@ -1,9 +1,8 @@
-import { join } from 'path'
-
 import {
   GeneratorCallback,
   ProjectConfiguration,
 } from '@nx/devkit'
+import { join } from 'path'
 
 import { BaseGenerator } from './BaseGenerator'
 // Nx library generator available for future use
@@ -83,6 +82,8 @@ export abstract class LibraryBase extends BaseGenerator<LibraryGeneratorOptions>
 
   /**
    * Create library-specific package.json
+   * @param additionalDependencies
+   * @param additionalDevDependencies
    */
   protected createPackageJson(
     additionalDependencies?: Record<string, string>,
@@ -117,6 +118,8 @@ export abstract class LibraryBase extends BaseGenerator<LibraryGeneratorOptions>
 
   /**
    * Create library-specific TypeScript configuration
+   * @param extendsConfig
+   * @param additionalCompilerOptions
    */
   protected createTsConfig(
     extendsConfig?: string[],
@@ -150,6 +153,7 @@ export abstract class LibraryBase extends BaseGenerator<LibraryGeneratorOptions>
 
   /**
    * Create library-specific Vitest configuration
+   * @param testEnvironment
    */
   protected createVitestConfig(testEnvironment?: 'node' | 'jsdom'): void {
     const env = testEnvironment || (this.libraryType === 'ui' ? 'jsdom' : 'node')

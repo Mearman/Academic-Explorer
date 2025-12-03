@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * CLI wrapper for sync-targets generator
  *
@@ -61,7 +60,7 @@ const currentFilePath = fileURLToPath(currentFileUrl)
 const workspaceRoot = join(dirname(currentFilePath), "../../..")
 
 // Find all project.json files in apps/ and packages/
-function findProjectJsonFiles(): string[] {
+const findProjectJsonFiles = (): string[] => {
 	const projectFiles: string[] = []
 
 	for (const dir of ["apps", "packages"]) {
@@ -77,10 +76,10 @@ function findProjectJsonFiles(): string[] {
 	}
 
 	return projectFiles
-}
+};
 
 // Main sync function
-function syncProjectTargets(dryRun: boolean): void {
+const syncProjectTargets = (dryRun: boolean): void => {
 	const projectFiles = findProjectJsonFiles()
 	let modifiedCount = 0
 
@@ -145,7 +144,7 @@ function syncProjectTargets(dryRun: boolean): void {
 
 	console.log("")
 	console.log(`${dryRun ? "[DRY RUN] Would modify" : "Modified"} ${modifiedCount} project(s)`)
-}
+};
 
 // Run the CLI
 const dryRun = process.argv.includes("--dry-run")

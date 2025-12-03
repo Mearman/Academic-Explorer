@@ -1,6 +1,6 @@
 import { Tree } from '@nx/devkit'
 
-import { ComponentBase, NormalizedComponentOptions, ComponentGeneratorOptions } from '../base/ComponentBase'
+import { ComponentBase, ComponentGeneratorOptions,NormalizedComponentOptions } from '../base/ComponentBase'
 
 interface ReactComponentNormalizedOptions extends NormalizedComponentOptions {
   componentPath: string
@@ -288,6 +288,8 @@ export type { ${className}Props } from './${fileName}'
 
 /**
  * Component generator factory
+ * @param tree
+ * @param options
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function componentGenerator(

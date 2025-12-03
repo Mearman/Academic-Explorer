@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /**
  * Generate coverage report for GitHub Actions
  * Reads coverage-summary.json and outputs formatted report
@@ -38,21 +37,17 @@ interface Metric {
 
 type ReportFormat = "summary" | "pr-comment"
 
-function getStatusIcon({ actual, threshold }: { actual: number; threshold: number }): string {
-	return actual >= threshold ? "[SUCCESS]" : "[ERROR]"
-}
+const getStatusIcon = ({ actual, threshold }: { actual: number; threshold: number }): string => actual >= threshold ? "[SUCCESS]" : "[ERROR]";
 
-function getStatusText({ actual, threshold }: { actual: number; threshold: number }): string {
-	return actual >= threshold ? "Pass" : "Fail"
-}
+const getStatusText = ({ actual, threshold }: { actual: number; threshold: number }): string => actual >= threshold ? "Pass" : "Fail";
 
-function generateReport({
+const generateReport = ({
 	coverageData,
 	format = "summary",
 }: {
 	coverageData: CoverageData
 	format?: ReportFormat
-}): void {
+}): void => {
 	const { total } = coverageData
 
 	const metrics: Metric[] = [
@@ -107,9 +102,9 @@ function generateReport({
 			`\n**Thresholds:** Lines ≥${THRESHOLDS.lines}%, Functions ≥${THRESHOLDS.functions}%, Branches ≥${THRESHOLDS.branches}%, Statements ≥${THRESHOLDS.statements}%`
 		)
 	}
-}
+};
 
-function main(): void {
+const main = (): void => {
 	const format = (process.argv[2] || "summary") as ReportFormat
 	const coverageFile = process.argv[3] || "coverage-reports/coverage-summary.json"
 
@@ -132,7 +127,7 @@ function main(): void {
 		console.error(`Error reading coverage file: ${(error as Error).message}`)
 		process.exit(1)
 	}
-}
+};
 
 // ES module - check if this file is being run directly
 if (import.meta.url === `file://${process.argv[1]}`) {

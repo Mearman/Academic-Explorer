@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 
 import { join } from "path"
 import { fileURLToPath } from "url"
@@ -11,7 +10,7 @@ const STATIC_DATA_DIR = join(__dirname, "..", "public", "data", "openalex")
 /**
  * Generate static data indexes CLI script
  */
-async function main(): Promise<void> {
+const main = async (): Promise<void> => {
 	try {
 		console.log("[REFRESH] Auto-download enabled - will download missing entities")
 
@@ -22,12 +21,12 @@ async function main(): Promise<void> {
 		console.error("[ERROR] Error generating static data indexes:", error)
 		process.exit(1)
 	}
-}
+};
 
 /**
  * Show usage information
  */
-function showUsage(): void {
+const showUsage = (): void => {
 	console.log(`
 Usage: npx tsx tools/scripts/generate-static-data-index.ts [options]
 
@@ -40,7 +39,7 @@ Examples:
 
 Note: Auto-download of missing entities is always enabled.
 `)
-}
+};
 
 // Show help if requested
 if (process.argv.includes("--help") || process.argv.includes("-h")) {

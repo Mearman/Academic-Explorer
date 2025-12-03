@@ -1,15 +1,14 @@
-import { join } from 'path'
-
 import {
+  addProjectConfiguration,
+  formatFiles,
+  generateFiles,
   GeneratorCallback,
+  names,
+  offsetFromRoot,
   ProjectConfiguration,
   Tree,
-  addProjectConfiguration,
-  generateFiles,
-  offsetFromRoot,
-  formatFiles,
-  names,
 } from '@nx/devkit'
+import { join } from 'path'
 // Nx generators available for future use
 // import { libraryGenerator as nxLibraryGenerator } from '@nx/js'
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'
@@ -45,6 +44,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Add project configuration to workspace
+   * @param projectConfig
    */
   protected addProject(projectConfig: ProjectConfiguration): void {
     addProjectConfiguration(
@@ -56,6 +56,9 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Generate files with proper formatting
+   * @param templatePath
+   * @param targetPath
+   * @param templateVars
    */
   protected async generateFiles(
     templatePath: string,
@@ -94,6 +97,8 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Create a file in the tree
+   * @param path
+   * @param content
    */
   protected createFile(path: string, content: string): void {
     this.tree.write(join(this.normalizedOptions.projectRoot, path), content)
@@ -101,6 +106,8 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Create standardized package.json
+   * @param dependencies
+   * @param devDependencies
    */
   protected createPackageJson(
     dependencies: Record<string, string> = {},
@@ -141,6 +148,8 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Create TypeScript configuration
+   * @param extendsConfig
+   * @param compilerOptions
    */
   protected createTsConfig(
     extendsConfig: string[] = ['../../tsconfig.base.json'],
@@ -168,6 +177,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
 
   /**
    * Create Vitest configuration
+   * @param testEnvironment
    */
   protected createVitestConfig(testEnvironment: 'node' | 'jsdom' = 'node'): void {
     const vitestConfig = `/// <reference types="vitest" />
@@ -245,6 +255,7 @@ export default tseslint.config(
 
   /**
    * Create index file with exports
+   * @param exports
    */
   protected createIndexFile(exports: string[] = []): void {
     const content = this.generateIndexContent(exports)
@@ -256,6 +267,7 @@ export default tseslint.config(
 
   /**
    * Generate index file content
+   * @param exports
    */
   protected generateIndexContent(exports: string[]): string {
     if (exports.length === 0) {
@@ -278,6 +290,7 @@ export * from './lib'
 
   /**
    * Log generation completion
+   * @param generatorType
    */
   protected logCompletion(generatorType: string): void {
     console.log(`✅ ${generatorType} '${this.normalizedOptions.projectName}' created successfully!`)

@@ -62,7 +62,7 @@ const defaultRules: TargetRule[] = [
 // JSON Logic Evaluator
 // ============================================================================
 
-function getVar(data: DataContext, path: JsonLogicValue): JsonLogicValue {
+const getVar = (data: DataContext, path: JsonLogicValue): JsonLogicValue => {
 	if (path === "" || path === null || path === undefined) {
 		return data[""]
 	}
@@ -83,9 +83,9 @@ function getVar(data: DataContext, path: JsonLogicValue): JsonLogicValue {
 		data = data[part]
 	}
 	return data
-}
+};
 
-function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext): JsonLogicValue {
+const evaluate = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext): JsonLogicValue => {
 	if (rule === null || rule === undefined) {
 		return rule
 	}
@@ -405,25 +405,20 @@ function evaluate(rule: JsonLogicRule, data: DataContext, fsContext: FsContext):
 		default:
 			return rule
 	}
-}
+};
 
-function checkCondition(rule: JsonLogicRule, data: DataContext, fsContext: FsContext): boolean {
-	return !!evaluate(rule, data, fsContext)
-}
+const checkCondition = (rule: JsonLogicRule, data: DataContext, fsContext: FsContext): boolean => !!evaluate(rule, data, fsContext);
 
-function checkAllConditions(
-	conditions: JsonLogicRule | JsonLogicRule[],
-	data: DataContext,
-	fsContext: FsContext
-): boolean {
+const checkAllConditions = (conditions: JsonLogicRule | JsonLogicRule[], data: DataContext, fsContext: FsContext): boolean => {
 	const conditionArray = Array.isArray(conditions) ? conditions : [conditions]
 	return conditionArray.every((c) => checkCondition(c, data, fsContext))
-}
+};
 
 /**
  * Gets the target rules from nx.json plugin configuration
+ * @param tree
  */
-function getRulesFromNxJson(tree: Tree): TargetRule[] {
+const getRulesFromNxJson = (tree: Tree): TargetRule[] => {
 	const nxJson = readNxJson(tree)
 
 	if (!nxJson?.plugins) {
@@ -444,7 +439,7 @@ function getRulesFromNxJson(tree: Tree): TargetRule[] {
 	}
 
 	return defaultRules
-}
+};
 
 /**
  * Sync Targets Generator
@@ -459,6 +454,7 @@ function getRulesFromNxJson(tree: Tree): TargetRule[] {
  * Usage:
  * - nx sync (runs automatically as global sync generator)
  * - nx generate @bibgraph/generators:sync-targets
+ * @param tree
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function syncTargetsGenerator(

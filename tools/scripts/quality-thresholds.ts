@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 
 /**
  * Quality thresholds configuration
@@ -54,7 +53,7 @@ export const qualityThresholds: QualityThresholds = {
 }
 
 // Function to validate thresholds
-export function validateThresholds(): boolean {
+export const validateThresholds = (): boolean => {
 	console.log("🔍 Validating quality thresholds...")
 
 	const issues: string[] = []
@@ -103,10 +102,10 @@ export function validateThresholds(): boolean {
 
 	console.log("✅ All quality thresholds are valid")
 	return true
-}
+};
 
 // Function to print current thresholds
-export function printThresholds(): void {
+export const printThresholds = (): void => {
 	console.log("📊 Current Quality Thresholds:")
 	console.log("================================")
 
@@ -132,7 +131,7 @@ export function printThresholds(): void {
 	console.log(`   Max Critical Vulnerabilities: ${qualityThresholds.security.maxCriticalVulns}`)
 	console.log(`   Max High Vulnerabilities: ${qualityThresholds.security.maxHighVulns}`)
 	console.log(`   Max Moderate Vulnerabilities: ${qualityThresholds.security.maxModerateVulns}`)
-}
+};
 
 // CLI interface
 if (import.meta.url === `file://${process.argv[1]}`) {

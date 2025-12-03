@@ -1,12 +1,11 @@
-#!/usr/bin/env tsx
 
 /**
  * Validation script for BibGraph generators
  * This script validates that all generator files and configurations are properly set up
  */
 
-import { readFileSync, existsSync } from "fs"
-import { join, dirname } from "path"
+import { existsSync,readFileSync } from "fs"
+import { dirname,join } from "path"
 import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -19,7 +18,7 @@ interface ValidationResult {
   warnings: string[]
 }
 
-function checkFileExists(path: string, description: string): ValidationResult {
+const checkFileExists = (path: string, description: string): ValidationResult => {
   const result: ValidationResult = {
     success: true,
     errors: [],
@@ -32,9 +31,9 @@ function checkFileExists(path: string, description: string): ValidationResult {
   }
 
   return result
-}
+};
 
-function validateJSONFile(path: string, description: string): ValidationResult {
+const validateJSONFile = (path: string, description: string): ValidationResult => {
   const result = checkFileExists(path, description)
   if (!result.success) return result
 
@@ -47,12 +46,9 @@ function validateJSONFile(path: string, description: string): ValidationResult {
   }
 
   return result
-}
+};
 
-function validateGenerator(
-  generatorName: string,
-  generatorPath: string,
-): ValidationResult {
+const validateGenerator = (generatorName: string, generatorPath: string): ValidationResult => {
   console.log(`\n🔍 Validating ${generatorName} generator...`)
 
   const result: ValidationResult = {
@@ -89,9 +85,9 @@ function validateGenerator(
   }
 
   return result
-}
+};
 
-function main() {
+const main = () => {
   console.log("🚀 Validating BibGraph Generators")
   console.log("==========================================")
 
@@ -198,7 +194,7 @@ function main() {
   if (!overallResult.success) {
     process.exit(1)
   }
-}
+};
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   main()

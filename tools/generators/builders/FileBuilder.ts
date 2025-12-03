@@ -36,6 +36,7 @@ export class FileBuilder {
 
   /**
    * Process template with variable substitution
+   * @param template
    */
   private processTemplate(template: string): string {
     let content = template
@@ -61,6 +62,7 @@ export class FileBuilder {
 
   /**
    * Update file content
+   * @param newContent
    */
   update(newContent: string): void {
     this.options.content = newContent
@@ -70,6 +72,7 @@ export class FileBuilder {
 
   /**
    * Append content to file
+   * @param content
    */
   append(content: string): void {
     const existingContent = this.tree.read(this.options.path, 'utf-8') || ''
@@ -78,6 +81,7 @@ export class FileBuilder {
 
   /**
    * Prepend content to file
+   * @param content
    */
   prepend(content: string): void {
     const existingContent = this.tree.read(this.options.path, 'utf-8') || ''
@@ -114,6 +118,7 @@ export class FileBuilderFactory {
 
   /**
    * Create a new FileBuilder
+   * @param options
    */
   create(options: FileBuilderOptions): FileBuilder {
     return new FileBuilder(this.tree, options)
@@ -121,6 +126,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a FileBuilder with simple content
+   * @param path
+   * @param content
    */
   withContent(path: string, content: string): FileBuilder {
     return this.create({ path, content })
@@ -128,6 +135,9 @@ export class FileBuilderFactory {
 
   /**
    * Create a FileBuilder with template
+   * @param path
+   * @param template
+   * @param vars
    */
   withTemplate(path: string, template: string, vars: Record<string, unknown> = {}): FileBuilder {
     return this.create({ path, template, templateVars: vars })
@@ -135,6 +145,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a TypeScript file
+   * @param path
+   * @param content
    */
   createTypeScriptFile(path: string, content: string): FileBuilder {
     const fullPath = path.endsWith('.ts') ? path : `${path}.ts`
@@ -143,6 +155,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a React component file
+   * @param path
+   * @param content
    */
   createComponentFile(path: string, content: string): FileBuilder {
     const fullPath = path.endsWith('.tsx') ? path : `${path}.tsx`
@@ -151,6 +165,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a test file
+   * @param path
+   * @param content
    */
   createTestFile(path: string, content: string): FileBuilder {
     const fullPath = path.includes('.test.') ? path : `${path}.test.ts`
@@ -159,6 +175,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a configuration file
+   * @param path
+   * @param config
    */
   createConfigFile(path: string, config: Record<string, unknown>): FileBuilder {
     const content = JSON.stringify(config, null, 2)
@@ -168,6 +186,8 @@ export class FileBuilderFactory {
 
   /**
    * Create a README file
+   * @param path
+   * @param content
    */
   createReadme(path: string, content: string): FileBuilder {
     const fullPath = path.endsWith('.md') ? path : `${path}/README.md`

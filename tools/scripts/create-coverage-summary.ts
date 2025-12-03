@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /**
  * Extract coverage summary from vitest v8 coverage and create coverage-summary.json
  * This bridges the gap between vitest v8 coverage format and our CI reporting
@@ -35,9 +34,7 @@ interface CoverageData {
 	[key: string]: FileCoverageData
 }
 
-function calculatePercentage({ covered, total }: { covered: number; total: number }): number {
-	return total > 0 ? Math.round((covered / total) * 100 * 100) / 100 : 0
-}
+const calculatePercentage = ({ covered, total }: { covered: number; total: number }): number => total > 0 ? Math.round((covered / total) * 100 * 100) / 100 : 0;
 
 // function aggregateStatements(fileData: FileCoverageData): { total: number; covered: number } {
 //   let total = 0;
@@ -110,10 +107,10 @@ function calculatePercentage({ covered, total }: { covered: number; total: numbe
 //   return { total, covered };
 // }
 
-function aggregateStatements(fileData: FileCoverageData): {
+const aggregateStatements = (fileData: FileCoverageData): {
 	total: number
 	covered: number
-} {
+} => {
 	let total = 0
 	let covered = 0
 
@@ -125,12 +122,12 @@ function aggregateStatements(fileData: FileCoverageData): {
 	}
 
 	return { total, covered }
-}
+};
 
-function aggregateFunctions(fileData: FileCoverageData): {
+const aggregateFunctions = (fileData: FileCoverageData): {
 	total: number
 	covered: number
-} {
+} => {
 	let total = 0
 	let covered = 0
 
@@ -142,12 +139,12 @@ function aggregateFunctions(fileData: FileCoverageData): {
 	}
 
 	return { total, covered }
-}
+};
 
-function aggregateBranches(fileData: FileCoverageData): {
+const aggregateBranches = (fileData: FileCoverageData): {
 	total: number
 	covered: number
-} {
+} => {
 	let total = 0
 	let covered = 0
 
@@ -164,12 +161,12 @@ function aggregateBranches(fileData: FileCoverageData): {
 	}
 
 	return { total, covered }
-}
+};
 
-function aggregateLines(fileData: FileCoverageData): {
+const aggregateLines = (fileData: FileCoverageData): {
 	total: number
 	covered: number
-} {
+} => {
 	let total = 0
 	let covered = 0
 
@@ -191,9 +188,9 @@ function aggregateLines(fileData: FileCoverageData): {
 	}
 
 	return { total, covered }
-}
+};
 
-function parseCoverageFinal(coverageFinalPath: string): CoverageSummary | null {
+const parseCoverageFinal = (coverageFinalPath: string): CoverageSummary | null => {
 	try {
 		const coverageData: CoverageData = JSON.parse(fs.readFileSync(coverageFinalPath, "utf8"))
 
@@ -259,9 +256,9 @@ function parseCoverageFinal(coverageFinalPath: string): CoverageSummary | null {
 		console.warn(`Failed to parse coverage-final.json: ${(error as Error).message}`)
 		return null
 	}
-}
+};
 
-function main(): void {
+const main = (): void => {
 	// Create coverage-reports directory if it doesn't exist
 	const coverageReportsDir = path.join(__dirname, "..", "coverage-reports")
 	if (!fs.existsSync(coverageReportsDir)) {
@@ -307,7 +304,7 @@ function main(): void {
 	console.log(
 		`Coverage: ${coverageSummary.total.lines.pct}% lines, ${coverageSummary.total.functions.pct}% functions, ${coverageSummary.total.branches.pct}% branches, ${coverageSummary.total.statements.pct}% statements`
 	)
-}
+};
 
 // ES module - check if this file is being run directly
 if (import.meta.url === `file://${process.argv[1]}`) {

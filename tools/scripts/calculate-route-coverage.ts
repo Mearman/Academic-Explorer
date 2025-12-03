@@ -3,7 +3,6 @@
  *
  * Analyzes E2E test coverage across all application routes.
  * Compares defined routes against test files to calculate coverage percentage.
- *
  * @module coverage/calculate-route-coverage
  * @see spec-020 Phase 7: T085-T089 Coverage Reporting
  */
@@ -17,10 +16,10 @@ import * as path from 'path';
 const ROUTE_MANIFEST = {
 	// Entity Index Routes (12 types)
 	entityIndex: [
-		{ route: '/works', pattern: /works|work-type|incoming-/ },
+		{ route: '/works', pattern: /incoming-|work-type|works/ },
 		{ route: '/authors', pattern: /author|incoming-authorships/ },
-		{ route: '/institutions', pattern: /institution|incoming-affiliations/ },
-		{ route: '/sources', pattern: /source|incoming-publications/ },
+		{ route: '/institutions', pattern: /incoming-affiliations|institution/ },
+		{ route: '/sources', pattern: /incoming-publications|source/ },
 		{ route: '/topics', pattern: /topic/ },
 		{ route: '/funders', pattern: /funder|incoming-funding/ },
 		{ route: '/publishers', pattern: /publisher/ },
@@ -33,10 +32,10 @@ const ROUTE_MANIFEST = {
 
 	// Entity Detail Routes (12 types)
 	entityDetail: [
-		{ route: '/works/:id', pattern: /works|graph-interaction|work-type/ },
-		{ route: '/authors/:id', pattern: /author-verification|author-routes/ },
+		{ route: '/works/:id', pattern: /graph-interaction|work-type|works/ },
+		{ route: '/authors/:id', pattern: /author-routes|author-verification/ },
 		{ route: '/institutions/:id', pattern: /institution|ror/ },
-		{ route: '/sources/:id', pattern: /source|issn/ },
+		{ route: '/sources/:id', pattern: /issn|source/ },
 		{ route: '/topics/:id', pattern: /topic/ },
 		{ route: '/funders/:id', pattern: /funder/ },
 		{ route: '/publishers/:id', pattern: /publisher/ },
@@ -102,8 +101,9 @@ interface CoverageSummary {
 
 /**
  * Find all E2E test files in the project
+ * @param baseDir
  */
-function findTestFiles(baseDir: string): string[] {
+const findTestFiles = (baseDir: string): string[] => {
 	const testFiles: string[] = [];
 	const e2eDir = path.join(baseDir, 'apps/web/e2e');
 	const srcE2eDir = path.join(baseDir, 'apps/web/src/test/e2e');
@@ -125,15 +125,16 @@ function findTestFiles(baseDir: string): string[] {
 	findFiles(srcE2eDir);
 
 	return testFiles;
-}
+};
 
 /**
  * Check if a route is covered by any test file
+ * @param route
+ * @param route.route
+ * @param route.pattern
+ * @param testFiles
  */
-function isRouteCovered(
-	route: { route: string; pattern: RegExp },
-	testFiles: string[]
-): { covered: boolean; matchingFiles: string[] } {
+const isRouteCovered = (route: { route: string; pattern: RegExp }, testFiles: string[]): { covered: boolean; matchingFiles: string[] } => {
 	const matchingFiles = testFiles.filter((file) => {
 		const fileName = path.basename(file).toLowerCase();
 		const content = fs.readFileSync(file, 'utf-8').toLowerCase();
@@ -144,12 +145,13 @@ function isRouteCovered(
 		covered: matchingFiles.length > 0,
 		matchingFiles: matchingFiles.map((f) => path.relative(process.cwd(), f)),
 	};
-}
+};
 
 /**
  * Calculate route coverage
+ * @param baseDir
  */
-function calculateCoverage(baseDir: string): CoverageSummary {
+const calculateCoverage = (baseDir: string): CoverageSummary => {
 	const testFiles = findTestFiles(baseDir);
 	const results: CoverageResult[] = [];
 	const byCategory: CoverageSummary['byCategory'] = {};
@@ -194,12 +196,13 @@ function calculateCoverage(baseDir: string): CoverageSummary {
 		byCategory,
 		results,
 	};
-}
+};
 
 /**
  * Generate markdown report
+ * @param coverage
  */
-function generateReport(coverage: CoverageSummary): string {
+const generateReport = (coverage: CoverageSummary): string => {
 	let report = `# Route Coverage Report
 
 **Generated**: ${new Date().toISOString()}
@@ -249,10 +252,10 @@ function generateReport(coverage: CoverageSummary): string {
 	}
 
 	return report;
-}
+};
 
 // Main execution
-function main() {
+const main = () => {
 	// Decode URL-encoded path (handles spaces in directory names)
 	const scriptDir = decodeURIComponent(path.dirname(new URL(import.meta.url).pathname));
 	const baseDir = path.resolve(scriptDir, '../../..');
@@ -265,7 +268,7 @@ function main() {
 	const reportPath = path.join(scriptDir, 'route-coverage-report.md');
 	fs.writeFileSync(reportPath, report);
 	console.log(`\nReport saved to: ${reportPath}`);
-}
+};
 
 // Run main when executed directly
 main();

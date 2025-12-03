@@ -50,7 +50,7 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
   private getComponentName(): string {
     const parts = this.options.component.split('/')
     const lastPart = parts[parts.length - 1]
-    return lastPart.replace(/[^a-zA-Z0-9]/g, '')
+    return lastPart.replace(/[^0-9A-Z]/gi, '')
   }
 
   /**
@@ -78,6 +78,8 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
 
   /**
    * Generate index route for entity views
+   * @param componentPath
+   * @param routePath
    */
   static generateIndexRoute(componentPath: string, routePath: string): RouteBuilder {
     return new RouteBuilder({
@@ -88,6 +90,10 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
 
   /**
    * Generate detail route with parameter
+   * @param componentPath
+   * @param routePath
+   * @param parameter
+   * @param lazy
    */
   static generateDetailRoute(
     componentPath: string,
@@ -104,6 +110,10 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
 
   /**
    * Generate route with data loading
+   * @param componentPath
+   * @param routePath
+   * @param loaderPath
+   * @param lazy
    */
   static generateRouteWithLoader(
     componentPath: string,
@@ -121,6 +131,9 @@ ${this.options.loader ? `loader: () => import('${this.options.loader}').then(m =
 
   /**
    * Generate route with error handling
+   * @param componentPath
+   * @param routePath
+   * @param errorComponentPath
    */
   static generateRouteWithErrorHandling(
     componentPath: string,
@@ -158,6 +171,7 @@ export class RouteTreeBuilder {
 
   /**
    * Add route
+   * @param route
    */
   addRoute(route: RouteBuilder): this {
     this.routes.push(route)
@@ -166,6 +180,8 @@ export class RouteTreeBuilder {
 
   /**
    * Add regular route
+   * @param path
+   * @param component
    */
   addRegularRoute(path: string, component: string): this {
     return this.addRoute(new RouteBuilder({ path, component }))
@@ -173,6 +189,8 @@ export class RouteTreeBuilder {
 
   /**
    * Add lazy route
+   * @param path
+   * @param component
    */
   addLazyRoute(path: string, component: string): this {
     return this.addRoute(new RouteBuilder({ path, component, lazy: true }))
@@ -180,6 +198,9 @@ export class RouteTreeBuilder {
 
   /**
    * Add route with loader
+   * @param path
+   * @param component
+   * @param loader
    */
   addRouteWithLoader(path: string, component: string, loader: string): this {
     return this.addRoute(new RouteBuilder({ path, component, loader }))
@@ -196,6 +217,9 @@ export class RouteTreeBuilder {
 
   /**
    * Create entity view routes
+   * @param entityName
+   * @param entityPlural
+   * @param componentPath
    */
   static createEntityViewRoutes(
     entityName: string,

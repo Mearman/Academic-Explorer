@@ -1,13 +1,11 @@
-#!/usr/bin/env npx tsx
 
+import { Octokit } from "@octokit/rest"
 import { exec } from "child_process"
 import { promisify } from "util"
 
-import { Octokit } from "@octokit/rest"
-
 const execAsync = promisify(exec)
 
-async function main(): Promise<void> {
+const main = async (): Promise<void> => {
 	const token = process.env["GITHUB_TOKEN"]
 	const prNumber = process.env["PR_NUMBER"]
 	const owner = process.env["REPO_OWNER"]
@@ -66,7 +64,7 @@ async function main(): Promise<void> {
 		console.error("Failed to manage coverage comments:", error)
 		process.exit(1)
 	}
-}
+};
 
 if (require.main === module) {
 	void main()

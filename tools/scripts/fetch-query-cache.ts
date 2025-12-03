@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /**
  * Script to automatically fetch and cache OpenAlex queries
  */
@@ -47,7 +46,7 @@ const QUERIES_TO_CACHE = [
 	},
 ]
 
-async function main() {
+const main = async () => {
 	try {
 		const staticDataDir = join(process.cwd(), "public", "data", "openalex")
 
@@ -76,9 +75,9 @@ async function main() {
 		console.error("[ERROR] Error in query cache generation:", error)
 		process.exit(1)
 	}
-}
+};
 
-function determineEntityType(url: string): string {
+const determineEntityType = (url: string): string => {
 	const entityPatterns = [
 		{ pattern: "/works", type: "works" },
 		{ pattern: "/authors", type: "authors" },
@@ -96,7 +95,7 @@ function determineEntityType(url: string): string {
 	}
 
 	return "works" // default
-}
+};
 
 // Add specific queries if provided as command line arguments
 if (process.argv.length > 2) {

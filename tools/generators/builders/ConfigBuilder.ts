@@ -70,6 +70,7 @@ export class ConfigBuilder {
 
   /**
    * Set extends
+   * @param extendsValue
    */
   setExtends(extendsValue: string[]): this {
     this.options.extends = extendsValue
@@ -78,6 +79,7 @@ export class ConfigBuilder {
 
   /**
    * Add extend
+   * @param extend
    */
   addExtend(extend: string): this {
     this.options.extends = [...(this.options.extends || []), extend]
@@ -86,6 +88,7 @@ export class ConfigBuilder {
 
   /**
    * Set compiler options
+   * @param options
    */
   setCompilerOptions(options: Record<string, unknown>): this {
     this.options.compilerOptions = { ...this.options.compilerOptions, ...options }
@@ -94,6 +97,8 @@ export class ConfigBuilder {
 
   /**
    * Add compiler option
+   * @param key
+   * @param value
    */
   addCompilerOption(key: string, value: unknown): this {
     this.options.compilerOptions = {
@@ -105,6 +110,7 @@ export class ConfigBuilder {
 
   /**
    * Set include patterns
+   * @param include
    */
   setInclude(include: string[]): this {
     this.options.include = include
@@ -113,6 +119,7 @@ export class ConfigBuilder {
 
   /**
    * Add include pattern
+   * @param pattern
    */
   addInclude(pattern: string): this {
     this.options.include = [...(this.options.include || []), pattern]
@@ -121,6 +128,7 @@ export class ConfigBuilder {
 
   /**
    * Set exclude patterns
+   * @param exclude
    */
   setExclude(exclude: string[]): this {
     this.options.exclude = exclude
@@ -129,6 +137,7 @@ export class ConfigBuilder {
 
   /**
    * Add exclude pattern
+   * @param pattern
    */
   addExclude(pattern: string): this {
     this.options.exclude = [...(this.options.exclude || []), pattern]
@@ -137,6 +146,7 @@ export class ConfigBuilder {
 
   /**
    * Add project reference
+   * @param path
    */
   addReference(path: string): this {
     this.options.references = [
@@ -148,6 +158,7 @@ export class ConfigBuilder {
 
   /**
    * Create library configuration
+   * @param options
    */
   static library(options?: ConfigBuilderOptions): ConfigBuilder {
     return new ConfigBuilder({
@@ -176,6 +187,7 @@ export class ConfigBuilder {
 
   /**
    * Create React component configuration
+   * @param options
    */
   static reactComponent(options?: ConfigBuilderOptions): ConfigBuilder {
     return new ConfigBuilder({
@@ -201,6 +213,7 @@ export class ConfigBuilder {
 
   /**
    * Create Node.js configuration
+   * @param options
    */
   static nodejs(options?: ConfigBuilderOptions): ConfigBuilder {
     return new ConfigBuilder({
@@ -291,6 +304,7 @@ export default defineConfig({
 
   /**
    * Set test environment
+   * @param env
    */
   setTestEnvironment(env: 'node' | 'jsdom' | 'happy-dom'): this {
     this.testEnvironment = env
@@ -299,6 +313,7 @@ export default defineConfig({
 
   /**
    * Enable/disable globals
+   * @param enabled
    */
   setGlobals(enabled: boolean): this {
     this.globals = enabled
@@ -307,6 +322,7 @@ export default defineConfig({
 
   /**
    * Enable/disable watch mode
+   * @param enabled
    */
   setWatch(enabled: boolean): this {
     this.watch = enabled
@@ -315,6 +331,7 @@ export default defineConfig({
 
   /**
    * Add setup file
+   * @param file
    */
   addSetupFile(file: string): this {
     this.setupFiles.push(file)
@@ -323,6 +340,7 @@ export default defineConfig({
 
   /**
    * Set test timeout
+   * @param timeout
    */
   setTestTimeout(timeout: number): this {
     this.testTimeout = timeout
@@ -331,6 +349,7 @@ export default defineConfig({
 
   /**
    * Set hook timeout
+   * @param timeout
    */
   setHookTimeout(timeout: number): this {
     this.hookTimeout = timeout
@@ -339,6 +358,7 @@ export default defineConfig({
 
   /**
    * Set coverage options
+   * @param options
    */
   setCoverage(options: Record<string, unknown>): this {
     this.coverageOptions = { ...this.coverageOptions, ...options }
@@ -347,6 +367,9 @@ export default defineConfig({
 
   /**
    * Create for Node.js environment
+   * @param options
+   * @param options.testTimeout
+   * @param options.hookTimeout
    */
   static nodejs(options?: { testTimeout?: number; hookTimeout?: number }): VitestConfigBuilder {
     const builder = new VitestConfigBuilder('node')
@@ -357,6 +380,9 @@ export default defineConfig({
 
   /**
    * Create for React/JSDOM environment
+   * @param options
+   * @param options.testTimeout
+   * @param options.hookTimeout
    */
   static react(options?: { testTimeout?: number; hookTimeout?: number }): VitestConfigBuilder {
     const builder = new VitestConfigBuilder('jsdom')
@@ -402,6 +428,8 @@ export default tseslint.config(
 
   /**
    * Add rule
+   * @param rule
+   * @param value
    */
   addRule(rule: string, value: unknown): this {
     this.rules[rule] = value
@@ -410,6 +438,7 @@ export default tseslint.config(
 
   /**
    * Add rules
+   * @param rules
    */
   addRules(rules: Record<string, unknown>): this {
     this.rules = { ...this.rules, ...rules }
@@ -418,6 +447,7 @@ export default tseslint.config(
 
   /**
    * Add ignore pattern
+   * @param pattern
    */
   addIgnore(pattern: string): this {
     this.ignores.push(pattern)

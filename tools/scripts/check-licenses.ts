@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 import { execSync } from "node:child_process"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
@@ -27,7 +26,7 @@ interface LicenseData {
 	[key: string]: PackageLicense
 }
 
-function checkLicenses(): void {
+const checkLicenses = (): void => {
 	try {
 		console.log("[SEARCH] Checking licenses...")
 
@@ -106,7 +105,7 @@ function checkLicenses(): void {
 			process.exit(1)
 		}
 	}
-}
+};
 
 if (import.meta.url === `file://${process.argv[1]}`) {
 	checkLicenses()

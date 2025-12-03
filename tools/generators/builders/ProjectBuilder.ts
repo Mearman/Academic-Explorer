@@ -1,5 +1,4 @@
 import { join } from 'path'
-
 import {
   addProjectConfiguration,
   ProjectConfiguration,
@@ -45,6 +44,7 @@ export class ProjectBuilder {
 
   /**
    * Add project to workspace
+   * @param config
    */
   addProject(config?: ProjectConfiguration): void {
     const projectConfig = config || this.build()
@@ -153,6 +153,8 @@ export class ProjectBuilder {
 
   /**
    * Add custom target
+   * @param name
+   * @param config
    */
   addTarget(name: string, config: unknown): void {
     this.options.targets = this.options.targets || {}
@@ -161,6 +163,7 @@ export class ProjectBuilder {
 
   /**
    * Add tags
+   * @param tags
    */
   addTags(...tags: string[]): void {
     this.options.tags = [...(this.options.tags || []), ...tags]
@@ -168,6 +171,7 @@ export class ProjectBuilder {
 
   /**
    * Set source root
+   * @param sourceRoot
    */
   setSourceRoot(sourceRoot: string): void {
     this.options.sourceRoot = sourceRoot

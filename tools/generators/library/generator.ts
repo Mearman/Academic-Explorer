@@ -315,6 +315,8 @@ export function ${this.normalizedOptions.className}({
 
 /**
  * Library generator factory
+ * @param tree
+ * @param options
  */
 // eslint-disable-next-line import/no-default-export -- Nx generator convention
 export default async function libraryGenerator(
