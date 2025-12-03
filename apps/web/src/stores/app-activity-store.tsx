@@ -356,9 +356,8 @@ const appActivityReducer = (
     }
 
     case "REMOVE_EVENT": {
-      // Extract and remove the event with the given ID
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [action.payload]: _, ...newEvents } = state.events;
+      // Extract and remove the event with the given ID using destructuring
+      const { [action.payload]: _removed, ...newEvents } = state.events;
 
       return {
         ...state,
