@@ -735,8 +735,6 @@ program
 		}
 
 		const validatedOptions = optionsValidation.data
-		const limit =
-			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
 		const entities = await cli.getWellPopulatedEntities()
 
 		if (validatedOptions.format === "json") {
@@ -775,8 +773,6 @@ program
 		}
 
 		const validatedOptions = optionsValidation.data
-		const limit =
-			typeof validatedOptions.limit === "string" ? Number.parseInt(validatedOptions.limit, 10) : 10
 		const collections = await cli.getPopularCollections()
 
 		if (validatedOptions.format === "json") {
