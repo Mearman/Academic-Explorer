@@ -35,7 +35,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
-import React, { useCallback,useEffect, useState } from "react";
+import React, { useCallback,useEffect, useMemo, useState } from "react";
 
 /**
  * Shared entity click handler for navigating to entity detail pages
@@ -537,15 +537,29 @@ const StaticCacheTierCard = ({
 
 export const CacheTierLists = () => {
   const [summary, setSummary] = useState<CacheTierSummary | null>(null);
-  const [staticConfig, setStaticConfig] = useState<StaticCacheTierConfig | null>(null);
   const [staticCacheEntities, setStaticCacheEntities] = useState<CachedEntityEntry[]>([]);
   const [tierStats, setTierStats] = useState<{
     gitHubPages: CacheTierStats | null;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialLoadCompleted, setHasInitialLoadCompleted] = useState(false);
   const [isRefreshingMemory, setIsRefreshingMemory] = useState(false);
   const [isRefreshingIndexedDB, setIsRefreshingIndexedDB] = useState(false);
   const [isRefreshingStatic, setIsRefreshingStatic] = useState(false);
+
+  // Derive loading state from data availability
+  const isLoading = useMemo(() => {
+    return !hasInitialLoadCompleted;
+  }, [hasInitialLoadCompleted]);
+
+  // Derive static config directly - it's a synchronous configuration getter
+  const staticConfig = useMemo<StaticCacheTierConfig | null>(() => {
+    try {
+      return cachedOpenAlex.getStaticCacheTierConfig();
+    } catch (error) {
+      logger.error("cache-tier-ui", "Failed to load static cache config", { error });
+      return null;
+    }
+  }, []);
 
   const loadCacheSummary = useCallback(async () => {
     try {
@@ -553,15 +567,6 @@ export const CacheTierLists = () => {
       setSummary(result);
     } catch (error) {
       logger.error("cache-tier-ui", "Failed to load cache tier summary", { error });
-    }
-  }, []);
-
-  const loadStaticConfig = useCallback(() => {
-    try {
-      const config = cachedOpenAlex.getStaticCacheTierConfig();
-      setStaticConfig(config);
-    } catch (error) {
-      logger.error("cache-tier-ui", "Failed to load static cache config", { error });
     }
   }, []);
 
@@ -586,14 +591,12 @@ export const CacheTierLists = () => {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-    loadStaticConfig();
     void Promise.all([loadCacheSummary(), loadTierStats(), loadStaticCacheEntities()])
       .catch((error) => {
         logger.error("cache-tier-ui", "Failed to load cache data", { error });
       })
-      .finally(() => setIsLoading(false));
-  }, [loadCacheSummary, loadStaticConfig, loadTierStats, loadStaticCacheEntities]);
+      .finally(() => setHasInitialLoadCompleted(true));
+  }, [loadCacheSummary, loadTierStats, loadStaticCacheEntities]);
 
   const handleRefreshMemory = useCallback(async () => {
     setIsRefreshingMemory(true);
@@ -634,12 +637,12 @@ export const CacheTierLists = () => {
   const handleRefreshStatic = useCallback(async () => {
     setIsRefreshingStatic(true);
     try {
-      loadStaticConfig();
+      // staticConfig is now derived via useMemo and doesn't need explicit refresh
       await Promise.all([loadTierStats(), loadStaticCacheEntities()]);
     } finally {
       setIsRefreshingStatic(false);
     }
-  }, [loadStaticConfig, loadTierStats, loadStaticCacheEntities]);
+  }, [loadTierStats, loadStaticCacheEntities]);
 
   if (isLoading) {
     return (

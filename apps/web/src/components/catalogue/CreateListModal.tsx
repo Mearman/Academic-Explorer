@@ -16,7 +16,7 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 
 interface CreateListModalProps {
@@ -38,18 +38,26 @@ export const CreateListModal = ({ onClose, onSubmit }: CreateListModalProps) => 
   const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Derived state computed via useMemo instead of repeated calculations
+  const trimmedTitle = useMemo(() => title.trim(), [title]);
+  const trimmedDescription = useMemo(() => description.trim(), [description]);
+  const filteredTags = useMemo(() =>
+    tags.filter(tag => tag.trim().length > 0),
+    [tags]
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim()) return;
+    if (!trimmedTitle) return;
 
     setIsSubmitting(true);
     try {
       const listData = {
-        title: title.trim(),
-        description: description.trim() || undefined,
+        title: trimmedTitle,
+        description: trimmedDescription || undefined,
         type,
-        tags: tags.filter(tag => tag.trim().length > 0),
+        tags: filteredTags,
         isPublic,
       };
 
@@ -57,14 +65,14 @@ export const CreateListModal = ({ onClose, onSubmit }: CreateListModalProps) => 
 
       logger.debug("catalogue-ui", "List creation form submitted successfully", {
         listType: type,
-        hasDescription: !!description.trim(),
-        tagsCount: tags.filter(tag => tag.trim().length > 0).length,
+        hasDescription: !!trimmedDescription,
+        tagsCount: filteredTags.length,
         isPublic
       });
     } catch (error) {
       logger.error("catalogue-ui", "Failed to create list from form", {
         listType: type,
-        title: title.trim(),
+        title: trimmedTitle,
         error
       });
     } finally {
@@ -150,7 +158,7 @@ export const CreateListModal = ({ onClose, onSubmit }: CreateListModalProps) => 
           <Button
             type="submit"
             loading={isSubmitting}
-            disabled={!title.trim()}
+            disabled={!trimmedTitle}
           >
             Create {type === "bibliography" ? "Bibliography" : "List"}
           </Button>

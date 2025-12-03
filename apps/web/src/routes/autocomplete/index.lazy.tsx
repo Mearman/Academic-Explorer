@@ -48,7 +48,6 @@ const parseEntityTypes = (typesParam: string | undefined): EntityType[] | null =
 const AutocompleteGeneralRoute = () => {
   const urlSearch = useSearch({ from: "/autocomplete/" });
   const navigate = useNavigate();
-  const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
   const [viewMode, setViewMode] = useState<TableViewMode>("list");
   const { getEntityColor } = useThemeColors();
 
@@ -57,31 +56,23 @@ const AutocompleteGeneralRoute = () => {
     navigate({ to: path });
   }, [navigate]);
 
-  // Parse selected entity types from URL
+  // Derive query from URL search params
+  const query = useMemo(() => {
+    return urlSearch.q || urlSearch.search || "";
+  }, [urlSearch.q, urlSearch.search]);
+
+  // Derive selected entity types from URL
   // If no types specified in URL, default to all types (all checkboxes checked)
-  const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(() => {
+  const selectedTypes = useMemo<EntityType[]>(() => {
     const typesFromUrl = parseEntityTypes(urlSearch.types);
     // null = no param (default to all), [] = explicitly cleared, array = specific types
     if (typesFromUrl === null) return [...AUTOCOMPLETE_ENTITY_TYPES];
     return typesFromUrl;
-  });
-
-  // Update selected types when URL changes
-  useEffect(() => {
-    const typesFromUrl = parseEntityTypes(urlSearch.types);
-    // null = no param (default to all), [] = explicitly cleared, array = specific types
-    const effectiveTypes = typesFromUrl === null ? [...AUTOCOMPLETE_ENTITY_TYPES] : typesFromUrl;
-    if (JSON.stringify(effectiveTypes) !== JSON.stringify(selectedTypes)) {
-      setSelectedTypes(effectiveTypes);
-    }
   }, [urlSearch.types]);
 
   // Handle entity type filter changes
   const handleEntityTypeChange = useCallback(
     (types: EntityType[]) => {
-      // Update the types in the current URL (stay on general autocomplete page)
-      setSelectedTypes(types);
-
       // Build URL params, avoiding URLSearchParams encoding for types (commas get encoded)
       const paramParts: string[] = [];
       if (query) {
@@ -200,13 +191,6 @@ const AutocompleteGeneralRoute = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const newQuery = urlSearch.q || urlSearch.search || "";
-    if (newQuery !== query) {
-      setQuery(newQuery);
-    }
-  }, [urlSearch.q, urlSearch.search, query]);
-
   // Check if all types are selected (for determining search behavior)
   const allTypesSelected =
     selectedTypes.length === AUTOCOMPLETE_ENTITY_TYPES.length &&
@@ -266,9 +250,7 @@ const AutocompleteGeneralRoute = () => {
     staleTime: 30_000,
   });
 
-  const handleSearch = (value: string) => {
-    setQuery(value);
-
+  const handleSearch = useCallback((value: string) => {
     // Build URL params, avoiding URLSearchParams encoding for types
     const paramParts: string[] = [];
     if (value) {
@@ -293,7 +275,7 @@ const AutocompleteGeneralRoute = () => {
       ? `#/autocomplete?${paramParts.join("&")}`
       : "#/autocomplete";
     window.history.replaceState(null, "", newHash);
-  };
+  }, [selectedTypes, urlSearch.filter]);
 
   return (
     <Container size="lg" py="xl">

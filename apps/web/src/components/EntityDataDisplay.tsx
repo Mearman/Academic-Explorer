@@ -1005,24 +1005,16 @@ interface GlobalGridProps {
 
 const GlobalGrid = ({ sections, colors }: GlobalGridProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [gridItems, setGridItems] = useState<FlatGridItem[]>([]);
-  const [numCols, setNumCols] = useState(4);
-  const [totalRows, setTotalRows] = useState(1);
-  const lastWidthRef = useRef(0);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  // Calculate layout
-  const calculateLayout = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const containerWidth = container.offsetWidth;
-    if (containerWidth === 0) return;
-    if (Math.abs(containerWidth - lastWidthRef.current) < 5 && gridItems.length > 0) return;
-    lastWidthRef.current = containerWidth;
+  // Compute layout using useMemo
+  const { gridItems, numCols, totalRows } = useMemo(() => {
+    if (containerWidth === 0) {
+      return { gridItems: [], numCols: 4, totalRows: 1 };
+    }
 
     const { MIN_COLUMN_WIDTH, GAP, GROUP_PADDING } = GRID_CONFIG;
     const cols = Math.max(2, Math.floor((containerWidth + GAP) / (MIN_COLUMN_WIDTH + GAP)));
-    setNumCols(cols);
 
     const occupancy = new OccupancyGrid(cols);
     const items: FlatGridItem[] = [];
@@ -1241,26 +1233,30 @@ const GlobalGrid = ({ sections, colors }: GlobalGridProps) => {
     // Calculate total rows
     const maxRow = items.reduce((max, item) =>
       Math.max(max, item.position.rowStart + item.position.rowSpan), 0);
-    setTotalRows(maxRow);
-    setGridItems(items);
-  }, [sections, colors, gridItems.length]);
+
+    return { gridItems: items, numCols: cols, totalRows: maxRow };
+  }, [sections, colors, containerWidth]);
 
   // Initial layout and resize handling
   useLayoutEffect(() => {
-    calculateLayout();
-
     const container = containerRef.current;
     if (!container) return;
 
-    const resizeObserver = new ResizeObserver(() => {
-      // Reset and recalculate
-      lastWidthRef.current = 0;
-      calculateLayout();
-    });
+    const updateWidth = () => {
+      const width = container.offsetWidth;
+      if (width > 0) {
+        setContainerWidth(width);
+      }
+    };
+
+    // Initial measurement
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver(updateWidth);
     resizeObserver.observe(container);
 
     return () => resizeObserver.disconnect();
-  }, [calculateLayout]);
+  }, []);
 
   const { ROW_UNIT, GAP } = GRID_CONFIG;
 

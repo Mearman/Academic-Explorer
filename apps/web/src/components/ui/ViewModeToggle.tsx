@@ -9,7 +9,7 @@ import type { ViewMode } from '@bibgraph/types';
 import { detectWebGLCapabilities } from '@bibgraph/utils';
 import { Box,SegmentedControl, Tooltip } from '@mantine/core';
 import { IconAlertTriangle,IconCube, IconSquare } from '@tabler/icons-react';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 
 export interface ViewModeToggleProps {
   /** Current view mode */
@@ -31,31 +31,10 @@ export const ViewModeToggle = ({
   size = 'sm',
   fullWidth = false,
 }: ViewModeToggleProps) => {
-  const [webglAvailable, setWebglAvailable] = useState<boolean | null>(null);
-  const [webglReason, setWebglReason] = useState<string>('');
-
-  // Check WebGL availability on mount
-  useEffect(() => {
-    const result = detectWebGLCapabilities();
-    setWebglAvailable(result.available);
-    setWebglReason(result.reason ?? '');
-  }, []);
-
-  // Show loading state while checking
-  if (webglAvailable === null) {
-    return (
-      <SegmentedControl
-        size={size}
-        fullWidth={fullWidth}
-        disabled
-        data={[
-          { label: '2D', value: '2D' },
-          { label: '3D', value: '3D' },
-        ]}
-        value="2D"
-      />
-    );
-  }
+  // Check WebGL availability - computed once and memoized
+  const webglCapabilities = useMemo(() => detectWebGLCapabilities(), []);
+  const webglAvailable = webglCapabilities.available;
+  const webglReason = webglCapabilities.reason ?? '';
 
   // Disable 3D option if WebGL unavailable
   const is3DDisabled = !webglAvailable || disabled;

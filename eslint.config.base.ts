@@ -342,7 +342,7 @@ export default tseslint.config([
             "@eslint-react/no-unstable-context-value": "error",
             "@eslint-react/no-unstable-default-props": "error",
             "@eslint-react/prefer-read-only-props": "off",
-            "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "off", // Acceptable pattern for derived state synchronization
+            "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "off", // Many valid patterns for side effects and prop syncing
             // JSX A11y rules (from flat/recommended)
             ...jsxA11yPlugin.flatConfigs.recommended.rules,
         },

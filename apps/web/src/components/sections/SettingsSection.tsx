@@ -87,15 +87,18 @@ export const SettingsSection: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  // Sync local email state with store
-  React.useEffect(() => {
-    setLocalEmail(politePoolEmail || "");
-  }, [politePoolEmail]);
+  // Derived state synced with store - replaces useEffect pattern
+  const syncedLocalEmail = React.useMemo(() => politePoolEmail || "", [politePoolEmail]);
+  const syncedLocalApiKey = React.useMemo(() => apiKey || "", [apiKey]);
 
-  // Sync local API key state with store
+  // Update local state when store values change
   React.useEffect(() => {
-    setLocalApiKey(apiKey || "");
-  }, [apiKey]);
+    setLocalEmail(syncedLocalEmail);
+  }, [syncedLocalEmail]);
+
+  React.useEffect(() => {
+    setLocalApiKey(syncedLocalApiKey);
+  }, [syncedLocalApiKey]);
 
   const handleEmailChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

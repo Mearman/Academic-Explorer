@@ -15,7 +15,7 @@ import {
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 
 const textKeywordsSearchSchema = z.object({
@@ -26,7 +26,8 @@ const textKeywordsSearchSchema = z.object({
 
 const TextKeywordsRoute = () => {
   const urlSearch = Route.useSearch();
-  const [title, setTitle] = useState(urlSearch.title || "");
+  const initialTitle = useMemo(() => urlSearch.title || "", [urlSearch.title]);
+  const [title, setTitle] = useState(initialTitle);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -39,11 +40,8 @@ const TextKeywordsRoute = () => {
   }, []);
 
   useEffect(() => {
-    const newTitle = urlSearch.title || "";
-    if (newTitle !== title) {
-      setTitle(newTitle);
-    }
-  }, [urlSearch.title, title]);
+    setTitle(initialTitle);
+  }, [initialTitle]);
 
   const {
     data: keywords = [],

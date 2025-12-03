@@ -24,6 +24,7 @@ import {
 import QRCode from "qrcode";
 import React, { useEffect,useState } from "react";
 
+const QR_CODE_PENDING = "PENDING";
 
 interface ShareModalProps {
   shareUrl: string;
@@ -34,11 +35,10 @@ interface ShareModalProps {
 export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) => {
   const [showQR, setShowQR] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
-  const [isGeneratingQR, setIsGeneratingQR] = useState(false); // T077: Loading state for QR generation
 
   useEffect(() => {
     if (showQR && shareUrl) {
-      setIsGeneratingQR(true); // T077: Set loading state
+      setQrCodeUrl(QR_CODE_PENDING);
       void QRCode.toDataURL(shareUrl, {
         width: 200,
         margin: 1,
@@ -59,9 +59,7 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
             urlLength: shareUrl.length,
             error
           });
-        })
-        .finally(() => {
-          setIsGeneratingQR(false); // T077: Clear loading state
+          setQrCodeUrl("");
         });
     }
   }, [showQR, shareUrl]);
@@ -69,6 +67,9 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
   const handleOpenLink = () => {
     window.open(shareUrl, "_blank", "noopener,noreferrer");
   };
+
+  const isGeneratingQR = qrCodeUrl === QR_CODE_PENDING;
+  const hasValidQRCode = qrCodeUrl !== "" && qrCodeUrl !== QR_CODE_PENDING;
 
   return (
     <>
@@ -133,14 +134,13 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
           </Tooltip>
         </Group>
 
-        {/* T077: Show loading spinner while generating QR code */}
         {showQR && isGeneratingQR && (
           <Box style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
             <Loader size="md" />
           </Box>
         )}
 
-        {showQR && !isGeneratingQR && qrCodeUrl && (
+        {showQR && hasValidQRCode && (
           <Stack align="center" gap="xs" id="qr-code-section">
             <Text size="sm" fw={500}>QR Code</Text>
             <img

@@ -203,8 +203,20 @@ export const ForceGraph3DVisualization = ({
   // Use any for the ref type to avoid complex generic type issues with react-force-graph-3d
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(undefined);
-  const [webglStatus, setWebglStatus] = useState<{ available: boolean; reason?: string } | null>(null);
   const colorScheme = useComputedColorScheme('light');
+
+  // Compute WebGL status once on mount - derived from WebGL capabilities
+  const webglStatus = useMemo(() => {
+    const result = detectWebGLCapabilities();
+    return { available: result.available, reason: result.reason };
+  }, []);
+
+  // Notify parent when WebGL is unavailable
+  useEffect(() => {
+    if (!webglStatus.available && onWebGLUnavailable) {
+      onWebGLUnavailable(webglStatus.reason ?? 'WebGL not available');
+    }
+  }, [webglStatus.available, webglStatus.reason, onWebGLUnavailable]);
 
   // Notify parent when graph methods become available
   useEffect(() => {
@@ -283,15 +295,6 @@ export const ForceGraph3DVisualization = ({
       }
     };
   }, [enableCursorCenteredZoom]);
-
-  // Check WebGL availability on mount
-  useEffect(() => {
-    const result = detectWebGLCapabilities();
-    setWebglStatus({ available: result.available, reason: result.reason });
-    if (!result.available && onWebGLUnavailable) {
-      onWebGLUnavailable(result.reason ?? 'WebGL not available');
-    }
-  }, [onWebGLUnavailable]);
 
   // Track container width for responsive sizing
   const [containerWidth, setContainerWidth] = useState(width ?? 800);
@@ -743,26 +746,6 @@ export const ForceGraph3DVisualization = ({
 
   if (!visible) {
     return null;
-  }
-
-  // Show loading state while checking WebGL
-  if (webglStatus === null) {
-    return (
-      <Box
-        ref={containerRef}
-        pos="relative"
-        style={{
-          width: width ?? '100%',
-          height,
-          border: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'}`,
-          borderRadius: 'var(--mantine-radius-md)',
-          overflow: 'hidden',
-          backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)',
-        }}
-      >
-        <LoadingOverlay visible />
-      </Box>
-    );
   }
 
   // Show fallback if WebGL unavailable

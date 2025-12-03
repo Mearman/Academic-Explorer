@@ -229,19 +229,23 @@ const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
 const SearchPage = () => {
   const searchParams = useSearch({ from: "/search" });
 
-  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    query: "",
-  });
+  // Derive initial search filters from URL parameters using useMemo
+  const initialSearchFilters = useMemo<SearchFilters>(() => {
+    const qParam = searchParams.q;
+    return {
+      query: qParam && typeof qParam === "string" ? qParam : "",
+    };
+  }, [searchParams.q]);
+
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>(
+    initialSearchFilters,
+  );
   const [loading, setLoading] = useState(false);
 
-  // Handle URL parameters on mount
+  // Update searchFilters when URL parameters change
   useEffect(() => {
-    const qParam = searchParams.q;
-
-    if (qParam && typeof qParam === "string") {
-      setSearchFilters((prev) => ({ ...prev, query: qParam }));
-    }
-  }, [searchParams.q]);
+    setSearchFilters(initialSearchFilters);
+  }, [initialSearchFilters]);
 
   // Memoize filters to prevent unnecessary re-renders
   const memoizedFilters = useMemo(() => {

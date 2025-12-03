@@ -6,7 +6,7 @@ import {
   IconPalette,
   IconRotate,
   IconSun} from '@tabler/icons-react'
-import { useEffect,useState } from 'react'
+import { useMemo } from 'react'
 
 import { SplitButton } from '@/components/ui/SplitButton'
 import { useTheme } from '@/contexts/theme-context'
@@ -38,23 +38,34 @@ const BORDER_RADIUS_OPTIONS = [
 
 export const ColorSchemeSelector = () => {
   const { config, setColorScheme, setColorMode, setComponentLibrary, setBorderRadius, resetTheme } = useTheme()
-  const [selectedPalette, setSelectedPalette] = useState<ShadcnPalette>(config.colorScheme as ShadcnPalette)
 
-  // Update local state when theme context changes
-  useEffect(() => {
-    setSelectedPalette(config.colorScheme as ShadcnPalette)
-  }, [config.colorScheme])
+  // Derive selected palette from config (no local state needed)
+  const selectedPalette = useMemo<ShadcnPalette>(() => {
+    const scheme = config.colorScheme;
+    // Type guard function to check if scheme is a valid ShadcnPalette
+    const isValidPalette = (value: unknown): value is ShadcnPalette => {
+      if (typeof value !== 'string') {
+        return false;
+      }
+      // Check if the value exists in the palette names array
+      return shadcnPaletteNames.includes(value);
+    };
 
-  // Handle palette changes
+    if (isValidPalette(scheme)) {
+      return scheme;
+    }
+    // Fallback to a default valid palette if something goes wrong
+    return 'blue';
+  }, [config.colorScheme]);
+
+  // Handle palette changes (directly update context)
   const handlePaletteChange = (palette: ShadcnPalette) => {
-    setSelectedPalette(palette)
     setColorScheme(palette)
   }
 
   // Reset color palette to default
   const resetColorPalette = () => {
     setColorScheme('blue')
-    setSelectedPalette('blue')
   }
 
   // Reset border radius to default

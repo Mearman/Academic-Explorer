@@ -26,7 +26,7 @@ import {
   IconList,
   IconPlus,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
 
@@ -199,12 +199,14 @@ export const AddToCatalogueButton = ({
   const { lists, addEntityToList } = useCatalogue();
 
   // Filter lists that can accept this entity type
-  const compatibleLists = lists.filter(list => {
-    if (list.type === "bibliography") {
-      return entityType === "works";
-    }
-    return true; // Regular lists can accept any entity type
-  });
+  const compatibleLists = useMemo(() => {
+    return lists.filter(list => {
+      if (list.type === "bibliography") {
+        return entityType === "works";
+      }
+      return true; // Regular lists can accept any entity type
+    });
+  }, [lists, entityType]);
 
   const handleAddToList = async (listId: string, listTitle: string) => {
     try {

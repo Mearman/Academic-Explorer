@@ -34,7 +34,7 @@ import {
   IconShare,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import React, { useEffect,useState } from "react";
+import React, { useMemo,useState } from "react";
 
 
 
@@ -78,10 +78,8 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
     hasFulltext: false,
   });
 
-  const [activeFiltersCount, setActiveFiltersCount] = useState(0);
-
-  // Calculate active filters count
-  useEffect(() => {
+  // Calculate active filters count from current filters
+  const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (filters.query) count++;
     if (filters.publicationYear[0] !== 1900 || filters.publicationYear[1] !== 2024) count++;
@@ -96,8 +94,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
     if (filters.languages.length > 0) count++;
     if (filters.hasAbstract) count++;
     if (filters.hasFulltext) count++;
-
-    setActiveFiltersCount(count);
+    return count;
   }, [filters]);
 
   const handleSearch = () => {
