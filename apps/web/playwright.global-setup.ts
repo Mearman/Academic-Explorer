@@ -80,7 +80,7 @@ async function globalSetup(config: FullConfig) {
       // Add timeout protection for the entire page load process
       await Promise.race([
         page.goto(baseURL, { waitUntil: "networkidle", timeout: 30000 }),
-        new Promise((_, reject) =>
+        new Promise((_resolve, reject) =>
           setTimeout(() => reject(new Error("Page load timeout")), 30000)
         )
       ]);
@@ -88,7 +88,7 @@ async function globalSetup(config: FullConfig) {
       // Wait for the application to initialize and cache to populate (with shorter timeout)
       await Promise.race([
         page.waitForTimeout(3000),
-        new Promise((_, reject) =>
+        new Promise((_resolve, reject) =>
           setTimeout(() => reject(new Error("Application initialization timeout")), 3000)
         )
       ]);
@@ -100,7 +100,7 @@ async function globalSetup(config: FullConfig) {
           path: STORAGE_STATE_PATH,
           indexedDB: true // Enable IndexedDB state persistence
         }),
-        new Promise((_, reject) =>
+        new Promise((_resolve, reject) =>
           setTimeout(() => reject(new Error("Storage state save timeout")), 10000)
         )
       ]);

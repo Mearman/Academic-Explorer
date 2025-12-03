@@ -7,7 +7,6 @@ import { logger } from "@bibgraph/utils";
 
 import { DexieCacheTier } from "../cache/dexie/dexie-cache-tier";
 import { isIndexedDBAvailable } from "../cache/dexie/entity-cache-db";
-
 import type { StaticEntityType } from "./static-data-utils";
 
 export interface StaticDataResult {
@@ -218,7 +217,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
   private getFilePath(entityType: StaticEntityType, id: string): string {
     // Sanitize ID for filesystem
-    const sanitizedId = id.replace(/[^a-zA-Z0-9-_]/g, "_");
+    const sanitizedId = id.replace(/[^\w-]/g, "_");
     return `${this.cacheDir}/${entityType}/${sanitizedId}.json`;
   }
 
@@ -470,6 +469,7 @@ class IndexedDBCacheTier implements CacheTierInterface {
 
   /**
    * Clear entities of a specific type
+   * @param entityType
    */
   async clearByType(entityType: StaticEntityType): Promise<number> {
     return this.dexieTier.clearByType(entityType);
@@ -546,6 +546,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
   /**
    * Create a typed HTTP error object
+   * @param response
    */
   private createHttpError(response: Response): {
     message: string;
@@ -561,6 +562,8 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
   /**
    * Calculate retry delay with exponential backoff and jitter
+   * @param attempt
+   * @param retryAfterSec
    */
   private calculateRetryDelay(attempt: number, retryAfterSec?: number): number {
     const base = this.retryConfig.baseDelayMs * Math.pow(2, attempt - 1);
@@ -573,6 +576,8 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
   /**
    * Update failure state for a URL
+   * @param url
+   * @param error
    */
   private updateFailureState(url: string, error: unknown): void {
     const prev = this.recentFailures.get(url) ?? {
@@ -631,6 +636,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
     /**
      * Handle successful fetch response
+     * @param response
      */
     const handleSuccessfulResponse = async (
       response: Response,
@@ -653,6 +659,8 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
     /**
      * Handle fetch error and determine if retry is needed
+     * @param error
+     * @param attempt
      */
     const handleFetchError = async (
       error: unknown,
@@ -695,7 +703,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
         }
 
         const delay = this.calculateRetryDelay(attempt, retryAfterSec);
-        await new Promise((r) => setTimeout(r, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         return attemptFetch(attempt + 1);
       }
 
@@ -789,8 +797,12 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
 /**
  * Helper function to calculate cache statistics
+ * @param stats
+ * @param stats.requests
+ * @param stats.hits
+ * @param stats.totalLoadTime
  */
-function calculateCacheStats(stats: {
+const calculateCacheStats = (stats: {
   requests: number;
   hits: number;
   totalLoadTime: number;
@@ -798,14 +810,12 @@ function calculateCacheStats(stats: {
   requests: number;
   hits: number;
   averageLoadTime: number;
-} {
-  return {
+} => ({
     requests: stats.requests,
     hits: stats.hits,
     averageLoadTime:
       stats.requests > 0 ? stats.totalLoadTime / stats.requests : 0,
-  };
-}
+  });
 
 /**
  * Multi-tier static data provider with automatic fallback and environment detection
@@ -1085,6 +1095,7 @@ class StaticDataProvider {
 
   /**
    * Clear IndexedDB cache entries by entity type
+   * @param entityType
    */
   async clearIndexedDBByType(entityType: StaticEntityType): Promise<number> {
     return this.indexedDBCacheTier.clearByType(entityType);
@@ -1120,6 +1131,9 @@ class StaticDataProvider {
   /**
    * Set static data in the cache (memory and IndexedDB tiers)
    * Used to cache API results for future lookups
+   * @param entityType
+   * @param id
+   * @param data
    */
   async setStaticData(
     entityType: StaticEntityType,
