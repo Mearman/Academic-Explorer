@@ -74,8 +74,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await expect(switchInput).not.toBeChecked();
 
     // Wait for setting to save and any pending requests
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear tracked requests before navigating
     apiRequests.length = 0;
 
@@ -84,8 +83,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await page.waitForLoadState('load');
 
     // Wait for API requests to complete
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify work requests were made
     const workRequests = apiRequests.filter(req => req.url.includes('/works'));
     expect(workRequests.length).toBeGreaterThan(0);
@@ -125,7 +123,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
     if (await switchInput.isChecked()) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify it's OFF
@@ -141,8 +139,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await expect(switchInput).toBeChecked();
 
     // Wait for setting to save
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Clear tracked requests again before navigating
     apiRequests.length = 0;
 
@@ -151,8 +148,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await page.waitForLoadState('load');
 
     // Wait for API requests to complete
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify work requests were made
     const workRequests = apiRequests.filter(req => req.url.includes('/works'));
     expect(workRequests.length).toBeGreaterThan(0);
@@ -178,7 +174,7 @@ test.describe('Xpac Toggle Functionality', () => {
     // Toggle OFF
     if (await switchInput.isChecked()) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify toggle is OFF
@@ -211,7 +207,7 @@ test.describe('Xpac Toggle Functionality', () => {
     // Ensure toggle is ON
     if (!(await switchInput.isChecked())) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify toggle is ON
@@ -258,7 +254,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
     if (await switchInput.isChecked()) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify OFF state
@@ -269,8 +265,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify work requests do NOT include include_xpac
     const workRequests = apiRequests.filter(req => req.url.includes('/works'));
     const requestsWithXpac = workRequests.filter(req =>
@@ -287,8 +282,7 @@ test.describe('Xpac Toggle Functionality', () => {
     const refreshedToggle = page.getByTestId('xpac-toggle');
     const refreshedInput = refreshedToggle.locator('input[type="checkbox"]');
     await refreshedInput.click();
-    await page.waitForTimeout(500);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify ON state
     await expect(refreshedInput).toBeChecked();
 
@@ -296,8 +290,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
     await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Verify work requests DO include include_xpac=true
     const workRequests2 = apiRequests.filter(req => req.url.includes('/works'));
     const requestsWithXpac2 = workRequests2.filter(req =>
@@ -323,13 +316,13 @@ test.describe('Xpac Toggle Functionality', () => {
       await switchInput.click();
       // Verify the state changed
       const newIsChecked = switchInput;
-      await expect(newIsChecked).toBeChecked({ checked:  });
-      await page.waitForTimeout(200);
+      await expect(newIsChecked).toBeChecked({ checked: !isChecked });
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Verify page is still responsive and no errors
-    const bodyText = page;
-    await expect(bodyText).toHaveText('body', );
+    const bodyText = page.locator('body');
+    await expect(bodyText).not.toContainText('error', { ignoreCase: true });
 
     const hasError = bodyText?.toLowerCase().includes('error') &&
                      !bodyText?.toLowerCase().includes('0 errors');
@@ -406,7 +399,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
     if (!(await switchInput.isChecked())) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Navigate to author detail page
@@ -414,8 +407,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
     await page.goto(`/#/authors/${authorId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter for works requests
     const worksRequests = apiRequests.filter(req =>
       req.url.includes('/works')
@@ -459,7 +451,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
     if (await switchInput.isChecked()) {
       await switchInput.click();
-      await page.waitForTimeout(500);
+      // Removed: waitForTimeout - use locator assertions instead
     }
 
     // Navigate to author detail page
@@ -467,8 +459,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
     await page.goto(`/#/authors/${authorId}`, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Filter for works requests
     const worksRequests = apiRequests.filter(req =>
       req.url.includes('/works')

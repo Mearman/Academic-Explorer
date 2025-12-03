@@ -119,13 +119,13 @@ const waitForContent = async (page: any, timeout: number): Promise<void> => {
 
   try {
     // Try primary selector with shorter timeout
-    await page.waitForSelector('main', { timeout: shortTimeout });
+    await page.locator('main', { timeout: shortTimeout }).waitFor();
     return;
   } catch {
     // Try fallback selectors immediately with short timeout
     for (const selector of fallbackSelectors) {
       try {
-        await page.waitForSelector(selector, { timeout: 2000 });
+        await page.locator(selector, { timeout: 2000 }).waitFor();
         return;
       } catch {
         // Try next fallback
@@ -190,7 +190,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(directUrl.url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -216,7 +216,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${apiDomainUrl.url}`);
 
-        await page.goto(apiDomainUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(apiDomainUrl.url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -242,7 +242,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing: ${fullHttpsUrl.url}`);
 
-        await page.goto(fullHttpsUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(fullHttpsUrl.url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -274,7 +274,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing query params: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(directUrl.url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -313,7 +313,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
       for (const { format, url } of permutations.slice(0, 3)) { // Test first 3 formats
         console.log(`Testing format ${format}: ${url}`);
 
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         const contentSelector = await page.locator('main').count() > 0 ? 'main' : 'body';
@@ -355,7 +355,7 @@ test.describe('URL Permutations - E2E Browser Tests', () => {
 
         console.log(`Testing ${entityType}: ${directUrl.url}`);
 
-        await page.goto(directUrl.url, { waitUntil: 'networkidle', timeout: 30_000 });
+        await page.goto(directUrl.url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
         await waitForContent(page, timeout);
 
         // Verify no error state
@@ -393,19 +393,19 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     const appUrl = `${BASE_URL}/#/works/${workId}`;
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify work page displays expected content (MSW returns mock data with ID in title)
     // MSW mock factory creates works with display_name: "Mock Work {id}"
-    expect(pageText).toContain(`Mock Work ${workId}`);
+    expect(textContent).toContain(`Mock Work ${workId}`);
 
     // Verify page structure includes key sections
-    expect(pageText).toMatch(/author|cited|publication|year/i);
+    expect(textContent).toMatch(/author|cited|publication|year/i);
 
     console.log(`✓ Work page displays content for ${workId}`);
   });
@@ -415,19 +415,19 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     const appUrl = `${BASE_URL}/#/authors/${authorId}`;
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify author page displays expected content (MSW returns mock data with ID in title)
     // MSW mock factory creates authors with display_name: "Mock Author {id}"
-    expect(pageText).toContain(`Mock Author ${authorId}`);
+    expect(textContent).toContain(`Mock Author ${authorId}`);
 
     // Verify page structure includes key sections
-    expect(pageText).toMatch(/cited|publications|works/i);
+    expect(textContent).toMatch(/cited|publications|works/i);
 
     console.log(`✓ Author page displays content for ${authorId}`);
   });
@@ -446,17 +446,17 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API returned ${apiData.results.length} results`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify at least the first few results are displayed
     const firstResults = apiData.results.slice(0, 3);
     for (const result of firstResults) {
-      expect(pageText).toContain(result.display_name);
+      expect(textContent).toContain(result.display_name);
     }
 
     console.log(`✓ Filtered results page displays API data: ${firstResults.map((r: any) => r.display_name).join(', ')}`);
@@ -481,16 +481,16 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API order (citations): ${apiCitations.join(' → ')}`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify the names appear in the page content
     for (const name of apiNames) {
-      expect(pageText).toContain(name);
+      expect(textContent).toContain(name);
     }
 
     // Note: We can't easily verify the exact order in rendered HTML without more specific selectors
@@ -512,17 +512,17 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API returned ${apiData.results.length} autocomplete suggestions`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify at least some suggestions are displayed
     const firstSuggestions = apiData.results.slice(0, 3);
     for (const suggestion of firstSuggestions) {
-      expect(pageText).toContain(suggestion.display_name);
+      expect(textContent).toContain(suggestion.display_name);
     }
 
     console.log(`✓ Autocomplete page displays API suggestions: ${firstSuggestions.map((s: any) => s.display_name).join(', ')}`);
@@ -542,19 +542,19 @@ test.describe('Data Integrity - API vs Displayed Content', () => {
     console.log(`API Data (select=${select}): ${apiData.display_name}`);
 
     // Navigate to app
-    await page.goto(appUrl, { waitUntil: 'networkidle', timeout: 30_000 });
+    await page.goto(appUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForContent(page, getTimeout());
 
     // Get page content
     const pageText = page.locator('main').first();
-    await expect(pageText).toHaveText();
+    const textContent = await pageText.textContent();
 
     // Verify selected fields are displayed
-    expect(pageText).toContain(apiData.display_name);
+    expect(textContent).toContain(apiData.display_name);
 
     if (apiData.orcid) {
       const orcidId = apiData.orcid.replace('https://orcid.org/', '');
-      expect(pageText).toContain(orcidId);
+      expect(textContent).toContain(orcidId);
     }
 
     console.log(`✓ Select parameter page displays selected API fields: ${apiData.display_name}`);

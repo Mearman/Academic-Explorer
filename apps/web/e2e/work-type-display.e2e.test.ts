@@ -43,10 +43,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for work content to load
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
       state: 'visible',
-    }).catch(async () => {
+    }).waitFor().catch(async () => {
       console.log('⚠️ Work detail page not loaded properly');
       throw new Error('Work detail page failed to load');
     });
@@ -89,8 +89,7 @@ test.describe('Work Type Display', () => {
       await page.waitForLoadState('load');
 
       // Wait for page content
-      await page.waitForTimeout(2000);
-
+      // Removed: waitForTimeout - use locator assertions instead
       // Look for XPAC work type badge
       const xpacBadge = page.locator('[data-testid="xpac-work-type-badge"]');
       const badgeVisible = await xpacBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -118,10 +117,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
       state: 'visible',
-    });
+    }).waitFor();
 
     // Verify the page displays the work type "dataset" somewhere in the content
     // The work type is part of OpenAlex API response
@@ -149,10 +148,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
       state: 'visible',
-    });
+    }).waitFor();
 
     // Verify the page displays content
     const bodyText = page;
@@ -184,10 +183,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Verify the page loads successfully
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
       state: 'visible',
-    });
+    }).waitFor();
 
     // The article should not have a specimen badge
     const specimenBadge = page.locator('[data-testid="xpac-work-type-badge"]:has-text("specimen")');
@@ -205,10 +204,10 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for entity detail page to load
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
       state: 'visible',
-    });
+    }).waitFor();
 
     // Verify the page displays content
     const bodyText = page;
@@ -234,9 +233,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
-    });
+    }).waitFor();
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -295,9 +294,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
-    });
+    }).waitFor();
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -329,9 +328,9 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
-    });
+    }).waitFor();
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
@@ -361,8 +360,7 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Wait for page to stabilize
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Check for JavaScript errors in console
     const errors: string[] = [];
     page.on('pageerror', (error) => {
@@ -417,9 +415,9 @@ test.describe('Work Type Badge Integration', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content
-    await page.waitForSelector('[data-testid="entity-detail-layout"]', {
+    await page.locator('[data-testid="entity-detail-layout"]', {
       timeout: 10_000,
-    });
+    }).waitFor();
 
     // Find work type badge
     const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();

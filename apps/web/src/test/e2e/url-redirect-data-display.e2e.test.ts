@@ -23,7 +23,7 @@ test.describe("URL Redirect and Data Display", () => {
     expect(currentUrl).toContain("bioplastics");
 
     // Wait for table data to load - the app uses Mantine table
-    await page.waitForSelector('table tbody tr', { timeout: 15_000 });
+    await page.locator('table tbody tr').waitFor({ timeout: 15_000 });
 
     // Verify that results are displayed in the table
     const tableRows = await page.locator('table tbody tr').count();
@@ -38,7 +38,7 @@ test.describe("URL Redirect and Data Display", () => {
     await page.goto("/#/authors/A5017898742");
 
     // Wait for author name to be displayed
-    await page.waitForSelector('h1', { timeout: 15_000 });
+    await page.locator('h1').waitFor({ timeout: 15_000 });
 
     // Verify the author name is displayed
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Joseph Mearman');

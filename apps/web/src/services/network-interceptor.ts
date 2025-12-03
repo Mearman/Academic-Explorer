@@ -54,12 +54,12 @@ export class NetworkInterceptor {
         Promise.reject(
           new Error("fetch not available in Node.js"),
         )) satisfies typeof fetch;
-      this.originalXhrOpen = (): void => {
+      this.originalXhrOpen = ((): void => {
         // No-op for Node.js environment
-      } satisfies typeof XMLHttpRequest.prototype.open;
-      this.originalXhrSend = (): void => {
+      }) satisfies typeof XMLHttpRequest.prototype.open;
+      this.originalXhrSend = ((): void => {
         // No-op for Node.js environment
-      } satisfies typeof XMLHttpRequest.prototype.send;
+      }) satisfies typeof XMLHttpRequest.prototype.send;
     }
   }
 

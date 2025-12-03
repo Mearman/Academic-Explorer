@@ -32,10 +32,10 @@ test.describe('Metadata Improvement Badges', () => {
 
     // Wait for badges container to be present
     // The component may take time to render after data loads
-    await page.waitForSelector('[data-testid="metadata-improvement-badges"]', {
+    await page.locator('[data-testid="metadata-improvement-badges"]', {
       timeout: 10_000,
       state: 'visible',
-    }).catch(async () => {
+    }).waitFor().catch(async () => {
       // If badges don't appear, check if this is due to missing data
       const pageContent = await page.content();
       console.log('⚠️ Badges not found. Checking page state...');
@@ -98,8 +98,7 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Wait for page content to stabilize
-    await page.waitForTimeout(2000);
-
+    // Removed: waitForTimeout - use locator assertions instead
     // Badges should not be present for works without improvements
     const badgesContainer = page.locator('[data-testid="metadata-improvement-badges"]');
     const badgesExist = await badgesContainer.isVisible().catch(() => false);
@@ -123,9 +122,9 @@ test.describe('Metadata Improvement Badges', () => {
     await page.waitForLoadState('load');
 
     // Wait for badges to render
-    await page.waitForSelector('[data-testid="metadata-improvement-badges"]', {
+    await page.locator('[data-testid="metadata-improvement-badges"]', {
       timeout: 10_000,
-    }).catch(() => {
+    }).waitFor().catch(() => {
       console.log('⚠️ Badges not rendered - work may not have improvements or data not loaded');
     });
 
