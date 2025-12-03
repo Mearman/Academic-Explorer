@@ -218,11 +218,24 @@ export default tseslint.config([
             "unicorn/filename-case": "off", // We use PascalCase for components
             "unicorn/no-null": "off", // null is common in React/DOM APIs
             "unicorn/prefer-module": "off", // We support both CJS and ESM
+            "unicorn/no-array-reduce": "off", // reduce is idiomatic for aggregation
+            "unicorn/prefer-single-call": "off", // Multiple push calls are readable
+            "unicorn/no-immediate-mutation": "off", // Mutation after creation is common pattern
+            "unicorn/catch-error-name": "off", // Existing code uses "err" consistently
+            "unicorn/prefer-global-this": "off", // window is standard for browser code
+            "unicorn/no-array-for-each": "off", // forEach is idiomatic JavaScript
+            "unicorn/switch-case-braces": "off", // Stylistic preference, not enforced
+            "unicorn/consistent-function-scoping": "off", // Closures are sometimes intentional
+            "unicorn/prefer-add-event-listener": "off", // onmessage is common for workers
+            "unicorn/no-useless-switch-case": "off", // Fall-through cases are intentional
 
             // SonarJS rules (from flat/recommended)
             ...sonarjsPlugin.configs.recommended.rules,
             "sonarjs/cognitive-complexity": ["warn", 25], // Allow moderate complexity
             "sonarjs/no-duplicate-string": "off", // Too noisy for string literals
+            "sonarjs/prefer-regexp-exec": "off", // Conflicts with unicorn/prefer-regexp-test
+            "sonarjs/redundant-type-aliases": "off", // Type aliases provide semantic meaning
+            "sonarjs/no-nested-template-literals": "off", // Nested templates are readable
         },
         settings: {
             "import/resolver": {

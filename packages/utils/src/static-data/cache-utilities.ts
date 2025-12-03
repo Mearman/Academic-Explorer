@@ -263,10 +263,10 @@ export const parseOpenAlexUrl = (url: string): ParsedOpenAlexUrl | null => {
 				/^https?:\/\/openalex\.org\/[A-Z]\d+$/i.test(decodedCandidate) ||
 				/^https%3A%2F%2Fopenalex\.org%2F[A-Z]\d+$/i.test(entityIdCandidate)
 			const isOrcidId =
-				/^(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
-				/^https?:\/\/orcid\.org\/(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
-				/^orcid:(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
-				/^https%3A%2F%2Forcid\.org%2F(\d{4}-){3}\d{3}[0-9X]$/i.test(entityIdCandidate)
+				/^(?:\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
+				/^https?:\/\/orcid\.org\/(?:\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
+				/^orcid:(?:\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
+				/^https%3A%2F%2Forcid\.org%2F(?:\d{4}-){3}\d{3}[0-9X]$/i.test(entityIdCandidate)
 
 			if (isOpenAlexId || isOpenAlexUrl || isOrcidId) {
 				entityId = entityIdCandidate

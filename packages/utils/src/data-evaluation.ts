@@ -253,7 +253,8 @@ export const compareBibGraphResults = (bibGraphResults: WorkReference[], dataset
  * Stub implementation - applications should provide their own
  * @param _dataset
  */
-export const searchBasedOnSTARDataset = (_dataset: STARDataset): WorkReference[] => {
+export const searchBasedOnSTARDataset = (dataset: STARDataset): WorkReference[] => {
+	void dataset; // Intentionally unused in stub implementation
 	logger.warn(DATA_EVALUATION_LOG_CONTEXT, "searchBasedOnSTARDataset: Using stub implementation")
 	return []
 };
