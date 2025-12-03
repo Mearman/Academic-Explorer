@@ -359,7 +359,7 @@ const ExternalIdRoute = () => {
         );
 
         // Fallback to search
-        void navigate({
+        navigate({
           to: "/search",
           search: { q: externalId, filter: undefined, search: undefined },
           replace: true,

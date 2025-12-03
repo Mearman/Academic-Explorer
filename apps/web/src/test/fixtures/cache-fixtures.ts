@@ -32,6 +32,7 @@ const HAR_CACHE_DIR = path.join(__dirname, "../../test-results/har-cache");
  * @param testTitle - The test title to generate a cache key from
  * @returns An 8-character hexadecimal cache key
  */
+// eslint-disable-next-line sonarjs/hashing -- MD5 acceptable for non-security test cache keys (deterministic identifiers)
 const getCacheKey = (testTitle: string): string => crypto.createHash("md5").update(testTitle).digest("hex").slice(0, 8);
 
 /**
