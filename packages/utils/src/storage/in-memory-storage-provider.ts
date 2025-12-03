@@ -74,7 +74,7 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	}
 
 	async getAllLists(): Promise<CatalogueList[]> {
-		const allLists = Array.from(this.lists.values());
+		const allLists = [...this.lists.values()];
 		// Sort by updatedAt descending (most recent first)
 		return allLists.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 	}
@@ -235,10 +235,10 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 		}
 
 		// Update positions
-		for (let i = 0; i < orderedEntityIds.length; i++) {
-			const entity = this.entities.get(orderedEntityIds[i]);
+		for (const [i, orderedEntityId] of orderedEntityIds.entries()) {
+			const entity = this.entities.get(orderedEntityId);
 			if (entity) {
-				this.entities.set(orderedEntityIds[i], {
+				this.entities.set(orderedEntityId, {
 					...entity,
 					position: i + 1
 				});

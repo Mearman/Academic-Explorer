@@ -172,7 +172,7 @@ export const isFieldQuery = (term: QueryTerm | FieldQuery): term is FieldQuery =
  * Get all unique field names from parsed query
  * @param parsedQuery
  */
-export const getQueryFields = (parsedQuery: ParsedQuery): string[] => Array.from(new Set(parsedQuery.fieldQueries.map((fq) => fq.field)));
+export const getQueryFields = (parsedQuery: ParsedQuery): string[] => [...new Set(parsedQuery.fieldQueries.map((fq) => fq.field))];
 
 /**
  * Get field queries for a specific field

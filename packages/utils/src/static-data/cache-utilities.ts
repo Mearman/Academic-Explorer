@@ -183,7 +183,7 @@ export const generateContentHash = async (data: unknown): Promise<string> => {
 		// Use dynamic import for crypto to support both Node.js and browser environments
 		if (globalThis.process?.versions?.node) {
 			// Node.js environment
-			const { createHash } = await import("crypto")
+			const { createHash } = await import("node:crypto")
 			return createHash("sha256").update(jsonString).digest("hex").slice(0, 16)
 		} else {
 			// Browser environment - use a simple hash fallback
@@ -405,7 +405,7 @@ export const encodeFilename = (filename: string): string => {
 
 		// Then encode all special characters with hex format
 		// Encodes: filesystem-unsafe (<>"|*?/\) + URL-special (:=%&+,)
-		return decoded.replace(
+		return decoded.replaceAll(
 			/["%&*+,/:<=>?\\|]/g,
 			(char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
 		)
@@ -416,7 +416,7 @@ export const encodeFilename = (filename: string): string => {
 			filename,
 			error,
 		})
-		return filename.replace(
+		return filename.replaceAll(
 			/["*/<>?\\|]/g,
 			(char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
 		)
@@ -428,9 +428,9 @@ export const encodeFilename = (filename: string): string => {
  * Reverses the encoding done by encodeFilename
  * @param filename
  */
-export const decodeFilename = (filename: string): string => filename.replace(/__([0-9A-F]+)__/g, (match, hex) => {
+export const decodeFilename = (filename: string): string => filename.replaceAll(/__([0-9A-F]+)__/g, (match, hex) => {
 		const hexStr = String(hex)
-		const codePoint = parseInt(hexStr, 16)
+		const codePoint = Number.parseInt(hexStr, 16)
 		return String.fromCharCode(codePoint)
 	});
 
@@ -521,7 +521,7 @@ const generateEntityFilePath = ({
 
 	if (pathSegments.length > 2) {
 		// For nested paths: /authors/A123/works → authors/A123/works.json
-		const fileName = pathSegments[pathSegments.length - 1]
+		const fileName = pathSegments.at(-1)
 		const dirPath = pathSegments.slice(0, -1).join("/")
 		return `${staticDataRoot}/${dirPath}/${fileName}.json`
 	}
@@ -541,7 +541,7 @@ const generateBaseCollectionPath = ({
 	}
 
 	// For nested paths without meaningful query params
-	const fileName = pathSegments[pathSegments.length - 1]
+	const fileName = pathSegments.at(-1)
 	const dirPath = pathSegments.slice(0, -1).join("/")
 	return `${staticDataRoot}/${dirPath}/${fileName}.json`
 };
@@ -891,8 +891,8 @@ const sortUrlsByRecency = (entry: FileEntry): void => {
 			entry.equivalentUrls.sort((a, b) => {
 				const taRaw = entry.urlTimestamps?.[a]
 				const tbRaw = entry.urlTimestamps?.[b]
-				const ta = taRaw ? Date.parse(taRaw) : NaN
-				const tb = tbRaw ? Date.parse(tbRaw) : NaN
+				const ta = taRaw ? Date.parse(taRaw) : Number.NaN
+				const tb = tbRaw ? Date.parse(tbRaw) : Number.NaN
 
 				// If both invalid or equal, keep original order
 				if (Number.isNaN(ta) && Number.isNaN(tb)) return 0
@@ -1041,7 +1041,7 @@ export const reconstructPossibleCollisions = ({
 		// cursor token at the end. Preserve raw characters so tests can match exact
 		// literal strings (they expect unencoded ':' and '/'). This mirrors prior
 		// implementation.
-		let cursorLess = queryStr.replace(/[&?]cursor=\*/g, "")
+		let cursorLess = queryStr.replaceAll(/[&?]cursor=\*/g, "")
 		if (cursorLess.startsWith("&")) cursorLess = cursorLess.slice(1)
 		if (cursorLess.endsWith("&")) cursorLess = cursorLess.slice(0, -1)
 		const withCursor = cursorLess ? `?${cursorLess}&cursor=MTIzNDU2` : "?cursor=MTIzNDU2"

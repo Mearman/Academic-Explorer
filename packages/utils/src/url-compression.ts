@@ -59,9 +59,9 @@ export const compressListData = (data: CompressedListData): string => {
 
     // URL-safe base64 (replace + and / with - and _)
     const urlSafe = base64
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+      .replaceAll('+', '-')
+      .replaceAll('/', '_')
+      .replaceAll('=', '');
 
     return urlSafe;
   } catch (error) {
@@ -76,7 +76,7 @@ export const compressListData = (data: CompressedListData): string => {
 export const decompressListData = (compressedData: string): CompressedListData | null => {
   try {
     // Restore base64 padding
-    let base64 = compressedData.replace(/-/g, '+').replace(/_/g, '/');
+    let base64 = compressedData.replaceAll('-', '+').replaceAll('_', '/');
     while (base64.length % 4) {
       base64 += '=';
     }
@@ -190,16 +190,16 @@ export const validateListData = (data: unknown): data is CompressedListData => {
     return false;
   }
 
-  const validEntityTypes = [
+  const validEntityTypes = new Set([
     'works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'
-  ];
+  ]);
 
   for (const entity of entities) {
     if (!entity || typeof entity !== 'object') {
       return false;
     }
 
-    if (!entity.entityType || !validEntityTypes.includes(entity.entityType)) {
+    if (!entity.entityType || !validEntityTypes.has(entity.entityType)) {
       return false;
     }
 

@@ -205,7 +205,7 @@ export class Octree<T> {
    */
   findNearest(point: Position3D, maxDistance?: number): OctreeItem<T> | null {
     let nearest: OctreeItem<T> | null = null;
-    let nearestDistSq = maxDistance !== undefined ? maxDistance * maxDistance : Infinity;
+    let nearestDistSq = maxDistance === undefined ? Infinity : maxDistance * maxDistance;
 
     this.findNearestNode(this.root, point, (item, distSq) => {
       if (distSq < nearestDistSq) {
@@ -226,7 +226,7 @@ export class Octree<T> {
    */
   findKNearest(point: Position3D, k: number, maxDistance?: number): OctreeItem<T>[] {
     const candidates: Array<{ item: OctreeItem<T>; distSq: number }> = [];
-    const maxDistSq = maxDistance !== undefined ? maxDistance * maxDistance : Infinity;
+    const maxDistSq = maxDistance === undefined ? Infinity : maxDistance * maxDistance;
 
     this.findNearestNode(this.root, point, (item, distSq) => {
       if (distSq <= maxDistSq) {

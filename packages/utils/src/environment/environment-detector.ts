@@ -98,7 +98,7 @@ export class EnvironmentDetector {
 	}
 
 	private static getModeFromViteEnv(): EnvironmentMode | null {
-		if (typeof import.meta === "undefined" || !("env" in import.meta)) {
+		if (import.meta === undefined || !("env" in import.meta)) {
 			return null
 		}
 
@@ -262,9 +262,9 @@ export class EnvironmentDetector {
 			commitHash:
 				typeof commitHash === "string"
 					? commitHash
-					: typeof shortCommitHash === "string"
+					: (typeof shortCommitHash === "string"
 						? shortCommitHash
-						: undefined,
+						: undefined),
 		}
 	}
 

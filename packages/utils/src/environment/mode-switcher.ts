@@ -167,7 +167,7 @@ export class ModeSwitcher {
 		this._listeners.push(listener)
 		return () => {
 			const index = this._listeners.indexOf(listener)
-			if (index > -1) {
+			if (index !== -1) {
 				this._listeners.splice(index, 1)
 			}
 		}
@@ -275,9 +275,9 @@ export class ModeSwitcher {
 				mode:
 					forcedMode === "development"
 						? EnvironmentMode.DEVELOPMENT
-						: forcedMode === "production"
+						: (forcedMode === "production"
 							? EnvironmentMode.PRODUCTION
-							: EnvironmentMode.TEST,
+							: EnvironmentMode.TEST),
 			}
 		}
 
@@ -299,14 +299,10 @@ export class ModeSwitcher {
 	}): CacheConfig {
 		let config: CacheConfig
 
-		if (options.useCase) {
-			config = CacheConfigFactory.createOptimizedConfig({
+		config = options.useCase ? CacheConfigFactory.createOptimizedConfig({
 				useCase: options.useCase,
 				context,
-			})
-		} else {
-			config = CacheConfigFactory.createCacheConfig(context)
-		}
+			}) : CacheConfigFactory.createCacheConfig(context);
 
 		// Apply option overrides
 		if (options.maxCacheSize) {

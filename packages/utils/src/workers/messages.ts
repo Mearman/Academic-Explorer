@@ -78,20 +78,20 @@ export const forceSimulationReheatMessageSchema = z.object({
 	links: z.array(forceSimulationLinkSchema),
 	config: forceSimulationConfigSchema.optional(),
 	pinnedNodes: z.array(z.string()).optional(),
-	alpha: z.number().optional().default(1.0),
+	alpha: z.number().optional().default(1),
 })
 
 export const forceSimulationUpdateLinksMessageSchema = z.object({
 	type: z.literal("FORCE_SIMULATION_UPDATE_LINKS"),
 	links: z.array(forceSimulationLinkSchema),
-	alpha: z.number().optional().default(1.0),
+	alpha: z.number().optional().default(1),
 })
 
 export const forceSimulationUpdateNodesMessageSchema = z.object({
 	type: z.literal("FORCE_SIMULATION_UPDATE_NODES"),
 	nodes: z.array(forceSimulationNodeSchema),
 	pinnedNodes: z.array(z.string()).optional(),
-	alpha: z.number().optional().default(1.0),
+	alpha: z.number().optional().default(1),
 })
 
 // Task wrapper schema for worker pool

@@ -111,7 +111,7 @@ class LocalEventBus implements EventBus {
 		const handlers = this.listeners.get(eventType)
 		if (handlers) {
 			const index = handlers.indexOf(handler)
-			if (index >= 0) {
+			if (index !== -1) {
 				handlers.splice(index, 1)
 				this.listenerIds.delete(handler)
 			}

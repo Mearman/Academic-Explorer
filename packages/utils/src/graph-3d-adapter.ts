@@ -290,7 +290,7 @@ export const distance3D = (a: Position3D, b: Position3D): number => {
 	const dx = b.x - a.x
 	const dy = b.y - a.y
 	const dz = b.z - a.z
-	return Math.sqrt(dx * dx + dy * dy + dz * dz)
+	return Math.hypot(dx, dy, dz)
 };
 
 /**
@@ -310,7 +310,7 @@ export const lerp3D = (a: Position3D, b: Position3D, t: number): Position3D => (
  * @param v
  */
 export const normalize3D = (v: Position3D): Position3D => {
-	const len = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
+	const len = Math.hypot(v.x, v.y, v.z)
 	if (len === 0) return { x: 0, y: 0, z: 0 }
 	return {
 		x: v.x / len,

@@ -16,8 +16,8 @@ export interface EntityNavigator {
 /**
  * Navigation helper for handling entity routes and URL cleanup
  */
-export class NavigationHelper {
-	static createEntityNavigator(config: NavigationConfig): EntityNavigator {
+export const NavigationHelper = {
+	createEntityNavigator: (config: NavigationConfig): EntityNavigator => {
 		const { entityType, logContext = "EntityRoute" } = config;
 
 		return {
@@ -36,17 +36,11 @@ export class NavigationHelper {
 				// The actual implementation would check for malformed URLs and redirect
 			},
 		};
-	}
+	},
 
-	static createUrlRedirect(
-		fromPath: string,
-		toPath: string,
-		params: Record<string, string>
-	): { to: string; params: Record<string, string>; replace: boolean } {
-		return {
+	createUrlRedirect: (fromPath: string, toPath: string, params: Record<string, string>): { to: string; params: Record<string, string>; replace: boolean } => ({
 			to: toPath,
 			params,
 			replace: true,
-		};
-	}
-}
+		}),
+};

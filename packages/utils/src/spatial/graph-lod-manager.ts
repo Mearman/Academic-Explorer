@@ -48,10 +48,10 @@ export const DEFAULT_LOD_CONFIGS: Record<LODLevel, LODConfig> = {
   [LODLevel.HIGH]: {
     geometrySegments: 32,
     showLabels: true,
-    labelDetail: 1.0,
+    labelDetail: 1,
     useComplexMaterials: true,
     maxVisibleNodes: 500,
-    opacityMultiplier: 1.0,
+    opacityMultiplier: 1,
   },
   [LODLevel.MEDIUM]: {
     geometrySegments: 16,
@@ -286,8 +286,8 @@ export class GraphLODManager {
   ): Map<number, LODLevel> {
     const result = new Map<number, LODLevel>();
 
-    for (let i = 0; i < objects.length; i++) {
-      result.set(i, this.getEffectiveLOD(objects[i], cameraPosition));
+    for (const [i, object] of objects.entries()) {
+      result.set(i, this.getEffectiveLOD(object, cameraPosition));
     }
 
     return result;
@@ -335,7 +335,7 @@ export class GraphLODManager {
     const dx = a.x - b.x;
     const dy = a.y - b.y;
     const dz = a.z - b.z;
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    return Math.hypot(dx, dy, dz);
   }
 
   private updateAdaptiveLOD(): void {
@@ -395,8 +395,8 @@ export const extractFrustumPlanes = (projectionMatrix: number[], viewMatrix: num
     },
   ].map(plane => {
     // Normalize the plane
-    const len = Math.sqrt(
-      plane.normal.x ** 2 + plane.normal.y ** 2 + plane.normal.z ** 2
+    const len = Math.hypot(
+      plane.normal.x, plane.normal.y, plane.normal.z
     );
     return {
       normal: {
@@ -415,7 +415,7 @@ export const extractFrustumPlanes = (projectionMatrix: number[], viewMatrix: num
  * @param b
  */
 const multiplyMatrices = (a: number[], b: number[]): number[] => {
-  const result = new Array(16).fill(0);
+  const result: number[] = Array.from<number>({length: 16}).fill(0);
 
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
@@ -445,7 +445,7 @@ export const createFrustumBounds = (cameraPosition: Position3D, lookAt: Position
     z: lookAt.z - cameraPosition.z,
   };
 
-  const len = Math.sqrt(direction.x ** 2 + direction.y ** 2 + direction.z ** 2);
+  const len = Math.hypot(direction.x, direction.y, direction.z);
   const normalizedDir = {
     x: direction.x / len,
     y: direction.y / len,

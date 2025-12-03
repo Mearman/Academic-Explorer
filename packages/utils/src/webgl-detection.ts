@@ -207,7 +207,7 @@ export const getRecommendedRendererSettings = (result: WebGLDetectionResult): {
 		result.renderer?.toLowerCase().includes('mesa')
 
 	// Check texture size as proxy for GPU capability
-	const isHighEnd = (result.maxTextureSize ?? 0) >= 16384
+	const isHighEnd = (result.maxTextureSize ?? 0) >= 16_384
 
 	return {
 		antialias: result.antialiasSupported ?? false,

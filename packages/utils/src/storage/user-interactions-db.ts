@@ -21,7 +21,7 @@ class BookmarkEventEmitter {
     this.listeners.push(listener);
     return () => {
       const index = this.listeners.indexOf(listener);
-      if (index > -1) {
+      if (index !== -1) {
         this.listeners.splice(index, 1);
       }
     };
@@ -813,7 +813,7 @@ export class UserInteractionsService {
 				}
 			})
 
-			return Array.from(requestCounts.values())
+			return [...requestCounts.values()]
 				.sort((a, b) => b.count - a.count)
 				.slice(0, limit)
 		} catch (error) {
@@ -938,10 +938,7 @@ export class UserInteractionsService {
 
 						let updatedTags: string[] = []
 
-						if (replaceTags !== undefined) {
-							// Replace all tags
-							updatedTags = replaceTags
-						} else {
+						if (replaceTags === undefined) {
 							// Start with existing tags
 							updatedTags = [...(bookmark.tags || [])]
 
@@ -958,6 +955,9 @@ export class UserInteractionsService {
 							if (removeTags) {
 								updatedTags = updatedTags.filter(tag => !removeTags.includes(tag))
 							}
+						} else {
+							// Replace all tags
+							updatedTags = replaceTags
 						}
 
 						// Update the bookmark

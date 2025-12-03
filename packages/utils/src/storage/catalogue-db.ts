@@ -29,7 +29,7 @@ class CatalogueEventEmitter {
     this.listeners.push(listener);
     return () => {
       const index = this.listeners.indexOf(listener);
-      if (index > -1) {
+      if (index !== -1) {
         this.listeners.splice(index, 1);
       }
     };
@@ -560,8 +560,8 @@ export class CatalogueService {
 
       // Update positions atomically within a transaction
       await this.db.transaction("rw", this.db.catalogueEntities, async () => {
-        for (let i = 0; i < orderedEntityIds.length; i++) {
-          await this.db.catalogueEntities.update(orderedEntityIds[i], {
+        for (const [i, orderedEntityId] of orderedEntityIds.entries()) {
+          await this.db.catalogueEntities.update(orderedEntityId, {
             position: i + 1
           });
         }
@@ -921,9 +921,8 @@ export class CatalogueService {
       .equals([SPECIAL_LIST_IDS.HISTORY, params.entityType, params.entityId])
       .first();
 
-    if (existing) {
-      // Update existing record with new timestamp
-      if (existing.id) {
+    if (existing && // Update existing record with new timestamp
+      existing.id) {
         await this.db.catalogueEntities.update(existing.id, {
           addedAt: params.timestamp || new Date(),
           notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
@@ -934,7 +933,6 @@ export class CatalogueService {
 
         return existing.id;
       }
-    }
 
     // Add new history entry
     const notes = `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`;

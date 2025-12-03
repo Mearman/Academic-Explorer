@@ -16,7 +16,6 @@ import type {
 } from '@bibgraph/types';
 
 import type { GenericLogger } from '../logger.js';
-
 import type {
   CatalogueEntity,
   CatalogueList,

@@ -343,8 +343,8 @@ describe('extractFrustumPlanes', () => {
 
     // Each plane should have normalized normal
     for (const plane of planes) {
-      const normalLength = Math.sqrt(
-        plane.normal.x ** 2 + plane.normal.y ** 2 + plane.normal.z ** 2
+      const normalLength = Math.hypot(
+        plane.normal.x, plane.normal.y, plane.normal.z
       );
       expect(normalLength).toBeCloseTo(1, 5);
     }

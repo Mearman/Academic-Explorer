@@ -338,9 +338,9 @@ export const downloadExport = (content: string, format: ExportFormat, filename?:
 	const link = globalThis.document.createElement("a");
 	link.href = url;
 	link.download = defaultFilename;
-	globalThis.document.body.appendChild(link);
+	globalThis.document.body.append(link);
 	link.click();
-	globalThis.document.body.removeChild(link);
+	link.remove();
 	URL.revokeObjectURL(url);
 };
 
@@ -350,7 +350,7 @@ export const downloadExport = (content: string, format: ExportFormat, filename?:
  */
 const escapeCSV = (value: string): string => {
 	if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-		return `"${value.replace(/"/g, '""')}"`;
+		return `"${value.replaceAll('"', '""')}"`;
 	}
 	return value;
 };
@@ -360,8 +360,8 @@ const escapeCSV = (value: string): string => {
  * @param value
  */
 const escapeHTML = (value: string): string => value
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&#039;");
+		.replaceAll('&', "&amp;")
+		.replaceAll('<', "&lt;")
+		.replaceAll('>', "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll('\'', "&#039;");

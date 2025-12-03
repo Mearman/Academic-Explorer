@@ -37,7 +37,7 @@ const DEFAULT_CONFIG: CacheBrowserConfig = {
 	version: 1,
 	includeIndexedDB: true,
 	includeRepositoryStore: true,
-	maxScanItems: 10000,
+	maxScanItems: 10_000,
 	batchSize: 100,
 }
 

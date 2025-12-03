@@ -88,7 +88,7 @@ export class EntityDetectionService {
 
 				// Extract DOI part from various formats
 				if (doi.toLowerCase().startsWith("doi:")) {
-					doi = doi.substring(4)
+					doi = doi.slice(4)
 				}
 
 				// Remove any dx.doi.org prefix

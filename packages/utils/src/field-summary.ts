@@ -108,7 +108,7 @@ export const generateFieldListPreview = (selectFields: string[], maxLength = 50)
 	}
 
 	// Truncate and add ellipsis
-	return fieldList.substring(0, maxLength - 3) + "..."
+	return fieldList.slice(0, Math.max(0, maxLength - 3)) + "..."
 };
 
 /**

@@ -238,8 +238,8 @@ export const getDisplayName = (item: {
 export const formatLargeNumber = (num: number | null | undefined): string => {
 	if (!num || num === 0) return "0"
 
-	if (num >= 1000000) {
-		return `${(num / 1000000).toFixed(1)}M`
+	if (num >= 1_000_000) {
+		return `${(num / 1_000_000).toFixed(1)}M`
 	}
 
 	if (num >= 1000) {
@@ -297,7 +297,7 @@ export const chunk = <T>({ array, size }: { array: T[]; size: number }): T[][] =
  * Flatten a nested array by one level
  * @param arrays
  */
-export const flatten = <T>(arrays: T[][]): T[] => arrays.reduce((acc, arr) => acc.concat(arr), []);
+export const flatten = <T>(arrays: T[][]): T[] => arrays.flat();
 
 /**
  * Create a Map from an array using a key function
@@ -344,7 +344,7 @@ export const arrayToLookup = <T>({
  * Get unique values from an array
  * @param array
  */
-export const unique = <T>(array: T[]): T[] => Array.from(new Set(array));
+export const unique = <T>(array: T[]): T[] => [...new Set(array)];
 
 /**
  * Get intersection of two arrays

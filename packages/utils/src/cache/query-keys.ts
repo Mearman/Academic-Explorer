@@ -127,7 +127,7 @@ export const createSearchKey = ({
  */
 export const extractResourceType = (cacheKey: string): string | null => {
 	const colonIndex = cacheKey.indexOf(":")
-	return colonIndex > 0 ? cacheKey.substring(0, colonIndex) : null
+	return colonIndex > 0 ? cacheKey.slice(0, Math.max(0, colonIndex)) : null
 };
 
 /**

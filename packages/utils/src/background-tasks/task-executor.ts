@@ -190,7 +190,7 @@ export class BackgroundTaskExecutor {
    * Get all available strategies and their support status
    */
   getStrategies(): Array<{ name: BackgroundStrategy; supported: boolean; active: boolean }> {
-    return Array.from(this.strategies.entries()).map(([name, strategy]) => ({
+    return [...this.strategies.entries()].map(([name, strategy]) => ({
       name,
       supported: strategy.isSupported(),
       active: strategy === this.activeStrategy,

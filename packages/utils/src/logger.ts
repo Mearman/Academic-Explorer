@@ -44,7 +44,7 @@ export class GenericLogger {
 		}
 
 		const entry: LogEntry = {
-			id: Math.random().toString(36).substring(7),
+			id: Math.random().toString(36).slice(7),
 			timestamp: new Date(),
 			level,
 			category,
@@ -80,14 +80,25 @@ export class GenericLogger {
 			const logMessage = `[${category}] ${message}`
 			const logData = data ?? ""
 
-			if (level === "debug") {
+			switch (level) {
+			case "debug": {
 				console.debug(logMessage, logData)
-			} else if (level === "info") {
+			
+			break;
+			}
+			case "info": {
 				console.info(logMessage, logData)
-			} else if (level === "warn") {
+			
+			break;
+			}
+			case "warn": {
 				console.warn(logMessage, logData)
-			} else {
+			
+			break;
+			}
+			default: {
 				console.error(logMessage, logData)
+			}
 			}
 		}
 	}
@@ -138,9 +149,9 @@ export class GenericLogger {
 		const a = globalThis.document.createElement("a")
 		a.href = url
 		a.download = `logs-${new Date().toISOString().split("T")[0]}.json`
-		globalThis.document.body.appendChild(a)
+		globalThis.document.body.append(a)
 		a.click()
-		globalThis.document.body.removeChild(a)
+		a.remove()
 		URL.revokeObjectURL(url)
 	}
 
@@ -172,7 +183,7 @@ const toError = (error: unknown): Error => {
 // Convenience functions for common logging patterns
 export const createApiLogger = (logger: GenericLogger) => ({
 	logRequest: (url: string, method: string, status?: number, responseTime?: number) => {
-		const level = status && status >= 400 ? "error" : status && status >= 300 ? "warn" : "debug"
+		const level = status && status >= 400 ? "error" : (status && status >= 300 ? "warn" : "debug")
 		logger.log(level, "api", `${method} ${url}${status ? ` - ${String(status)}` : ""}`, {
 			url,
 			method,

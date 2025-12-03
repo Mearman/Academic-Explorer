@@ -157,12 +157,12 @@ export interface CacheStrategyConfig {
 /**
  * Cache strategy selector based on environment
  */
-export class CacheStrategySelector {
+export const CacheStrategySelector = {
 	/**
 	 * Get default cache strategy for environment mode
 	 * @param mode
 	 */
-	static getDefaultStrategy(mode: EnvironmentMode): CacheStrategy {
+	getDefaultStrategy: (mode: EnvironmentMode): CacheStrategy => {
 		switch (mode) {
 			case EnvironmentMode.DEVELOPMENT:
 				return CacheStrategy.DEVELOPMENT_DISK_WRITE
@@ -176,13 +176,13 @@ export class CacheStrategySelector {
 			default:
 				return CacheStrategy.DEVELOPMENT_MEMORY_ONLY
 		}
-	}
+	},
 
 	/**
 	 * Get cache strategy configuration for specific strategy
 	 * @param strategy
 	 */
-	static getStrategyConfig(strategy: CacheStrategy): CacheStrategyConfig {
+	getStrategyConfig: (strategy: CacheStrategy): CacheStrategyConfig => {
 		switch (strategy) {
 			case CacheStrategy.DEVELOPMENT_DISK_WRITE:
 				return {
@@ -359,7 +359,7 @@ export class CacheStrategySelector {
 					debug: false,
 				}
 		}
-	}
+	},
 
 	/**
 	 * Select optimal cache strategy based on build context
@@ -370,7 +370,7 @@ export class CacheStrategySelector {
 	 * @param root0.options.offline
 	 * @param root0.options.debug
 	 */
-	static selectStrategy({
+	selectStrategy: ({
 		context,
 		options,
 	}: {
@@ -380,7 +380,7 @@ export class CacheStrategySelector {
 			offline?: boolean
 			debug?: boolean
 		}
-	}): CacheStrategy {
+	}): CacheStrategy => {
 		const { useCase, offline, debug } = options ?? {}
 
 		// Handle special cases
@@ -418,13 +418,13 @@ export class CacheStrategySelector {
 
 		// Default fallback
 		return CacheStrategy.DEVELOPMENT_MEMORY_ONLY
-	}
+	},
 
 	/**
 	 * Get all available strategies for current environment
 	 * @param context
 	 */
-	static getAvailableStrategies(context: BuildContext): CacheStrategy[] {
+	getAvailableStrategies: (context: BuildContext): CacheStrategy[] => {
 		const strategies: CacheStrategy[] = []
 
 		// Always available
@@ -452,8 +452,8 @@ export class CacheStrategySelector {
 		}
 
 		return strategies
-	}
-}
+	},
+};
 
 /**
  * Convenience function to get cache strategy configuration

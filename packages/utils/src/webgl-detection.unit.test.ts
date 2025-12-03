@@ -49,15 +49,15 @@ describe('WebGL Detection', () => {
       // Mock canvas and WebGL2 context
       const mockGl = {
         getParameter: vi.fn().mockImplementation((param: number) => {
-          if (param === 0x9245) return 'Test Renderer'; // UNMASKED_RENDERER_WEBGL
-          if (param === 0x9246) return 'Test Vendor'; // UNMASKED_VENDOR_WEBGL
-          if (param === 0x0D33) return 16384; // MAX_TEXTURE_SIZE
-          if (param === 0x8B4A) return 256; // MAX_VERTEX_UNIFORM_VECTORS
+          if (param === 0x92_45) return 'Test Renderer'; // UNMASKED_RENDERER_WEBGL
+          if (param === 0x92_46) return 'Test Vendor'; // UNMASKED_VENDOR_WEBGL
+          if (param === 0x0D_33) return 16_384; // MAX_TEXTURE_SIZE
+          if (param === 0x8B_4A) return 256; // MAX_VERTEX_UNIFORM_VECTORS
           return null;
         }),
         getExtension: vi.fn().mockImplementation((name: string) => {
           if (name === 'WEBGL_debug_renderer_info') {
-            return { UNMASKED_VENDOR_WEBGL: 0x9246, UNMASKED_RENDERER_WEBGL: 0x9245 };
+            return { UNMASKED_VENDOR_WEBGL: 0x92_46, UNMASKED_RENDERER_WEBGL: 0x92_45 };
           }
           if (name === 'WEBGL_lose_context') {
             return { loseContext: vi.fn() };
@@ -65,8 +65,8 @@ describe('WebGL Detection', () => {
           return null;
         }),
         getContextAttributes: vi.fn().mockReturnValue({ antialias: true }),
-        MAX_TEXTURE_SIZE: 0x0D33,
-        MAX_VERTEX_UNIFORM_VECTORS: 0x8B4A,
+        MAX_TEXTURE_SIZE: 0x0D_33,
+        MAX_VERTEX_UNIFORM_VECTORS: 0x8B_4A,
       };
 
       const mockCanvas = {
@@ -91,8 +91,8 @@ describe('WebGL Detection', () => {
         getParameter: vi.fn().mockReturnValue('Test Renderer'),
         getExtension: vi.fn().mockReturnValue(null),
         getContextAttributes: vi.fn().mockReturnValue({ antialias: false }),
-        MAX_TEXTURE_SIZE: 0x0D33,
-        MAX_VERTEX_UNIFORM_VECTORS: 0x8B4A,
+        MAX_TEXTURE_SIZE: 0x0D_33,
+        MAX_VERTEX_UNIFORM_VECTORS: 0x8B_4A,
       };
 
       const mockCanvas = {
@@ -131,8 +131,8 @@ describe('WebGL Detection', () => {
         getParameter: vi.fn().mockReturnValue('Test'),
         getExtension: vi.fn().mockReturnValue(null),
         getContextAttributes: vi.fn().mockReturnValue({ antialias: false }),
-        MAX_TEXTURE_SIZE: 0x0D33,
-        MAX_VERTEX_UNIFORM_VECTORS: 0x8B4A,
+        MAX_TEXTURE_SIZE: 0x0D_33,
+        MAX_VERTEX_UNIFORM_VECTORS: 0x8B_4A,
       };
 
       const mockCanvas = {
@@ -158,8 +158,8 @@ describe('WebGL Detection', () => {
         getParameter: vi.fn().mockReturnValue('Test'),
         getExtension: vi.fn().mockReturnValue(null),
         getContextAttributes: vi.fn().mockReturnValue({ antialias: false }),
-        MAX_TEXTURE_SIZE: 0x0D33,
-        MAX_VERTEX_UNIFORM_VECTORS: 0x8B4A,
+        MAX_TEXTURE_SIZE: 0x0D_33,
+        MAX_VERTEX_UNIFORM_VECTORS: 0x8B_4A,
       };
 
       const mockCanvas = {
@@ -191,7 +191,7 @@ describe('WebGL Detection', () => {
         capability: 'webgl2',
         renderer: 'NVIDIA GeForce RTX 3080',
         vendor: 'NVIDIA Corporation',
-        maxTextureSize: 16384,
+        maxTextureSize: 16_384,
         maxVertexUniforms: 4096,
         antialiasSupported: true,
       };
@@ -258,8 +258,8 @@ describe('WebGL Detection', () => {
         getParameter: vi.fn().mockReturnValue('Test'),
         getExtension: vi.fn().mockReturnValue(null),
         getContextAttributes: vi.fn().mockReturnValue({ antialias: false }),
-        MAX_TEXTURE_SIZE: 0x0D33,
-        MAX_VERTEX_UNIFORM_VECTORS: 0x8B4A,
+        MAX_TEXTURE_SIZE: 0x0D_33,
+        MAX_VERTEX_UNIFORM_VECTORS: 0x8B_4A,
       };
 
       const mockCanvas = {

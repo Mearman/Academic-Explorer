@@ -201,7 +201,7 @@ export class MemoryCache<T> {
 	 * Get all cache keys
 	 */
 	keys(): string[] {
-		return Array.from(this.cache.keys())
+		return [...this.cache.keys()]
 	}
 
 	/**
@@ -322,7 +322,7 @@ export class MemoryCache<T> {
 
 	private removeFromAccessOrder(key: string): void {
 		const index = this.accessOrder.indexOf(key)
-		if (index > -1) {
+		if (index !== -1) {
 			this.accessOrder.splice(index, 1)
 		}
 	}

@@ -205,7 +205,7 @@ export class CacheConfigFactory {
 	static createNetworkConfig(context: BuildContext): NetworkConfig {
 		if (context.isDevelopment) {
 			return {
-				timeout: 30000, // 30 seconds for dev (slower responses expected)
+				timeout: 30_000, // 30 seconds for dev (slower responses expected)
 				retries: 2,
 				retryDelayMs: 1000,
 				deduplication: true,
@@ -219,7 +219,7 @@ export class CacheConfigFactory {
 
 		if (context.isProduction) {
 			return {
-				timeout: 15000, // 15 seconds for production
+				timeout: 15_000, // 15 seconds for production
 				retries: 3,
 				retryDelayMs: 2000,
 				deduplication: true,
@@ -247,7 +247,7 @@ export class CacheConfigFactory {
 
 		// Default configuration
 		return {
-			timeout: 20000, // 20 seconds default
+			timeout: 20_000, // 20 seconds default
 			retries: 2,
 			retryDelayMs: 1500,
 			deduplication: true,
@@ -324,7 +324,7 @@ export class CacheConfigFactory {
 					network: {
 						...baseConfig.network,
 						backgroundSync: true,
-						timeout: 10000, // Faster timeout for production
+						timeout: 10_000, // Faster timeout for production
 					},
 				}
 
@@ -360,7 +360,7 @@ export class CacheConfigFactory {
 					},
 					network: {
 						...baseConfig.network,
-						timeout: 60000, // Longer timeout for debugging
+						timeout: 60_000, // Longer timeout for debugging
 						backgroundSync: false,
 					},
 				}
