@@ -210,6 +210,12 @@ function createWebConfig(): UserConfig {
     preview: {
       port: 4173,
       strictPort: true,
+      headers: {
+        // Prevent CSS caching issues in CI
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
     },
   };
 }

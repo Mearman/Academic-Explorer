@@ -138,10 +138,32 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
         timeout: 30_000,
       });
 
+      // Wait for CSS to be fully applied
+      await page.waitForFunction(() => {
+        const testElement = document.createElement('div');
+        testElement.style.position = 'absolute';
+        testElement.style.visibility = 'hidden';
+        testElement.style.pointerEvents = 'none';
+        document.body.appendChild(testElement);
+
+        const computedStyle = getComputedStyle(testElement);
+        const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
+
+        document.body.removeChild(testElement);
+        return stylesLoaded;
+      }, { timeout: 10_000 });
+
+      // Additional wait for Mantine styles to settle
+      await page.waitForTimeout(200);
+
       // Wait for redirect and page load
-      // Removed: waitForTimeout - use locator assertions instead
-      // Look for bookmark button in entity detail
-      const bookmarkButton = page.locator('button').filter({ has: page.locator('svg') }).first();
+      // Look for bookmark button in entity detail with better selector
+      const bookmarkButton = page.locator('button[aria-label*="bookmark"], button[title*="bookmark"], button').filter({ has: page.locator('svg') }).first();
+
+      // Wait for button to be present in DOM
+      await bookmarkButton.waitFor({ state: 'attached', timeout: 10_000 });
+
+      // Ensure button is visible
       await expect(bookmarkButton).toBeVisible({ timeout: 10_000 });
 
       // Bookmark the entity

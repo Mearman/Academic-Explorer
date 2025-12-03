@@ -180,7 +180,29 @@ test.describe('Mobile Navigation Menu - E2E', () => {
     });
 
     test('should have sufficient touch target size (≥44px)', async ({ page }) => {
+      // Wait for CSS to be fully applied before measuring
+      await page.waitForFunction(() => {
+        const testElement = document.createElement('div');
+        testElement.style.position = 'absolute';
+        testElement.style.visibility = 'hidden';
+        testElement.style.pointerEvents = 'none';
+        document.body.appendChild(testElement);
+
+        const computedStyle = getComputedStyle(testElement);
+        const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
+
+        document.body.removeChild(testElement);
+        return stylesLoaded;
+      }, { timeout: 10_000 });
+
+      // Additional wait for Mantine styles to settle
+      await page.waitForTimeout(100);
+
       const menuButton = page.getByRole('button', { name: /open navigation menu/i });
+
+      // Wait for button to be fully visible and styled
+      await expect(menuButton).toBeVisible();
+
       const boundingBox = await menuButton.boundingBox();
 
       expect(boundingBox).not.toBeNull();

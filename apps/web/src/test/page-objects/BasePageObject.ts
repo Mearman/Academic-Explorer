@@ -48,6 +48,39 @@ export class BasePageObject {
 	}
 
 	/**
+	 * Wait for CSS to be fully loaded and styles to be applied
+	 * This fixes issues with elements having incorrect sizes or visibility
+	 */
+	async waitForStylesApplied(): Promise<void> {
+		// Wait for CSS to be loaded by checking for computed styles
+		await this.page.waitForFunction(() => {
+			const testElement = document.createElement('div');
+			testElement.style.position = 'absolute';
+			testElement.style.visibility = 'hidden';
+			testElement.style.pointerEvents = 'none';
+			document.body.appendChild(testElement);
+
+			// Check if CSS is loaded by verifying computed styles
+			const computedStyle = getComputedStyle(testElement);
+			const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
+
+			document.body.removeChild(testElement);
+			return stylesLoaded;
+		}, { timeout: 10_000 });
+
+		// Additional wait for Mantine styles to settle
+		await this.page.waitForTimeout(100);
+	}
+
+	/**
+	 * Wait for app to be ready including navigation and CSS
+	 */
+	async waitForAppReady(): Promise<void> {
+		await this.waitForNavigation();
+		await this.waitForStylesApplied();
+	}
+
+	/**
 	 * Get the current URL
 	 */
 	getUrl(): string {
