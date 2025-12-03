@@ -179,8 +179,9 @@ const networkActivityReducer = (
     }
 
     case "REMOVE_REQUEST": {
-      const { [action.payload]: removed, ...rest } = state.requests;
-      void removed; // Mark as intentionally unused
+      // Extract and remove the request with the given ID
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [action.payload]: _, ...rest } = state.requests;
 
       return {
         ...state,

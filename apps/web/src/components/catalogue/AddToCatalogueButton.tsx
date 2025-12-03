@@ -64,12 +64,10 @@ const CreateAndAddModal = ({
 }: CreateAndAddModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  // Tags feature not yet implemented - using empty array for now
-  const tags: string[] = [];
   const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { createList, addEntityToList } = useCatalogue();
+  const { createList, addEntityToList} = useCatalogue();
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
@@ -79,12 +77,12 @@ const CreateAndAddModal = ({
       // Determine list type based on entity type
       const listType = entityType === "works" ? "bibliography" : "list";
 
-      // Create new list
+      // Create new list (tags feature not yet implemented)
       const listId = await createList({
         title: title.trim(),
         description: description.trim() || undefined,
         type: listType,
-        tags: tags.filter(tag => tag.trim().length > 0),
+        tags: [],
         isPublic,
       });
 
@@ -151,7 +149,6 @@ const CreateAndAddModal = ({
           onChange={(e) => setTitle(e.target.value)}
           required
           aria-required="true"
-          autoFocus
         />
 
         <Textarea

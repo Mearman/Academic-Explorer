@@ -37,7 +37,18 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import React, { useCallback,useEffect, useState } from "react";
 
+/**
+ * Shared entity click handler for navigating to entity detail pages
+ */
+const useEntityNavigation = () => {
+  const navigate = useNavigate();
 
+  return useCallback((entity: CachedEntityEntry) => {
+    const entityType = entity.entityType as EntityType;
+    const path = `/${entityType}/${entity.entityId}`;
+    navigate({ to: path });
+  }, [navigate]);
+};
 
 interface CacheTierSummary {
   memory: { count: number; entities: CachedEntityEntry[] };
@@ -138,16 +149,10 @@ const CacheTierCard = ({
   isPersistent,
   maxEntries = 10_000,
 }: CacheTierCardProps) => {
-  const navigate = useNavigate();
+  const handleEntityClick = useEntityNavigation();
   const entityTypeCounts = groupByEntityType(entities);
   const totalSize = entities.reduce((sum, e) => sum + e.dataSize, 0);
   const usagePercent = Math.min((entities.length / maxEntries) * 100, 100);
-
-  const handleEntityClick = (entity: CachedEntityEntry) => {
-    const entityType = entity.entityType as EntityType;
-    const path = `/${entityType}/${entity.entityId}`;
-    navigate({ to: path });
-  };
 
   return (
     <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
@@ -349,15 +354,9 @@ const StaticCacheTierCard = ({
   color,
   badges,
 }: StaticCacheTierCardProps) => {
-  const navigate = useNavigate();
+  const handleEntityClick = useEntityNavigation();
   const entityTypeCounts = groupByEntityType(entities);
   const hitRate = stats && stats.requests > 0 ? (stats.hits / stats.requests) * 100 : 0;
-
-  const handleEntityClick = (entity: CachedEntityEntry) => {
-    const entityType = entity.entityType as EntityType;
-    const path = `/${entityType}/${entity.entityId}`;
-    navigate({ to: path });
-  };
 
   return (
     <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>

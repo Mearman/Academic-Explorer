@@ -6,7 +6,7 @@ import { createCSSVariableString } from './css-variable-resolver'
 export const shadcnLightTheme = style({
   ':root': {
     ...createCSSVariableString('light').split('\n').reduce((acc, line) => {
-      const match = line.match(/--shadcn-([^:]+):\s*([^;]+?);/)
+      const match = line.match(/--shadcn-([^:]+):\s*([^;\s][^;]*);/)
       if (match) {
         acc[`--shadcn-${match[1]}`] = match[2]
       }
@@ -17,7 +17,7 @@ export const shadcnLightTheme = style({
 
 // Dark mode CSS variables using globalStyle
 export const shadcnDarkThemeVariables = createCSSVariableString('dark').split('\n').reduce((acc, line) => {
-  const match = line.match(/--shadcn-([^:]+):\s*([^;]+?);/)
+  const match = line.match(/--shadcn-([^:]+):\s*([^;\s][^;]*);/)
   if (match) {
     acc[`--shadcn-${match[1]}`] = match[2]
   }

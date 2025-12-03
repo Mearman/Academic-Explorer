@@ -78,7 +78,7 @@ test.describe('Keywords Navigation and Display', () => {
     const navigationPromise = page.goto(`${BASE_URL}/#/keywords/deep-learning`);
 
     // Check for loading indicator
-    const loadingIndicator = page.getByText(/Loading|loading/i);
+    const loadingIndicator = page.getByText(/loading/i);
 
     // Loading state should appear briefly (with a very short timeout)
     try {
@@ -112,7 +112,7 @@ test.describe('Keywords Navigation and Display', () => {
     await page.goto(`${BASE_URL}/#/keywords/this-keyword-does-not-exist-12345`);
 
     // Wait for error state to appear
-    await expect(page.getByText(/Error|error|Not Found|not found/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/error|not found/i)).toBeVisible({ timeout: 10_000 });
 
     // Error should display the attempted keyword ID
     await expect(page.getByText(/this-keyword-does-not-exist-12345/i)).toBeVisible();

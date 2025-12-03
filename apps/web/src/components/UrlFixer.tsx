@@ -21,7 +21,7 @@ export const UrlFixer = () => {
       }
 
       // Fix collapsed protocol slashes (https:/doi.org should become https://doi.org)
-      const collapsedRegex = new RegExp(String.raw`(^|\/)(https?:\/\/)([^/])`, 'g');
+      const collapsedRegex = /(^|\/)(https?:\/\/)([^/])/g;
       if (collapsedRegex.test(fixedHash)) {
         fixedHash = fixedHash.replaceAll(collapsedRegex, '$1$2$3');
         needsUpdate = true;

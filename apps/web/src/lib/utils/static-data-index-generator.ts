@@ -174,8 +174,7 @@ export const generateIndexWithAutoDownload = async ({
  * @param entityType
  * @param recursive
  */
-export const generateIndexForEntityType = async (entityDir: string, entityType: StaticEntityType, recursive?: boolean): Promise<void> => {
-  const shouldRecurse = recursive ?? true;
+export const generateIndexForEntityType = async (entityDir: string, entityType: StaticEntityType, recursive = true): Promise<void> => {
   await initializeNodeModules();
   try {
     console.log(`Generating index for ${entityType}...`);
@@ -208,15 +207,16 @@ export const generateIndexForEntityType = async (entityDir: string, entityType: 
     let directories: Record<string, DirectoryEntry> = {};
     let maxLastUpdated = new Date().toISOString();
 
-    if (shouldRecurse) {
+    if (recursive) {
       const { directories: subDirs, maxLastUpdated: subMaxUpdated } =
-        await processSubdirectories({ entityDir, entityType, recursive: shouldRecurse });
+        await processSubdirectories({ entityDir, entityType, recursive });
       directories = subDirs;
       maxLastUpdated = subMaxUpdated;
     }
 
-    const overallLastUpdated =
-      maxLastUpdated > new Date().toISOString() ? maxLastUpdated : new Date().toISOString();
+    const currentIsoString = new Date().toISOString();
+    // Use Math.max for ISO string comparison (strings are lexicographically comparable)
+    const overallLastUpdated = Math.max(maxLastUpdated, currentIsoString);
 
     // Read existing index to check if content has changed
     const indexPath = path.join(entityDir, INDEX_FILENAME);

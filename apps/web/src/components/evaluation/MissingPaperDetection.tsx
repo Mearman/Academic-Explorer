@@ -39,7 +39,7 @@ interface DetectionJob {
   datasetId: string;
   status: "ready" | "running" | "completed" | "failed";
   results?: MissingPaperDetectionResults;
-  progress?: DetectionProgress | undefined;
+  progress?: DetectionProgress;
   error?: string;
   startTime?: Date;
   endTime?: Date;

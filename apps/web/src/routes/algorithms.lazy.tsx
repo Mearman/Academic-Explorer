@@ -694,7 +694,7 @@ const AlgorithmsPage = () => {
         // Find the type with highest percentage and adjust it
         const maxType = ENTITY_TYPES_ORDERED.reduce((max, type) =>
           (percentages[type] || 0) > (percentages[max] || 0) ? type : max
-        );
+        , ENTITY_TYPES_ORDERED[0]);
         percentages[maxType] = Math.max(0, (percentages[maxType] || 0) + adjustment);
       } else if (totalAssigned === 0) {
         // Fallback: give 100% to works if all are 0

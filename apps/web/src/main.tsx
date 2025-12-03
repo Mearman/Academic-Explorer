@@ -279,7 +279,7 @@ storageProvider.initializeSpecialLists().catch((error) => {
   }
 })();
 
-const rootElement = document.getElementById("root");
+const rootElement = document.querySelector<HTMLElement>("#root");
 if (!rootElement) {
   throw new Error("Root element not found");
 }

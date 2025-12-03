@@ -1387,16 +1387,14 @@ const updateUnifiedIndex = async (dataPath: string, entityType: string, index: U
 
           try {
             const parsed: unknown = JSON.parse(fileContent);
-            if (Array.isArray(parsed)) {
-              // Query results as direct array
-              fileType = "query";
-            } else if (
-              parsed &&
-              typeof parsed === "object" &&
-              "results" in parsed &&
-              Array.isArray(parsed.results)
+            if (
+              Array.isArray(parsed) ||
+              (parsed &&
+                typeof parsed === "object" &&
+                "results" in parsed &&
+                Array.isArray(parsed.results))
             ) {
-              // Query results wrapped in object with results property
+              // Query results: either direct array or wrapped in object with results property
               fileType = "query";
             }
           } catch {
