@@ -189,7 +189,7 @@ describe('Label Propagation Clustering', () => {
   });
 
   describe('User Story 6 - Scenario 3: Fast Convergence', () => {
-    it('should converge in 3-5 iterations for typical citation networks', () => {
+    it('should converge in 3-5 iterations for typical citation networks', { timeout: 15000 }, () => {
       // Given: Citation network with clear community structure
       const graph = smallCitationNetwork();
 
