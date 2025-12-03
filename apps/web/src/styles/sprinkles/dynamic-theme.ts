@@ -70,7 +70,13 @@ if (typeof document !== 'undefined') {
     }
   `;
   style.replaceSync(cssText);
-  document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
+  // adoptedStyleSheets may not be iterable in test environments (JSDOM)
+  if (document.adoptedStyleSheets && Symbol.iterator in Object(document.adoptedStyleSheets)) {
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
+  } else {
+    // Fallback for test environments: initialize with single stylesheet
+    document.adoptedStyleSheets = [style];
+  }
 }
 
 /**
