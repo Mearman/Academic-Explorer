@@ -196,6 +196,10 @@ export default tseslint.config([
             "jsdoc/require-param-description": "off",
             "jsdoc/require-returns-description": "off",
             "jsdoc/require-returns": "off", // Too noisy for React components
+            "jsdoc/require-yields": "off", // Too noisy for generators
+            "jsdoc/require-yields-type": "off",
+            "jsdoc/require-throws-type": "off",
+            "jsdoc/check-param-names": "off", // Conflicts with destructured params
 
             // Node.js rules (from flat/recommended-module for ES modules)
             ...nodePlugin.configs["flat/recommended-module"].rules,
@@ -266,6 +270,7 @@ export default tseslint.config([
             "apps/web/**/*.{ts,tsx}",
             "packages/ui/**/*.{ts,tsx}",
             "packages/client/**/*.{ts,tsx}",
+            "packages/utils/**/*.{ts,tsx}",
         ],
         rules: {
             "n/no-unsupported-features/node-builtins": "off",
