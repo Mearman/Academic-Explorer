@@ -1,7 +1,6 @@
 /**
  * E2E Workflow tests for catalogue/list management
  * Tests the complete lifecycle of creating, populating, viewing, and managing catalogue lists
- * @workflow @manual
  * @module catalogue-workflow.e2e
  */
 

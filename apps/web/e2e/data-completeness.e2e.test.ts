@@ -4,7 +4,6 @@
  * Automated tests promoting manual data completeness verification.
  * Tests that the styled view displays ALL data from API responses.
  * Compares field count and content between direct API response and rendered page.
- * @manual
  */
 
 import { expect,test } from '@playwright/test';

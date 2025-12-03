@@ -8,7 +8,6 @@
  * 3. Wait for and verify results
  * 4. Interact with results (clicking, filtering)
  * 5. Navigate to entity detail pages
- * @category @workflow
  * @see spec-020 Phase 1: Search workflow testing
  */
 

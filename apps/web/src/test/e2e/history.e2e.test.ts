@@ -1,7 +1,6 @@
 /**
  * E2E tests for History/Catalogue utility page
  * Tests history page functionality including empty state and populated state
- * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';

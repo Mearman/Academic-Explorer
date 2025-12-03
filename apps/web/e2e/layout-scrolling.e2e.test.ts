@@ -7,7 +7,6 @@
  * - Sidebars scroll independently
  * - Scroll contexts are isolated
  * - Keyboard navigation works correctly
- * @manual Promoted from manual test suite
  */
 
 import { expect,test } from "@playwright/test";

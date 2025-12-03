@@ -4,7 +4,6 @@
  * Tests the Browse utility page which serves as an entry point displaying
  * all 12 OpenAlex entity types as clickable cards. This page allows users
  * to navigate to different entity index pages.
- * @category @utility
  * @see spec-020 Phase 2: Utility page E2E tests
  */
 

@@ -2,7 +2,6 @@
  * E2E tests for homepage functionality
  * Automated version of manual homepage tests
  * Tests the main BibGraph homepage with search, navigation, and basic interactions
- * @manual
  */
 
 import { expect, test } from "@playwright/test";

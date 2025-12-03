@@ -211,6 +211,8 @@ export default tseslint.config([
             "jsdoc/require-throws-type": "off",
             "jsdoc/check-param-names": "off", // Conflicts with destructured params
             "jsdoc/check-tag-names": ["warn", { definedTags: ["packageDocumentation", "typeParam", "vitest-environment", "remarks", "invariant"] }], // Allow TSDoc tags and custom tags
+            "jsdoc/escape-inline-tags": "off", // False positives on package names like @posthog in regular comments
+            "jsdoc/tag-lines": "off", // Too strict about blank lines after description
 
             // Node.js rules (from flat/recommended-module for ES modules)
             ...nodePlugin.configs["flat/recommended-module"].rules,

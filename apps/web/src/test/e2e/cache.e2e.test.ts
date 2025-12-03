@@ -6,8 +6,6 @@
  * - Placeholder content display (current state)
  * - Navigation to cache page
  * - CLI tools suggestion visibility
- * @category E2E
- * @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';

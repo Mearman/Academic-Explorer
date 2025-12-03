@@ -3,7 +3,6 @@
  *
  * Tests handling of slow/hanging requests that exceed timeout limits
  * @module error-timeout.e2e
- * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 

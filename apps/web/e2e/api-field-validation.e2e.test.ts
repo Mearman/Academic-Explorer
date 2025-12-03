@@ -10,7 +10,6 @@
  *
  * This test would have caught the authorships_count bug that caused
  * https://mearman.github.io/BibGraph/#/works/W2009047091 to fail.
- * @manual - Promoted from manual test suite
  */
 
 import {

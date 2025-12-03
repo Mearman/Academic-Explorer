@@ -3,7 +3,6 @@
  *
  * Tests handling of network disconnection, connection failures, and offline mode
  * @module error-network.e2e
- * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 

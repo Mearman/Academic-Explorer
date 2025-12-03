@@ -3,7 +3,6 @@
  *
  * Tests handling of non-existent entities and routes
  * @module error-404.e2e
- * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 

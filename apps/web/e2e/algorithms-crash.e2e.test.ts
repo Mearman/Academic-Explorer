@@ -7,7 +7,6 @@
  * Bug: "Cannot read properties of undefined (reading 'map')" error
  * occurs in GraphAlgorithmsPanel when Select component receives undefined data.
  * @module algorithms-crash.e2e
- * @tags error @utility
  */
 
 import { expect,test } from "@playwright/test";

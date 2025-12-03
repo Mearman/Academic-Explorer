@@ -8,7 +8,6 @@
  * - Settings persistence across page reloads
  * - Reset preferences functionality
  * - Clear cache functionality
- * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';

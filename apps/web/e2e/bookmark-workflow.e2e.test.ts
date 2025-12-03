@@ -10,7 +10,6 @@
  * 6. Remove bookmark
  * 7. Verify entity removed from bookmarks
  * @module bookmark-workflow.e2e
- * @tags workflow
  */
 
 import AxeBuilder from '@axe-core/playwright';

@@ -4,7 +4,6 @@
  * Tests the 2D/3D view mode toggle, WebGL detection, and 3D rendering
  * on the algorithms page.
  * @module 3d-visualization.e2e
- * @tags utility @3d
  */
 
 import { expect,test } from "@playwright/test";

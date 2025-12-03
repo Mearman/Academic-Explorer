@@ -5,7 +5,6 @@
  * Focuses on UI elements, search interface interactions, and page loading.
  * Does not test actual API results (handled by integration tests).
  * @see spec-020 Phase 1: Utility page testing
- * @category @utility
  */
 
 import AxeBuilder from '@axe-core/playwright';

@@ -5,7 +5,6 @@
  * Ensures the application gracefully handles malformed URLs without crashes,
  * blank pages, or security vulnerabilities (XSS).
  * @module error-malformed-url.e2e
- * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 

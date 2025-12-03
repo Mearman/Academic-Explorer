@@ -13,8 +13,6 @@
  *
  * Promoted from manual tests to automated smoke tests.
  * @module openalex-url-routing.e2e
- * @tag @manual
- * @tags utility
  * @see apps/web/src/test/e2e/manual/openalex-url.e2e.test.ts
  * @see apps/web/src/test/e2e/manual/external-id-routing.e2e.test.ts
  */

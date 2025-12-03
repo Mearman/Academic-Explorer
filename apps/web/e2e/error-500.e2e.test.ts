@@ -3,7 +3,6 @@
  *
  * Tests handling of server-side errors using route interception
  * @module error-500.e2e
- * @tags error
  * @see spec-020 Phase 5: Error scenario coverage
  */
 
