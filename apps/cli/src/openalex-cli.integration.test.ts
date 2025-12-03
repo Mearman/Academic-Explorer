@@ -123,14 +123,44 @@ describe("OpenAlexCLI Integration Tests", () => {
 			const hasAnyStats = stats.authors || stats.works || stats.institutions
 			expect(hasAnyStats).toBeTruthy()
 
-			// Validate authors stats structure if present
-			stats.authors?.count && expect(stats.authors.count).toBeGreaterThan(0)
-			stats.authors?.totalSize && expect(stats.authors.totalSize).toBeGreaterThan(0)
-			stats.authors?.lastModified && expect(typeof stats.authors.lastModified).toBe("string")
+			// Validate structure of returned stats (whichever entity types are present)
+			// Note: At least one entity type has stats (validated by hasAnyStats check above)
 
-			// Validate works stats structure if present
-			stats.works?.count && expect(stats.works.count).toBeGreaterThan(0)
-			stats.works?.totalSize && expect(stats.works.totalSize).toBeGreaterThan(0)
+			// For each present entity type, validate its structure
+			const validEntityStats = Object.values(stats).filter(
+				(entityStats) => entityStats !== null && entityStats !== undefined
+			)
+
+			// At least one entity type should have valid stats
+			expect(validEntityStats.length).toBeGreaterThan(0)
+
+			// Extract values that need validation
+			const countsToValidate = validEntityStats
+				.filter((entityStats) => "count" in entityStats && entityStats.count !== undefined)
+				.map((entityStats) => entityStats.count)
+
+			const sizesToValidate = validEntityStats
+				.filter((entityStats) => "totalSize" in entityStats && entityStats.totalSize !== undefined)
+				.map((entityStats) => entityStats.totalSize)
+
+			const lastModifiedToValidate = validEntityStats
+				.filter((entityStats) => "lastModified" in entityStats && entityStats.lastModified !== undefined)
+				.map((entityStats) => entityStats.lastModified)
+
+			// Validate all counts
+			for (const count of countsToValidate) {
+				expect(count).toBeGreaterThan(0)
+			}
+
+			// Validate all sizes
+			for (const size of sizesToValidate) {
+				expect(size).toBeGreaterThan(0)
+			}
+
+			// Validate all lastModified values
+			for (const lastModified of lastModifiedToValidate) {
+				expect(typeof lastModified).toBe("string")
+			}
 		})
 
 		it("should return null for non-existent entity", async () => {

@@ -3,10 +3,8 @@
  * Separated for better testability
  */
 
-import { existsSync, readFileSync } from "node:fs"
 import { access, mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises"
-import { dirname, join, resolve } from "node:path"
-import { fileURLToPath } from "node:url"
+import { join } from "node:path"
 
 import { cachedOpenAlex, CachedOpenAlexClient } from "@bibgraph/client/cached-client"
 import { staticDataProvider } from "@bibgraph/client/internal/static-data-provider"
@@ -249,63 +247,13 @@ const generateCanonicalEntityUrl = ({
 //   }
 // }
 
-// Get the project root directory (workspace root)
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const projectRoot = resolve(__dirname, "../../..")
-
-/**
- * Check if running in development mode within the repo
- */
-const isDevelopmentMode = (): boolean => {
-	// Check NODE_ENV first (most reliable)
-	if (typeof process !== "undefined" && process.env.NODE_ENV) {
-		const nodeEnv = process.env.NODE_ENV.toLowerCase()
-		if (nodeEnv === "development" || nodeEnv === "dev") return true
-		if (nodeEnv === "production") return false
-	}
-
-	// Check if we're running from within the BibGraph repo structure
-	try {
-		const currentPath = process.cwd()
-		const expectedRepoName = "BibGraph"
-
-		// Check if current working directory contains repo structure indicators
-		if (currentPath.includes(expectedRepoName) || currentPath.includes("bibgraph")) {
-			return true
-		}
-
-		// Check if we can find package.json with bibgraph workspace name
-		const packageJsonPath = resolve(projectRoot, "package.json")
-		try {
-			if (existsSync(packageJsonPath)) {
-				const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"))
-				if (packageJson.name === "bibgraph") {
-					return true
-				}
-			}
-		} catch {
-			// Continue to other checks
-		}
-	} catch {
-		// Ignore path resolution errors
-	}
-
-	// Default to false for production/distribution mode
-	return false
-};
-
 /**
  * Get the appropriate static data path based on environment
+ * Currently uses the same path for both development and production
  */
 const getStaticDataPath = (): string => {
-	if (isDevelopmentMode()) {
-		// In development, save to apps/web/public/data/openalex so the web app can read it
-		return getStaticDataCachePath()
-	} else {
-		// In production/distribution, use the standard path
-		return getStaticDataCachePath()
-	}
+	// Uses standard path in all environments
+	return getStaticDataCachePath()
 };
 
 export class OpenAlexCLI {
@@ -581,14 +529,10 @@ export class OpenAlexCLI {
 					`${SAVED_QUERY_MESSAGE} ${filename} ${CONTENT_CHANGED_MESSAGE}`
 				)
 
-				// Create query definition with URL only (params parsing removed)
-				const queryDef: QueryDefinition = { url }
-
 				// Update query index with new lastModified timestamp
-				this.updateQueryIndex(entityType, queryDef, {
-					lastModified: new Date().toISOString(),
-					contentHash: newContentHash,
-				})
+				// TODO: Re-enable when query index implementation is available
+				// Originally: this.updateQueryIndex(entityType, { url }, { lastModified, contentHash })
+				this.updateQueryIndex()
 			} else {
 				logger.debug(
 					LOG_CONTEXT_GENERAL,
@@ -597,12 +541,9 @@ export class OpenAlexCLI {
 
 				// Content hasn't changed, but ensure index entry exists with preserved lastModified
 				if (existingLastModified) {
-					const queryDef: QueryDefinition = { url }
-
-					this.updateQueryIndex(entityType, queryDef, {
-						lastModified: existingLastModified, // Preserve existing timestamp
-						contentHash: newContentHash,
-					})
+					// TODO: Re-enable when query index implementation is available
+					// Originally: this.updateQueryIndex(entityType, { url }, { lastModified: existingLastModified, contentHash })
+					this.updateQueryIndex()
 				}
 			}
 		} catch (error) {
@@ -672,8 +613,7 @@ export class OpenAlexCLI {
 			// Transform unified index to summary format for integration tests
 			const entities: string[] = []
 
-			for (const [key, _entry] of Object.entries(unifiedIndex)) {
-				void _entry // Acknowledge unused variable
+			for (const [key] of Object.entries(unifiedIndex)) {
 				// Extract entity IDs from the unified index keys
 				const match = key.match(/\/([ACFIPSTW]\d+)(?:\?|$)/)
 				if (match) {
@@ -687,7 +627,7 @@ export class OpenAlexCLI {
 			return {
 				entityType,
 				count: entities.length,
-				entities: entities.sort(),
+				entities: [...entities].sort(),
 			}
 		} catch (error) {
 			logError(logger, `Failed to load entity summary for ${entityType}`, error, "general")
@@ -1321,20 +1261,10 @@ export class OpenAlexCLI {
 
 	/**
 	 * Update query index when adding a new cached query
-	 * @param _entityType
-	 * @param _queryDef
-	 * @param _metadata
-	 * @param _metadata.lastModified
-	 * @param _metadata.contentHash
+	 * Note: Parameters removed as method is not yet implemented
+	 * Future signature: (entityType: StaticEntityType, queryDef: QueryDefinition, metadata: { lastModified?: string; contentHash?: string })
 	 */
-	updateQueryIndex(
-		_entityType: StaticEntityType,
-		_queryDef: QueryDefinition,
-		_metadata: { lastModified?: string; contentHash?: string }
-	): void {
-		void _entityType // Acknowledge unused parameters
-		void _queryDef
-		void _metadata
+	updateQueryIndex(): void {
 		// Note: Query indexes are handled separately from unified indexes
 		// This method maintains the existing query index format for backward compatibility
 		// You may want to consider migrating query indexes to the unified format as well
@@ -1704,12 +1634,10 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get field coverage for an entity across all cache tiers
-	 * @param _entityType
-	 * @param _entityId
+	 * Note: Parameters removed as method is not yet implemented
+	 * Future signature: (entityType: StaticEntityType, entityId: string)
 	 */
-	getFieldCoverage(_entityType: StaticEntityType, _entityId: string): Promise<FieldCoverageByTier> {
-		void _entityType // Acknowledge unused parameters
-		void _entityId
+	getFieldCoverage(): Promise<FieldCoverageByTier> {
 		// Simplified implementation for CLI - just return basic structure
 		logger.warn(LOG_CONTEXT_GENERAL, FIELD_COVERAGE_ANALYSIS_NOT_AVAILABLE_MESSAGE)
 		return Promise.resolve({
@@ -1723,21 +1651,16 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get well-populated entities with extensive field coverage
-	 * @param _entityType
-	 * @param _limit
+	 * Note: Parameters removed as method is not yet implemented
+	 * Future signature: (entityType: StaticEntityType, limit: number)
 	 */
-	getWellPopulatedEntities(
-		_entityType: StaticEntityType,
-		_limit: number
-	): Promise<
+	getWellPopulatedEntities(): Promise<
 		Array<{
 			entityId: string
 			fieldCount: number
 			fields: string[]
 		}>
 	> {
-		void _entityType // Acknowledge unused parameters
-		void _limit
 		try {
 			// TODO: Re-enable when synthetic cache analysis is available
 			// This requires implementing synthetic cache population for analysis queries
@@ -1752,16 +1675,16 @@ export class OpenAlexCLI {
 
 	/**
 	 * Get popular cached collections with high entity counts
-	 * @param _limit
+	 * Note: Parameters removed as method is not yet implemented
+	 * Future signature: (limit: number)
 	 */
-	getPopularCollections(_limit: number): Promise<
+	getPopularCollections(): Promise<
 		Array<{
 			queryKey: string
 			entityCount: number
 			pageCount: number
 		}>
 	> {
-		void _limit // Acknowledge unused parameter
 		try {
 			// TODO: Re-enable when synthetic cache analysis is available
 			// This requires implementing synthetic cache population for analysis queries
@@ -1782,7 +1705,7 @@ export class OpenAlexCLI {
 			await staticDataProvider.clearCache()
 		} catch (error) {
 			logError(logger, FAILED_TO_CLEAR_SYNTHETIC_CACHE_MESSAGE, error, LOG_CONTEXT_GENERAL)
-			return Promise.reject(error instanceof Error ? error : new Error(String(error)))
+			throw error instanceof Error ? error : new Error(String(error))
 		}
 	}
 
@@ -1947,7 +1870,8 @@ export class OpenAlexCLI {
 			errors: string[]
 		}
 	): Promise<void> {
-		const wellPopulated = await this.getWellPopulatedEntities(type, 50)
+		// TODO: Re-enable when getWellPopulatedEntities implementation is available
+		const wellPopulated = await this.getWellPopulatedEntities()
 
 		for (const entityData of wellPopulated) {
 			try {
@@ -2094,7 +2018,8 @@ export class OpenAlexCLI {
 			errors: string[]
 		}
 	): Promise<void> {
-		const popularCollections = await this.getPopularCollections(10)
+		// TODO: Re-enable when getPopularCollections implementation is available
+		const popularCollections = await this.getPopularCollections()
 
 		for (const collection of popularCollections) {
 			try {

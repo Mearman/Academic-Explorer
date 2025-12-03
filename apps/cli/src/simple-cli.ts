@@ -7,7 +7,7 @@
 /* eslint-disable custom/no-deprecated */
 // Commander.js methods flagged as deprecated are actually the correct modern API
 
-import { logError,logger } from "@bibgraph/utils/logger"
+import { logger } from "@bibgraph/utils/logger"
 import { Command } from "commander"
 
 import { detectEntityType, SUPPORTED_ENTITIES } from "./entity-detection.js"
@@ -21,16 +21,10 @@ program
 	.description("Detect entity type from OpenAlex ID")
 	.argument("<entity-id>", "OpenAlex entity ID to detect")
 	.action((entityId: string) => {
-		try {
-			const entityType = detectEntityType(entityId)
-			console.log(`Entity ID: ${entityId}`)
-			console.log(`Detected type: ${entityType}`)
-			logger.debug("cli", "Entity type detected", { entityId, entityType })
-		} catch (error) {
-			console.error(`Error: ${error instanceof Error ? error.message : String(error)}`)
-			logError(logger, "Failed to detect entity type", error, "cli")
-			process.exit(1)
-		}
+		const entityType = detectEntityType(entityId)
+		console.log(`Entity ID: ${entityId}`)
+		console.log(`Detected type: ${entityType}`)
+		logger.debug("cli", "Entity type detected", { entityId, entityType })
 	})
 
 program
