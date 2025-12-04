@@ -58,11 +58,11 @@ export const EntityBrowser = () => {
           >
             <Group justify="space-between" mb="xs">
               <Text fw={500} size="lg">{entity.name}</Text>
-              <Badge variant="light" color="blue">
+              <Badge variant="filled" color="blue">
                 {entity.count}
               </Badge>
             </Group>
-            <Text size="sm" c="dimmed" lineClamp={3}>
+            <Text size="sm" c="gray.7" lineClamp={3}>
               {entity.description}
             </Text>
           </Card>
