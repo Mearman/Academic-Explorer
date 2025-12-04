@@ -131,7 +131,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
-    timeout: 120_000,
+    timeout: 300_000, // Increased from 120s to 300s for CI reliability
     env: {
       NODE_ENV: process.env.CI ? "production" : "development",
       RUNNING_E2E: "true",
