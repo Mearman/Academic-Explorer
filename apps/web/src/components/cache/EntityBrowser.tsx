@@ -1,4 +1,4 @@
-import { Container, Title, Card, Group, Badge, SimpleGrid, Text } from "@mantine/core";
+import { Badge, Card, Container, Group, SimpleGrid, Text,Title } from "@mantine/core";
 import { useNavigate } from "@tanstack/react-router";
 
 /**
