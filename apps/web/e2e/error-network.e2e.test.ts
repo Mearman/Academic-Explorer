@@ -24,7 +24,7 @@ test.describe('@error Network Errors', () => {
     const errorIndicators = [
       page.getByText(/connection|failed to fetch|network|offline/i),
       page.getByText(/error|try again|unavailable/i),
-      page.locator('[data-testid="error-message"], [role="alert"]'),
+      page.locator('[data-testid="error-message"]'),
     ];
 
     let foundError = false;
@@ -79,7 +79,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Look for retry option
-    const retryButton = page.locator('button:has-text("Retry"), button:has-text("Try again"), [data-testid="retry-button"]');
+    const retryButton = page.locator('button:has-text("Retry")');
 
     if (await retryButton.isVisible().catch(() => false)) {
       await retryButton.click();
@@ -116,7 +116,7 @@ test.describe('@error Network Errors', () => {
     // Should now show content or at least different state
     // Removed: waitForTimeout - use locator assertions instead
     // After reload with network, should either show content or be in loading state
-    const contentOrLoading = page.locator('h1, [data-testid="entity-title"], .skeleton, [data-testid="loading"]');
+    const contentOrLoading = page.locator('h1');
     await expect(contentOrLoading.first()).toBeVisible({ timeout: 15_000 });
   });
 
@@ -157,7 +157,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should show loading state during delay
-    const loadingIndicators = page.locator('.skeleton, [data-testid="loading"], .loading, [aria-busy="true"]');
+    const loadingIndicators = page.locator('[data-testid="loading"]');
 
     // At least one loading indicator should be visible
     const count = await loadingIndicators.count();
@@ -184,7 +184,7 @@ test.describe('@error Network Errors', () => {
 
     // Should handle intermittent failures
     // Either show error with retry, or successfully load (depending on retry logic)
-    const errorOrContent = page.locator('h1, [data-testid="entity-title"], [role="alert"]');
+    const errorOrContent = page.locator('h1');
     await expect(errorOrContent.first()).toBeVisible({ timeout: 15_000 });
   });
 
@@ -205,7 +205,7 @@ test.describe('@error Network Errors', () => {
     await waitForAppReady(page);
 
     // Should still show app shell/navigation even without network
-    const appShell = page.locator('header, nav, [role="navigation"]');
+    const appShell = page.locator('header');
     await expect(appShell.first()).toBeVisible({ timeout: 5000 });
   });
 
@@ -219,14 +219,14 @@ test.describe('@error Network Errors', () => {
     });
 
     // Attempt search
-    const searchInput = page.locator('input[type="search"], input[placeholder*="Search" i]');
+    const searchInput = page.locator('input[type="search"]');
     if (await searchInput.isVisible().catch(() => false)) {
       await searchInput.fill('machine learning');
       await searchInput.press('Enter');
 
       // Removed: waitForTimeout - use locator assertions instead
       // Should show error or no results
-      const errorOrEmpty = page.locator('[role="alert"], .error, [data-testid="error-message"], .empty-state');
+      const errorOrEmpty = page.locator('[data-testid="error-message"]');
       const hasError = await errorOrEmpty.count();
       expect(hasError).toBeGreaterThan(0);
     }
@@ -251,10 +251,10 @@ test.describe('@error Network Errors', () => {
     blockNetwork = true;
 
     // Try to expand relationships section if exists
-    const relationshipsSection = page.locator('[data-testid="relationships"], section:has-text("Relationships"), section:has-text("Related")');
+    const relationshipsSection = page.locator('[data-testid="relationships"]');
 
     if (await relationshipsSection.isVisible().catch(() => false)) {
-      const expandButton = relationshipsSection.locator('button, summary');
+      const expandButton = relationshipsSection.locator('button');
       if (await expandButton.first().isVisible().catch(() => false)) {
         await expandButton.first().click();
         // Removed: waitForTimeout - use locator assertions instead

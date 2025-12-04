@@ -46,7 +46,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
-		const pageTitle = page.locator('h1, [data-testid="page-title"]');
+		const pageTitle = page.locator('h1');
 		await expect(pageTitle).toContainText('Works');
 
 		// Step 4: Click first work from the list
@@ -92,7 +92,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
-		const pageTitle = page.locator('h1, [data-testid="page-title"]');
+		const pageTitle = page.locator('h1');
 		await expect(pageTitle).toContainText('Authors');
 
 		// Step 4: Click first author from the list
@@ -138,7 +138,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
-		const pageTitle = page.locator('h1, [data-testid="page-title"]');
+		const pageTitle = page.locator('h1');
 		await expect(pageTitle).toContainText('Institutions');
 
 		// Step 4: Click first institution from the list
@@ -196,7 +196,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(entityList).toBeVisible({ timeout: 30_000 });
 
 		// Verify page title
-		const pageTitle = page.locator('h1, [data-testid="page-title"]');
+		const pageTitle = page.locator('h1');
 		await expect(pageTitle).toContainText('Works');
 	});
 
@@ -246,7 +246,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(page).toHaveURL(/\/works\/?/);
 		await waitForAppReady(page);
 
-		const worksListTitle = page.locator('h1, [data-testid="page-title"]');
+		const worksListTitle = page.locator('h1');
 		await expect(worksListTitle).toContainText('Works');
 
 		// Return to browse
@@ -259,7 +259,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(page).toHaveURL(/\/authors\/?/);
 		await waitForAppReady(page);
 
-		const authorsListTitle = page.locator('h1, [data-testid="page-title"]');
+		const authorsListTitle = page.locator('h1');
 		await expect(authorsListTitle).toContainText('Authors');
 
 		// Return to browse
@@ -272,7 +272,7 @@ test.describe('@workflow Browse Workflow', () => {
 		await expect(page).toHaveURL(/\/institutions\/?/);
 		await waitForAppReady(page);
 
-		const institutionsListTitle = page.locator('h1, [data-testid="page-title"]');
+		const institutionsListTitle = page.locator('h1');
 		await expect(institutionsListTitle).toContainText('Institutions');
 
 		// Verify app remained stable throughout

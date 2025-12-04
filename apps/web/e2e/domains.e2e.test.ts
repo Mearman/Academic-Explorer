@@ -119,7 +119,7 @@ test.describe('@entity Domains Detail Page', () => {
     await expect(root).toBeVisible();
 
     // Verify header is present
-    const header = page.locator('header, [role="banner"]');
+    const header = page.locator('header');
     await expect(header).toBeVisible();
   });
 

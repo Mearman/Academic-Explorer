@@ -83,7 +83,7 @@ test.describe('@workflow Graph Interaction', () => {
 		await expect(edgesGroup).toBeAttached();
 
 		// Verify at least some nodes are rendered
-		const nodes = page.locator('svg g.nodes circle, svg g.nodes rect');
+		const nodes = page.locator('svg g.nodes circle');
 		const nodeCount = await nodes.count();
 		expect(nodeCount).toBeGreaterThan(0);
 
@@ -251,7 +251,6 @@ test.describe('@workflow Graph Interaction', () => {
 		// Find clickable graph nodes
 		const nodeSelectors = [
 			'svg g.nodes circle',
-			'svg g.nodes rect',
 			'[data-testid="graph-node"]',
 			'.node',
 		];
@@ -288,14 +287,14 @@ test.describe('@workflow Graph Interaction', () => {
 				await waitForAppReady(page);
 			} else {
 				// Check if selection state changed (e.g., node highlight)
-				const selectedNodes = page.locator('circle[stroke-width="3"], circle.selected, .node.selected');
+				const selectedNodes = page.locator('circle[stroke-width="3"]');
 				const hasSelection = (await selectedNodes.count()) > 0;
 
 				if (hasSelection) {
 					console.log('✅ Node click triggered selection state change');
 				} else {
 					// Tooltip or other UI feedback
-					const tooltip = page.locator('[data-testid="node-tooltip"], .tooltip, [role="tooltip"]');
+					const tooltip = page.locator('[data-testid="node-tooltip"]');
 					const hasTooltip = await tooltip.isVisible().catch(() => false);
 
 					if (hasTooltip) {
@@ -330,7 +329,7 @@ test.describe('@workflow Graph Interaction', () => {
 
 			// Get initial state of relationships displayed
 			const getVisibleRelationships = async () => {
-				const relationshipItems = page.locator('[data-testid*="relationship-item"], .relationship-item, li[data-relationship-type]');
+				const relationshipItems = page.locator('[data-testid*="relationship-item"]');
 				return relationshipItems.count();
 			};
 
@@ -443,8 +442,8 @@ test.describe('@workflow Graph Interaction', () => {
 
 		if (isVisible) {
 			// Quick zoom in/out sequence
-			const zoomInButton = page.locator('[data-testid="zoom-in"], button[aria-label*="Zoom in" i]').first();
-			const zoomOutButton = page.locator('[data-testid="zoom-out"], button[aria-label*="Zoom out" i]').first();
+			const zoomInButton = page.locator('[data-testid="zoom-in"]').first();
+			const zoomOutButton = page.locator('[data-testid="zoom-out"]').first();
 
 			const hasZoomIn = await zoomInButton.isVisible().catch(() => false);
 			const hasZoomOut = await zoomOutButton.isVisible().catch(() => false);
@@ -475,7 +474,7 @@ test.describe('@workflow Graph Interaction', () => {
 			expect(criticalErrors).toHaveLength(0);
 
 			// Verify graph is still responsive
-			const nodes = page.locator('svg g.nodes circle, svg g.nodes rect');
+			const nodes = page.locator('svg g.nodes circle');
 			const nodeCount = await nodes.count();
 			expect(nodeCount).toBeGreaterThan(0);
 
@@ -502,7 +501,7 @@ test.describe('@workflow Graph Interaction', () => {
 		console.log(`Graph render time: ${renderTime}ms`);
 
 		// Verify graph actually rendered
-		const nodes = page.locator('svg g.nodes circle, svg g.nodes rect');
+		const nodes = page.locator('svg g.nodes circle');
 		const nodeCount = await nodes.count();
 		console.log(`Graph rendered with ${nodeCount} nodes`);
 		expect(nodeCount).toBeGreaterThan(0);
@@ -554,7 +553,7 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 		}
 
 		// Verify graph has nodes rendered
-		const nodes = page.locator('svg g.nodes circle, svg g.nodes rect');
+		const nodes = page.locator('svg g.nodes circle');
 		const nodeCount = await nodes.count();
 		expect(nodeCount).toBeGreaterThan(0);
 
@@ -712,7 +711,6 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 		// Find graph nodes
 		const nodeSelectors = [
 			'svg g.nodes circle',
-			'svg g.nodes rect',
 			'[data-testid="graph-node"]',
 		];
 
@@ -742,10 +740,10 @@ test.describe('@workflow @tablet Graph Interaction - Tablet Viewport', () => {
 				await page.waitForTimeout(1000); // Wait for interaction response
 
 				// Check for visual feedback (tooltip, selection, navigation)
-				const tooltip = page.locator('[data-testid="node-tooltip"], .tooltip, [role="tooltip"]');
+				const tooltip = page.locator('[data-testid="node-tooltip"]');
 				const hasTooltip = await tooltip.isVisible().catch(() => false);
 
-				const selectedNodes = page.locator('circle[stroke-width="3"], circle.selected, .node.selected');
+				const selectedNodes = page.locator('circle[stroke-width="3"]');
 				const hasSelection = (await selectedNodes.count()) > 0;
 
 				// Check if navigation occurred

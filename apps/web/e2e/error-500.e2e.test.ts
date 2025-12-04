@@ -34,7 +34,7 @@ test.describe('@error 500 Server Errors', () => {
     await waitForAppReady(page);
 
     // Should display error message or error state
-    const errorIndicators = page.locator('[data-testid="error-message"], [role="alert"], .error');
+    const errorIndicators = page.locator('[data-testid="error-message"]');
     const errorText = page.getByText(/error|failed|try again|unavailable/i);
 
     // Wait for error to be displayed

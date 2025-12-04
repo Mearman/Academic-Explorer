@@ -52,7 +52,7 @@ test.describe('Work Type Display', () => {
     });
 
     // Look for work type badge (may be xpac or regular work-type-badge)
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
 
     // Verify badge exists
     const badgeExists = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
@@ -239,7 +239,7 @@ test.describe('Work Type Display', () => {
     });
 
     // Find work type badge
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -268,7 +268,7 @@ test.describe('Work Type Display', () => {
     await page.waitForLoadState('load');
 
     // Find work type badge
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -300,7 +300,7 @@ test.describe('Work Type Display', () => {
     });
 
     // Find work type badge
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -334,7 +334,7 @@ test.describe('Work Type Display', () => {
     });
 
     // Find work type badge
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -374,7 +374,7 @@ test.describe('Work Type Display', () => {
     await expect(bodyText).not.toBeEmpty();
 
     // Work type badge may or may not be present - both are valid
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 2000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -400,7 +400,7 @@ test.describe('Work Type Badge Integration', () => {
     await expect(richDisplayTitle).toBeVisible({ timeout: 10_000 });
 
     // Verify work type badge is present
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {
@@ -422,7 +422,7 @@ test.describe('Work Type Badge Integration', () => {
     });
 
     // Find work type badge
-    const workTypeBadge = page.locator('[data-testid="work-type-badge"], [data-testid="xpac-work-type-badge"]').first();
+    const workTypeBadge = page.locator('[data-testid="work-type-badge"]').first();
     const badgeVisible = await workTypeBadge.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (badgeVisible) {

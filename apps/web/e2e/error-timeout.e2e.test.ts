@@ -32,7 +32,7 @@ test.describe('@error Timeout Errors', () => {
     const errorIndicators = [
       page.getByText(/loading|timed out|timeout|took too long/i),
       page.getByText(/error|failed|unavailable/i),
-      page.locator('[data-testid="error-message"], [role="alert"], .skeleton'),
+      page.locator('[data-testid="error-message"]'),
     ];
 
     // Wait a bit for error state to appear
@@ -59,14 +59,14 @@ test.describe('@error Timeout Errors', () => {
     await page.goto('/works/W2741809807');
 
     // Should show loading state initially
-    const loadingIndicators = page.locator('.skeleton, [data-testid="loading"], [aria-busy="true"]');
+    const loadingIndicators = page.locator('[data-testid="loading"]');
 
     // Check loading state appears within first 2 seconds
     try {
       await expect(loadingIndicators.first()).toBeVisible({ timeout: 2000 });
     } catch {
       // If no explicit loading indicator, page should at least be rendering
-      await expect(page.locator('#root, #app')).toBeVisible();
+      await expect(page.locator('#root')).toBeVisible();
     }
   });
 

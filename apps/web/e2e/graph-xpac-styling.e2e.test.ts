@@ -96,7 +96,7 @@ test.describe('Graph XPAC Styling', () => {
 
     // Fallback: Look for graph container divs
     if (!graphFound) {
-      const graphContainer = page.locator('[class*="graph"], [id*="graph"], [data-testid*="graph"]');
+      const graphContainer = page.locator('[data-testid*="graph"]');
       const containerCount = await graphContainer.count();
 
       if (containerCount > 0) {
@@ -113,12 +113,7 @@ test.describe('Graph XPAC Styling', () => {
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for graph nodes with accessibility features
-    const graphNodes = page.locator(
-      '[role="button"][aria-label],' +
-      '[data-node-type],' +
-      '[data-testid*="node"],' +
-      '[title*="work"], [title*="author"]'
-    );
+    const graphNodes = page.locator('[data-testid*="node"]');
 
     const nodeCount = await graphNodes.count();
 
@@ -147,7 +142,7 @@ test.describe('Graph XPAC Styling', () => {
     let xpacFound = false;
 
     // Check for XPAC in node labels
-    const xpacNodes = page.locator('[aria-label*="XPAC"], [title*="XPAC"], [data-is-xpac="true"]');
+    const xpacNodes = page.locator('[data-is-xpac="true"]');
     const xpacNodeCount = await xpacNodes.count();
 
     if (xpacNodeCount > 0) {
@@ -156,7 +151,7 @@ test.describe('Graph XPAC Styling', () => {
     }
 
     // Check for XPAC in data attributes
-    const xpacDataNodes = page.locator('[data-xpac], [data-work-type]');
+    const xpacDataNodes = page.locator('[data-xpac]');
     const xpacDataCount = await xpacDataNodes.count();
 
     if (xpacDataCount > 0 && !xpacFound) {
@@ -192,9 +187,7 @@ test.describe('Graph XPAC Styling', () => {
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to graph view if available
-    const graphLink = page.locator('a[href*="/graph"]').or(
-      page.getByRole('button', { name: /graph/i })
-    );
+    const graphLink = page.locator('a[href*="/graph"]');
 
     const graphLinkExists = await graphLink.count();
 
@@ -203,7 +196,7 @@ test.describe('Graph XPAC Styling', () => {
       await page.waitForLoadState('load');
       // Removed: waitForTimeout - use locator assertions instead
       // Look for styled XPAC nodes
-      const xpacNodes = page.locator('[data-is-xpac="true"], [data-work-type]');
+      const xpacNodes = page.locator('[data-is-xpac="true"]');
       const xpacCount = await xpacNodes.count();
 
       if (xpacCount > 0) {
@@ -248,16 +241,12 @@ test.describe('Graph XPAC Styling', () => {
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for author nodes with verification status
-    const authorNodes = page.locator('[data-node-type="author"], [aria-label*="author"]');
+    const authorNodes = page.locator('[data-node-type="author"]');
     const authorCount = await authorNodes.count();
 
     if (authorCount > 0) {
       // Check for unverified status indicators
-      const unverifiedNodes = page.locator(
-        '[data-author-verified="false"],' +
-        '[data-verified="false"],' +
-        '[aria-label*="unverified"]'
-      );
+      const unverifiedNodes = page.locator('[data-author-verified="false"]');
 
       const unverifiedCount = await unverifiedNodes.count();
 
@@ -339,7 +328,7 @@ test.describe('Graph XPAC Styling', () => {
       const initialBoundingBox = await canvas.boundingBox();
 
       // Simulate theme toggle (if available)
-      const themeButton = page.locator('button[aria-label*="theme"], button[title*="theme"]').first();
+      const themeButton = page.locator('button[aria-label*="theme"]').first();
       const themeButtonExists = await themeButton.count();
 
       if (themeButtonExists > 0) {
@@ -392,7 +381,7 @@ test.describe('Graph XPAC Styling', () => {
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for graph statistics display
-    const statsSection = page.locator('[data-testid*="graph-stats"], [class*="GraphStats"]');
+    const statsSection = page.locator('[data-testid*="graph-stats"]');
     const statsExists = await statsSection.count();
 
     if (statsExists > 0) {

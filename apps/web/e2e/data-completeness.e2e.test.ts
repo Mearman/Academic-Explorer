@@ -59,7 +59,7 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 
 			// Verify we have similar number of results displayed
 			const resultCards = await page
-				.locator('[data-testid="work-card"], .work-item, article')
+				.locator('[data-testid="work-card"]')
 				.count();
 			expect(resultCards).toBeGreaterThan(0);
 
@@ -161,7 +161,7 @@ test.describe('Data Completeness - Styled View vs API @manual', () => {
 
 		// Verify we show similar number of results
 		const resultCount = await page
-			.locator('[data-testid="concept-card"], .concept-item, article')
+			.locator('[data-testid="concept-card"]')
 			.count();
 		expect(resultCount).toBeGreaterThan(0);
 	});

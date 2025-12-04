@@ -68,9 +68,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Navigate to settings (look for settings link or button)
     // Settings might be in a menu, header, or sidebar
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -186,9 +184,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -281,9 +277,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -451,9 +445,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -557,9 +549,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -632,9 +622,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
-    const settingsButton = page.locator('button, a').filter({
-      hasText: /configuration|settings/i,
-    }).first();
+    const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
 
     const settingsButtonVisible = await settingsButton.isVisible().catch(() => false);
 
@@ -655,8 +643,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       expect(selectorVisible).toBe(true);
 
       // Verify selector has the expected options
-      const selectorOptions = page.locator(`[data-testid="data-version-selector"] option,
-                                             [data-testid="data-version-selector"] div:has-text("Auto")`);
+      const selectorOptions = page.locator(`[data-testid="data-version-selector"] option`);
       const optionCount = await selectorOptions.count().catch(() => 0);
 
       console.log(`Version selector options count: ${optionCount}`);

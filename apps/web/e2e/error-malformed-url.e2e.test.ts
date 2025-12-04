@@ -20,7 +20,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 		// Should show error message or handle gracefully
 		const hasErrorMessage = await page.getByText(/error|invalid|not found|processing/i).isVisible().catch(() => false);
-		const hasContent = (await page.locator('#root, body').textContent())?.length ?? 0;
+		const hasContent = (await page.locator('#root').textContent())?.length ?? 0;
 
 		// Either show error message or have non-empty content (graceful handling)
 		expect(hasErrorMessage || hasContent > 0).toBe(true);
@@ -214,7 +214,7 @@ test.describe('@error Malformed URL Errors', () => {
 		await waitForAppReady(page);
 
 		// Should either show works list/index or handle gracefully, not crash
-		const content = page.locator('h1, [data-testid="page-title"], [data-testid="entity-list"]');
+		const content = page.locator('h1');
 		await expect(content.first()).toBeVisible({ timeout: 10_000 });
 
 		// Should not show generic error
@@ -384,7 +384,7 @@ test.describe('@error Malformed URL Error Recovery', () => {
 		// If error shown, verify recovery path exists
 		if (hasError) {
 			// Look for navigation options (home, browse, etc.)
-			const navLinks = page.locator('a[href*="browse"], a[href*="/"], button:has-text("Home")');
+			const navLinks = page.locator('a[href*="browse"]');
 			const hasNavigation = await navLinks.count() > 0;
 
 			// Should provide way to recover
@@ -441,7 +441,7 @@ test.describe('@error Malformed URL Accessibility', () => {
 			expect(parentTag).toBeDefined();
 
 			// Page should have proper landmark structure
-			const main = page.locator('main, [role="main"]');
+			const main = page.locator('main');
 			const hasMain = await main.count() > 0;
 			expect(hasMain).toBe(true);
 		}
@@ -459,7 +459,7 @@ test.describe('@error Malformed URL Accessibility', () => {
 		const hasFocus = await focusedElement.count() > 0;
 
 		// If interactive elements exist, should be keyboard accessible
-		const buttons = await page.locator('button, a').count();
+		const buttons = await page.locator('button').count();
 		if (buttons > 0) {
 			expect(hasFocus).toBe(true);
 		}

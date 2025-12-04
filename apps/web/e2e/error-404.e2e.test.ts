@@ -164,7 +164,7 @@ test.describe("@error 404 Not Found Errors", () => {
 
 		// App shell should still be present (header, etc.)
 		// This ensures the error is handled gracefully within the app
-		const appRoot = page.locator("#root, #app, main, [role=main]");
+		const appRoot = page.locator("#root");
 		await expect(appRoot).toBeVisible();
 	});
 });
