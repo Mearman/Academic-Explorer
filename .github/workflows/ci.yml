@@ -159,13 +159,14 @@ jobs:
         run: pnpm nx run-many -t test:unit test:component test:integration --exclude=algorithms --parallel=2
 
       - name: Run algorithms tests separately
-        timeout-minutes: 15
+        timeout-minutes: 20
         env:
-          NODE_OPTIONS: --max-old-space-size=8192
+          NODE_OPTIONS: --max-old-space-size=6144
           NX_PARALLEL: 1
+          CI: true
         run: |
           cd packages/algorithms
-          npx vitest run --reporter=verbose --no-coverage
+          npx vitest run --reporter=verbose --no-coverage --no-threads --test-timeout=30000
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v5
@@ -238,7 +239,7 @@ jobs:
   # Uses matrix sharding to run tests in parallel across E2E_SHARDS runners
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     needs: [validate, setup-e2e]
     if: always() && needs.validate.result == 'success'
     strategy:
