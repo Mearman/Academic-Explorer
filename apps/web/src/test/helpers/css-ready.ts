@@ -10,6 +10,8 @@ import type { Page } from "@playwright/test";
 /**
  * Wait for Mantine CSS to be fully loaded and applied
  * This fixes issues where element size/visibility checks fail before styles are loaded
+ * @param page - Playwright Page instance
+ * @param timeout - Maximum time to wait in milliseconds
  */
 export const waitForMantineStyles = async (page: Page, timeout = 15_000): Promise<void> => {
   await page.waitForFunction(() => {
@@ -34,6 +36,8 @@ export const waitForMantineStyles = async (page: Page, timeout = 15_000): Promis
 /**
  * Wait for CSS to be fully loaded using the existing BasePageObject approach
  * This provides a more reliable CSS load detection than simple timeouts
+ * @param page - Playwright Page instance
+ * @param timeout - Maximum time to wait in milliseconds
  */
 export const waitForStylesApplied = async (page: Page, timeout = 15_000): Promise<void> => {
   await page.waitForFunction(() => {
@@ -57,6 +61,8 @@ export const waitForStylesApplied = async (page: Page, timeout = 15_000): Promis
 /**
  * Wait for app to be ready including CSS and basic element detection
  * Combines CSS loading with basic app readiness checks
+ * @param page - Playwright Page instance
+ * @param timeout - Maximum time to wait in milliseconds
  */
 export const waitForAppReady = async (page: Page, timeout = 20_000): Promise<void> => {
   // Wait for root element to be present
@@ -72,6 +78,11 @@ export const waitForAppReady = async (page: Page, timeout = 20_000): Promise<voi
 /**
  * Enhanced wait for element that also ensures CSS is loaded
  * Useful for elements that need correct styling for size/visibility checks
+ * @param page - Playwright Page instance
+ * @param selector - CSS selector for the element to wait for
+ * @param options - Configuration options
+ * @param options.timeout - Maximum time to wait in milliseconds
+ * @param options.ensureCSS - Whether to wait for CSS to be loaded first
  */
 export const waitForVisibleElement = async (
   page: Page,

@@ -4,6 +4,7 @@
  */
 
 import { expect,test } from '@playwright/test';
+
 import { waitForMantineStyles } from '../helpers/css-ready';
 
 test.describe('Mobile Navigation Menu - E2E', () => {
