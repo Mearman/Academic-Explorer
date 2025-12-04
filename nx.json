@@ -441,8 +441,8 @@
       "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
-        "project": "unit",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "testMatch": ["**/__tests__/**/*.unit.test.ts"]
       },
       "cache": true,
       "dependsOn": ["^build"],
@@ -482,8 +482,8 @@
       "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.config.ts",
-        "project": "integration",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "testMatch": ["**/__tests__/**/*.integration.test.ts"]
       },
       "cache": true,
       "dependsOn": [

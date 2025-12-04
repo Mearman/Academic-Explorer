@@ -33,25 +33,6 @@ export default defineConfig(
           statements: 74,
         },
       },
-      // Named projects for targeted test execution
-      projects: [
-        {
-          test: {
-            name: 'unit',
-            include: ['__tests__/**/*.test.ts'],
-            exclude: ['__tests__/**/*.integration.test.ts'],
-            environment: 'node',
-          },
-        },
-        {
-          test: {
-            name: 'integration',
-            include: ['__tests__/**/*.integration.test.ts', 'src/**/*.integration.test.ts'],
-            environment: 'node',
-            testTimeout: 30000,
-          },
-        },
-      ],
     },
   })
 );
