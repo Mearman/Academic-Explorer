@@ -287,26 +287,15 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Try filesystem cache first
+    // E2E mode: Always return mock data immediately to avoid any network requests
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('works', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, {
-          headers: {
-            "x-powered-by": "filesystem-cache",
-            "x-cache-hit": "true",
-          },
-        });
-      }
-
-      // No cache hit - return mock data instead of hitting API to avoid rate limiting
-      console.log(`🎭 Filesystem cache miss, returning mock data: works/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: works/${id}`);
       const work = createMockWork(id);
       return HttpResponse.json(work, {
         headers: {
-          "x-powered-by": "msw-mock-fallback",
-          "x-cache-hit": "false",
-          "x-msw-request-id": `mock-fallback-${id}`,
+          "x-powered-by": "msw-e2e-mock",
+          "x-cache-hit": "e2e-mock",
+          "x-msw-request-id": `e2e-mock-${id}`,
         },
       });
     }
@@ -353,26 +342,15 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Try filesystem cache first
+    // E2E mode: Always return mock data immediately to avoid any network requests
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('authors', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, {
-          headers: {
-            "x-powered-by": "filesystem-cache",
-            "x-cache-hit": "true",
-          },
-        });
-      }
-
-      // No cache hit - return mock data instead of hitting API to avoid rate limiting
-      console.log(`🎭 Filesystem cache miss, returning mock data: authors/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: authors/${id}`);
       const author = createMockAuthor(id);
       return HttpResponse.json(author, {
         headers: {
-          "x-powered-by": "msw-mock-fallback",
-          "x-cache-hit": "false",
-          "x-msw-request-id": `mock-fallback-${id}`,
+          "x-powered-by": "msw-e2e-mock",
+          "x-cache-hit": "e2e-mock",
+          "x-msw-request-id": `e2e-mock-${id}`,
         },
       });
     }
@@ -404,26 +382,15 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Try filesystem cache first
+    // E2E mode: Always return mock data immediately to avoid any network requests
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('institutions', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, {
-          headers: {
-            "x-powered-by": "filesystem-cache",
-            "x-cache-hit": "true",
-          },
-        });
-      }
-
-      // No cache hit - return mock data instead of hitting API to avoid rate limiting
-      console.log(`🎭 Filesystem cache miss, returning mock data: institutions/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: institutions/${id}`);
       const institution = createMockInstitution(id);
       return HttpResponse.json(institution, {
         headers: {
-          "x-powered-by": "msw-mock-fallback",
-          "x-cache-hit": "false",
-          "x-msw-request-id": `mock-fallback-${id}`,
+          "x-powered-by": "msw-e2e-mock",
+          "x-cache-hit": "e2e-mock",
+          "x-msw-request-id": `e2e-mock-${id}`,
         },
       });
     }
@@ -531,13 +498,9 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('sources', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
-      }
-      console.log(`🎭 Filesystem cache miss, returning mock data: sources/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: sources/${id}`);
       return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" }, {
-        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
       });
     }
 
@@ -549,13 +512,9 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('topics', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
-      }
-      console.log(`🎭 Filesystem cache miss, returning mock data: topics/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: topics/${id}`);
       return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` }, {
-        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
       });
     }
 
@@ -567,13 +526,9 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('publishers', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
-      }
-      console.log(`🎭 Filesystem cache miss, returning mock data: publishers/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: publishers/${id}`);
       return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` }, {
-        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
       });
     }
 
@@ -585,13 +540,9 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('funders', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
-      }
-      console.log(`🎭 Filesystem cache miss, returning mock data: funders/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: funders/${id}`);
       return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` }, {
-        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
       });
     }
 
@@ -603,13 +554,9 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
     if (isE2EMode) {
-      const cachedData = await tryFilesystemCache('concepts', id);
-      if (cachedData) {
-        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
-      }
-      console.log(`🎭 Filesystem cache miss, returning mock data: concepts/${id}`);
+      console.log(`🎭 E2E mode - returning mock data immediately: concepts/${id}`);
       return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` }, {
-        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
       });
     }
 
