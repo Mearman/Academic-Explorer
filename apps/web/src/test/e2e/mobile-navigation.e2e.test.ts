@@ -4,6 +4,7 @@
  */
 
 import { expect,test } from '@playwright/test';
+import { waitForMantineStyles } from '../helpers/css-ready';
 
 test.describe('Mobile Navigation Menu - E2E', () => {
   test.describe('T013: Mobile viewport behavior (375px)', () => {
@@ -180,23 +181,8 @@ test.describe('Mobile Navigation Menu - E2E', () => {
     });
 
     test('should have sufficient touch target size (≥44px)', async ({ page }) => {
-      // Wait for CSS to be fully applied before measuring
-      await page.waitForFunction(() => {
-        const testElement = document.createElement('div');
-        testElement.style.position = 'absolute';
-        testElement.style.visibility = 'hidden';
-        testElement.style.pointerEvents = 'none';
-        document.body.append(testElement);
-
-        const computedStyle = getComputedStyle(testElement);
-        const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
-
-        testElement.remove();
-        return stylesLoaded;
-      }, { timeout: 10_000 });
-
-      // Additional wait for Mantine styles to settle
-      await page.waitForTimeout(100);
+      // Wait for Mantine styles to be fully applied before measuring
+      await waitForMantineStyles(page);
 
       const menuButton = page.getByRole('button', { name: /open navigation menu/i });
 

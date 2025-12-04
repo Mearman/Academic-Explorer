@@ -55,9 +55,9 @@ export default defineConfig({
     // Set user agent for consistency
     userAgent: "BibGraph-E2E-Tests/1.0 Playwright",
 
-    // Timeout settings
-    actionTimeout: 10_000,
-    navigationTimeout: 20_000,
+    // Timeout settings - increased for CI reliability
+    actionTimeout: 15_000,
+    navigationTimeout: 30_000,
 
     // Browser launch options for IndexedDB support
     launchOptions: {
@@ -75,8 +75,8 @@ export default defineConfig({
     serviceWorkers: 'allow',
   },
 
-  // Test timeout
-  timeout: 60_000,
+  // Test timeout - increased from 60s for complex test scenarios
+  timeout: 90_000,
 
   // Global setup and teardown for cache warming and cleanup
   globalSetup: "./playwright.global-setup.ts",

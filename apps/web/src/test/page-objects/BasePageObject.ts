@@ -10,6 +10,7 @@
 
 import type { Locator,Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { waitForStylesApplied } from "../helpers/css-ready";
 
 export interface BasePageObjectOptions {
 	/** Base URL for the application */
@@ -52,24 +53,7 @@ export class BasePageObject {
 	 * This fixes issues with elements having incorrect sizes or visibility
 	 */
 	async waitForStylesApplied(): Promise<void> {
-		// Wait for CSS to be loaded by checking for computed styles
-		await this.page.waitForFunction(() => {
-			const testElement = document.createElement('div');
-			testElement.style.position = 'absolute';
-			testElement.style.visibility = 'hidden';
-			testElement.style.pointerEvents = 'none';
-			document.body.append(testElement);
-
-			// Check if CSS is loaded by verifying computed styles
-			const computedStyle = getComputedStyle(testElement);
-			const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
-
-			testElement.remove();
-			return stylesLoaded;
-		}, { timeout: 10_000 });
-
-		// Additional wait for Mantine styles to settle
-		await this.page.waitForTimeout(100);
+		await waitForStylesApplied(this.page, this.defaultTimeout);
 	}
 
 	/**

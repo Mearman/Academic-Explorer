@@ -4,6 +4,7 @@
  */
 
 import { expect, test } from "@playwright/test";
+import { waitForMantineStyles } from "../helpers/css-ready";
 
 test.describe("OpenAlex URL Redirection and Bookmarking", () => {
   const BASE_URL = process.env.CI ? "http://localhost:4173" : "http://localhost:5173";
@@ -138,23 +139,8 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
         timeout: 30_000,
       });
 
-      // Wait for CSS to be fully applied
-      await page.waitForFunction(() => {
-        const testElement = document.createElement('div');
-        testElement.style.position = 'absolute';
-        testElement.style.visibility = 'hidden';
-        testElement.style.pointerEvents = 'none';
-        document.body.append(testElement);
-
-        const computedStyle = getComputedStyle(testElement);
-        const stylesLoaded = computedStyle && computedStyle.position === 'absolute';
-
-        testElement.remove();
-        return stylesLoaded;
-      }, { timeout: 10_000 });
-
-      // Additional wait for Mantine styles to settle
-      await page.waitForTimeout(200);
+      // Wait for Mantine styles to be fully applied
+      await waitForMantineStyles(page);
 
       // Wait for redirect and page load
       // Look for bookmark button in entity detail with better selector
