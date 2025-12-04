@@ -150,7 +150,7 @@ jobs:
         timeout-minutes: 20
         env:
           NODE_OPTIONS: --max-old-space-size=8192
-        run: pnpm nx run-many -t lint --parallel=3 --continue-on-error
+        run: pnpm nx run-many -t lint --parallel=3
 
       - name: Run tests (except algorithms)
         timeout-minutes: 20
