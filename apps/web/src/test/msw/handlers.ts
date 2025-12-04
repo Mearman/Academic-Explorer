@@ -267,7 +267,7 @@ const createCacheHelpers = (cacheUtils?: FilesystemCacheUtils) => {
  * @param cacheUtils
  */
 export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
-  const { isE2EMode } = createCacheHelpers(cacheUtils);
+  const { tryFilesystemCache, writeToCache, isE2EMode } = createCacheHelpers(cacheUtils);
 
   return [
   // Get single work by ID
@@ -287,19 +287,6 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Always return mock data immediately to avoid any network requests
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: works/${id}`);
-      const work = createMockWork(id);
-      return HttpResponse.json(work, {
-        headers: {
-          "x-powered-by": "msw-e2e-mock",
-          "x-cache-hit": "e2e-mock",
-          "x-msw-request-id": `e2e-mock-${id}`,
-        },
-      });
-    }
-
     // Handle rate limit simulation (test mode only)
     if (id === "W2799442855") {
       return HttpResponse.json(
@@ -315,7 +302,7 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // Return mock data for non-E2E tests
+    // Return mock data for all tests (including E2E)
     const work = createMockWork(id);
     return HttpResponse.json(work, {
       headers: {
@@ -342,20 +329,7 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Always return mock data immediately to avoid any network requests
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: authors/${id}`);
-      const author = createMockAuthor(id);
-      return HttpResponse.json(author, {
-        headers: {
-          "x-powered-by": "msw-e2e-mock",
-          "x-cache-hit": "e2e-mock",
-          "x-msw-request-id": `e2e-mock-${id}`,
-        },
-      });
-    }
-
-    // Return mock data for non-E2E tests
+    // Return mock data for all tests (including E2E)
     const author = createMockAuthor(id);
     return HttpResponse.json(author, {
       headers: {
@@ -382,20 +356,7 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       );
     }
 
-    // E2E mode: Always return mock data immediately to avoid any network requests
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: institutions/${id}`);
-      const institution = createMockInstitution(id);
-      return HttpResponse.json(institution, {
-        headers: {
-          "x-powered-by": "msw-e2e-mock",
-          "x-cache-hit": "e2e-mock",
-          "x-msw-request-id": `e2e-mock-${id}`,
-        },
-      });
-    }
-
-    // Return mock data for non-E2E tests
+    // Return mock data for all tests (including E2E)
     const institution = createMockInstitution(id);
     return HttpResponse.json(institution, {
       headers: {
@@ -497,26 +458,12 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     const { id } = params;
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: sources/${id}`);
-      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" }, {
-        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
-      });
-    }
-
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" });
   }),
 
   http.get(`${API_BASE}/topics/:id`, async ({ params }) => {
     const { id } = params;
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
-
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: topics/${id}`);
-      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` }, {
-        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
-      });
-    }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` });
   }),
@@ -525,13 +472,6 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     const { id } = params;
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: publishers/${id}`);
-      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` }, {
-        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
-      });
-    }
-
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` });
   }),
 
@@ -539,26 +479,12 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
     const { id } = params;
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
 
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: funders/${id}`);
-      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` }, {
-        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
-      });
-    }
-
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` });
   }),
 
   http.get(`${API_BASE}/concepts/:id`, async ({ params }) => {
     const { id } = params;
     if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
-
-    if (isE2EMode) {
-      console.log(`🎭 E2E mode - returning mock data immediately: concepts/${id}`);
-      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` }, {
-        headers: { "x-powered-by": "msw-e2e-mock", "x-cache-hit": "e2e-mock" }
-      });
-    }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` });
   }),
