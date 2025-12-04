@@ -40,7 +40,7 @@ export default tseslint.config([
             "**/*.js",
             "**/*.js.map",
             // Config files outside tsconfig rootDir - excluded from lint
-            "**/vitest.config.ts",
+            "**/vitest.config*.ts",
             "**/vitest.setup.ts",
             "**/vite.config.ts",
             "**/vite.config.*.ts",
