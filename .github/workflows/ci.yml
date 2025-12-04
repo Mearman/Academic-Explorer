@@ -32,7 +32,7 @@ env:
   HUSKY: 0
   CI: true
   # E2E test parallelism - number of shards for Playwright test distribution
-  E2E_SHARDS: 10
+  E2E_SHARDS: 20
   # Option B: Disable database cache if Option A (caching full .nx dir) doesn't work
   # Uncomment these three lines to fall back to legacy file-based caching:
   # NX_DISABLE_DB: true
