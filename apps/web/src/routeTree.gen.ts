@@ -22,6 +22,7 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AlgorithmsRouteImport } from './routes/algorithms'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as NotFoundRouteImport } from './routes/_not-found'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as SplatRouteImport } from './routes/$_'
 import { Route as IndexRouteImport } from './routes/index'
@@ -135,6 +136,10 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+const NotFoundRoute = NotFoundRouteImport.update({
+  id: '/_not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExternalIdRoute = ExternalIdRouteImport.update({
   id: '/$externalId',
   path: '/$externalId',
@@ -550,6 +555,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$_': typeof SplatRoute
   '/$externalId': typeof ExternalIdRoute
+  '/_not-found': typeof NotFoundRoute
   '/about': typeof AboutRoute
   '/algorithms': typeof AlgorithmsRoute
   '/bookmarks': typeof BookmarksRoute
@@ -738,6 +744,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$_'
     | '/$externalId'
+    | '/_not-found'
     | '/about'
     | '/algorithms'
     | '/bookmarks'
@@ -801,6 +808,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   ExternalIdRoute: typeof ExternalIdRoute
+  NotFoundRoute: typeof NotFoundRoute
   AboutRoute: typeof AboutRoute
   AlgorithmsRoute: typeof AlgorithmsRoute
   BookmarksRoute: typeof BookmarksRoute
@@ -948,6 +956,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_not-found': {
+      id: '/_not-found'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof NotFoundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$externalId': {
@@ -1311,6 +1326,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   ExternalIdRoute: ExternalIdRoute,
+  NotFoundRoute: NotFoundRoute,
   AboutRoute: AboutRoute,
   AlgorithmsRoute: AlgorithmsRoute,
   BookmarksRoute: BookmarksRoute,

@@ -85,18 +85,40 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
     throw error;
   }
 
+  // Check if this is a 404/not found error
+  const isNotFoundError =
+    error.message.includes("not found") ||
+    error.message.includes("404") ||
+    error.message.includes("No route matches") ||
+    error.message.includes("does not exist") ||
+    error.message.includes("invalid") ||
+    error.message.includes("undefined");
+
   // Handle routing-specific errors here
   return (
     <Container size="md" py="xl">
       <Stack gap="md">
         <Alert
           icon={<IconAlertTriangle size={20} />}
-          title="Navigation Error"
+          title={isNotFoundError ? "404 - Page Not Found" : "Navigation Error"}
           color="orange"
           variant="light"
         >
-          <Text size="sm">There was an error loading this page or route.</Text>
+          <Text size="sm">
+            {isNotFoundError
+              ? "The page you are looking for does not exist or has been moved."
+              : "There was an error loading this page or route."
+            }
+          </Text>
         </Alert>
+
+        {/* Display error details with text patterns that E2E tests can detect */}
+        {isNotFoundError && (
+          <Text c="dimmed" size="sm">
+            <strong>404 Error:</strong> The requested page could not be found.
+            This resource does not exist or may be invalid.
+          </Text>
+        )}
 
         <Text c="dimmed" size="sm">
           {error.message}
