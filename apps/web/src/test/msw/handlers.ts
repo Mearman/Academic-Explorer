@@ -267,7 +267,7 @@ const createCacheHelpers = (cacheUtils?: FilesystemCacheUtils) => {
  * @param cacheUtils
  */
 export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
-  const { tryFilesystemCache, isE2EMode } = createCacheHelpers(cacheUtils);
+  const { isE2EMode } = createCacheHelpers(cacheUtils);
 
   return [
   // Get single work by ID
