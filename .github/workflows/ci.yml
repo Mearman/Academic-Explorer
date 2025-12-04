@@ -292,33 +292,92 @@ jobs:
       - name: Run E2E tests (shard ${{ matrix.shard }}/${{ env.E2E_SHARDS }})
         run: |
           cd apps/web
-          # Run Playwright tests with explicit handling of flaky vs failed tests
-          # --reporter=json will help us distinguish between flaky and failed tests
+
+          # Run Playwright tests with enhanced output for debugging
+          # Use the built-in reporters and capture exit code properly
           pnpm exec playwright test \
             --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
-            --reporter=json \
-            --reporter=output \
+            --reporter=list,html,json \
+            --output-dir=test-results \
+            TEST_RESULTS_FILE="test-results/results.json" \
             || {
             TEST_EXIT_CODE=$?
             echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
 
-            # Check the test results to see if tests actually failed vs were flaky
+            # Analyze the actual test results to determine if this is a real failure
+            echo "🔍 Analyzing test results to distinguish between flaky passes and actual failures..."
+
+            # Check for various possible result file locations
+            RESULTS_FILE=""
             if [ -f "test-results/results.json" ]; then
-              FAILED_TESTS=$(cat test-results/results.json | jq '.suites[].specs[].tests[] | select(.results[-1].status == "failed") | length' | wc -l || echo "0")
-              FLAKY_TESTS=$(cat test-results/results.json | jq '.suites[].specs[].tests[] | select(.results | length > 1) | length' | wc -l || echo "0")
+              RESULTS_FILE="test-results/results.json"
+            elif [ -f "blob-report/results.json" ]; then
+              RESULTS_FILE="blob-report/results.json"
+            else
+              # Look for any JSON files that might contain results
+              RESULTS_FILE=$(find test-results -name "*.json" -type f | head -1)
+            fi
 
-              echo "Failed tests: $FAILED_TESTS, Flaky tests: $FLAKY_TESTS"
+            if [ -n "$RESULTS_FILE" ] && [ -f "$RESULTS_FILE" ]; then
+              echo "📄 Found results file: $RESULTS_FILE"
 
-              # Only fail the job if there are actual test failures, not just flaky tests
-              if [ "$FAILED_TESTS" -eq 0 ]; then
-                echo "All tests passed (some were flaky). Treating as success."
-                exit 0
+              # Try to parse the JSON results safely
+              if jq empty "$RESULTS_FILE" 2>/dev/null; then
+                echo "✅ Results file is valid JSON, analyzing..."
+
+                # Get test summary from the results
+                TOTAL_SPECS=$(jq -r '[.suites[]?.specs[]?] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+                TOTAL_TESTS=$(jq -r '[.suites[]?.specs[]?.tests[]?] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+
+                echo "📊 Test Statistics:"
+                echo "  Total test specs: $TOTAL_SPECS"
+                echo "  Total individual tests: $TOTAL_TESTS"
+
+                if [ "$TOTAL_TESTS" -gt 0 ]; then
+                  # Count different test outcomes
+                  PASSED_TESTS=$(jq -r '[.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "passed")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+                  FAILED_TESTS=$(jq -r '[.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "failed")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+                  SKIPPED_TESTS=$(jq -r '[.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "skipped")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+                  FLAKY_TESTS=$(jq -r '[.suites[]?.specs[]?.tests[]? | select(.results | length > 1)] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+
+                  echo "  Passed: $PASSED_TESTS"
+                  echo "  Failed: $FAILED_TESTS"
+                  echo "  Skipped: $SKIPPED_TESTS"
+                  echo "  Flaky: $FLAKY_TESTS"
+
+                  # The key logic: if there are no failed tests, treat as success
+                  # Even flaky tests that eventually pass should result in success
+                  if [ "$FAILED_TESTS" -eq 0 ]; then
+                    echo "✅ All tests passed (some may have been flaky but eventually succeeded)."
+                    echo "🎉 Treating the test run as successful."
+                    exit 0
+                  else
+                    echo "❌ Found $FAILED_TESTS failed test(s). This represents actual test failures."
+                    echo "🔍 Failed tests:"
+                    jq -r '.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "failed") | "  - \(.title // \"Unnamed test\")"' "$RESULTS_FILE" 2>/dev/null || echo "  (Could not extract test names)"
+                    echo "💾 Check the uploaded HTML report for detailed failure information."
+                    exit 1
+                  fi
+                else
+                  echo "⚠️ No tests were found in the results. This might indicate:"
+                  echo "  - Test discovery issues"
+                  echo "  - Configuration problems"
+                  echo "  - Empty test shard"
+                  echo "🔍 Playwright exit code: $TEST_EXIT_CODE"
+                  exit 1
+                fi
               else
-                echo "Some tests actually failed. Failing the job."
+                echo "⚠️ Results file exists but is not valid JSON."
+                echo "🔍 File content preview:"
+                head -20 "$RESULTS_FILE" 2>/dev/null || echo "Could not read file"
                 exit $TEST_EXIT_CODE
               fi
             else
-              echo "No results file found. Assuming actual test failure."
+              echo "⚠️ No test results file found. This indicates a test execution failure."
+              echo "🔍 Searching for test-related files..."
+              find test-results -type f -name "*.json" -o -name "*.txt" -o -name "*.log" 2>/dev/null | head -10 | sed 's/^/  /' || echo "  (No files found)"
+              echo "🔍 Playwright exit code: $TEST_EXIT_CODE"
+              echo "💾 This likely indicates a test infrastructure problem rather than test failures."
               exit $TEST_EXIT_CODE
             fi
           }
