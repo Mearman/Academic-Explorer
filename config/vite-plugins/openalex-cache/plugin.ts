@@ -60,24 +60,46 @@ export function openalexCachePlugin(
       console.log("🌐 OpenAlex cache middleware configured for development");
     },
 
-    config(userConfig, configEnv) {
-      // Check if we're in development mode using configEnv
-      if (configEnv.command !== "serve" || opts.enabled === false) {
+    configurePreviewServer(server) {
+      if (!shouldEnablePlugin(opts, pluginState.getConfig()!)) {
         return;
       }
 
-      // Configure CORS to allow OpenAlex API requests
-      if (!userConfig.server) {
-        userConfig.server = {};
+      // Add redirect middleware for API requests before OpenAlex cache middleware
+      server.middlewares.use("/api", createRedirectMiddleware(logVerbose));
+
+      // Add middleware to intercept OpenAlex API requests
+      server.middlewares.use(
+        "/api/openalex",
+        createCacheMiddleware(
+          pluginState.getContext(),
+          pluginState.getDebounceManager(),
+          pluginState.getStaticDataDir()!,
+        ),
+      );
+
+      console.log("🌐 OpenAlex cache middleware configured for preview");
+    },
+
+    config(userConfig, configEnv) {
+      // Only enable plugin for serve and preview modes
+      // Use type assertion because config hook can be called in different contexts
+      const command = configEnv.command as "serve" | "preview" | "build";
+      if (command === "serve" || command === "preview") {
+        // Configure CORS to allow OpenAlex API requests
+        if (!userConfig.server) {
+          userConfig.server = {};
+        }
+
+        // Set up CORS for development and preview
+        userConfig.server.cors = {
+          origin: true,
+          credentials: true,
+        };
+
+        const mode = command === "serve" ? "development" : "preview";
+        console.log(`🌐 OpenAlex cache plugin enabled for ${mode}`);
       }
-
-      // Set up CORS for development
-      userConfig.server.cors = {
-        origin: true,
-        credentials: true,
-      };
-
-      console.log("🌐 OpenAlex cache plugin enabled for development");
     },
   };
 }
