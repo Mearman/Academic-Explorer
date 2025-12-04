@@ -6,7 +6,7 @@
  */
 
 import type { Author, Authorship,Institution, Work } from "@bibgraph/types";
-import { http, HttpResponse, passthrough } from "msw";
+import { http, HttpResponse } from "msw";
 
 const API_BASE = "https://api.openalex.org";
 
