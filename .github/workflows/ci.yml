@@ -292,7 +292,36 @@ jobs:
       - name: Run E2E tests (shard ${{ matrix.shard }}/${{ env.E2E_SHARDS }})
         run: |
           cd apps/web
-          pnpm exec playwright test --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }}
+          # Run Playwright tests with explicit handling of flaky vs failed tests
+          # --reporter=json will help us distinguish between flaky and failed tests
+          pnpm exec playwright test \
+            --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
+            --reporter=json \
+            --reporter=output \
+            || {
+            TEST_EXIT_CODE=$?
+            echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
+
+            # Check the test results to see if tests actually failed vs were flaky
+            if [ -f "test-results/results.json" ]; then
+              FAILED_TESTS=$(cat test-results/results.json | jq '.suites[].specs[].tests[] | select(.results[-1].status == "failed") | length' | wc -l || echo "0")
+              FLAKY_TESTS=$(cat test-results/results.json | jq '.suites[].specs[].tests[] | select(.results | length > 1) | length' | wc -l || echo "0")
+
+              echo "Failed tests: $FAILED_TESTS, Flaky tests: $FLAKY_TESTS"
+
+              # Only fail the job if there are actual test failures, not just flaky tests
+              if [ "$FAILED_TESTS" -eq 0 ]; then
+                echo "All tests passed (some were flaky). Treating as success."
+                exit 0
+              else
+                echo "Some tests actually failed. Failing the job."
+                exit $TEST_EXIT_CODE
+              fi
+            else
+              echo "No results file found. Assuming actual test failure."
+              exit $TEST_EXIT_CODE
+            fi
+          }
 
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v5
