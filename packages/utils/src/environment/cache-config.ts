@@ -92,6 +92,7 @@ export class CacheConfigFactory {
 	static createStaticDataPaths(context: BuildContext): StaticDataPaths {
 		if (context.isDevelopment && context.isDevServer) {
 			// Local development server - use relative paths to public directory
+			// In development with Vite, static files are served from public/
 			return {
 				baseUrl: this.LOCAL_DATA_PATH,
 				openalexPath: this.OPENALEX_SUBPATH,
@@ -102,6 +103,56 @@ export class CacheConfigFactory {
 					Pragma: "no-cache",
 					Expires: "0",
 				},
+			}
+		}
+
+		if (context.isTest) {
+			// Check if running in E2E mode with filesystem cache available
+			const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
+
+			if (isE2E) {
+				// E2E tests - detect if filesystem cache is available via MSW setup
+				// The global setup creates public/data/openalex directory
+				const hasFilesystemCache = typeof window !== 'undefined' &&
+					(window.location.pathname.startsWith('/data/openalex/') ||
+						// Check for MSW filesystem cache indicators
+						localStorage.getItem('e2e-filesystem-cache-available') === 'true');
+
+				if (hasFilesystemCache) {
+					// Use filesystem cache paths for E2E tests
+					return {
+						baseUrl: this.LOCAL_DATA_PATH,
+						openalexPath: this.OPENALEX_SUBPATH,
+						openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
+						isAbsolute: false,
+						cacheHeaders: {
+							"Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+							"Accept-Encoding": "gzip, deflate, br",
+						},
+					};
+				} else {
+					// Regular unit tests - no cache headers
+					return {
+						baseUrl: this.LOCAL_DATA_PATH,
+						openalexPath: this.OPENALEX_SUBPATH,
+						openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
+						isAbsolute: false,
+						cacheHeaders: {
+							"Cache-Control": "no-cache",
+						},
+					};
+				}
+			} else {
+				// Non-E2E test environment
+				return {
+					baseUrl: this.LOCAL_DATA_PATH,
+					openalexPath: this.OPENALEX_SUBPATH,
+					openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
+					isAbsolute: false,
+					cacheHeaders: {
+						"Cache-Control": "no-cache",
+					},
+				}
 			}
 		}
 
@@ -137,7 +188,7 @@ export class CacheConfigFactory {
 			}
 		}
 
-		// Test environment or unknown - use minimal local paths
+		// Default environment - minimal local paths
 		return {
 			baseUrl: this.LOCAL_DATA_PATH,
 			openalexPath: this.OPENALEX_SUBPATH,
@@ -177,13 +228,36 @@ export class CacheConfigFactory {
 		}
 
 		if (context.isTest) {
-			return {
-				maxSize: 10 * 1024 * 1024, // 10MB for tests
-				expirationTime: 5 * 60 * 1000, // 5 minutes
-				persistent: false, // Don't persist test data
-				storagePreference: "memory",
-				compression: false,
-				debug: false,
+			// Check if running in E2E mode with filesystem cache available
+			const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
+			const hasFilesystemCache = isE2E && typeof window !== 'undefined' &&
+				// Check if static filesystem cache is available at /data/openalex/
+				// This will be true when running against preview server with cached data
+				window.location.pathname.startsWith('/data/openalex/') ||
+				// Or when MSW has set up the filesystem cache directory
+				(document.querySelector('script[src*="/data/openalex/"]') !== null ||
+				 localStorage.getItem('e2e-filesystem-cache-available') === 'true');
+
+			if (hasFilesystemCache) {
+				// E2E tests with filesystem cache - use larger persistent cache
+				return {
+					maxSize: 100 * 1024 * 1024, // 100MB for E2E with filesystem cache
+					expirationTime: 60 * 60 * 1000, // 1 hour
+					persistent: true, // Persist to leverage filesystem cache
+					storagePreference: "indexeddb",
+					compression: true, // Save space
+					debug: false,
+				};
+			} else {
+				// Regular unit tests - small memory cache
+				return {
+					maxSize: 10 * 1024 * 1024, // 10MB for tests
+					expirationTime: 5 * 60 * 1000, // 5 minutes
+					persistent: false, // Don't persist test data
+					storagePreference: "memory",
+					compression: false,
+					debug: false,
+				};
 			}
 		}
 
