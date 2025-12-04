@@ -93,11 +93,13 @@ function createWebConfig(): UserConfig {
         routesDirectory: resolve(__dirname, 'src/routes'),
         generatedRouteTree: resolve(__dirname, 'src/routeTree.gen.ts'),
       }),
-      // OpenAlex Cache Plugin
-      openalexCachePlugin({
-        staticDataPath: "public/data/openalex",
-        verbose: false,
-      }),
+      // OpenAlex Cache Plugin - disabled during E2E tests to prevent server-side API calls and rate limiting
+      ...(process.env.RUNNING_E2E !== 'true' ? [
+        openalexCachePlugin({
+          staticDataPath: "public/data/openalex",
+          verbose: false,
+        })
+      ] : []),
       // Vanilla Extract Plugin
       vanillaExtractPlugin(),
       // React Plugin

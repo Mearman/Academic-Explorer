@@ -53,9 +53,10 @@ const globalSetup = async (config: FullConfig) => {
   }
 
   // Check if we should warm up the cache
-  // Skip cache warmup in CI environments and when OpenAlex API requests are causing rate limiting
+  // Skip cache warmup in CI environments, during E2E tests, and when OpenAlex API requests are causing rate limiting
   const shouldWarmCache =
     !process.env.CI &&
+    !process.env.RUNNING_E2E &&
     process.env.E2E_WARM_CACHE === "true" &&
     !fs.existsSync(STORAGE_STATE_PATH);
 
