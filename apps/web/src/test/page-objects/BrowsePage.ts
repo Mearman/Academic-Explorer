@@ -30,7 +30,7 @@ export class BrowsePage extends BaseSPAPageObject {
 	 * Navigate to /browse page
 	 */
 	async gotoBrowse(): Promise<void> {
-		await this.goto("/browse");
+		await this.goto("#/browse");
 	}
 
 	/**
