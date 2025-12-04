@@ -53,10 +53,11 @@ const globalSetup = async (config: FullConfig) => {
   }
 
   // Check if we should warm up the cache
-  // Skip cache warmup in CI environments to prevent hanging
+  // Skip cache warmup in CI environments and when OpenAlex API requests are causing rate limiting
   const shouldWarmCache =
     !process.env.CI &&
-    (process.env.E2E_WARM_CACHE === "true" || !fs.existsSync(STORAGE_STATE_PATH));
+    process.env.E2E_WARM_CACHE === "true" &&
+    !fs.existsSync(STORAGE_STATE_PATH);
 
   if (shouldWarmCache) {
     console.log("🔥 Warming cache with initial application load...");
@@ -85,11 +86,11 @@ const globalSetup = async (config: FullConfig) => {
         )
       ]);
 
-      // Wait for the application to initialize and cache to populate (with shorter timeout)
+      // Wait for the application to initialize and cache to populate (with extended timeout)
       await Promise.race([
-        page.waitForTimeout(3000),
+        page.waitForTimeout(45000),
         new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new Error("Application initialization timeout")), 3000)
+          setTimeout(() => reject(new Error("Application initialization timeout")), 45000)
         )
       ]);
 

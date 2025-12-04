@@ -299,9 +299,16 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
         });
       }
 
-      // No cache hit - pass through to real API
-      console.log(`🌐 Filesystem cache miss, passing through to API: works/${id}`);
-      return passthrough();
+      // No cache hit - return mock data instead of hitting API to avoid rate limiting
+      console.log(`🎭 Filesystem cache miss, returning mock data: works/${id}`);
+      const work = createMockWork(id);
+      return HttpResponse.json(work, {
+        headers: {
+          "x-powered-by": "msw-mock-fallback",
+          "x-cache-hit": "false",
+          "x-msw-request-id": `mock-fallback-${id}`,
+        },
+      });
     }
 
     // Handle rate limit simulation (test mode only)
@@ -358,9 +365,16 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
         });
       }
 
-      // No cache hit - pass through to real API
-      console.log(`🌐 Filesystem cache miss, passing through to API: authors/${id}`);
-      return passthrough();
+      // No cache hit - return mock data instead of hitting API to avoid rate limiting
+      console.log(`🎭 Filesystem cache miss, returning mock data: authors/${id}`);
+      const author = createMockAuthor(id);
+      return HttpResponse.json(author, {
+        headers: {
+          "x-powered-by": "msw-mock-fallback",
+          "x-cache-hit": "false",
+          "x-msw-request-id": `mock-fallback-${id}`,
+        },
+      });
     }
 
     // Return mock data for non-E2E tests
@@ -402,9 +416,16 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
         });
       }
 
-      // No cache hit - pass through to real API
-      console.log(`🌐 Filesystem cache miss, passing through to API: institutions/${id}`);
-      return passthrough();
+      // No cache hit - return mock data instead of hitting API to avoid rate limiting
+      console.log(`🎭 Filesystem cache miss, returning mock data: institutions/${id}`);
+      const institution = createMockInstitution(id);
+      return HttpResponse.json(institution, {
+        headers: {
+          "x-powered-by": "msw-mock-fallback",
+          "x-cache-hit": "false",
+          "x-msw-request-id": `mock-fallback-${id}`,
+        },
+      });
     }
 
     // Return mock data for non-E2E tests
@@ -514,8 +535,10 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       if (cachedData) {
         return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
       }
-      console.log(`🌐 Filesystem cache miss, passing through to API: sources/${id}`);
-      return passthrough();
+      console.log(`🎭 Filesystem cache miss, returning mock data: sources/${id}`);
+      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" }, {
+        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+      });
     }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" });
@@ -530,8 +553,10 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       if (cachedData) {
         return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
       }
-      console.log(`🌐 Filesystem cache miss, passing through to API: topics/${id}`);
-      return passthrough();
+      console.log(`🎭 Filesystem cache miss, returning mock data: topics/${id}`);
+      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` }, {
+        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+      });
     }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` });
@@ -546,8 +571,10 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       if (cachedData) {
         return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
       }
-      console.log(`🌐 Filesystem cache miss, passing through to API: publishers/${id}`);
-      return passthrough();
+      console.log(`🎭 Filesystem cache miss, returning mock data: publishers/${id}`);
+      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` }, {
+        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+      });
     }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` });
@@ -562,8 +589,10 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       if (cachedData) {
         return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
       }
-      console.log(`🌐 Filesystem cache miss, passing through to API: funders/${id}`);
-      return passthrough();
+      console.log(`🎭 Filesystem cache miss, returning mock data: funders/${id}`);
+      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` }, {
+        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+      });
     }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` });
@@ -578,8 +607,10 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
       if (cachedData) {
         return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
       }
-      console.log(`🌐 Filesystem cache miss, passing through to API: concepts/${id}`);
-      return passthrough();
+      console.log(`🎭 Filesystem cache miss, returning mock data: concepts/${id}`);
+      return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` }, {
+        headers: { "x-powered-by": "msw-mock-fallback", "x-cache-hit": "false" }
+      });
     }
 
     return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` });
@@ -587,10 +618,19 @@ export const createOpenalexHandlers = (cacheUtils?: FilesystemCacheUtils) => {
 
     // Catch-all for unhandled OpenAlex API routes
     http.get(`${API_BASE}/*`, () => {
-      // In E2E mode, pass through unhandled requests to real API
+      // In E2E mode, return mock error instead of hitting API to avoid rate limiting
       if (isE2EMode) {
-        console.log(`🌐 Unhandled request, passing through to API`);
-        return passthrough();
+        console.log(`🎭 Unhandled request, returning mock 404 to avoid API calls`);
+        return HttpResponse.json(
+          { error: "Entity not found in E2E test mode" },
+          {
+            status: 404,
+            headers: {
+              "x-powered-by": "msw-mock-fallback",
+              "x-msw-request-id": "mock-e2e-catch-all",
+            },
+          },
+        );
       }
 
       return HttpResponse.json(

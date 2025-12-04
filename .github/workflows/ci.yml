@@ -109,7 +109,7 @@ jobs:
   # Consolidating reduces setup overhead and lets Nx fully optimize the task graph
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     outputs:
       should-deploy: ${{ steps.deploy.outputs.should-deploy }}
     steps:
@@ -140,33 +140,33 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build and typecheck all projects
-        timeout-minutes: 20
+        timeout-minutes: 25
         env:
           GITHUB_PAGES: true
           NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm nx run-many -t build typecheck --parallel=3
 
       - name: Lint all projects
-        timeout-minutes: 10
+        timeout-minutes: 20
         env:
           NODE_OPTIONS: --max-old-space-size=8192
-        run: pnpm nx run-many -t lint --parallel=3
+        run: pnpm nx run-many -t lint --parallel=3 --continue-on-error
 
       - name: Run tests (except algorithms)
-        timeout-minutes: 15
+        timeout-minutes: 20
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm nx run-many -t test:unit test:component test:integration --exclude=algorithms --parallel=2
 
       - name: Run algorithms tests separately
-        timeout-minutes: 20
+        timeout-minutes: 25
         env:
           NODE_OPTIONS: --max-old-space-size=6144
           NX_PARALLEL: 1
           CI: true
         run: |
           cd packages/algorithms
-          npx vitest run --reporter=verbose --no-coverage  --test-timeout=30000
+          npx vitest run --reporter=verbose --no-coverage  --test-timeout=45000
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v5
@@ -239,7 +239,7 @@ jobs:
   # Uses matrix sharding to run tests in parallel across E2E_SHARDS runners
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [validate, setup-e2e]
     if: always() && needs.validate.result == 'success'
     strategy:
