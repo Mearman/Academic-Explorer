@@ -138,6 +138,7 @@ const AboutRoute = AboutRouteImport.update({
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 const NotFoundRoute = NotFoundRouteImport.update({
   id: '/_not-found',
+  path: '/_not-found',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExternalIdRoute = ExternalIdRouteImport.update({
