@@ -166,7 +166,7 @@ jobs:
           CI: true
         run: |
           cd packages/algorithms
-          npx vitest run --reporter=verbose --no-coverage --no-threads --test-timeout=30000
+          npx vitest run --reporter=verbose --no-coverage  --test-timeout=30000
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v5
