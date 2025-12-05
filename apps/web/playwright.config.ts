@@ -31,7 +31,10 @@ export default defineConfig({
   reporter: [
     ["list"],
     ["html", { open: "never", outputFolder: "test-results/playwright-report" }],
-    ["json", { outputFile: "test-results/results.json" }],
+    // Force consistent JSON output path that matches CI expectations
+    ["json", {
+      outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_FILE || 'test-results/results.json'
+    }],
   ],
 
   // Shared settings for all projects
