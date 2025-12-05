@@ -73,10 +73,6 @@ export interface AddBookmarkParams {
   entityType: EntityType;
   /** OpenAlex ID of the entity */
   entityId: string;
-  /** URL where entity can be accessed */
-  url: string;
-  /** Optional title of the entity */
-  title?: string;
   /** Optional user notes */
   notes?: string;
 }
@@ -460,7 +456,7 @@ export interface CatalogueStorageProvider {
   /**
    * Add an entity to the Bookmarks system list
    *
-   * Appends URL to notes for reference.
+   * Stores entity type and ID for navigation reconstruction.
    *
    * @param params - Bookmark parameters
    * @returns Promise resolving to the entity record ID
@@ -471,8 +467,6 @@ export interface CatalogueStorageProvider {
    * await provider.addBookmark({
    *   entityType: "works",
    *   entityId: "W2741809807",
-   *   url: "https://openalex.org/W2741809807",
-   *   title: "ML for Cultural Heritage",
    *   notes: "Important for Chapter 3"
    * });
    * ```
@@ -529,7 +523,7 @@ export interface CatalogueStorageProvider {
    * Add an entity to the History system list
    *
    * Updates timestamp if entity already exists in history.
-   * Appends URL and title to notes for reference.
+   * Stores URL and title in notes for reference.
    *
    * @param params - History entry parameters
    * @returns Promise resolving to the entity record ID
