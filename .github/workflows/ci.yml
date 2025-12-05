@@ -612,12 +612,71 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+  # Route-based Smoke Tests - Fast validation that all routes from routeTree.gen.ts load successfully
+  smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate]
+    if: always() && needs.validate.result == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        timeout-minutes: 5
+        run: pnpm install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: build-artifacts
+          path: .
+
+      - name: Start preview server for smoke tests
+        run: |
+          cd apps/web
+          NODE_ENV=production RUNNING_E2E=true pnpm preview --port 4173 &
+          echo "Preview server starting on port 4173..."
+          timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 2; done'
+          echo "✅ Preview server is ready on http://localhost:4173"
+
+      - name: Run route-based smoke tests
+        timeout-minutes: 8
+        run: |
+          cd apps/web
+          NODE_ENV=production RUNNING_E2E=true BASE_URL=http://localhost:4173 \
+          pnpm exec playwright test src/test/e2e/page-smoke.e2e.test.ts \
+            --reporter=list,json \
+            --reporter=json --outputFile=test-results/smoke-test-results.json \
+            --reporter=html --outputFolder=test-results/smoke-test-report
+
+      - name: Upload smoke test artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: smoke-test-results
+          path: |
+            apps/web/test-results/smoke-test-results.json
+            apps/web/test-results/smoke-test-report
+          retention-days: 7
+          if-no-files-found: ignore
+
   # Deployment
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate, e2e, security-audit]
-    if: always() && needs.validate.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success'
+    needs: [validate, smoke-tests, security-audit]
+    if: always() && needs.validate.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main' && needs.validate.result == 'success' && needs.smoke-tests.result == 'success' && needs.security-audit.result == 'success'
     environment:
       name: production
       url: https://mearman.github.io/BibGraph/
@@ -759,8 +818,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [validate, e2e, security-audit, deploy]
-    if: always() && needs.validate.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && needs.security-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
+    needs: [validate, smoke-tests, security-audit, deploy]
+    if: always() && needs.validate.result == 'success' && needs.smoke-tests.result == 'success' && needs.security-audit.result == 'success' && needs.deploy.result == 'success' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
