@@ -1,16 +1,20 @@
 <!--
 Sync Impact Report:
-Version: 2.15.1 → 2.16.0 (MINOR: Added type coercion prohibition to Type Safety principle)
+Version: 2.16.0 → 2.17.0 (MINOR: Added CI trigger prohibition principle)
 Modified Sections:
-  - Type Safety (Principle I): Added explicit prohibition of type coercions (`as Type`, `<Type>value`) except in test files
-Added Sections: None
+  - Added Principle XXI - CI Trigger Discipline
+  - Updated Constitution version and date
+  - Updated principle count in Quality Gates section
+Added Sections:
+  - Principle XXI: CI Trigger Discipline
 Removed Sections: None
 Templates Requiring Updates:
-  - .specify/templates/plan-template.md: ✅ Updated (item 1 - Type Safety now includes no type coercions)
-  - .specify/templates/spec-template.md: ✅ Updated (Type Safety constitution alignment)
-  - .specify/templates/tasks-template.md: ✅ Updated (constitution compliance verification)
+  - .specify/templates/plan-template.md: ✅ Updated (Constitution Check includes new principle)
+  - .specify/templates/spec-template.md: ✅ Updated (Constitution compliance verification)
+  - .specify/templates/tasks-template.md: ✅ Updated (Task categorization reflects new CI discipline)
 Follow-up TODOs: None
 Previous Amendments:
+  - v2.16.0: Added type coercion prohibition to Type Safety principle
   - v2.15.1: Strengthened spec commit requirements - MUST commit after each SpecKit command
   - v2.15.0: Added Principle XX - Canonical Hash Computed Colours
   - v2.14.0: Added Principle XIX - Documentation Token Efficiency
@@ -33,10 +37,11 @@ Previous Amendments:
   - v2.4.0: Added no re-export requirement to Principle III
 -->
 
-# BibGraph Constitution (v2.16.0)
+# BibGraph Constitution (v2.17.0)
 
 ## Version History
 
+- **v2.17.0** (2025-12-05): Added Principle XXI - CI Trigger Discipline (never create commits solely for CI triggers)
 - **v2.16.0** (2025-12-02): Added type coercion prohibition to Type Safety (Principle I) - no `as Type` or `<Type>value` except in test files
 - **v2.15.1** (2025-12-02): Strengthened spec commit requirements - MUST commit after each SpecKit command
 - **v2.15.0** (2025-12-02): Added Principle XX - Canonical Hash Computed Colours
@@ -451,6 +456,40 @@ const typeColor = getEntityTypeColor('authors');
 
 **Rationale**: Consistent hash-computed colours create visual identity for entities, allowing users to recognize the same entity across different views and contexts. This improves navigation, reduces cognitive load, and maintains professional visual coherence in the graph exploration experience.
 
+### XXI. CI Trigger Discipline (NON-NEGOTIABLE)
+
+**NEVER create commits solely for the purpose of triggering CI pipelines**. Commits MUST represent actual code changes, not infrastructure manipulation.
+
+**Requirements**:
+- Commits MUST contain meaningful changes to code, configuration, or documentation
+- When CI needs to be re-run due to infrastructure issues or flaky tests, use GitHub CLI (`gh run rerun`) or workflow_dispatch instead
+- Empty commits, whitespace changes, or trivial modifications solely to trigger CI are PROHIBITED
+- CI infrastructure issues should be resolved through appropriate GitHub Actions features, not code commits
+
+**Acceptable CI retry methods**:
+```bash
+# ✅ CORRECT: Use GitHub CLI to rerun failed jobs
+gh run rerun <run-id>
+gh run rerun <run-id> --failed
+
+# ✅ CORRECT: Use workflow_dispatch for manual triggers
+gh workflow run "CI/CD Pipeline" -f main
+```
+
+**Prohibited patterns**:
+```bash
+# ❌ WRONG: Empty commits to trigger CI
+git commit --allow-empty -m "ci: trigger pipeline"
+
+# ❌ WRONG: Trivial changes to trigger CI
+echo " " >> README.md && git add README.md && git commit -m "ci: retry pipeline"
+
+# ❌ WRONG: Whitespace/comment changes solely for CI
+git add . && git commit -m "ci: trigger rebuild"
+```
+
+**Rationale**: Maintains commit history integrity, preserves git bisect effectiveness, and separates code changes from infrastructure management. Using proper GitHub CLI features preserves the semantic meaning of commits and maintains repository hygiene.
+
 ## Consolidated Patterns
 
 ### Import Patterns
@@ -561,6 +600,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - **Atomic Commits (VI)** → Repository Integrity (IX) → Continuous Execution (X)
 - **Test-First Development (II)** → Test-First Bug Fixes (VIII) → Complete Implementation (XI)
 - **Storage Abstraction (IV)** → Test-First Development (II) → Repository Integrity (IX)
+- **CI Trigger Discipline (XXI)** → Atomic Commits (VI) → Repository Integrity (IX)
 
 ### Workflow Enablers
 - **Working Files Hygiene (XIV)** → Atomic Commits (VI) → Repository Integrity (IX)
@@ -570,6 +610,7 @@ grep -rn "[^a-zA-Z0-9_][0-9]\{2,\}[^a-zA-Z0-9_]" --include="*.ts" --include="*.t
 - **Agent Embed Link Format (XVIII)** → DRY Code (XV) → Working Files Hygiene (XIV)
 - **Documentation Token Efficiency (XIX)** → DRY Code (XV) → Agent Embed Link Format (XVIII)
 - **Canonical Hash Computed Colours (XX)** → No Magic Numbers (XVII) → DRY Code (XV)
+- **CI Trigger Discipline (XXI)** → Atomic Commits (VI) → Repository Integrity (IX)
 
 ## Development Workflow
 
@@ -618,6 +659,13 @@ After each atomic task:
 5. Create conventional commit
 6. Push regularly to avoid losing work
 
+### CI Retry Discipline
+When CI fails due to infrastructure issues or flaky tests:
+1. Use GitHub CLI to rerun failed jobs: `gh run rerun <run-id>`
+2. For manual triggers, use workflow_dispatch: `gh workflow run "CI/CD Pipeline"`
+3. NEVER create commits solely to trigger CI
+4. Document persistent CI issues in appropriate tracking systems
+
 ### Slash Command Invocation
 - MUST use SlashCommand tool - NEVER type commands directly
 - Correct pattern: `<invoke name="SlashCommand"><parameter name="command">/speckit.plan</parameter></invoke>`
@@ -626,7 +674,7 @@ After each atomic task:
 ## Quality Gates
 
 ### Constitution Compliance
-Every PR MUST verify alignment with all 20 core principles (including type coercion prohibition in Principle I). Feature specs MUST document compliance.
+Every PR MUST verify alignment with all 21 core principles (including type coercion prohibition in Principle I and CI trigger discipline in Principle XXI). Feature specs MUST document compliance.
 
 ### Test Coverage Requirements
 - All new storage operations: unit tests with mock provider + E2E tests with in-memory provider
@@ -640,6 +688,7 @@ Every PR MUST verify alignment with all 20 core principles (including type coerc
 - MUST pass quality pipeline before pushing
 - NEVER use `git add .`, `git add -A`, or `git commit -a`
 - Spec file changes committed after each SpecKit command and phase
+- NEVER create commits solely to trigger CI
 
 ### Repository Integrity Gates
 - MUST leave repository in fully working state
@@ -664,6 +713,7 @@ Every PR MUST verify alignment with all 20 core principles (including type coerc
 - **Agent Embed Link Format**: Agent instruction files use `[@path](path)` format in blockquotes for embeds
 - **Documentation Token Efficiency**: AGENTS.md, README.md, constitution are deduplicated and concise; hierarchical embedding preferred
 - **Canonical Hash Computed Colours**: UI elements referencing entities use hash-computed colours from shared utilities; no hardcoded entity colours
+- **CI Trigger Discipline**: No empty or trivial commits solely for CI triggering; use GitHub CLI or workflow_dispatch for retries
 
 ### Breaking Changes
 MAJOR.MINOR.PATCH versioning applies. During development, breaking changes acceptable without MAJOR bumps but MUST be documented.
@@ -694,6 +744,11 @@ await provider.initializeSpecialLists(); // ALWAYS call before operations
 - Page objects: `apps/web/src/test/page-objects/` (BasePageObject → BaseSPAPageObject → BaseEntityPageObject)
 - Wait helpers: `waitForAppReady`, `waitForEntityData`, `waitForSearchResults`, `waitForGraphReady`
 - Test categories: `@entity`, `@utility`, `@workflow`, `@error`
+
+### CI Infrastructure Issues
+- **npm registry failures**: Use `gh run rerun` instead of creating commits
+- **Flaky E2E tests**: Use GitHub CLI retry features or workflow_dispatch
+- **Infrastructure timeouts**: Retry through appropriate GitHub Actions mechanisms
 
 ## Governance
 
