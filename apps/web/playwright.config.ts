@@ -124,20 +124,18 @@ export default defineConfig({
   outputDir: "test-results/playwright-artifacts",
 
   // Web server configuration for E2E tests
-  webServer: {
-    // In CI, use preview server with built app for faster, more reliable tests
+  webServer: process.env.CI ? undefined : {
     // In dev, use dev server for hot reload and better DX
+    // In CI, no webServer - expect external server to be running
     // Commands run from apps/web directory (set by Nx e2e target)
-    command: process.env.CI
-      ? "pnpm preview"
-      : "pnpm dev",
-    port: process.env.CI ? 4173 : 5173,
-    reuseExistingServer: !process.env.CI,
+    command: "pnpm dev",
+    port: 5173,
+    reuseExistingServer: true,
     stdout: "pipe",
     stderr: "pipe",
     timeout: 300_000, // Increased from 120s to 300s for CI reliability
     env: {
-      NODE_ENV: process.env.CI ? "production" : "development",
+      NODE_ENV: "development",
       RUNNING_E2E: "true",
     },
   },
