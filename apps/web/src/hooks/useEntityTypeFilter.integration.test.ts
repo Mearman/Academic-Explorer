@@ -80,13 +80,11 @@ describe('Entity Type Filter Integration (T036)', () => {
 			await storage.addBookmark({
 				entityId: 'W2',
 				entityType: 'works',
-				url: '/works/W2',
 			});
 
 			await storage.addBookmark({
 				entityId: 'A2',
 				entityType: 'authors',
-				url: '/authors/A2',
 			});
 
 			// For this test, we'll manually create nodes since we don't have OpenAlex API
@@ -146,13 +144,11 @@ describe('Entity Type Filter Integration (T036)', () => {
 			await storage.addBookmark({
 				entityId: 'W2',
 				entityType: 'works',
-				url: '/works/W2',
 			});
 
 			await storage.addBookmark({
 				entityId: 'A2',
 				entityType: 'authors',
-				url: '/authors/A2',
 			});
 
 			// Create mixed nodes array
@@ -314,7 +310,6 @@ describe('Entity Type Filter Integration (T036)', () => {
 			await storage.addBookmark({
 				entityId,
 				entityType: 'works',
-				url: `/works/${entityId}`,
 			});
 
 			// Verify separate storage
