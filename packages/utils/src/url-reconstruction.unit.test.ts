@@ -197,11 +197,12 @@ describe('URL Reconstruction Utility', () => {
 
 		it('should work with GitHub Pages deployment', () => {
 			const githubPath = '/BibGraph'
-			const entityId = 'W1234567890'
+			const workId = 'W1234567890'
+			const authorId = 'A1234567890'
 			const options = { basePath: githubPath }
 
-			expect(reconstructEntityUrl('works', entityId, options)).toBe(`${githubPath}/works/${entityId}`)
-			expect(reconstructEntityUrl('authors', entityId, options)).toBe(`${githubPath}/authors/${entityId}`)
+			expect(reconstructEntityUrl('works', workId, options)).toBe(`${githubPath}/works/${workId}`)
+			expect(reconstructEntityUrl('authors', authorId, options)).toBe(`${githubPath}/authors/${authorId}`)
 		})
 
 		it('should handle base path normalization', () => {

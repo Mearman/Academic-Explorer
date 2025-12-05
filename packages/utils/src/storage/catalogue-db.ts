@@ -302,8 +302,15 @@ export class CatalogueService {
         .equals([params.listId, params.entityType, params.entityId])
         .first();
 
-      if (existing) {
-        throw new Error("Entity already exists in list");
+      if (existing && existing.id) {
+        // Instead of throwing, return the existing ID
+        this.logger?.debug(LOG_CATEGORY, "Entity already exists in list, returning existing ID", {
+          listId: params.listId,
+          entityType: params.entityType,
+          entityId: params.entityId,
+          existingId: existing.id,
+        });
+        return existing.id;
       }
 
       // Get next position if not specified
@@ -348,6 +355,31 @@ export class CatalogueService {
 
       return id;
     } catch (error) {
+      // Handle constraint errors gracefully - they might occur in race conditions
+      if (error instanceof Dexie.ConstraintError) {
+        this.logger?.debug(LOG_CATEGORY, "Entity already exists due to race condition, attempting to find existing", {
+          params,
+          error: error.message,
+        });
+
+        // Try to find and return the existing entity
+        try {
+          const existing = await this.db.catalogueEntities
+            .where(["listId", "entityType", "entityId"])
+            .equals([params.listId, params.entityType, params.entityId])
+            .first();
+
+          if (existing?.id) {
+            return existing.id;
+          }
+        } catch (findError) {
+          this.logger?.warn(LOG_CATEGORY, "Failed to find existing entity after constraint error", {
+            params,
+            findError,
+          });
+        }
+      }
+
       this.logger?.error(LOG_CATEGORY, "Failed to add entity to catalogue list", {
         params,
         error,
