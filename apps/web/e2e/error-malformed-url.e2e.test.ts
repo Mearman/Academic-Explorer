@@ -15,7 +15,7 @@ import { waitForAppReady } from '@/test/helpers/app-ready';
 test.describe('@error Malformed URL Errors', () => {
 	test('should handle invalid work ID format', async ({ page }) => {
 		// Work IDs should be W followed by digits
-		await page.goto('/works/invalid-work-id');
+		await page.goto('#/works/invalid-work-id');
 		await waitForAppReady(page);
 
 		// Should show error message or handle gracefully
@@ -31,7 +31,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle invalid author ID format', async ({ page }) => {
 		// Author IDs should be A followed by digits
-		await page.goto('/authors/not-an-author');
+		await page.goto('#/authors/not-an-author');
 		await waitForAppReady(page);
 
 		// Should show error or processing message
@@ -44,7 +44,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle invalid institution ID format', async ({ page }) => {
 		// Institution IDs should be I followed by digits
-		await page.goto('/institutions/invalid-institution-id');
+		await page.goto('#/institutions/invalid-institution-id');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('#root').textContent();
@@ -62,7 +62,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle malformed DOI with collapsed protocol', async ({ page }) => {
 		// Test collapsed https:/doi.org instead of https://doi.org
-		await page.goto('/works/https:/doi.org/10.1234/test');
+		await page.goto('#/works/https:/doi.org/10.1234/test');
 		await waitForAppReady(page);
 
 		// Should handle gracefully - either fix URL, show error, or redirect
@@ -77,7 +77,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle DOI with missing prefix', async ({ page }) => {
 		// DOI without 10. prefix
-		await page.goto('/works/invalid-doi-format');
+		await page.goto('#/works/invalid-doi-format');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -95,7 +95,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle malformed DOI in URL', async ({ page }) => {
 		// DOI with special characters that might break URL parsing
-		await page.goto('/works/doi:malformed/doi/with/slashes');
+		await page.goto('#/works/doi:malformed/doi/with/slashes');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -108,7 +108,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle ORCID with invalid format', async ({ page }) => {
 		// ORCIDs should be 0000-0000-0000-0000 format
-		await page.goto('/authors/orcid:invalid-orcid');
+		await page.goto('#/authors/orcid:invalid-orcid');
 		await waitForAppReady(page);
 
 		// Should show error or processing message
@@ -120,7 +120,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle ROR with invalid format', async ({ page }) => {
 		// ROR IDs have specific format
-		await page.goto('/institutions/ror:not-a-valid-ror');
+		await page.goto('#/institutions/ror:not-a-valid-ror');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -137,7 +137,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle ISSN with invalid format', async ({ page }) => {
 		// ISSNs should be 0000-0000 format
-		await page.goto('/sources/issn:not-an-issn');
+		await page.goto('#/sources/issn:not-an-issn');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -154,7 +154,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle special characters in entity IDs', async ({ page }) => {
 		// Test URL with special characters - should not execute as code
-		await page.goto('/works/<script>alert(1)</script>');
+		await page.goto('#/works/<script>alert(1)</script>');
 		await waitForAppReady(page);
 
 		// Should not execute script
@@ -175,7 +175,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle URL with query injection attempt', async ({ page }) => {
 		// Use a real work ID to test query parameter handling
-		await page.goto('/works/W2741809807?filter=<script>alert(1)</script>');
+		await page.goto('#/works/W2741809807?filter=<script>alert(1)</script>');
 		await waitForAppReady(page);
 
 		// Should not execute script
@@ -210,7 +210,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle empty entity ID', async ({ page }) => {
 		// Navigate to entity type root with trailing slash
-		await page.goto('/works/');
+		await page.goto('#/works/');
 		await waitForAppReady(page);
 
 		// Should either show works list/index or handle gracefully, not crash
@@ -224,7 +224,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle entity ID with only whitespace', async ({ page }) => {
 		// URL encoded spaces
-		await page.goto('/works/%20%20%20');
+		await page.goto('#/works/%20%20%20');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -251,7 +251,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle URL with null bytes', async ({ page }) => {
 		// Attempt to include null byte (URL encoded as %00)
-		await page.goto('/works/W123%00456');
+		await page.goto('#/works/W123%00456');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -264,7 +264,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle URL path traversal attempts', async ({ page }) => {
 		// Path traversal attempt in entity ID
-		await page.goto('/works/../../../etc/passwd');
+		await page.goto('#/works/../../../etc/passwd');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -280,7 +280,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle Unicode in entity IDs', async ({ page }) => {
 		// Unicode characters in entity ID
-		await page.goto('/works/W123🚀456');
+		await page.goto('#/works/W123🚀456');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -293,7 +293,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle SQL injection patterns', async ({ page }) => {
 		// SQL injection pattern in entity ID
-		await page.goto("/works/W123'; DROP TABLE works;--");
+		await page.goto("#/works/W123'; DROP TABLE works;--");
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -306,7 +306,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle mixed valid and invalid entity ID components', async ({ page }) => {
 		// Start with valid pattern but include invalid characters
-		await page.goto('/works/W1234567890ABC!@#$%');
+		await page.goto('#/works/W1234567890ABC!@#$%');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -319,7 +319,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle entity type mismatch - work ID in author route', async ({ page }) => {
 		// Valid work ID (W prefix) in author route (expects A prefix)
-		await page.goto('/authors/W2741809807');
+		await page.goto('#/authors/W2741809807');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -334,7 +334,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle malformed protocol in external ID', async ({ page }) => {
 		// Invalid protocol format
-		await page.goto('/works/htp://invalid.protocol.com/work');
+		await page.goto('#/works/htp://invalid.protocol.com/work');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -347,7 +347,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle consecutive slashes in URL', async ({ page }) => {
 		// Multiple consecutive slashes
-		await page.goto('/works//W2741809807');
+		await page.goto('#/works//W2741809807');
 		await waitForAppReady(page);
 
 		// Browser/router may normalize this - verify it doesn't crash
@@ -361,7 +361,7 @@ test.describe('@error Malformed URL Errors', () => {
 
 	test('should handle malformed hash URL format', async ({ page }) => {
 		// Malformed hash routing format
-		await page.goto('/#//works/W2741809807');
+		await page.goto('#/#//works/W2741809807');
 		await waitForAppReady(page);
 
 		const hasContent = await page.locator('body').textContent();
@@ -376,7 +376,7 @@ test.describe('@error Malformed URL Errors', () => {
 test.describe('@error Malformed URL Error Recovery', () => {
 	test('should recover from malformed URL to valid navigation', async ({ page }) => {
 		// Start with malformed URL
-		await page.goto('/works/invalid-work-id');
+		await page.goto('#/works/invalid-work-id');
 		await waitForAppReady(page);
 
 		const hasError = await page.getByText(/error|invalid|not found/i).isVisible().catch(() => false);
@@ -392,7 +392,7 @@ test.describe('@error Malformed URL Error Recovery', () => {
 		}
 
 		// Navigate to valid page
-		await page.goto('/works/W2741809807');
+		await page.goto('#/works/W2741809807');
 		await waitForAppReady(page);
 
 		// Should load successfully after malformed URL
@@ -402,18 +402,18 @@ test.describe('@error Malformed URL Error Recovery', () => {
 
 	test('should maintain application state after malformed URL', async ({ page }) => {
 		// Load valid page first
-		await page.goto('/browse');
+		await page.goto('#/browse');
 		await waitForAppReady(page);
 
 		const browseGrid = page.locator('[data-testid="browse-grid"]');
 		await expect(browseGrid).toBeVisible();
 
 		// Navigate to malformed URL
-		await page.goto('/works/invalid-id-format');
+		await page.goto('#/works/invalid-id-format');
 		await waitForAppReady(page);
 
 		// Return to valid page
-		await page.goto('/browse');
+		await page.goto('#/browse');
 		await waitForAppReady(page);
 
 		// Application should still work normally
@@ -428,7 +428,7 @@ test.describe('@error Malformed URL Error Recovery', () => {
 
 test.describe('@error Malformed URL Accessibility', () => {
 	test('should maintain accessibility on error pages from malformed URLs', async ({ page }) => {
-		await page.goto('/works/invalid-work-id');
+		await page.goto('#/works/invalid-work-id');
 		await waitForAppReady(page);
 
 		// Error messages should be accessible
@@ -448,7 +448,7 @@ test.describe('@error Malformed URL Accessibility', () => {
 	});
 
 	test('should allow keyboard navigation on malformed URL error pages', async ({ page }) => {
-		await page.goto('/authors/invalid-author-id');
+		await page.goto('#/authors/invalid-author-id');
 		await waitForAppReady(page);
 
 		// Tab through interactive elements

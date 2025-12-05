@@ -30,7 +30,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to the home page
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
 
     // Wait for page to load
     await page.waitForLoadState("load");
@@ -46,7 +46,7 @@ test.describe("Data Version Selector November Availability", () => {
       await settingsButton.click();
     } else {
       // Fallback: navigate directly to settings view if it exists
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -66,7 +66,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Try to navigate to settings
@@ -74,7 +74,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -131,7 +131,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -139,7 +139,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -177,7 +177,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -185,7 +185,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -234,7 +234,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -242,7 +242,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -285,7 +285,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:01Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -293,7 +293,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -311,7 +311,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -319,7 +319,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -361,7 +361,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -369,7 +369,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -389,7 +389,7 @@ test.describe("Data Version Selector November Availability", () => {
     console.log("✅ Set data version to Version 1");
 
     // Navigate away (back to home)
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate back to settings
@@ -397,7 +397,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton2.isVisible()) {
       await settingsButton2.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -417,7 +417,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.clock.setSystemTime(new Date("2025-11-15T12:00:00Z"));
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -425,7 +425,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 
@@ -466,7 +466,7 @@ test.describe("Data Version Selector November Availability", () => {
       await page.clock.setSystemTime(testDate);
 
       // Navigate to home then settings
-      await page.goto("/#/", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
       // Removed: waitForTimeout - use locator assertions instead
       // Navigate to settings
@@ -474,7 +474,7 @@ test.describe("Data Version Selector November Availability", () => {
       if (await settingsButton.isVisible()) {
         await settingsButton.click();
       } else {
-        await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+        await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
       }
 
@@ -498,7 +498,7 @@ test.describe("Data Version Selector November Availability", () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     // Navigate to home then settings
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to settings
@@ -506,7 +506,7 @@ test.describe("Data Version Selector November Availability", () => {
     if (await settingsButton.isVisible()) {
       await settingsButton.click();
     } else {
-      await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+      await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
     }
 

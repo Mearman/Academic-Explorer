@@ -17,7 +17,7 @@ test.describe('@error Network Errors', () => {
       route.abort('failed');
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should display network error or retry option
@@ -42,7 +42,7 @@ test.describe('@error Network Errors', () => {
       route.abort('connectionreset');
     });
 
-    await page.goto('/authors/A5017898742');
+    await page.goto('#/authors/A5017898742');
     await waitForAppReady(page);
 
     // Should show error state
@@ -55,7 +55,7 @@ test.describe('@error Network Errors', () => {
       route.abort('internetdisconnected');
     });
 
-    await page.goto('/institutions/I33213144');
+    await page.goto('#/institutions/I33213144');
     await waitForAppReady(page);
 
     // Should show offline/connection error
@@ -75,7 +75,7 @@ test.describe('@error Network Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Look for retry option
@@ -99,7 +99,7 @@ test.describe('@error Network Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Verify error state
@@ -125,7 +125,7 @@ test.describe('@error Network Errors', () => {
       route.abort('namenotresolved');
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should show error
@@ -138,7 +138,7 @@ test.describe('@error Network Errors', () => {
       route.abort('timedout');
     });
 
-    await page.goto('/sources/S2764455272');
+    await page.goto('#/sources/S2764455272');
     await waitForAppReady(page);
 
     // Should show timeout or connection error
@@ -153,7 +153,7 @@ test.describe('@error Network Errors', () => {
       route.continue();
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should show loading state during delay
@@ -179,7 +179,7 @@ test.describe('@error Network Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should handle intermittent failures
@@ -190,7 +190,7 @@ test.describe('@error Network Errors', () => {
 
   test('should maintain app functionality with cached data on network failure', async ({ page }) => {
     // First visit to cache data
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Wait for initial content to load
@@ -201,7 +201,7 @@ test.describe('@error Network Errors', () => {
     });
 
     // Navigate to another page
-    await page.goto('/');
+    await page.goto('#/');
     await waitForAppReady(page);
 
     // Should still show app shell/navigation even without network
@@ -210,7 +210,7 @@ test.describe('@error Network Errors', () => {
   });
 
   test('should handle network errors during search', async ({ page }) => {
-    await page.goto('/search');
+    await page.goto('#/search');
     await waitForAppReady(page);
 
     // Block network before searching
@@ -244,7 +244,7 @@ test.describe('@error Network Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
     // Removed: waitForTimeout - use locator assertions instead
     // Block network for relationship requests
@@ -271,7 +271,7 @@ test.describe('@error Network Errors', () => {
       route.abort('failed');
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Check for user-friendly messaging (not technical error codes)

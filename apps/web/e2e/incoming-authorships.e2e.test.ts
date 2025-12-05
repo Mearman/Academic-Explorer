@@ -9,7 +9,7 @@ import { expect,test } from '@playwright/test';
 test.describe('Incoming Relationships - Author Authorships', () => {
   test('should display incoming authorships section on author detail page', async ({ page }) => {
     // Navigate to an author who has authored works
-    await page.goto('/authors/A5023888391'); // Example author with works
+    await page.goto('#/authors/A5023888391'); // Example author with works
 
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('Incoming Relationships - Author Authorships', () => {
   });
 
   test('should display list of authored works', async ({ page }) => {
-    await page.goto('/authors/A5023888391');
+    await page.goto('#/authors/A5023888391');
 
     const authorshipsSection = page.locator('[data-testid="relationship-section-authorship-inbound"]');
     await expect(authorshipsSection).toBeVisible();
@@ -44,7 +44,7 @@ test.describe('Incoming Relationships - Author Authorships', () => {
   });
 
   test('should navigate to work when clicked', async ({ page }) => {
-    await page.goto('/authors/A5023888391');
+    await page.goto('#/authors/A5023888391');
 
     const authorshipsSection = page.locator('[data-testid="relationship-section-authorship-inbound"]');
     const firstWork = authorshipsSection.locator('[data-testid^="relationship-item-"]').first();
@@ -58,7 +58,7 @@ test.describe('Incoming Relationships - Author Authorships', () => {
   });
 
   test('should display authorship metadata (position, corresponding)', async ({ page }) => {
-    await page.goto('/authors/A5023888391');
+    await page.goto('#/authors/A5023888391');
 
     const authorshipsSection = page.locator('[data-testid="relationship-section-authorship-inbound"]');
     const firstItem = authorshipsSection.locator('[data-testid^="relationship-item-"]').first();

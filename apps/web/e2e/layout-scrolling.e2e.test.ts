@@ -22,7 +22,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     test("main content area has no nested scrollbar", async ({ page }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -53,7 +53,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -85,7 +85,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     test("main content fills viewport height correctly", async ({ page }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -128,7 +128,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
 
       // This test requires populating bookmarks
       // For now, we verify the overflow property exists
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -166,7 +166,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -204,7 +204,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 
@@ -230,7 +230,7 @@ test.describe("Layout Scrolling Behavior @manual", () => {
     }) => {
       test.setTimeout(30_000);
 
-      await page.goto("/bookmarks");
+      await page.goto("#/bookmarks");
       await waitForAppReady(page);
       await page.waitForLoadState("networkidle");
 

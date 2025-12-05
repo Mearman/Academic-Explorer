@@ -19,7 +19,7 @@ import { expect,test } from '@playwright/test';
 test.describe('Xpac Toggle Functionality', () => {
   test('should show XpacToggle in Settings page', async ({ page }) => {
     // Navigate to settings page
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Find the xpac toggle by test ID
@@ -57,7 +57,7 @@ test.describe('Xpac Toggle Functionality', () => {
     });
 
     // Navigate to settings page
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Find and toggle OFF the xpac switch
@@ -79,7 +79,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
 
     // Navigate to search to trigger API requests
-    await page.goto('/#/search?q=test', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/search?q=test', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Wait for API requests to complete
@@ -114,7 +114,7 @@ test.describe('Xpac Toggle Functionality', () => {
     });
 
     // Navigate to settings page
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Toggle xpac OFF first
@@ -144,7 +144,7 @@ test.describe('Xpac Toggle Functionality', () => {
     apiRequests.length = 0;
 
     // Navigate to search to trigger API requests
-    await page.goto('/#/search?q=test', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/search?q=test', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Wait for API requests to complete
@@ -165,7 +165,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
   test('should persist xpac setting across page reloads', async ({ page }) => {
     // Navigate to settings and toggle OFF
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -185,7 +185,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await page.waitForLoadState('load');
 
     // Navigate to settings again (reload may land on home page)
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Verify toggle is still OFF
@@ -198,7 +198,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
   test('should persist xpac setting as ON across page reloads', async ({ page }) => {
     // Navigate to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -218,7 +218,7 @@ test.describe('Xpac Toggle Functionality', () => {
     await page.waitForLoadState('load');
 
     // Navigate back to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Verify toggle is still ON
@@ -245,7 +245,7 @@ test.describe('Xpac Toggle Functionality', () => {
     });
 
     // Navigate to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Toggle xpac OFF
@@ -275,7 +275,7 @@ test.describe('Xpac Toggle Functionality', () => {
     expect(requestsWithXpac.length).toBe(0);
 
     // Navigate back to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Toggle xpac back ON
@@ -304,7 +304,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
   test('should handle rapid toggle changes without errors', async ({ page }) => {
     // Navigate to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -335,7 +335,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
   test('should show notification when xpac setting is changed', async ({ page }) => {
     // Navigate to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -355,7 +355,7 @@ test.describe('Xpac Toggle Functionality', () => {
 
   test('should verify xpac toggle label and description text', async ({ page }) => {
     // Navigate to settings
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -393,7 +393,7 @@ test.describe('Xpac Toggle Functionality', () => {
     });
 
     // Navigate to settings and ensure xpac is ON
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');
@@ -445,7 +445,7 @@ test.describe('Xpac Toggle Functionality', () => {
     });
 
     // Navigate to settings and toggle xpac OFF
-    await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const xpacToggle = page.getByTestId('xpac-toggle');

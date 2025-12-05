@@ -20,7 +20,7 @@ import { expect,test } from '@playwright/test';
 test.describe('Graph XPAC Styling', () => {
   test('should load graph exploration page successfully', async ({ page }) => {
     // Navigate to graph exploration page
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Verify page loaded successfully
@@ -48,7 +48,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should render graph container with appropriate canvas or SVG element', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     await page.waitForTimeout(3000); // Allow graph rendering to complete
 
@@ -109,7 +109,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should render graph with accessible node labels', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for graph nodes with accessibility features
@@ -135,7 +135,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should identify XPAC works in graph data or DOM', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for XPAC work indicators in DOM
@@ -183,7 +183,7 @@ test.describe('Graph XPAC Styling', () => {
 
   test('should apply visual styling to XPAC nodes when present', async ({ page }) => {
     // First, search for works to populate graph
-    await page.goto('/#/search?q=machine+learning', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/search?q=machine+learning', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to graph view if available
@@ -237,7 +237,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should render unverified author nodes with distinctive styling', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for author nodes with verification status
@@ -276,7 +276,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should handle graph interactions without breaking styling', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Find graph container
@@ -317,7 +317,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should maintain graph styling consistency across page interactions', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Capture initial state
@@ -350,7 +350,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should pass accessibility checks on graph page', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Run accessibility scan
@@ -377,7 +377,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should display graph statistics if available', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Look for graph statistics display
@@ -402,7 +402,7 @@ test.describe('Graph XPAC Styling', () => {
   });
 
   test('should render graph without memory leaks on extended viewing', async ({ page }) => {
-    await page.goto('/#/explore/graph', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/explore/graph', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Initial load

@@ -63,7 +63,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate to home page
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     // Navigate to settings (look for settings link or button)
@@ -80,7 +80,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       settingsPageUrl = page.url();
     } else {
       // Try direct navigation to settings route
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
       settingsPageUrl = page.url();
     }
@@ -123,7 +123,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Trigger an API request by navigating to an entity page
     // Use a known work ID (W2741809807 from author verification tests)
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Verify that intercepted requests contain data_version=1
@@ -181,7 +181,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate to settings
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
@@ -192,7 +192,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       await settingsButton.click();
       // Removed: waitForTimeout - use locator assertions instead
     } else {
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
     }
 
@@ -225,7 +225,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     interceptedRequests.length = 0;
 
     // Trigger API request
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Verify data_version=2 in requests
@@ -274,7 +274,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate to settings
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
@@ -285,7 +285,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       await settingsButton.click();
       // Removed: waitForTimeout - use locator assertions instead
     } else {
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
     }
 
@@ -318,7 +318,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     interceptedRequests.length = 0;
 
     // Trigger API request
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Verify that NO requests have data_version parameter
@@ -349,7 +349,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
 
     // Clear any existing settings from IndexedDB and browser cache
     // Must navigate to app origin before accessing IndexedDB (about:blank context denies access)
-    await page.goto('/');
+    await page.goto('#/');
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase('bibgraph-settings');
@@ -383,7 +383,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate to app without any prior settings
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Additional wait for network to settle
     await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {
@@ -442,7 +442,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate and set version to 1
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
@@ -453,7 +453,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       await settingsButton.click();
       // Removed: waitForTimeout - use locator assertions instead
     } else {
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
     }
 
@@ -546,7 +546,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     });
 
     // Navigate and set version to 1
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
@@ -557,7 +557,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       await settingsButton.click();
       // Removed: waitForTimeout - use locator assertions instead
     } else {
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
     }
 
@@ -592,7 +592,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     console.log('✓ Page refreshed');
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to an entity page
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Verify data_version=1 is still in requests after refresh
@@ -619,7 +619,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
     // Set date to November 2025
     await page.clock.setSystemTime(new Date('2025-11-15T12:00:00Z'));
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
 
     const settingsButton = page.locator('button:has-text(/configuration|settings/i)').first();
@@ -630,7 +630,7 @@ test.describe('Data Version Parameter in API Requests (T041)', () => {
       await settingsButton.click();
       // Removed: waitForTimeout - use locator assertions instead
     } else {
-      await page.goto('/#/settings', { waitUntil: 'domcontentloaded' });
+      await page.goto('#/#/settings', { waitUntil: 'domcontentloaded' });
       await page.waitForLoadState('load');
     }
 

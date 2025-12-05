@@ -9,7 +9,7 @@ import { expect,test } from '@playwright/test';
 test.describe('Incoming Relationships - Source Publications', () => {
   test('should display incoming publications section on source detail page', async ({ page }) => {
     // Navigate to a source (journal/venue) with published works
-    await page.goto('/sources/S137773608'); // Example source
+    await page.goto('#/sources/S137773608'); // Example source
 
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('Incoming Relationships - Source Publications', () => {
   });
 
   test('should display list of published works', async ({ page }) => {
-    await page.goto('/sources/S137773608');
+    await page.goto('#/sources/S137773608');
 
     const publicationsSection = page.locator('[data-testid="relationship-section-publication-inbound"]');
     await expect(publicationsSection).toBeVisible();
@@ -44,7 +44,7 @@ test.describe('Incoming Relationships - Source Publications', () => {
   });
 
   test('should navigate to work when clicked', async ({ page }) => {
-    await page.goto('/sources/S137773608');
+    await page.goto('#/sources/S137773608');
 
     const publicationsSection = page.locator('[data-testid="relationship-section-publication-inbound"]');
     const firstWork = publicationsSection.locator('[data-testid^="relationship-item-"]').first();
@@ -58,7 +58,7 @@ test.describe('Incoming Relationships - Source Publications', () => {
   });
 
   test('should display publication metadata (year, issue)', async ({ page }) => {
-    await page.goto('/sources/S137773608');
+    await page.goto('#/sources/S137773608');
 
     const publicationsSection = page.locator('[data-testid="relationship-section-publication-inbound"]');
     const firstItem = publicationsSection.locator('[data-testid^="relationship-item-"]').first();

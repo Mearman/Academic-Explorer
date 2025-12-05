@@ -39,7 +39,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 	test.beforeEach(async ({ page, context }) => {
 		// Clear storage before each test for isolation
 		await context.clearCookies();
-		await page.goto('/');
+		await page.goto('#/');
 		await waitForAppReady(page);
 
 		// Clear IndexedDB and localStorage
@@ -62,7 +62,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 
 	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
 		// Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		const accessibilityScanResults = await new AxeBuilder({ page })
@@ -109,7 +109,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await expect(bookmarkButtonAfterReload).toHaveAttribute('data-variant', 'filled');
 
 		// 7. Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// 8. Verify entity appears in bookmarks list
@@ -138,7 +138,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await expect(unbookmarkButton).not.toHaveAttribute('data-variant', 'filled');
 
 		// 12. Navigate back to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// 13. Verify entity is removed from bookmarks list
@@ -166,7 +166,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await expect(bookmarkButton).toHaveAttribute('data-variant', 'filled');
 
 		// Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// Verify author appears in bookmarks
@@ -196,7 +196,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await bookmarkButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// Verify both entities appear
@@ -219,7 +219,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await bookmarkButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// Verify bookmark exists
@@ -240,7 +240,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await unbookmarkButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Go back to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// Verify bookmark is removed
@@ -258,11 +258,11 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await bookmarkButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate away to another page
-		await page.goto('/explore');
+		await page.goto('#/explore');
 		await waitForAppReady(page);
 
 		// Navigate to settings
-		await page.goto('/settings');
+		await page.goto('#/settings');
 		await waitForAppReady(page);
 
 		// Navigate back to entity
@@ -275,7 +275,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await expect(persistedBookmarkButton).toHaveAttribute('data-variant', 'filled');
 
 		// Verify in bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		const bookmarkCards = page.locator('[data-testid="bookmark-card"]');
@@ -299,7 +299,7 @@ test.describe('@workflow Bookmark Workflow', () => {
 		await bookmarkButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to bookmarks page
-		await page.goto('/bookmarks');
+		await page.goto('#/bookmarks');
 		await waitForAppReady(page);
 
 		// Verify both bookmarks exist

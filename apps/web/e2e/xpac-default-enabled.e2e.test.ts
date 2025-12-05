@@ -142,7 +142,7 @@ test.describe('xpac Works Default Inclusion', () => {
     });
 
     // Navigate to works list/search page
-    await page.goto('/#/works', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works', { waitUntil: 'domcontentloaded' });
 
     // Wait for page to load
     await page.waitForLoadState('load');

@@ -9,7 +9,7 @@ import { expect,test } from '@playwright/test';
 test.describe('Incoming Relationships - Funder Grants', () => {
   test('should display incoming funded works section on funder detail page', async ({ page }) => {
     // Navigate to a funder with funded works
-    await page.goto('/funders/F4320332161'); // Example funder
+    await page.goto('#/funders/F4320332161'); // Example funder
 
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('Incoming Relationships - Funder Grants', () => {
   });
 
   test('should display list of funded works', async ({ page }) => {
-    await page.goto('/funders/F4320332161');
+    await page.goto('#/funders/F4320332161');
 
     const fundingSection = page.locator('[data-testid="relationship-section-funded_by-inbound"]');
     await expect(fundingSection).toBeVisible();
@@ -44,7 +44,7 @@ test.describe('Incoming Relationships - Funder Grants', () => {
   });
 
   test('should navigate to funded work when clicked', async ({ page }) => {
-    await page.goto('/funders/F4320332161');
+    await page.goto('#/funders/F4320332161');
 
     const fundingSection = page.locator('[data-testid="relationship-section-funded_by-inbound"]');
     const firstWork = fundingSection.locator('[data-testid^="relationship-item-"]').first();
@@ -58,7 +58,7 @@ test.describe('Incoming Relationships - Funder Grants', () => {
   });
 
   test('should display funding metadata (award ID, amount)', async ({ page }) => {
-    await page.goto('/funders/F4320332161');
+    await page.goto('#/funders/F4320332161');
 
     const fundingSection = page.locator('[data-testid="relationship-section-funded_by-inbound"]');
     const firstItem = fundingSection.locator('[data-testid^="relationship-item-"]').first();

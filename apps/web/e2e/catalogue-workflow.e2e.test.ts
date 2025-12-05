@@ -17,7 +17,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should pass accessibility checks (WCAG 2.1 AA)', async ({ page }) => {
 		// Navigate to catalogues page
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const accessibilityScanResults = await new AxeBuilder({ page })
@@ -30,7 +30,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 	test.afterEach(async ({ page }) => {
 		// Clean up: delete created lists if they exist
 		if (createdListId || createdBibliographyId) {
-			await page.goto('/catalogue');
+			await page.goto('#/catalogue');
 			await waitForAppReady(page);
 
 			// Attempt to delete the created list
@@ -86,7 +86,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should create a new general list', async ({ page }) => {
 		// Navigate to catalogue page
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		// Verify catalogue manager is visible
@@ -135,7 +135,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should create a new bibliography', async ({ page }) => {
 		// Navigate to catalogue page
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		// Click "Create New List" button
@@ -178,7 +178,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should add an entity to a list from entity detail page', async ({ page }) => {
 		// First, create a list to add entities to
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const createButton = page.getByRole('button', { name: /create new list/i });
@@ -189,7 +189,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await submitButton.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate to a known entity (work)
-		await page.goto('/works/W2741809807');
+		await page.goto('#/works/W2741809807');
 		await waitForAppReady(page);
 
 		// Wait for entity title to load
@@ -234,7 +234,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		}
 
 		// Navigate back to catalogue to verify
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		// Select the list
@@ -250,7 +250,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should view list contents and entity details', async ({ page }) => {
 		// Create a list and add an entity
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const createButton = page.getByRole('button', { name: /create new list/i });
@@ -259,7 +259,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await page.getByRole('button', { name: /create list/i }).click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity
-		await page.goto('/works/W2741809807');
+		await page.goto('#/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
@@ -268,7 +268,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await listMenuItem.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate back to catalogue
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		// Select the list
@@ -300,7 +300,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should remove an entity from a list', async ({ page }) => {
 		// Create a list and add an entity
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const createButton = page.getByRole('button', { name: /create new list/i });
@@ -309,7 +309,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await page.getByRole('button', { name: /create list/i }).click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity
-		await page.goto('/works/W2741809807');
+		await page.goto('#/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
@@ -318,7 +318,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await listMenuItem.click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Navigate back to catalogue
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		// Select the list
@@ -366,7 +366,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should delete a list', async ({ page }) => {
 		// Create a list
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const createButton = page.getByRole('button', { name: /create new list/i });
@@ -409,7 +409,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 
 	test('should handle adding duplicate entity to list', async ({ page }) => {
 		// Create a list and add an entity twice
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 
 		const createButton = page.getByRole('button', { name: /create new list/i });
@@ -418,7 +418,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		await page.getByRole('button', { name: /create list/i }).click();
 		// Removed: waitForTimeout - use locator assertions instead
 		// Add an entity first time
-		await page.goto('/works/W2741809807');
+		await page.goto('#/works/W2741809807');
 		await waitForAppReady(page);
 		const addToListButton = page.locator('[data-testid="add-to-catalogue-button"]');
 		await addToListButton.click();
@@ -439,7 +439,7 @@ test.describe('@workflow Catalogue Workflow', () => {
 		}
 
 		// Verify only one entity in list
-		await page.goto('/catalogue');
+		await page.goto('#/catalogue');
 		await waitForAppReady(page);
 		const listCard = page.getByText(testListTitle);
 		await listCard.click();

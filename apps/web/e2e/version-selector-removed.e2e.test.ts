@@ -25,7 +25,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page loaded successfully
@@ -60,7 +60,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-15T12:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page loaded successfully
@@ -87,7 +87,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify xpac toggle is visible
@@ -115,7 +115,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Get xpac toggle
@@ -150,7 +150,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page header is visible
@@ -191,7 +191,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page is keyboard navigable - tab through focusable elements
@@ -234,7 +234,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-11-30T23:59:59Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify data version selector IS visible before cutoff
@@ -249,11 +249,11 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to home page first
-    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify selector is not visible
@@ -261,7 +261,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await expect(dataVersionSelector).toBeHidden();
 
     // Navigate to a work detail page
-    await page.goto("/#/works/W2741809807", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/works/W2741809807", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify page loaded (not in settings, so selector shouldn't be present)
@@ -269,7 +269,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await expect(bodyText).not.toBeEmpty();
 
     // Navigate back to settings
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify selector is still not visible
@@ -285,7 +285,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify no element with data-testid="data-version-selector" exists
@@ -328,7 +328,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Verify email section exists
@@ -356,7 +356,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Find configure button in email section
@@ -394,7 +394,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     });
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Wait a bit for any async operations to complete
@@ -433,7 +433,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
     const startTime = Date.now();
 
     // Navigate to settings page
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     const loadTime = Date.now() - startTime;
@@ -457,7 +457,7 @@ test.describe("Data Version Selector Removal After November 2025", () => {
   }) => {
     // First, check that selector IS visible on November 30
     await page.clock.setSystemTime(new Date("2025-11-30T23:59:59Z"));
-    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.goto("#/#/settings", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     const selectorBefore = page.getByTestId("data-version-selector");

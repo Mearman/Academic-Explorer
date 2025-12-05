@@ -42,7 +42,7 @@ test.describe('Edge Direction - Work → Author (Authorship)', () => {
   test('should have Work as source and Author as target for authorship edges', async ({ page }) => {
     // Load a known work entity with authors
     // Using W2741809807 as test case (known work with multiple authors)
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     await page.waitForTimeout(3000); // Allow graph to render
 
@@ -76,7 +76,7 @@ test.describe('Edge Direction - Work → Author (Authorship)', () => {
 test.describe('Edge Direction - Work → Work (Reference)', () => {
   test('should have citing Work as source and cited Work as target for reference edges', async ({ page }) => {
     // Load a work that cites other works
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
@@ -105,7 +105,7 @@ test.describe('Edge Direction - Work → Work (Reference)', () => {
 
   test('should have cited Work as source and citing Work as target for inbound citations', async ({ page }) => {
     // Load a work that is cited by others
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
@@ -136,7 +136,7 @@ test.describe('Edge Direction - Work → Work (Reference)', () => {
 test.describe('Edge Direction - Work → Source (Publication)', () => {
   test('should have Work as source and Source as target for publication edges', async ({ page }) => {
     // Load a work published in a source/venue
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
@@ -167,7 +167,7 @@ test.describe('Edge Direction - Work → Source (Publication)', () => {
 test.describe('Edge Direction - Work → Topic', () => {
   test('should have Work as source and Topic as target for topic edges', async ({ page }) => {
     // Load a work with topics
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     const edges = await getGraphEdges(page);
@@ -200,7 +200,7 @@ test.describe('Edge Direction - Author → Institution (Affiliation)', () => {
   test('should have Author as source and Institution as target for affiliation edges', async ({ page }) => {
     // Load an author with institutional affiliations
     // First load a work, then navigate to an author
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Click on an author node to navigate (if visible)
@@ -246,7 +246,7 @@ test.describe('Edge Direction - Institution → Institution (Lineage)', () => {
   test('should have child Institution as source and parent Institution as target for lineage edges', async ({ page }) => {
     // Load an institution with parent/child relationships
     // Navigate via an author's institution
-    await page.goto('/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
+    await page.goto('#/#/works/W2741809807', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('load');
     // Removed: waitForTimeout - use locator assertions instead
     // Navigate to institution (via author if needed)

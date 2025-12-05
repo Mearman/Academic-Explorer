@@ -22,7 +22,7 @@ test.describe('@error Timeout Errors', () => {
     });
 
     // Set a shorter timeout for the navigation
-    await page.goto('/works/W2741809807', { timeout: 30_000 }).catch(() => {
+    await page.goto('#/works/W2741809807', { timeout: 30_000 }).catch(() => {
       // Navigation may timeout, which is expected
     });
 
@@ -56,7 +56,7 @@ test.describe('@error Timeout Errors', () => {
       await route.continue();
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
 
     // Should show loading state initially
     const loadingIndicators = page.locator('[data-testid="loading"]');
@@ -86,7 +86,7 @@ test.describe('@error Timeout Errors', () => {
 
     // Wait a bit then navigate away
     // Removed: waitForTimeout - use locator assertions instead
-    await page.goto('/browse');
+    await page.goto('#/browse');
     await waitForAppReady(page);
 
     // Should be on browse page without errors
@@ -107,7 +107,7 @@ test.describe('@error Timeout Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Look for retry option
@@ -125,7 +125,7 @@ test.describe('@error Timeout Errors', () => {
       route.abort('timedout');
     });
 
-    await page.goto('/authors/A5017898742');
+    await page.goto('#/authors/A5017898742');
     await waitForAppReady(page);
 
     // Should show error indicating timeout or general failure

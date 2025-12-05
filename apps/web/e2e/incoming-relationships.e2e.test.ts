@@ -12,14 +12,14 @@ import { clearGraph,populateWorkCitations } from './helpers/populate-graph';
 test.describe('Incoming Relationships - Work Citations', () => {
   test.beforeEach(async ({ page }) => {
     // Clear graph before each test for isolation
-    await page.goto('/');
+    await page.goto('#/');
     await page.waitForLoadState('networkidle');
     await clearGraph(page);
   });
 
   test('should display incoming citations section on work detail page', async ({ page }) => {
     // Navigate to work page
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
 
     // Populate graph with test citation data
@@ -45,7 +45,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
   });
 
   test('should display list of citing works', async ({ page }) => {
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
     // Removed: waitForTimeout - use locator assertions instead
@@ -62,7 +62,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
   });
 
   test('should navigate to citing work when clicked', async ({ page }) => {
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
     // Removed: waitForTimeout - use locator assertions instead
@@ -88,7 +88,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
   test('should display "Showing X of Y" count when citations exceed page size', async ({ page }) => {
     // Navigate to a work with many citations (>50)
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
     // Removed: waitForTimeout - use locator assertions instead
@@ -108,7 +108,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
   test('should display "Load more" button when citations exceed 50', async ({ page }) => {
     // Navigate to a work with many citations
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
     // Removed: waitForTimeout - use locator assertions instead
@@ -133,7 +133,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
   test('should handle works with no incoming citations', async ({ page }) => {
     // Navigate to a work with no citations (newly published work or isolated work)
     // This test may need to be updated with a real work ID that has 0 citations
-    await page.goto('/works/W1');
+    await page.goto('#/works/W1');
 
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
@@ -157,7 +157,7 @@ test.describe('Incoming Relationships - Work Citations', () => {
   });
 
   test('should display work metadata in citation items', async ({ page }) => {
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await page.waitForLoadState('networkidle');
     await populateWorkCitations(page);
     // Removed: waitForTimeout - use locator assertions instead

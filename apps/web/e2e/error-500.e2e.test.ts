@@ -30,7 +30,7 @@ test.describe('@error 500 Server Errors', () => {
       });
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should display error message or error state
@@ -58,7 +58,7 @@ test.describe('@error 500 Server Errors', () => {
       }
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Look for retry button
@@ -84,7 +84,7 @@ test.describe('@error 500 Server Errors', () => {
       });
     });
 
-    await page.goto('/authors/A5017898742');
+    await page.goto('#/authors/A5017898742');
     await waitForAppReady(page);
 
     // Verify user-friendly message (not raw error)
@@ -106,7 +106,7 @@ test.describe('@error 500 Server Errors', () => {
       });
     });
 
-    await page.goto('/works/W2741809807');
+    await page.goto('#/works/W2741809807');
     await waitForAppReady(page);
 
     // Should handle 502 similar to 500
@@ -123,7 +123,7 @@ test.describe('@error 500 Server Errors', () => {
       });
     });
 
-    await page.goto('/institutions/I33213144');
+    await page.goto('#/institutions/I33213144');
     await waitForAppReady(page);
 
     // Should handle 503 gracefully

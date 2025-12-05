@@ -17,7 +17,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     });
 
     // Navigate to homepage
-    await page.goto("/", {
+    await page.goto("#/", {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
@@ -35,7 +35,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should display homepage content correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto("#/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check main title in the homepage card
@@ -60,7 +60,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should have working example search links", async ({ page }) => {
-    await page.goto("/", {
+    await page.goto("#/", {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
@@ -81,7 +81,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should display technology stack correctly", async ({ page }) => {
-    await page.goto("/", {
+    await page.goto("#/", {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
@@ -102,7 +102,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should display example searches", async ({ page }) => {
-    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto("#/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for example search section
@@ -121,7 +121,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should allow typing in search input", async ({ page }) => {
-    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto("#/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -142,7 +142,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should handle search button states correctly", async ({ page }) => {
-    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto("#/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     const searchInput = page.locator(
@@ -164,7 +164,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should display helpful usage instructions", async ({ page }) => {
-    await page.goto("/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto("#/", { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await waitForAppReady(page);
 
     // Check for usage instructions - the actual text from the component
@@ -175,7 +175,7 @@ test.describe("Homepage E2E Tests @manual", () => {
   });
 
   test("should have proper accessibility features", async ({ page }) => {
-    await page.goto("/", {
+    await page.goto("#/", {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });
@@ -203,7 +203,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Set mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -233,7 +233,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -260,7 +260,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Set desktop viewport
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -287,7 +287,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Set 4K viewport
       await page.setViewportSize({ width: 3840, height: 2160 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -315,7 +315,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     test("should have search input with minimum 44px touch target height", async ({
       page,
     }) => {
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -337,7 +337,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     test("should have search button with minimum 44x44px touch target size", async ({
       page,
     }) => {
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -358,7 +358,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     test("should have proper spacing between search input and button", async ({
       page,
     }) => {
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -390,7 +390,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Test on mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -416,7 +416,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     test("should have technology stack indicators with equal spacing", async ({
       page,
     }) => {
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -459,7 +459,7 @@ test.describe("Homepage E2E Tests @manual", () => {
     }) => {
       // Test on mobile viewport
       await page.setViewportSize({ width: 320, height: 568 });
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -500,7 +500,7 @@ test.describe("Homepage E2E Tests @manual", () => {
       // Browser zoom affects viewport dimensions and element sizes in ways that are
       // difficult to test deterministically. Visual regression testing would be more
       // appropriate for zoom level verification.
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
@@ -538,7 +538,7 @@ test.describe("Homepage E2E Tests @manual", () => {
       // Note: CSS zoom behavior may be inconsistent across browsers and CI environments.
       // At 200% zoom, layout calculations may be unreliable due to browser rounding
       // and viewport adjustment behaviors.
-      await page.goto("/", {
+      await page.goto("#/", {
         waitUntil: 'domcontentloaded',
         timeout: 30_000,
       });
