@@ -447,7 +447,7 @@ export const buildFilterStringFromFilters = (filters: EntityFilters | Partial<En
           }
         } else {
           // Convert mixed array to strings
-          convertedFilters[key] = value.map(item => String(item));
+          convertedFilters[key] = value.map(String);
         }
       } else {
         // For any other type, convert to string

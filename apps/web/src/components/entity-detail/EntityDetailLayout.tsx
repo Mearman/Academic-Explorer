@@ -244,8 +244,8 @@ export const EntityDetailLayout = ({
           </Paper>
         ) : (
           <>
-            {/* Tiled grid layout for entity data sections */}
-            <EntityDataDisplay data={data} layout="tiled" />
+            {/* Stacked layout for entity data sections */}
+            <EntityDataDisplay data={data} layout="stacked" />
             {/* Relationship sections in dedicated row */}
             {children}
           </>

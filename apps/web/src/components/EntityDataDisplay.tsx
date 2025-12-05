@@ -15,7 +15,6 @@ import {
   Group,
   Paper,
   Stack,
-  Table,
   Text,
   Title,
 } from "@mantine/core";
@@ -36,11 +35,8 @@ import {
 import { Link } from "@tanstack/react-router";
 import React from "react";
 
-import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
-
-type LayoutMode = "stacked";
 
 /** Section priority for consistent ordering */
 const SECTION_PRIORITY: Record<string, number> = {
@@ -295,13 +291,9 @@ const renderValueContent = (value: unknown): React.ReactNode => {
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
   title?: string;
-  /** Layout mode: only "stacked" is supported now */
-  layout?: LayoutMode;
 }
 
-export const EntityDataDisplay = ({ data, title, layout = "stacked" }: EntityDataDisplayProps) => {
-  const { colors } = useThemeColors();
-
+export const EntityDataDisplay = ({ data, title }: EntityDataDisplayProps) => {
   // Group and prepare data
   const sections = groupFields(data);
 
