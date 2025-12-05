@@ -79,8 +79,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W2741809807',
-				url: 'https://openalex.org/W2741809807',
-				title: 'ML for Cultural Heritage',
 				notes: 'Important for Chapter 3',
 			});
 
@@ -94,32 +92,33 @@ describe('Bookmark Storage Operations', () => {
 			expect(bookmarks[0].listId).toBe(SPECIAL_LIST_IDS.BOOKMARKS);
 		});
 
-		it('should store URL in notes field', async () => {
+		it('should store entityType and entityId correctly', async () => {
 			await provider.initializeSpecialLists();
 
 			await provider.addBookmark({
 				entityType: 'authors',
 				entityId: 'A123456789',
-				url: 'https://openalex.org/A123456789',
 			});
 
 			const bookmarks = await provider.getBookmarks();
-			expect(bookmarks[0].notes).toContain('URL: https://openalex.org/A123456789');
+			expect(bookmarks[0].entityType).toBe('authors');
+			expect(bookmarks[0].entityId).toBe('A123456789');
+			expect(bookmarks[0].notes).toBeUndefined();
 		});
 
-		it('should append URL to user-provided notes', async () => {
+		it('should preserve user-provided notes', async () => {
 			await provider.initializeSpecialLists();
 
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W999',
-				url: 'https://example.com/work/W999',
 				notes: 'Key reference paper',
 			});
 
 			const bookmarks = await provider.getBookmarks();
-			expect(bookmarks[0].notes).toContain('Key reference paper');
-			expect(bookmarks[0].notes).toContain('URL: https://example.com/work/W999');
+			expect(bookmarks[0].entityType).toBe('works');
+			expect(bookmarks[0].entityId).toBe('W999');
+			expect(bookmarks[0].notes).toBe('Key reference paper');
 		});
 
 		it('should initialize special lists automatically if not done', async () => {
@@ -127,7 +126,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'topics',
 				entityId: 'T12345',
-				url: 'https://openalex.org/T12345',
 			});
 
 			expect(entityRecordId).toBeTruthy();
@@ -153,7 +151,6 @@ describe('Bookmark Storage Operations', () => {
 				await provider.addBookmark({
 					entityType,
 					entityId: `${entityType.toUpperCase()}-123`,
-					url: `https://openalex.org/${entityType.toUpperCase()}-123`,
 				});
 			}
 
@@ -169,7 +166,6 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W2741809807',
-				url: 'https://openalex.org/W2741809807',
 			});
 
 			const isBookmarked = await provider.isBookmarked('works', 'W2741809807');
@@ -189,7 +185,6 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W123',
-				url: 'https://openalex.org/W123',
 			});
 
 			// Same ID but different type should not be bookmarked
@@ -215,17 +210,14 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W1',
-				url: 'https://openalex.org/W1',
 			});
 			await provider.addBookmark({
 				entityType: 'authors',
 				entityId: 'A1',
-				url: 'https://openalex.org/A1',
 			});
 			await provider.addBookmark({
 				entityType: 'topics',
 				entityId: 'T1',
-				url: 'https://openalex.org/T1',
 			});
 
 			const bookmarks = await provider.getBookmarks();
@@ -257,17 +249,14 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W1',
-				url: 'https://openalex.org/W1',
 			});
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W2',
-				url: 'https://openalex.org/W2',
 			});
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W3',
-				url: 'https://openalex.org/W3',
 			});
 
 			const bookmarks = await provider.getBookmarks();
@@ -284,7 +273,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W123',
-				url: 'https://openalex.org/W123',
 			});
 
 			let bookmarks = await provider.getBookmarks();
@@ -302,12 +290,10 @@ describe('Bookmark Storage Operations', () => {
 			const recordId1 = await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W1',
-				url: 'https://openalex.org/W1',
 			});
 			const recordId2 = await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W2',
-				url: 'https://openalex.org/W2',
 			});
 
 			await provider.removeBookmark(recordId1);
@@ -324,7 +310,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'authors',
 				entityId: 'A999',
-				url: 'https://openalex.org/A999',
 			});
 
 			let isBookmarked = await provider.isBookmarked('authors', 'A999');
@@ -352,7 +337,6 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W123',
-				url: 'https://openalex.org/W123',
 			});
 
 			// Attempt to add same entity again
@@ -360,7 +344,6 @@ describe('Bookmark Storage Operations', () => {
 				provider.addBookmark({
 					entityType: 'works',
 					entityId: 'W123',
-					url: 'https://openalex.org/W123',
 				})
 			).rejects.toThrow('Entity already exists in list');
 		});
@@ -371,14 +354,12 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'X123',
-				url: 'https://openalex.org/W123',
 			});
 
 			// Different entity type but same ID - should be allowed
 			const recordId = await provider.addBookmark({
 				entityType: 'authors',
 				entityId: 'X123',
-				url: 'https://openalex.org/A123',
 			});
 
 			expect(recordId).toBeTruthy();
@@ -397,8 +378,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'institutions',
 				entityId: 'I987654',
-				url: 'https://openalex.org/I987654',
-				title: 'MIT',
 				notes: 'Leading research institution',
 			});
 
@@ -411,8 +390,7 @@ describe('Bookmark Storage Operations', () => {
 			expect(bookmark.entityType).toBe('institutions');
 			expect(bookmark.entityId).toBe('I987654');
 			expect(bookmark.listId).toBe(SPECIAL_LIST_IDS.BOOKMARKS);
-			expect(bookmark.notes).toContain('Leading research institution');
-			expect(bookmark.notes).toContain('URL: https://openalex.org/I987654');
+			expect(bookmark.notes).toBe('Leading research institution');
 			expect(bookmark.addedAt).toBeInstanceOf(Date);
 			expect(bookmark.addedAt.getTime()).toBeGreaterThanOrEqual(beforeTimestamp.getTime());
 			expect(bookmark.addedAt.getTime()).toBeLessThanOrEqual(afterTimestamp.getTime());
@@ -425,31 +403,29 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'funders',
 				entityId: 'F555',
-				url: 'https://openalex.org/F555',
-				// No title or notes provided
+				// No notes provided
 			});
 
 			const bookmarks = await provider.getBookmarks();
 			const bookmark = bookmarks[0];
 
 			expect(bookmark.id).toBe(entityRecordId);
-			expect(bookmark.notes).toBe('URL: https://openalex.org/F555');
+			expect(bookmark.notes).toBeUndefined();
 		});
 
-		it('should handle special characters in URLs and notes', async () => {
+		it('should handle special characters in notes', async () => {
 			await provider.initializeSpecialLists();
 
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W999',
-				url: 'https://example.com/path?query=value&param=123#fragment',
 				notes: 'Contains special chars: <>&"\'',
 			});
 
 			const bookmarks = await provider.getBookmarks();
-
-			expect(bookmarks[0].notes).toContain('https://example.com/path?query=value&param=123#fragment');
-			expect(bookmarks[0].notes).toContain('Contains special chars: <>&"\'');
+			expect(bookmarks[0].entityType).toBe('works');
+			expect(bookmarks[0].entityId).toBe('W999');
+			expect(bookmarks[0].notes).toBe('Contains special chars: <>&"\'');
 		});
 
 		it('should handle very long notes', async () => {
@@ -460,14 +436,14 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W888',
-				url: 'https://openalex.org/W888',
 				notes: longNotes,
 			});
 
 			const bookmarks = await provider.getBookmarks();
-
-			expect(bookmarks[0].notes).toContain(longNotes);
-			expect(bookmarks[0].notes?.length).toBeGreaterThan(1000);
+			expect(bookmarks[0].entityType).toBe('works');
+			expect(bookmarks[0].entityId).toBe('W888');
+			expect(bookmarks[0].notes).toBe(longNotes);
+			expect(bookmarks[0].notes?.length).toBeGreaterThanOrEqual(1000);
 		});
 	});
 
@@ -514,7 +490,6 @@ describe('Bookmark Storage Operations', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W777',
-				url: 'https://openalex.org/W777',
 			});
 
 			const afterList = await provider.getList(SPECIAL_LIST_IDS.BOOKMARKS);
@@ -531,7 +506,6 @@ describe('Bookmark Storage Operations', () => {
 			const entityRecordId = await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W666',
-				url: 'https://openalex.org/W666',
 			});
 
 			const beforeList = await provider.getList(SPECIAL_LIST_IDS.BOOKMARKS);

@@ -4,6 +4,7 @@
 
 export * from "./bookmark-export";
 export * from "./bookmark-filters";
+export * from "./bookmark-migration";
 export * from "./build-info";
 export * from "./data-evaluation";
 export * from "./data";
@@ -23,6 +24,7 @@ export * from "./query-parser";
 export * from "./services";
 export * from "./url-compression";
 export * from "./url-parser";
+export * from "./url-reconstruction";
 export * from "./validation";
 export * from "./webgl-detection";
 export * from "./background-tasks/index";

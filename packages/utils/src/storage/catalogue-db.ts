@@ -837,29 +837,21 @@ export class CatalogueService {
    * @param params
    * @param params.entityType
    * @param params.entityId
-   * @param params.url
-   * @param params.title
    * @param params.notes
    */
   async addBookmark(params: {
     entityType: EntityType;
     entityId: string;
-    url: string;
-    title?: string;
     notes?: string;
   }): Promise<string> {
     await this.initializeSpecialLists();
 
-    // Add to bookmarks list with URL as notes
-    const notesWithUrl = params.notes
-      ? `${params.notes}\n\nURL: ${params.url}`
-      : `URL: ${params.url}`;
-
+    // Store entity data directly in proper fields, user notes only in notes field
     return await this.addEntityToList({
       listId: SPECIAL_LIST_IDS.BOOKMARKS,
       entityType: params.entityType,
       entityId: params.entityId,
-      notes: notesWithUrl,
+      notes: params.notes, // User notes only, no URLs
     });
   }
 
