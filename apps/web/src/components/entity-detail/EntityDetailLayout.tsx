@@ -245,7 +245,7 @@ export const EntityDetailLayout = ({
         ) : (
           <>
             {/* Stacked layout for entity data sections */}
-            <EntityDataDisplay data={data} layout="stacked" />
+            <EntityDataDisplay data={data} />
             {/* Relationship sections in dedicated row */}
             {children}
           </>
