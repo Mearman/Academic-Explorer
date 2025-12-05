@@ -267,8 +267,6 @@ describe('InMemoryStorageProvider Graph List Operations (T028)', () => {
 			await provider.addBookmark({
 				entityType: 'works',
 				entityId: 'W801',
-				url: 'https://openalex.org/W801',
-				title: 'Bookmark',
 			});
 
 			await provider.clearGraphList();
