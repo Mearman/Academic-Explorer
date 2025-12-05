@@ -130,7 +130,7 @@ export class FilterBuilder {
    *
    * Converts a filter object with key-value pairs to OpenAlex API filter format.
    * This is the primary method for converting EntityFilters to query strings.
-   * @param _filters - The filter object containing field-value pairs (not yet implemented)
+   * @param filters - The filter object containing field-value pairs
    * @example
    * ```typescript
    * const filterString = builder.buildFromObject({
@@ -141,9 +141,31 @@ export class FilterBuilder {
    * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
    * ```
    */
-  buildFromObject(): string {
-    // Implementation will be added in separate task
-    throw new Error("FilterBuilder.buildFromObject not yet implemented");
+  buildFromObject(filters: Record<string, FilterValue>): string {
+    if (!filters || typeof filters !== "object") {
+      return "";
+    }
+
+    const filterParts: string[] = [];
+
+    for (const [field, value] of Object.entries(filters)) {
+      if (value === undefined || value === null) {
+        continue;
+      }
+
+      // Convert value to string format
+      let valueStr: string;
+      if (Array.isArray(value)) {
+        // Join array values with pipe separator
+        valueStr = value.map(String).join("|");
+      } else {
+        valueStr = String(value);
+      }
+
+      filterParts.push(`${field}:${valueStr}`);
+    }
+
+    return filterParts.join(",");
   }
 
   /**
@@ -375,14 +397,66 @@ export const createFilterBuilder = (options?: FilterBuilderOptions): FilterBuild
  * This is an internal function used by query-builder.ts which wraps it as buildFilterString
  * External consumers should use the buildFilterString export from query-builder.ts
  * @param filters - The filter object to convert
- * @param _filters
  * @param options - Optional builder configuration
  * @returns Formatted filter string for the OpenAlex API
  * @internal
  */
-export const buildFilterStringFromFilters = (_filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>, options?: FilterBuilderOptions): string => {
+export const buildFilterStringFromFilters = (filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>, options?: FilterBuilderOptions): string => {
   const builder = new FilterBuilder(options);
-  return builder.buildFromObject();
+
+  // Convert EntityFilters (Record<string, unknown>) to Record<string, FilterValue>
+  // FilterValue = string | number | boolean | string[] | number[]
+  const convertedFilters: Record<string, FilterValue> = {};
+
+  if (filters && typeof filters === "object") {
+    for (const [key, value] of Object.entries(filters)) {
+      if (value === undefined || value === null) {
+        continue;
+      }
+
+      // Proper type checking instead of type assertion
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        convertedFilters[key] = value;
+      } else if (Array.isArray(value)) {
+        // Check if all array elements are strings or numbers
+        if (value.every(item => typeof item === 'string' || typeof item === 'number')) {
+          // Create properly typed arrays without casting
+          const stringArray: string[] = [];
+          const numberArray: number[] = [];
+
+          let allStrings = true;
+          let allNumbers = true;
+
+          for (const item of value) {
+            if (typeof item === 'string') {
+              stringArray.push(item);
+              allNumbers = false;
+            } else if (typeof item === 'number') {
+              numberArray.push(item);
+              allStrings = false;
+            }
+          }
+
+          if (allStrings) {
+            convertedFilters[key] = stringArray;
+          } else if (allNumbers) {
+            convertedFilters[key] = numberArray;
+          } else {
+            // Mixed array - convert all to strings
+            convertedFilters[key] = [...stringArray, ...numberArray.map(String)];
+          }
+        } else {
+          // Convert mixed array to strings
+          convertedFilters[key] = value.map(item => String(item));
+        }
+      } else {
+        // For any other type, convert to string
+        convertedFilters[key] = String(value);
+      }
+    }
+  }
+
+  return builder.buildFromObject(convertedFilters);
 };
 
 // Types are already exported above - no need to re-export
