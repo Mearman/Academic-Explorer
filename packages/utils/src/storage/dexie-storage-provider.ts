@@ -136,8 +136,6 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 		return await this.catalogueService.addBookmark({
 			entityType: params.entityType,
 			entityId: params.entityId,
-			url: params.url,
-			title: params.title,
 			notes: params.notes,
 		});
 	}

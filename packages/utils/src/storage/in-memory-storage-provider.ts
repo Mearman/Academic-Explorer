@@ -499,16 +499,12 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 	async addBookmark(params: AddBookmarkParams): Promise<string> {
 		await this.initializeSpecialLists();
 
-		// Add to bookmarks list with URL as notes
-		const notesWithUrl = params.notes
-			? `${params.notes}\n\nURL: ${params.url}`
-			: `URL: ${params.url}`;
-
+		// Add to bookmarks list with entity data in proper fields, user notes only in notes field
 		return await this.addEntityToList({
 			listId: SPECIAL_LIST_IDS.BOOKMARKS,
 			entityType: params.entityType,
 			entityId: params.entityId,
-			notes: notesWithUrl,
+			notes: params.notes,
 		});
 	}
 

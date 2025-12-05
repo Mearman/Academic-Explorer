@@ -78,10 +78,6 @@ export interface AddBookmarkParams {
   entityType: EntityType;
   /** OpenAlex ID of the entity */
   entityId: string;
-  /** URL where entity can be accessed */
-  url: string;
-  /** Optional title of the entity */
-  title?: string;
   /** Optional user notes */
   notes?: string;
 }

@@ -347,13 +347,9 @@ export const useUserInteractions = (options: UseUserInteractionsOptions = {}): U
       }
 
       try {
-        const currentUrl = location.pathname + serializeSearch(location.search);
-
         await catalogueService.addBookmark({
           entityType: entityType as EntityType,
           entityId: entityId,
-          url: currentUrl,
-          title,
           notes: tags ? `${notes || ''}\n\nTags: ${tags.join(', ')}` : notes,
         });
 
@@ -433,9 +429,7 @@ export const useUserInteractions = (options: UseUserInteractionsOptions = {}): U
         await catalogueService.addBookmark({
           entityType: "works", // Use works as default for search bookmarks
           entityId: searchId,
-          url: `${location.pathname}${serializeSearch(location.search)}`,
-          title,
-          notes: `Search Query: ${searchQuery}\n${filters ? `Filters: ${JSON.stringify(filters, null, 2)}` : ''}${notes ? `\n\nNotes: ${notes}` : ''}${tags ? `\n\nTags: ${tags.join(', ')}` : ''}`,
+          notes: `Title: ${title}\n\nSearch Query: ${searchQuery}\n${filters ? `Filters: ${JSON.stringify(filters, null, 2)}` : ''}${notes ? `\n\nNotes: ${notes}` : ''}${tags ? `\n\nTags: ${tags.join(', ')}` : ''}`,
         });
 
         setIsBookmarked(true);
@@ -475,9 +469,7 @@ export const useUserInteractions = (options: UseUserInteractionsOptions = {}): U
         await catalogueService.addBookmark({
           entityType: "works", // Use works as default for list bookmarks
           entityId: listId,
-          url,
-          title,
-          notes: tags ? `${notes || ''}\n\nTags: ${tags.join(', ')}` : notes,
+          notes: `Title: ${title}\n\n${tags ? `${notes || ''}\n\nTags: ${tags.join(', ')}` : notes}`,
         });
 
         setIsBookmarked(true);

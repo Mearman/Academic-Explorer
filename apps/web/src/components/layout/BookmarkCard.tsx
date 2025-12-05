@@ -5,7 +5,14 @@
 
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
-import { type CatalogueEntity,catalogueService } from "@bibgraph/utils/storage/catalogue-db";
+import {
+  type CatalogueEntity,
+  catalogueService
+} from "@bibgraph/utils/storage/catalogue-db";
+import {
+  reconstructEntityUrl,
+  parseExistingAppUrl
+} from "@bibgraph/utils/url-reconstruction";
 import {
   ActionIcon,
   Badge,
@@ -57,23 +64,45 @@ export const BookmarkCard = ({ bookmark, onClose, onDeleted }: BookmarkCardProps
     title = `${bookmark.entityType}: ${bookmark.entityId}`;
   }
 
-  // Compute link URL - for special IDs, try to extract from notes; otherwise use entity path
+  // Compute link URL using entity-based reconstruction with backward compatibility
   const getLinkUrl = (): string => {
-    // Try to extract URL from notes first
+    // For new bookmarks: use entity-based URL reconstruction
+    if (bookmark.entityType && bookmark.entityId) {
+      return reconstructEntityUrl(
+        bookmark.entityType,
+        bookmark.entityId,
+        { basePath: "" } // bibgraph.com is primary domain
+      );
+    }
+
+    // Backward compatibility: try to extract URL from notes for existing bookmarks
     const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
     if (urlMatch) {
       const url = urlMatch[1];
+
+      // Try to parse existing app URLs and convert to entity-based navigation
+      const parsedUrl = parseExistingAppUrl(url);
+      if (parsedUrl && parsedUrl.entityType && parsedUrl.entityId) {
+        return reconstructEntityUrl(
+          parsedUrl.entityType,
+          parsedUrl.entityId,
+          { basePath: "" } // bibgraph.com is primary domain
+        );
+      }
+
       // Convert OpenAlex API URLs to internal paths
       if (url.startsWith("https://api.openalex.org")) {
         return url.replace("https://api.openalex.org", "");
       }
-      // Return internal paths as-is
+
+      // Return internal paths as-is (no base path needed for bibgraph.com)
       if (url.startsWith("/")) {
         return url;
       }
     }
-    // Default to entity path
-    return `/${String(bookmark.entityType)}/${String(bookmark.entityId)}`;
+
+    // Fallback to default entity path
+    return `/${String(bookmark.entityType || 'works')}/${String(bookmark.entityId || 'unknown')}`;
   };
 
   const linkUrl = getLinkUrl();
