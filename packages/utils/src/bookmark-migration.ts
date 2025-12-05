@@ -5,9 +5,8 @@
  * Handles backward compatibility and data integrity.
  */
 
-import { logger } from "./logger.js"
 import { EntityDetectionService } from "./entity-detection-service.js"
-import { parseExistingAppUrl } from "./url-reconstruction.js"
+import { logger } from "./logger.js"
 import type { CatalogueService } from "./storage/catalogue-db.js"
 
 /**
@@ -46,10 +45,7 @@ export interface MigrationOptions {
  * @param options - Migration configuration options
  * @returns Migration result with statistics
  */
-export async function migrateBookmarkUrls(
-	catalogueService: CatalogueService,
-	options: MigrationOptions = {}
-): Promise<MigrationResult> {
+export const migrateBookmarkUrls = async (catalogueService: CatalogueService, options: MigrationOptions = {}): Promise<MigrationResult> => {
 	const { dryRun = false, deleteMigrated = false } = options
 
 	logger.info("bookmark-migration", "Starting bookmark migration", { dryRun, deleteMigrated })
@@ -104,18 +100,20 @@ export async function migrateBookmarkUrls(
 					if (urlIndex !== -1) {
 						// Remove "URL: ..." and any preceding/trailing whitespace/newlines
 						userNotes = userNotes
-							.substring(0, urlIndex)
+							.slice(0, Math.max(0, urlIndex))
 							.trim()
 							.replace(/\n+$/, "")
 					}
 
 					// Update the bookmark with entity data using direct database access
 					const db = catalogueService['db']
-					await db.catalogueEntities.update(bookmark.id!, {
-						entityType: detection.entityType,
-						entityId: detection.normalizedId,
-						notes: userNotes || undefined
-					})
+					if (bookmark.id) {
+						await db.catalogueEntities.update(bookmark.id, {
+							entityType: detection.entityType,
+							entityId: detection.normalizedId,
+							notes: userNotes || undefined
+						})
+					}
 
 					if (deleteMigrated) {
 						// Note: This would require implementing deleteEntity method
@@ -157,7 +155,7 @@ export async function migrateBookmarkUrls(
 	}
 
 	return result
-}
+};
 
 /**
  * Validates bookmark data integrity after migration
@@ -165,15 +163,13 @@ export async function migrateBookmarkUrls(
  * @param catalogueService - The catalogue service instance
  * @returns Validation result with issues found
  */
-export async function validateMigration(
-	catalogueService: CatalogueService
-): Promise<{
+export const validateMigration = async (catalogueService: CatalogueService): Promise<{
 	totalBookmarks: number
 	withEntityData: number
 	withLegacyUrls: number
 	withInvalidData: number
 	issues: string[]
-}> {
+}> => {
 	const result = {
 		totalBookmarks: 0,
 		withEntityData: 0,
@@ -213,7 +209,7 @@ export async function validateMigration(
 	}
 
 	return result
-}
+};
 
 /**
  * Gets migration statistics without performing migration
@@ -221,13 +217,11 @@ export async function validateMigration(
  * @param catalogueService - The catalogue service instance
  * @returns Statistics about bookmarks that need migration
  */
-export async function getMigrationStats(
-	catalogueService: CatalogueService
-): Promise<{
+export const getMigrationStats = async (catalogueService: CatalogueService): Promise<{
 	totalBookmarks: number
 	needMigration: number
 	alreadyMigrated: number
-}> {
+}> => {
 	const result = {
 		totalBookmarks: 0,
 		needMigration: 0,
@@ -251,7 +245,7 @@ export async function getMigrationStats(
 	}
 
 	return result
-}
+};
 
 /**
  * Convenience function to perform complete migration workflow
@@ -260,14 +254,11 @@ export async function getMigrationStats(
  * @param options - Migration options
  * @returns Complete migration result
  */
-export async function performMigration(
-	catalogueService: CatalogueService,
-	options: MigrationOptions = {}
-): Promise<{
+export const performMigration = async (catalogueService: CatalogueService, options: MigrationOptions = {}): Promise<{
 	migration: MigrationResult
 	validation: Awaited<ReturnType<typeof validateMigration>>
 	stats: Awaited<ReturnType<typeof getMigrationStats>>
-}> {
+}> => {
 	// Get before stats
 	const beforeStats = await getMigrationStats(catalogueService)
 	logger.info("bookmark-migration", "Migration stats before", beforeStats)
@@ -292,4 +283,4 @@ export async function performMigration(
 		validation: validationResult,
 		stats: afterStats
 	}
-}
+};

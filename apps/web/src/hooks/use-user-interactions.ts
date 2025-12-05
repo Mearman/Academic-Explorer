@@ -334,7 +334,7 @@ export const useUserInteractions = (options: UseUserInteractionsOptions = {}): U
 
   const bookmarkEntity = useCallback(
     async ({
-      title,
+      title: _title,
       notes,
       tags,
     }: {

@@ -5,14 +5,14 @@
  * that converts entity type + ID pairs back to navigation URLs.
  */
 
-import { describe, it, expect, test } from 'vitest'
 import type { EntityType } from '@bibgraph/types'
+import { describe, expect, it } from 'vitest'
+
 import {
-	reconstructEntityUrl,
 	parseExistingAppUrl,
-	reconstructStandardUrl,
-	reconstructGitHubPagesUrl
-} from './url-reconstruction.js'
+	reconstructEntityUrl,
+	reconstructGitHubPagesUrl,
+	reconstructStandardUrl} from './url-reconstruction.js'
 
 describe('URL Reconstruction Utility', () => {
 	describe('reconstructEntityUrl', () => {
@@ -81,7 +81,7 @@ describe('URL Reconstruction Utility', () => {
 
 		it('should handle empty options', () => {
 			expect(reconstructEntityUrl('works', 'W123', {})).toBe('/works/W123')
-			expect(reconstructEntityUrl('works', 'W123', undefined)).toBe('/works/W123')
+			expect(reconstructEntityUrl('works', 'W123')).toBe('/works/W123')
 		})
 	})
 

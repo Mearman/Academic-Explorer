@@ -49,11 +49,7 @@ const GITHUB_PAGES_BASE_PATH = "/BibGraph"
  * @param options - Configuration options
  * @returns Navigation URL path (without domain)
  */
-export function reconstructEntityUrl(
-	entityType: EntityType,
-	entityId: string,
-	options: UrlReconstructionOptions = {}
-): string {
+export const reconstructEntityUrl = (entityType: EntityType, entityId: string, options: UrlReconstructionOptions = {}): string => {
 	const { basePath = DEFAULT_BASE_PATH, preserveExternalUrls = false } = options
 
 	// Normalize base path to ensure it starts with / and doesn't end with /
@@ -75,12 +71,13 @@ export function reconstructEntityUrl(
 
 	// Handle OpenAlex entities (direct IDs)
 	return reconstructOpenAlexUrl(entityType, entityId, finalBasePath)
-}
+};
 
 /**
  * Checks if an entity ID represents an external identifier
+ * @param entityId
  */
-function isExternalIdentifier(entityId: string): boolean {
+const isExternalIdentifier = (entityId: string): boolean => {
 	// DOI pattern (including DOI URL format)
 	if (/^10\.\d+\/\S+$/.test(entityId) || /^https?:\/\/doi\.org\/10\.\d+\/\S+$/i.test(entityId)) {
 		return true
@@ -105,16 +102,15 @@ function isExternalIdentifier(entityId: string): boolean {
 	}
 
 	return false
-}
+};
 
 /**
  * Reconstructs URL for external identifiers as app routes
+ * @param entityType
+ * @param entityId
+ * @param basePath
  */
-function reconstructExternalIdRoute(
-	entityType: EntityType,
-	entityId: string,
-	basePath: string
-): string {
+const reconstructExternalIdRoute = (entityType: EntityType, entityId: string, basePath: string): string => {
 	// Strip URL prefixes for external identifiers
 	const cleanId = extractExternalId(entityId)
 
@@ -155,12 +151,13 @@ function reconstructExternalIdRoute(
 
 	// Fallback to standard entity route
 	return `${basePath}/${entityType}/${cleanId}`
-}
+};
 
 /**
  * Extracts clean external ID from URL format
+ * @param entityId
  */
-function extractExternalId(entityId: string): string {
+const extractExternalId = (entityId: string): string => {
 	// DOI URL format
 	const doiMatch = entityId.match(/https?:\/\/doi\.org\/(10\.\d+\/\S+)/i)
 	if (doiMatch) {
@@ -180,16 +177,15 @@ function extractExternalId(entityId: string): string {
 	}
 
 	return entityId
-}
+};
 
 /**
  * Reconstructs URL for OpenAlex entities (direct IDs)
+ * @param entityType
+ * @param entityId
+ * @param basePath
  */
-function reconstructOpenAlexUrl(
-	entityType: EntityType,
-	entityId: string,
-	basePath: string
-): string {
+const reconstructOpenAlexUrl = (entityType: EntityType, entityId: string, basePath: string): string => {
 	// Remove any trailing slash and ensure uppercase format
 	const cleanId = entityId.replace(/\/$/, "").toUpperCase()
 
@@ -200,12 +196,14 @@ function reconstructOpenAlexUrl(
 	}
 
 	return `${basePath}/${entityType}/${cleanId}`
-}
+};
 
 /**
  * Validates OpenAlex ID format against entity type
+ * @param entityType
+ * @param entityId
  */
-function isValidOpenAlexId(entityType: EntityType, entityId: string): boolean {
+const isValidOpenAlexId = (entityType: EntityType, entityId: string): boolean => {
 	// Check if ID starts with correct prefix for entity type
 	const prefixMap: Record<EntityType, string> = {
 		works: "W",
@@ -228,23 +226,23 @@ function isValidOpenAlexId(entityType: EntityType, entityId: string): boolean {
 	}
 
 	// Check prefix and that it's followed by digits
-	const prefixPattern = new RegExp(`^${expectedPrefix}\\d+$`)
+	const prefixPattern = new RegExp(String.raw`^${expectedPrefix}\d+$`)
 	return prefixPattern.test(entityId)
-}
+};
 
 /**
  * Detects if a URL is an external identifier URL
  * This is useful for backward compatibility with existing bookmark data
+ * @param url
  */
-export function isExternalIdentifierUrl(url: string): boolean {
-	return /^https?:\/\/(doi\.org|orcid\.org|ror\.org)\//i.test(url)
-}
+export const isExternalIdentifierUrl = (url: string): boolean => /^https?:\/\/(?:doi\.org|orcid\.org|ror\.org)\//i.test(url);
 
 /**
  * Extracts entity type and ID from existing app URLs
  * Useful for migration and backward compatibility
+ * @param url
  */
-export function parseExistingAppUrl(url: string): { entityType?: EntityType; entityId?: string } | null {
+export const parseExistingAppUrl = (url: string): { entityType?: EntityType; entityId?: string } | null => {
 	try {
 		const urlObj = new URL(url)
 		const pathname = urlObj.pathname
@@ -255,9 +253,10 @@ export function parseExistingAppUrl(url: string): { entityType?: EntityType; ent
 			: pathname
 
 		// Parse entity routes: /works/W123, /authors/A456, etc.
-		const entityRouteMatch = pathWithoutBase.match(/^\/([^\/]+)\/([^\/]+)$/)
+		const entityRouteMatch = pathWithoutBase.match(/^\/([^/]+)\/([^/]+)$/)
 		if (entityRouteMatch) {
-			const [, entityType, entityId] = entityRouteMatch
+			const entityType = entityRouteMatch[1]
+			const entityId = entityRouteMatch[2]
 
 			// Validate entity type
 			const validEntityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "publishers", "concepts", "funders", "topics", "keywords", "domains", "fields", "subfields"]
@@ -322,17 +321,14 @@ export function parseExistingAppUrl(url: string): { entityType?: EntityType; ent
 		// Invalid URL format
 		return null
 	}
-}
+};
 
 /**
  * Creates a URL reconstruction function with fixed options
  * Useful for creating app-specific reconstruction utilities
+ * @param options
  */
-export function createUrlReconstructor(options: UrlReconstructionOptions) {
-	return function(entityType: EntityType, entityId: string): string {
-		return reconstructEntityUrl(entityType, entityId, options)
-	}
-}
+export const createUrlReconstructor = (options: UrlReconstructionOptions) => (entityType: EntityType, entityId: string): string => reconstructEntityUrl(entityType, entityId, options);
 
 /**
  * Default URL reconstructor for standard deployment
