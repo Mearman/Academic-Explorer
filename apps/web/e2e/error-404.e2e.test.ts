@@ -63,17 +63,11 @@ test.describe("@error 404 Not Found Errors", () => {
 	});
 
 	test("should display 404 error for non-existent route", async ({ page }) => {
-		await page.goto("/nonexistent-page-12345");
+		await page.goto("#/nonexistent-page-12345");
 		await waitForAppReady(page);
 
-		// Should show 404 or redirect to home
-		const notFoundText = page.getByText(/not found|404|page.*exist/i);
-		const isError = await notFoundText.isVisible().catch(() => false);
-
-		if (!isError) {
-			// May redirect to home page instead
-			await expect(page).toHaveURL(/^\/?$/);
-		}
+		// Should redirect to search with the unknown route as query parameter
+		await expect(page).toHaveURL(/\/search\?q=nonexistent-page-12345/);
 	});
 
 	test("should display appropriate error message", async ({ page }) => {

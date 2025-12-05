@@ -51,7 +51,7 @@ export class ErrorPage extends BaseSPAPageObject {
 
 	// Navigation methods
 	async gotoNonExistentEntity(type: string, id: string): Promise<void> {
-		await this.page.goto(`/${type}/${id}`);
+		await this.page.goto(`#/${type}/${id}`);
 		await this.waitForLoadingComplete();
 	}
 
