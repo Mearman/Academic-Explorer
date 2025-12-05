@@ -295,10 +295,9 @@ jobs:
 
           # Run Playwright tests with enhanced output for debugging
           # Use the configured reporters from playwright.config.ts (which includes JSON output)
-          # Add --fail-fast to stop on first test failure
+          # Note: Playwright CLI doesn't support --fail-fast flag, only matrix fail-fast works
           pnpm exec playwright test \
             --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
-            --fail-fast \
             || {
             TEST_EXIT_CODE=$?
             echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
