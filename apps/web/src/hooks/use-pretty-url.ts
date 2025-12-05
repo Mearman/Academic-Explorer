@@ -17,49 +17,54 @@ export const usePrettyUrl = (entityType: string, rawId: string | undefined, deco
   useEffect(() => {
     if (!rawId || !decodedId) return;
 
-    // Prevent duplicate processing
-    const currentHash = window.location.hash;
-    const hashPath = currentHash.split("?")[0];
+    // Function to check and update URL
+    const checkAndUpdateUrl = () => {
+      const currentHash = window.location.hash;
+      const hashPath = currentHash.split("?")[0];
 
-    // Only decode if currently encoded and the decoded version is different
-    if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
-      // Use a very short timeout to ensure the component has fully mounted
-      const timeoutId = setTimeout(() => {
-        const latestHash = window.location.hash;
-        const latestHashPath = latestHash.split("?")[0];
+      // Check if the URL contains the encoded version and not the decoded version
+      if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
+        // Extract query parameters carefully to avoid duplication
+        let queryParams = "";
+        const queryIndex = currentHash.indexOf("?");
+        if (queryIndex !== -1) {
+          queryParams = currentHash.slice(queryIndex);
+          // Fix duplicated query parameters like ?select=x?select=x by parsing and rebuilding
+          const queryString = queryParams.slice(1); // Remove the ?
 
-        // Double-check conditions after timeout and ensure we're not duplicating
-        if (latestHashPath.includes("%") && !latestHashPath.includes(decodedId)) {
-          // Extract query parameters carefully to avoid duplication
-          let queryParams = "";
-          const queryIndex = latestHash.indexOf("?");
-          if (queryIndex !== -1) {
-            queryParams = latestHash.slice(Math.max(0, queryIndex));
-            // Fix duplicated query parameters like ?select=x?select=x by parsing and rebuilding
-            const queryString = queryParams.slice(1); // Remove the ?
+          // Check if query parameters contain duplicates (has multiple ? characters)
+          if (queryString.includes("?")) {
+            // Only use URLSearchParams if there are duplicates to fix
             const uniqueParams = new URLSearchParams(queryString).toString();
             queryParams = uniqueParams ? "?" + uniqueParams : "";
           }
-
-          const decodedHash = `#/${entityType}/${decodedId}${queryParams}`;
-          const newUrl = window.location.pathname + window.location.search + decodedHash;
-
-          // Only update if the URL would actually change
-          if (newUrl !== window.location.href) {
-            logger.debug("routing", "usePrettyUrl updating URL", {
-              entityType,
-              rawId,
-              decodedId,
-              oldHash: latestHash,
-              queryParams,
-              newHash: decodedHash
-            });
-            window.history.replaceState(window.history.state, "", newUrl);
-          }
+          // If no duplicates, preserve original query parameters to avoid double-encoding
         }
-      }, 100); // Very short timeout for better UX
 
-      return () => clearTimeout(timeoutId);
-    }
+        const decodedHash = `#/${entityType}/${decodedId}${queryParams}`;
+        const newUrl = window.location.pathname + window.location.search + decodedHash;
+
+        // Only update if the URL would actually change
+        if (newUrl !== window.location.href) {
+          logger.debug("routing", "usePrettyUrl updating URL", {
+            entityType,
+            rawId,
+            decodedId,
+            oldHash: currentHash,
+            queryParams,
+            newHash: decodedHash
+          });
+          window.history.replaceState(window.history.state, "", newUrl);
+        }
+      }
+    };
+
+    // Check immediately
+    checkAndUpdateUrl();
+
+    // Also check after a short delay to handle any async loading
+    const timeoutId = setTimeout(checkAndUpdateUrl, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [entityType, rawId, decodedId]);
 };
