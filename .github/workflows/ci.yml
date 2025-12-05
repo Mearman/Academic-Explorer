@@ -654,11 +654,8 @@ jobs:
         timeout-minutes: 8
         run: |
           cd apps/web
-          NODE_ENV=production RUNNING_E2E=true BASE_URL=http://localhost:4173 \
-          pnpm exec playwright test src/test/e2e/page-smoke.e2e.test.ts \
-            --reporter=list,json \
-            --reporter=json --outputFile=test-results/smoke-test-results.json \
-            --reporter=html --outputFolder=test-results/smoke-test-report
+          export NODE_ENV=production RUNNING_E2E=true BASE_URL=http://localhost:4173
+          pnpm exec playwright test src/test/e2e/page-smoke.e2e.test.ts --reporter=list
 
       - name: Upload smoke test artifacts
         if: always()
