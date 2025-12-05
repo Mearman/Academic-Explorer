@@ -1,3 +1,8 @@
+## <small>23.1.1 (2025-12-05)</small>
+
+* fix(ci): increase E2E preview server timeout from 60 to 120 seconds ([99edf23](https://github.com/Mearman/BibGraph/commit/99edf23))
+* chore(release): 23.1.0 [skip ci] ([92e7dc4](https://github.com/Mearman/BibGraph/commit/92e7dc4))
+
 ## 23.1.0 (2025-12-05)
 
 * style(web): fix import sorting in BookmarkCard integration test ([583a5bb](https://github.com/Mearman/BibGraph/commit/583a5bb))
