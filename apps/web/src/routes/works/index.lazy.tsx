@@ -1,6 +1,5 @@
 import { createFilterBuilder } from "@bibgraph/client";
 import type { Work } from "@bibgraph/types/entities";
-import { convertToRelativeUrl } from "@bibgraph/ui";
 import { Anchor } from "@mantine/core";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
@@ -9,6 +8,7 @@ import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQuery
 import type { TableViewMode } from "@/components/TableViewModeToggle";
 import type { ColumnConfig } from "@/components/types";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+import { convertOpenAlexToInternalLink } from "@/utils/openalex-link-conversion";
 
 const worksColumns: ColumnConfig[] = [
   {
@@ -16,7 +16,7 @@ const worksColumns: ColumnConfig[] = [
     header: "Title",
     render: (_value: unknown, row: unknown) => {
       const work = row as Work;
-      const workUrl = convertToRelativeUrl(work.id);
+      const workUrl = `#${convertOpenAlexToInternalLink(work.id).internalPath}`;
       if (workUrl) {
         return (
           <Anchor
@@ -43,7 +43,7 @@ const worksColumns: ColumnConfig[] = [
           {authorships.map((authorship, index) => {
             const { author } = authorship;
             if (!author?.id) return null;
-            const authorUrl = convertToRelativeUrl(author.id);
+            const authorUrl = `#${convertOpenAlexToInternalLink(author.id).internalPath}`;
 
             return (
               <span key={author.id}>
@@ -73,7 +73,7 @@ const worksColumns: ColumnConfig[] = [
       const { primary_location } = work;
       if (!primary_location?.source?.display_name) return "Unknown";
 
-      const sourceUrl = convertToRelativeUrl(primary_location.source.id);
+      const sourceUrl = `#${convertOpenAlexToInternalLink(primary_location.source.id).internalPath}`;
       if (sourceUrl) {
         return (
           <Anchor
