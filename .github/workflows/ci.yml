@@ -293,14 +293,29 @@ jobs:
         run: |
           cd apps/web
 
-          # Run Playwright tests with enhanced output for debugging
-          # Use the configured reporters from playwright.config.ts (which includes JSON output)
-          # Note: Playwright CLI doesn't support --fail-fast flag, only matrix fail-fast works
+          # Run Playwright tests with JSON output to temporary file to avoid corruption
+          # Use list reporter for console output, JSON reporter for clean results
           pnpm exec playwright test \
             --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
+            --reporter=list,json \
+            2>test-results/console-output.log \
             || {
             TEST_EXIT_CODE=$?
             echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
+
+            # Copy the JSON results to expected location if it exists
+            if [ -f "test-results/results.json" ]; then
+              echo "✅ JSON results file created successfully"
+              # Validate JSON integrity
+              if jq empty "test-results/results.json" 2>/dev/null; then
+                echo "✅ JSON results file is valid"
+              else
+                echo "⚠️ JSON results file is corrupted, showing first 200 characters:"
+                head -200 "test-results/results.json" | cat -v
+              fi
+            else
+              echo "⚠️ No JSON results file found"
+            fi
 
             # Analyze the actual test results to determine if this is a real failure
             echo "🔍 Analyzing test results to distinguish between flaky passes and actual failures..."
@@ -313,7 +328,7 @@ jobs:
               RESULTS_FILE="blob-report/results.json"
             else
               # Look for any JSON files that might contain results
-              RESULTS_FILE=$(find test-results -name "*.json" -type f | head -1)
+              RESULTS_FILE=$(find test-results -name "*.json" -type f -exec file {} \; | grep "JSON" | cut -d: -f1 | head -1)
             fi
 
             if [ -n "$RESULTS_FILE" ] && [ -f "$RESULTS_FILE" ]; then
