@@ -50,6 +50,11 @@ const GITHUB_PAGES_BASE_PATH = "/BibGraph"
  * @returns Navigation URL path (without domain)
  */
 export const reconstructEntityUrl = (entityType: EntityType, entityId: string, options: UrlReconstructionOptions = {}): string => {
+	// Handle undefined/null inputs gracefully
+	if (entityId == null) {
+		return ""
+	}
+
 	const { basePath = DEFAULT_BASE_PATH, preserveExternalUrls = false } = options
 
 	// Normalize base path to ensure it starts with / and doesn't end with /
@@ -75,7 +80,7 @@ export const reconstructEntityUrl = (entityType: EntityType, entityId: string, o
 
 /**
  * Checks if an entity ID represents an external identifier
- * @param entityId
+ * @param entityId - The entity ID to check
  */
 const isExternalIdentifier = (entityId: string): boolean => {
 	// DOI pattern (including DOI URL format)
@@ -89,10 +94,10 @@ const isExternalIdentifier = (entityId: string): boolean => {
 	}
 
 	// ROR pattern (including ROR URL format)
-	if (/^[0-9a-z]{9}$/i.test(entityId) && /[a-z]/i.test(entityId)) {
+	if (/^[0-9a-z]{8,10}$/i.test(entityId)) {
 		return true
 	}
-	if (/^https?:\/\/ror\.org\/[0-9a-z]{9}$/i.test(entityId)) {
+	if (/^https?:\/\/ror\.org\/[0-9a-z]{8,10}$/i.test(entityId)) {
 		return true
 	}
 
@@ -106,9 +111,9 @@ const isExternalIdentifier = (entityId: string): boolean => {
 
 /**
  * Reconstructs URL for external identifiers as app routes
- * @param entityType
- * @param entityId
- * @param basePath
+ * @param entityType - The entity type
+ * @param entityId - The external entity ID
+ * @param basePath - The base path for the URL
  */
 const reconstructExternalIdRoute = (entityType: EntityType, entityId: string, basePath: string): string => {
 	// Strip URL prefixes for external identifiers
@@ -131,7 +136,7 @@ const reconstructExternalIdRoute = (entityType: EntityType, entityId: string, ba
 			break
 
 		case "institutions":
-			if (/^[0-9a-z]{9}$/i.test(cleanId) && /[a-z]/i.test(cleanId)) {
+			if (/^[0-9a-z]{8,10}$/i.test(cleanId)) {
 				// ROR route
 				return `${basePath}/institutions/ror/${cleanId}`
 			}
@@ -155,7 +160,7 @@ const reconstructExternalIdRoute = (entityType: EntityType, entityId: string, ba
 
 /**
  * Extracts clean external ID from URL format
- * @param entityId
+ * @param entityId - The entity ID to extract from
  */
 const extractExternalId = (entityId: string): string => {
 	// DOI URL format
@@ -171,7 +176,7 @@ const extractExternalId = (entityId: string): string => {
 	}
 
 	// ROR URL format
-	const rorMatch = entityId.match(/https?:\/\/ror\.org\/([0-9a-z]{9})/i)
+	const rorMatch = entityId.match(/https?:\/\/ror\.org\/([0-9a-z]{8,10})/i)
 	if (rorMatch) {
 		return rorMatch[1]
 	}
@@ -181,27 +186,31 @@ const extractExternalId = (entityId: string): string => {
 
 /**
  * Reconstructs URL for OpenAlex entities (direct IDs)
- * @param entityType
- * @param entityId
- * @param basePath
+ * @param entityType - The entity type
+ * @param entityId - The OpenAlex entity ID
+ * @param basePath - The base path for the URL
  */
 const reconstructOpenAlexUrl = (entityType: EntityType, entityId: string, basePath: string): string => {
-	// Remove any trailing slash and ensure uppercase format
-	const cleanId = entityId.replace(/\/$/, "").toUpperCase()
+	// Remove any trailing slash
+	const cleanId = entityId.replace(/\/$/, "")
 
-	// Validate that it's a proper OpenAlex ID for the entity type
-	if (!isValidOpenAlexId(entityType, cleanId)) {
+	// For standard OpenAlex IDs, convert to uppercase
+	const isStandardId = /^[WASIPCFKTD]\d+$/i.test(cleanId)
+	const finalId = isStandardId ? cleanId.toUpperCase() : cleanId
+
+	// Validate that it's a proper OpenAlex ID for the entity type (only for standard IDs)
+	if (isStandardId && !isValidOpenAlexId(entityType, finalId)) {
 		// If validation fails, still construct the URL but let the app handle 404s
-		console.warn(`Invalid OpenAlex ID format for ${entityType}: ${cleanId}`)
+		console.warn(`Invalid OpenAlex ID format for ${entityType}: ${finalId}`)
 	}
 
-	return `${basePath}/${entityType}/${cleanId}`
+	return `${basePath}/${entityType}/${finalId}`
 };
 
 /**
  * Validates OpenAlex ID format against entity type
- * @param entityType
- * @param entityId
+ * @param entityType - The entity type to validate
+ * @param entityId - The entity ID to validate
  */
 const isValidOpenAlexId = (entityType: EntityType, entityId: string): boolean => {
 	// Check if ID starts with correct prefix for entity type
@@ -233,19 +242,28 @@ const isValidOpenAlexId = (entityType: EntityType, entityId: string): boolean =>
 /**
  * Detects if a URL is an external identifier URL
  * This is useful for backward compatibility with existing bookmark data
- * @param url
+ * @param url - The URL to check
  */
 export const isExternalIdentifierUrl = (url: string): boolean => /^https?:\/\/(?:doi\.org|orcid\.org|ror\.org)\//i.test(url);
 
 /**
  * Extracts entity type and ID from existing app URLs
  * Useful for migration and backward compatibility
- * @param url
+ * @param url - The URL to parse
  */
 export const parseExistingAppUrl = (url: string): { entityType?: EntityType; entityId?: string } | null => {
 	try {
-		const urlObj = new URL(url)
-		const pathname = urlObj.pathname
+		// Handle both full URLs and relative paths
+		let pathname: string
+		try {
+			const urlObj = new URL(url)
+			pathname = urlObj.pathname
+		} catch {
+			// If it's not a full URL, treat it as a relative path
+			// Remove query parameters and hash fragments from relative URLs
+			const cleanUrl = url.split('?')[0].split('#')[0]
+			pathname = cleanUrl.startsWith('/') ? cleanUrl : `/${cleanUrl}`
+		}
 
 		// Handle GitHub Pages base path
 		const pathWithoutBase = pathname.startsWith(GITHUB_PAGES_BASE_PATH)
@@ -296,7 +314,7 @@ export const parseExistingAppUrl = (url: string): { entityType?: EntityType; ent
 		const rorRouteMatch = pathWithoutBase.match(/^\/institutions\/ror\/(.+)$/)
 		if (rorRouteMatch) {
 			const ror = rorRouteMatch[1]
-			if (/^[0-9a-z]{9}$/i.test(ror) && /[a-z]/i.test(ror)) {
+			if (/^[0-9a-z]{8,10}$/i.test(ror)) {
 				return {
 					entityType: "institutions" as EntityType,
 					entityId: `https://ror.org/${ror}`
@@ -326,7 +344,7 @@ export const parseExistingAppUrl = (url: string): { entityType?: EntityType; ent
 /**
  * Creates a URL reconstruction function with fixed options
  * Useful for creating app-specific reconstruction utilities
- * @param options
+ * @param options - The URL reconstruction options
  */
 export const createUrlReconstructor = (options: UrlReconstructionOptions) => (entityType: EntityType, entityId: string): string => reconstructEntityUrl(entityType, entityId, options);
 

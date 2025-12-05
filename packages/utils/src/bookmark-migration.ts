@@ -107,7 +107,7 @@ export const migrateBookmarkUrls = async (catalogueService: CatalogueService, op
 
 					// Update the bookmark with entity data using direct database access
 					const db = catalogueService['db']
-					if (bookmark.id) {
+					if (bookmark.id != null) {
 						await db.catalogueEntities.update(bookmark.id, {
 							entityType: detection.entityType,
 							entityId: detection.normalizedId,

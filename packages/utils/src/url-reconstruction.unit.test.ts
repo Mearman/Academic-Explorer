@@ -12,7 +12,8 @@ import {
 	parseExistingAppUrl,
 	reconstructEntityUrl,
 	reconstructGitHubPagesUrl,
-	reconstructStandardUrl} from './url-reconstruction.js'
+	reconstructStandardUrl
+} from './url-reconstruction.js'
 
 describe('URL Reconstruction Utility', () => {
 	describe('reconstructEntityUrl', () => {
@@ -220,8 +221,8 @@ describe('URL Reconstruction Utility', () => {
 
 	describe('Edge Cases', () => {
 		it('should handle undefined/null inputs gracefully', () => {
-			expect(() => reconstructEntityUrl(undefined as any, 'W123')).not.toThrow()
-			expect(() => reconstructEntityUrl('works', undefined as any)).not.toThrow()
+			expect(() => reconstructEntityUrl(null as any, 'W123')).not.toThrow()
+			expect(() => reconstructEntityUrl('works', null as any)).not.toThrow()
 			expect(() => reconstructEntityUrl('works', '')).not.toThrow()
 		})
 
