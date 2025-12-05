@@ -7,11 +7,12 @@ import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils/logger";
 import {
   type CatalogueEntity,
-  catalogueService
+  catalogueService,
 } from "@bibgraph/utils/storage/catalogue-db";
 import {
   parseExistingAppUrl,
-  reconstructEntityUrl} from "@bibgraph/utils/url-reconstruction";
+  reconstructEntityUrl,
+} from "@bibgraph/utils/url-reconstruction";
 import {
   ActionIcon,
   Badge,
