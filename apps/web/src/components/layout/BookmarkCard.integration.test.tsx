@@ -5,14 +5,14 @@
  * with entity-based storage and backward compatibility for existing bookmarks.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { CatalogueEntity } from '@bibgraph/utils/storage/catalogue-db'
+import { SPECIAL_LIST_IDS } from '@bibgraph/utils/storage/catalogue-db'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BookmarkCard } from '@/components/layout/BookmarkCard'
 import { useUserInteractions } from '@/hooks/use-user-interactions'
-import { SPECIAL_LIST_IDS } from '@bibgraph/utils/storage/catalogue-db'
 
 // Mock the hook to provide controlled test data
 const mockUseUserInteractions = vi.mocked(useUserInteractions)

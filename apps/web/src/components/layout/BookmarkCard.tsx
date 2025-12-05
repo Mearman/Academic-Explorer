@@ -10,9 +10,8 @@ import {
   catalogueService
 } from "@bibgraph/utils/storage/catalogue-db";
 import {
-  reconstructEntityUrl,
-  parseExistingAppUrl
-} from "@bibgraph/utils/url-reconstruction";
+  parseExistingAppUrl,
+  reconstructEntityUrl} from "@bibgraph/utils/url-reconstruction";
 import {
   ActionIcon,
   Badge,
