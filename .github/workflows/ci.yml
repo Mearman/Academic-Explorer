@@ -244,7 +244,7 @@ jobs:
     needs: [validate, setup-e2e]
     if: always() && needs.validate.result == 'success'
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         shard: ${{ fromJson(needs.setup-e2e.outputs.shards) }}
     steps:
@@ -295,8 +295,10 @@ jobs:
 
           # Run Playwright tests with enhanced output for debugging
           # Use the configured reporters from playwright.config.ts (which includes JSON output)
+          # Add --fail-fast to stop on first test failure
           pnpm exec playwright test \
             --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
+            --fail-fast \
             || {
             TEST_EXIT_CODE=$?
             echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
