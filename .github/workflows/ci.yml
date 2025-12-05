@@ -294,11 +294,9 @@ jobs:
           cd apps/web
 
           # Run Playwright tests with enhanced output for debugging
-          # Use the built-in reporters and capture exit code properly
+          # Use the configured reporters from playwright.config.ts (which includes JSON output)
           pnpm exec playwright test \
             --shard=${{ matrix.shard }}/${{ env.E2E_SHARDS }} \
-            --reporter=list,html,json \
-            --output-dir=test-results \
             || {
             TEST_EXIT_CODE=$?
             echo "Playwright tests completed with exit code: $TEST_EXIT_CODE"
