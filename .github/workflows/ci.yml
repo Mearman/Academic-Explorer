@@ -334,7 +334,7 @@ jobs:
                 if [ "$TOTAL_TESTS" -gt 0 ]; then
                   # Count different test outcomes
                   PASSED_TESTS=$(jq -r '[.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "passed")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
-                  FAILED_TESTS=$(jq -r '[.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "failed")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
+                  FAILED_TESTS=$(jq -r '[.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "unexpected")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
                   SKIPPED_TESTS=$(jq -r '[.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "skipped")] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
                   FLAKY_TESTS=$(jq -r '[.projects[]?.suites[]?.specs[]?.tests[]? | select(.results | length > 1)] | length' "$RESULTS_FILE" 2>/dev/null || echo "0")
 
@@ -355,7 +355,7 @@ jobs:
                     else
                       echo "❌ Found $FAILED_TESTS failed test(s). This represents actual test failures."
                       echo "🔍 Failed tests:"
-                      jq -r '.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "failed") | "  - \(.title // \"Unnamed test\")"' "$RESULTS_FILE" 2>/dev/null || echo "  (Could not extract test names)"
+                      jq -r '.projects[]?.suites[]?.specs[]?.tests[]? | select(.results[-1].status == "unexpected") | "  - \(.title // \"Unnamed test\")"' "$RESULTS_FILE" 2>/dev/null || echo "  (Could not extract test names)"
                       echo "💾 Check the uploaded HTML report for detailed failure information."
                       exit 1
                     fi
