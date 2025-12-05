@@ -767,6 +767,7 @@ export class CatalogueService {
 
   /**
    * Initialize special system lists if they don't exist
+   * This method is idempotent and safe to call multiple times concurrently
    */
   async initializeSpecialLists(): Promise<void> {
     try {
@@ -774,50 +775,80 @@ export class CatalogueService {
       const historyList = await this.getList(SPECIAL_LIST_IDS.HISTORY);
 
       if (!bookmarksList) {
-        await this.db.catalogueLists.add({
-          id: SPECIAL_LIST_IDS.BOOKMARKS,
-          title: "Bookmarks",
-          description: "System-managed bookmarks list",
-          type: "list",
-          tags: ["system"],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isPublic: false,
-        });
-        this.logger?.debug(LOG_CATEGORY, "Bookmarks list initialized");
+        try {
+          await this.db.catalogueLists.add({
+            id: SPECIAL_LIST_IDS.BOOKMARKS,
+            title: "Bookmarks",
+            description: "System-managed bookmarks list",
+            type: "list",
+            tags: ["system"],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isPublic: false,
+          });
+          this.logger?.debug(LOG_CATEGORY, "Bookmarks list initialized");
+        } catch (addError) {
+          // If list already exists (created by another instance), that's fine
+          if (addError instanceof Dexie.ConstraintError) {
+            this.logger?.debug(LOG_CATEGORY, "Bookmarks list already exists, skipping initialization");
+          } else {
+            throw addError;
+          }
+        }
       }
 
       if (!historyList) {
-        await this.db.catalogueLists.add({
-          id: SPECIAL_LIST_IDS.HISTORY,
-          title: "History",
-          description: "System-managed browsing history",
-          type: "list",
-          tags: ["system"],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isPublic: false,
-        });
-        this.logger?.debug(LOG_CATEGORY, "History list initialized");
+        try {
+          await this.db.catalogueLists.add({
+            id: SPECIAL_LIST_IDS.HISTORY,
+            title: "History",
+            description: "System-managed browsing history",
+            type: "list",
+            tags: ["system"],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isPublic: false,
+          });
+          this.logger?.debug(LOG_CATEGORY, "History list initialized");
+        } catch (addError) {
+          // If list already exists (created by another instance), that's fine
+          if (addError instanceof Dexie.ConstraintError) {
+            this.logger?.debug(LOG_CATEGORY, "History list already exists, skipping initialization");
+          } else {
+            throw addError;
+          }
+        }
       }
 
       const graphList = await this.getList(SPECIAL_LIST_IDS.GRAPH);
       if (!graphList) {
-        await this.db.catalogueLists.add({
-          id: SPECIAL_LIST_IDS.GRAPH,
-          title: "Graph",
-          description: "System-managed graph working set",
-          type: "list",
-          tags: ["system"],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          isPublic: false,
-        });
-        this.logger?.debug(LOG_CATEGORY, "Graph list initialized");
+        try {
+          await this.db.catalogueLists.add({
+            id: SPECIAL_LIST_IDS.GRAPH,
+            title: "Graph",
+            description: "System-managed graph working set",
+            type: "list",
+            tags: ["system"],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isPublic: false,
+          });
+          this.logger?.debug(LOG_CATEGORY, "Graph list initialized");
+        } catch (addError) {
+          // If list already exists (created by another instance), that's fine
+          if (addError instanceof Dexie.ConstraintError) {
+            this.logger?.debug(LOG_CATEGORY, "Graph list already exists, skipping initialization");
+          } else {
+            throw addError;
+          }
+        }
       }
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to initialize special lists", { error });
-      throw error;
+      // Don't re-throw constraint errors - they indicate the lists already exist
+      if (!(error instanceof Dexie.ConstraintError)) {
+        throw error;
+      }
     }
   }
 
