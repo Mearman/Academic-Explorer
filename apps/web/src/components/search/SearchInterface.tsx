@@ -1,7 +1,7 @@
-import { debouncedSearch, isValidSearchQuery,normalizeSearchQuery, logger } from "@bibgraph/utils";
+import { debouncedSearch, isValidSearchQuery, logger, normalizeSearchQuery } from "@bibgraph/utils";
 import { ActionIcon, Alert, Button, Group, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
-import { IconSearch, IconX, IconInfoCircle } from "@tabler/icons-react";
-import { useCallback,useState,useEffect } from "react";
+import { IconInfoCircle, IconSearch, IconX } from "@tabler/icons-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
