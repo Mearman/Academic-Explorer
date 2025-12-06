@@ -137,6 +137,15 @@ export const useNavigationEnhancements = () => {
             case ']':
               navigateWithKeyboard('right', event);
               break;
+            case 'k':
+            case 'K':
+              // Focus search input
+              event.preventDefault();
+              const searchInput = document.querySelector('input[aria-label="Global search input"]');
+              if (searchInput) {
+                (searchInput as HTMLInputElement).focus();
+              }
+              break;
           }
         }
       };
