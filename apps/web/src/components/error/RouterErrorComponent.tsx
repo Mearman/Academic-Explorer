@@ -4,6 +4,8 @@ import { IconAlertTriangle, IconHome,IconRefresh } from "@tabler/icons-react";
 import { ErrorComponentProps } from "@tanstack/react-router";
 import React from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 // PostHog type for window object
 interface PostHogInstance {
   capture: (event: string, properties?: Record<string, unknown>) => void;
@@ -99,7 +101,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
     <Container size="md" py="xl">
       <Stack gap="md">
         <Alert
-          icon={<IconAlertTriangle size={20} />}
+          icon={<IconAlertTriangle size={ICON_SIZE.XL} />}
           title={isNotFoundError ? "404 - Page Not Found" : "Navigation Error"}
           color="orange"
           variant="light"
@@ -126,7 +128,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
 
         <Group role="group" aria-label="Error recovery actions">
           <Button
-            leftSection={<IconRefresh size={16} />}
+            leftSection={<IconRefresh size={ICON_SIZE.MD} />}
             onClick={reset}
             variant="filled"
             aria-label="Try again to reload this page"
@@ -134,7 +136,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
             Try Again
           </Button>
           <Button
-            leftSection={<IconHome size={16} />}
+            leftSection={<IconHome size={ICON_SIZE.MD} />}
             component="a"
             href="#/"
             variant="light"

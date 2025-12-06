@@ -3,6 +3,7 @@ import { IconChevronDown } from '@tabler/icons-react'
 
 import {
   DEFAULT_THEME_BORDER_RADIUS,
+  ICON_SIZE,
   MANTINE_THEME_BORDER_RADIUS,
   SPLIT_BUTTON_HEIGHT,
   SPLIT_BUTTON_MIN_WIDTH,
@@ -52,7 +53,7 @@ export const SplitButton = ({ ref, mainButtonProps, dropdownButtonProps, groupPr
       w: height,
       h: height,
       'aria-label': 'More options' as const,
-      children: <IconChevronDown size={14} />
+      children: <IconChevronDown size={ICON_SIZE.SM} />
     }
 
     const defaultGroupProps: GroupProps = {

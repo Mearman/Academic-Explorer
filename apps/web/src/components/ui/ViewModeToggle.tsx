@@ -11,6 +11,8 @@ import { Box,SegmentedControl, Tooltip } from '@mantine/core';
 import { IconAlertTriangle,IconCube, IconSquare } from '@tabler/icons-react';
 import React, { useMemo } from 'react';
 
+import { ICON_SIZE } from '@/config/style-constants';
+
 export interface ViewModeToggleProps {
   /** Current view mode */
   value: ViewMode;
@@ -50,7 +52,7 @@ export const ViewModeToggle = ({
             gap: 'var(--mantine-spacing-xs)',
           }}
         >
-          <IconSquare size={14} />
+          <IconSquare size={ICON_SIZE.SM} />
           <span>2D</span>
         </Box>
       ),
@@ -74,9 +76,9 @@ export const ViewModeToggle = ({
               cursor: 'not-allowed',
             }}
           >
-            <IconCube size={14} />
+            <IconCube size={ICON_SIZE.SM} />
             <span>3D</span>
-            {!webglAvailable && <IconAlertTriangle size={12} />}
+            {!webglAvailable && <IconAlertTriangle size={ICON_SIZE.XS} />}
           </Box>
         </Tooltip>
       ) : (
@@ -87,7 +89,7 @@ export const ViewModeToggle = ({
             gap: 'var(--mantine-spacing-xs)',
           }}
         >
-          <IconCube size={14} />
+          <IconCube size={ICON_SIZE.SM} />
           <span>3D</span>
         </Box>
       ),

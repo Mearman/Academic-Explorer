@@ -26,7 +26,7 @@ import { modals } from "@mantine/modals";
 import { IconTrash } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import { useEntityDisplayName } from "@/hooks/use-entity-display-name";
 
 import * as styles from "./sidebar.css";
@@ -190,7 +190,7 @@ export const BookmarkCard = ({ bookmark, onClose, onDeleted }: BookmarkCardProps
                 handleDelete();
               }}
             >
-              <IconTrash size={12} />
+              <IconTrash size={ICON_SIZE.XS} />
             </ActionIcon>
           </Tooltip>
         )}

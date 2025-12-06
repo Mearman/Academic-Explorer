@@ -7,6 +7,8 @@ import { Badge, Card, Group, Text, Tooltip } from "@mantine/core";
 import { IconBook2,IconList } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 import * as styles from "./sidebar.css";
 
 interface CatalogueListCardProps {
@@ -49,7 +51,7 @@ export const CatalogueListCard = ({ list, onClose }: CatalogueListCardProps) => 
     >
       <Group gap="xs" wrap="nowrap">
         <Tooltip label={isBibliography ? "Bibliography" : "List"}>
-          <Icon size={16} style={{ flexShrink: 0 }} />
+          <Icon size={ICON_SIZE.MD} style={{ flexShrink: 0 }} />
         </Tooltip>
         <div style={{ flex: 1, minWidth: 0 }}>
           <Text size="sm" fw={500} lineClamp={1}>

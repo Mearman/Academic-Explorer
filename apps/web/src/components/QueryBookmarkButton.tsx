@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+import { ICON_SIZE } from "@/config/style-constants";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 
 
@@ -75,7 +76,7 @@ export const QueryBookmarkButton = ({
           title: "Bookmark Removed",
           message: "Query bookmark has been removed",
           color: "gray",
-          icon: <IconBookmark size={16} />,
+          icon: <IconBookmark size={ICON_SIZE.MD} />,
           autoClose: NOTIFICATION_DURATION.SHORT_MS,
         });
       } else {
@@ -85,7 +86,7 @@ export const QueryBookmarkButton = ({
           title: "Query Bookmarked",
           message: `Saved as "${title}"`,
           color: "blue",
-          icon: <IconCheck size={16} />,
+          icon: <IconCheck size={ICON_SIZE.MD} />,
           autoClose: NOTIFICATION_DURATION.SHORT_MS,
         });
       }
@@ -95,7 +96,7 @@ export const QueryBookmarkButton = ({
         title: "Bookmark Failed",
         message: "Could not update bookmark. Please try again.",
         color: "red",
-        icon: <IconX size={16} />,
+        icon: <IconX size={ICON_SIZE.MD} />,
         autoClose: NOTIFICATION_DURATION.MEDIUM_MS,
       });
     } finally {
@@ -122,11 +123,11 @@ export const QueryBookmarkButton = ({
           data-testid="query-bookmark-button"
         >
           {isLoading ? (
-            <IconLoader size={16} />
+            <IconLoader size={ICON_SIZE.MD} />
           ) : (isQueryBookmarked ? (
-            <IconBookmarkFilled size={16} />
+            <IconBookmarkFilled size={ICON_SIZE.MD} />
           ) : (
-            <IconBookmark size={16} />
+            <IconBookmark size={ICON_SIZE.MD} />
           ))}
         </ActionIcon>
 
