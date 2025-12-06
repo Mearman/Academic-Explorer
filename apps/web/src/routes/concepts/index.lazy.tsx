@@ -1,13 +1,12 @@
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-
-import { ICON_SIZE } from "@/config/style-constants";
 import { useState } from "react";
 
 import { EntityList } from "@/components/EntityList";
 import type { TableViewMode } from "@/components/TableViewModeToggle";
 import type { ColumnConfig } from "@/components/types";
+import { ICON_SIZE } from "@/config/style-constants";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
 const conceptsColumns: ColumnConfig[] = [

@@ -1,9 +1,9 @@
 import { Alert, Button, Container, Group,Stack, Text } from "@mantine/core";
 import { IconAlertTriangle,IconBug } from "@tabler/icons-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import React, { useState } from "react";
 
 import { ICON_SIZE } from "@/config/style-constants";
-import React, { useState } from "react";
 
 /**
  * Error Test Component

@@ -15,10 +15,9 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-
-import { ICON_SIZE } from "@/config/style-constants";
 import { useState } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 

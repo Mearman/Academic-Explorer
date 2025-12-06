@@ -19,8 +19,6 @@ import {
 } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconBulb,IconChartBar, IconSearch } from "@tabler/icons-react";
-
-import { ICON_SIZE } from "@/config/style-constants";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useEffect,useMemo, useState } from "react";
 
@@ -31,6 +29,7 @@ import {
   PrecisionRecallScatterPlot,
 } from "@/components/evaluation/MetaAnalysisCharts";
 import { MissingPaperDetection } from "@/components/evaluation/MissingPaperDetection";
+import { ICON_SIZE } from "@/config/style-constants";
 import { BORDER_DEFAULT } from "@/constants/styles";
 
 // Type guard for STARDataset array

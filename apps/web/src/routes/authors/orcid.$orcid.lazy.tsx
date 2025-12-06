@@ -6,9 +6,9 @@ import {
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { ICON_SIZE } from "@/config/style-constants";
-import { useEffect } from "react";
 
 const ORCIDAuthorRoute = () => {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
