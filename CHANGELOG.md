@@ -1,3 +1,17 @@
+## 23.3.0 (2025-12-06)
+
+* fix(ci): correct GITHUB_OUTPUT format in determine-version job ([ad776d7](https://github.com/Mearman/BibGraph/commit/ad776d7))
+* fix(web): add navigation components to index barrel export ([c8bc084](https://github.com/Mearman/BibGraph/commit/c8bc084))
+* fix(web): improve HomePage example search accessibility ([573ca6f](https://github.com/Mearman/BibGraph/commit/573ca6f))
+* fix(web): resolve all linting errors in new components ([a3b78d1](https://github.com/Mearman/BibGraph/commit/a3b78d1))
+* test(web): update RelationshipItem test for formatMetadata output ([3986e1a](https://github.com/Mearman/BibGraph/commit/3986e1a))
+* feat(web): add human-readable metadata formatting for relationships ([fecb386](https://github.com/Mearman/BibGraph/commit/fecb386))
+* feat(web): enhance search interface with keyboard shortcuts & accessibility ([d70b820](https://github.com/Mearman/BibGraph/commit/d70b820))
+* feat(web): implement comprehensive navigation UX improvements ([cd3fa8a](https://github.com/Mearman/BibGraph/commit/cd3fa8a))
+* feat(web): improve graph explorer empty state with engaging visuals ([8464dc8](https://github.com/Mearman/BibGraph/commit/8464dc8))
+* feat(web): use entity-specific colors for breadcrumb badges ([3e0c759](https://github.com/Mearman/BibGraph/commit/3e0c759))
+* chore(release): 23.2.0 [skip ci] ([41bcd69](https://github.com/Mearman/BibGraph/commit/41bcd69))
+
 ## 23.2.0 (2025-12-06)
 
 * fix(ui): suppress false positive ESLint warning for screen reader announcement ([cea379d](https://github.com/Mearman/BibGraph/commit/cea379d))
