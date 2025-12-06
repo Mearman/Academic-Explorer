@@ -1,3 +1,14 @@
+## 23.8.0 (2025-12-06)
+
+* refactor(web): fix eslint errors ([014230d](https://github.com/Mearman/BibGraph/commit/014230d))
+* refactor(web): fix import sorting errors ([0a7b6e7](https://github.com/Mearman/BibGraph/commit/0a7b6e7))
+* refactor(web): fix linting errors and improve autocomplete UX ([d8bc36e](https://github.com/Mearman/BibGraph/commit/d8bc36e))
+* refactor(web): improve UX with keyboard navigation and proper styling ([c917810](https://github.com/Mearman/BibGraph/commit/c917810))
+* refactor(web): replace magic numbers and inline styles with constants ([15ace92](https://github.com/Mearman/BibGraph/commit/15ace92))
+* feat(web): add Ctrl+K keyboard shortcut for search focus ([e9d54a1](https://github.com/Mearman/BibGraph/commit/e9d54a1))
+* fix(ci): generate coverage during test runs ([c082a6a](https://github.com/Mearman/BibGraph/commit/c082a6a))
+* fix(ci): improve accessibility test server cleanup ([a73c89a](https://github.com/Mearman/BibGraph/commit/a73c89a))
+
 ## <small>23.7.2 (2025-12-06)</small>
 
 * fix(ci): pass NEXT_RELEASE_VERSION to build step ([09c800a](https://github.com/Mearman/BibGraph/commit/09c800a))
