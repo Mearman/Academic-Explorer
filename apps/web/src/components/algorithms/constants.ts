@@ -52,6 +52,23 @@ export const K_CORE = {
 } as const;
 
 // =============================================================================
+// K-TRUSS DECOMPOSITION
+// =============================================================================
+
+/**
+ * K-truss algorithm defaults and parameter ranges
+ * K-truss: subgraph where every edge participates in at least (k-2) triangles
+ */
+export const K_TRUSS = {
+  /** Default k value - k=3 means edges in at least 1 triangle */
+  K_DEFAULT: 3,
+  /** Minimum k - k=2 is trivially the original graph */
+  K_MIN: 2,
+  /** Maximum k - beyond 10, k-trusses are typically very small or empty */
+  K_MAX: 10,
+} as const;
+
+// =============================================================================
 // CORE-PERIPHERY DECOMPOSITION
 // =============================================================================
 
@@ -118,6 +135,27 @@ export const MOTIF_DETECTION = {
   PREVIEW_LIMIT: 5,
   /** Maximum triangles to highlight at once */
   TRIANGLE_HIGHLIGHT_LIMIT: 10,
+} as const;
+
+// =============================================================================
+// SCORE FILTER (PATH FINDING)
+// =============================================================================
+
+/**
+ * Score filter defaults for path-finding algorithms
+ * Used to filter edges based on normalized score (0-1)
+ */
+export const SCORE_FILTER = {
+  /** Minimum score value (normalized 0-1) */
+  MIN: 0,
+  /** Maximum score value (normalized 0-1) */
+  MAX: 1,
+  /** Step increment for score adjustment */
+  STEP: 0.1,
+  /** Decimal precision for display */
+  DECIMAL_SCALE: 2,
+  /** Default weight for edges without weight property */
+  DEFAULT_WEIGHT: 1,
 } as const;
 
 // =============================================================================

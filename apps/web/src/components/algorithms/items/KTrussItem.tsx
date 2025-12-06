@@ -17,6 +17,7 @@ import { useState } from 'react';
 
 import { useKTruss } from '@/hooks/use-graph-algorithms';
 
+import { K_TRUSS } from '../constants';
 import type { AlgorithmItemBaseProps } from '../types';
 
 export const KTrussItem = ({
@@ -24,7 +25,7 @@ export const KTrussItem = ({
   edges,
   onHighlightNodes,
 }: AlgorithmItemBaseProps) => {
-  const [kTrussK, setKTrussK] = useState<number>(3);
+  const [kTrussK, setKTrussK] = useState<number>(K_TRUSS.K_DEFAULT);
   const kTruss = useKTruss(nodes, edges, kTrussK);
 
   return (
@@ -37,9 +38,9 @@ export const KTrussItem = ({
         label="K Value"
         description="k=3 means edges in at least 1 triangle, k=4 means at least 2 triangles"
         value={kTrussK}
-        onChange={(value) => setKTrussK(typeof value === 'number' ? value : 3)}
-        min={2}
-        max={10}
+        onChange={(value) => setKTrussK(typeof value === 'number' ? value : K_TRUSS.K_DEFAULT)}
+        min={K_TRUSS.K_MIN}
+        max={K_TRUSS.K_MAX}
         step={1}
       />
 

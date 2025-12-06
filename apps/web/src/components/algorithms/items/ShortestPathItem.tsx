@@ -44,6 +44,7 @@ import {
   type WeightConfig,
 } from '@/services/graph-algorithms';
 
+import { SCORE_FILTER } from '../constants';
 import type { PathAlgorithmProps } from '../types';
 
 /** Weight property options for the dropdown */
@@ -124,7 +125,7 @@ export const ShortestPathItem = ({
     return {
       property: weightProperty,
       invert: invertWeight,
-      defaultWeight: 1,
+      defaultWeight: SCORE_FILTER.DEFAULT_WEIGHT,
     };
   }, [weightProperty, invertWeight]);
 
@@ -250,10 +251,10 @@ export const ShortestPathItem = ({
                     label="Min Score"
                     description="Only edges with score ≥"
                     placeholder="0.0"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    decimalScale={2}
+                    min={SCORE_FILTER.MIN}
+                    max={SCORE_FILTER.MAX}
+                    step={SCORE_FILTER.STEP}
+                    decimalScale={SCORE_FILTER.DECIMAL_SCALE}
                     value={scoreMin ?? ''}
                     onChange={(value) => setScoreMin(typeof value === 'number' ? value : undefined)}
                   />
@@ -261,10 +262,10 @@ export const ShortestPathItem = ({
                     label="Max Score"
                     description="Only edges with score ≤"
                     placeholder="1.0"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    decimalScale={2}
+                    min={SCORE_FILTER.MIN}
+                    max={SCORE_FILTER.MAX}
+                    step={SCORE_FILTER.STEP}
+                    decimalScale={SCORE_FILTER.DECIMAL_SCALE}
                     value={scoreMax ?? ''}
                     onChange={(value) => setScoreMax(typeof value === 'number' ? value : undefined)}
                   />
