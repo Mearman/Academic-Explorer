@@ -113,7 +113,7 @@ export const BreadcrumbNavigation = () => {
         items.push({
           label: part.charAt(0).toUpperCase() + part.slice(1),
           href: currentPath,
-          icon: part === "graph" ? undefined : <IconSearch size={14} />,
+          icon: part === "graph" ? undefined : <IconSearch size={ICON_SIZE.SM} />,
           tooltip: `View ${part}`,
         });
       }

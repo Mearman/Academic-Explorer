@@ -27,7 +27,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 interface HistoryManagerProps {
@@ -178,13 +178,13 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
     <Stack maw={800} mx="auto" p="md">
       <Group justify="space-between" mb="md">
         <Group>
-          <IconHistory size={24} />
+          <IconHistory size={ICON_SIZE.XXL} />
           <Title order={2}>Navigation History</Title>
         </Group>
         <Button
           variant="light"
           color="red"
-          leftSection={<IconTrash size={16} />}
+          leftSection={<IconTrash size={ICON_SIZE.MD} />}
           onClick={handleClearHistory}
           disabled={recentHistory.length === 0}
         >
@@ -199,7 +199,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
           aria-label="Search navigation history"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          leftSection={<IconSearch size={16} />}
+          leftSection={<IconSearch size={ICON_SIZE.MD} />}
           style={{ flex: 1 }}
         />
         {searchQuery && (
@@ -213,7 +213,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
         <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
           <Stack align="center" gap="md">
             <IconHistory
-              size={48}
+              size={ICON_SIZE.EMPTY_STATE}
               style={{ color: "var(--mantine-color-gray-4)" }}
             />
             <Text size="lg" fw={500}>
@@ -281,7 +281,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
                             onClick={() => handleNavigate(entry)}
                             aria-label={`Navigate to ${title}`}
                           >
-                            <IconExternalLink size={16} />
+                            <IconExternalLink size={ICON_SIZE.MD} />
                           </ActionIcon>
                         </Tooltip>
                         {entry.id && (
@@ -296,7 +296,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
                                 }
                               }}
                             >
-                              <IconTrash size={16} />
+                              <IconTrash size={ICON_SIZE.MD} />
                             </ActionIcon>
                           </Tooltip>
                         )}

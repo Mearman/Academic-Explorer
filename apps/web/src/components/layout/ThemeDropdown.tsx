@@ -16,6 +16,7 @@ import {
 import React, { useState } from "react";
 
 import { ThemeSettings } from "@/components/ThemeSettings";
+import { ICON_SIZE } from "@/config/style-constants";
 import { useTheme } from "@/contexts/theme-context";
 import type { ColorScheme,ComponentLibrary } from "@/styles/theme-contracts";
 
@@ -58,9 +59,9 @@ export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDro
   };
 
   const colorModeIcons = {
-    light: <IconSun size={14} />,
-    dark: <IconMoon size={14} />,
-    auto: <IconDeviceDesktop size={14} />,
+    light: <IconSun size={ICON_SIZE.SM} />,
+    dark: <IconMoon size={ICON_SIZE.SM} />,
+    auto: <IconDeviceDesktop size={ICON_SIZE.SM} />,
   };
 
   const handleOpenSettings = () => {
@@ -88,7 +89,7 @@ export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDro
       <Menu.Divider />
 
       <Menu.Item
-        leftSection={<IconColorPicker size={16} />}
+        leftSection={<IconColorPicker size={ICON_SIZE.MD} />}
         rightSection={
           <Group gap={4}>
             {colorModeIcons[config.colorMode]}
@@ -103,7 +104,7 @@ export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDro
       </Menu.Item>
 
       <Menu.Item
-        leftSection={<IconPalette size={16} />}
+        leftSection={<IconPalette size={ICON_SIZE.MD} />}
         onClick={handleOpenSettings}
       >
         Customize Theme
@@ -117,7 +118,7 @@ export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDro
         <Menu>
           <Menu.Target>
             <Group gap={6}>
-              <IconPalette size={16} />
+              <IconPalette size={ICON_SIZE.MD} />
               <Text size="sm">Theme</Text>
             </Group>
           </Menu.Target>
@@ -145,7 +146,7 @@ export const ThemeDropdown = ({ variant = "action-icon", size = "lg" }: ThemeDro
             size={size}
             aria-label="Theme settings"
           >
-            <IconPalette size={18} />
+            <IconPalette size={ICON_SIZE.LG} />
           </ActionIcon>
         </Menu.Target>
         {themeContent}

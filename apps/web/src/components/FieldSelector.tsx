@@ -13,7 +13,7 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
-import { CARD_BORDER_STYLE } from "@/config/style-constants";
+import { CARD_BORDER_STYLE, ICON_SIZE } from "@/config/style-constants";
 
 export interface FieldSelectorProps<
   T extends readonly string[] = readonly string[],
@@ -106,7 +106,7 @@ export const FieldSelector = <T extends readonly string[]>({
               size="xs"
               variant="subtle"
               color="red"
-              leftSection={<IconX size={14} />}
+              leftSection={<IconX size={ICON_SIZE.SM} />}
               onClick={handleClear}
             >
               Clear All

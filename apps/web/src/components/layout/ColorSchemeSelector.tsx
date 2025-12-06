@@ -9,6 +9,7 @@ import {
 import { useMemo } from 'react'
 
 import { SplitButton } from '@/components/ui/SplitButton'
+import { ICON_SIZE } from '@/config/style-constants'
 import { useTheme } from '@/contexts/theme-context'
 import { type ShadcnPalette,shadcnPaletteNames } from '@/styles/shadcn-colors'
 import { sprinkles } from '@/styles/sprinkles'
@@ -85,7 +86,7 @@ export const ColorSchemeSelector = () => {
 
   const getCurrentIcon = () => {
     const IconComponent = COLOR_SCHEME_LABELS[config.colorMode].icon
-    return <IconComponent size={18} />
+    return <IconComponent size={ICON_SIZE.LG} />
   }
 
   // Cycle through color schemes: auto -> light -> dark -> auto
@@ -117,16 +118,16 @@ export const ColorSchemeSelector = () => {
             }}
             title="Reset theme mode to auto"
           >
-            <IconRotate size={12} />
+            <IconRotate size={ICON_SIZE.XS} />
           </ActionIcon>
         </Group>
       </Menu.Label>
       {Object.entries(COLOR_SCHEME_LABELS).map(([scheme, { icon: Icon, label }]) => (
         <Menu.Item
           key={scheme}
-          leftSection={<Icon size={16} />}
+          leftSection={<Icon size={ICON_SIZE.MD} />}
           onClick={() => setColorMode(scheme as 'light' | 'dark' | 'auto')}
-          rightSection={config.colorMode === scheme ? <IconCheck size={16} /> : null}
+          rightSection={config.colorMode === scheme ? <IconCheck size={ICON_SIZE.MD} /> : null}
         >
           {label}
         </Menu.Item>
@@ -138,7 +139,7 @@ export const ColorSchemeSelector = () => {
       <Menu.Label>
         <Group justify="space-between" w="100%">
           <Group gap={6}>
-            <IconPalette size={16} />
+            <IconPalette size={ICON_SIZE.MD} />
             Color Palette
           </Group>
           <ActionIcon
@@ -151,7 +152,7 @@ export const ColorSchemeSelector = () => {
             }}
             title="Reset color palette to default"
           >
-            <IconRotate size={12} />
+            <IconRotate size={ICON_SIZE.XS} />
           </ActionIcon>
         </Group>
       </Menu.Label>
@@ -184,7 +185,7 @@ export const ColorSchemeSelector = () => {
               </Text>
               {selectedPalette === palette && (
                 <Box style={{ marginLeft: 'auto' }}>
-                  <IconCheck size={12} />
+                  <IconCheck size={ICON_SIZE.XS} />
                 </Box>
               )}
             </Menu.Item>
@@ -198,7 +199,7 @@ export const ColorSchemeSelector = () => {
       <Menu.Label>
         <Group justify="space-between" w="100%">
           <Group gap={6}>
-            <IconPalette size={16} />
+            <IconPalette size={ICON_SIZE.MD} />
             Component Library
           </Group>
           <ActionIcon
@@ -211,7 +212,7 @@ export const ColorSchemeSelector = () => {
             }}
             title="Reset component library to mantine"
           >
-            <IconRotate size={12} />
+            <IconRotate size={ICON_SIZE.XS} />
           </ActionIcon>
         </Group>
       </Menu.Label>
@@ -219,7 +220,7 @@ export const ColorSchemeSelector = () => {
         <Menu.Item
           key={lib}
           onClick={() => setComponentLibrary(lib as ComponentLibrary)}
-          rightSection={config.componentLibrary === lib ? <IconCheck size={16} /> : null}
+          rightSection={config.componentLibrary === lib ? <IconCheck size={ICON_SIZE.MD} /> : null}
         >
           <Box>
             <Text size="sm">{label}</Text>
@@ -234,7 +235,7 @@ export const ColorSchemeSelector = () => {
       <Menu.Label>
         <Group justify="space-between" w="100%">
           <Group gap={6}>
-            <IconPalette size={16} />
+            <IconPalette size={ICON_SIZE.MD} />
             Border Radius
           </Group>
           <ActionIcon
@@ -247,7 +248,7 @@ export const ColorSchemeSelector = () => {
             }}
             title="Reset border radius to default"
           >
-            <IconRotate size={12} />
+            <IconRotate size={ICON_SIZE.XS} />
           </ActionIcon>
         </Group>
       </Menu.Label>
@@ -282,7 +283,7 @@ export const ColorSchemeSelector = () => {
               </Text>
               {config.borderRadius === radius.value && (
                 <Box style={{ marginLeft: 'auto' }}>
-                  <IconCheck size={12} />
+                  <IconCheck size={ICON_SIZE.XS} />
                 </Box>
               )}
             </Menu.Item>
