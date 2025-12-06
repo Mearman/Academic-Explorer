@@ -4,6 +4,7 @@
 
 import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
+import { ALGORITHM, LAYOUT } from '@/config/style-constants';
 import {
   ActionIcon,
   Alert,
@@ -13,6 +14,7 @@ import {
   Card,
   Container,
   Divider,
+  Flex,
   Grid,
   Group,
   NumberInput,
@@ -87,16 +89,16 @@ const ENTITY_DISPLAY_NAMES: Record<EntityType, string> = {
   domains: 'Domains',
 };
 
-// Log scale constants for total nodes slider (5 to 10000)
-const LOG_MIN = Math.log10(5);
-const LOG_MAX = Math.log10(10_000);
+// Log scale constants for total nodes slider
+const LOG_MIN = Math.log10(ALGORITHM.MIN_NODES);
+const LOG_MAX = Math.log10(ALGORITHM.MAX_NODES);
 
 /**
  * Convert a linear slider position (0-100) to a log-scale node count
  * @param linear
  */
 const linearToLogNodes = (linear: number): number => {
-  const logValue = LOG_MIN + (linear / 100) * (LOG_MAX - LOG_MIN);
+  const logValue = LOG_MIN + (linear / ALGORITHM.SLIDER_MAX) * (LOG_MAX - LOG_MIN);
   return Math.round(Math.pow(10, logValue));
 };
 
@@ -796,7 +798,7 @@ const AlgorithmsPage = () => {
           </Alert>
 
           {/* Graph Visualization */}
-          <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
+          <Card withBorder p="md">
             <Group justify="space-between" mb="md">
               <Group gap="xs">
                 <Title order={5}>Graph Visualization</Title>
@@ -905,7 +907,7 @@ const AlgorithmsPage = () => {
             <Grid.Col span={{ base: 12, md: 3 }}>
               <Stack gap="md">
                 {/* Configuration Card */}
-                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
+                <Card withBorder p="md">
                   <Title order={5} mb="sm">Graph Configuration</Title>
 
                   <Stack gap="sm">
@@ -918,7 +920,7 @@ const AlgorithmsPage = () => {
                         onChange={(val) => updateConfig('seed', typeof val === 'number' ? val : null)}
                         placeholder="Random"
                         allowNegative={false}
-                        style={{ flex: '1' }}
+                        flex={1}
                         size="xs"
                       />
                       <Button
@@ -969,7 +971,7 @@ const AlgorithmsPage = () => {
                             { value: 6, label: '6' },
                           ]}
                           size="sm"
-                          style={{ flex: '1' }}
+                          flex={1}
                         />
                         <NumberInput
                           value={graphConfig.componentCount}
@@ -1025,7 +1027,7 @@ const AlgorithmsPage = () => {
                             { value: 10, label: '10' },
                           ]}
                           size="sm"
-                          style={{ flex: '1' }}
+                          flex={1}
                         />
                         <NumberInput
                           value={graphConfig.edgesPerNodeRange[1]}
@@ -1099,7 +1101,7 @@ const AlgorithmsPage = () => {
                           ]}
                           label={(val) => linearToLogNodes(val).toLocaleString()}
                           size="sm"
-                          style={{ flex: '1' }}
+                          flex={1}
                         />
                         <NumberInput
                           value={graphConfig.totalNodeCountRange[1]}
@@ -1159,7 +1161,7 @@ const AlgorithmsPage = () => {
                               max={100}
                               step={1}
                               size="xs"
-                              style={{ flex: '1' }}
+                              flex={1}
                             />
                             <NumberInput
                               value={graphConfig.entityPercentages[entityType]}
@@ -1179,7 +1181,7 @@ const AlgorithmsPage = () => {
                 </Card>
 
                 {/* Graph Summary Card */}
-                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
+                <Card withBorder p="md">
                   <Title order={5} mb="sm">Current Graph Stats</Title>
 
                   <Stack gap="xs">
@@ -1207,7 +1209,7 @@ const AlgorithmsPage = () => {
 
             {/* Right: Algorithms Panel with Category Tabs */}
             <Grid.Col span={{ base: 12, md: 9 }}>
-              <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
+              <Paper withBorder p="md">
                 <AlgorithmTabs
                   nodes={graphData.nodes}
                   edges={graphData.edges}

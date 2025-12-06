@@ -161,6 +161,56 @@ export const TIME_MS = {
 } as const;
 
 // =============================================================================
+// LAYOUT CONSTANTS
+// =============================================================================
+
+/**
+ * Layout measurement constants for consistent sizing and spacing
+ */
+export const LAYOUT = {
+	/** Header height in pixels (used for calc(100vh - 60px)) */
+	HEADER_HEIGHT: 60,
+	/** Graph viewport height as viewport percentage */
+	GRAPH_VIEWPORT_HEIGHT: '55vh',
+	/** Default card height for algorithm controls */
+	ALGORITHM_CARD_HEIGHT: 400,
+} as const;
+
+// =============================================================================
+// ALGORITHM CONSTANTS
+// =============================================================================
+
+/**
+ * Algorithm configuration constants for UI controls and limits
+ */
+export const ALGORITHM = {
+	/** Minimum number of nodes allowed in graph generation */
+	MIN_NODES: 5,
+	/** Maximum number of nodes allowed in graph generation */
+	MAX_NODES: 10000,
+	/** Maximum slider position for node count */
+	SLIDER_MAX: 100,
+	/** Default random seed for reproducible layouts */
+	DEFAULT_SEED: 42,
+	/** Default node range for random graph generation */
+	DEFAULT_NODE_RANGE: [50, 100],
+} as const;
+
+// =============================================================================
+// API CONSTANTS
+// =============================================================================
+
+/**
+ * API and data fetching constants
+ */
+export const API = {
+	/** OpenAlex maximum results per page */
+	OPENALEX_MAX_PER_PAGE: 200,
+	/** Maximum query limit for performance */
+	MAX_QUERY_LIMIT: 10000,
+} as const;
+
+// =============================================================================
 // PROGRESS/LOADING CONSTANTS
 // =============================================================================
 

@@ -21,6 +21,7 @@ import {
   Button,
   Card,
   Container,
+  Flex,
   Group,
   Loader,
   SegmentedControl,
@@ -29,6 +30,7 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
+import { LAYOUT } from '@/config/style-constants';
 import {
   IconAlertTriangle,
   IconEye,
@@ -230,7 +232,7 @@ const EntityGraphPage = () => {
   // Empty state - no sources enabled or no entities
   if (isEmpty && enabledSourceCount === 0) {
     return (
-      <Box style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
+      <Flex h={`calc(100vh - ${LAYOUT.HEADER_HEIGHT}px)`}>
         {/* Source Panel */}
         <GraphSourcePanel
           sources={sources}
@@ -243,17 +245,17 @@ const EntityGraphPage = () => {
         />
 
         {/* Empty state content */}
-        <Container size="md" py="xl" style={{ flex: 1 }}>
+        <Container size="md" py="xl" flex={1}>
           <GraphEmptyState variant="no-sources" availableSourceCount={sources.length} />
         </Container>
-      </Box>
+      </Flex>
     );
   }
 
   // Empty state with sources enabled but no entities
   if (isEmpty) {
     return (
-      <Box style={{ display: 'flex', height: 'calc(100vh - 60px)' }}>
+      <Flex h={`calc(100vh - ${LAYOUT.HEADER_HEIGHT}px)`}>
         {/* Source Panel */}
         <GraphSourcePanel
           sources={sources}
@@ -266,15 +268,15 @@ const EntityGraphPage = () => {
         />
 
         {/* Empty state content */}
-        <Container size="md" py="xl" style={{ flex: 1 }}>
+        <Container size="md" py="xl" flex={1}>
           <GraphEmptyState variant="no-entities" />
         </Container>
-      </Box>
+      </Flex>
     );
   }
 
   return (
-    <Box style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
+    <Flex h={`calc(100vh - ${LAYOUT.HEADER_HEIGHT}px)`} style={{ overflow: 'hidden' }}>
       {/* Left: Source Panel */}
       <GraphSourcePanel
         sources={sources}
@@ -287,7 +289,7 @@ const EntityGraphPage = () => {
       />
 
       {/* Center: Main Content */}
-      <Box style={{ flex: 1, overflow: 'auto', padding: 'var(--mantine-spacing-md)' }}>
+      <Box flex={1} style={{ overflow: 'auto', padding: 'var(--mantine-spacing-md)' }}>
         <Stack gap="lg">
           {/* Page Header */}
           <Group justify="space-between" align="flex-start">
@@ -310,7 +312,7 @@ const EntityGraphPage = () => {
           </Group>
 
           {/* Graph Visualization Card */}
-          <Card style={{ border: '1px solid var(--mantine-color-gray-3)' }} p="md">
+          <Card withBorder p="md">
             <Stack gap="md">
               {/* Controls Row */}
               <Group justify="space-between">
@@ -384,12 +386,11 @@ const EntityGraphPage = () => {
               </Group>
 
               {/* Graph Container */}
-              <div
+              <Box
+                h={LAYOUT.GRAPH_VIEWPORT_HEIGHT}
+                mih={350}
                 style={{
-                  height: '55vh',
-                  minHeight: '350px',
                   border: '1px solid var(--mantine-color-gray-2)',
-                  borderRadius: 'var(--mantine-radius-md)',
                   overflow: 'hidden',
                 }}
               >
@@ -439,7 +440,7 @@ const EntityGraphPage = () => {
                   pathSource={pathSource}
                   pathTarget={pathTarget}
                 />
-              </div>
+              </Box>
             </Stack>
           </Card>
 
@@ -463,7 +464,7 @@ const EntityGraphPage = () => {
           )}
         </Stack>
       </Box>
-    </Box>
+    </Flex>
   );
 };
 

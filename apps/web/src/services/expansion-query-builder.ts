@@ -8,6 +8,7 @@ import type {
   FilterCriteria,
   SortCriteria,
 } from "@bibgraph/types";
+import { API } from "@/config/style-constants";
 import { logger } from "@bibgraph/utils/logger";
 
 export interface OpenAlexQueryParams {
@@ -39,7 +40,7 @@ const buildQueryParams = ({
   const params: OpenAlexQueryParams = {};
 
   // Always use maximum per_page for efficiency, handle total limit separately
-  params.per_page = 200; // OpenAlex maximum per page
+  params.per_page = API.OPENALEX_MAX_PER_PAGE;
 
   // Build sort string
   const sortString = buildSortString(settings.sorts ?? []);
@@ -248,8 +249,8 @@ const validateLimit = ({
     if (settings.limit < 0) {
       errors.push("Limit must be 0 (unlimited) or greater");
     }
-    if (settings.limit > 10_000) {
-      errors.push("Limit cannot exceed 10000 for performance reasons");
+    if (settings.limit > API.MAX_QUERY_LIMIT) {
+      errors.push(`Limit cannot exceed ${API.MAX_QUERY_LIMIT} for performance reasons`);
     }
   }
 };
