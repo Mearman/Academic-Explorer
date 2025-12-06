@@ -40,6 +40,8 @@ import {
   IconRefresh,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
+
+import { ICON_SIZE } from '@/config/style-constants';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
@@ -208,14 +210,14 @@ const EntityGraphPage = () => {
   if (error) {
     return (
       <Container size="xl" py="md">
-        <Alert icon={<IconAlertTriangle size={16} />} title="Error Loading Data" color="red">
+        <Alert icon={<IconAlertTriangle size={ICON_SIZE.MD} />} title="Error Loading Data" color="red">
           <Stack gap="sm">
             <Text>{error.message}</Text>
             <Button
               variant="outline"
               color="red"
               size="xs"
-              leftSection={<IconRefresh size={14} />}
+              leftSection={<IconRefresh size={ICON_SIZE.SM} />}
               onClick={refresh}
             >
               Retry
@@ -291,7 +293,7 @@ const EntityGraphPage = () => {
           {/* Page Header */}
           <Group justify="space-between" align="flex-start">
             <Group>
-              <IconGraph size={28} />
+              <IconGraph size={ICON_SIZE.HEADER} />
               <Stack gap={0}>
                 <Title order={2}>Entity Graph</Title>
                 <Text c="dimmed" size="sm">
@@ -302,7 +304,7 @@ const EntityGraphPage = () => {
             <Group>
               <Tooltip label="Refresh data">
                 <ActionIcon variant="light" onClick={refresh} loading={loading}>
-                  <IconRefresh size={16} />
+                  <IconRefresh size={ICON_SIZE.MD} />
                 </ActionIcon>
               </Tooltip>
             </Group>
@@ -336,7 +338,7 @@ const EntityGraphPage = () => {
                       onClick={fitToViewAll}
                       aria-label="Fit all to view"
                     >
-                      <IconFocusCentered size={16} />
+                      <IconFocusCentered size={ICON_SIZE.MD} />
                     </ActionIcon>
                   </Tooltip>
                   <Tooltip label={highlightedNodes.size > 0 ? "Fit selected nodes to view" : "Fit all to view (no selection)"}>
@@ -347,7 +349,7 @@ const EntityGraphPage = () => {
                       aria-label="Fit selected to view"
                       disabled={highlightedNodes.size === 0}
                     >
-                      <IconFocus2 size={16} />
+                      <IconFocus2 size={ICON_SIZE.MD} />
                     </ActionIcon>
                   </Tooltip>
 
@@ -357,7 +359,7 @@ const EntityGraphPage = () => {
                       variant={enableSimulation ? 'filled' : 'light'}
                       onClick={() => setEnableSimulation(!enableSimulation)}
                     >
-                      <IconEye size={16} />
+                      <IconEye size={ICON_SIZE.MD} />
                     </ActionIcon>
                   </Tooltip>
 
@@ -374,7 +376,7 @@ const EntityGraphPage = () => {
                       variant="light"
                       color="blue"
                       size="sm"
-                      leftSection={<IconLoader size={12} className="animate-spin" />}
+                      leftSection={<IconLoader size={ICON_SIZE.XS} className="animate-spin" />}
                     >
                       Expanding {expandingNodeIds.length} node{expandingNodeIds.length === 1 ? '' : 's'}...
                     </Badge>
@@ -453,7 +455,7 @@ const EntityGraphPage = () => {
 
           {/* Path selection info */}
           {(pathSource || pathTarget) && (
-            <Alert icon={<IconInfoCircle size={16} />} color="blue" title="Path Selection">
+            <Alert icon={<IconInfoCircle size={ICON_SIZE.MD} />} color="blue" title="Path Selection">
               <Text size="sm">
                 {pathSource && !pathTarget && `Source selected: ${pathSource}. Click another node to set target.`}
                 {pathSource && pathTarget && `Source: ${pathSource} → Target: ${pathTarget}`}
