@@ -124,11 +124,12 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
           {error.message}
         </Text>
 
-        <Group>
+        <Group role="group" aria-label="Error recovery actions">
           <Button
             leftSection={<IconRefresh size={16} />}
             onClick={reset}
             variant="filled"
+            aria-label="Try again to reload this page"
           >
             Try Again
           </Button>
@@ -137,6 +138,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
             component="a"
             href="#/"
             variant="light"
+            aria-label="Navigate to home page"
           >
             Go Home
           </Button>

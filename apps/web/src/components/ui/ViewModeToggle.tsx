@@ -110,6 +110,7 @@ export const ViewModeToggle = ({
       }}
       data={data}
       disabled={disabled}
+      aria-label="Toggle between 2D and 3D graph visualization modes"
     />
   );
 };
