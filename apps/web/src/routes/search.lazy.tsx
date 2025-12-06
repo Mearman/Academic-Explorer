@@ -20,12 +20,13 @@ import {
   IconBookmarkOff,
   IconInfoCircle,
 } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
-import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE, SEARCH, TIME_MS } from '@/config/style-constants';
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { SearchInterface } from "../components/search/SearchInterface";
@@ -98,18 +99,37 @@ const renderLoadingState = () => (
   </Text>
 );
 
-const renderErrorState = (error: unknown) => (
-  <Alert
-    icon={<IconInfoCircle />}
-    title="Search Error"
-    color="red"
-    variant="light"
-  >
-    <Text size="sm">
-      Failed to search OpenAlex: {String(error)}. Please try again.
-    </Text>
-  </Alert>
-);
+const renderErrorState = (error: unknown) => {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const isNetworkError = errorMessage.toLowerCase().includes('network') ||
+                         errorMessage.toLowerCase().includes('fetch');
+  const isRateLimitError = errorMessage.toLowerCase().includes('rate limit') ||
+                           errorMessage.toLowerCase().includes('too many');
+
+  let errorTitle = "Search Error";
+  let errorDescription = `Failed to search OpenAlex: ${errorMessage}. Please try again.`;
+
+  if (isNetworkError) {
+    errorTitle = "Network Error";
+    errorDescription = "Unable to connect to OpenAlex. Please check your internet connection and try again.";
+  } else if (isRateLimitError) {
+    errorTitle = "Rate Limited";
+    errorDescription = "Too many search requests. Please wait a moment and try again.";
+  }
+
+  return (
+    <Alert
+      icon={<IconInfoCircle />}
+      title={errorTitle}
+      color="red"
+      variant="light"
+    >
+      <Text size="sm">
+        {errorDescription}
+      </Text>
+    </Alert>
+  );
+};
 
 const renderNoResultsState = (query: string) => (
   <Alert
@@ -270,8 +290,8 @@ const SearchPage = () => {
     queryKey: ["search-autocomplete", searchFilters],
     queryFn: () => searchAllEntities(searchFilters),
     enabled: Boolean(searchFilters.query.trim()),
-    retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: SEARCH.MAX_RETRY_ATTEMPTS,
+    staleTime: TIME_MS.SEARCH_STALE_TIME,
   });
 
   const columns = createSearchColumns();
@@ -308,13 +328,38 @@ const SearchPage = () => {
                 try {
                   if (userInteractions.isBookmarked) {
                     await userInteractions.unbookmarkSearch();
+                    notifications.show({
+                      title: "Bookmark Removed",
+                      message: `Search "${searchFilters.query}" has been removed from your bookmarks`,
+                      color: "green",
+                      autoClose: TIME_MS.BOOKMARK_FEEDBACK_DURATION,
+                    });
                   } else {
                     const title = searchFilters.query;
                     await userInteractions.bookmarkSearch({
                       title,
                       searchQuery: searchFilters.query,
                     });
+                    notifications.show({
+                      title: "Search Bookmarked",
+                      message: `Search "${searchFilters.query}" has been added to your bookmarks`,
+                      color: "blue",
+                      autoClose: TIME_MS.BOOKMARK_FEEDBACK_DURATION,
+                    });
                   }
+                } catch (error) {
+                  logger.error("ui", "Bookmark operation failed", {
+                    error,
+                    searchQuery: searchFilters.query,
+                    isBookmarked: userInteractions.isBookmarked
+                  }, "SearchPage");
+
+                  notifications.show({
+                    title: "Bookmark Failed",
+                    message: "Could not update bookmark. Please try again.",
+                    color: "red",
+                    autoClose: TIME_MS.BOOKMARK_FEEDBACK_DURATION,
+                  });
                 } finally {
                   setLoading(false);
                 }

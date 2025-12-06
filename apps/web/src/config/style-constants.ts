@@ -158,6 +158,10 @@ export const TIME_MS = {
 	HOURS_2: 2 * 60 * 60 * 1000,
 	/** 24 hours (1 day) in milliseconds */
 	DAY: 24 * 60 * 60 * 1000,
+	/** Search cache stale time (5 minutes) */
+	SEARCH_STALE_TIME: 5 * 60 * 1000,
+	/** Bookmark feedback toast duration (2 seconds) */
+	BOOKMARK_FEEDBACK_DURATION: 2 * 1000,
 } as const;
 
 // =============================================================================
@@ -238,4 +242,16 @@ export const LOADING_CONSTANTS = {
 	MAX_PROGRESS_PERCENT: 95,
 	/** Progress update interval in milliseconds (10 updates per second) */
 	PROGRESS_UPDATE_INTERVAL_MS: 100,
+} as const;
+
+// =============================================================================
+// SEARCH CONSTANTS
+// =============================================================================
+
+/**
+ * Search functionality constants
+ */
+export const SEARCH = {
+	/** Maximum number of search retry attempts */
+	MAX_RETRY_ATTEMPTS: 1,
 } as const;
