@@ -85,7 +85,7 @@ const QuickSearch = ({ onSearch }: QuickSearchProps) => {
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           style={{ flex: 1 }}
         />
-        <ActionIcon size="lg" onClick={handleSearch} color="blue">
+        <ActionIcon size="lg" onClick={handleSearch} color="blue" aria-label="Search">
           <IconSearch size={18} />
         </ActionIcon>
       </Group>
@@ -451,10 +451,10 @@ export const ResearchDashboard = () => {
             <Text c="dimmed">Your academic research command center</Text>
           </div>
           <Group>
-            <ActionIcon variant="light" size="lg">
+            <ActionIcon variant="light" size="lg" aria-label="Refresh dashboard">
               <IconRefresh size={18} />
             </ActionIcon>
-            <ActionIcon variant="light" size="lg">
+            <ActionIcon variant="light" size="lg" aria-label="Open in new window">
               <IconExternalLink size={18} />
             </ActionIcon>
           </Group>
