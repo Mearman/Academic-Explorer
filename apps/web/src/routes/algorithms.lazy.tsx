@@ -40,11 +40,11 @@ import React, { useCallback, useEffect, useMemo, useRef,useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { AlgorithmTabs } from '@/components/algorithms';
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 

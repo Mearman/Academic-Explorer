@@ -16,11 +16,12 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
 import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
 import React, { FunctionComponent,ReactNode,useEffect } from "react";
+
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;

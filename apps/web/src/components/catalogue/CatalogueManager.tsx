@@ -43,9 +43,9 @@ import { CreateListModal } from "@/components/catalogue/CreateListModal";
 import { ExportModal } from "@/components/catalogue/ExportModal";
 import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { settingsActions } from "@/stores/settings-store";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 
 interface CatalogueManagerProps {

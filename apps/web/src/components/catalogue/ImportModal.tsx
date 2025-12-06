@@ -30,9 +30,9 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 import type { ExportFormat } from "@/types/catalogue";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 
 interface ImportModalProps {

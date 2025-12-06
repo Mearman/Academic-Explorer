@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
+
 import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 
 const textKeywordsSearchSchema = z.object({

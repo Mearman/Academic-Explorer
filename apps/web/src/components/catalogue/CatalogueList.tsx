@@ -35,8 +35,8 @@ import {
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
-import { useCatalogue } from "@/hooks/useCatalogue";
 import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { useCatalogue } from "@/hooks/useCatalogue";
 
 interface CatalogueListProps {
   lists: CatalogueList[];

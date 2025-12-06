@@ -10,7 +10,6 @@
 
 import { Stack, Text,Title } from "@mantine/core";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 
 /**
