@@ -56,7 +56,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useRef,useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import {
   isAuthorMetadata,
@@ -248,7 +248,7 @@ const SortableEntityRow = ({
             tabIndex={0}
             data-testid={`drag-handle-${entity.entityId}`}
           >
-            <IconGripVertical size={16} color="var(--mantine-color-gray-4)" />
+            <IconGripVertical size={ICON_SIZE.MD} color="var(--mantine-color-gray-4)" />
           </div>
         </Table.Td>
         <Table.Td>
@@ -298,7 +298,7 @@ const SortableEntityRow = ({
                 title="Edit notes"
                 aria-label="Edit notes"
               >
-                <IconEdit size={14} />
+                <IconEdit size={ICON_SIZE.SM} />
               </ActionIcon>
             </Group>
           )}
@@ -317,25 +317,25 @@ const SortableEntityRow = ({
                   variant="subtle"
                   onClick={() => onNavigate(entity.entityType, entity.entityId)}
                 >
-                  <IconExternalLink size={14} />
+                  <IconExternalLink size={ICON_SIZE.SM} />
                 </ActionIcon>
               </Tooltip>
             )}
             <Menu shadow="md" width={160}>
               <Menu.Target>
                 <ActionIcon size="sm" variant="subtle">
-                  <IconDots size={14} />
+                  <IconDots size={ICON_SIZE.SM} />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item
-                  leftSection={<IconNotes size={14} />}
+                  leftSection={<IconNotes size={ICON_SIZE.SM} />}
                   onClick={() => setEditingNotes(true)}
                 >
                   Edit Notes
                 </Menu.Item>
                 <Menu.Item
-                  leftSection={<IconTrash size={14} />}
+                  leftSection={<IconTrash size={ICON_SIZE.SM} />}
                   color="red"
                   onClick={() => setShowRemoveConfirm(true)}
                   aria-label="Remove entity"
@@ -724,7 +724,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
             placeholder="Search entities..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={ICON_SIZE.MD} />}
             flex={1}
             aria-label="Search entities by ID or notes"
           />

@@ -18,6 +18,7 @@ import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import React, { useState } from "react";
 
+import { ICON_SIZE } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 
@@ -76,7 +77,7 @@ export const AddToListModal = ({
         title: "Added to List",
         message: `${entityDisplayName || entityId} added to "${selectedList?.title}"`,
         color: "green",
-        icon: <IconCheck size={16} />,
+        icon: <IconCheck size={ICON_SIZE.MD} />,
       });
 
       // Close modal immediately - notification will persist
@@ -113,7 +114,7 @@ export const AddToListModal = ({
   if (availableLists.length === 0) {
     return (
       <Stack gap="md">
-        <Alert icon={<IconAlertCircle size={16} />} color="yellow">
+        <Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} color="yellow">
           {entityType === "works"
             ? "No lists or bibliographies available. Create a list first to add entities."
             : "No lists available for this entity type. Bibliographies can only contain works."

@@ -21,7 +21,7 @@ import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
 import React, { FunctionComponent,ReactNode,useEffect } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;
@@ -64,7 +64,7 @@ const CatalogueFallback = ({
     >
       <Stack gap="md">
         <Group>
-          <IconAlertTriangle size={32} color="var(--mantine-color-red-6)" />
+          <IconAlertTriangle size={ICON_SIZE.EMPTY_STATE_SM} color="var(--mantine-color-red-6)" />
           <div>
             <Text
               id="error-title"
@@ -124,7 +124,7 @@ const CatalogueFallback = ({
             variant="subtle"
             onClick={() => window.location.reload()}
             size="sm"
-            leftSection={<IconRefresh size={16} />}
+            leftSection={<IconRefresh size={ICON_SIZE.MD} />}
           >
             Reload Page
           </Button>

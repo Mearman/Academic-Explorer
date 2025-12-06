@@ -6,6 +6,8 @@ import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconList } from "@tabler/icons-react";
 import React from "react";
 
+import { ICON_SIZE } from '@/config/style-constants';
+
 interface CatalogueSidebarLinkProps {
   onClose?: () => void;
 }
@@ -29,7 +31,7 @@ export const CatalogueSidebarLink = ({ onClose }: CatalogueSidebarLinkProps) => 
         onClick={handleClick}
         title="Catalogue"
       >
-        <IconList size={18} />
+        <IconList size={ICON_SIZE.LG} />
       </ActionIcon>
     </Tooltip>
   );
