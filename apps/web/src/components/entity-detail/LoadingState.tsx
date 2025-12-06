@@ -4,6 +4,8 @@ import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect,useRef,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 import { getMantineColor } from "./EntityTypeConfig";
 
@@ -143,7 +145,7 @@ export const LoadingState = ({
           <Paper
             p="xl"
             radius="xl"
-            style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+            style={{ border: BORDER_STYLE_GRAY_3 }}
             w="100%"
             maw="48rem"
             role="progressbar"

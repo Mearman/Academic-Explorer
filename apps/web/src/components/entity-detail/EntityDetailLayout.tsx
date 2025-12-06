@@ -4,6 +4,7 @@ import { ActionIcon, Badge, Box, Code, Group, Modal, Paper, SegmentedControl,Sta
 import { IconBookmark, IconBookmarkFilled, IconBookmarkOff, IconCode, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
@@ -204,8 +205,8 @@ export const EntityDetailLayout = ({
 
         {/* Content Section */}
         {viewMode === "raw" ? (
-          <Paper style={{ overflow: 'hidden', border: "1px solid var(--mantine-color-gray-3)" }} radius="xl">
-            <Paper p="md" bg="var(--mantine-color-gray-0)" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
+          <Paper style={{ overflow: 'hidden', border: BORDER_STYLE_GRAY_3 }} radius="xl">
+            <Paper p="md" bg="var(--mantine-color-gray-0)" style={{ borderBottom: BORDER_STYLE_GRAY_3 }}>
               <Group gap="sm">
                 <IconCode size={20} color="var(--mantine-color-gray-6)" />
                 <Text size="lg" fw={600} c="var(--mantine-color-gray-9)">

@@ -2,6 +2,8 @@ import { Alert, Code, Container, Flex,Group, Paper, Stack, Text, Title } from "@
 import { IconAlertCircle } from "@tabler/icons-react";
 import React from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+
 interface ErrorStateProps {
   entityType: string;
   entityId: string;
@@ -10,7 +12,7 @@ interface ErrorStateProps {
 
 export const ErrorState = ({ entityType, entityId, error }: ErrorStateProps) => <Container size="md" p="xl" data-testid="error-state">
       <Flex h="100vh" justify="center" align="center">
-        <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }} w="100%" maw="48rem">
+        <Paper p="xl" radius="xl" style={{ border: BORDER_STYLE_GRAY_3 }} w="100%" maw="48rem">
           <Stack gap="lg">
             <Group justify="center" mb="md">
               <Alert variant="light" color="red" radius="xl" p="lg" w="fit-content">
@@ -23,7 +25,7 @@ export const ErrorState = ({ entityType, entityId, error }: ErrorStateProps) => 
             </Title>
 
             <Stack gap="md">
-              <Paper p="md" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-red-light-0)">
+              <Paper p="md" radius="lg" style={{ border: BORDER_STYLE_GRAY_3 }} bg="var(--mantine-color-red-light-0)">
                 <Stack gap="xs">
                   <Text size="sm" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: "0.05em" }}>
                     {entityType} ID:
