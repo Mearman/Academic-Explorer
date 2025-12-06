@@ -188,24 +188,29 @@ export const HeaderSearchInput = () => {
 
         <Popover.Dropdown>
           <Stack gap="xs" p="xs" miw="300">
-            <Group justify="space-between" align="center">
-              <Text size="sm" fw={600}>
-                <Group gap="xs">
-                  <IconHistory size={14} />
-                  Recent Searches
-                </Group>
+            <Stack gap={4}>
+              <Group justify="space-between" align="center">
+                <Text size="sm" fw={600}>
+                  <Group gap="xs">
+                    <IconHistory size={14} />
+                    Recent Searches
+                  </Group>
+                </Text>
+                {searchHistory.length > 0 && (
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    onClick={handleClearHistory}
+                    aria-label="Clear search history"
+                  >
+                    <IconX size={12} />
+                  </ActionIcon>
+                )}
+              </Group>
+              <Text size="xs" c="dimmed">
+                Enter to search · Esc to close · ↓ to navigate
               </Text>
-              {searchHistory.length > 0 && (
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  onClick={handleClearHistory}
-                  aria-label="Clear search history"
-                >
-                  <IconX size={12} />
-                </ActionIcon>
-              )}
-            </Group>
+            </Stack>
 
             {filteredHistory.map((historyQuery, index) => (
               <Group
@@ -246,9 +251,14 @@ export const HeaderSearchInput = () => {
             ))}
 
             {filteredHistory.length === 0 && (
-              <Text size="sm" c="dimmed" ta="center" py="md">
-                {query ? "No matching searches" : "No recent searches"}
-              </Text>
+              <Stack gap="xs" py="md">
+                <Text size="sm" c="dimmed" ta="center">
+                  {query ? "No matching searches" : "No recent searches"}
+                </Text>
+                <Text size="xs" c="dimmed" ta="center">
+                  Press Enter to search
+                </Text>
+              </Stack>
             )}
           </Stack>
         </Popover.Dropdown>
