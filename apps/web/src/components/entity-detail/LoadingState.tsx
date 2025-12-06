@@ -1,8 +1,9 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
-import React, { useEffect,useState } from "react";
+import React, { useEffect,useRef,useState } from "react";
 
+import { useLiveRegion, useReducedMotion } from "@bibgraph/ui";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
@@ -76,10 +77,16 @@ export const LoadingState = ({
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [lastAnnouncedStep, setLastAnnouncedStep] = useState(-1);
   const loaderColor = getMantineColor(config.colorKey as EntityType);
   const steps = getLoadingSteps(entityType);
 
-  // Simulate progress
+  // Accessibility hooks
+  const { announce, LiveRegionComponent } = useLiveRegion();
+  const prefersReducedMotion = useReducedMotion();
+  const loadingElementRef = useRef<HTMLDivElement>(null);
+
+  // Simulate progress with accessibility announcements
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeElapsed(prev => prev + 100);
@@ -92,17 +99,30 @@ export const LoadingState = ({
 
       // Update current step based on progress
       let cumulativeTime = 0;
+      let newStep = 0;
       for (let i = 0; i < steps.length; i++) {
         cumulativeTime += (steps[i].estimatedTime / 100) * totalTime;
         if (timeElapsed < cumulativeTime) {
-          setCurrentStep(i);
+          newStep = i;
           break;
         }
+      }
+
+      setCurrentStep(newStep);
+
+      // Announce step changes to screen readers
+      if (newStep !== lastAnnouncedStep && newStep < steps.length) {
+        const step = steps[newStep];
+        announce(
+          `Loading ${entityType}: ${step.label}. ${Math.round(progressPercentage)}% complete.`,
+          'polite'
+        );
+        setLastAnnouncedStep(newStep);
       }
     }, 100);
 
     return () => clearInterval(interval);
-  }, [timeElapsed, estimatedDuration, steps]);
+  }, [timeElapsed, estimatedDuration, steps, entityType, lastAnnouncedStep, announce]);
 
   // Debug logging
   logger.debug("ui", "LoadingState rendering", {
@@ -124,9 +144,32 @@ export const LoadingState = ({
   };
 
   return (
-    <Container size="md" p="xl" data-testid="loading-state">
-      <Flex h="100vh" justify="center" align="center">
-        <Paper p="xl" radius="xl" style={{ border: "1px solid var(--mantine-color-gray-3)" }} w="100%" maw="48rem">
+    <>
+      {/* Live region for screen reader announcements */}
+      <LiveRegionComponent />
+
+      <Container
+        size="md"
+        p="xl"
+        data-testid="loading-state"
+        ref={loadingElementRef}
+        role="status"
+        aria-live="polite"
+        aria-label={`Loading ${entityType}`}
+      >
+        <Flex h="100vh" justify="center" align="center">
+          <Paper
+            p="xl"
+            radius="xl"
+            style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+            w="100%"
+            maw="48rem"
+            role="progressbar"
+            aria-valuenow={Math.round(progress)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${operation} ${entityType} progress`}
+          >
           <Stack gap="xl">
             {/* Header */}
             <Group justify="center" gap="md">
@@ -155,7 +198,7 @@ export const LoadingState = ({
                     color={loaderColor}
                     size="md"
                     radius="md"
-                    animated
+                    animated={!prefersReducedMotion}
                   />
                 </Stack>
 
@@ -227,5 +270,6 @@ export const LoadingState = ({
         </Paper>
       </Flex>
     </Container>
+    </>
   );
 };
