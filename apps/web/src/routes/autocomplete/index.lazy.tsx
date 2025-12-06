@@ -26,6 +26,7 @@ import {
   AUTOCOMPLETE_ENTITY_TYPES,
   EntityTypeFilter,
 } from "@/components/EntityTypeFilter";
+import { ContentSkeleton } from "@/components/molecules/ContentSkeleton";
 import { BaseTable } from "@/components/tables/BaseTable";
 import { type TableViewMode,TableViewModeToggle } from "@/components/TableViewModeToggle";
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
@@ -341,9 +342,7 @@ const AutocompleteGeneralRoute = () => {
         )}
 
         {isLoading && query.trim() && (
-          <Text ta="center" py="xl">
-            Loading suggestions...
-          </Text>
+          <ContentSkeleton variant="list" />
         )}
 
         {error && (

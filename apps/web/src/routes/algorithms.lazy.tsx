@@ -4,7 +4,6 @@
 
 import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { RelationType } from '@bibgraph/types';
-import { ALGORITHM, LAYOUT } from '@/config/style-constants';
 import {
   ActionIcon,
   Alert,
@@ -14,7 +13,6 @@ import {
   Card,
   Container,
   Divider,
-  Flex,
   Grid,
   Group,
   NumberInput,
@@ -46,7 +44,7 @@ import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVis
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+import { ALGORITHM, ICON_SIZE } from '@/config/style-constants';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 
