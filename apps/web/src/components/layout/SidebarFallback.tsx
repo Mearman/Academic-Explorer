@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 
-import { CARD_BORDER_STYLE } from "@/config/style-constants";
+import { CARD_BORDER_STYLE, ICON_SIZE } from "@/config/style-constants";
 
 import * as styles from "./sidebar.css";
 
@@ -35,12 +35,12 @@ export const SidebarFallback = ({ title, type, onClose }: SidebarFallbackProps) 
       {/* Header */}
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarTitle}>
-          <IconBookmark size={18} />
+          <IconBookmark size={ICON_SIZE.LG} />
           <Title order={6}>{title}</Title>
         </div>
         {onClose && (
           <ActionIcon size="sm" variant="subtle" onClick={onClose}>
-            <IconX size={14} />
+            <IconX size={ICON_SIZE.SM} />
           </ActionIcon>
         )}
       </div>
@@ -51,7 +51,7 @@ export const SidebarFallback = ({ title, type, onClose }: SidebarFallbackProps) 
           placeholder={`Search ${title.toLowerCase()}...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          leftSection={<IconSearch size={14} />}
+          leftSection={<IconSearch size={ICON_SIZE.SM} />}
           size="sm"
         />
       </div>
@@ -60,7 +60,7 @@ export const SidebarFallback = ({ title, type, onClose }: SidebarFallbackProps) 
       <div className={styles.scrollableContent}>
         <Card style={CARD_BORDER_STYLE} p="md">
           <div className={styles.emptyState}>
-            <IconBookmark size={32} />
+            <IconBookmark size={ICON_SIZE.EMPTY_STATE_SM} />
             <Text size="sm" fw={500} ta="center">
               {searchQuery ? `No ${title.toLowerCase()} found` : `No ${title.toLowerCase()} yet`}
             </Text>

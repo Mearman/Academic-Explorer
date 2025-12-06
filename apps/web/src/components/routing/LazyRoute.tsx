@@ -2,6 +2,8 @@ import { Center, Stack,Text } from "@mantine/core";
 import { IconLoader } from "@tabler/icons-react";
 import React, { Suspense } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 interface LazyRouteProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
@@ -18,7 +20,7 @@ export const LazyRoute: React.FC<LazyRouteProps> = ({ children, fallback }) => {
   const defaultFallback = (
     <Center style={{ height: "50vh" }}>
       <Stack align="center" gap="md">
-        <IconLoader size={32} className="animate-spin" />
+        <IconLoader size={ICON_SIZE.EMPTY_STATE_SM} className="animate-spin" />
         <Text size="sm" c="dimmed">
           Loading...
         </Text>

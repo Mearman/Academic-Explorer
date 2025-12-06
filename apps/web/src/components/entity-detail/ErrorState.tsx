@@ -2,7 +2,7 @@ import { Alert, Code, Container, Flex,Group, Paper, Stack, Text, Title } from "@
 import { IconAlertCircle } from "@tabler/icons-react";
 import React from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 
 interface ErrorStateProps {
   entityType: string;
@@ -16,7 +16,7 @@ export const ErrorState = ({ entityType, entityId, error }: ErrorStateProps) => 
           <Stack gap="lg">
             <Group justify="center" mb="md">
               <Alert variant="light" color="red" radius="xl" p="lg" w="fit-content">
-                <IconAlertCircle size={40} />
+                <IconAlertCircle size={ICON_SIZE.HERO} />
               </Alert>
             </Group>
 

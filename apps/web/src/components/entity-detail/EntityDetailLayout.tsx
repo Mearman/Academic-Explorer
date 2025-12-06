@@ -4,7 +4,7 @@ import { ActionIcon, Badge, Box, Code, Group, Modal, Paper, SegmentedControl,Sta
 import { IconBookmark, IconBookmarkFilled, IconBookmarkOff, IconCode, IconListCheck } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
@@ -141,7 +141,7 @@ export const EntityDetailLayout = ({
                   onClick={() => setShowAddToListModal(true)}
                   data-testid="add-to-catalogue-button"
                 >
-                  <IconListCheck size={20} />
+                  <IconListCheck size={ICON_SIZE.XL} />
                 </ActionIcon>
               </Tooltip>
 
@@ -159,9 +159,9 @@ export const EntityDetailLayout = ({
                   data-testid="entity-bookmark-button"
                 >
                   {userInteractions.isBookmarked ? (
-                    <IconBookmark size={20} fill="currentColor" />
+                    <IconBookmark size={ICON_SIZE.XL} fill="currentColor" />
                   ) : (
-                    <IconBookmarkOff size={20} />
+                    <IconBookmarkOff size={ICON_SIZE.XL} />
                   )}
                 </ActionIcon>
               </Tooltip>
@@ -183,9 +183,9 @@ export const EntityDetailLayout = ({
                     onClick={handleQueryBookmarkToggle}
                   >
                     {queryBookmarking.isQueryBookmarked ? (
-                      <IconBookmarkFilled size={20} />
+                      <IconBookmarkFilled size={ICON_SIZE.XL} />
                     ) : (
-                      <IconBookmark size={20} />
+                      <IconBookmark size={ICON_SIZE.XL} />
                     )}
                   </ActionIcon>
                 </Tooltip>
@@ -208,7 +208,7 @@ export const EntityDetailLayout = ({
           <Paper style={{ overflow: 'hidden', border: BORDER_STYLE_GRAY_3 }} radius="xl">
             <Paper p="md" bg="var(--mantine-color-gray-0)" style={{ borderBottom: BORDER_STYLE_GRAY_3 }}>
               <Group gap="sm">
-                <IconCode size={20} color="var(--mantine-color-gray-6)" />
+                <IconCode size={ICON_SIZE.XL} color="var(--mantine-color-gray-6)" />
                 <Text size="lg" fw={600} c="var(--mantine-color-gray-9)">
                   Raw JSON Data
                 </Text>
