@@ -29,7 +29,7 @@ import {
 import { ContentSkeleton } from "@/components/molecules/ContentSkeleton";
 import { BaseTable } from "@/components/tables/BaseTable";
 import { type TableViewMode,TableViewModeToggle } from "@/components/TableViewModeToggle";
-import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+import { API, BORDER_STYLE_GRAY_3, ICON_SIZE, TEXT, TIME_MS } from '@/config/style-constants';
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
@@ -153,7 +153,7 @@ const AutocompleteGeneralRoute = () => {
       cell: (info) => {
         const hint = info.getValue() as string | undefined;
         return hint ? (
-          <Text size="sm" c="dimmed" lineClamp={1}>
+          <Text size="sm" c="dimmed" lineClamp={TEXT.DEFAULT_LINE_CLAMP}>
             {hint}
           </Text>
         ) : null;
@@ -249,7 +249,7 @@ const AutocompleteGeneralRoute = () => {
       return response;
     },
     enabled: query.trim().length > 0 && selectedTypes.length > 0,
-    staleTime: 30_000,
+    staleTime: TIME_MS.MINUTES_30,
   });
 
   const handleSearch = useCallback((value: string) => {
@@ -400,7 +400,7 @@ const AutocompleteGeneralRoute = () => {
                 data={results}
                 columns={tableColumns}
                 searchable={false}
-                pageSize={25}
+                pageSize={API.DEFAULT_PAGE_SIZE}
               />
             )}
 

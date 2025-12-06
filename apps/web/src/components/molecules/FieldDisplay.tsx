@@ -9,6 +9,7 @@ import { IconClick,IconRefresh } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import type { CacheKeyType } from "@/config/cache";
+import { TEXT } from "@/config/style-constants";
 import { useFieldFetch } from "@/hooks/use-field-fetch";
 
 interface FieldDisplayProps {
@@ -103,7 +104,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
 
   return (
     <Group gap="xs" wrap="nowrap" align="flex-start">
-      <Text size="sm" fw={500} style={{ minWidth: "120px" }}>
+      <Text size="sm" fw={500} style={{ minWidth: TEXT.LABEL_MIN_WIDTH }}>
         {label}:
       </Text>
 

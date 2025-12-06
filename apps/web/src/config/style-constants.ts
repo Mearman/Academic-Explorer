@@ -208,6 +208,22 @@ export const API = {
 	OPENALEX_MAX_PER_PAGE: 200,
 	/** Maximum query limit for performance */
 	MAX_QUERY_LIMIT: 10000,
+	/** Default page size for tables and paginated lists */
+	DEFAULT_PAGE_SIZE: 25,
+} as const;
+
+// =============================================================================
+// TEXT CONSTANTS
+// =============================================================================
+
+/**
+ * Text display and formatting constants
+ */
+export const TEXT = {
+	/** Default line clamp for multi-line text truncation */
+	DEFAULT_LINE_CLAMP: 1,
+	/** Minimum width for label columns in forms and data displays */
+	LABEL_MIN_WIDTH: "120px",
 } as const;
 
 // =============================================================================
