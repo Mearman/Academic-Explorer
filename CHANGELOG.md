@@ -1,3 +1,9 @@
+## <small>23.4.2 (2025-12-06)</small>
+
+* fix(web): resolve lint errors in style constants migration ([3471997](https://github.com/Mearman/BibGraph/commit/3471997))
+* refactor(web): complete BORDER_STYLE_GRAY_3 migration across 27 components ([a981e12](https://github.com/Mearman/BibGraph/commit/a981e12))
+* chore(release): 23.4.1 [skip ci] ([06f7a02](https://github.com/Mearman/BibGraph/commit/06f7a02))
+
 ## <small>23.4.1 (2025-12-06)</small>
 
 * refactor(web): add style constants for DRY border styling ([6747773](https://github.com/Mearman/BibGraph/commit/6747773))
