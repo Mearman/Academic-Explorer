@@ -136,3 +136,40 @@ export const ICON_SIZE = {
 
 /** Type for ICON_SIZE values */
 export type IconSize = (typeof ICON_SIZE)[keyof typeof ICON_SIZE];
+
+// =============================================================================
+// TIME CONSTANTS
+// =============================================================================
+
+/**
+ * Time duration constants in milliseconds
+ * Used for timestamps, intervals, and duration calculations
+ */
+export const TIME_MS = {
+	/** 1 second in milliseconds */
+	SECOND: 1000,
+	/** 1 minute in milliseconds */
+	MINUTE: 60 * 1000,
+	/** 30 minutes in milliseconds */
+	MINUTES_30: 30 * 60 * 1000,
+	/** 1 hour in milliseconds */
+	HOUR: 60 * 60 * 1000,
+	/** 2 hours in milliseconds */
+	HOURS_2: 2 * 60 * 60 * 1000,
+	/** 24 hours (1 day) in milliseconds */
+	DAY: 24 * 60 * 60 * 1000,
+} as const;
+
+// =============================================================================
+// PROGRESS/LOADING CONSTANTS
+// =============================================================================
+
+/**
+ * Constants for loading state and progress indicators
+ */
+export const LOADING_CONSTANTS = {
+	/** Maximum progress percentage before completion (reserve for final animation) */
+	MAX_PROGRESS_PERCENT: 95,
+	/** Progress update interval in milliseconds (10 updates per second) */
+	PROGRESS_UPDATE_INTERVAL_MS: 100,
+} as const;

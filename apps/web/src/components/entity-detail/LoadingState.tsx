@@ -4,7 +4,7 @@ import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect,useRef,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, LOADING_CONSTANTS } from "@/config/style-constants";
 
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 import { getMantineColor } from "./EntityTypeConfig";
@@ -73,11 +73,11 @@ export const LoadingState = ({
   // Simulate progress with accessibility announcements
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeElapsed(prev => prev + 100);
+      setTimeElapsed(prev => prev + LOADING_CONSTANTS.PROGRESS_UPDATE_INTERVAL_MS);
 
       // Calculate progress based on elapsed time and steps
       const totalTime = estimatedDuration;
-      const progressPercentage = Math.min((timeElapsed / totalTime) * 100, 95); // Cap at 95%
+      const progressPercentage = Math.min((timeElapsed / totalTime) * 100, LOADING_CONSTANTS.MAX_PROGRESS_PERCENT);
 
       setProgress(progressPercentage);
 
@@ -103,7 +103,7 @@ export const LoadingState = ({
         );
         setLastAnnouncedStep(newStep);
       }
-    }, 100);
+    }, LOADING_CONSTANTS.PROGRESS_UPDATE_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [timeElapsed, estimatedDuration, steps, entityType, lastAnnouncedStep, announce]);
