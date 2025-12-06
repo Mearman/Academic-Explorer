@@ -3,7 +3,7 @@ import { Button, Group, Paper, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useCallback,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
 interface SearchFilters {
   query: string;
@@ -58,7 +58,7 @@ export const SearchInterface = ({
         <Group align="flex-end">
           <TextInput
             placeholder={placeholder}
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={ICON_SIZE.MD} />}
             value={query}
             onChange={(e) => {
               handleQueryChange(e.target.value);
@@ -68,7 +68,7 @@ export const SearchInterface = ({
             size="md"
             aria-label="Search query input"
           />
-          <Button onClick={handleSearch} loading={isLoading} leftSection={<IconSearch size={16} />}>
+          <Button onClick={handleSearch} loading={isLoading} leftSection={<IconSearch size={ICON_SIZE.MD} />}>
             Search
           </Button>
           {Boolean(query) && (

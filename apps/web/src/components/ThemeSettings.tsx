@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 
-import { BORDER_STYLE_GRAY_3, CARD_BORDER_STYLE } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, CARD_BORDER_STYLE, ICON_SIZE } from "@/config/style-constants";
 import { useTheme } from "@/contexts/theme-context";
 import type { BorderRadius,ColorScheme, ComponentLibrary } from "@/styles/theme-contracts";
 
@@ -60,7 +60,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
       value: "light",
       label: (
         <Group gap={6}>
-          <IconSun size={14} />
+          <IconSun size={ICON_SIZE.SM} />
           <span>Light</span>
         </Group>
       ),
@@ -69,7 +69,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
       value: "dark",
       label: (
         <Group gap={6}>
-          <IconMoon size={14} />
+          <IconMoon size={ICON_SIZE.SM} />
           <span>Dark</span>
         </Group>
       ),
@@ -78,7 +78,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
       value: "auto",
       label: (
         <Group gap={6}>
-          <IconDeviceDesktop size={14} />
+          <IconDeviceDesktop size={ICON_SIZE.SM} />
           <span>Auto</span>
         </Group>
       ),
@@ -123,7 +123,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
       <Card style={CARD_BORDER_STYLE} p="md" bg="var(--mantine-color-body)">
         <Group justify="space-between" align="center">
           <Group>
-            <IconPalette size={20} color="var(--colors-primary)" />
+            <IconPalette size={ICON_SIZE.XL} color="var(--colors-primary)" />
             <Text size="sm" fw={500}>
               Current Theme
             </Text>

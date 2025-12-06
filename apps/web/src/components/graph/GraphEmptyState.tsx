@@ -28,6 +28,8 @@ import {
 import { Link } from '@tanstack/react-router';
 import React from 'react';
 
+import { ICON_SIZE } from '@/config/style-constants';
+
 export type GraphEmptyStateVariant = 'no-sources' | 'no-entities';
 
 export interface GraphEmptyStateProps {
@@ -77,7 +79,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
 }) => (
   <Stack align="center" gap="xl" py="xl">
     <DecorativeIcon>
-      <IconGraph size={60} stroke={1.2} />
+      <IconGraph size={ICON_SIZE.HERO_LG} stroke={1.2} />
     </DecorativeIcon>
 
     <Stack align="center" gap="xs">
@@ -99,7 +101,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
           <List.Item
             icon={
               <ThemeIcon color="blue" size={24} radius="xl">
-                <IconCircleNumber1 size={16} />
+                <IconCircleNumber1 size={ICON_SIZE.MD} />
               </ThemeIcon>
             }
           >
@@ -111,7 +113,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
           <List.Item
             icon={
               <ThemeIcon color="blue" size={24} radius="xl">
-                <IconCircleNumber2 size={16} />
+                <IconCircleNumber2 size={ICON_SIZE.MD} />
               </ThemeIcon>
             }
           >
@@ -122,7 +124,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
           <List.Item
             icon={
               <ThemeIcon color="blue" size={24} radius="xl">
-                <IconCircleNumber3 size={16} />
+                <IconCircleNumber3 size={ICON_SIZE.MD} />
               </ThemeIcon>
             }
           >
@@ -136,7 +138,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
 
     <Group gap="xs">
       <ThemeIcon variant="light" color="gray" size="sm">
-        <IconSettings size={14} />
+        <IconSettings size={ICON_SIZE.SM} />
       </ThemeIcon>
       <Text size="xs" c="dimmed">
         Tip: Use "Enable All" to quickly activate all data sources
@@ -151,7 +153,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
 const NoEntitiesState: React.FC = () => (
   <Stack align="center" gap="xl" py="xl">
     <DecorativeIcon>
-      <IconGraph size={60} stroke={1.2} />
+      <IconGraph size={ICON_SIZE.HERO_LG} stroke={1.2} />
     </DecorativeIcon>
 
     <Stack align="center" gap="xs">
@@ -174,7 +176,7 @@ const NoEntitiesState: React.FC = () => (
             component={Link}
             to="/search"
             variant="light"
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={ICON_SIZE.MD} />}
           >
             Search OpenAlex
           </Button>
@@ -182,7 +184,7 @@ const NoEntitiesState: React.FC = () => (
             component={Link}
             to="/browse"
             variant="light"
-            leftSection={<IconBookmark size={16} />}
+            leftSection={<IconBookmark size={ICON_SIZE.MD} />}
           >
             Browse Entities
           </Button>
@@ -196,7 +198,7 @@ const NoEntitiesState: React.FC = () => (
     <Card withBorder radius="md" p="md" maw={500} w="100%" bg="var(--mantine-color-gray-light)">
       <Group>
         <ThemeIcon variant="light" color="blue" size="lg" radius="md">
-          <IconHistory size={20} />
+          <IconHistory size={ICON_SIZE.XL} />
         </ThemeIcon>
         <Stack gap={2} style={{ flex: 1 }}>
           <Text size="sm" fw={500}>

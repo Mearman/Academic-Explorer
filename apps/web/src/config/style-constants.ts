@@ -130,6 +130,8 @@ export const ICON_SIZE = {
 	HERO: 40,
 	/** Empty state primary icons (48px) */
 	EMPTY_STATE: 48,
+	/** Large decorative hero icons (60px) */
+	HERO_LG: 60,
 } as const;
 
 /** Type for ICON_SIZE values */
