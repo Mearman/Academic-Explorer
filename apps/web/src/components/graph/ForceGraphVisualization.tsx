@@ -12,6 +12,15 @@ import React, { useCallback, useEffect, useMemo,useRef } from 'react';
 import ForceGraph2D, { type ForceGraphMethods, type LinkObject,type NodeObject } from 'react-force-graph-2d';
 
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
+import {
+  CONTAINER,
+  LABEL,
+  LINK,
+  LOADING_RING,
+  NODE,
+  SIMULATION,
+  TIMING,
+} from './constants';
 import { getEdgeStyle } from './edge-styles';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
@@ -95,8 +104,6 @@ export interface ForceGraphVisualizationProps {
   onGraphReady?: (methods: ForceGraphMethods) => void;
 }
 
-/** Default seed for deterministic layouts */
-const DEFAULT_SEED = 42;
 
 /**
  * Simple seeded random number generator for deterministic layouts
@@ -144,12 +151,12 @@ export const ForceGraphVisualization = ({
     };
     // Check immediately and after a short delay (for initial mount)
     checkRef();
-    const timeoutId = setTimeout(checkRef, 100);
+    const timeoutId = setTimeout(checkRef, TIMING.GRAPH_REF_CHECK_DELAY_MS);
     return () => clearTimeout(timeoutId);
   }, [onGraphReady]);
 
   // Track container width for responsive sizing
-  const [containerWidth, setContainerWidth] = React.useState(width ?? 800);
+  const [containerWidth, setContainerWidth] = React.useState(width ?? CONTAINER.DEFAULT_WIDTH);
 
   useEffect(() => {
     if (!containerRef.current || width) return;
@@ -184,7 +191,7 @@ export const ForceGraphVisualization = ({
   // Transform nodes for force graph
   const graphData = useMemo(() => {
     // Always use deterministic seeding for reproducible layouts
-    const random = seededRandom(seed ?? DEFAULT_SEED);
+    const random = seededRandom(seed ?? SIMULATION.DEFAULT_SEED);
 
     // Deduplicate nodes by ID (safety net - upstream should already deduplicate)
     const seenNodeIds = new Set<string>();
@@ -214,8 +221,8 @@ export const ForceGraphVisualization = ({
       label: node.label,
       entityId: node.entityId,
       // Use existing positions or generate random ones
-      x: node.x ?? (random() - 0.5) * 400,
-      y: node.y ?? (random() - 0.5) * 400,
+      x: node.x ?? (random() - 0.5) * SIMULATION.INITIAL_POSITION_SPREAD,
+      y: node.y ?? (random() - 0.5) * SIMULATION.INITIAL_POSITION_SPREAD,
       originalNode: node,
     }));
 
@@ -268,10 +275,10 @@ export const ForceGraphVisualization = ({
 
     const x = forceNode.x ?? 0;
     const y = forceNode.y ?? 0;
-    const size = style.size ?? 6;
+    const size = style.size ?? NODE.DEFAULT_SIZE;
 
     // Apply opacity for non-highlighted nodes in highlight mode
-    ctx.globalAlpha = isHighlighted ? (style.opacity ?? 1) : 0.2;
+    ctx.globalAlpha = isHighlighted ? (style.opacity ?? NODE.FULL_OPACITY) : NODE.DIMMED_OPACITY;
 
     // Draw node circle
     ctx.beginPath();
@@ -288,41 +295,41 @@ export const ForceGraphVisualization = ({
 
     // Draw spinning ring for expanding nodes (loading indicator)
     if (isExpanding) {
-      const ringRadius = size * 1.5;
-      const ringWidth = size * 0.3;
-      // Time-based rotation (full rotation every 1.5 seconds)
-      const rotation = (Date.now() / 1500) * Math.PI * 2;
+      const ringRadius = size * LOADING_RING.RADIUS_MULTIPLIER;
+      const ringWidth = size * LOADING_RING.WIDTH_MULTIPLIER;
+      // Time-based rotation (full rotation every PRIMARY_ROTATION_PERIOD_MS)
+      const rotation = (Date.now() / LOADING_RING.PRIMARY_ROTATION_PERIOD_MS) * Math.PI * 2;
 
-      ctx.globalAlpha = 0.8;
+      ctx.globalAlpha = LOADING_RING.OPACITY;
 
-      // Main spinning arc (deep sky blue)
+      // Main spinning arc (primary color)
       ctx.beginPath();
-      ctx.arc(x, y, ringRadius, rotation, rotation + Math.PI * 1.5);
-      ctx.strokeStyle = '#00bfff';
+      ctx.arc(x, y, ringRadius, rotation, rotation + LOADING_RING.PRIMARY_ARC_LENGTH);
+      ctx.strokeStyle = LOADING_RING.PRIMARY_COLOR;
       ctx.lineWidth = ringWidth;
       ctx.lineCap = 'round';
       ctx.stroke();
 
-      // Secondary faster arc (white, for visual interest)
-      const fastRotation = (Date.now() / 750) * Math.PI * 2;
+      // Secondary faster arc (secondary color, for visual interest)
+      const fastRotation = (Date.now() / LOADING_RING.SECONDARY_ROTATION_PERIOD_MS) * Math.PI * 2;
       ctx.beginPath();
-      ctx.arc(x, y, ringRadius, fastRotation, fastRotation + Math.PI * 0.5);
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = ringWidth * 0.6;
+      ctx.arc(x, y, ringRadius, fastRotation, fastRotation + LOADING_RING.SECONDARY_ARC_LENGTH);
+      ctx.strokeStyle = LOADING_RING.SECONDARY_COLOR;
+      ctx.lineWidth = ringWidth * LOADING_RING.SECONDARY_WIDTH_RATIO;
       ctx.stroke();
 
       ctx.lineCap = 'butt'; // Reset
     }
 
     // Draw label when zoomed in
-    if (globalScale > 1.5) {
+    if (globalScale > LABEL.ZOOM_THRESHOLD) {
       const label = forceNode.label || forceNode.id;
-      const fontSize = Math.max(10 / globalScale, 3);
+      const fontSize = Math.max(LABEL.BASE_FONT_SIZE / globalScale, LABEL.MIN_FONT_SIZE);
       ctx.font = `${fontSize}px Sans-Serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillStyle = isHighlighted ? 'var(--mantine-color-text)' : 'var(--mantine-color-dimmed)';
-      ctx.fillText(label, x, y + size + 2);
+      ctx.fillText(label, x, y + size + LABEL.VERTICAL_OFFSET);
     }
 
     ctx.globalAlpha = 1;
@@ -342,13 +349,13 @@ export const ForceGraphVisualization = ({
 
     if (!source.x || !source.y || !target.x || !target.y) return;
 
-    ctx.globalAlpha = isHighlighted ? (style.opacity ?? 0.6) : 0.1;
+    ctx.globalAlpha = isHighlighted ? (style.opacity ?? LINK.DEFAULT_OPACITY) : LINK.DIMMED_OPACITY;
     ctx.strokeStyle = style.color ?? 'var(--mantine-color-dimmed)';
     ctx.fillStyle = style.color ?? 'var(--mantine-color-dimmed)';
-    ctx.lineWidth = (style.width ?? 1) / globalScale;
+    ctx.lineWidth = (style.width ?? LINK.DEFAULT_WIDTH) / globalScale;
 
     if (style.dashed) {
-      ctx.setLineDash([5 / globalScale, 5 / globalScale]);
+      ctx.setLineDash([LINK.DASH_PATTERN / globalScale, LINK.DASH_PATTERN / globalScale]);
     } else {
       ctx.setLineDash([]);
     }
@@ -361,8 +368,8 @@ export const ForceGraphVisualization = ({
 
     // Draw arrowhead for directed edges
     if (style.directed) {
-      const targetNodeSize = 6; // Default node size
-      const arrowLength = 8 / globalScale;
+      const targetNodeSize = NODE.DEFAULT_SIZE;
+      const arrowLength = LINK.ARROW_LENGTH / globalScale;
 
       // Calculate angle from source to target
       const dx = target.x - source.x;
@@ -379,12 +386,12 @@ export const ForceGraphVisualization = ({
       ctx.beginPath();
       ctx.moveTo(arrowTipX, arrowTipY);
       ctx.lineTo(
-        arrowTipX - arrowLength * Math.cos(angle - Math.PI / 6),
-        arrowTipY - arrowLength * Math.sin(angle - Math.PI / 6)
+        arrowTipX - arrowLength * Math.cos(angle - LINK.ARROW_ANGLE),
+        arrowTipY - arrowLength * Math.sin(angle - LINK.ARROW_ANGLE)
       );
       ctx.lineTo(
-        arrowTipX - arrowLength * Math.cos(angle + Math.PI / 6),
-        arrowTipY - arrowLength * Math.sin(angle + Math.PI / 6)
+        arrowTipX - arrowLength * Math.cos(angle + LINK.ARROW_ANGLE),
+        arrowTipY - arrowLength * Math.sin(angle + LINK.ARROW_ANGLE)
       );
       ctx.closePath();
       ctx.fill();
@@ -438,8 +445,8 @@ export const ForceGraphVisualization = ({
     if (graphRef.current && graphData.nodes.length > 0) {
       // Small delay to let simulation settle
       setTimeout(() => {
-        graphRef.current?.zoomToFit(400, 50);
-      }, 500);
+        graphRef.current?.zoomToFit(TIMING.ZOOM_TO_FIT_DURATION_MS, TIMING.ZOOM_TO_FIT_PADDING);
+      }, TIMING.AUTO_FIT_DELAY_MS);
     }
   }, [graphData.nodes.length]);
 
@@ -475,9 +482,9 @@ export const ForceGraphVisualization = ({
         enableNodeDrag={true}
         enableZoomInteraction={true}
         enablePanInteraction={true}
-        cooldownTime={enableSimulation ? 3000 : 0}
-        d3AlphaDecay={0.02}
-        d3VelocityDecay={0.3}
+        cooldownTime={enableSimulation ? SIMULATION.COOLDOWN_TIME_MS : 0}
+        d3AlphaDecay={SIMULATION.ALPHA_DECAY}
+        d3VelocityDecay={SIMULATION.VELOCITY_DECAY}
       />
     </Box>
   );
@@ -500,10 +507,10 @@ const getDefaultNodeStyle = (node: ForceGraphNode, isHighlighted: boolean, commu
 
   return {
     color,
-    size: isHighlighted ? 8 : 6,
-    opacity: 1,
+    size: isHighlighted ? NODE.HIGHLIGHTED_SIZE : NODE.DEFAULT_SIZE,
+    opacity: NODE.FULL_OPACITY,
     borderColor: isHighlighted ? 'var(--mantine-color-body)' : undefined,
-    borderWidth: isHighlighted ? 2 : 0,
+    borderWidth: isHighlighted ? NODE.HIGHLIGHTED_BORDER_WIDTH : 0,
   };
 };
 
@@ -523,8 +530,8 @@ const getDefaultLinkStyle = (link: ForceGraphLink, isHighlighted: boolean, isPat
   if (isHighlighted && isPathHighlightMode) {
     return {
       color: 'var(--mantine-primary-color-filled)', // Primary color for path highlighting
-      width: 3,
-      opacity: 0.8,
+      width: LINK.HIGHLIGHTED_WIDTH,
+      opacity: LINK.HIGHLIGHTED_OPACITY,
       dashed: false,
       directed: isDirected,
     };
@@ -532,8 +539,8 @@ const getDefaultLinkStyle = (link: ForceGraphLink, isHighlighted: boolean, isPat
 
   return {
     color: edgeStyle.stroke ?? 'var(--mantine-color-dimmed)',
-    width: edgeStyle.strokeWidth ?? 2,
-    opacity: edgeStyle.strokeOpacity ?? 0.6,
+    width: edgeStyle.strokeWidth ?? LINK.DEFAULT_WIDTH,
+    opacity: edgeStyle.strokeOpacity ?? LINK.DEFAULT_OPACITY,
     dashed: edgeStyle.strokeDasharray !== undefined,
     directed: isDirected,
   };
