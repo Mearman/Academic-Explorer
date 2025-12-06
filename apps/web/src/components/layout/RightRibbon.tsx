@@ -1,6 +1,8 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconLayoutSidebarRight } from "@tabler/icons-react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 /**
  * Placeholder component for the removed RightRibbon functionality
  */
@@ -11,6 +13,6 @@ export const RightRibbon = () => <Tooltip label="Right Ribbon (temporarily disab
         c="dimmed"
         disabled
       >
-        <IconLayoutSidebarRight size={18} />
+        <IconLayoutSidebarRight size={ICON_SIZE.LG} />
       </ActionIcon>
     </Tooltip>;

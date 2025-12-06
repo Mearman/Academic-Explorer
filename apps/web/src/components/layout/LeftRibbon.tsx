@@ -1,6 +1,8 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconLayoutSidebar } from "@tabler/icons-react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 /**
  * Placeholder component for the removed LeftRibbon functionality
  */
@@ -11,6 +13,6 @@ export const LeftRibbon = () => <Tooltip label="Left Ribbon (temporarily disable
         c="dimmed"
         disabled
       >
-        <IconLayoutSidebar size={18} />
+        <IconLayoutSidebar size={ICON_SIZE.LG} />
       </ActionIcon>
     </Tooltip>;

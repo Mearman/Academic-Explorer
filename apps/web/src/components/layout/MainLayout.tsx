@@ -30,6 +30,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import React, { useCallback, useRef,useState } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
 import { useLayoutStore } from "@/stores/layout-store";
 import { sprinkles } from "@/styles/sprinkles";
 
@@ -221,7 +222,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     aria-label="Close search"
                     style={{ flexShrink: 0 }}
                   >
-                    <IconX size={18} />
+                    <IconX size={ICON_SIZE.LG} />
                   </ActionIcon>
                 </>
               ) : (
@@ -231,7 +232,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   size="lg"
                   aria-label="Open search"
                 >
-                  <IconSearch size={18} />
+                  <IconSearch size={ICON_SIZE.LG} />
                 </ActionIcon>
               )}
             </Box>
@@ -246,7 +247,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   aria-label="Toggle left sidebar"
                   color={leftSidebarOpen ? "blue" : "gray"}
                 >
-                  <IconLayoutSidebar size={18} />
+                  <IconLayoutSidebar size={ICON_SIZE.LG} />
                 </ActionIcon>
 
                 <ActionIcon
@@ -256,7 +257,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   aria-label="Toggle right sidebar"
                   color={rightSidebarOpen ? "blue" : "gray"}
                 >
-                  <IconLayoutSidebarRight size={18} />
+                  <IconLayoutSidebarRight size={ICON_SIZE.LG} />
                 </ActionIcon>
               </>
             )}
@@ -339,7 +340,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     aria-label="Open navigation menu"
                     hiddenFrom="xl"
                   >
-                    <IconMenu size={18} />
+                    <IconMenu size={ICON_SIZE.LG} />
                   </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -450,9 +451,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                       color={leftSidebarPinned ? "blue" : "gray"}
                     >
                       {leftSidebarPinned ? (
-                        <IconPinned size={14} />
+                        <IconPinned size={ICON_SIZE.SM} />
                       ) : (
-                        <IconPin size={14} />
+                        <IconPin size={ICON_SIZE.SM} />
                       )}
                     </ActionIcon>
                   </Group>
@@ -605,9 +606,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                       color={rightSidebarPinned ? "blue" : "gray"}
                     >
                       {rightSidebarPinned ? (
-                        <IconPinned size={14} />
+                        <IconPinned size={ICON_SIZE.SM} />
                       ) : (
-                        <IconPin size={14} />
+                        <IconPin size={ICON_SIZE.SM} />
                       )}
                     </ActionIcon>
                   </Group>
