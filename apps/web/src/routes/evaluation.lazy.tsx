@@ -19,7 +19,7 @@ import {
 } from "@tabler/icons-react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 /**
  * Main evaluation dashboard for STAR methodology integration
  * Provides PhD thesis evaluation capabilities using systematic literature reviews
@@ -56,8 +56,8 @@ const EvaluationDashboard = () => <Container size="xl" p="xl" mx="auto">
         {/* Datasets Card */}
         <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Group justify="space-between" mb="md">
-            <ThemeIcon color="blue" size={40} radius="md">
-              <IconChartBar size={20} />
+            <ThemeIcon color="blue" size={ICON_SIZE.HERO} radius="md">
+              <IconChartBar size={ICON_SIZE.XL} />
             </ThemeIcon>
           </Group>
 
@@ -92,8 +92,8 @@ const EvaluationDashboard = () => <Container size="xl" p="xl" mx="auto">
         {/* Comparison Card */}
         <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Group justify="space-between" mb="md">
-            <ThemeIcon color="green" size={40} radius="md">
-              <IconSearch size={20} />
+            <ThemeIcon color="green" size={ICON_SIZE.HERO} radius="md">
+              <IconSearch size={ICON_SIZE.XL} />
             </ThemeIcon>
           </Group>
 
@@ -124,8 +124,8 @@ const EvaluationDashboard = () => <Container size="xl" p="xl" mx="auto">
         {/* Results Card */}
         <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Group justify="space-between" mb="md">
-            <ThemeIcon color="yellow" size={40} radius="md">
-              <IconTrendingUp size={20} />
+            <ThemeIcon color="yellow" size={ICON_SIZE.HERO} radius="md">
+              <IconTrendingUp size={ICON_SIZE.XL} />
             </ThemeIcon>
           </Group>
 
@@ -219,7 +219,7 @@ const EvaluationDashboard = () => <Container size="xl" p="xl" mx="auto">
         >
           <Text size="xs" c="gray.7" fs="italic">
             <Group gap={4} mb="xs">
-              <IconBulb size={14} />
+              <IconBulb size={ICON_SIZE.SM} />
               <Text span fw={600}>PhD Evaluation Context:</Text>
             </Group>
             {" "}

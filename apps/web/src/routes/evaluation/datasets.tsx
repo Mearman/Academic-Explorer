@@ -27,7 +27,7 @@ import { IconChartBar,IconUpload } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
 
 // Types are imported from @bibgraph/utils
@@ -145,7 +145,7 @@ const DatasetsManagement = () => {
           onClick={() => {
             setShowUploadModal(true);
           }}
-          leftSection={<IconUpload size={16} />}
+          leftSection={<IconUpload size={ICON_SIZE.MD} />}
           size="md"
         >
           Upload Dataset
@@ -157,7 +157,7 @@ const DatasetsManagement = () => {
         <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl" bg="gray.0">
           <Stack align="center" gap="md">
             <div style={{ opacity: 0.3 }}>
-              <IconChartBar size={48} />
+              <IconChartBar size={ICON_SIZE.EMPTY_STATE} />
             </div>
             <Title order={3} fw={600} c="gray.7">
               No datasets uploaded yet
@@ -309,7 +309,7 @@ const DatasetsManagement = () => {
               onChange={(file) => handleFileUpload(file)}
               placeholder={
                 <Stack align="center" gap="md" p="xl">
-                  <IconUpload size={32} style={{ color: "var(--mantine-color-blue-6)" }} />
+                  <IconUpload size={ICON_SIZE.EMPTY_STATE_SM} style={{ color: "var(--mantine-color-blue-6)" }} />
                   <Text size="lg" fw={500} ta="center">
                     Upload your dataset file
                   </Text>

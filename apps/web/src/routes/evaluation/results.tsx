@@ -19,6 +19,8 @@ import {
 } from "@bibgraph/utils";
 import { logError, logger } from "@bibgraph/utils/logger";
 import { IconBulb,IconChartBar, IconSearch } from "@tabler/icons-react";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useEffect,useMemo, useState } from "react";
 
@@ -491,7 +493,7 @@ const ComparisonResults = () => {
           }}
         >
           <div style={{ marginBottom: "16px", opacity: 0.3 }}>
-            <IconChartBar size={48} />
+            <IconChartBar size={ICON_SIZE.EMPTY_STATE} />
           </div>
           <h3
             style={{
@@ -1213,7 +1215,7 @@ const ComparisonResults = () => {
                     }}
                   >
                     <div style={{ marginBottom: "16px", opacity: 0.3 }}>
-                      <IconSearch size={48} />
+                      <IconSearch size={ICON_SIZE.EMPTY_STATE} />
                     </div>
                     <h3
                       style={{
@@ -1258,7 +1260,7 @@ const ComparisonResults = () => {
               <span
                 style={{ display: "flex", alignItems: "center", gap: "4px" }}
               >
-                <IconBulb size={16} />
+                <IconBulb size={ICON_SIZE.MD} />
                 Thesis Integration Notes
               </span>
             </h3>
