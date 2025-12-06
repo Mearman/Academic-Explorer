@@ -1,3 +1,8 @@
+## <small>23.1.2 (2025-12-06)</small>
+
+* fix(algorithms): resolve flaky citation network backward reachability test ([b2f29a4](https://github.com/Mearman/BibGraph/commit/b2f29a4))
+* chore(release): 23.1.1 [skip ci] ([6594e04](https://github.com/Mearman/BibGraph/commit/6594e04))
+
 ## <small>23.1.1 (2025-12-05)</small>
 
 * fix(ci): increase E2E preview server timeout from 60 to 120 seconds ([99edf23](https://github.com/Mearman/BibGraph/commit/99edf23))
