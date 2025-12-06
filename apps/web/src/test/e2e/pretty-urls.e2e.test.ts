@@ -114,8 +114,8 @@ test.describe('Pretty URL Display', () => {
 
     // Verify query parameters are preserved
     expect(currentHash).toContain('select=id,display_name');
-    // TODO: Fix query parameter duplication - should not contain ?select=x?select=x pattern
-    // expect(currentHash).not.toContain('?select=id,display_name?select=');
+    // Query parameters should not be duplicated (fixed: strip query params before extracting entity ID)
+    expect(currentHash).not.toContain('?select=id,display_name?select=');
 
     console.log('✓ Query parameters preserved in pretty URL');
   });

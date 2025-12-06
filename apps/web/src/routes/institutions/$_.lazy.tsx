@@ -25,7 +25,9 @@ const InstitutionRoute = () => {
   // For hash routing with URLs containing slashes (like ROR, ORCID), we need to reconstruct the full ID
   const getInstitutionIdFromHash = () => {
     if (typeof window !== 'undefined') {
-      const hashParts = window.location.hash.split('/');
+      // First strip query parameters from the hash, then extract the entity ID
+      const hashWithoutQuery = window.location.hash.split('?')[0];
+      const hashParts = hashWithoutQuery.split('/');
       return hashParts.length >= 3 ? hashParts.slice(2).join('/') : '';
     }
     return '';
