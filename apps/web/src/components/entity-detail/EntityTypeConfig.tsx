@@ -11,6 +11,33 @@ export interface EntityTypeConfig {
   colorKey: string; // Maps to vars.color[colorKey] in theme
 }
 
+/**
+ * Maps entity types to Mantine color names for UI components
+ * This is the SINGLE SOURCE OF TRUTH for entity type colors in Mantine components
+ */
+const ENTITY_MANTINE_COLORS: Record<EntityType, string> = {
+  authors: 'blue',
+  works: 'violet',
+  institutions: 'orange',
+  sources: 'teal',
+  concepts: 'yellow',
+  topics: 'pink',
+  publishers: 'indigo',
+  funders: 'lime',
+  domains: 'gray',
+  fields: 'cyan',
+  subfields: 'grape',
+  keywords: 'red',
+};
+
+/**
+ * Get Mantine color name for an entity type
+ * Used for Badge, Loader, Progress, and other Mantine components
+ */
+export const getMantineColor = (entityType: EntityType): string => {
+  return ENTITY_MANTINE_COLORS[entityType] || 'blue';
+};
+
 export const ENTITY_TYPE_CONFIGS: Record<EntityType, EntityTypeConfig> = {
   authors: {
     name: "AUTHOR",

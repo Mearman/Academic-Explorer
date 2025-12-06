@@ -10,6 +10,7 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
+import { getMantineColor } from "./EntityTypeConfig";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 export type DetailViewMode = "rich" | "raw";
@@ -26,25 +27,6 @@ interface EntityDetailLayoutProps {
   data: Record<string, unknown>;
   children?: ReactNode;
 }
-
-// Helper function to map entity types to Mantine colors
-const getMantineColor = (entityType: EntityType): string => {
-  const colorMap: Record<EntityType, string> = {
-    authors: 'blue',
-    works: 'violet',
-    institutions: 'orange',
-    sources: 'teal',
-    concepts: 'yellow',
-    topics: 'pink',
-    publishers: 'indigo',
-    funders: 'lime',
-    domains: 'gray',
-    fields: 'cyan',
-    subfields: 'grape',
-    keywords: 'red',
-  };
-  return colorMap[entityType] || 'blue';
-};
 
 export const EntityDetailLayout = ({
   config,

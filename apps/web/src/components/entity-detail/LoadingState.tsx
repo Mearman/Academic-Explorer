@@ -4,6 +4,7 @@ import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect,useRef,useState } from "react";
 
+import { getMantineColor } from "./EntityTypeConfig";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
@@ -20,25 +21,6 @@ interface LoadingStep {
   label: string;
   estimatedTime: number; // percentage of total time
 }
-
-// Helper function to map entity types to Mantine colors
-const getMantineColor = (entityType: EntityType): string => {
-  const colorMap: Record<EntityType, string> = {
-    authors: 'blue',
-    works: 'violet',
-    institutions: 'orange',
-    sources: 'teal',
-    concepts: 'yellow',
-    topics: 'pink',
-    publishers: 'indigo',
-    funders: 'lime',
-    domains: 'gray',
-    fields: 'cyan',
-    subfields: 'grape',
-    keywords: 'red',
-  };
-  return colorMap[entityType] || 'blue';
-};
 
 // Define loading steps for entity detail pages
 const getLoadingSteps = (entityType: string): LoadingStep[] => {
