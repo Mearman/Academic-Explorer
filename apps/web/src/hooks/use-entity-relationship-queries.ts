@@ -4,7 +4,18 @@
  * @module use-entity-relationship-queries
  */
 
-import { getAuthors, getInstitutions, getSources, getTopicById,getWorks } from '@bibgraph/client';
+import {
+  getAuthors,
+  getFunderById,
+  getFunders,
+  getInstitutions,
+  getPublisherById,
+  getPublishers,
+  getSources,
+  getTopicById,
+  getTopics,
+  getWorks,
+} from '@bibgraph/client';
 import type { EntityType , RelationshipQueryConfig } from '@bibgraph/types';
 import { getInboundQueries, getOutboundQueries,RelationType } from '@bibgraph/types';
 import { type QueryClient,useQueries, useQueryClient } from '@tanstack/react-query';
@@ -405,7 +416,30 @@ const executeRelationshipQuery = async (entityId: string, entityType: EntityType
           ...(config.select && { select: config.select }),
         });
         break;
-      // TODO: Add topics, publishers, funders when needed
+      case 'topics':
+        response = await getTopics({
+          filters: { id: filter },
+          per_page: pageSize,
+          page,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      case 'publishers':
+        response = await getPublishers({
+          filters: { id: filter },
+          per_page: pageSize,
+          page,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      case 'funders':
+        response = await getFunders({
+          filter,
+          per_page: pageSize,
+          page,
+          ...(config.select && { select: config.select }),
+        });
+        break;
       default:
         throw new Error(`Unsupported target type: ${config.targetType}`);
     }
@@ -477,7 +511,16 @@ const executeRelationshipQuery = async (entityId: string, entityType: EntityType
         entityData = topic as Record<string, unknown>;
         break;
       }
-      // TODO: Add publishers, funders when needed
+      case 'publishers': {
+        const publisher = await getPublisherById(entityId);
+        entityData = publisher as Record<string, unknown>;
+        break;
+      }
+      case 'funders': {
+        const funder = await getFunderById(entityId);
+        entityData = funder as Record<string, unknown>;
+        break;
+      }
       default:
         throw new Error(`Unsupported entity type for embedded extraction: ${entityType}`);
     }
@@ -762,6 +805,12 @@ const prefetchEntity = async (queryClient: QueryClient, entityId: string, target
         }
         case 'topics': {
           return await getTopicById(entityId);
+        }
+        case 'publishers': {
+          return await getPublisherById(entityId);
+        }
+        case 'funders': {
+          return await getFunderById(entityId);
         }
         default:
           throw new Error(`Unsupported entity type for prefetch: ${targetEntityType}`);
