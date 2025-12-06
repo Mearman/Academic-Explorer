@@ -166,7 +166,7 @@ export const BreadcrumbNavigation = () => {
   }
 
   return (
-    <Box py="xs" px="md">
+    <Box component="nav" aria-label="Breadcrumb navigation" py="xs" px="md">
       <Group justify="space-between" align="center">
         <Breadcrumbs
           separator={<IconChevronRight size={12} color="var(--mantine-color-gray-5)" />}
