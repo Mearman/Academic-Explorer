@@ -6,6 +6,7 @@
  * with automatic error tracking to PostHog.
  */
 
+import { useScreenReader } from "@bibgraph/ui";
 import {
   Alert,
   Button,
@@ -18,9 +19,7 @@ import {
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
 import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
-import React, { useEffect,FunctionComponent,ReactNode } from "react";
-
-import { useScreenReader } from "@bibgraph/ui";
+import React, { FunctionComponent,ReactNode,useEffect } from "react";
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;

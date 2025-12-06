@@ -1,9 +1,9 @@
 import type { EntityType } from "@bibgraph/types";
+import { useLiveRegion, useReducedMotion } from "@bibgraph/ui";
 import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect,useRef,useState } from "react";
 
-import { useLiveRegion, useReducedMotion } from "@bibgraph/ui";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
