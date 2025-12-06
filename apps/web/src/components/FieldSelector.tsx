@@ -13,6 +13,8 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
+import { CARD_BORDER_STYLE } from "@/config/style-constants";
+
 export interface FieldSelectorProps<
   T extends readonly string[] = readonly string[],
 > {
@@ -86,7 +88,7 @@ export const FieldSelector = <T extends readonly string[]>({
   ));
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md">
+    <Card style={CARD_BORDER_STYLE} padding="md">
       <Stack gap="sm">
         <Group justify="space-between" wrap="nowrap">
           <div>
