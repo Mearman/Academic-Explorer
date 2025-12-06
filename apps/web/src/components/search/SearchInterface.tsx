@@ -1,9 +1,12 @@
 import { SearchLoadingSpinner } from "@bibgraph/ui";
 import { debouncedSearch, isValidSearchQuery, logger, normalizeSearchQuery } from "@bibgraph/utils";
-import { ActionIcon, Alert, Button, Group, IconFilter, IconInfoCircle, IconSearch, IconX, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
-import { useCallback, useEffect, useState } from "react";
+import { ActionIcon, Alert, Button, Group, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
+import { IconFilter, IconInfoCircle, IconSearch, IconX } from "@tabler/icons-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
+import { useSearchHotkeys } from "@/hooks/use-hotkeys";
+import { announceToScreenReader } from "@/utils/accessibility";
 
 import { AdvancedSearchFilters,SearchFilters } from "./SearchFilters";
 
@@ -27,16 +30,29 @@ export const SearchInterface = ({
   showHelp = false,
   showAdvancedFilters = false
 }: SearchInterfaceProps) => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [searchTip, setSearchTip] = useState("");
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedSearchFilters>({});
   const [showFilters, setShowFilters] = useState(false);
+
+  // Set up keyboard shortcuts for search
+  useSearchHotkeys(
+    () => handleSearch(),
+    () => handleClearFilters()
+  );
 
   const handleSearch = useCallback(() => {
     const filters = {
       query: isValidSearchQuery(query) ? normalizeSearchQuery(query) : "",
       advanced: showFilters && Object.keys(advancedFilters).length > 0 ? advancedFilters : undefined,
     };
+
+    // Announce search to screen readers
+    if (filters.query) {
+      announceToScreenReader(`Searching for: ${filters.query}`);
+    }
+
     onSearch(filters);
   }, [query, advancedFilters, showFilters, onSearch]);
 
@@ -169,6 +185,9 @@ export const SearchInterface = ({
             color="blue"
             icon={<IconInfoCircle size={ICON_SIZE.SM} />}
             radius="md"
+            id="search-tips"
+            role="complementary"
+            aria-live="polite"
           >
             <Text size="sm">
               <strong>Pro tip:</strong> {searchTip}
@@ -179,6 +198,7 @@ export const SearchInterface = ({
         {/* Search Input Group */}
         <Group align="flex-end">
           <TextInput
+            ref={searchInputRef}
             placeholder={placeholder}
             leftSection={
               isLoading ? (
@@ -204,7 +224,11 @@ export const SearchInterface = ({
             disabled={isLoading}
             flex={1}
             size="md"
-            aria-label="Search query input"
+            aria-label={`Search academic works, ${query ? `current value: ${query}` : 'empty'}`}
+            aria-describedby={showHelp ? "search-tips" : undefined}
+            role="searchbox"
+            aria-expanded={showFilters}
+            aria-haspopup={showAdvancedFilters}
             rightSection={query && !isLoading && (
               <Tooltip label="Clear search">
                 <ActionIcon
@@ -244,7 +268,6 @@ export const SearchInterface = ({
             filters={advancedFilters}
             onFiltersChange={handleFiltersChange}
             onReset={handleResetFilters}
-            isActive={Object.keys(advancedFilters).length > 0}
           />
         )}
 

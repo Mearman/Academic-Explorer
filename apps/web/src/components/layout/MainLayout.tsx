@@ -28,19 +28,26 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React, { useCallback, useRef,useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ICON_SIZE } from "@/config/style-constants";
 import { useLayoutStore } from "@/stores/layout-store";
 import { sprinkles } from "@/styles/sprinkles";
+import {
+  announceToScreenReader,
+  injectAccessibilityStyles,
+  createSkipLinks,
+} from "@/utils/accessibility";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { ColorSchemeSelector } from "./ColorSchemeSelector";
 import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
+import { KeyboardShortcutsButton, KeyboardShortcutsHelp } from "@/components/modals/KeyboardShortcutsHelp";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 import { RightSidebarContent } from "./RightSidebarContent";
+import { useGlobalHotkeys } from "@/hooks/use-hotkeys";
 // import { ThemeDropdown } from "./ThemeDropdown";
 // import { ThemeSettings } from "@/components/ThemeSettings";
 
@@ -56,6 +63,46 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  // Initialize accessibility features on mount
+  useEffect(() => {
+    injectAccessibilityStyles();
+
+    // Add skip links to the document
+    const skipLinks = createSkipLinks();
+    document.body.insertBefore(skipLinks, document.body.firstChild);
+
+    // Announce app load for screen readers
+    announceToScreenReader('BibGraph application loaded', 'polite');
+
+    return () => {
+      if (document.body.contains(skipLinks)) {
+        document.body.removeChild(skipLinks);
+      }
+    };
+  }, []);
+
+  // Keyboard shortcuts state
+  const [shortcutsHelpOpened, setShortcutsHelpOpened] = useState(false);
+
+  // Set up global keyboard shortcuts
+  const { getAllHotkeys } = useGlobalHotkeys({
+    enabled: true,
+  });
+
+  // Custom shortcuts for layout
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+? for keyboard shortcuts help (override from useGlobalHotkeys)
+      if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+        e.preventDefault();
+        setShortcutsHelpOpened(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Layout store for sidebar state management
   const layoutStore = useLayoutStore();
 
@@ -408,6 +455,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             {!mobileSearchExpanded && (
               <ColorSchemeSelector />
             )}
+
+            {/* Keyboard shortcuts button (hidden on mobile when search expanded) */}
+            {!mobileSearchExpanded && (
+              <KeyboardShortcutsButton
+                onClick={() => setShortcutsHelpOpened(true)}
+              />
+            )}
           </Group>
         </Group>
       </AppShell.Header>
@@ -645,6 +699,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </Stack>
         )}
       </AppShell.Main>
+
+      {/* Keyboard Shortcuts Help Modal */}
+      <KeyboardShortcutsHelp
+        opened={shortcutsHelpOpened}
+        onClose={() => setShortcutsHelpOpened(false)}
+      />
 
       </AppShell>
   );

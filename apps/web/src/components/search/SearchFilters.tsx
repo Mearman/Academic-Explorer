@@ -464,13 +464,23 @@ export const SearchFilters = ({
                     case "concepts":
                       return `${k}: ${Array.isArray(v) ? v.join(", ") : v}`;
                     case "publicationYear":
-                      if (typeof v === "object" && v.from && v.to) {
-                        return `year: ${v.from}-${v.to}`;
+                      if (typeof v === "object" && v !== null) {
+                        const yearObj = v as { from?: unknown; to?: unknown };
+                        if (yearObj.from && yearObj.to) {
+                          return `year: ${yearObj.from}-${yearObj.to}`;
+                        } else if (yearObj.from) {
+                          return `year: >= ${yearObj.from}`;
+                        } else if (yearObj.to) {
+                          return `year: <= ${yearObj.to}`;
+                        }
                       }
                       return "";
                     case "citationCount":
-                      if (typeof v === "object" && (v.from || v.to)) {
-                        return `citations: ${v.from || "0"}-${v.to || "∞"}`;
+                      if (typeof v === "object" && v !== null) {
+                        const citationObj = v as { from?: unknown; to?: unknown };
+                        if (citationObj.from || citationObj.to) {
+                          return `citations: ${citationObj.from || "0"}-${citationObj.to || "∞"}`;
+                        }
                       }
                       return "";
                     case "openAccess":
