@@ -63,3 +63,38 @@ export const BORDER_RADIUS_SM = 4;
 export const BORDER_RADIUS_MD = 8;
 export const BORDER_RADIUS_LG = 12;
 export const BORDER_RADIUS_XL = 16;
+
+// =============================================================================
+// MANTINE THEME RADIUS MAP
+// =============================================================================
+
+/**
+ * Maps Mantine theme border radius sizes to CSS pixel values
+ * Used for components that need theme-aware border radius styling
+ */
+export const MANTINE_THEME_BORDER_RADIUS = {
+	xs: "4px",
+	sm: "8px",
+	md: "16px",
+	lg: "24px",
+	xl: "32px",
+} as const;
+
+/**
+ * Default border radius fallback value
+ */
+export const DEFAULT_THEME_BORDER_RADIUS = "16px";
+
+// =============================================================================
+// BUTTON SIZE CONSTANTS
+// =============================================================================
+
+/**
+ * Default height for split buttons and compound button groups
+ */
+export const SPLIT_BUTTON_HEIGHT = 34;
+
+/**
+ * Default minimum width for split buttons
+ */
+export const SPLIT_BUTTON_MIN_WIDTH = 120;

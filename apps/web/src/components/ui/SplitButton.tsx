@@ -1,6 +1,12 @@
 import { ActionIcon, Button, Group, GroupProps, Menu } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 
+import {
+  DEFAULT_THEME_BORDER_RADIUS,
+  MANTINE_THEME_BORDER_RADIUS,
+  SPLIT_BUTTON_HEIGHT,
+  SPLIT_BUTTON_MIN_WIDTH,
+} from '@/config/style-constants'
 import { useTheme } from '@/contexts/theme-context'
 
 // Use intersection with record to allow any valid HTML button attributes
@@ -32,19 +38,12 @@ interface SplitButtonProps {
   height?: number
 }
 
-export const SplitButton = ({ ref, mainButtonProps, dropdownButtonProps, groupProps, dropdownItems, height = 34 }: SplitButtonProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+export const SplitButton = ({ ref, mainButtonProps, dropdownButtonProps, groupProps, dropdownItems, height = SPLIT_BUTTON_HEIGHT }: SplitButtonProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
     const { config } = useTheme()
 
-    // Get current theme border radius value
+    // Get current theme border radius value from centralized constants
     const getThemeBorderRadius = () => {
-      const radiusMap = {
-        xs: '4px',
-        sm: '8px',
-        md: '16px',
-        lg: '24px',
-        xl: '32px'
-      } as const
-      return radiusMap[config.borderRadius] || '16px'
+      return MANTINE_THEME_BORDER_RADIUS[config.borderRadius] || DEFAULT_THEME_BORDER_RADIUS
     }
 
     const defaultDropdownProps = {
@@ -58,7 +57,7 @@ export const SplitButton = ({ ref, mainButtonProps, dropdownButtonProps, groupPr
 
     const defaultGroupProps: GroupProps = {
       gap: 0,
-      miw: 120,
+      miw: SPLIT_BUTTON_MIN_WIDTH,
       style: {
         height: `${height}px`,
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
