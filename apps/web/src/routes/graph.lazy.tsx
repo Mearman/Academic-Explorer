@@ -39,12 +39,13 @@ import {
   IconLoader,
   IconRefresh,
 } from '@tabler/icons-react';
-import { createLazyFileRoute, Link } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
+import { GraphEmptyState } from '@/components/graph/GraphEmptyState';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
 import {
   type ContextMenuState,
@@ -242,23 +243,7 @@ const EntityGraphPage = () => {
 
         {/* Empty state content */}
         <Container size="md" py="xl" style={{ flex: 1 }}>
-          <Stack gap="lg">
-            <Group>
-              <IconGraph size={28} />
-              <Title order={2}>Entity Graph</Title>
-            </Group>
-
-            <Alert icon={<IconInfoCircle size={16} />} title="No Data Sources Enabled" color="blue">
-              <Stack gap="md">
-                <Text>
-                  Enable one or more data sources from the left panel to visualize entities.
-                </Text>
-                <Text size="sm" c="dimmed">
-                  Available sources include your bookmarks, browsing history, custom lists, and cached entities.
-                </Text>
-              </Stack>
-            </Alert>
-          </Stack>
+          <GraphEmptyState variant="no-sources" availableSourceCount={sources.length} />
         </Container>
       </Box>
     );
@@ -281,31 +266,7 @@ const EntityGraphPage = () => {
 
         {/* Empty state content */}
         <Container size="md" py="xl" style={{ flex: 1 }}>
-          <Stack gap="lg">
-            <Group>
-              <IconGraph size={28} />
-              <Title order={2}>Entity Graph</Title>
-            </Group>
-
-            <Alert icon={<IconInfoCircle size={16} />} title="No Entities Found" color="blue">
-              <Stack gap="md">
-                <Text>
-                  The enabled data sources contain no entities. Try enabling more sources or add some bookmarks.
-                </Text>
-                <Group>
-                  <Button component={Link} to="/browse" variant="light">
-                    Browse Entities
-                  </Button>
-                  <Button component={Link} to="/search" variant="light">
-                    Search OpenAlex
-                  </Button>
-                  <Button component={Link} to="/bookmarks" variant="light">
-                    View Bookmarks
-                  </Button>
-                </Group>
-              </Stack>
-            </Alert>
-          </Stack>
+          <GraphEmptyState variant="no-entities" />
         </Container>
       </Box>
     );

@@ -11,6 +11,7 @@ import type {
   FundingMetadata,
   LineageMetadata,
 } from '@/types/relationship';
+
 import { formatMetadata } from './formatMetadata';
 
 describe('formatMetadata', () => {
