@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 /**
  * Parse query parameters from a path string and merge with additional search params
  * @param pathWithQuery Path potentially containing query parameters (e.g., "/works?filter=...")
@@ -235,7 +237,7 @@ const ApiOpenAlexRoute = () => {
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
         <IconSearch
-          size={18}
+          size={ICON_SIZE.LG}
           style={{ marginRight: "8px", verticalAlign: "middle" }}
         />
         Processing OpenAlex API URL

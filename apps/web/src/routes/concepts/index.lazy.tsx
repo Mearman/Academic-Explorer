@@ -1,6 +1,8 @@
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { useState } from "react";
 
 import { EntityList } from "@/components/EntityList";
@@ -23,7 +25,7 @@ const ConceptsListRoute = () => {
   return (
     <div>
       <Alert
-        icon={<IconAlertCircle size={16} />}
+        icon={<IconAlertCircle size={ICON_SIZE.MD} />}
         title="Concepts Entity Deprecated"
         color="yellow"
         style={{ marginBottom: "1rem" }}

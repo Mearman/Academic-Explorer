@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 /**
  * Parse query parameters from a URL string
  * @param urlString Full URL string with potential query parameters
@@ -131,7 +133,7 @@ const HttpsRoute = () => {
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
         <IconSearch
-          size={18}
+          size={ICON_SIZE.LG}
           style={{ marginRight: "8px", verticalAlign: "middle" }}
         />
         Processing HTTPS URL

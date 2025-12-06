@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 const ISSNSourceRoute = () => {
   const { issn } = useParams({ from: "/sources/issn/$issn" });
   const navigate = useNavigate();
@@ -59,7 +61,7 @@ const ISSNSourceRoute = () => {
       }}
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
-        <IconBook size={18} style={{ display: "inline", marginRight: "8px" }} />
+        <IconBook size={ICON_SIZE.LG} style={{ display: "inline", marginRight: "8px" }} />
         Resolving ISSN...
       </div>
       <div

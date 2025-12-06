@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 const DOIWorkRoute = () => {
   const { doi } = useParams({ from: "/works/doi/$doi" });
   const navigate = useNavigate();
@@ -62,7 +64,7 @@ const DOIWorkRoute = () => {
       }}
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
-        <IconFile size={18} style={{ display: "inline", marginRight: "8px" }} />
+        <IconFile size={ICON_SIZE.LG} style={{ display: "inline", marginRight: "8px" }} />
         Resolving DOI...
       </div>
       <div

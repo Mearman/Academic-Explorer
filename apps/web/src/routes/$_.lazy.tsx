@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 const ExternalIdRoute = () => {
   const { _splat: splat } = useParams({ from: "/$_" });
   const externalId = splat || "";
@@ -380,7 +382,7 @@ const ExternalIdRoute = () => {
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
         <IconSearch
-          size={18}
+          size={ICON_SIZE.LG}
           style={{ display: "inline", marginRight: "8px" }}
         />
         Resolving identifier...

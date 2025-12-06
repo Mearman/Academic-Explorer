@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 
 const OpenAlexRoute = () => {
   const { _splat } = useParams({ from: "/openalex/org/$" });
@@ -76,7 +78,7 @@ const OpenAlexRoute = () => {
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
         <IconSearch
-          size={18}
+          size={ICON_SIZE.LG}
           style={{ display: "inline", marginRight: "8px" }}
         />
         Resolving OpenAlex URL...

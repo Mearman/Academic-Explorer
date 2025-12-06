@@ -28,7 +28,7 @@ import {
 } from "@/components/EntityTypeFilter";
 import { BaseTable } from "@/components/tables/BaseTable";
 import { type TableViewMode,TableViewModeToggle } from "@/components/TableViewModeToggle";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
@@ -296,7 +296,7 @@ const AutocompleteGeneralRoute = () => {
           placeholder="Search for anything in OpenAlex..."
           value={query}
           onChange={(event) => handleSearch(event.currentTarget.value)}
-          leftSection={<IconSearch size={16} />}
+          leftSection={<IconSearch size={ICON_SIZE.MD} />}
           size="md"
         />
 

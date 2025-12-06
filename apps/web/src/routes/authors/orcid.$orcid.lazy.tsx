@@ -6,6 +6,8 @@ import {
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { useEffect } from "react";
 
 const ORCIDAuthorRoute = () => {
@@ -62,7 +64,7 @@ const ORCIDAuthorRoute = () => {
       }}
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
-        <IconUser size={18} style={{ display: "inline", marginRight: "8px" }} />
+        <IconUser size={ICON_SIZE.LG} style={{ display: "inline", marginRight: "8px" }} />
         Resolving ORCID...
       </div>
       <div

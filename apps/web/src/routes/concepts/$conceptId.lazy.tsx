@@ -3,6 +3,8 @@ import { type Concept, type ConceptField } from "@bibgraph/types/entities";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -80,7 +82,7 @@ const ConceptRoute = () => {
       onViewModeChange={setViewMode}
       data={concept}>
       <Alert
-        icon={<IconAlertCircle size={16} />}
+        icon={<IconAlertCircle size={ICON_SIZE.MD} />}
         title="Concepts Entity Deprecated"
         color="yellow"
         style={{ marginBottom: "1rem" }}

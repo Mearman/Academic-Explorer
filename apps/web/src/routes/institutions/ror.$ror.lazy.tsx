@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 const RORInstitutionRoute = () => {
   const { ror } = useParams({ from: "/institutions/ror/$ror" });
   const navigate = useNavigate();
@@ -66,7 +68,7 @@ const RORInstitutionRoute = () => {
     >
       <div style={{ marginBottom: "20px", fontSize: "18px" }}>
         <IconBuilding
-          size={18}
+          size={ICON_SIZE.LG}
           style={{ display: "inline", marginRight: "8px" }}
         />
         Resolving ROR ID...
