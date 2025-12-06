@@ -98,9 +98,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm nx preview web &",
+          "pnpm nx preview web > /dev/null 2>&1 &",
           "sleep 5",
-          "pa11y-ci --config {projectRoot}/.pa11yci.json"
+          "SERVER_PID=$!",
+          "pa11y-ci --config {projectRoot}/.pa11yci.json || PA11Y_EXIT=$?",
+          "kill $SERVER_PID 2>/dev/null || true",
+          "wait $SERVER_PID 2>/dev/null || true",
+          "exit ${PA11Y_EXIT:-0}"
         ],
         "parallel": false
       },
