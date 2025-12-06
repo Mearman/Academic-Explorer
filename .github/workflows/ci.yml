@@ -725,6 +725,9 @@ jobs:
           name: build-artifacts
           path: .
 
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Start preview server for smoke tests
         run: |
           cd apps/web
