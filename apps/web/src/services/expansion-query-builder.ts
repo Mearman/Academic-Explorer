@@ -8,8 +8,9 @@ import type {
   FilterCriteria,
   SortCriteria,
 } from "@bibgraph/types";
-import { API } from "@/config/style-constants";
 import { logger } from "@bibgraph/utils/logger";
+
+import { API } from "@/config/style-constants";
 
 export interface OpenAlexQueryParams {
   filter?: string;

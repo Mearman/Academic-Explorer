@@ -3,6 +3,7 @@
  * Shows cached values or clickable placeholders for missing data
  */
 
+import { logger } from "@bibgraph/utils";
 import { ActionIcon, Group, Skeleton, Text, Tooltip } from "@mantine/core";
 import { IconClick,IconRefresh } from "@tabler/icons-react";
 import React, { useState } from "react";
@@ -68,23 +69,33 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     entityId,
     entityType,
     onSuccess: (data) => {
-      console.log('[FieldDisplay] onSuccess called', { fieldName, data });
+      logger.debug("ui", "[FieldDisplay] Field data fetched", {
+        fieldName,
+        entityId,
+        entityType,
+        hasData: !!data
+      });
       // Extract the fetched field from the response
       const fetchedValue = (data as Record<string, unknown>)[fieldName];
-      console.log('[FieldDisplay] Extracted field value:', { fieldName, fetchedValue });
       setCurrentValue(fetchedValue);
       setHasBeenFetched(true);
 
       if (onDataFetched) {
-        console.log('[FieldDisplay] Calling onDataFetched with full data object');
-        // Pass the full data object, not just the field value
+        logger.debug("ui", "[FieldDisplay] Triggering onDataFetched callback", {
+          fieldName,
+          dataSize: JSON.stringify(data).length
+        });
         onDataFetched(data);
       }
     },
   });
 
   const handleFetchClick = async () => {
-    console.log('[FieldDisplay] handleFetchClick called', { fieldName, entityId, entityType });
+    logger.debug("ui", "[FieldDisplay] Fetch button clicked", {
+      fieldName,
+      entityId,
+      entityType
+    });
     await fetchField(fieldName);
   };
 

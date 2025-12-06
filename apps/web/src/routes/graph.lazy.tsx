@@ -30,7 +30,6 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
-import { LAYOUT } from '@/config/style-constants';
 import {
   IconAlertTriangle,
   IconEye,
@@ -56,7 +55,7 @@ import {
 } from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import { ICON_SIZE } from '@/config/style-constants';
+import { ICON_SIZE,LAYOUT  } from '@/config/style-constants';
 import { useGraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';
