@@ -31,6 +31,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useCatalogue } from "@/hooks/useCatalogue";
 
@@ -90,7 +91,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
       <div className={styles.sidebarContainer}>
         <div className={styles.sidebarHeader}>
           <div className={styles.sidebarTitle}>
-            <IconBookmark size={18} />
+            <IconBookmark size={ICON_SIZE.LG} />
             <Title order={6}>Bookmarks</Title>
           </div>
           <Group gap="xs">
@@ -102,12 +103,12 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                 to="/bookmarks"
                 aria-label="Go to bookmarks management page"
               >
-                <IconSettings size={14} />
+                <IconSettings size={ICON_SIZE.SM} />
               </ActionIcon>
             </Tooltip>
             {onClose && (
               <ActionIcon size="sm" variant="subtle" onClick={onClose} aria-label="Close sidebar">
-                <IconX size={14} />
+                <IconX size={ICON_SIZE.SM} />
               </ActionIcon>
             )}
           </Group>
@@ -132,13 +133,13 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
       {/* Header */}
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarTitle}>
-          <IconBook size={18} />
+          <IconBook size={ICON_SIZE.LG} />
           <Title order={6}>Collections</Title>
         </div>
         <Group gap="xs">
           {onClose && (
             <ActionIcon size="sm" variant="subtle" onClick={onClose} aria-label="Close sidebar">
-              <IconX size={14} />
+              <IconX size={ICON_SIZE.SM} />
             </ActionIcon>
           )}
         </Group>
@@ -160,8 +161,8 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setListsExpanded(!listsExpanded); }}
           >
             <Group gap="xs">
-              {listsExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
-              <IconList size={14} />
+              {listsExpanded ? <IconChevronDown size={ICON_SIZE.SM} /> : <IconChevronRight size={ICON_SIZE.SM} />}
+              <IconList size={ICON_SIZE.SM} />
               <Text size="sm" fw={600}>Lists</Text>
               <Text size="xs" c="dimmed">({userLists.length})</Text>
             </Group>
@@ -178,7 +179,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                   }}
                   aria-label="Create new list"
                 >
-                  <IconPlus size={12} />
+                  <IconPlus size={ICON_SIZE.XS} />
                 </ActionIcon>
               </Tooltip>
               <Tooltip label="Manage catalogue">
@@ -193,7 +194,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                   }}
                   aria-label="Go to catalogue management"
                 >
-                  <IconSettings size={12} />
+                  <IconSettings size={ICON_SIZE.XS} />
                 </ActionIcon>
               </Tooltip>
             </Group>
@@ -241,8 +242,8 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setBookmarksExpanded(!bookmarksExpanded); }}
           >
             <Group gap="xs">
-              {bookmarksExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
-              <IconBookmark size={14} />
+              {bookmarksExpanded ? <IconChevronDown size={ICON_SIZE.SM} /> : <IconChevronRight size={ICON_SIZE.SM} />}
+              <IconBookmark size={ICON_SIZE.SM} />
               <Text size="sm" fw={600}>Bookmarks</Text>
               <Text size="xs" c="dimmed">({bookmarks.length})</Text>
             </Group>
@@ -258,7 +259,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                 }}
                 aria-label="Go to bookmarks management"
               >
-                <IconSettings size={12} />
+                <IconSettings size={ICON_SIZE.XS} />
               </ActionIcon>
             </Tooltip>
           </Group>
@@ -272,7 +273,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                   aria-label="Search bookmarks"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  leftSection={<IconSearch size={14} />}
+                  leftSection={<IconSearch size={ICON_SIZE.SM} />}
                   size="xs"
                 />
               </div>
@@ -286,7 +287,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
             ) : (filteredBookmarks.length === 0 ? (
               <Card withBorder p="sm">
                 <div className={styles.emptyState} style={{ padding: "1rem" }}>
-                  <IconBookmarkOff size={24} />
+                  <IconBookmarkOff size={ICON_SIZE.XXL} />
                   <Text size="xs" fw={500} ta="center">
                     {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
                   </Text>

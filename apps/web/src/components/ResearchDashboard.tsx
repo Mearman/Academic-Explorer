@@ -43,7 +43,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import React, { useEffect,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 
@@ -86,7 +86,7 @@ const QuickSearch = ({ onSearch }: QuickSearchProps) => {
           style={{ flex: 1 }}
         />
         <ActionIcon size="lg" onClick={handleSearch} color="blue" aria-label="Search">
-          <IconSearch size={18} />
+          <IconSearch size={ICON_SIZE.LG} />
         </ActionIcon>
       </Group>
     </Card>
@@ -106,15 +106,15 @@ const RecentActivity = ({ activities }: RecentActivityProps) => {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "search":
-        return <IconSearch size={16} />;
+        return <IconSearch size={ICON_SIZE.MD} />;
       case "bookmark":
-        return <IconBook size={16} />;
+        return <IconBook size={ICON_SIZE.MD} />;
       case "export":
-        return <IconDownload size={16} />;
+        return <IconDownload size={ICON_SIZE.MD} />;
       case "share":
-        return <IconShare size={16} />;
+        return <IconShare size={ICON_SIZE.MD} />;
       default:
-        return <IconClock size={16} />;
+        return <IconClock size={ICON_SIZE.MD} />;
     }
   };
 
@@ -159,42 +159,42 @@ const QuickActions = ({ onAction }: QuickActionsProps) => {
       id: "advanced-search",
       title: "Advanced Search",
       description: "Complex queries with filters",
-      icon: <IconFilter size={24} />,
+      icon: <IconFilter size={ICON_SIZE.XXL} />,
       color: "blue" as const,
     },
     {
       id: "create-list",
       title: "Create List",
       description: "Start a new bibliography",
-      icon: <IconBook size={24} />,
+      icon: <IconBook size={ICON_SIZE.XXL} />,
       color: "green" as const,
     },
     {
       id: "analyze-trends",
       title: "Analyze Trends",
       description: "Research trend analysis",
-      icon: <IconTrendingUp size={24} />,
+      icon: <IconTrendingUp size={ICON_SIZE.XXL} />,
       color: "orange" as const,
     },
     {
       id: "export-data",
       title: "Export Data",
       description: "Download in various formats",
-      icon: <IconDownload size={24} />,
+      icon: <IconDownload size={ICON_SIZE.XXL} />,
       color: "violet" as const,
     },
     {
       id: "compare-entities",
       title: "Compare Entities",
       description: "Side-by-side comparison",
-      icon: <IconChartBar size={24} />,
+      icon: <IconChartBar size={ICON_SIZE.XXL} />,
       color: "cyan" as const,
     },
     {
       id: "discover-papers",
       title: "Discover Papers",
       description: "AI-powered recommendations",
-      icon: <IconBulb size={24} />,
+      icon: <IconBulb size={ICON_SIZE.XXL} />,
       color: "yellow" as const,
     },
   ];
@@ -242,25 +242,25 @@ const ResearchStats = ({ stats }: ResearchStatsProps) => {
     {
       label: "Total Searches",
       value: stats.totalSearches,
-      icon: <IconSearch size={20} />,
+      icon: <IconSearch size={ICON_SIZE.XL} />,
       color: "blue" as const,
     },
     {
       label: "Saved Items",
       value: stats.savedItems,
-      icon: <IconBook size={20} />,
+      icon: <IconBook size={ICON_SIZE.XL} />,
       color: "green" as const,
     },
     {
       label: "Exported Lists",
       value: stats.exportedLists,
-      icon: <IconDownload size={20} />,
+      icon: <IconDownload size={ICON_SIZE.XL} />,
       color: "violet" as const,
     },
     {
       label: "Shared Items",
       value: stats.sharedItems,
-      icon: <IconShare size={20} />,
+      icon: <IconShare size={ICON_SIZE.XL} />,
       color: "orange" as const,
     },
   ];
@@ -301,11 +301,11 @@ const PopularTopics = ({ topics }: PopularTopicsProps) => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case "up":
-        return <IconTrendingUp size={14} color="green" />;
+        return <IconTrendingUp size={ICON_SIZE.SM} color="green" />;
       case "down":
-        return <IconTrendingUp size={14} color="red" style={{ transform: "rotate(180deg)" }} />;
+        return <IconTrendingUp size={ICON_SIZE.SM} color="red" style={{ transform: "rotate(180deg)" }} />;
       default:
-        return <IconTrendingUp size={14} color="gray" style={{ transform: "rotate(90deg)" }} />;
+        return <IconTrendingUp size={ICON_SIZE.SM} color="gray" style={{ transform: "rotate(90deg)" }} />;
     }
   };
 
@@ -452,16 +452,16 @@ export const ResearchDashboard = () => {
           </div>
           <Group>
             <ActionIcon variant="light" size="lg" aria-label="Refresh dashboard">
-              <IconRefresh size={18} />
+              <IconRefresh size={ICON_SIZE.LG} />
             </ActionIcon>
             <ActionIcon variant="light" size="lg" aria-label="Open in new window">
-              <IconExternalLink size={18} />
+              <IconExternalLink size={ICON_SIZE.LG} />
             </ActionIcon>
           </Group>
         </Group>
 
         {/* Alert */}
-        <Alert icon={<IconNews size={16} />} color="blue" variant="light">
+        <Alert icon={<IconNews size={ICON_SIZE.MD} />} color="blue" variant="light">
           <Text size="sm">
             <strong>New Feature:</strong> Research trends now available! Explore trending topics in your field.
           </Text>
@@ -497,7 +497,7 @@ export const ResearchDashboard = () => {
                   <Button
                     variant="subtle"
                     fullWidth
-                    leftSection={<IconDatabase size={14} />}
+                    leftSection={<IconDatabase size={ICON_SIZE.SM} />}
                     onClick={() => navigate({ to: "/catalogue" })}
                   >
                     My Bibliographies ({lists.length})
@@ -505,7 +505,7 @@ export const ResearchDashboard = () => {
                   <Button
                     variant="subtle"
                     fullWidth
-                    leftSection={<IconBook size={14} />}
+                    leftSection={<IconBook size={ICON_SIZE.SM} />}
                     onClick={() => navigate({ to: "/history" })}
                   >
                     Recent Searches
@@ -513,7 +513,7 @@ export const ResearchDashboard = () => {
                   <Button
                     variant="subtle"
                     fullWidth
-                    leftSection={<IconUsers size={14} />}
+                    leftSection={<IconUsers size={ICON_SIZE.SM} />}
                     onClick={() => navigate({ to: "/authors" })}
                   >
                     Top Authors
@@ -521,7 +521,7 @@ export const ResearchDashboard = () => {
                   <Button
                     variant="subtle"
                     fullWidth
-                    leftSection={<IconBuilding size={14} />}
+                    leftSection={<IconBuilding size={ICON_SIZE.SM} />}
                     onClick={() => navigate({ to: "/institutions" })}
                   >
                     Leading Institutions

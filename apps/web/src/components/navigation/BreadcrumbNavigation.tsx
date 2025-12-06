@@ -28,6 +28,7 @@ import { Link,useLocation } from "@tanstack/react-router";
 import React, { useCallback,useMemo } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+import { ICON_SIZE } from "@/config/style-constants";
 
 interface BreadcrumbItem {
   label: string;
@@ -50,7 +51,7 @@ export const BreadcrumbNavigation = () => {
     items.push({
       label: "Home",
       href: "/",
-      icon: <IconHome size={14} />,
+      icon: <IconHome size={ICON_SIZE.SM} />,
       tooltip: "Return to search homepage",
     });
 
@@ -76,7 +77,7 @@ export const BreadcrumbNavigation = () => {
       items.push({
         label: part.charAt(0).toUpperCase() + part.slice(1),
         href: `/${part}`,
-        icon: <IconSearch size={14} />,
+        icon: <IconSearch size={ICON_SIZE.SM} />,
         tooltip: `Search ${part}`,
       });
 
@@ -169,7 +170,7 @@ export const BreadcrumbNavigation = () => {
     <Box component="nav" aria-label="Breadcrumb navigation" py="xs" px="md">
       <Group justify="space-between" align="center">
         <Breadcrumbs
-          separator={<IconChevronRight size={12} color="var(--mantine-color-gray-5)" />}
+          separator={<IconChevronRight size={ICON_SIZE.XS} color="var(--mantine-color-gray-5)" />}
           styles={{
             root: {
               flex: 1,
@@ -226,7 +227,7 @@ export const BreadcrumbNavigation = () => {
               onClick={handleCopyUrl}
               aria-label="Copy current page URL"
             >
-              <IconCopy size={14} />
+              <IconCopy size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
 
@@ -237,7 +238,7 @@ export const BreadcrumbNavigation = () => {
               onClick={handleShare}
               aria-label="Share current page"
             >
-              <IconShare size={14} />
+              <IconShare size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
         </Group>

@@ -29,7 +29,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import {
   BookmarkSelectionProvider,
   useBookmarkSelection,
@@ -121,7 +121,7 @@ const BookmarkCard = ({
           <Button
             variant="subtle"
             size="xs"
-            leftSection={<IconExternalLink size={14} />}
+            leftSection={<IconExternalLink size={ICON_SIZE.SM} />}
             onClick={() => {
               onNavigate(url);
             }}
@@ -274,7 +274,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
     <Stack maw={1000} mx="auto" p="md">
         <Group justify="space-between" mb="md">
           <Group>
-            <IconBookmark size={24} />
+            <IconBookmark size={ICON_SIZE.XXL} />
             <Text size="xl" fw={700}>
               Bookmarks
             </Text>
@@ -319,7 +319,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
                     title="Delete selected bookmarks"
                     aria-label="Delete selected bookmarks"
                   >
-                    <IconTrash size={16} />
+                    <IconTrash size={ICON_SIZE.MD} />
                   </ActionIcon>
                 </>
               )}
@@ -333,7 +333,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
           aria-label="Search bookmarks"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          leftSection={<IconSearch size={16} />}
+          leftSection={<IconSearch size={ICON_SIZE.MD} />}
           mb="md"
         />
 
@@ -341,7 +341,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
         <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
           <Stack align="center" gap="md">
             <div style={{ color: 'var(--mantine-color-dimmed)' }}>
-              <IconBookmarkOff size={48} />
+              <IconBookmarkOff size={ICON_SIZE.EMPTY_STATE} />
             </div>
             <Text size="lg" fw={500}>
               {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
