@@ -1,3 +1,8 @@
+## <small>23.7.1 (2025-12-06)</small>
+
+* fix(release): include package.json in semantic-release commits ([29eb0ae](https://github.com/Mearman/BibGraph/commit/29eb0ae))
+* chore(release): 23.7.0 [skip ci] ([c4281f5](https://github.com/Mearman/BibGraph/commit/c4281f5))
+
 ## 23.7.0 (2025-12-06)
 
 * fix(web): add accessibility attributes to BookmarksSidebar ([10641b6](https://github.com/Mearman/BibGraph/commit/10641b6))
