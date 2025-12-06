@@ -1,8 +1,7 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // Hook for managing ARIA live regions
-export function useLiveRegion() {
+export const useLiveRegion = () => {
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
 
   const announce = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
@@ -35,13 +34,10 @@ export function useLiveRegion() {
   ), []);
 
   return { announce, LiveRegionComponent };
-}
+};
 
 // Hook for keyboard navigation
-export function useKeyboardNavigation(
-  items: Array<{ id: string; element?: HTMLElement | null }>,
-  onSelect?: (id: string) => void
-) {
+export const useKeyboardNavigation = (items: Array<{ id: string; element?: HTMLElement | null }>, onSelect?: (id: string) => void) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -82,10 +78,10 @@ export function useKeyboardNavigation(
   }, [activeIndex, items]);
 
   return { activeIndex, handleKeyDown, setActiveIndex };
-}
+};
 
 // Hook for focus trap
-export function useFocusTrap(isActive: boolean) {
+export const useFocusTrap = (isActive: boolean) => {
   const containerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -128,10 +124,10 @@ export function useFocusTrap(isActive: boolean) {
   }, [isActive]);
 
   return containerRef;
-}
+};
 
 // Hook for managing ARIA attributes
-export function useAriaAttributes() {
+export const useAriaAttributes = () => {
   const getAriaLabel = useCallback((elementType: string, action?: string) => {
     const labels = {
       button: 'Button',
@@ -158,10 +154,10 @@ export function useAriaAttributes() {
   }, []);
 
   return { getAriaLabel, getAriaDescribedBy };
-}
+};
 
 // Hook for screen reader announcements
-export function useScreenReader() {
+export const useScreenReader = () => {
   const announceToScreenReader = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
@@ -172,11 +168,11 @@ export function useScreenReader() {
     announcement.style.height = '1px';
     announcement.style.overflow = 'hidden';
 
-    document.body.appendChild(announcement);
+    document.body.append(announcement);
     announcement.textContent = message;
 
     setTimeout(() => {
-      document.body.removeChild(announcement);
+      announcement.remove();
     }, 1000);
   }, []);
 
@@ -202,10 +198,10 @@ export function useScreenReader() {
     announceAction,
     announceStatus,
   };
-}
+};
 
 // Hook for high contrast mode detection
-export function useHighContrast() {
+export const useHighContrast = () => {
   const [isHighContrast, setIsHighContrast] = useState(false);
 
   useEffect(() => {
@@ -221,10 +217,10 @@ export function useHighContrast() {
   }, []);
 
   return isHighContrast;
-}
+};
 
 // Hook for reduced motion detection
-export function useReducedMotion() {
+export const useReducedMotion = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -240,10 +236,10 @@ export function useReducedMotion() {
   }, []);
 
   return prefersReducedMotion;
-}
+};
 
 // Hook for focus management
-export function useFocusManagement() {
+export const useFocusManagement = () => {
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const saveFocus = useCallback(() => {
@@ -263,5 +259,5 @@ export function useFocusManagement() {
   }, []);
 
   return { saveFocus, restoreFocus, focusElement };
-}
+};
 
