@@ -3,6 +3,8 @@
  * Provides contextual navigation with keyboard support and accessibility
  */
 
+import type { EntityType } from "@bibgraph/types";
+import { ENTITY_METADATA } from "@bibgraph/types";
 import { EntityDetectionService } from "@bibgraph/utils";
 import {
   ActionIcon,
@@ -30,6 +32,7 @@ interface BreadcrumbItem {
   href?: string;
   icon?: React.ReactNode;
   badge?: string | number;
+  badgeEntityType?: EntityType;
   tooltip?: string;
 }
 
@@ -84,8 +87,9 @@ export const BreadcrumbNavigation = () => {
           items.push({
             label: entityId,
             href: currentPath,
-            badge: detection.entityType.charAt(0).toUpperCase(),
-            tooltip: `${detection.entityType}: ${detection.normalizedId}`,
+            badge: ENTITY_METADATA[detection.entityType].idPrefix,
+            badgeEntityType: detection.entityType,
+            tooltip: `${ENTITY_METADATA[detection.entityType].displayName}: ${detection.normalizedId}`,
           });
           i += 2; // Skip the next part since we processed it as entity ID
           continue;
@@ -201,7 +205,7 @@ export const BreadcrumbNavigation = () => {
                   <Badge
                     size="xs"
                     variant="light"
-                    color="blue"
+                    color={item.badgeEntityType ? ENTITY_METADATA[item.badgeEntityType].color : "blue"}
                     radius="sm"
                   >
                     {item.badge}
