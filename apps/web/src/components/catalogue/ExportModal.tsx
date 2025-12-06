@@ -15,6 +15,7 @@ import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck, IconDownload } from "@tabler/icons-react";
 import React, { useState } from "react";
 
+import { ICON_SIZE } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 
@@ -52,7 +53,7 @@ export const ExportModal = ({ listId, listTitle, onClose }: ExportModalProps) =>
           title: "Export Successful",
           message: `List exported as ${selectedFormat.toUpperCase()} format`,
           color: "green",
-          icon: <IconCheck size={16} />,
+          icon: <IconCheck size={ICON_SIZE.MD} />,
         });
       } else {
         // CSV and BibTeX not yet implemented
@@ -124,7 +125,7 @@ export const ExportModal = ({ listId, listTitle, onClose }: ExportModalProps) =>
       </Radio.Group>
 
       {exportSuccess && (
-        <Alert color="green" icon={<IconCheck size={16} />} role="status" aria-live="polite">
+        <Alert color="green" icon={<IconCheck size={ICON_SIZE.MD} />} role="status" aria-live="polite">
           <Stack gap="xs">
             <Text size="sm" fw={500}>
               Export Successful!
@@ -137,7 +138,7 @@ export const ExportModal = ({ listId, listTitle, onClose }: ExportModalProps) =>
       )}
 
       {(selectedFormat === "csv" || selectedFormat === "bibtex") && (
-        <Alert icon={<IconAlertCircle size={16} />} color="yellow">
+        <Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} color="yellow">
           This export format is not yet implemented. Please use JSON or Compressed Data format.
         </Alert>
       )}
@@ -150,7 +151,7 @@ export const ExportModal = ({ listId, listTitle, onClose }: ExportModalProps) =>
           onClick={handleExport}
           loading={isExporting}
           disabled={selectedFormat === "csv" || selectedFormat === "bibtex"}
-          leftSection={<IconDownload size={16} />}
+          leftSection={<IconDownload size={ICON_SIZE.MD} />}
           data-testid="export-list-button"
         >
           {exportSuccess ? "Export Again" : "Export"}

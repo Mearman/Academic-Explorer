@@ -30,7 +30,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 import type { ExportFormat } from "@/types/catalogue";
 
@@ -229,7 +229,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
         </Text>
 
         <Alert
-          icon={<IconAlertTriangle size={16} />}
+          icon={<IconAlertTriangle size={ICON_SIZE.MD} />}
           title="Important"
           color="blue"
           variant="light"
@@ -259,7 +259,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
                 data-testid="file-upload-area"
               >
                 <Stack align="center" gap="xs">
-                  <IconUpload size={32} color="var(--mantine-color-blue-6)" />
+                  <IconUpload size={ICON_SIZE.EMPTY_STATE_SM} color="var(--mantine-color-blue-6)" />
                   <Text size="sm" fw={500}>
                     Click to upload file
                   </Text>
@@ -268,7 +268,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
                   </Text>
                   {selectedFile && (
                     <Group gap="xs">
-                      <IconFile size={16} />
+                      <IconFile size={ICON_SIZE.MD} />
                       <Text size="sm">{selectedFile.name}</Text>
                     </Group>
                   )}
@@ -287,7 +287,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
             placeholder="Paste shared catalogue URL or data string"
             value={shareUrl}
             onChange={(e) => handleShareUrlChange(e.currentTarget.value)}
-            leftSection={<IconLink size={16} />}
+            leftSection={<IconLink size={ICON_SIZE.MD} />}
             rightSection={
               <Button
                 variant="subtle"
@@ -338,7 +338,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
         {/* Validation Errors */}
         {validationResult && !validationResult.valid && (
           <Alert
-            icon={<IconAlertTriangle size={16} />}
+            icon={<IconAlertTriangle size={ICON_SIZE.MD} />}
             title="Validation Failed"
             color="red"
             variant="light"
@@ -354,7 +354,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
         {/* Validation Warnings */}
         {validationResult && validationResult.valid && validationResult.warnings && validationResult.warnings.length > 0 && (
           <Alert
-            icon={<IconAlertTriangle size={16} />}
+            icon={<IconAlertTriangle size={ICON_SIZE.MD} />}
             title="Warnings"
             color="yellow"
             variant="light"
@@ -370,7 +370,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
         {/* Import Error */}
         {error && (
           <Alert
-            icon={<IconAlertTriangle size={16} />}
+            icon={<IconAlertTriangle size={ICON_SIZE.MD} />}
             title="Import Failed"
             color="red"
             variant="light"
@@ -395,7 +395,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
             <Stack gap="md">
               <Group justify="space-between">
                 <Text size="sm" fw={700}>Import Preview</Text>
-                <Badge color="green" leftSection={<IconCheck size={14} />}>
+                <Badge color="green" leftSection={<IconCheck size={ICON_SIZE.SM} />}>
                   Valid
                 </Badge>
               </Group>
@@ -464,7 +464,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
               (validationResult && !validationResult.valid) ||
               isValidating
             }
-            leftSection={<IconDownload size={16} />}
+            leftSection={<IconDownload size={ICON_SIZE.MD} />}
             aria-busy={isImporting}
           >
             Import List

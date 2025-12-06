@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useMemo, useState } from "react";
 
+import { ICON_SIZE } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 interface AddToCatalogueButtonProps {
@@ -274,7 +275,7 @@ export const AddToCatalogueButton = ({
             <Button
               data-testid="add-to-catalogue-button"
               size={size}
-              leftSection={<IconBookmark size={16} />}
+              leftSection={<IconBookmark size={ICON_SIZE.MD} />}
               variant="light"
               className={className}
             >
@@ -294,9 +295,9 @@ export const AddToCatalogueButton = ({
                       key={listId}
                       leftSection={
                         list.type === "bibliography" ? (
-                          <IconBook size={14} />
+                          <IconBook size={ICON_SIZE.SM} />
                         ) : (
-                          <IconList size={14} />
+                          <IconList size={ICON_SIZE.SM} />
                         )
                       }
                       onClick={() => handleAddToList(listId, listTitle)}
@@ -318,7 +319,7 @@ export const AddToCatalogueButton = ({
               </Menu.Item>
             )}
             <Menu.Item
-              leftSection={<IconPlus size={14} />}
+              leftSection={<IconPlus size={ICON_SIZE.SM} />}
               onClick={handleCreateAndAdd}
             >
               Create New List
@@ -349,7 +350,7 @@ export const AddToCatalogueButton = ({
             className={className}
             aria-label="Add to catalogue list"
           >
-            <IconBookmark size={16} />
+            <IconBookmark size={ICON_SIZE.MD} />
           </ActionIcon>
         </Menu.Target>
 
@@ -365,9 +366,9 @@ export const AddToCatalogueButton = ({
                     key={listId}
                     leftSection={
                       list.type === "bibliography" ? (
-                        <IconBook size={14} />
+                        <IconBook size={ICON_SIZE.SM} />
                       ) : (
-                        <IconList size={14} />
+                        <IconList size={ICON_SIZE.SM} />
                       )
                     }
                     onClick={() => handleAddToList(listId, listTitle)}
@@ -389,7 +390,7 @@ export const AddToCatalogueButton = ({
             </Menu.Item>
           )}
           <Menu.Item
-            leftSection={<IconPlus size={14} />}
+            leftSection={<IconPlus size={ICON_SIZE.SM} />}
             onClick={handleCreateAndAdd}
           >
             Create New List

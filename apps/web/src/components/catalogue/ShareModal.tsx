@@ -22,6 +22,8 @@ import {
   IconQrcode,
 } from "@tabler/icons-react";
 import QRCode from "qrcode";
+
+import { ICON_SIZE } from '@/config/style-constants';
 import React, { useEffect,useState } from "react";
 
 const QR_CODE_PENDING = "PENDING";
@@ -97,7 +99,7 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
                     size="sm"
                     variant="light"
                     onClick={copy}
-                    leftSection={copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                    leftSection={copied ? <IconCheck size={ICON_SIZE.MD} /> : <IconCopy size={ICON_SIZE.MD} />}
                     aria-label={copied ? "URL copied to clipboard" : "Copy share URL to clipboard"}
                     data-testid="copy-share-url-button"
                   >
@@ -112,7 +114,7 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
         <Group>
           <Button
             variant={showQR ? "filled" : "outline"}
-            leftSection={<IconQrcode size={16} />}
+            leftSection={<IconQrcode size={ICON_SIZE.MD} />}
             onClick={() => setShowQR(!showQR)}
             size="sm"
             aria-expanded={showQR}
@@ -129,7 +131,7 @@ export const ShareModal = ({ shareUrl, listTitle, onClose }: ShareModalProps) =>
               aria-label="Open share link in new tab"
               data-testid="open-share-link-button"
             >
-              <IconExternalLink size={16} />
+              <IconExternalLink size={ICON_SIZE.MD} />
             </ActionIcon>
           </Tooltip>
         </Group>
