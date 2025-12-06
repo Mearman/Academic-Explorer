@@ -138,7 +138,7 @@ export const useNavigationEnhancements = () => {
               navigateWithKeyboard('right', event);
               break;
             case 'k':
-            case 'K':
+            case 'K': {
               // Focus search input
               event.preventDefault();
               const searchInput = document.querySelector('input[aria-label="Global search input"]');
@@ -146,6 +146,7 @@ export const useNavigationEnhancements = () => {
                 (searchInput as HTMLInputElement).focus();
               }
               break;
+            }
           }
         }
       };

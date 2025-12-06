@@ -63,7 +63,7 @@ export const TableViewModeToggle = ({
         e.preventDefault();
         const modes: TableViewMode[] = ["table", "list", "grid"];
         const currentIndex = modes.indexOf(value);
-        let newIndex = currentIndex;
+        let newIndex: number;
 
         if (e.key === "ArrowLeft") {
           newIndex = currentIndex > 0 ? currentIndex - 1 : modes.length - 1;
