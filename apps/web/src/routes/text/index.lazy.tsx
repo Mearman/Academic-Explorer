@@ -17,6 +17,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute,useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+
 
 const TextAnalysisRoute = () => {
   const urlSearch = useSearch({ from: "/text/" });
@@ -96,7 +98,7 @@ const TextAnalysisRoute = () => {
         />
 
         {!title.trim() && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter text to analyze
@@ -148,7 +150,7 @@ const TextAnalysisRoute = () => {
               Found {concepts.length} concept{concepts.length === 1 ? "" : "s"}
             </Text>
             {concepts.map((concept) => (
-              <Card key={concept.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
+              <Card key={concept.id} style={{ border: BORDER_STYLE_GRAY_3 }} padding="md" shadow="sm">
                 <Stack gap="xs">
                   <Group justify="space-between" wrap="nowrap">
                     <Anchor

@@ -12,6 +12,8 @@ import {
 } from "@mantine/core";
 import { IconPlus, IconSearch,IconTrash } from "@tabler/icons-react";
 import React, { useCallback,useState } from "react";
+
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 // Simple ID generator for query terms
 const generateId = () =>
   `query-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
@@ -140,7 +142,7 @@ export const AdvancedQueryBuilder: React.FC<AdvancedQueryBuilderProps> = ({
   const canSearch = query.terms.some((term) => term.text.trim().length > 0);
 
   return (
-    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Stack gap="md">
         <Group justify="space-between" align="center">
           <Text fw={500} size="sm">

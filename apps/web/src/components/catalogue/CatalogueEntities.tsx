@@ -56,6 +56,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useRef,useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import {
   isAuthorMetadata,
@@ -665,7 +666,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
 
   if (!selectedList) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Text size="lg" c="dimmed">
             Select a list to view its entities
@@ -677,7 +678,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
 
   if (isLoadingEntities) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Loader size="lg" />
           <Text size="sm" c="dimmed">
@@ -690,7 +691,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
 
   if (entities.length === 0) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Text size="lg" fw={500} ta="center">
             No entities yet
@@ -705,7 +706,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
   }
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md">
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md">
       <Stack gap="md">
         {/* Header */}
         <Group justify="space-between">
@@ -789,7 +790,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
         )}
 
         {/* Entities Table - T075: With virtual scrolling for large lists */}
-        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding={0}>
+        <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding={0}>
           <Box
             ref={parentRef}
             style={{

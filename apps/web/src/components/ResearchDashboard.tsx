@@ -43,6 +43,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import React, { useEffect,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 
@@ -62,7 +63,7 @@ const QuickSearch = ({ onSearch }: QuickSearchProps) => {
   };
 
   return (
-    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Title order={4} mb="md">Quick Search</Title>
       <Group gap="sm">
         <Select
@@ -118,7 +119,7 @@ const RecentActivity = ({ activities }: RecentActivityProps) => {
   };
 
   return (
-    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} h="100%">
+    <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }} h="100%">
       <Title order={4} mb="md">Recent Activity</Title>
       <List spacing="sm" size="sm">
         {activities.slice(0, 5).map((activity) => (
@@ -199,7 +200,7 @@ const QuickActions = ({ onAction }: QuickActionsProps) => {
   ];
 
   return (
-    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Title order={4} mb="md">Quick Actions</Title>
       <SimpleGrid cols={3} spacing="md">
         {actions.map((action) => (
@@ -265,7 +266,7 @@ const ResearchStats = ({ stats }: ResearchStatsProps) => {
   ];
 
   return (
-    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Title order={4} mb="md">Research Statistics</Title>
       <SimpleGrid cols={2} spacing="md">
         {statCards.map((stat) => (
@@ -309,7 +310,7 @@ const PopularTopics = ({ topics }: PopularTopicsProps) => {
   };
 
   return (
-    <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Title order={4} mb="md">Popular Research Topics</Title>
       <Stack gap="sm">
         {topics.map((topic, index) => (
@@ -490,7 +491,7 @@ export const ResearchDashboard = () => {
               <RecentActivity activities={recentActivity} />
 
               {/* Quick Links */}
-              <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+              <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
                 <Title order={4} mb="md">Quick Links</Title>
                 <Stack gap="xs">
                   <Button

@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { pageDescription,pageTitle } from "../styles/layout.css";
@@ -33,7 +34,7 @@ const AboutPage = () => {
       padding="xl"
       radius="lg"
       style={{
-        border: "1px solid var(--mantine-color-gray-3)",
+        border: BORDER_STYLE_GRAY_3,
         backgroundColor: colors.background.blur,
         backdropFilter: "blur(10px)",
         maxWidth: "800px",
@@ -50,7 +51,7 @@ const AboutPage = () => {
           </Text>
         </div>
 
-        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Title order={3} mb="md">
             Research Focus
           </Title>
@@ -64,7 +65,7 @@ const AboutPage = () => {
           </Text>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Title order={3} mb="md">
             Key Features
           </Title>
@@ -98,7 +99,7 @@ const AboutPage = () => {
           </List>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Title order={3} mb="md">
             Technology Stack
           </Title>
@@ -111,7 +112,7 @@ const AboutPage = () => {
           </Group>
         </Card>
 
-        <Card shadow="sm" padding="lg" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+        <Card shadow="sm" padding="lg" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
           <Title order={3} mb="md">
             Development & Deployment
           </Title>

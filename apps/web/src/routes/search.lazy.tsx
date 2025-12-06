@@ -25,6 +25,7 @@ import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { SearchInterface } from "../components/search/SearchInterface";
@@ -78,7 +79,7 @@ const renderSearchHeader = () => (
 );
 
 const renderEmptyState = () => (
-  <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+  <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
     <Stack align="center" py="xl">
       <Text size="lg" fw={500}>
         Enter a search term to explore OpenAlex
@@ -369,7 +370,7 @@ const SearchPage = () => {
           placeholder="Search for works, authors, institutions, topics... e.g. 'machine learning', 'Marie Curie', 'MIT'"
         />
 
-        {hasQuery && <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>{renderSearchResults()}</Card>}
+        {hasQuery && <Card style={{ border: BORDER_STYLE_GRAY_3 }}>{renderSearchResults()}</Card>}
 
         {!hasQuery && renderEmptyState()}
       </Stack>

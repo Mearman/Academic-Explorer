@@ -29,6 +29,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import {
   BookmarkSelectionProvider,
   useBookmarkSelection,
@@ -75,7 +76,7 @@ const BookmarkCard = ({
 
   return (
     <Card
-      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      style={{ border: BORDER_STYLE_GRAY_3 }}
       padding="md"
       data-testid="bookmark-card"
       className={isSelected ? "border-blue-500 bg-blue-50 dark:bg-blue-950" : ""}
@@ -335,7 +336,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
         />
 
       {filteredBookmarks.length === 0 ? (
-        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+        <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
           <Stack align="center" gap="md">
             <div style={{ color: 'var(--mantine-color-dimmed)' }}>
               <IconBookmarkOff size={48} />

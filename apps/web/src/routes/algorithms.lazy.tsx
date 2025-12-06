@@ -40,6 +40,7 @@ import React, { useCallback, useEffect, useMemo, useRef,useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { AlgorithmTabs } from '@/components/algorithms';
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
@@ -795,7 +796,7 @@ const AlgorithmsPage = () => {
           </Alert>
 
           {/* Graph Visualization */}
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
             <Group justify="space-between" mb="md">
               <Group gap="xs">
                 <Title order={5}>Graph Visualization</Title>
@@ -904,7 +905,7 @@ const AlgorithmsPage = () => {
             <Grid.Col span={{ base: 12, md: 3 }}>
               <Stack gap="md">
                 {/* Configuration Card */}
-                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
                   <Title order={5} mb="sm">Graph Configuration</Title>
 
                   <Stack gap="sm">
@@ -1178,7 +1179,7 @@ const AlgorithmsPage = () => {
                 </Card>
 
                 {/* Graph Summary Card */}
-                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
                   <Title order={5} mb="sm">Current Graph Stats</Title>
 
                   <Stack gap="xs">
@@ -1206,7 +1207,7 @@ const AlgorithmsPage = () => {
 
             {/* Right: Algorithms Panel with Category Tabs */}
             <Grid.Col span={{ base: 12, md: 9 }}>
-              <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+              <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
                 <AlgorithmTabs
                   nodes={graphData.nodes}
                   edges={graphData.edges}

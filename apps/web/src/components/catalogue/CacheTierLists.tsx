@@ -37,6 +37,8 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import React, { useCallback,useEffect, useMemo, useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+
 /**
  * Shared entity click handler for navigating to entity detail pages
  */
@@ -155,7 +157,7 @@ const CacheTierCard = ({
   const usagePercent = Math.min((entities.length / maxEntries) * 100, 100);
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
       <Group justify="space-between" mb="md">
         <Group>
           <ThemeIcon size="lg" variant="light" color={isPersistent ? "blue" : "orange"}>
@@ -198,7 +200,7 @@ const CacheTierCard = ({
           <Text size="xs" c="dimmed">Loading cache data...</Text>
         </Stack>
       ) : (entities.length === 0 ? (
-        <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
+        <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" bg="gray.0">
           <Text size="sm" c="dimmed" ta="center">
             No entities cached in this tier
           </Text>
@@ -207,19 +209,19 @@ const CacheTierCard = ({
         <Stack gap="md">
           {/* Summary Stats */}
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs">
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Entities</Text>
               <Text size="lg" fw={700}>{entities.length.toLocaleString()}</Text>
             </Paper>
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Total Size</Text>
               <Text size="lg" fw={700}>{formatBytes(totalSize)}</Text>
             </Paper>
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Entity Types</Text>
               <Text size="lg" fw={700}>{entityTypeCounts.length}</Text>
             </Paper>
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Usage</Text>
               <Text size="lg" fw={700}>{usagePercent.toFixed(1)}%</Text>
             </Paper>
@@ -246,7 +248,7 @@ const CacheTierCard = ({
               <Accordion.Panel>
                 <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs">
                   {entityTypeCounts.map(({ entityType, count }) => (
-                    <Paper key={entityType} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                    <Paper key={entityType} style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                       <Group gap="xs">
                         <Badge size="xs" color={getEntityTypeColor(entityType)} variant="filled">
                           {count}
@@ -359,7 +361,7 @@ const StaticCacheTierCard = ({
   const hitRate = stats && stats.requests > 0 ? (stats.hits / stats.requests) * 100 : 0;
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md" data-testid={`cache-tier-card-${title.toLowerCase().replaceAll(/\s+/g, "-")}`}>
       <Group justify="space-between" mb="md">
         <Group>
           <ThemeIcon size="lg" variant="light" color={color}>
@@ -388,7 +390,7 @@ const StaticCacheTierCard = ({
       ) : (
         <Stack gap="md">
           {/* URL Display */}
-          <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+          <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
             <Text size="xs" c="dimmed" fw={500} mb={4}>Cache URL</Text>
             <Text size="sm" ff="monospace" style={{ wordBreak: "break-all" }}>
               {url}
@@ -397,21 +399,21 @@ const StaticCacheTierCard = ({
 
           {/* Summary Stats */}
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs">
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Entities</Text>
               <Text size="lg" fw={700}>{entities.length.toLocaleString()}</Text>
             </Paper>
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
               <Text size="xs" c="dimmed" fw={500}>Entity Types</Text>
               <Text size="lg" fw={700}>{entityTypeCounts.length}</Text>
             </Paper>
             {stats && (
               <>
-                <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                   <Text size="xs" c="dimmed" fw={500}>Requests</Text>
                   <Text size="lg" fw={700}>{stats.requests.toLocaleString()}</Text>
                 </Paper>
-                <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                   <Text size="xs" c="dimmed" fw={500}>Hit Rate</Text>
                   <Text size="lg" fw={700}>{hitRate.toFixed(1)}%</Text>
                 </Paper>
@@ -447,7 +449,7 @@ const StaticCacheTierCard = ({
                 <Accordion.Panel>
                   <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs">
                     {entityTypeCounts.map(({ entityType, count }) => (
-                      <Paper key={entityType} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                      <Paper key={entityType} style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                         <Group gap="xs">
                           <Badge size="xs" color={getEntityTypeColor(entityType)} variant="filled">
                             {count}
@@ -517,7 +519,7 @@ const StaticCacheTierCard = ({
           )}
 
           {entities.length === 0 && (
-            <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
+            <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" bg="gray.0">
               <Text size="sm" c="dimmed" ta="center">
                 No entities cached in static storage
               </Text>
@@ -525,7 +527,7 @@ const StaticCacheTierCard = ({
           )}
         </Stack>
       )) : (
-        <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0">
+        <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" bg="gray.0">
           <Text size="sm" c="dimmed" ta="center">
             Not configured
           </Text>
@@ -655,7 +657,7 @@ export const CacheTierLists = () => {
 
   if (!summary) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Box c="gray.4">
             <IconDatabase size={48} />
@@ -757,7 +759,7 @@ export const CacheTierLists = () => {
 
         {/* Show message if no static cache is configured */}
         {staticConfig && !staticConfig.gitHubPages.isConfigured && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md">
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md">
             <Stack align="center" gap="md" py="lg">
               <ThemeIcon size="xl" variant="light" color="gray">
                 <IconCloud size={24} />

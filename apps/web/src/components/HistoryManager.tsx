@@ -27,6 +27,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 interface HistoryManagerProps {
@@ -209,7 +210,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
       </Group>
 
       {filteredEntries.length === 0 ? (
-        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+        <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
           <Stack align="center" gap="md">
             <IconHistory
               size={48}
@@ -254,7 +255,7 @@ export const HistoryManager = ({ onNavigate }: HistoryManagerProps) => {
                 return (
                   <Card
                     key={`${entry.entityId}-${entry.addedAt.getTime()}`}
-                    style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+                    style={{ border: BORDER_STYLE_GRAY_3 }}
                     padding="md"
                     shadow="sm"
                   >

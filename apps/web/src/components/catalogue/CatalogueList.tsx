@@ -36,6 +36,7 @@ import {
 import React, { useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 interface CatalogueListProps {
   lists: CatalogueList[];
@@ -106,7 +107,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
 
   return (
     <Card
-      style={{ border: "1px solid var(--mantine-color-gray-3)", cursor: "pointer" }}
+      style={{ border: BORDER_STYLE_GRAY_3, cursor: "pointer" }}
       padding="md"
       className={isSelected ? "border-blue-500 bg-blue-50 dark:bg-blue-950" : ""}
       onClick={onSelect}
@@ -436,7 +437,7 @@ export const CatalogueListComponent = ({
 
   if (lists.length === 0) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Box c="gray.4">
             {listType === "bibliography" ? (

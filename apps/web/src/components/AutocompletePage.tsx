@@ -28,6 +28,7 @@ import {
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 
 import { AutocompleteEntityFilter } from "@/components/AutocompleteEntityFilter";
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 
 export interface AutocompletePageProps {
   /** The entity type this page is for */
@@ -127,7 +128,7 @@ export const AutocompletePage = ({
 
         {/* Empty State (no query) */}
         {!query.trim() && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter a search term to see suggestions
@@ -210,7 +211,7 @@ const AutocompleteResultCard = ({ result, entityType }: AutocompleteResultCardPr
   const href = `#${metadata.routePath}/${cleanId}`;
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md" shadow="sm">
       <Stack gap="xs">
         <Group justify="space-between" wrap="nowrap">
           <Anchor href={href} fw={500} size="md">

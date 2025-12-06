@@ -16,6 +16,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
 import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
@@ -52,7 +53,7 @@ const CatalogueFallback = ({
 
   return (
     <Card
-      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      style={{ border: BORDER_STYLE_GRAY_3 }}
       p="xl"
       bg="red.0"
       role="alert"

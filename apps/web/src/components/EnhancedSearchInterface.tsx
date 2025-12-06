@@ -41,6 +41,7 @@ import {
 import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 // Add keyboard shortcuts for better UX
 const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
@@ -382,7 +383,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
         </FocusTrap>
       )}
 
-      <Card padding="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm" pos="relative">
+      <Card padding="lg" style={{ border: BORDER_STYLE_GRAY_3 }} shadow="sm" pos="relative">
         <LoadingOverlay visible={loading} overlayProps={{ blur: 2 }} />
 
         <Stack gap="md">
@@ -449,7 +450,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
         <Divider />
 
         {/* Basic Search */}
-        <Card padding="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="gray.0">
+        <Card padding="md" style={{ border: BORDER_STYLE_GRAY_3 }} bg="gray.0">
           <Stack gap="md">
             <Group gap="sm">
               <Select

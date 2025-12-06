@@ -3,6 +3,8 @@ import { Button, Group, Paper, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useCallback,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+
 interface SearchFilters {
   query: string;
 }
@@ -48,7 +50,7 @@ export const SearchInterface = ({
   };
 
   return (
-    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Stack gap="md">
         <Group>
           <Title order={3}>Search Academic Literature</Title>

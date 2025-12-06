@@ -29,6 +29,8 @@ import {
 import { IconAlertTriangle,IconClipboard } from "@tabler/icons-react";
 import React, { useMemo,useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+
 interface MissingPaperDetectionProps {
   dataset: STARDataset;
   onDetectionComplete?: (results: MissingPaperDetectionResults) => void;
@@ -130,7 +132,7 @@ export const MissingPaperDetection = ({
   };
 
   return (
-    <Paper p="lg" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+    <Paper p="lg" radius="lg" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Stack gap="lg" mb="lg">
         <Title order={3} c="var(--mantine-color-text)">
           Missing Paper Detection
@@ -142,7 +144,7 @@ export const MissingPaperDetection = ({
       </Stack>
 
       {/* Configuration Panel */}
-      <Card p="md" radius="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} bg="var(--mantine-color-gray-0)" mb="lg">
+      <Card p="md" radius="md" style={{ border: BORDER_STYLE_GRAY_3 }} bg="var(--mantine-color-gray-0)" mb="lg">
         <Title order={4} mb="md">
           Detection Configuration
         </Title>
@@ -341,7 +343,7 @@ const MissingPaperResults = ({
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p={0}>
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} p={0}>
       <Tabs value={activeTab} onChange={(value) => {
         if (value === "summary" || value === "candidates" || value === "methods" || value === "validation") {
           setActiveTab(value);
@@ -574,7 +576,7 @@ interface PaperCardProps {
   rank: number;
 }
 
-const PaperCard = ({ paper, rank }: PaperCardProps) => <Card p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+const PaperCard = ({ paper, rank }: PaperCardProps) => <Card p="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Group justify="space-between" align="flex-start" mb="sm">
         <Box flex={1}>
           <Group align="center" mb="xs">

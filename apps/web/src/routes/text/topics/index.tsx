@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 
 const textTopicsSearchSchema = z.object({
   title: z.string().optional().catch(undefined),
@@ -100,7 +101,7 @@ const TextTopicsRoute = () => {
         />
 
         {!title.trim() && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter text to analyze
@@ -151,7 +152,7 @@ const TextTopicsRoute = () => {
               Found {topics.length} topic{topics.length === 1 ? "" : "s"}
             </Text>
             {topics.map((topic) => (
-              <Card key={topic.id} style={{ border: "1px solid var(--mantine-color-gray-3)" }} padding="md" shadow="sm">
+              <Card key={topic.id} style={{ border: BORDER_STYLE_GRAY_3 }} padding="md" shadow="sm">
                 <Stack gap="xs">
                   <Group justify="space-between" wrap="nowrap">
                     <Anchor

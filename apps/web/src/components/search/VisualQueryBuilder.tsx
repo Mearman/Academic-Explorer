@@ -43,6 +43,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 import type { LogicalOperator } from "../filters/types/filter-ui";
@@ -236,7 +237,7 @@ const DropZone: React.FC<DropZoneProps> = ({
       p="md"
       style={{
         minHeight: isEmpty ? "80px" : "auto",
-        border: isEmpty ? "2px dashed var(--mantine-color-gray-3)" : "1px solid var(--mantine-color-gray-3)",
+        border: isEmpty ? "2px dashed var(--mantine-color-gray-3)" : BORDER_STYLE_GRAY_3,
         backgroundColor: isEmpty ? "var(--mantine-color-gray-0)" : "var(--mantine-color-body)",
         transition: prefersReducedMotion ? "none" : "all 0.2s ease",
       }}
@@ -578,7 +579,7 @@ export const VisualQueryBuilder = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+      <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
         <Stack gap="md">
           {/* Header */}
           <Group justify="space-between">

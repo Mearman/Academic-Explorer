@@ -45,6 +45,7 @@ import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { settingsActions } from "@/stores/settings-store";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 
 interface CatalogueManagerProps {
@@ -313,7 +314,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
 
         {/* Selected List Details */}
         {selectedList && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="gray.0" data-testid="selected-list-details">
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md" bg="gray.0" data-testid="selected-list-details">
             <Group justify="space-between" mb="md">
               <div>
                 <Title order={3} data-testid="selected-list-title">{selectedList.title}</Title>
@@ -386,7 +387,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
             {/* Entity Statistics */}
             {listStats && listStats.totalEntities > 0 && (
               <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs" mt="md">
-                <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                   <Text size="xs" c="dimmed" fw={500}>Total</Text>
                   <Text size="lg" fw={700} data-testid="stat-total">
                     {listStats.totalEntities}
@@ -396,7 +397,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
                 {Object.entries(listStats.entityCounts)
                   .filter(([, count]) => count > 0)
                   .map(([entityType, count]) => (
-                    <Paper key={entityType} style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" radius="sm">
+                    <Paper key={entityType} style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" radius="sm">
                       <Text size="xs" c="dimmed" fw={500} tt="capitalize">
                         {entityType}
                       </Text>

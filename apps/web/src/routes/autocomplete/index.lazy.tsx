@@ -28,6 +28,7 @@ import {
 } from "@/components/EntityTypeFilter";
 import { BaseTable } from "@/components/tables/BaseTable";
 import { type TableViewMode,TableViewModeToggle } from "@/components/TableViewModeToggle";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { transformAutocompleteResultToGridItem } from "@/utils/entity-mappers";
 
@@ -326,7 +327,7 @@ const AutocompleteGeneralRoute = () => {
         )}
 
         {selectedTypes.length > 0 && !query.trim() && (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
             <Stack align="center" py="xl">
               <Text size="lg" fw={500}>
                 Enter a search term to see suggestions

@@ -10,6 +10,7 @@
 
 import { Stack, Text,Title } from "@mantine/core";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 
 /**
@@ -72,7 +73,7 @@ export const EntityDetailLayoutIntegrationExample = () => `
         />
       )}
 
-      <Paper p="md" radius="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }}>
+      <Paper p="md" radius="lg" style={{ border: BORDER_STYLE_GRAY_3 }}>
         {/* Entity ID and select fields info */}
       </Paper>
     </Stack>

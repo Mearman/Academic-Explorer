@@ -32,6 +32,7 @@ import React, { useCallback,useState } from "react";
 
 import { useCatalogue } from "@/hooks/useCatalogue";
 import type { ExportFormat } from "@/types/catalogue";
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
 
 interface ImportModalProps {
@@ -390,7 +391,7 @@ export const ImportModal = ({ onClose, onImport, initialShareData }: ImportModal
         )}
 
         {preview && validationResult?.valid && (
-          <Paper style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+          <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
             <Stack gap="md">
               <Group justify="space-between">
                 <Text size="sm" fw={700}>Import Preview</Text>
