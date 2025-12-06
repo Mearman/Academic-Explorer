@@ -1,11 +1,12 @@
 import type { EntityType } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
-import { ActionIcon, Badge, Box, Code, Group, Modal, Paper, SegmentedControl,Stack, Text, Title, Tooltip } from "@mantine/core";
-import { IconBookmark, IconBookmarkFilled, IconBookmarkOff, IconCode, IconListCheck } from "@tabler/icons-react";
+import { ActionIcon, AppShell, Badge, Box, Code, Group, Modal, Paper, SegmentedControl, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { IconBookmark, IconBookmarkFilled, IconBookmarkOff, IconCode, IconListCheck, IconMenu2, IconX } from "@tabler/icons-react";
 import React, { ReactNode, useState } from "react";
 
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
+import { useResponsiveDesign } from "@/hooks/use-sprinkles";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
@@ -44,6 +45,9 @@ export const EntityDetailLayout = ({
   // Initialize theme colors hook
   useThemeColors();
 
+  // Initialize responsive design hook
+  const { isMobile } = useResponsiveDesign();
+
   // Initialize user interactions hook for entity bookmark functionality
   const userInteractions = useUserInteractions({
     entityId,
@@ -59,6 +63,9 @@ export const EntityDetailLayout = ({
 
   // Modal state for adding to catalogue
   const [showAddToListModal, setShowAddToListModal] = useState(false);
+
+  // Mobile navigation state
+  const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
 
   const handleBookmarkToggle = async () => {
     try {
@@ -84,41 +91,231 @@ export const EntityDetailLayout = ({
     }
   };
   return (
-    <Box p="xl" bg="var(--mantine-color-body)" style={{ minHeight: '100vh' }} data-testid="entity-detail-layout">
-      <Stack gap="xl">
-        {/* Header Section */}
-        <Paper p="xl" radius="xl">
-          <Group align="flex-start" justify="space-between" gap="xl">
-            <Stack gap="lg" style={{ flex: '1' }}>
-              <Badge
-                size="xl"
-                variant="light"
-                color={getMantineColor(entityType)}
-                leftSection={
-                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                    {config.icon}
-                  </svg>
-                }
-              >
-                {config.name}
-              </Badge>
+    <AppShell
+      padding={isMobile() ? "sm" : "xl"}
+      bg="var(--mantine-color-body)"
+      style={{ minHeight: '100vh' }}
+      data-testid="entity-detail-layout"
+    >
+      <AppShell.Main>
+        <Stack gap={isMobile() ? "lg" : "xl"}>
+          {/* Header Section */}
+          <Paper p={isMobile() ? "lg" : "xl"} radius="xl">
+            <Stack gap="lg">
+              {/* Mobile Header */}
+              {isMobile() && (
+                <Group justify="space-between" align="center">
+                  <Group gap="sm">
+                    <Badge
+                      size="lg"
+                      variant="light"
+                      color={getMantineColor(entityType)}
+                      leftSection={
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                          {config.icon}
+                        </svg>
+                      }
+                    >
+                      {config.name}
+                    </Badge>
+                  </Group>
 
-              <Title order={1} size="h1" c="var(--mantine-color-text)">
-                {displayName}
-              </Title>
+                  <ActionIcon
+                    variant="light"
+                    onClick={() => setMobileActionsOpen(!mobileActionsOpen)}
+                    aria-label="Actions menu"
+                  >
+                    {mobileActionsOpen ? <IconX size={ICON_SIZE.LG} /> : <IconMenu2 size={ICON_SIZE.LG} />}
+                  </ActionIcon>
+                </Group>
+              )}
 
-              <Paper p="md" radius="lg" bg="var(--mantine-color-body)">
+              {/* Desktop Header */}
+              {!isMobile() && (
+                <Group align="flex-start" justify="space-between" gap="xl">
+                  <Stack gap="lg" style={{ flex: '1' }}>
+                    <Badge
+                      size="xl"
+                      variant="light"
+                      color={getMantineColor(entityType)}
+                      leftSection={
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                          {config.icon}
+                        </svg>
+                      }
+                    >
+                      {config.name}
+                    </Badge>
+
+                    <Title order={1} size="h1" c="var(--mantine-color-text)">
+                      {displayName}
+                    </Title>
+                  </Stack>
+
+                  <Group gap="sm">
+                    {/* Desktop Action Buttons */}
+                    <Tooltip label="Add to catalogue list" position="bottom">
+                      <ActionIcon
+                        size="lg"
+                        variant="light"
+                        color="green"
+                        onClick={() => setShowAddToListModal(true)}
+                        data-testid="add-to-catalogue-button"
+                      >
+                        <IconListCheck size={ICON_SIZE.XL} />
+                      </ActionIcon>
+                    </Tooltip>
+
+                    <Tooltip
+                      label={userInteractions.isBookmarked ? "Remove entity bookmark" : "Bookmark this entity"}
+                      position="bottom"
+                    >
+                      <ActionIcon
+                        size="lg"
+                        variant={userInteractions.isBookmarked ? "filled" : "light"}
+                        color={userInteractions.isBookmarked ? "yellow" : "gray"}
+                        onClick={handleBookmarkToggle}
+                        loading={userInteractions.isLoadingBookmarks}
+                        data-testid="entity-bookmark-button"
+                      >
+                        {userInteractions.isBookmarked ? (
+                          <IconBookmark size={ICON_SIZE.XL} fill="currentColor" />
+                        ) : (
+                          <IconBookmarkOff size={ICON_SIZE.XL} />
+                        )}
+                      </ActionIcon>
+                    </Tooltip>
+
+                    {(selectParam || Object.keys(queryBookmarking.currentQueryParams).length > 0) && (
+                      <Tooltip
+                        label={
+                          queryBookmarking.isQueryBookmarked
+                            ? "Remove query bookmark"
+                            : "Bookmark this query (ignores pagination)"
+                        }
+                        position="bottom"
+                      >
+                        <ActionIcon
+                          size="lg"
+                          variant={queryBookmarking.isQueryBookmarked ? "filled" : "light"}
+                          color={queryBookmarking.isQueryBookmarked ? "blue" : "gray"}
+                          onClick={handleQueryBookmarkToggle}
+                        >
+                          {queryBookmarking.isQueryBookmarked ? (
+                            <IconBookmarkFilled size={ICON_SIZE.XL} />
+                          ) : (
+                            <IconBookmark size={ICON_SIZE.XL} />
+                          )}
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
+
+                    <SegmentedControl
+                      value={viewMode}
+                      onChange={(value) => onViewModeChange(value as DetailViewMode)}
+                      data={[
+                        { label: 'Rich', value: 'rich' },
+                        { label: 'Raw', value: 'raw' },
+                      ]}
+                    />
+                  </Group>
+                </Group>
+              )}
+
+              {/* Mobile Title and Actions */}
+              {isMobile() && (
+                <>
+                  <Title order={1} size="h2" c="var(--mantine-color-text)" ta="left">
+                    {displayName}
+                  </Title>
+
+                  {/* Mobile Actions Panel */}
+                  {mobileActionsOpen && (
+                    <Paper p="sm" radius="md" bg="var(--mantine-color-gray-0)">
+                      <Stack gap="sm">
+                        <Text size="sm" fw={600} c="dimmed">Actions</Text>
+                        <Group gap="sm" justify="space-around">
+                          <ActionIcon
+                            size="lg"
+                            variant="light"
+                            color="green"
+                            onClick={() => {
+                              setShowAddToListModal(true);
+                              setMobileActionsOpen(false);
+                            }}
+                            data-testid="mobile-add-to-catalogue-button"
+                          >
+                            <IconListCheck size={ICON_SIZE.LG} />
+                          </ActionIcon>
+
+                          <ActionIcon
+                            size="lg"
+                            variant={userInteractions.isBookmarked ? "filled" : "light"}
+                            color={userInteractions.isBookmarked ? "yellow" : "gray"}
+                            onClick={() => {
+                              handleBookmarkToggle();
+                              setMobileActionsOpen(false);
+                            }}
+                            loading={userInteractions.isLoadingBookmarks}
+                            data-testid="mobile-entity-bookmark-button"
+                          >
+                            {userInteractions.isBookmarked ? (
+                              <IconBookmark size={ICON_SIZE.LG} fill="currentColor" />
+                            ) : (
+                              <IconBookmarkOff size={ICON_SIZE.LG} />
+                            )}
+                          </ActionIcon>
+
+                          {(selectParam || Object.keys(queryBookmarking.currentQueryParams).length > 0) && (
+                            <ActionIcon
+                              size="lg"
+                              variant={queryBookmarking.isQueryBookmarked ? "filled" : "light"}
+                              color={queryBookmarking.isQueryBookmarked ? "blue" : "gray"}
+                              onClick={() => {
+                                handleQueryBookmarkToggle();
+                                setMobileActionsOpen(false);
+                              }}
+                            >
+                              {queryBookmarking.isQueryBookmarked ? (
+                                <IconBookmarkFilled size={ICON_SIZE.LG} />
+                              ) : (
+                                <IconBookmark size={ICON_SIZE.LG} />
+                              )}
+                            </ActionIcon>
+                          )}
+
+                          <SegmentedControl
+                            size="sm"
+                            value={viewMode}
+                            onChange={(value) => {
+                              onViewModeChange(value as DetailViewMode);
+                              setMobileActionsOpen(false);
+                            }}
+                            data={[
+                              { label: 'Rich', value: 'rich' },
+                              { label: 'Raw', value: 'raw' },
+                            ]}
+                          />
+                        </Group>
+                      </Stack>
+                    </Paper>
+                  )}
+                </>
+              )}
+
+              {/* Entity Details - shown on both mobile and desktop */}
+              <Paper p={isMobile() ? "sm" : "md"} radius="lg" bg="var(--mantine-color-body)">
                 <Stack gap="sm">
-                  <Group align="flex-start" gap="sm">
-                    <Text size="sm" fw={600} c="dimmed" miw="100px">
+                  <Group align="flex-start" gap="sm" wrap="nowrap">
+                    <Text size="sm" fw={600} c="dimmed" miw={isMobile() ? "80px" : "100px"}>
                       {config.name} ID:
                     </Text>
                     <Code flex={1} style={{ wordBreak: 'break-all' }}>
                       {entityId}
                     </Code>
                   </Group>
-                  <Group align="flex-start" gap="sm">
-                    <Text size="sm" fw={600} c="dimmed" miw="100px">
+                  <Group align="flex-start" gap="sm" wrap="nowrap">
+                    <Text size="sm" fw={600} c="dimmed" miw={isMobile() ? "80px" : "100px"}>
                       Select fields:
                     </Text>
                     <Text size="sm" c="dimmed" flex={1}>
@@ -130,126 +327,68 @@ export const EntityDetailLayout = ({
                 </Stack>
               </Paper>
             </Stack>
-
-            <Group gap="sm">
-              {/* Add to Catalogue Button */}
-              <Tooltip label="Add to catalogue list" position="bottom">
-                <ActionIcon
-                  size="lg"
-                  variant="light"
-                  color="green"
-                  onClick={() => setShowAddToListModal(true)}
-                  data-testid="add-to-catalogue-button"
-                >
-                  <IconListCheck size={ICON_SIZE.XL} />
-                </ActionIcon>
-              </Tooltip>
-
-              {/* Entity Bookmark Button */}
-              <Tooltip
-                label={userInteractions.isBookmarked ? "Remove entity bookmark" : "Bookmark this entity"}
-                position="bottom"
-              >
-                <ActionIcon
-                  size="lg"
-                  variant={userInteractions.isBookmarked ? "filled" : "light"}
-                  color={userInteractions.isBookmarked ? "yellow" : "gray"}
-                  onClick={handleBookmarkToggle}
-                  loading={userInteractions.isLoadingBookmarks}
-                  data-testid="entity-bookmark-button"
-                >
-                  {userInteractions.isBookmarked ? (
-                    <IconBookmark size={ICON_SIZE.XL} fill="currentColor" />
-                  ) : (
-                    <IconBookmarkOff size={ICON_SIZE.XL} />
-                  )}
-                </ActionIcon>
-              </Tooltip>
-
-              {/* Query Bookmark Button - only show if there are query parameters */}
-              {(selectParam || Object.keys(queryBookmarking.currentQueryParams).length > 0) && (
-                <Tooltip
-                  label={
-                    queryBookmarking.isQueryBookmarked
-                      ? "Remove query bookmark"
-                      : "Bookmark this query (ignores pagination)"
-                  }
-                  position="bottom"
-                >
-                  <ActionIcon
-                    size="lg"
-                    variant={queryBookmarking.isQueryBookmarked ? "filled" : "light"}
-                    color={queryBookmarking.isQueryBookmarked ? "blue" : "gray"}
-                    onClick={handleQueryBookmarkToggle}
-                  >
-                    {queryBookmarking.isQueryBookmarked ? (
-                      <IconBookmarkFilled size={ICON_SIZE.XL} />
-                    ) : (
-                      <IconBookmark size={ICON_SIZE.XL} />
-                    )}
-                  </ActionIcon>
-                </Tooltip>
-              )}
-
-              <SegmentedControl
-                value={viewMode}
-                onChange={(value) => onViewModeChange(value as DetailViewMode)}
-                data={[
-                  { label: 'Rich', value: 'rich' },
-                  { label: 'Raw', value: 'raw' },
-                ]}
-              />
-            </Group>
-          </Group>
-        </Paper>
+          </Paper>
 
         {/* Content Section */}
-        {viewMode === "raw" ? (
-          <Paper style={{ overflow: 'hidden', border: BORDER_STYLE_GRAY_3 }} radius="xl">
-            <Paper p="md" bg="var(--mantine-color-gray-0)" style={{ borderBottom: BORDER_STYLE_GRAY_3 }}>
-              <Group gap="sm">
-                <IconCode size={ICON_SIZE.XL} color="var(--mantine-color-gray-6)" />
-                <Text size="lg" fw={600} c="var(--mantine-color-gray-9)">
-                  Raw JSON Data
+          {viewMode === "raw" ? (
+            <Paper style={{ overflow: 'hidden', border: BORDER_STYLE_GRAY_3 }} radius="xl">
+              <Paper p={isMobile() ? "sm" : "md"} bg="var(--mantine-color-gray-0)" style={{ borderBottom: BORDER_STYLE_GRAY_3 }}>
+                <Group gap="sm">
+                  <IconCode size={isMobile() ? ICON_SIZE.LG : ICON_SIZE.XL} color="var(--mantine-color-gray-6)" />
+                  <Text size={isMobile() ? "md" : "lg"} fw={600} c="var(--mantine-color-gray-9)">
+                    Raw JSON Data
+                  </Text>
+                </Group>
+              </Paper>
+              <Paper p={isMobile() ? "sm" : "xl"} bg="var(--mantine-color-gray-1)" style={{ overflow: 'auto' }}>
+                <Text
+                  component="pre"
+                  size={isMobile() ? "xs" : "sm"}
+                  c="var(--mantine-color-gray-9)"
+                  ff="monospace"
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    maxHeight: isMobile() ? '400px' : 'none',
+                    overflow: isMobile() ? 'auto' : 'visible'
+                  }}
+                >
+                  {JSON.stringify(data, null, 2)}
                 </Text>
-              </Group>
+              </Paper>
             </Paper>
-            <Paper p="xl" bg="var(--mantine-color-gray-1)" style={{ overflow: 'auto' }}>
-              <Text
-                component="pre"
-                size="sm"
-                c="var(--mantine-color-gray-9)"
-                ff="monospace"
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-              >
-                {JSON.stringify(data, null, 2)}
-              </Text>
-            </Paper>
-          </Paper>
-        ) : (
-          <>
-            {/* Stacked layout for entity data sections */}
-            <EntityDataDisplay data={data} />
-            {/* Relationship sections in dedicated row */}
-            {children}
-          </>
-        )}
-      </Stack>
+          ) : (
+            <>
+              {/* Stacked layout for entity data sections */}
+              <EntityDataDisplay data={data} />
+              {/* Relationship sections in dedicated row */}
+              {children}
+            </>
+          )}
+        </Stack>
 
-      {/* Add to List Modal */}
-      <Modal
-        opened={showAddToListModal}
-        onClose={() => setShowAddToListModal(false)}
-        title="Add to Catalogue"
-        size="md"
-      >
-        <AddToListModal
-          entityType={entityType}
-          entityId={entityId}
-          entityDisplayName={displayName}
-          onClose={() => setShowAddToListModal(false)}
-        />
-      </Modal>
-    </Box>
+        {/* Add to List Modal */}
+        <Modal
+          opened={showAddToListModal}
+          onClose={() => {
+            setShowAddToListModal(false);
+            setMobileActionsOpen(false);
+          }}
+          title="Add to Catalogue"
+          size={isMobile() ? "sm" : "md"}
+          fullScreen={isMobile()}
+        >
+          <AddToListModal
+            entityType={entityType}
+            entityId={entityId}
+            entityDisplayName={displayName}
+            onClose={() => {
+              setShowAddToListModal(false);
+              setMobileActionsOpen(false);
+            }}
+          />
+        </Modal>
+      </AppShell.Main>
+    </AppShell>
   );
 };
