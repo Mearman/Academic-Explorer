@@ -106,7 +106,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
               </ActionIcon>
             </Tooltip>
             {onClose && (
-              <ActionIcon size="sm" variant="subtle" onClick={onClose}>
+              <ActionIcon size="sm" variant="subtle" onClick={onClose} aria-label="Close sidebar">
                 <IconX size={14} />
               </ActionIcon>
             )}
@@ -137,7 +137,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
         </div>
         <Group gap="xs">
           {onClose && (
-            <ActionIcon size="sm" variant="subtle" onClick={onClose}>
+            <ActionIcon size="sm" variant="subtle" onClick={onClose} aria-label="Close sidebar">
               <IconX size={14} />
             </ActionIcon>
           )}
@@ -153,6 +153,11 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
             align="center"
             style={{ cursor: "pointer", marginBottom: "0.5rem" }}
             onClick={() => setListsExpanded(!listsExpanded)}
+            role="button"
+            aria-expanded={listsExpanded}
+            aria-label="Toggle lists section"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setListsExpanded(!listsExpanded); }}
           >
             <Group gap="xs">
               {listsExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
@@ -229,6 +234,11 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
             align="center"
             style={{ cursor: "pointer", marginBottom: "0.5rem" }}
             onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
+            role="button"
+            aria-expanded={bookmarksExpanded}
+            aria-label="Toggle bookmarks section"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setBookmarksExpanded(!bookmarksExpanded); }}
           >
             <Group gap="xs">
               {bookmarksExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
