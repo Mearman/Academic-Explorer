@@ -2,6 +2,8 @@ import { Alert, Button,Container, Group, Stack, Text, Title } from "@mantine/cor
 import { IconHome, IconSearch } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 const NotFoundRoute = () => {
   return (
     <Container size="md" py="xl">
@@ -29,7 +31,7 @@ const NotFoundRoute = () => {
 
         <Group>
           <Button
-            leftSection={<IconHome size={16} />}
+            leftSection={<IconHome size={ICON_SIZE.MD} />}
             component="a"
             href="#/"
             variant="filled"
@@ -37,7 +39,7 @@ const NotFoundRoute = () => {
             Go Home
           </Button>
           <Button
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={ICON_SIZE.MD} />}
             component="a"
             href="#/search"
             variant="light"

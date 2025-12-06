@@ -1,6 +1,8 @@
 import { Alert, Button, Container, Group,Stack, Text } from "@mantine/core";
 import { IconAlertTriangle,IconBug } from "@tabler/icons-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import React, { useState } from "react";
 
 /**
@@ -44,7 +46,7 @@ const ErrorTestComponent = () => {
     <Container size="md" py="xl">
       <Stack gap="lg">
         <Alert
-          icon={<IconAlertTriangle size={20} />}
+          icon={<IconAlertTriangle size={ICON_SIZE.XL} />}
           title="Error Testing Page"
           color="orange"
           variant="light"
@@ -58,7 +60,7 @@ const ErrorTestComponent = () => {
         <Stack gap="md">
           <Text fw={500}>Test GlobalErrorBoundary:</Text>
           <Button
-            leftSection={<IconBug size={16} />}
+            leftSection={<IconBug size={ICON_SIZE.MD} />}
             onClick={triggerError}
             color="red"
             variant="light"
@@ -71,7 +73,7 @@ const ErrorTestComponent = () => {
           <Text fw={500}>Test Global Error Handlers:</Text>
           <Group>
             <Button
-              leftSection={<IconBug size={16} />}
+              leftSection={<IconBug size={ICON_SIZE.MD} />}
               onClick={triggerAsyncError}
               color="orange"
               variant="light"
@@ -79,7 +81,7 @@ const ErrorTestComponent = () => {
               Trigger Async Error
             </Button>
             <Button
-              leftSection={<IconBug size={16} />}
+              leftSection={<IconBug size={ICON_SIZE.MD} />}
               onClick={triggerJSError}
               color="yellow"
               variant="light"

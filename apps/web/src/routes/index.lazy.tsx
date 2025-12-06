@@ -15,6 +15,8 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { useState } from "react";
 
 import { useDocumentTitle } from "@/hooks/use-document-title";
@@ -73,7 +75,7 @@ const HomePage = () => {
       >
         <Stack gap="xl" align="center">
         <Group gap="md">
-          <IconGraph size={40} color={colors.primary} />
+          <IconGraph size={ICON_SIZE.HERO} color={colors.primary} />
           <Title order={1} ta="center">
             BibGraph
           </Title>
@@ -98,7 +100,7 @@ const HomePage = () => {
               onChange={(e) => {
                 setSearchQuery(e.target.value);
               }}
-              leftSection={<IconSearch size={20} />}
+              leftSection={<IconSearch size={ICON_SIZE.XL} />}
               aria-label="Search academic literature"
               styles={{
                 input: {
@@ -177,19 +179,19 @@ const HomePage = () => {
         <Stack gap="md" align="center" style={{ width: "100%" }} mt="lg">
           <Group gap="lg" justify="center" wrap="wrap">
             <Group gap="xs">
-              <IconBrandReact size={16} color={colors.primary} />
+              <IconBrandReact size={ICON_SIZE.MD} color={colors.primary} />
               <Text size="xs" c="dimmed">
                 React 19
               </Text>
             </Group>
             <Group gap="xs">
-              <IconDatabase size={16} color={colors.success} />
+              <IconDatabase size={ICON_SIZE.MD} color={colors.success} />
               <Text size="xs" c="dimmed">
                 OpenAlex API
               </Text>
             </Group>
             <Group gap="xs">
-              <IconGraph size={16} color={colors.entity.source} />
+              <IconGraph size={ICON_SIZE.MD} color={colors.entity.source} />
               <Text size="xs" c="dimmed">
                 XYFlow
               </Text>

@@ -25,7 +25,7 @@ import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { SearchInterface } from "../components/search/SearchInterface";
@@ -321,9 +321,9 @@ const SearchPage = () => {
               }}
               leftSection={
                 userInteractions.isBookmarked ? (
-                  <IconBookmark size={16} fill="currentColor" />
+                  <IconBookmark size={ICON_SIZE.MD} fill="currentColor" />
                 ) : (
-                  <IconBookmarkOff size={16} />
+                  <IconBookmarkOff size={ICON_SIZE.MD} />
                 )
               }
               title={
