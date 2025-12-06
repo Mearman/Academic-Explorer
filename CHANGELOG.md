@@ -1,3 +1,18 @@
+## 23.2.0 (2025-12-06)
+
+* fix(ui): suppress false positive ESLint warning for screen reader announcement ([cea379d](https://github.com/Mearman/BibGraph/commit/cea379d))
+* fix(web): enhance EntityList with ARIA and fix graph type compatibility ([e9d243b](https://github.com/Mearman/BibGraph/commit/e9d243b))
+* fix(web): remove unused imports and improve type safety in graph routes ([9c5cfe3](https://github.com/Mearman/BibGraph/commit/9c5cfe3))
+* fix(web): resolve import sorting issues in components ([4068cfc](https://github.com/Mearman/BibGraph/commit/4068cfc))
+* fix(web): resolve TypeScript errors with unknown type parameter ([4a7c9f6](https://github.com/Mearman/BibGraph/commit/4a7c9f6))
+* feat(ui): add accessibility hooks and skeleton loading components ([7511a34](https://github.com/Mearman/BibGraph/commit/7511a34))
+* feat(web): add accessibility enhancements and loading states ([64b62e2](https://github.com/Mearman/BibGraph/commit/64b62e2))
+* feat(web): enhance CatalogueErrorBoundary with screen reader support ([1789921](https://github.com/Mearman/BibGraph/commit/1789921))
+* feat(web): enhance loading state with progress indicators ([c6e2e3f](https://github.com/Mearman/BibGraph/commit/c6e2e3f))
+* feat(web): enhance loading states with progress indicators and skeleton screens ([d01162e](https://github.com/Mearman/BibGraph/commit/d01162e))
+* feat(web): enhance LoadingState with comprehensive accessibility features ([5304f8e](https://github.com/Mearman/BibGraph/commit/5304f8e))
+* chore(release): 23.1.4 [skip ci] ([75d426a](https://github.com/Mearman/BibGraph/commit/75d426a))
+
 ## <small>23.1.4 (2025-12-06)</small>
 
 * fix(ci): inject next version into build before semantic-release commits ([fc52f8d](https://github.com/Mearman/BibGraph/commit/fc52f8d))
