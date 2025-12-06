@@ -55,6 +55,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useRef,useState } from "react";
 
+import { NOTIFICATION_DURATION } from "@/config/notification-constants";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import {
   isAuthorMetadata,
@@ -501,7 +502,7 @@ export const CatalogueEntities = ({ onNavigate }: CatalogueEntitiesProps) => {
         title: "Reordered",
         message: `Entity moved from position ${oldIndex + 1} to position ${newIndex + 1}`,
         color: "blue",
-        autoClose: 2000,
+        autoClose: NOTIFICATION_DURATION.SHORT_MS,
       });
     } catch (error) {
       logger.error("catalogue-ui", "Failed to reorder entities", {

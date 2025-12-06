@@ -40,6 +40,8 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
 
+import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+
 // Add keyboard shortcuts for better UX
 const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
   useEffect(() => {
@@ -149,7 +151,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
       title: "Search Started",
       message: `Searching with ${activeFiltersCount} active filters`,
       color: "blue",
-      autoClose: 1000,
+      autoClose: NOTIFICATION_DURATION.BRIEF_MS,
       withCloseButton: false,
       styles: {
         root: {

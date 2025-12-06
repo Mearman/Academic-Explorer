@@ -27,6 +27,8 @@ import {
 import { Link,useLocation } from "@tanstack/react-router";
 import React, { useCallback,useMemo } from "react";
 
+import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+
 interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -130,7 +132,7 @@ export const BreadcrumbNavigation = () => {
           title: "URL Copied",
           message: "Current page URL copied to clipboard",
           color: "green",
-          autoClose: 3000,
+          autoClose: NOTIFICATION_DURATION.MEDIUM_MS,
         });
         return undefined;
       })
@@ -139,7 +141,7 @@ export const BreadcrumbNavigation = () => {
           title: "Copy Failed",
           message: "Failed to copy URL to clipboard",
           color: "red",
-          autoClose: 3000,
+          autoClose: NOTIFICATION_DURATION.MEDIUM_MS,
         });
         return undefined;
       });

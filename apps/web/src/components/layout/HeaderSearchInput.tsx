@@ -16,6 +16,7 @@ import {
 import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo,useRef, useState } from "react";
 
+import { NOTIFICATION_DURATION } from "@/config/notification-constants";
 import { useNavigationEnhancements } from "@/hooks/useNavigationEnhancements";
 
 export const HeaderSearchInput = () => {
@@ -112,7 +113,7 @@ export const HeaderSearchInput = () => {
       title: "History Cleared",
       message: "Search history has been cleared",
       color: "blue",
-      autoClose: 2000,
+      autoClose: NOTIFICATION_DURATION.SHORT_MS,
     });
   }, [clearSearchHistory]);
 
