@@ -9,7 +9,7 @@ import { IconClick,IconRefresh } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 import type { CacheKeyType } from "@/config/cache";
-import { TEXT } from "@/config/style-constants";
+import { ICON_SIZE, TEXT } from "@/config/style-constants";
 import { useFieldFetch } from "@/hooks/use-field-fetch";
 
 interface FieldDisplayProps {
@@ -127,8 +127,9 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
                 color="blue"
                 onClick={handleFetchClick}
                 loading={isFetching}
+                aria-label={`Fetch ${label.toLowerCase()}`}
               >
-                <IconClick size={14} />
+                <IconClick size={ICON_SIZE.XS} />
               </ActionIcon>
             </Tooltip>
           )}
@@ -140,8 +141,9 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
                 color="gray"
                 onClick={handleFetchClick}
                 loading={isFetching}
+                aria-label={`Retry fetching ${label.toLowerCase()}`}
               >
-                <IconRefresh size={14} />
+                <IconRefresh size={ICON_SIZE.XS} />
               </ActionIcon>
             </Tooltip>
           )}
