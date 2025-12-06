@@ -12,6 +12,7 @@ export * from "./HistorySidebar";
 export * from "./LeftRibbon";
 export * from "./LeftSidebarDynamic";
 export * from "./MainLayout";
+export * from "./MobileNavigation";
 export * from "./RightRibbon";
 export * from "./RightSidebarContent";
 export * from "./SidebarFallback";

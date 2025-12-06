@@ -4,5 +4,8 @@
 
 export * from "./ErrorRecovery";
 export * from "./LoadingSpinner";
+export * from "./NetworkStatus";
+export * from "./ProgressIndicator";
 export * from "./SearchEmptyState";
+export * from "./SmartErrorBoundary";
 export * from "./ErrorBoundary/index";
