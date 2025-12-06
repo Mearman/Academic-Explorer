@@ -18,7 +18,9 @@ import {
 import type { PostHogErrorBoundaryFallbackProps } from "@posthog/react";
 import { PostHogErrorBoundary } from "@posthog/react";
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
-import React, { FunctionComponent,ReactNode } from "react";
+import React, { useEffect,FunctionComponent,ReactNode } from "react";
+
+import { useScreenReader } from "@bibgraph/ui";
 
 interface CatalogueErrorBoundaryProps {
   children: ReactNode;
@@ -38,16 +40,44 @@ const CatalogueFallback = ({
   // Convert unknown error to Error for display
   const errorObj = error instanceof Error ? error : new Error(String(error));
 
+  // Accessibility: announce error to screen readers
+  const { announceAction } = useScreenReader();
+
+  useEffect(() => {
+    // Announce the error when component mounts
+    announceAction(
+      'Error occurred',
+      `Catalogue error: ${errorObj.message || "Unknown error occurred"}`
+    );
+  }, [errorObj.message, announceAction]);
+
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xl" bg="red.0">
+    <Card
+      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      p="xl"
+      bg="red.0"
+      role="alert"
+      aria-live="assertive"
+      aria-labelledby="error-title"
+      aria-describedby="error-description"
+    >
       <Stack gap="md">
         <Group>
           <IconAlertTriangle size={32} color="var(--mantine-color-red-6)" />
           <div>
-            <Text size="lg" fw={600} c="red">
+            <Text
+              id="error-title"
+              size="lg"
+              fw={600}
+              c="red"
+            >
               Catalogue Error
             </Text>
-            <Text size="sm" c="dimmed">
+            <Text
+              id="error-description"
+              size="sm"
+              c="dimmed"
+            >
               Something went wrong while loading the catalogue
             </Text>
           </div>
