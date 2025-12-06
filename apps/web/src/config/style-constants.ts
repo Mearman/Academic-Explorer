@@ -98,3 +98,37 @@ export const SPLIT_BUTTON_HEIGHT = 34;
  * Default minimum width for split buttons
  */
 export const SPLIT_BUTTON_MIN_WIDTH = 120;
+
+// =============================================================================
+// ICON SIZE CONSTANTS
+// =============================================================================
+
+/**
+ * Standardized icon sizes used throughout the application
+ * These follow a consistent scale for visual hierarchy
+ */
+export const ICON_SIZE = {
+	/** Extra small - badges, chips, inline indicators (12px) */
+	XS: 12,
+	/** Small - compact buttons, input adornments (14px) */
+	SM: 14,
+	/** Default - standard buttons, menu items, alerts (16px) */
+	MD: 16,
+	/** Large - accordion controls, section headers (18px) */
+	LG: 18,
+	/** Extra large - navigation icons, card headers (20px) */
+	XL: 20,
+	/** 2x large - prominent section icons, quick actions (24px) */
+	XXL: 24,
+	/** Page header icons (28px) */
+	HEADER: 28,
+	/** Empty state secondary icons (32px) */
+	EMPTY_STATE_SM: 32,
+	/** Hero icons, feature highlights (40px) */
+	HERO: 40,
+	/** Empty state primary icons (48px) */
+	EMPTY_STATE: 48,
+} as const;
+
+/** Type for ICON_SIZE values */
+export type IconSize = (typeof ICON_SIZE)[keyof typeof ICON_SIZE];
