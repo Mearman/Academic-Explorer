@@ -3,4 +3,5 @@
  */
 
 export * from "./use-async-operation";
+export * from "./useAccessibility";
 export * from "./useThemeVars";

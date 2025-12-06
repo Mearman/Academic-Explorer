@@ -15,11 +15,11 @@ import type {
   Topic,
   Work,
 } from "@bibgraph/types";
-import { DataState, useAsyncOperation } from "@bibgraph/ui";
+import { DataState, useAsyncOperation, useScreenReader, useAriaAttributes } from "@bibgraph/ui";
 import { logger } from "@bibgraph/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
 import { EntityGrid } from "./EntityGrid";
@@ -79,10 +79,13 @@ export const EntityList = ({
   searchParams,
 }: EntityListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const { announceStatus, announceAction } = useScreenReader();
+  const { getAriaLabel } = useAriaAttributes();
 
   const onError = React.useCallback((error: Error) => {
     logger.error("EntityList", `Failed to fetch ${entityType}`, { error });
-  }, [entityType]);
+    announceAction(`Error loading ${entityType}`);
+  }, [entityType, announceAction]);
 
   const asyncOperation = useAsyncOperation<Entity[]>({
     retryCount: 2,
@@ -258,12 +261,21 @@ export const EntityList = ({
     asyncOperation.execute(fetchData);
   }, [fetchData, asyncOperation.execute]);
 
+  // Announce when data loading completes
+  React.useEffect(() => {
+    if (!asyncOperation.loading && !asyncOperation.error && asyncOperation.data) {
+      announceStatus(`Loaded ${asyncOperation.data.length} ${entityType} items`);
+    }
+  }, [asyncOperation.loading, asyncOperation.error, asyncOperation.data, entityType, announceStatus]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    announceAction(`Navigated to page ${page} of ${paginationInfo.totalPages}`);
   };
 
   const handleViewModeChange = (newViewMode: TableViewMode) => {
     onViewModeChange?.(newViewMode);
+    announceAction(`Switched to ${newViewMode} view`);
   };
 
   return (
@@ -287,36 +299,72 @@ export const EntityList = ({
           transformEntityToListItem(item, entityType),
         );
 
+        const entityListTitle = title || entityType.charAt(0).toUpperCase() + entityType.slice(1);
+
         return (
-          <div>
+          <div role="region" aria-label={`${entityListTitle} list`}>
             <Group justify="space-between" mb="md">
-              <h1>
-                {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
+              <h1 id="entity-list-title">
+                {entityListTitle}
               </h1>
               {onViewModeChange && (
-                <TableViewModeToggle value={viewMode} onChange={handleViewModeChange} />
+                <div role="group" aria-label="View mode selection">
+                  <TableViewModeToggle
+                    value={viewMode}
+                    onChange={handleViewModeChange}
+                    aria-label={getAriaLabel("view mode toggle", `Change display view for ${entityListTitle}`)}
+                  />
+                </div>
               )}
             </Group>
-            {viewMode === "table" && (
-              <BaseTable data={tableData} columns={tableColumns} />
-            )}
-            {viewMode === "list" && <EntityListView items={listItems} />}
-            {viewMode === "grid" && <EntityGrid items={gridItems} />}
-            {paginationInfo.totalPages > 1 && (
-              <Group justify="space-between" mt="md">
-                <Text size="sm" c="dimmed">
-                  Showing {(currentPage - 1) * perPage + 1} to{" "}
-                  {Math.min(currentPage * perPage, paginationInfo.totalCount)} of {paginationInfo.totalCount}{" "}
-                  entries
-                </Text>
-                <Pagination
-                  value={currentPage}
-                  onChange={handlePageChange}
-                  total={paginationInfo.totalPages}
-                  size="sm"
-                  withEdges
+
+            <div
+              role="region"
+              aria-label={`${viewMode} view of ${entityListTitle}`}
+              aria-live="polite"
+            >
+              {viewMode === "table" && (
+                <BaseTable
+                  data={tableData}
+                  columns={tableColumns}
+                  aria-label={`${entityListTitle} table with ${data.length} rows`}
                 />
-              </Group>
+              )}
+              {viewMode === "list" && (
+                <EntityListView
+                  items={listItems}
+                  aria-label={`${entityListTitle} list with ${data.length} items`}
+                />
+              )}
+              {viewMode === "grid" && (
+                <EntityGrid
+                  items={gridItems}
+                  aria-label={`${entityListTitle} grid with ${data.length} items`}
+                />
+              )}
+            </div>
+
+            {paginationInfo.totalPages > 1 && (
+              <nav
+                aria-label="Pagination navigation"
+                role="navigation"
+              >
+                <Group justify="space-between" mt="md">
+                  <Text size="sm" c="dimmed" aria-live="polite">
+                    Showing {(currentPage - 1) * perPage + 1} to{" "}
+                    {Math.min(currentPage * perPage, paginationInfo.totalCount)} of {paginationInfo.totalCount}{" "}
+                    {entityType.toLowerCase()} entries
+                  </Text>
+                  <Pagination
+                    value={currentPage}
+                    onChange={handlePageChange}
+                    total={paginationInfo.totalPages}
+                    size="sm"
+                    withEdges
+                    aria-label={`Pagination for ${entityListTitle}, currently page ${currentPage} of ${paginationInfo.totalPages}`}
+                  />
+                </Group>
+              </nav>
             )}
           </div>
         );
