@@ -8,6 +8,8 @@
 import { Badge, Group, Paper, Text } from '@mantine/core';
 import React from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+
 export interface RelationshipCountsProps {
   /** Total number of incoming relationships */
   incomingCount: number;
@@ -40,7 +42,7 @@ export const RelationshipCounts: React.FC<RelationshipCountsProps> = ({
   }
 
   return (
-    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="relationship-counts">
+    <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }} data-testid="relationship-counts">
       <Group gap="md">
         <Text size="sm" fw={600}>Total Relationships:</Text>
 

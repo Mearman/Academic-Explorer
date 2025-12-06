@@ -9,6 +9,7 @@ import { RelationType } from '@bibgraph/types';
 import { Button, Checkbox, Group, Paper, Stack, Title } from '@mantine/core';
 import React from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { RELATIONSHIP_TYPE_LABELS } from '@/types/relationship';
 
 export interface RelationshipTypeFilterProps {
@@ -73,7 +74,7 @@ export const RelationshipTypeFilter: React.FC<RelationshipTypeFilterProps> = ({
   const noneSelected = selectedTypes.length === 0;
 
   return (
-    <Paper p="md" style={{ border: "1px solid var(--mantine-color-gray-3)" }} data-testid="relationship-type-filter">
+    <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }} data-testid="relationship-type-filter">
       <Stack gap="md">
         <Group justify="space-between">
           <Title order={3} size="h4">{title}</Title>

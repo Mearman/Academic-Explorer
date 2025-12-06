@@ -10,6 +10,7 @@ import { Alert,Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import React from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 
 import { RelationshipList } from './RelationshipList';
@@ -49,7 +50,7 @@ export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
   return (
     <Paper
       p="md"
-      style={{ border: "1px solid var(--mantine-color-gray-3)" }}
+      style={{ border: BORDER_STYLE_GRAY_3 }}
       data-testid={testId}
     >
       <Stack gap="md">
