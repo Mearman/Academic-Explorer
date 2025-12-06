@@ -1,3 +1,8 @@
+## <small>23.1.4 (2025-12-06)</small>
+
+* fix(ci): inject next version into build before semantic-release commits ([fc52f8d](https://github.com/Mearman/BibGraph/commit/fc52f8d))
+* chore(release): 23.1.3 [skip ci] ([3c800cb](https://github.com/Mearman/BibGraph/commit/3c800cb))
+
 ## <small>23.1.3 (2025-12-06)</small>
 
 * fix(algorithms): adjust label propagation performance thresholds for CI environment ([a671d98](https://github.com/Mearman/BibGraph/commit/a671d98))
