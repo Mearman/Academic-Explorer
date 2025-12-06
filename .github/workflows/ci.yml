@@ -226,6 +226,8 @@ jobs:
         env:
           GITHUB_PAGES: true
           NODE_OPTIONS: --max-old-space-size=8192
+          # Pass version from determine-version job to vite build
+          NEXT_RELEASE_VERSION: ${{ needs.determine-version.outputs.next-version }}
         run: pnpm nx run-many -t build typecheck --parallel=3
 
       - name: Lint all projects
