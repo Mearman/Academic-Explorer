@@ -2,7 +2,7 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { EntityDetectionService } from "@bibgraph/utils";
+import { EntityDetectionService, logger } from "@bibgraph/utils";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useMemo,useRef } from "react";
 
@@ -108,7 +108,7 @@ export const NavigationTracker = () => {
             }
           }
         } catch (analyticsError) {
-          console.warn('Failed to send page view to PostHog:', analyticsError);
+          logger.warn('analytics', 'Failed to send page view to PostHog', { error: analyticsError }, 'NavigationTracker');
         }
       }
 

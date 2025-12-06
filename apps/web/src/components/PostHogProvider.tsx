@@ -8,6 +8,7 @@
 import { PostHogProvider as PostHogReactProvider } from '@posthog/react'
 import React, { ReactNode } from 'react'
 
+import { logger } from '@bibgraph/utils'
 import {
   POSTHOG_API_KEY,
   POSTHOG_CONFIG,
@@ -34,7 +35,7 @@ export const PostHogProvider = ({ children }: { children: ReactNode }) => {
   // Only initialize PostHog if enabled and configured
   if (!POSTHOG_ENABLED || !shouldInitializePostHog()) {
     if (import.meta.env.DEV) {
-      console.info('PostHog analytics disabled - missing API key or invalid configuration')
+      logger.info('analytics', 'PostHog analytics disabled - missing API key or invalid configuration', {}, 'PostHogProvider')
     }
     return <>{children}</>
   }
@@ -50,9 +51,9 @@ export const PostHogProvider = ({ children }: { children: ReactNode }) => {
     )
   } catch (error) {
     // Log PostHog initialization error but don't break the app
-    console.error('PostHog initialization failed:', error)
+    logger.error('analytics', 'PostHog initialization failed', { error }, 'PostHogProvider')
     if (import.meta.env.DEV) {
-      console.warn('PostHog analytics disabled due to initialization error')
+      logger.warn('analytics', 'PostHog analytics disabled due to initialization error', {}, 'PostHogProvider')
     }
     return <>{children}</>
   }

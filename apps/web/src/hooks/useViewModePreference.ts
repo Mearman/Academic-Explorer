@@ -6,6 +6,7 @@
  */
 
 import type { ViewMode } from '@bibgraph/types';
+import { logger } from '@bibgraph/utils';
 import { useCallback,useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bibgraph-view-mode-preference';
@@ -60,7 +61,7 @@ export const useViewModePreference = (defaultMode: ViewMode = DEFAULT_MODE): Use
       setViewModeState(parsed);
     } catch (error) {
       // localStorage may be unavailable (e.g., private browsing)
-      console.warn('Failed to load view mode preference:', error);
+      logger.warn('ui', 'Failed to load view mode preference', { error }, 'useViewModePreference');
     }
     setIsLoaded(true);
   }, []);
@@ -72,7 +73,7 @@ export const useViewModePreference = (defaultMode: ViewMode = DEFAULT_MODE): Use
       localStorage.setItem(STORAGE_KEY, mode);
     } catch (error) {
       // localStorage may be unavailable
-      console.warn('Failed to save view mode preference:', error);
+      logger.warn('ui', 'Failed to save view mode preference', { error }, 'useViewModePreference');
     }
   }, []);
 
