@@ -17,6 +17,8 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 
+import { CARD_BORDER_STYLE } from "@/config/style-constants";
+
 import * as styles from "./sidebar.css";
 
 interface SidebarFallbackProps {
@@ -56,7 +58,7 @@ export const SidebarFallback = ({ title, type, onClose }: SidebarFallbackProps) 
 
       {/* Empty State */}
       <div className={styles.scrollableContent}>
-        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+        <Card style={CARD_BORDER_STYLE} p="md">
           <div className={styles.emptyState}>
             <IconBookmark size={32} />
             <Text size="sm" fw={500} ta="center">
