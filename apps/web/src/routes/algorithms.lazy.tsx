@@ -37,6 +37,7 @@ import {
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useMemo, useRef,useState } from 'react';
+import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { AlgorithmTabs } from '@/components/algorithms';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
@@ -44,8 +45,7 @@ import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualizat
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import ForceGraph2D, { type ForceGraphMethods } from 'react-force-graph-2d';
-import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
+import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 
 /**
  * Configuration for sample graph generation
@@ -569,7 +569,7 @@ const AlgorithmsPage = () => {
   const handleGraphReady = useCallback(
     (methods: ForceGraphMethods | unknown) => {
       // Cast to GraphMethods if it has the required zoomToFit method
-      if (methods && typeof (methods as any).zoomToFit === 'function') {
+      if (methods && typeof methods === 'object' && methods !== null && 'zoomToFit' in methods && typeof (methods as ForceGraphMethods).zoomToFit === 'function') {
         graphMethodsRef.current = methods as GraphMethods;
       }
     },
