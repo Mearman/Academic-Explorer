@@ -268,7 +268,7 @@ const EntityGraphPage = () => {
 
         {/* Empty state content */}
         <Container size="md" py="xl" flex={1}>
-          <GraphEmptyState variant="no-entities" />
+          <GraphEmptyState variant="no-entities" availableSourceCount={0} />
         </Container>
       </Flex>
     );
