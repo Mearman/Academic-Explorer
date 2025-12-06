@@ -1,3 +1,16 @@
+## <small>23.4.1 (2025-12-06)</small>
+
+* refactor(web): add style constants for DRY border styling ([6747773](https://github.com/Mearman/BibGraph/commit/6747773))
+* refactor(web): apply style constants to algorithm item components ([14e3cc5](https://github.com/Mearman/BibGraph/commit/14e3cc5))
+* refactor(web): apply style constants to algorithm panel components ([8aeb9de](https://github.com/Mearman/BibGraph/commit/8aeb9de))
+* refactor(web): apply style constants to entity-detail components ([20811a0](https://github.com/Mearman/BibGraph/commit/20811a0))
+* refactor(web): apply style constants to more components ([9e5bdee](https://github.com/Mearman/BibGraph/commit/9e5bdee))
+* refactor(web): apply style constants to relationship components ([d0bac77](https://github.com/Mearman/BibGraph/commit/d0bac77))
+* refactor(web): apply style constants to sidebar components ([183a0da](https://github.com/Mearman/BibGraph/commit/183a0da))
+* refactor(web): extract notification duration constants for DRY compliance ([747a814](https://github.com/Mearman/BibGraph/commit/747a814))
+* refactor(web): use centralized debounce constant in bookmarks ([4ae180e](https://github.com/Mearman/BibGraph/commit/4ae180e))
+* chore(release): 23.4.0 [skip ci] ([19ad92e](https://github.com/Mearman/BibGraph/commit/19ad92e))
+
 ## 23.4.0 (2025-12-06)
 
 * fix(web): prevent query parameter duplication in entity URL hash extraction ([4020b23](https://github.com/Mearman/BibGraph/commit/4020b23))
