@@ -6,7 +6,6 @@
  */
 
 import { Stack } from '@mantine/core';
-import React from 'react';
 
 import type { RelationshipSection } from '@/types/relationship';
 
@@ -36,7 +35,7 @@ export interface RelationshipListProps {
  * @param root0.onPageSizeChange
  * @param root0.isLoading
  */
-export const RelationshipList: React.FC<RelationshipListProps> = ({
+export const RelationshipList = ({
   section,
   onPageChange,
   onPageSizeChange,

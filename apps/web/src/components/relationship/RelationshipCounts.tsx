@@ -6,7 +6,6 @@
  */
 
 import { Badge, Group, Paper, Text } from '@mantine/core';
-import React from 'react';
 
 import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 
@@ -29,7 +28,7 @@ export interface RelationshipCountsProps {
  * @param root0.outgoingCount
  * @param root0.showGrandTotal
  */
-export const RelationshipCounts: React.FC<RelationshipCountsProps> = ({
+export const RelationshipCounts = ({
   incomingCount,
   outgoingCount,
   showGrandTotal = true,

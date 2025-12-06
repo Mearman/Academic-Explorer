@@ -6,7 +6,6 @@
  */
 
 import { Group, Pagination, Select, Text } from '@mantine/core';
-import React from 'react';
 
 import type { PaginationState } from '@/types/relationship';
 
@@ -49,7 +48,7 @@ const PAGE_SIZE_OPTIONS = [
  * @param root0.onPageSizeChange
  * @param root0.disabled
  */
-export const RelationshipPagination: React.FC<RelationshipPaginationProps> = ({
+export const RelationshipPagination = ({
   pagination,
   totalCount,
   loadedCount,

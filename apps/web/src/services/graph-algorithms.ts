@@ -4,8 +4,6 @@
  * @module services/graph-algorithms
  */
 
-import { logger } from "@bibgraph/utils";
-
 import {
   // Traversal
   bfs,
@@ -58,6 +56,7 @@ import type {
   GraphNode,
   WeightableEdgeProperty,
 } from '@bibgraph/types';
+import { logger } from "@bibgraph/utils";
 
 /**
  * Algorithm node type that satisfies the algorithms package requirements

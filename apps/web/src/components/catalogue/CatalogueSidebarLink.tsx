@@ -4,7 +4,6 @@
 
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconList } from "@tabler/icons-react";
-import React from "react";
 
 import { ICON_SIZE } from '@/config/style-constants';
 

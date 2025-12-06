@@ -60,7 +60,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
         }
       }
     } catch (analyticsError) {
-      console.warn('Failed to send router error to PostHog:', analyticsError);
+      logger.warn('routing', 'Failed to send router error to PostHog', { analyticsError }, 'RouterErrorComponent');
     }
   }, [error, info]);
 

@@ -8,7 +8,6 @@
 
 import { Alert,Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
-import React from 'react';
 
 import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
@@ -39,7 +38,7 @@ export interface RelationshipSectionProps {
  * @param root0.onPageSizeChange
  * @param root0.isLoading
  */
-export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
+export const RelationshipSection = ({
   section,
   onPageChange,
   onPageSizeChange,
