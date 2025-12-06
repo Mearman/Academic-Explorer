@@ -377,10 +377,23 @@ export const GraphAlgorithmsPanel = ({
           </Accordion.Control>
           <Accordion.Panel>
             <Stack gap="sm">
+              {/* Computing indicator */}
+              {isComputing && (
+                <Alert
+                  icon={<IconCircleDot size={16} />}
+                  color="blue"
+                  variant="light"
+                  styles={{ root: { padding: 'var(--mantine-spacing-xs)' } }}
+                >
+                  <Text size="sm">Computing community structure...</Text>
+                </Alert>
+              )}
+
               {/* Algorithm Selection */}
               <Select
                 label="Algorithm"
                 description={ALGORITHM_INFO[communityAlgorithm]}
+                disabled={isComputing}
                 data={[
                   {
                     group: 'Modularity-based',
@@ -423,6 +436,7 @@ export const GraphAlgorithmsPanel = ({
                 <NumberInput
                   label="Resolution"
                   description="Higher = more communities, Lower = fewer communities"
+                  disabled={isComputing}
                   value={resolution}
                   onChange={(value) => setResolution(typeof value === 'number' ? value : 1)}
                   min={0.1}
@@ -437,6 +451,7 @@ export const GraphAlgorithmsPanel = ({
                 <NumberInput
                   label="Number of Clusters"
                   description="Target number of communities/partitions"
+                  disabled={isComputing}
                   value={numClusters}
                   onChange={(value) => setNumClusters(typeof value === 'number' ? value : 5)}
                   min={2}
@@ -450,6 +465,7 @@ export const GraphAlgorithmsPanel = ({
                 <Select
                   label="Linkage Method"
                   description="How to measure distance between clusters"
+                  disabled={isComputing}
                   data={[
                     { value: 'single', label: 'Single (minimum)' },
                     { value: 'complete', label: 'Complete (maximum)' },
