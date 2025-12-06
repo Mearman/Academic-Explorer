@@ -67,10 +67,17 @@ describe('RelationshipSection', () => {
 
   it('should render section with label', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors');
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -79,10 +86,17 @@ describe('RelationshipSection', () => {
 
   it('should render count badge', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 25);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -91,10 +105,17 @@ describe('RelationshipSection', () => {
 
   it('should render correct data-testid based on type and direction', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -107,10 +128,17 @@ describe('RelationshipSection', () => {
       ...createMockSection(RelationType.REFERENCE, 5, 'Citations'),
       direction: 'inbound',
     };
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -120,10 +148,17 @@ describe('RelationshipSection', () => {
 
   it('should pass section to RelationshipList', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -135,10 +170,17 @@ describe('RelationshipSection', () => {
   it('should display icon when provided', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors');
     section.icon = '👤';
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -148,10 +190,17 @@ describe('RelationshipSection', () => {
   it('should not display icon when not provided', () => {
     const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors');
     section.icon = undefined;
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -166,10 +215,17 @@ describe('RelationshipSection', () => {
   describe('Partial Data Warning', () => {
     it('should not show warning when isPartialData is false', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', false);
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
 
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
 
@@ -178,10 +234,17 @@ describe('RelationshipSection', () => {
 
     it('should not show warning when isPartialData is undefined', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors');
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
 
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
 
@@ -190,10 +253,17 @@ describe('RelationshipSection', () => {
 
     it('should show warning when isPartialData is true', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
 
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
 
@@ -205,10 +275,17 @@ describe('RelationshipSection', () => {
 
     it('should show warning with yellow color variant', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
 
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
 
@@ -219,10 +296,17 @@ describe('RelationshipSection', () => {
 
     it('should show icon in warning message', () => {
       const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
 
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
 

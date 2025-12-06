@@ -62,11 +62,18 @@ describe('RelationshipSection Performance', () => {
 
   it('should render 50 items in under 1 second', () => {
     const section = createMockSection(50);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const startTime = performance.now();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -79,11 +86,18 @@ describe('RelationshipSection Performance', () => {
 
   it('should render 100 items (first page) in under 1 second', () => {
     const section = createMockSection(100);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const startTime = performance.now();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -96,11 +110,18 @@ describe('RelationshipSection Performance', () => {
 
   it('should handle empty sections efficiently', () => {
     const section = createMockSection(0);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const startTime = performance.now();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -114,12 +135,19 @@ describe('RelationshipSection Performance', () => {
   it('should handle partial data warning without performance impact', () => {
     const section = createMockSection(50);
     section.isPartialData = true;
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     const startTime = performance.now();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -142,9 +170,16 @@ describe('RelationshipSection Performance', () => {
 
     types.forEach((type) => {
       const section = createMockSection(50, type);
+      const onPageChange = vi.fn();
+      const onPageSizeChange = vi.fn();
       render(
         <TestWrapper>
-          <RelationshipSection section={section} />
+          <RelationshipSection
+            section={section}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            isLoading={false}
+          />
         </TestWrapper>
       );
     });
@@ -159,12 +194,19 @@ describe('RelationshipSection Performance', () => {
   it('should render with icon efficiently', () => {
     const section = createMockSection(50);
     section.icon = '👤';
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     const startTime = performance.now();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 

@@ -71,10 +71,17 @@ describe('RelationshipList', () => {
 
   it('should render all items when count is less than page size', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -85,10 +92,17 @@ describe('RelationshipList', () => {
 
   it('should display "Showing X of Y" count', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -97,10 +111,17 @@ describe('RelationshipList', () => {
 
   it('should display pagination controls when total items > 10', () => {
     const section = createMockSection(150);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -110,10 +131,17 @@ describe('RelationshipList', () => {
 
   it('should not display pagination controls when total items <= 10', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -128,7 +156,12 @@ describe('RelationshipList', () => {
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} onPageChange={onPageChange} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={vi.fn()}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -152,7 +185,12 @@ describe('RelationshipList', () => {
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} onPageSizeChange={onPageSizeChange} />
+        <RelationshipList
+          section={section}
+          onPageChange={vi.fn()}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -171,10 +209,17 @@ describe('RelationshipList', () => {
 
   it('should handle edge case with exactly 50 items', () => {
     const section = createMockSection(50);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -184,10 +229,17 @@ describe('RelationshipList', () => {
 
   it('should handle edge case with 51 items', () => {
     const section = createMockSection(51);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipList section={section} />
+        <RelationshipList
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 

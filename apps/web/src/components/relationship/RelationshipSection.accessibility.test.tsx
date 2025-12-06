@@ -71,9 +71,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have no axe accessibility violations', async () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -83,9 +90,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have proper semantic structure', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -98,9 +112,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have accessible count badge', () => {
     const section = createMockSection(25);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -111,9 +132,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have accessible partial data warning', async () => {
     const section = createMockSection(10, true);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -137,9 +165,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have sufficient color contrast', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -153,9 +188,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should handle keyboard navigation', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -175,9 +217,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should have proper heading hierarchy', () => {
     const section = createMockSection(10);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -188,9 +237,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should provide context for screen readers', () => {
     const section = createMockSection(10, true);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -206,10 +262,17 @@ describe('RelationshipSection Accessibility', () => {
   it('should handle icon accessibility', () => {
     const section = createMockSection(10);
     section.icon = '👤';
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
 
     render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
@@ -219,9 +282,16 @@ describe('RelationshipSection Accessibility', () => {
 
   it('should maintain accessibility with empty sections', async () => {
     const section = createMockSection(0);
+    const onPageChange = vi.fn();
+    const onPageSizeChange = vi.fn();
     const { container } = render(
       <TestWrapper>
-        <RelationshipSection section={section} />
+        <RelationshipSection
+          section={section}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={false}
+        />
       </TestWrapper>
     );
 
