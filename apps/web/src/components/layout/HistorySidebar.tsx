@@ -26,7 +26,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { CARD_BORDER_STYLE } from "@/config/style-constants";
+import { CARD_BORDER_STYLE, ICON_SIZE } from "@/config/style-constants";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { HistoryCard } from "./HistoryCard";
@@ -130,7 +130,7 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
       {/* Header */}
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarTitle}>
-          <IconHistory size={18} />
+          <IconHistory size={ICON_SIZE.LG} />
           <Title order={6}>History</Title>
         </div>
         <Group gap="xs">
@@ -142,12 +142,12 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
               to="/history"
               aria-label="Go to history management page"
             >
-              <IconSettings size={14} />
+              <IconSettings size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
           {onClose && (
             <ActionIcon size="sm" variant="subtle" onClick={onClose}>
-              <IconX size={14} />
+              <IconX size={ICON_SIZE.SM} />
             </ActionIcon>
           )}
         </Group>
@@ -161,7 +161,7 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
           label="Search history"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          leftSection={<IconSearch size={14} />}
+          leftSection={<IconSearch size={ICON_SIZE.SM} />}
           size="sm"
           style={{ flex: 1 }}
         />
@@ -175,7 +175,7 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
               className={styles.actionButton}
               aria-label="Clear all navigation history"
             >
-              <IconTrash size={14} />
+              <IconTrash size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
         )}
@@ -187,7 +187,7 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
           <Card style={CARD_BORDER_STYLE} p="md">
             <Stack align="center" gap="md" className={styles.emptyState}>
               <IconHistory
-                size={32}
+                size={ICON_SIZE.EMPTY_STATE_SM}
                 style={{ color: "var(--mantine-color-gray-4)" }}
               />
               <Text size="sm" fw={500} ta="center">

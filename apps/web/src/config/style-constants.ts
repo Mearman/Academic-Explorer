@@ -108,6 +108,8 @@ export const SPLIT_BUTTON_MIN_WIDTH = 120;
  * These follow a consistent scale for visual hierarchy
  */
 export const ICON_SIZE = {
+	/** 2x Extra small - micro indicators, decorative icons (10px) */
+	XXS: 10,
 	/** Extra small - badges, chips, inline indicators (12px) */
 	XS: 12,
 	/** Small - compact buttons, input adornments (14px) */

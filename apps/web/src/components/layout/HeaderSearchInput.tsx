@@ -18,6 +18,7 @@ import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo,useRef, useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
+import { ICON_SIZE } from "@/config/style-constants";
 import { useNavigationEnhancements } from "@/hooks/useNavigationEnhancements";
 
 export const HeaderSearchInput = () => {
@@ -154,7 +155,7 @@ export const HeaderSearchInput = () => {
           <TextInput
             ref={inputRef}
             placeholder="Search works, authors, institutions..."
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={ICON_SIZE.MD} />}
             value={query}
             onChange={(e) => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -193,7 +194,7 @@ export const HeaderSearchInput = () => {
                   }}
                   aria-label="Clear search"
                 >
-                  <IconX size={14} />
+                  <IconX size={ICON_SIZE.SM} />
                 </ActionIcon>
               ) : null
             }
@@ -206,7 +207,7 @@ export const HeaderSearchInput = () => {
               <Group justify="space-between" align="center">
                 <Text size="sm" fw={600}>
                   <Group gap="xs">
-                    <IconHistory size={14} />
+                    <IconHistory size={ICON_SIZE.SM} />
                     Recent Searches
                   </Group>
                 </Text>
@@ -217,7 +218,7 @@ export const HeaderSearchInput = () => {
                     onClick={handleClearHistory}
                     aria-label="Clear search history"
                   >
-                    <IconX size={12} />
+                    <IconX size={ICON_SIZE.XS} />
                   </ActionIcon>
                 )}
               </Group>
@@ -243,7 +244,7 @@ export const HeaderSearchInput = () => {
                 data-history-item={index.toString()}
                 tabIndex={0}
               >
-                <IconClock size={12} color="var(--mantine-color-gray-5)" />
+                <IconClock size={ICON_SIZE.XS} color="var(--mantine-color-gray-5)" />
                 <Text
                   size="sm"
                   style={{ flex: 1 }}
@@ -259,7 +260,7 @@ export const HeaderSearchInput = () => {
                     handleHistoryItemClick(historyQuery);
                   }}
                 >
-                  <IconArrowRight size={10} />
+                  <IconArrowRight size={ICON_SIZE.XXS} />
                 </ActionIcon>
               </Group>
             ))}
