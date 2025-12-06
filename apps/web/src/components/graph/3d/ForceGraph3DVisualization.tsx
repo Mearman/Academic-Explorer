@@ -27,6 +27,21 @@ import {
   useGraph3DPerformance,
 } from '../../../hooks/useGraph3DPerformance';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../../styles/hash-colors';
+import {
+  ANIMATION_3D,
+  CAMERA_3D,
+  COLORS_3D,
+  CONTAINER,
+  GEOMETRY_3D,
+  LABEL_3D,
+  LINK,
+  MATERIAL_3D,
+  NODE,
+  OVERLAY_3D,
+  PERFORMANCE_3D,
+  SIMULATION,
+  TIMING,
+} from '../constants';
 import { getEdgeStyle } from '../edge-styles';
 
 // Entity type colors using hash-based generation for deterministic, consistent coloring
@@ -129,9 +144,6 @@ export interface ForceGraph3DVisualizationProps {
   /** Enable cursor-centered zoom (zoom toward cursor position instead of orbit center) */
   enableCursorCenteredZoom?: boolean;
 }
-
-/** Default seed for deterministic layouts */
-const DEFAULT_SEED = 42;
 
 /**
  * Simple seeded random number generator for deterministic layouts
@@ -241,7 +253,7 @@ export const ForceGraph3DVisualization = ({
   } = useCameraPersistence({
     enabled: enableCameraPersistence,
     storageKey: cameraStorageKey,
-    debounceMs: 300,
+    debounceMs: CAMERA_3D.PERSISTENCE_DEBOUNCE_MS,
   });
 
   // Performance monitoring - tracks FPS, frame times, jank
@@ -255,7 +267,7 @@ export const ForceGraph3DVisualization = ({
     onPerformanceDrop: onPerformanceDrop
       ? (stats) => onPerformanceDrop(stats.fps)
       : undefined,
-    fpsThreshold: 30,
+    fpsThreshold: PERFORMANCE_3D.FPS_THRESHOLD,
   });
 
   // LOD Manager - adjusts detail based on distance and performance
@@ -263,13 +275,13 @@ export const ForceGraph3DVisualization = ({
     if (!enableAdaptiveLOD) return null;
     return new GraphLODManager({
       adaptiveMode: true,
-      targetFps: 60,
-      minFps: 30,
+      targetFps: PERFORMANCE_3D.TARGET_FPS,
+      minFps: PERFORMANCE_3D.MIN_FPS,
     });
   }, [enableAdaptiveLOD]);
 
   // Track camera position for LOD calculations
-  const cameraPositionRef = useRef({ x: 0, y: 0, z: 500 });
+  const cameraPositionRef = useRef({ x: 0, y: 0, z: CAMERA_3D.INITIAL_Z_POSITION });
 
   // Enable cursor-centered zoom on OrbitControls (built-in Three.js feature)
   // Requires controlType="orbit" on ForceGraph3D component
@@ -285,7 +297,7 @@ export const ForceGraph3DVisualization = ({
 
     // Try immediately and after a short delay (for initial mount)
     enableZoomToCursor();
-    const timeoutId = setTimeout(enableZoomToCursor, 100);
+    const timeoutId = setTimeout(enableZoomToCursor, TIMING.GRAPH_REF_CHECK_DELAY_MS);
 
     return () => {
       clearTimeout(timeoutId);
@@ -297,7 +309,7 @@ export const ForceGraph3DVisualization = ({
   }, [enableCursorCenteredZoom]);
 
   // Track container width for responsive sizing
-  const [containerWidth, setContainerWidth] = useState(width ?? 800);
+  const [containerWidth, setContainerWidth] = useState(width ?? CONTAINER.DEFAULT_WIDTH);
 
   useEffect(() => {
     if (!containerRef.current || width) return;
@@ -331,7 +343,7 @@ export const ForceGraph3DVisualization = ({
   // Transform nodes for force graph with 3D positions
   const graphData = useMemo(() => {
     // Always use deterministic seeding for reproducible layouts
-    const random = seededRandom(seed ?? DEFAULT_SEED);
+    const random = seededRandom(seed ?? SIMULATION.DEFAULT_SEED);
 
     // Deduplicate nodes by ID (safety net - upstream should already deduplicate)
     const seenNodeIds = new Set<string>();
@@ -361,9 +373,9 @@ export const ForceGraph3DVisualization = ({
       label: node.label,
       entityId: node.entityId,
       // Use existing positions or generate random ones in 3D space
-      x: node.x ?? (random() - 0.5) * 400,
-      y: node.y ?? (random() - 0.5) * 400,
-      z: (random() - 0.5) * 400, // Add Z dimension
+      x: node.x ?? (random() - 0.5) * SIMULATION.INITIAL_POSITION_SPREAD,
+      y: node.y ?? (random() - 0.5) * SIMULATION.INITIAL_POSITION_SPREAD,
+      z: (random() - 0.5) * SIMULATION.INITIAL_POSITION_SPREAD, // Add Z dimension
       originalNode: node,
     }));
 
@@ -409,14 +421,14 @@ export const ForceGraph3DVisualization = ({
       ? getNodeStyle(node.originalNode, isHighlighted, communityId)
       : getDefaultNodeStyle(node, isHighlighted, communityId, communityColors);
 
-    const color = style.color ?? ENTITY_TYPE_COLORS[node.entityType] ?? '#888888';
-    const baseSize = style.size ?? 6;
-    const opacity = isHighlighted ? (style.opacity ?? 1) : 0.3;
+    const color = style.color ?? ENTITY_TYPE_COLORS[node.entityType] ?? COLORS_3D.DEFAULT_FALLBACK;
+    const baseSize = style.size ?? NODE.DEFAULT_SIZE;
+    const opacity = isHighlighted ? (style.opacity ?? NODE.FULL_OPACITY) : MATERIAL_3D.DIMMED_NODE_OPACITY;
 
     // Calculate LOD based on distance to camera
     let lodLevel = LODLevel.HIGH;
     let lodSettings: { segments: number; showLabel: boolean; materialType: 'basic' | 'phong'; useRing: boolean } = {
-      segments: 16,
+      segments: GEOMETRY_3D.HIGH_LOD_SEGMENTS,
       showLabel: true,
       materialType: 'phong',
       useRing: true,
@@ -444,9 +456,9 @@ export const ForceGraph3DVisualization = ({
         color,
         transparent: true,
         opacity,
-        emissive: new THREE.Color(color).multiplyScalar(0.2),
-        emissiveIntensity: isHighlighted ? 0.3 : 0.1,
-        shininess: 50,
+        emissive: new THREE.Color(color).multiplyScalar(MATERIAL_3D.EMISSIVE_MULTIPLIER),
+        emissiveIntensity: isHighlighted ? MATERIAL_3D.EMISSIVE_INTENSITY_HIGHLIGHTED : MATERIAL_3D.EMISSIVE_INTENSITY_NORMAL,
+        shininess: MATERIAL_3D.SHININESS,
       });
     } else {
       // Low quality: MeshBasicMaterial (faster, no lighting calculations)
@@ -461,11 +473,15 @@ export const ForceGraph3DVisualization = ({
 
     // Add subtle ring for highlighted nodes (only at high LOD)
     if (isHighlighted && lodSettings.useRing && !isExpanding) {
-      const ringGeometry = new THREE.RingGeometry(baseSize * 1.2, baseSize * 1.4, lodSettings.segments * 2);
+      const ringGeometry = new THREE.RingGeometry(
+        baseSize * GEOMETRY_3D.RING_INNER_RADIUS_MULTIPLIER,
+        baseSize * GEOMETRY_3D.RING_OUTER_RADIUS_MULTIPLIER,
+        lodSettings.segments * 2
+      );
       const ringMaterial = new THREE.MeshBasicMaterial({
-        color: 0xFF_FF_FF,
+        color: COLORS_3D.RING_ACCENT,
         transparent: true,
-        opacity: 0.5,
+        opacity: MATERIAL_3D.RING_OPACITY,
         side: THREE.DoubleSide,
       });
       const ring = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -475,11 +491,16 @@ export const ForceGraph3DVisualization = ({
 
     // Add spinning ring for expanding nodes (loading indicator)
     if (isExpanding) {
-      const spinningRingGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.15, 8, 32);
+      const spinningRingGeometry = new THREE.TorusGeometry(
+        baseSize * GEOMETRY_3D.TORUS_RADIUS_MULTIPLIER,
+        baseSize * GEOMETRY_3D.TORUS_TUBE_MULTIPLIER,
+        GEOMETRY_3D.TORUS_TUBE_SEGMENTS,
+        GEOMETRY_3D.TORUS_RADIAL_SEGMENTS
+      );
       const spinningRingMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00_BF_FF, // Deep sky blue - loading indicator color
+        color: COLORS_3D.LOADING_INDICATOR,
         transparent: true,
-        opacity: 0.8,
+        opacity: MATERIAL_3D.SPINNING_RING_OPACITY,
       });
       const spinningRing = new THREE.Mesh(spinningRingGeometry, spinningRingMaterial);
       spinningRing.rotation.x = Math.PI / 2; // Start horizontal
@@ -488,16 +509,22 @@ export const ForceGraph3DVisualization = ({
       group.add(spinningRing);
 
       // Add a second partial ring for visual interest (loading arc effect)
-      const arcGeometry = new THREE.TorusGeometry(baseSize * 1.5, baseSize * 0.1, 8, 16, Math.PI);
+      const arcGeometry = new THREE.TorusGeometry(
+        baseSize * GEOMETRY_3D.TORUS_RADIUS_MULTIPLIER,
+        baseSize * GEOMETRY_3D.ARC_TUBE_MULTIPLIER,
+        GEOMETRY_3D.TORUS_TUBE_SEGMENTS,
+        GEOMETRY_3D.ARC_RADIAL_SEGMENTS,
+        GEOMETRY_3D.ARC_ANGLE
+      );
       const arcMaterial = new THREE.MeshBasicMaterial({
-        color: 0xFF_FF_FF,
+        color: COLORS_3D.RING_ACCENT,
         transparent: true,
-        opacity: 0.6,
+        opacity: MATERIAL_3D.ARC_OPACITY,
       });
       const arc = new THREE.Mesh(arcGeometry, arcMaterial);
       arc.rotation.x = Math.PI / 2;
       arc.userData.isSpinningRing = true;
-      arc.userData.spinSpeed = 2; // Spin faster than main ring
+      arc.userData.spinSpeed = ANIMATION_3D.SECONDARY_SPIN_MULTIPLIER;
       group.add(arc);
     }
 
@@ -506,12 +533,12 @@ export const ForceGraph3DVisualization = ({
     // Add label as sprite text (only if LOD allows labels)
     if (lodSettings.showLabel) {
       const sprite = new SpriteText(node.label);
-      sprite.color = isHighlighted ? '#ffffff' : '#888888';
-      sprite.textHeight = 4;
-      sprite.position.y = baseSize + 5;
-      sprite.backgroundColor = isHighlighted ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)';
-      sprite.padding = 1;
-      sprite.borderRadius = 2;
+      sprite.color = isHighlighted ? LABEL_3D.HIGHLIGHTED_COLOR : LABEL_3D.NORMAL_COLOR;
+      sprite.textHeight = LABEL_3D.TEXT_HEIGHT;
+      sprite.position.y = baseSize + LABEL_3D.VERTICAL_OFFSET;
+      sprite.backgroundColor = isHighlighted ? LABEL_3D.HIGHLIGHTED_BACKGROUND : LABEL_3D.NORMAL_BACKGROUND;
+      sprite.padding = LABEL_3D.PADDING;
+      sprite.borderRadius = LABEL_3D.BORDER_RADIUS;
       group.add(sprite);
     }
 
@@ -523,7 +550,7 @@ export const ForceGraph3DVisualization = ({
     const isHighlighted = isEdgeHighlighted(link.originalEdge);
 
     if (highlightedPath.length > 0 && isHighlighted) {
-      return 'rgba(100, 149, 237, 0.8)'; // Cornflower blue for path
+      return COLORS_3D.PATH_HIGHLIGHT;
     }
 
     const style = getLinkStyle
@@ -531,8 +558,8 @@ export const ForceGraph3DVisualization = ({
       : getDefaultLinkStyle(link, isHighlighted, highlightedPath.length > 0);
 
     return isHighlighted
-      ? (style.color ?? 'rgba(150, 150, 150, 0.6)')
-      : 'rgba(100, 100, 100, 0.2)';
+      ? (style.color ?? COLORS_3D.DEFAULT_LINK)
+      : COLORS_3D.DIMMED_LINK;
   }, [isEdgeHighlighted, getLinkStyle, highlightedPath.length]);
 
   // Link width based on highlighting
@@ -580,55 +607,55 @@ export const ForceGraph3DVisualization = ({
 
     const graph = graphRef.current;
     const cameraPosition = graph.cameraPosition();
-    const distance = 50; // Camera movement distance
+    const panDistance = CAMERA_3D.KEYBOARD_PAN_DISTANCE;
 
     switch (event.key) {
       case 'ArrowUp':
         // Move camera forward (zoom in) or pan up with Shift
         if (event.shiftKey) {
-          graph.cameraPosition({ y: cameraPosition.y + distance });
+          graph.cameraPosition({ y: cameraPosition.y + panDistance });
         } else {
-          const newZ = cameraPosition.z - distance;
-          graph.cameraPosition({ z: Math.max(newZ, 100) });
+          const newZ = cameraPosition.z - panDistance;
+          graph.cameraPosition({ z: Math.max(newZ, CAMERA_3D.MIN_Z_POSITION) });
         }
         event.preventDefault();
         break;
       case 'ArrowDown':
         // Move camera backward (zoom out) or pan down with Shift
         if (event.shiftKey) {
-          graph.cameraPosition({ y: cameraPosition.y - distance });
+          graph.cameraPosition({ y: cameraPosition.y - panDistance });
         } else {
-          graph.cameraPosition({ z: cameraPosition.z + distance });
+          graph.cameraPosition({ z: cameraPosition.z + panDistance });
         }
         event.preventDefault();
         break;
       case 'ArrowLeft':
         // Pan camera left
-        graph.cameraPosition({ x: cameraPosition.x - distance });
+        graph.cameraPosition({ x: cameraPosition.x - panDistance });
         event.preventDefault();
         break;
       case 'ArrowRight':
         // Pan camera right
-        graph.cameraPosition({ x: cameraPosition.x + distance });
+        graph.cameraPosition({ x: cameraPosition.x + panDistance });
         event.preventDefault();
         break;
       case 'Home':
       case 'r':
       case 'R':
         // Reset camera to fit graph
-        graph.zoomToFit(400, 50);
+        graph.zoomToFit(TIMING.ZOOM_TO_FIT_DURATION_MS, TIMING.ZOOM_TO_FIT_PADDING);
         event.preventDefault();
         break;
       case '+':
       case '=':
         // Zoom in
-        graph.cameraPosition({ z: Math.max(cameraPosition.z - 100, 100) });
+        graph.cameraPosition({ z: Math.max(cameraPosition.z - CAMERA_3D.ZOOM_STEP, CAMERA_3D.MIN_Z_POSITION) });
         event.preventDefault();
         break;
       case '-':
       case '_':
         // Zoom out
-        graph.cameraPosition({ z: cameraPosition.z + 100 });
+        graph.cameraPosition({ z: cameraPosition.z + CAMERA_3D.ZOOM_STEP });
         event.preventDefault();
         break;
       default:
@@ -660,9 +687,9 @@ export const ForceGraph3DVisualization = ({
             0 // Instant transition
           );
         } else {
-          graphRef.current?.zoomToFit(400, 50);
+          graphRef.current?.zoomToFit(TIMING.ZOOM_TO_FIT_DURATION_MS, TIMING.ZOOM_TO_FIT_PADDING);
         }
-      }, 500);
+      }, TIMING.AUTO_FIT_DELAY_MS);
     }
   }, [graphData.nodes.length, enableCameraPersistence, savedCameraState]);
 
@@ -714,7 +741,7 @@ export const ForceGraph3DVisualization = ({
         scene.traverse((object: THREE.Object3D) => {
           if (object.userData.isSpinningRing) {
             const spinSpeed = object.userData.spinSpeed ?? 1;
-            object.rotation.z += 0.03 * spinSpeed; // Rotate around Z axis
+            object.rotation.z += ANIMATION_3D.SPIN_SPEED * spinSpeed; // Rotate around Z axis
           }
         });
       }
@@ -796,7 +823,7 @@ export const ForceGraph3DVisualization = ({
         nodeThreeObjectExtend={false}
         linkColor={linkColor}
         linkWidth={linkWidth}
-        linkOpacity={0.6}
+        linkOpacity={LINK.DEFAULT_OPACITY}
         onNodeClick={handleNodeClick}
         onNodeRightClick={handleNodeRightClick}
         onNodeHover={handleNodeHover}
@@ -804,16 +831,16 @@ export const ForceGraph3DVisualization = ({
         enableNodeDrag={true}
         enableNavigationControls={true}
         showNavInfo={false}
-        cooldownTime={enableSimulation ? 3000 : 0}
-        d3AlphaDecay={0.02}
-        d3VelocityDecay={0.3}
+        cooldownTime={enableSimulation ? SIMULATION.COOLDOWN_TIME_MS : 0}
+        d3AlphaDecay={SIMULATION.ALPHA_DECAY}
+        d3VelocityDecay={SIMULATION.VELOCITY_DECAY}
         backgroundColor="rgba(0,0,0,0)"
         // Performance optimizations for large graphs
-        warmupTicks={graphData.nodes.length > 100 ? 100 : 50}
-        cooldownTicks={graphData.nodes.length > 500 ? 0 : 100}
+        warmupTicks={graphData.nodes.length > PERFORMANCE_3D.WARMUP_NODE_THRESHOLD ? PERFORMANCE_3D.LARGE_GRAPH_WARMUP_TICKS : PERFORMANCE_3D.SMALL_GRAPH_WARMUP_TICKS}
+        cooldownTicks={graphData.nodes.length > PERFORMANCE_3D.COOLDOWN_NODE_THRESHOLD ? PERFORMANCE_3D.LARGE_GRAPH_COOLDOWN_TICKS : PERFORMANCE_3D.NORMAL_COOLDOWN_TICKS}
         numDimensions={3}
         // Reduce physics complexity for large graphs
-        d3AlphaMin={graphData.nodes.length > 500 ? 0.01 : 0.001}
+        d3AlphaMin={graphData.nodes.length > PERFORMANCE_3D.COOLDOWN_NODE_THRESHOLD ? PERFORMANCE_3D.LARGE_GRAPH_ALPHA_MIN : PERFORMANCE_3D.NORMAL_ALPHA_MIN}
         // Use OrbitControls instead of TrackballControls for zoomToCursor support
         controlType="orbit"
       />
@@ -823,8 +850,8 @@ export const ForceGraph3DVisualization = ({
         <Box
           style={{
             position: 'absolute',
-            top: 8,
-            right: 8,
+            top: OVERLAY_3D.POSITION_OFFSET,
+            right: OVERLAY_3D.POSITION_OFFSET,
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             borderRadius: 'var(--mantine-radius-sm)',
             padding: '8px 12px',
@@ -832,7 +859,7 @@ export const ForceGraph3DVisualization = ({
             fontSize: 'var(--mantine-font-size-xs)',
             fontFamily: 'monospace',
             zIndex: 10,
-            minWidth: 140,
+            minWidth: OVERLAY_3D.MIN_WIDTH,
           }}
         >
           <Stack gap={4}>
@@ -876,7 +903,7 @@ export const ForceGraph3DVisualization = ({
               <Text size="xs" c="dimmed">Edges:</Text>
               <Text size="xs">{performanceStats.visibleEdges}</Text>
             </Group>
-            {performanceStats.jankScore > 10 && (
+            {performanceStats.jankScore > PERFORMANCE_3D.JANK_DISPLAY_THRESHOLD && (
               <Group gap={8} justify="space-between">
                 <Text size="xs" c="dimmed">Jank:</Text>
                 <Text size="xs" c="red">{performanceStats.jankScore}%</Text>
@@ -915,7 +942,7 @@ export const ForceGraph3DVisualization = ({
  * @param communityColors
  */
 const getDefaultNodeStyle = (node: ForceGraphNode, isHighlighted: boolean, communityId?: number, communityColors?: Map<number, string>): NodeStyle => {
-  let color = ENTITY_TYPE_COLORS[node.entityType] ?? '#888888';
+  let color = ENTITY_TYPE_COLORS[node.entityType] ?? COLORS_3D.DEFAULT_FALLBACK;
 
   // Use community color if available
   if (communityId !== undefined && communityColors?.has(communityId)) {
@@ -924,8 +951,8 @@ const getDefaultNodeStyle = (node: ForceGraphNode, isHighlighted: boolean, commu
 
   return {
     color,
-    size: isHighlighted ? 8 : 6,
-    opacity: 1,
+    size: isHighlighted ? NODE.HIGHLIGHTED_SIZE : NODE.DEFAULT_SIZE,
+    opacity: NODE.FULL_OPACITY,
   };
 };
 
@@ -942,17 +969,17 @@ const getDefaultLinkStyle = (link: ForceGraphLink, isHighlighted: boolean, isPat
   // Path highlight mode overrides edge type colors
   if (isHighlighted && isPathHighlightMode) {
     return {
-      color: 'rgba(100, 149, 237, 0.8)', // Cornflower blue for path
-      width: 3,
-      opacity: 0.8,
+      color: COLORS_3D.PATH_HIGHLIGHT,
+      width: LINK.HIGHLIGHTED_WIDTH,
+      opacity: LINK.HIGHLIGHTED_OPACITY,
       dashed: false,
     };
   }
 
   return {
-    color: edgeStyle.stroke ?? 'rgba(150, 150, 150, 0.6)',
-    width: edgeStyle.strokeWidth ?? 1.5,
-    opacity: edgeStyle.strokeOpacity ?? 0.6,
+    color: edgeStyle.stroke ?? COLORS_3D.DEFAULT_LINK,
+    width: edgeStyle.strokeWidth ?? LINK.DEFAULT_WIDTH,
+    opacity: edgeStyle.strokeOpacity ?? LINK.DEFAULT_OPACITY,
     dashed: edgeStyle.strokeDasharray !== undefined,
   };
 };
