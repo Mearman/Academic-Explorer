@@ -183,6 +183,7 @@ export const BookmarkCard = ({ bookmark, onClose, onDeleted }: BookmarkCardProps
               variant="subtle"
               color="red"
               className={styles.actionButton}
+              aria-label={`Delete ${title} from bookmarks`}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
