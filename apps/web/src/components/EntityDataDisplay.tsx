@@ -35,6 +35,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import React from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
 
@@ -51,13 +52,13 @@ const SECTION_PRIORITY: Record<string, number> = {
 
 /** Section icons mapping */
 const SECTION_ICONS: Record<string, React.ReactNode> = {
-  "Basic Information": <IconInfoCircle size={16} />,
-  "Identifiers": <IconKey size={16} />,
-  "Metrics": <IconChartBar size={16} />,
-  "Relationships": <IconNetwork size={16} />,
-  "Dates": <IconCalendar size={16} />,
-  "Locations & Geo": <IconWorld size={16} />,
-  "Other": <IconClipboard size={16} />,
+  "Basic Information": <IconInfoCircle size={ICON_SIZE.MD} />,
+  "Identifiers": <IconKey size={ICON_SIZE.MD} />,
+  "Metrics": <IconChartBar size={ICON_SIZE.MD} />,
+  "Relationships": <IconNetwork size={ICON_SIZE.MD} />,
+  "Dates": <IconCalendar size={ICON_SIZE.MD} />,
+  "Locations & Geo": <IconWorld size={ICON_SIZE.MD} />,
+  "Other": <IconClipboard size={ICON_SIZE.MD} />,
 };
 
 // ============================================================================
@@ -75,7 +76,7 @@ const renderPrimitiveValue = (value: unknown): React.ReactNode => {
         color={value ? "green" : "red"}
         variant="light"
         size="sm"
-        leftSection={value ? <IconCheck size={12} /> : <IconX size={12} />}
+        leftSection={value ? <IconCheck size={ICON_SIZE.XS} /> : <IconX size={ICON_SIZE.XS} />}
       >
         {value.toString()}
       </Badge>
@@ -103,7 +104,7 @@ const renderPrimitiveValue = (value: unknown): React.ReactNode => {
           style={{ wordBreak: "break-word" }}
         >
           <Group gap={4}>
-            <IconLink size={14} />
+            <IconLink size={ICON_SIZE.SM} />
             <Text size="sm" span>{value}</Text>
           </Group>
         </Anchor>
@@ -120,7 +121,7 @@ const renderPrimitiveValue = (value: unknown): React.ReactNode => {
           style={{ wordBreak: "break-word" }}
         >
           <Group gap={4}>
-            <IconExternalLink size={14} />
+            <IconExternalLink size={ICON_SIZE.SM} />
             <Text size="sm" span>{value}</Text>
           </Group>
         </Anchor>
@@ -138,7 +139,7 @@ const renderPrimitiveValue = (value: unknown): React.ReactNode => {
           style={{ wordBreak: "break-word" }}
         >
           <Group gap={4}>
-            <IconLink size={14} />
+            <IconLink size={ICON_SIZE.SM} />
             <Text size="sm" span>{value}</Text>
           </Group>
         </Anchor>
@@ -204,7 +205,7 @@ const groupFields = (data: Record<string, unknown>): SectionData[] => {
     .sort(([a], [b]) => (SECTION_PRIORITY[a] ?? 99) - (SECTION_PRIORITY[b] ?? 99))
     .map(([name, fields]) => ({
       name,
-      icon: SECTION_ICONS[name] || <IconFile size={16} />,
+      icon: SECTION_ICONS[name] || <IconFile size={ICON_SIZE.MD} />,
       fields: Object.entries(fields).map(([key, value]) => ({ key, value })),
     }));
 };

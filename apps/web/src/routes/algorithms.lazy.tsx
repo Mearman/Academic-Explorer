@@ -44,7 +44,7 @@ import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVis
 import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 
@@ -771,7 +771,7 @@ const AlgorithmsPage = () => {
             <Box>
               <Title order={2}>
                 <Group gap="xs">
-                  <IconGraph size={28} />
+                  <IconGraph size={ICON_SIZE.HEADER} />
                   Graph Algorithms
                 </Group>
               </Title>
@@ -781,7 +781,7 @@ const AlgorithmsPage = () => {
             </Box>
             <Button
               variant="light"
-              leftSection={<IconRefresh size={16} />}
+              leftSection={<IconRefresh size={ICON_SIZE.MD} />}
               onClick={handleRegenerateGraph}
             >
               Regenerate Sample Data
@@ -789,7 +789,7 @@ const AlgorithmsPage = () => {
           </Group>
 
           {/* Info Alert */}
-          <Alert icon={<IconInfoCircle size={16} />} title="Demo Mode" color="blue">
+          <Alert icon={<IconInfoCircle size={ICON_SIZE.MD} />} title="Demo Mode" color="blue">
             This page demonstrates the graph algorithms package with sample academic data.
             Click "Regenerate Sample Data" to create a new random graph.
             The algorithms can analyze community structure, find paths, and detect graph properties.
@@ -815,7 +815,7 @@ const AlgorithmsPage = () => {
                       onClick={fitToViewAll}
                       aria-label="Fit all to view"
                     >
-                      <IconFocusCentered size={16} />
+                      <IconFocusCentered size={ICON_SIZE.MD} />
                     </ActionIcon>
                   </Tooltip>
                   <Tooltip label={highlightedNodes.size > 0 ? "Fit selected nodes to view" : "Fit all to view (no selection)"}>
@@ -826,7 +826,7 @@ const AlgorithmsPage = () => {
                       aria-label="Fit selected to view"
                       disabled={highlightedNodes.size === 0}
                     >
-                      <IconFocus2 size={16} />
+                      <IconFocus2 size={ICON_SIZE.MD} />
                     </ActionIcon>
                   </Tooltip>
                 </Group>
@@ -928,7 +928,7 @@ const AlgorithmsPage = () => {
                         title={seedLocked ? "Seed locked - click to unlock" : "Seed unlocked - click to lock"}
                         px="xs"
                       >
-                        {seedLocked ? <IconLock size={14} /> : <IconLockOpen size={14} />}
+                        {seedLocked ? <IconLock size={ICON_SIZE.SM} /> : <IconLockOpen size={ICON_SIZE.SM} />}
                       </Button>
                       <Button
                         variant="subtle"
@@ -953,7 +953,7 @@ const AlgorithmsPage = () => {
                           title={componentsLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
                           px="xs"
                         >
-                          {componentsLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                          {componentsLocked ? <IconLock size={ICON_SIZE.XS} /> : <IconLockOpen size={ICON_SIZE.XS} />}
                         </Button>
                       </Group>
                       <Group gap="xs" align="center">
@@ -996,7 +996,7 @@ const AlgorithmsPage = () => {
                           title={edgesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
                           px="xs"
                         >
-                          {edgesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                          {edgesLocked ? <IconLock size={ICON_SIZE.XS} /> : <IconLockOpen size={ICON_SIZE.XS} />}
                         </Button>
                       </Group>
                       <Group gap="xs" align="center">
@@ -1055,7 +1055,7 @@ const AlgorithmsPage = () => {
                           title={totalNodesLocked ? "Locked - click to unlock" : "Unlocked - click to lock"}
                           px="xs"
                         >
-                          {totalNodesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                          {totalNodesLocked ? <IconLock size={ICON_SIZE.XS} /> : <IconLockOpen size={ICON_SIZE.XS} />}
                         </Button>
                       </Group>
                       <Group gap="xs" align="center">
@@ -1129,7 +1129,7 @@ const AlgorithmsPage = () => {
                         title={percentagesLocked ? "Distributions locked from randomization" : "Distributions included in randomization"}
                         px="xs"
                       >
-                        {percentagesLocked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                        {percentagesLocked ? <IconLock size={ICON_SIZE.XS} /> : <IconLockOpen size={ICON_SIZE.XS} />}
                       </Button>
                     </Group>
                     <Text size="xs" c="dimmed">
@@ -1149,7 +1149,7 @@ const AlgorithmsPage = () => {
                                 ? "Locked - excluded from redistribution"
                                 : "Unlocked - included in redistribution"}
                             >
-                              {lockedEntityTypes.has(entityType) ? <IconLock size={12} /> : <IconLockOpen size={12} />}
+                              {lockedEntityTypes.has(entityType) ? <IconLock size={ICON_SIZE.XS} /> : <IconLockOpen size={ICON_SIZE.XS} />}
                             </ActionIcon>
                             <Text size="xs" c="dimmed" w={80}>{ENTITY_DISPLAY_NAMES[entityType]}</Text>
                             <Slider

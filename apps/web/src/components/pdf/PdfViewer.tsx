@@ -24,7 +24,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useCallback,useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
 
 export interface PdfViewerProps {
   /** URL of the PDF to display */
@@ -87,7 +87,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
       <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" radius="md">
         <Stack gap="sm">
           <Group gap="xs">
-            <IconFileTypePdf size={20} />
+            <IconFileTypePdf size={ICON_SIZE.XL} />
             <Text size="sm" fw={500}>
               PDF Document
             </Text>
@@ -109,7 +109,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     return (
       <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" radius="md">
         <Alert
-          icon={<IconAlertCircle size={16} />}
+          icon={<IconAlertCircle size={ICON_SIZE.MD} />}
           title="PDF Unavailable"
           color="yellow"
           variant="light"
@@ -126,7 +126,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
       <Paper style={{ border: BORDER_STYLE_GRAY_3 }} p="md" radius="md">
         <Stack gap="md">
           <Group gap="xs">
-            <IconFileTypePdf size={20} />
+            <IconFileTypePdf size={ICON_SIZE.XL} />
             <Text size="sm" fw={500}>
               PDF Document
             </Text>
@@ -137,7 +137,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
             )}
           </Group>
           <Alert
-            icon={<IconAlertCircle size={16} />}
+            icon={<IconAlertCircle size={ICON_SIZE.MD} />}
             title="Unable to Display PDF Inline"
             color="yellow"
             variant="light"
@@ -151,7 +151,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                 <Button
                   variant="light"
                   size="xs"
-                  leftSection={<IconExternalLink size={14} />}
+                  leftSection={<IconExternalLink size={ICON_SIZE.SM} />}
                   onClick={handleOpenExternal}
                 >
                   Open in New Tab
@@ -159,7 +159,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                 <Button
                   variant="subtle"
                   size="xs"
-                  leftSection={<IconRefresh size={14} />}
+                  leftSection={<IconRefresh size={ICON_SIZE.SM} />}
                   onClick={handleRetry}
                 >
                   Retry
@@ -178,7 +178,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
         {/* Header */}
         <Group justify="space-between">
           <Group gap="xs">
-            <IconFileTypePdf size={20} style={{ color: "var(--mantine-color-red-6)" }} />
+            <IconFileTypePdf size={ICON_SIZE.XL} style={{ color: "var(--mantine-color-red-6)" }} />
             <Text size="sm" fw={500}>
               {title || "PDF Document"}
             </Text>
@@ -197,9 +197,9 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                 aria-label={isExpanded ? "Collapse PDF viewer" : "Expand PDF viewer"}
               >
                 {isExpanded ? (
-                  <IconMinimize size={16} />
+                  <IconMinimize size={ICON_SIZE.MD} />
                 ) : (
-                  <IconMaximize size={16} />
+                  <IconMaximize size={ICON_SIZE.MD} />
                 )}
               </ActionIcon>
             </Tooltip>
@@ -210,7 +210,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                 onClick={handleOpenExternal}
                 aria-label="Open PDF in new tab"
               >
-                <IconExternalLink size={16} />
+                <IconExternalLink size={ICON_SIZE.MD} />
               </ActionIcon>
             </Tooltip>
           </Group>
@@ -264,7 +264,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
             <Button
               variant="light"
               size="xs"
-              leftSection={<IconMaximize size={14} />}
+              leftSection={<IconMaximize size={ICON_SIZE.SM} />}
               onClick={toggleExpanded}
             >
               Show PDF
@@ -272,7 +272,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
             <Button
               variant="subtle"
               size="xs"
-              leftSection={<IconExternalLink size={14} />}
+              leftSection={<IconExternalLink size={ICON_SIZE.SM} />}
               onClick={handleOpenExternal}
             >
               Open in New Tab
