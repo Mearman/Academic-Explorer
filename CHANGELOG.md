@@ -1,3 +1,8 @@
+## <small>23.1.3 (2025-12-06)</small>
+
+* fix(algorithms): adjust label propagation performance thresholds for CI environment ([a671d98](https://github.com/Mearman/BibGraph/commit/a671d98))
+* chore(release): 23.1.2 [skip ci] ([28e83dc](https://github.com/Mearman/BibGraph/commit/28e83dc))
+
 ## <small>23.1.2 (2025-12-06)</small>
 
 * fix(algorithms): resolve flaky citation network backward reachability test ([b2f29a4](https://github.com/Mearman/BibGraph/commit/b2f29a4))
