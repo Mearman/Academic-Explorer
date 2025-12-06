@@ -5,10 +5,10 @@
  * Uses EU hosting, cookieless mode, and GDPR-compliant settings
  */
 
+import { logger } from '@bibgraph/utils'
 import { PostHogProvider as PostHogReactProvider } from '@posthog/react'
 import React, { ReactNode } from 'react'
 
-import { logger } from '@bibgraph/utils'
 import {
   POSTHOG_API_KEY,
   POSTHOG_CONFIG,
