@@ -113,9 +113,11 @@ describe('RelationshipItem', () => {
       </TestWrapper>
     );
 
-    // Metadata is displayed (JSON stringified in current implementation)
-    const metadataText = screen.getByText(/authorship/i);
+    // Metadata is displayed as human-readable text via formatMetadata
+    // Expected output: "1st author · corresponding"
+    const metadataText = screen.getByText(/1st author/i);
     expect(metadataText).toBeInTheDocument();
+    expect(metadataText).toHaveTextContent('corresponding');
   });
 
   it('should handle click navigation for outbound relationships', async () => {
