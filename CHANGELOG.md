@@ -1,3 +1,21 @@
+## 23.9.0 (2025-12-06)
+
+* fix(web): resolve ESLint errors in component files ([90ae800](https://github.com/Mearman/BibGraph/commit/90ae800))
+* fix(web): resolve lint errors and improve code quality ([d2a455e](https://github.com/Mearman/BibGraph/commit/d2a455e))
+* fix(web): resolve SearchInterface test failures ([a5d2cec](https://github.com/Mearman/BibGraph/commit/a5d2cec))
+* fix(web): resolve TypeScript and lint errors in mobile and search components ([19dc532](https://github.com/Mearman/BibGraph/commit/19dc532))
+* refactor(web): enhance search UX with better error handling and user feedback ([fcb3041](https://github.com/Mearman/BibGraph/commit/fcb3041))
+* refactor(web): fix import order in PostHogProvider ([e4022f4](https://github.com/Mearman/BibGraph/commit/e4022f4))
+* refactor(web): organize imports in SearchInterface component ([c304ad5](https://github.com/Mearman/BibGraph/commit/c304ad5))
+* refactor(web): replace console statements with structured logging ([8498543](https://github.com/Mearman/BibGraph/commit/8498543))
+* feat(ui): enhance error recovery with intelligent retry mechanisms ([4ac0517](https://github.com/Mearman/BibGraph/commit/4ac0517))
+* feat(ui): enhance search empty states with actionable guidance ([3e4197e](https://github.com/Mearman/BibGraph/commit/3e4197e))
+* feat(web): add mobile-responsive navigation to EntityDetailLayout ([a7f88c1](https://github.com/Mearman/BibGraph/commit/a7f88c1))
+* feat(web): enhance CreateListModal UX with comprehensive validation and feedback ([7341fb3](https://github.com/Mearman/BibGraph/commit/7341fb3))
+* feat(web): enhance responsive design with touch gestures and optimized tables ([19df62a](https://github.com/Mearman/BibGraph/commit/19df62a))
+* feat(web): enhance SearchInterface UX with tips rotation and better loading states ([d6accff](https://github.com/Mearman/BibGraph/commit/d6accff))
+* style(web): fix import sorting in search.lazy route ([66472ee](https://github.com/Mearman/BibGraph/commit/66472ee))
+
 ## <small>23.8.1 (2025-12-06)</small>
 
 * fix(ci): add missing coverage:report script ([dcd44ed](https://github.com/Mearman/BibGraph/commit/dcd44ed))
