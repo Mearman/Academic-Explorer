@@ -1,10 +1,10 @@
+import { SearchLoadingSpinner } from '@bibgraph/ui';
 import { debouncedSearch, isValidSearchQuery, logger, normalizeSearchQuery } from "@bibgraph/utils";
 import { ActionIcon, Alert, Button, Group, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
 import { IconInfoCircle, IconSearch, IconX } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
-import { SearchLoadingSpinner } from '@bibgraph/ui';
 
 interface SearchFilters {
   query: string;
