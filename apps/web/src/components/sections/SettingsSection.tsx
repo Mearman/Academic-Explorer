@@ -29,6 +29,8 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
+
+import { ICON_SIZE } from "@/config/style-constants";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
@@ -128,7 +130,7 @@ export const SettingsSection: React.FC = () => {
       title: "Email Updated",
       message,
       color: "green",
-      icon: <IconCheck size={16} />,
+      icon: <IconCheck size={ICON_SIZE.MD} />,
     });
   }, []);
 
@@ -207,7 +209,7 @@ export const SettingsSection: React.FC = () => {
       title: "API Key Updated",
       message,
       color: "green",
-      icon: <IconCheck size={16} />,
+      icon: <IconCheck size={ICON_SIZE.MD} />,
     });
   }, [localApiKey, setApiKey]);
 
@@ -241,7 +243,7 @@ export const SettingsSection: React.FC = () => {
         ? "Extended research outputs (xpac) enabled"
         : "Extended research outputs (xpac) disabled",
       color: "blue",
-      icon: <IconCheck size={16} />,
+      icon: <IconCheck size={ICON_SIZE.MD} />,
     });
   }, []);
 
@@ -255,7 +257,7 @@ export const SettingsSection: React.FC = () => {
       title: "Data Version Updated",
       message: `OpenAlex data version set to ${versionLabel}`,
       color: "blue",
-      icon: <IconCheck size={16} />,
+      icon: <IconCheck size={ICON_SIZE.MD} />,
     });
   }, []);
 
@@ -274,7 +276,7 @@ export const SettingsSection: React.FC = () => {
       title: "Strategy Updated",
       message: `Background processing strategy set to ${strategyLabels[value]}`,
       color: "blue",
-      icon: <IconCheck size={16} />,
+      icon: <IconCheck size={ICON_SIZE.MD} />,
     });
   }, []);
 
@@ -337,7 +339,7 @@ export const SettingsSection: React.FC = () => {
         message:
           "User preferences have been reset to defaults. Please reload the page to see changes.",
         color: "green",
-        icon: <IconRefresh size={16} />,
+        icon: <IconRefresh size={ICON_SIZE.MD} />,
       });
     } catch (error) {
       logger.error("ui", "Failed to reset user preferences", { error });
@@ -345,7 +347,7 @@ export const SettingsSection: React.FC = () => {
         title: "Reset Failed",
         message: "Failed to reset user preferences. Please try again.",
         color: "red",
-        icon: <IconAlertTriangle size={16} />,
+        icon: <IconAlertTriangle size={ICON_SIZE.MD} />,
       });
     } finally {
       setResetState((prev) => ({ ...prev, resettingPreferences: false }));
@@ -412,7 +414,7 @@ export const SettingsSection: React.FC = () => {
       message:
         "All cache and user data have been cleared. Please reload the page to see changes.",
       color: "green",
-      icon: <IconTrash size={16} />,
+      icon: <IconTrash size={ICON_SIZE.MD} />,
     });
   };
 
@@ -423,7 +425,7 @@ export const SettingsSection: React.FC = () => {
       title: "Clear Failed",
       message: "Failed to clear cache and user data. Please try again.",
       color: "red",
-      icon: <IconAlertTriangle size={16} />,
+      icon: <IconAlertTriangle size={ICON_SIZE.MD} />,
     });
   };
 
@@ -462,7 +464,7 @@ export const SettingsSection: React.FC = () => {
   return (
     <Stack gap="md">
       <Group gap="xs">
-        <IconSettings size={16} />
+        <IconSettings size={ICON_SIZE.MD} />
         <Text size="sm" fw={500}>
           User Preferences
         </Text>
@@ -471,7 +473,7 @@ export const SettingsSection: React.FC = () => {
       {/* OpenAlex Polite Pool Email Configuration */}
       <Stack gap="sm">
         <Group gap="xs">
-          <IconMail size={16} />
+          <IconMail size={ICON_SIZE.MD} />
           <Text size="sm" fw={500}>
             OpenAlex Polite Pool
           </Text>
@@ -482,7 +484,7 @@ export const SettingsSection: React.FC = () => {
             w={220}
           >
             <IconInfoCircle
-              size={12}
+              size={ICON_SIZE.XS}
               style={{ color: "var(--mantine-color-dimmed)" }}
             />
           </Tooltip>
@@ -505,12 +507,12 @@ export const SettingsSection: React.FC = () => {
                 showEmailValidation ? (
                   isEmailValid ? (
                     <IconCheck
-                      size={16}
+                      size={ICON_SIZE.MD}
                       style={{ color: "var(--mantine-color-green-6)" }}
                     />
                   ) : (
                     <IconX
-                      size={16}
+                      size={ICON_SIZE.MD}
                       style={{ color: "var(--mantine-color-red-6)" }}
                     />
                   )
@@ -523,7 +525,7 @@ export const SettingsSection: React.FC = () => {
                 size="xs"
                 onClick={handleEmailSave}
                 disabled={showEmailValidation && !isEmailValid}
-                leftSection={<IconCheck size={14} />}
+                leftSection={<IconCheck size={ICON_SIZE.SM} />}
               >
                 Save
               </Button>
@@ -531,7 +533,7 @@ export const SettingsSection: React.FC = () => {
                 variant="subtle"
                 size="xs"
                 onClick={handleEmailCancel}
-                leftSection={<IconX size={14} />}
+                leftSection={<IconX size={ICON_SIZE.SM} />}
               >
                 Cancel
               </Button>
@@ -566,7 +568,7 @@ export const SettingsSection: React.FC = () => {
       {/* OpenAlex API Key Configuration */}
       <Stack gap="sm">
         <Group gap="xs">
-          <IconKey size={16} />
+          <IconKey size={ICON_SIZE.MD} />
           <Text size="sm" fw={500}>
             OpenAlex API Key
           </Text>
@@ -577,7 +579,7 @@ export const SettingsSection: React.FC = () => {
             w={200}
           >
             <IconInfoCircle
-              size={12}
+              size={ICON_SIZE.XS}
               style={{ color: "var(--mantine-color-dimmed)" }}
             />
           </Tooltip>
@@ -598,7 +600,7 @@ export const SettingsSection: React.FC = () => {
                 variant="light"
                 size="xs"
                 onClick={handleApiKeySave}
-                leftSection={<IconCheck size={14} />}
+                leftSection={<IconCheck size={ICON_SIZE.SM} />}
               >
                 Save
               </Button>
@@ -606,7 +608,7 @@ export const SettingsSection: React.FC = () => {
                 variant="subtle"
                 size="xs"
                 onClick={handleApiKeyCancel}
-                leftSection={<IconX size={14} />}
+                leftSection={<IconX size={ICON_SIZE.SM} />}
               >
                 Cancel
               </Button>
@@ -668,7 +670,7 @@ export const SettingsSection: React.FC = () => {
       <Divider />
 
       <Alert
-        icon={<IconAlertTriangle size={16} />}
+        icon={<IconAlertTriangle size={ICON_SIZE.MD} />}
         title="Warning"
         color="yellow"
         variant="light"
@@ -680,7 +682,7 @@ export const SettingsSection: React.FC = () => {
       <Stack gap="sm">
         <Button
           variant="outline"
-          leftSection={<IconRefresh size={16} />}
+          leftSection={<IconRefresh size={ICON_SIZE.MD} />}
           onClick={() => void handleResetPreferences()}
           loading={resetState.resettingPreferences}
           disabled={resetState.clearingCache}
@@ -697,7 +699,7 @@ export const SettingsSection: React.FC = () => {
         <Button
           variant="outline"
           color="red"
-          leftSection={<IconTrash size={16} />}
+          leftSection={<IconTrash size={ICON_SIZE.MD} />}
           onClick={() => void handleClearAllData()}
           loading={resetState.clearingCache}
           disabled={resetState.resettingPreferences}

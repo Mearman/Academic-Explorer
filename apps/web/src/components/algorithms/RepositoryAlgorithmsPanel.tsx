@@ -37,7 +37,7 @@ import {
 } from '@tabler/icons-react';
 import React, { useMemo,useState } from 'react';
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useRepositoryAlgorithms } from '@/hooks/use-repository-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
 
@@ -132,7 +132,7 @@ export const RepositoryAlgorithmsPanel = () => {
   if (!hasData) {
     return (
       <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
-        <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
+        <Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} title="No Graph Data" color="gray">
           <Text size="sm">
             Add entities to the repository to analyze their relationships using graph algorithms.
           </Text>
@@ -150,7 +150,7 @@ export const RepositoryAlgorithmsPanel = () => {
       <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="sm">
         <Title order={6} mb="xs">
           <Group gap="xs">
-            <IconGraph size={16} />
+            <IconGraph size={ICON_SIZE.MD} />
             Repository Graph
           </Group>
         </Title>
@@ -199,7 +199,7 @@ export const RepositoryAlgorithmsPanel = () => {
       <Accordion variant="separated" defaultValue="communities" styles={{ item: { borderRadius: 'var(--mantine-radius-sm)' } }}>
         {/* Community Detection */}
         <Accordion.Item value="communities">
-          <Accordion.Control icon={<IconUsers size={16} />}>
+          <Accordion.Control icon={<IconUsers size={ICON_SIZE.MD} />}>
             <Group gap="xs">
               <Text size="sm">Communities</Text>
               {communities.length > 0 && (
@@ -261,7 +261,7 @@ export const RepositoryAlgorithmsPanel = () => {
                         key={community.id}
                         icon={
                           <ThemeIcon
-                            size={16}
+                            size={ICON_SIZE.MD}
                             radius="xl"
                             style={{
                               backgroundColor:
@@ -269,7 +269,7 @@ export const RepositoryAlgorithmsPanel = () => {
                                 '#gray',
                             }}
                           >
-                            <IconCircleDot size={10} />
+                            <IconCircleDot size={ICON_SIZE.XXS} />
                           </ThemeIcon>
                         }
                       >
@@ -297,7 +297,7 @@ export const RepositoryAlgorithmsPanel = () => {
 
         {/* Shortest Path */}
         <Accordion.Item value="path">
-          <Accordion.Control icon={<IconRoute size={16} />}>
+          <Accordion.Control icon={<IconRoute size={ICON_SIZE.MD} />}>
             <Text size="sm">Shortest Path</Text>
           </Accordion.Control>
           <Accordion.Panel>
@@ -328,7 +328,7 @@ export const RepositoryAlgorithmsPanel = () => {
                 size="xs"
                 onClick={handleFindPath}
                 disabled={!pathSource || !pathTarget}
-                leftSection={<IconRoute size={14} />}
+                leftSection={<IconRoute size={ICON_SIZE.SM} />}
               >
                 Find Path
               </Button>
@@ -340,7 +340,7 @@ export const RepositoryAlgorithmsPanel = () => {
                       <Group justify="space-between">
                         <Text size="xs" fw={500} c="green">
                           <IconCircleCheck
-                            size={14}
+                            size={ICON_SIZE.SM}
                             style={{ verticalAlign: 'middle' }}
                           />{' '}
                           Path Found
@@ -356,7 +356,7 @@ export const RepositoryAlgorithmsPanel = () => {
                   ) : (
                     <Text size="xs" c="red">
                       <IconAlertCircle
-                        size={14}
+                        size={ICON_SIZE.SM}
                         style={{ verticalAlign: 'middle' }}
                       />{' '}
                       No path exists
@@ -370,7 +370,7 @@ export const RepositoryAlgorithmsPanel = () => {
 
         {/* K-Core */}
         <Accordion.Item value="kcore">
-          <Accordion.Control icon={<IconHierarchy size={16} />}>
+          <Accordion.Control icon={<IconHierarchy size={ICON_SIZE.MD} />}>
             <Group gap="xs">
               <Text size="sm">K-Core</Text>
               {kCore && kCore.nodes.length > 0 && (
@@ -397,7 +397,7 @@ export const RepositoryAlgorithmsPanel = () => {
               <Button
                 size="xs"
                 onClick={handleComputeKCore}
-                leftSection={<IconChartDonut size={14} />}
+                leftSection={<IconChartDonut size={ICON_SIZE.SM} />}
               >
                 Find {localKCoreValue}-Core
               </Button>
@@ -426,7 +426,7 @@ export const RepositoryAlgorithmsPanel = () => {
 
         {/* Components */}
         <Accordion.Item value="components">
-          <Accordion.Control icon={<IconNetwork size={16} />}>
+          <Accordion.Control icon={<IconNetwork size={ICON_SIZE.MD} />}>
             <Group gap="xs">
               <Text size="sm">Components</Text>
               <Badge size="xs" variant="light">
@@ -441,12 +441,12 @@ export const RepositoryAlgorithmsPanel = () => {
               </Text>
               {statistics?.isConnected ? (
                 <Text size="xs" c="green">
-                  <IconCircleCheck size={14} style={{ verticalAlign: 'middle' }} />{' '}
+                  <IconCircleCheck size={ICON_SIZE.SM} style={{ verticalAlign: 'middle' }} />{' '}
                   All nodes are reachable from each other.
                 </Text>
               ) : (
                 <Text size="xs" c="yellow">
-                  <IconAlertCircle size={14} style={{ verticalAlign: 'middle' }} />{' '}
+                  <IconAlertCircle size={ICON_SIZE.SM} style={{ verticalAlign: 'middle' }} />{' '}
                   Some nodes are not connected to others.
                 </Text>
               )}
