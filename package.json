@@ -15,6 +15,7 @@
     "build": "nx run-many -t build",
     "clean": "nx reset && rm -rf dist coverage .nx/cache .tanstack node_modules/.vite && pnpm --filter='*' clean",
     "cli": "tsx apps/cli/src/openalex-cli.ts",
+    "coverage:report": "echo 'Coverage reports already generated during test execution'",
     "deps:analyze": "nx show project web --json | jq '.implicitDependencies' && nx graph --file=deps-graph.json && echo 'Dependency graph generated'",
     "deps:audit": "nx run bibgraph:deps:audit",
     "deps:knip": "nx run bibgraph:deps:knip",
