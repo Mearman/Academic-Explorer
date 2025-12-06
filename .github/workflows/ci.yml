@@ -115,11 +115,13 @@ jobs:
     outputs:
       next-version: ${{ steps.version.outputs.next-version }}
       should-release: ${{ steps.version.outputs.should-release }}
+      updated-package-json: ${{ steps.version.outputs.updated-package-json }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -134,7 +136,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Determine next version
+      - name: Determine and update next version
         id: version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -146,15 +148,34 @@ jobs:
           VERSION=$(echo "$OUTPUT" | grep -oP "The next release version is \K[0-9]+\.[0-9]+\.[0-9]+" || echo "")
 
           if [ -n "$VERSION" ]; then
-            echo "next-version=$VERSION" >> "$GITHUB_OUTPUT"
-            echo "should-release=true" >> "$GITHUB_OUTPUT"
-            echo "✅ Next version will be: $VERSION"
+            {
+              echo "next-version=$VERSION"
+              echo "should-release=true"
+              echo "✅ Next version will be: $VERSION"
+
+              # Update package.json with next version for build
+              jq --arg version "$VERSION" '.version = $version' package.json > package.json.tmp
+              mv package.json.tmp package.json
+
+              echo "updated-package-json=true"
+              echo "📝 Updated package.json with version: $VERSION"
+
+              # Commit and push the version update
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git add package.json
+              git commit -m "chore(ci): bump version to $VERSION for build [skip ci]"
+              git push origin main
+            } >> "$GITHUB_OUTPUT"
           else
             # No new release needed, use current version from package.json
             VERSION=$(jq -r .version package.json)
-            echo "next-version=$VERSION" >> "$GITHUB_OUTPUT"
-            echo "should-release=false" >> "$GITHUB_OUTPUT"
-            echo "ℹ️ No new release needed, using current version: $VERSION"
+            {
+              echo "next-version=$VERSION"
+              echo "should-release=false"
+              echo "updated-package-json=false"
+              echo "ℹ️ No new release needed, using current version: $VERSION"
+            } >> "$GITHUB_OUTPUT"
           fi
 
   # Main validation job - build, typecheck, lint, and all tests in one job
@@ -199,8 +220,6 @@ jobs:
         env:
           GITHUB_PAGES: true
           NODE_OPTIONS: --max-old-space-size=8192
-          # Inject version from determine-version job (empty for PRs, falls back to package.json)
-          NEXT_RELEASE_VERSION: ${{ needs.determine-version.outputs.next-version || '' }}
         run: pnpm nx run-many -t build typecheck --parallel=3
 
       - name: Lint all projects

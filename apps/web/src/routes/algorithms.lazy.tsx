@@ -44,8 +44,8 @@ import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualizat
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualization } from '@/hooks/use-graph-visualization';
-import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 import ForceGraph2D, { type ForceGraphMethods } from 'react-force-graph-2d';
+import { useFitToView, type GraphMethods } from '@/hooks/useFitToView';
 
 /**
  * Configuration for sample graph generation
@@ -567,9 +567,9 @@ const AlgorithmsPage = () => {
 
   // Handler for when graph methods become available
   const handleGraphReady = useCallback(
-    (methods: ForceGraphMethods | any) => {
+    (methods: ForceGraphMethods | unknown) => {
       // Cast to GraphMethods if it has the required zoomToFit method
-      if (methods && typeof methods.zoomToFit === 'function') {
+      if (methods && typeof (methods as any).zoomToFit === 'function') {
         graphMethodsRef.current = methods as GraphMethods;
       }
     },
