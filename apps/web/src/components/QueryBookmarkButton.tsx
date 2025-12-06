@@ -5,13 +5,17 @@
 
 import { logger } from "@bibgraph/utils/logger";
 import { ActionIcon, Text,Tooltip } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconBookmark,
   IconBookmarkFilled,
-  IconLoader
+  IconCheck,
+  IconLoader,
+  IconX,
 } from "@tabler/icons-react";
 import { useState } from "react";
 
+import { NOTIFICATION_DURATION } from "@/config/notification-constants";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 
 
@@ -61,20 +65,39 @@ export const QueryBookmarkButton = ({
     if (isLoading || disabled) return;
 
     setIsLoading(true);
+    const title = generateDefaultTitle();
 
     try {
       if (isQueryBookmarked) {
         await unbookmarkCurrentQuery();
         onUnbookmark?.();
-      } else {
-        await bookmarkCurrentQuery({
-          title: generateDefaultTitle()
+        notifications.show({
+          title: "Bookmark Removed",
+          message: "Query bookmark has been removed",
+          color: "gray",
+          icon: <IconBookmark size={16} />,
+          autoClose: NOTIFICATION_DURATION.SHORT_MS,
         });
+      } else {
+        await bookmarkCurrentQuery({ title });
         onBookmark?.();
+        notifications.show({
+          title: "Query Bookmarked",
+          message: `Saved as "${title}"`,
+          color: "blue",
+          icon: <IconCheck size={16} />,
+          autoClose: NOTIFICATION_DURATION.SHORT_MS,
+        });
       }
     } catch (error) {
       logger.error("bookmarks", "Failed to toggle query bookmark:", error);
-      // You could add error notification here
+      notifications.show({
+        title: "Bookmark Failed",
+        message: "Could not update bookmark. Please try again.",
+        color: "red",
+        icon: <IconX size={16} />,
+        autoClose: NOTIFICATION_DURATION.MEDIUM_MS,
+      });
     } finally {
       setIsLoading(false);
     }
