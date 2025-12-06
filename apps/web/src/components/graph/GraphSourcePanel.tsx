@@ -33,6 +33,8 @@ import {
 } from '@tabler/icons-react';
 import { useCallback,useState } from 'react';
 
+import { ICON_SIZE } from '@/config/style-constants';
+
 export interface GraphSourcePanelProps {
   /** Available data sources with their state */
   sources: GraphDataSourceState[];
@@ -92,7 +94,7 @@ const SourceToggle = ({
   return (
     <Group justify="space-between" wrap="nowrap" gap="xs">
       <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-        <Icon size={16} style={{ flexShrink: 0 }} />
+        <Icon size={ICON_SIZE.MD} style={{ flexShrink: 0 }} />
         <Text size="sm" truncate style={{ flex: 1 }}>
           {state.source.label}
         </Text>
@@ -201,7 +203,7 @@ export const GraphSourcePanel = ({
       >
         <Tooltip label="Show data sources" position="right">
           <ActionIcon variant="subtle" onClick={toggleCollapsed}>
-            <IconChevronRight size={18} />
+            <IconChevronRight size={ICON_SIZE.LG} />
           </ActionIcon>
         </Tooltip>
       </Paper>
@@ -238,12 +240,12 @@ export const GraphSourcePanel = ({
               onClick={onRefresh}
               loading={loading}
             >
-              <IconRefresh size={16} />
+              <IconRefresh size={ICON_SIZE.MD} />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Collapse panel">
             <ActionIcon variant="subtle" size="sm" onClick={toggleCollapsed}>
-              <IconChevronLeft size={16} />
+              <IconChevronLeft size={ICON_SIZE.MD} />
             </ActionIcon>
           </Tooltip>
         </Group>

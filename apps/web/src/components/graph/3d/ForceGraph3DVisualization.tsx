@@ -16,6 +16,8 @@ import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { detectWebGLCapabilities, GraphLODManager, LODLevel } from '@bibgraph/utils';
 import { Badge, Box, Group, LoadingOverlay, Stack, Text, useComputedColorScheme } from '@mantine/core';
 import { IconActivity,IconAlertTriangle } from '@tabler/icons-react';
+
+import { ICON_SIZE } from '@/config/style-constants';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import * as THREE from 'three';
@@ -171,7 +173,7 @@ const WebGLUnavailable = ({ reason }: { reason: string }) => <Box
         color: 'var(--mantine-color-dimmed)',
       }}
     >
-      <IconAlertTriangle size={48} style={{ marginBottom: 'var(--mantine-spacing-md)' }} />
+      <IconAlertTriangle size={ICON_SIZE.EMPTY_STATE} style={{ marginBottom: 'var(--mantine-spacing-md)' }} />
       <Box style={{ fontWeight: 500, marginBottom: 'var(--mantine-spacing-xs)' }}>
         3D Visualization Unavailable
       </Box>
@@ -865,7 +867,7 @@ export const ForceGraph3DVisualization = ({
           <Stack gap={4}>
             <Group gap={8} justify="space-between">
               <Group gap={4}>
-                <IconActivity size={14} />
+                <IconActivity size={ICON_SIZE.SM} />
                 <Text size="xs" fw={500}>Performance</Text>
               </Group>
               <Badge

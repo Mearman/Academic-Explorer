@@ -20,6 +20,7 @@ import {
 import { Link } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useRef } from 'react';
 
+import { ICON_SIZE } from '@/config/style-constants';
 import { ENTITY_TYPE_COLORS } from '../../styles/hash-colors';
 
 /**
@@ -228,9 +229,9 @@ export const NodeContextMenu = ({
             <Menu.Item
               leftSection={
                 nodeIsExpanding ? (
-                  <Loader size={14} />
+                  <Loader size={ICON_SIZE.SM} />
                 ) : (
-                  <IconArrowsMaximize size={14} />
+                  <IconArrowsMaximize size={ICON_SIZE.SM} />
                 )
               }
               onClick={handleExpand}
@@ -247,7 +248,7 @@ export const NodeContextMenu = ({
             <Menu.Item
               component={Link}
               to={detailsRoute}
-              leftSection={<IconExternalLink size={14} />}
+              leftSection={<IconExternalLink size={ICON_SIZE.SM} />}
               onClick={onClose}
             >
               View details
@@ -259,7 +260,7 @@ export const NodeContextMenu = ({
             <Menu.Label>Path Selection</Menu.Label>
 
             <Menu.Item
-              leftSection={<IconRoute size={14} />}
+              leftSection={<IconRoute size={ICON_SIZE.SM} />}
               onClick={handleSetPathSource}
               disabled={isCurrentPathSource}
               rightSection={
@@ -274,7 +275,7 @@ export const NodeContextMenu = ({
             </Menu.Item>
 
             <Menu.Item
-              leftSection={<IconTarget size={14} />}
+              leftSection={<IconTarget size={ICON_SIZE.SM} />}
               onClick={handleSetPathTarget}
               disabled={isCurrentPathTarget}
               rightSection={
@@ -291,7 +292,7 @@ export const NodeContextMenu = ({
             <Menu.Divider />
 
             {/* Close */}
-            <Menu.Item leftSection={<IconX size={14} />} onClick={onClose}>
+            <Menu.Item leftSection={<IconX size={ICON_SIZE.SM} />} onClick={onClose}>
               Close
             </Menu.Item>
           </Menu.Dropdown>
