@@ -1,5 +1,6 @@
 import { logger } from "@bibgraph/utils";
 import {
+  ActionIcon,
   Box,
   Group,
   Pagination,
@@ -8,11 +9,9 @@ import {
   Table,
   Text,
   TextInput,
-  ActionIcon,
   Tooltip,
 } from "@mantine/core";
-import { IconColumns, IconColumns3 } from "@tabler/icons-react";
-import {
+import { IconColumns, IconColumns3 ,
   IconSearch,
   IconSortAscending,
   IconSortDescending,
@@ -32,8 +31,8 @@ import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { useEffect,useRef, useState } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
-import { sprinkles } from "@/styles/sprinkles";
 import { useResponsiveDesign } from "@/hooks/use-sprinkles";
+import { sprinkles } from "@/styles/sprinkles";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -48,6 +47,29 @@ interface BaseTableProps<T> {
   estimateSize?: number;
   maxHeight?: number;
 }
+
+// Helper component for table wrapper with mobile scroll support
+const TableWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { isMobile } = useResponsiveDesign();
+
+  if (isMobile()) {
+    return (
+      <ScrollArea
+        type="auto"
+        scrollbarSize={8}
+        className={sprinkles({ borderGray3: true, borderRadius: 'md' })}
+        styles={{
+          viewport: {
+            minHeight: '400px'
+          }
+        }}
+      >
+        {children}
+      </ScrollArea>
+    );
+  }
+  return <>{children}</>;
+};
 
 export const BaseTable = <T,>({
   data,
@@ -386,26 +408,6 @@ export const BaseTable = <T,>({
 
   // Helper function to render regular table
   const renderRegularTable = () => {
-    const TableWrapper = ({ children }: { children: React.ReactNode }) => {
-      if (isMobile()) {
-        return (
-          <ScrollArea
-            type="auto"
-            scrollbarSize={8}
-            className={sprinkles({ borderGray3: true, borderRadius: 'md' })}
-            styles={{
-              viewport: {
-                minHeight: '400px'
-              }
-            }}
-          >
-            {children}
-          </ScrollArea>
-        );
-      }
-      return <>{children}</>;
-    };
-
     return (
       <TableWrapper>
         <Table

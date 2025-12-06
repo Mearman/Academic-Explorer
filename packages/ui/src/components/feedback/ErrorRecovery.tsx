@@ -1,17 +1,17 @@
-import type { ReactNode } from "react";
-import { Alert, Button, Card, Group, Stack, Text, Title, Badge, Progress } from "@mantine/core";
+import { Alert, Badge, Button, Card, Group, Progress, Stack, Text } from "@mantine/core";
 import {
-  IconAlertTriangle,
-  IconRefresh,
-  IconWifiOff,
-  IconClock,
-  IconDatabaseOff,
-  IconCloudOff,
-  IconServerOff,
+  IconArrowBack,
   IconBug,
+  IconClock,
+  IconCloudOff,
+  IconDatabaseOff,
   IconHome,
-  IconArrowBack
-} from "@tabler/icons-react";
+  IconRefresh,
+  IconServerOff,
+  IconWifiOff} from "@tabler/icons-react";
+import type { ReactNode } from "react";
+
+const DEFAULT_ERROR_SUGGESTIONS: ErrorSuggestion[] = [];
 
 export interface ErrorRecoveryProps {
   error: Error | unknown;
@@ -129,7 +129,7 @@ export const ErrorRecovery = ({
   isRetrying = false,
   className,
   context,
-  errorSuggestions = []
+  errorSuggestions = DEFAULT_ERROR_SUGGESTIONS
 }: ErrorRecoveryProps) => {
   const errorInfo = getErrorType(error);
   const retryDelay = getRetryDelay(retryCount);

@@ -44,9 +44,10 @@ export const useMobileGestures = (config: SwipeConfig = {}) => {
 
   // Detect touch device on mount
   useEffect(() => {
+    const nav = navigator || {};
     const hasTouch = 'ontouchstart' in window ||
-                   navigator.maxTouchPoints > 0 ||
-                   (navigator as any).msMaxTouchPoints > 0;
+                   (nav.maxTouchPoints && nav.maxTouchPoints > 0) ||
+                   ((nav as { msMaxTouchPoints?: number }).msMaxTouchPoints || 0) > 0;
     setIsTouchDevice(hasTouch);
   }, []);
 
@@ -142,6 +143,9 @@ export const useMobileGestures = (config: SwipeConfig = {}) => {
 /**
  * Hook for touch-friendly sidebar controls
  * Enhances mobile sidebar interaction with touch gestures
+ * @param onOpen
+ * @param onClose
+ * @param isOpen
  */
 export const useTouchSidebar = (onOpen: () => void, onClose: () => void, isOpen: boolean) => {
   const { isTouchDevice, swipedRight, swipedLeft } = useMobileGestures({
@@ -175,6 +179,8 @@ export const useTouchSidebar = (onOpen: () => void, onClose: () => void, isOpen:
 
 /**
  * Hook for mobile-optimized long press detection
+ * @param onLongPress
+ * @param delay
  */
 export const useLongPress = (onLongPress: () => void, delay = 500) => {
   const [isLongPressing, setIsLongPressing] = useState(false);

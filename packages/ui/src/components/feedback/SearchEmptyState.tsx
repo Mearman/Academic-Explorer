@@ -1,6 +1,6 @@
+import { Alert, Badge,Button, Card, Group, Stack, Text, Title } from "@mantine/core";
+import { IconBook, IconBrain, IconFlask, IconHeart,IconMicroscope, IconTrendingUp } from "@tabler/icons-react";
 import type { ReactNode } from "react";
-import { Alert, Button, Card, Group, Stack, Text, Title, Badge } from "@mantine/core";
-import { IconBook, IconFlask, IconMicroscope, IconTrendingUp, IconBrain, IconHeart } from "@tabler/icons-react";
 
 export interface SearchEmptyStateProps {
   variant: "initial" | "no-results";
@@ -90,6 +90,26 @@ export const SearchEmptyState = ({
     }
   };
 
+  // Helper function to handle category item clicks
+  const handleCategoryItemClick = (itemQuery: string) => {
+    handleQuickSearch(itemQuery);
+  };
+
+  // Helper function to render category items
+  const renderCategoryItems = (items: typeof QUICK_SEARCHES[0][]) => {
+    return items.map((item) => (
+      <Button
+        key={item.query}
+        variant="subtle"
+        size="xs"
+        fullWidth
+        onClick={handleCategoryItemClick.bind(null, item.query)}
+      >
+        {item.label}
+      </Button>
+    ));
+  };
+
   const renderQuickSearchButtons = () => (
     <Stack gap="sm">
       <Text size="sm" fw={600} c="dimmed">Popular Searches</Text>
@@ -130,17 +150,7 @@ export const SearchEmptyState = ({
                 <Badge size="xs" variant="light" color={items[0]?.color}>
                   {category}
                 </Badge>
-                {items.map((item) => (
-                  <Button
-                    key={item.query}
-                    variant="subtle"
-                    size="xs"
-                    fullWidth
-                    onClick={() => handleQuickSearch(item.query)}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+                {renderCategoryItems(items)}
               </Stack>
             </Card>
           ))}

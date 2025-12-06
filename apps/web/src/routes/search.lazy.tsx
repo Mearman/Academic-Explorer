@@ -1,10 +1,9 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { ENTITY_METADATA, toEntityType } from "@bibgraph/types";
 import type { AutocompleteResult } from "@bibgraph/types/entities";
-import { convertToRelativeUrl, SearchEmptyState, ErrorRecovery } from "@bibgraph/ui";
+import { convertToRelativeUrl, ErrorRecovery,SearchEmptyState } from "@bibgraph/ui";
 import { formatLargeNumber, logger } from "@bibgraph/utils";
 import {
-  Alert,
   Anchor,
   Badge,
   Button,
@@ -19,7 +18,6 @@ import { notifications } from "@mantine/notifications";
 import {
   IconBookmark,
   IconBookmarkOff,
-  IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
@@ -244,7 +242,6 @@ const SearchPage = () => {
   // Retry state management
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [retryDelay, setRetryDelay] = useState(0);
   const maxRetries = 3;
 
   // Update searchFilters when URL parameters change
@@ -314,7 +311,6 @@ const SearchPage = () => {
     if (retryCount >= maxRetries) return;
 
     const delay = Math.min(Math.pow(2, retryCount) * 1000, 30000); // Max 30s
-    setRetryDelay(delay);
 
     logger.info("search", "Starting exponential backoff retry", {
       retryCount: retryCount + 1,
@@ -339,7 +335,6 @@ const SearchPage = () => {
       });
     } finally {
       setIsRetrying(false);
-      setRetryDelay(0);
     }
   };
 
