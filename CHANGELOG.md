@@ -1,3 +1,15 @@
+## <small>23.8.1 (2025-12-06)</small>
+
+* fix(ci): add missing coverage:report script ([dcd44ed](https://github.com/Mearman/BibGraph/commit/dcd44ed))
+* fix(web): add aria-labels to ActionIcon components ([9226669](https://github.com/Mearman/BibGraph/commit/9226669))
+* fix(web): add availableSourceCount prop to GraphEmptyState component ([e332581](https://github.com/Mearman/BibGraph/commit/e332581))
+* test(web): add missing props to RelationshipSection test components ([e6eb814](https://github.com/Mearman/BibGraph/commit/e6eb814))
+* refactor(web): remove unused React imports and fix console.warn ([73fe41f](https://github.com/Mearman/BibGraph/commit/73fe41f))
+* refactor(web): remove unused React imports from components ([a33a2ae](https://github.com/Mearman/BibGraph/commit/a33a2ae))
+* refactor(web): replace console.error with logger ([4c34f05](https://github.com/Mearman/BibGraph/commit/4c34f05))
+* refactor(web): replace magic numbers with named constants ([151f4cf](https://github.com/Mearman/BibGraph/commit/151f4cf))
+* Merge remote-tracking branch 'origin/main' ([e2b6364](https://github.com/Mearman/BibGraph/commit/e2b6364))
+
 ## 23.8.0 (2025-12-06)
 
 * refactor(web): fix eslint errors ([014230d](https://github.com/Mearman/BibGraph/commit/014230d))
