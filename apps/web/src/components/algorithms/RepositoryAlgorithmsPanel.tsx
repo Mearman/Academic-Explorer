@@ -37,6 +37,7 @@ import {
 } from '@tabler/icons-react';
 import React, { useMemo,useState } from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useRepositoryAlgorithms } from '@/hooks/use-repository-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
 
@@ -119,7 +120,7 @@ export const RepositoryAlgorithmsPanel = () => {
 
   if (isLoading) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
         <Stack align="center" gap="sm">
           <Loader size="sm" />
           <Text size="sm" c="dimmed">Loading repository data...</Text>
@@ -130,7 +131,7 @@ export const RepositoryAlgorithmsPanel = () => {
 
   if (!hasData) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
         <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
           <Text size="sm">
             Add entities to the repository to analyze their relationships using graph algorithms.
@@ -146,7 +147,7 @@ export const RepositoryAlgorithmsPanel = () => {
   return (
     <Stack gap="sm">
       {/* Graph Statistics Card */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="sm">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="sm">
         <Title order={6} mb="xs">
           <Group gap="xs">
             <IconGraph size={16} />
@@ -333,7 +334,7 @@ export const RepositoryAlgorithmsPanel = () => {
               </Button>
 
               {pathResult && (
-                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs" bg="gray.0">
+                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs" bg="gray.0">
                   {pathResult.found ? (
                     <Stack gap={4}>
                       <Group justify="space-between">
@@ -402,7 +403,7 @@ export const RepositoryAlgorithmsPanel = () => {
               </Button>
 
               {kCore && (
-                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                   {kCore.nodes.length > 0 ? (
                     <Group justify="space-between">
                       <Text size="xs" c="dimmed">

@@ -48,6 +48,7 @@ import {
 } from '@tabler/icons-react';
 import React, { useMemo,useState } from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import {
   type CommunityDetectionOptions,
   useBFS,
@@ -307,7 +308,7 @@ export const GraphAlgorithmsPanel = ({
 
   if (nodes.length === 0) {
     return (
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
         <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
           Add nodes and edges to the graph to run algorithms.
         </Alert>
@@ -318,7 +319,7 @@ export const GraphAlgorithmsPanel = ({
   return (
     <Stack gap="md">
       {/* Graph Statistics Card */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
         <Title order={5} mb="sm">
           <Group gap="xs">
             <IconGraph size={18} />
@@ -569,7 +570,7 @@ export const GraphAlgorithmsPanel = ({
               </Button>
 
               {pathResult && (
-                <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="sm" bg="gray.0">
+                <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="sm" bg="gray.0">
                   {pathResult.found ? (
                     <Stack gap="xs">
                       <Group justify="space-between">
@@ -710,7 +711,7 @@ export const GraphAlgorithmsPanel = ({
               {traversalStartNode && (
                 <Stack gap="xs">
                   {/* BFS Results */}
-                  <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                  <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                     <Group justify="space-between" mb="xs">
                       <Text size="sm" fw={500}>Breadth-First Search (BFS)</Text>
                       {bfsResult && (
@@ -756,7 +757,7 @@ export const GraphAlgorithmsPanel = ({
                   </Card>
 
                   {/* DFS Results */}
-                  <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                  <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                     <Group justify="space-between" mb="xs">
                       <Text size="sm" fw={500}>Depth-First Search (DFS)</Text>
                       {dfsResult && (
@@ -876,7 +877,7 @@ export const GraphAlgorithmsPanel = ({
                     Graph contains cycles - topological sort is not possible.
                   </Alert>
                   {cycleInfo.cycle.length > 0 && (
-                    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                    <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                       <Text size="sm" fw={500} mb="xs">Detected Cycle:</Text>
                       <Group gap="xs" wrap="wrap">
                         {cycleInfo.cycle.map((nodeId, index) => (
@@ -914,7 +915,7 @@ export const GraphAlgorithmsPanel = ({
                     Graph is a DAG (Directed Acyclic Graph) - topological ordering exists.
                   </Alert>
                   {topologicalOrder && topologicalOrder.length > 0 && (
-                    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                    <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                       <Text size="sm" fw={500} mb="xs">Topological Order:</Text>
                       <Text size="xs" c="dimmed" mb="xs">
                         Nodes ordered so all edges point from earlier to later nodes.
@@ -1049,7 +1050,7 @@ export const GraphAlgorithmsPanel = ({
                 <>
                   {/* Articulation Points */}
                   {biconnectedComponents.articulationPoints.length > 0 && (
-                    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+                    <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                       <Group justify="space-between" mb="xs">
                         <Text size="sm" fw={500}>Articulation Points (Cut Vertices)</Text>
                         <Badge color="orange" variant="light">
@@ -1215,7 +1216,7 @@ export const GraphAlgorithmsPanel = ({
               </Text>
 
               {/* Triangles */}
-              <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+              <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                 <Group justify="space-between" mb="xs">
                   <Text size="sm" fw={500}>Triangles (3-Cliques)</Text>
                   <Badge variant="light">{triangles.count}</Badge>
@@ -1256,7 +1257,7 @@ export const GraphAlgorithmsPanel = ({
               </Card>
 
               {/* Star Patterns */}
-              <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+              <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                 <Group justify="space-between" mb="xs">
                   <Text size="sm" fw={500}>Star Patterns (Hub Nodes)</Text>
                   <Badge variant="light">{starPatterns.count}</Badge>
@@ -1316,7 +1317,7 @@ export const GraphAlgorithmsPanel = ({
               </Card>
 
               {/* Co-Citations */}
-              <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+              <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                 <Group justify="space-between" mb="xs">
                   <Text size="sm" fw={500}>Co-Citations</Text>
                   <Badge variant="light" color="cyan">{coCitations.pairs.length} pairs</Badge>
@@ -1369,7 +1370,7 @@ export const GraphAlgorithmsPanel = ({
               </Card>
 
               {/* Bibliographic Coupling */}
-              <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+              <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
                 <Group justify="space-between" mb="xs">
                   <Text size="sm" fw={500}>Bibliographic Coupling</Text>
                   <Badge variant="light" color="grape">{bibCoupling.pairs.length} pairs</Badge>
