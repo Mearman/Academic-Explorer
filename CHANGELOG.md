@@ -1,3 +1,11 @@
+## <small>23.3.1 (2025-12-06)</small>
+
+* refactor(algorithms): add K_TRUSS and SCORE_FILTER constants ([3e7fcc5](https://github.com/Mearman/BibGraph/commit/3e7fcc5))
+* refactor(algorithms): centralize magic numbers into constants ([339d55a](https://github.com/Mearman/BibGraph/commit/339d55a))
+* fix(algorithms): add missing empty states to connectivity components ([0c185ff](https://github.com/Mearman/BibGraph/commit/0c185ff))
+* fix(ci): add missing Playwright browser installation to smoke-tests ([a12bcfd](https://github.com/Mearman/BibGraph/commit/a12bcfd))
+* chore(release): 23.3.0 [skip ci] ([d4878fb](https://github.com/Mearman/BibGraph/commit/d4878fb))
+
 ## 23.3.0 (2025-12-06)
 
 * fix(ci): correct GITHUB_OUTPUT format in determine-version job ([ad776d7](https://github.com/Mearman/BibGraph/commit/ad776d7))
