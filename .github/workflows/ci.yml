@@ -106,11 +106,65 @@ jobs:
           git commit -m "chore(deps): auto-fix syncpack mismatches [skip ci]"
           git push
 
+  # Determine next version using semantic-release dry-run
+  # This runs BEFORE validate so we can build with the correct version
+  determine-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    outputs:
+      next-version: ${{ steps.version.outputs.next-version }}
+      should-release: ${{ steps.version.outputs.should-release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Determine next version
+        id: version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Run semantic-release in dry-run mode to get the next version
+          OUTPUT=$(npx semantic-release --dry-run 2>&1) || true
+
+          # Extract version from output (looks for "The next release version is X.X.X")
+          VERSION=$(echo "$OUTPUT" | grep -oP "The next release version is \K[0-9]+\.[0-9]+\.[0-9]+" || echo "")
+
+          if [ -n "$VERSION" ]; then
+            echo "next-version=$VERSION" >> "$GITHUB_OUTPUT"
+            echo "should-release=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Next version will be: $VERSION"
+          else
+            # No new release needed, use current version from package.json
+            VERSION=$(jq -r .version package.json)
+            echo "next-version=$VERSION" >> "$GITHUB_OUTPUT"
+            echo "should-release=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ No new release needed, using current version: $VERSION"
+          fi
+
   # Main validation job - build, typecheck, lint, and all tests in one job
   # Consolidating reduces setup overhead and lets Nx fully optimize the task graph
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: [determine-version]
+    # Run even when determine-version is skipped (for PRs/non-main branches)
+    if: always() && !cancelled()
     outputs:
       should-deploy: ${{ steps.deploy.outputs.should-deploy }}
     steps:
@@ -145,6 +199,8 @@ jobs:
         env:
           GITHUB_PAGES: true
           NODE_OPTIONS: --max-old-space-size=8192
+          # Inject version from determine-version job (empty for PRs, falls back to package.json)
+          NEXT_RELEASE_VERSION: ${{ needs.determine-version.outputs.next-version || '' }}
         run: pnpm nx run-many -t build typecheck --parallel=3
 
       - name: Lint all projects

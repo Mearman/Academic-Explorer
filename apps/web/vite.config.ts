@@ -30,13 +30,20 @@ function getBuildInfo() {
     }
   };
 
-  // Read version from root package.json
+  // Get version: prefer CI-injected version, fall back to package.json
   let version = '0.0.0-dev';
-  try {
-    const pkgJson = JSON.parse(readFileSync(resolve(monorepoRoot, 'package.json'), 'utf-8'));
-    version = pkgJson.version || version;
-  } catch {
-    // Fall back to default version
+  const ciVersion = process.env.NEXT_RELEASE_VERSION;
+  if (ciVersion) {
+    // CI provides the next release version before semantic-release commits
+    version = ciVersion;
+  } else {
+    // Fall back to package.json for local dev and PRs
+    try {
+      const pkgJson = JSON.parse(readFileSync(resolve(monorepoRoot, 'package.json'), 'utf-8'));
+      version = pkgJson.version || version;
+    } catch {
+      // Fall back to default version
+    }
   }
 
   const commitHash = safeGitExec(['rev-parse', 'HEAD'], 'unknown');
