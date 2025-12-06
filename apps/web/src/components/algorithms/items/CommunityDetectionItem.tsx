@@ -24,6 +24,12 @@ import React, { useEffect,useMemo, useState } from 'react';
 import { type CommunityDetectionOptions,useCommunityDetection } from '@/hooks/use-graph-algorithms';
 import type { ClusteringAlgorithm } from '@/services/graph-algorithms';
 
+import {
+  COMMUNITY_COLORS,
+  COMMUNITY_DETECTION,
+  type LinkageMethod,
+  QUALITY_THRESHOLDS,
+} from '../constants';
 import type { CommunityAlgorithmProps } from '../types';
 
 /**
@@ -47,9 +53,9 @@ export const CommunityDetectionItem = ({
 }: CommunityAlgorithmProps) => {
   // Community detection state
   const [communityAlgorithm, setCommunityAlgorithm] = useState<ClusteringAlgorithm>('louvain');
-  const [resolution, setResolution] = useState<number>(1);
-  const [numClusters, setNumClusters] = useState<number>(5);
-  const [linkage, setLinkage] = useState<'single' | 'complete' | 'average'>('average');
+  const [resolution, setResolution] = useState<number>(COMMUNITY_DETECTION.RESOLUTION_DEFAULT);
+  const [numClusters, setNumClusters] = useState<number>(COMMUNITY_DETECTION.NUM_CLUSTERS_DEFAULT);
+  const [linkage, setLinkage] = useState<LinkageMethod>(COMMUNITY_DETECTION.LINKAGE_DEFAULT);
 
   const communityOptions: CommunityDetectionOptions = useMemo(
     () => ({ algorithm: communityAlgorithm, resolution, numClusters, linkage }),
@@ -70,13 +76,9 @@ export const CommunityDetectionItem = ({
 
   // Community colors for visualization
   const communityColors = useMemo(() => {
-    const colors = [
-      '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6',
-      '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
-    ];
     const colorMap = new Map<number, string>();
     sortedCommunities.forEach((community, index) => {
-      colorMap.set(community.id, colors[index % colors.length]);
+      colorMap.set(community.id, COMMUNITY_COLORS[index % COMMUNITY_COLORS.length]);
     });
     return colorMap;
   }, [sortedCommunities]);
@@ -147,10 +149,10 @@ export const CommunityDetectionItem = ({
           label="Resolution"
           description="Higher = more communities, Lower = fewer communities"
           value={resolution}
-          onChange={(value) => setResolution(typeof value === 'number' ? value : 1)}
-          min={0.1}
-          max={3}
-          step={0.1}
+          onChange={(value) => setResolution(typeof value === 'number' ? value : COMMUNITY_DETECTION.RESOLUTION_DEFAULT)}
+          min={COMMUNITY_DETECTION.RESOLUTION_MIN}
+          max={COMMUNITY_DETECTION.RESOLUTION_MAX}
+          step={COMMUNITY_DETECTION.RESOLUTION_STEP}
           decimalScale={2}
         />
       )}
@@ -161,9 +163,9 @@ export const CommunityDetectionItem = ({
           label="Number of Clusters"
           description="Target number of communities/partitions"
           value={numClusters}
-          onChange={(value) => setNumClusters(typeof value === 'number' ? value : 5)}
-          min={2}
-          max={20}
+          onChange={(value) => setNumClusters(typeof value === 'number' ? value : COMMUNITY_DETECTION.NUM_CLUSTERS_DEFAULT)}
+          min={COMMUNITY_DETECTION.NUM_CLUSTERS_MIN}
+          max={COMMUNITY_DETECTION.NUM_CLUSTERS_MAX}
           step={1}
         />
       )}
@@ -189,7 +191,7 @@ export const CommunityDetectionItem = ({
           <Text size="sm" c="dimmed">Modularity Score</Text>
           <Tooltip label="Quality metric (higher is better, 0.3-0.7 typical)">
             <Badge
-              color={modularity > 0.4 ? 'green' : (modularity > 0.2 ? 'yellow' : 'red')}
+              color={modularity > QUALITY_THRESHOLDS.MODULARITY.EXCELLENT ? 'green' : (modularity > QUALITY_THRESHOLDS.MODULARITY.GOOD ? 'yellow' : 'red')}
               variant="light"
             >
               {modularity.toFixed(4)}

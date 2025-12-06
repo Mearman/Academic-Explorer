@@ -17,6 +17,7 @@ import { useState } from 'react';
 
 import { useKCore } from '@/hooks/use-graph-algorithms';
 
+import { K_CORE } from '../constants';
 import type { AlgorithmItemBaseProps } from '../types';
 
 export const KCoreItem = ({
@@ -24,7 +25,7 @@ export const KCoreItem = ({
   edges,
   onHighlightNodes,
 }: AlgorithmItemBaseProps) => {
-  const [kCoreValue, setKCoreValue] = useState<number>(2);
+  const [kCoreValue, setKCoreValue] = useState<number>(K_CORE.K_DEFAULT);
   const kCore = useKCore(nodes, edges, kCoreValue);
 
   const handleKCoreHighlight = () => {
@@ -39,9 +40,9 @@ export const KCoreItem = ({
         label="K Value"
         description="Minimum degree for nodes in the k-core"
         value={kCoreValue}
-        onChange={(value) => setKCoreValue(typeof value === 'number' ? value : 2)}
-        min={1}
-        max={20}
+        onChange={(value) => setKCoreValue(typeof value === 'number' ? value : K_CORE.K_DEFAULT)}
+        min={K_CORE.K_MIN}
+        max={K_CORE.K_MAX}
         step={1}
       />
 

@@ -17,6 +17,7 @@ import { useMemo,useState } from 'react';
 
 import { useEgoNetwork } from '@/hooks/use-graph-algorithms';
 
+import { EGO_NETWORK } from '../constants';
 import type { AlgorithmItemBaseProps } from '../types';
 
 export const EgoNetworkItem = ({
@@ -25,7 +26,7 @@ export const EgoNetworkItem = ({
   onHighlightNodes,
 }: AlgorithmItemBaseProps) => {
   const [egoCenter, setEgoCenter] = useState<string | null>(null);
-  const [egoRadius, setEgoRadius] = useState<number>(1);
+  const [egoRadius, setEgoRadius] = useState<number>(EGO_NETWORK.RADIUS_DEFAULT);
   const egoNetwork = useEgoNetwork(nodes, edges, egoCenter, egoRadius, true);
 
   // Create node options for select dropdown
@@ -56,9 +57,9 @@ export const EgoNetworkItem = ({
         label="Radius"
         description="Number of hops from the center node"
         value={egoRadius}
-        onChange={(value) => setEgoRadius(typeof value === 'number' ? value : 1)}
-        min={1}
-        max={5}
+        onChange={(value) => setEgoRadius(typeof value === 'number' ? value : EGO_NETWORK.RADIUS_DEFAULT)}
+        min={EGO_NETWORK.RADIUS_MIN}
+        max={EGO_NETWORK.RADIUS_MAX}
         step={1}
       />
 

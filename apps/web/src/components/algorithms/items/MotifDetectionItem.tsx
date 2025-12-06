@@ -27,6 +27,7 @@ import {
   useTriangles,
 } from '@/hooks/use-graph-algorithms';
 
+import { MOTIF_DETECTION, QUALITY_THRESHOLDS } from '../constants';
 import type { AlgorithmItemBaseProps } from '../types';
 
 export const MotifDetectionItem = ({
@@ -36,14 +37,14 @@ export const MotifDetectionItem = ({
 }: AlgorithmItemBaseProps) => {
   // Motif detection hooks
   const triangles = useTriangles(nodes, edges);
-  const [starMinDegree, setStarMinDegree] = useState<number>(3);
+  const [starMinDegree, setStarMinDegree] = useState<number>(MOTIF_DETECTION.STAR_MIN_DEGREE_DEFAULT);
   const [starType, setStarType] = useState<'in' | 'out'>('out');
   const starPatterns = useStarPatterns(nodes, edges, { minDegree: starMinDegree, type: starType });
 
   // Co-citation and bibliographic coupling
-  const [coCitationMinCount, setCoCitationMinCount] = useState<number>(2);
+  const [coCitationMinCount, setCoCitationMinCount] = useState<number>(MOTIF_DETECTION.CO_CITATION_MIN_DEFAULT);
   const coCitations = useCoCitations(nodes, edges, coCitationMinCount);
-  const [bibCouplingMinShared, setBibCouplingMinShared] = useState<number>(2);
+  const [bibCouplingMinShared, setBibCouplingMinShared] = useState<number>(MOTIF_DETECTION.BIB_COUPLING_MIN_DEFAULT);
   const bibCoupling = useBibliographicCoupling(nodes, edges, bibCouplingMinShared);
 
   return (
@@ -69,7 +70,7 @@ export const MotifDetectionItem = ({
               <Badge
                 size="xs"
                 variant="outline"
-                color={triangles.clusteringCoefficient > 0.3 ? 'green' : (triangles.clusteringCoefficient > 0.1 ? 'yellow' : 'gray')}
+                color={triangles.clusteringCoefficient > QUALITY_THRESHOLDS.CLUSTERING_COEFFICIENT.HIGH ? 'green' : (triangles.clusteringCoefficient > QUALITY_THRESHOLDS.CLUSTERING_COEFFICIENT.MEDIUM ? 'yellow' : 'gray')}
               >
                 {(triangles.clusteringCoefficient * 100).toFixed(1)}%
               </Badge>
@@ -81,13 +82,13 @@ export const MotifDetectionItem = ({
               size="xs"
               onClick={() => {
                 const uniqueNodes = new Set<string>();
-                triangles.triangles.slice(0, 10).forEach(t => {
+                triangles.triangles.slice(0, MOTIF_DETECTION.TRIANGLE_HIGHLIGHT_LIMIT).forEach(t => {
                   t.nodes.forEach(n => uniqueNodes.add(n));
                 });
                 onHighlightNodes?.([...uniqueNodes]);
               }}
             >
-              Highlight First 10 Triangles
+              Highlight First {MOTIF_DETECTION.TRIANGLE_HIGHLIGHT_LIMIT} Triangles
             </Button>
           )}
         </Stack>
@@ -104,9 +105,9 @@ export const MotifDetectionItem = ({
             label="Minimum Degree"
             description="Nodes with at least this many connections"
             value={starMinDegree}
-            onChange={(value) => setStarMinDegree(typeof value === 'number' ? value : 3)}
-            min={2}
-            max={20}
+            onChange={(value) => setStarMinDegree(typeof value === 'number' ? value : MOTIF_DETECTION.STAR_MIN_DEGREE_DEFAULT)}
+            min={MOTIF_DETECTION.STAR_MIN_DEGREE_MIN}
+            max={MOTIF_DETECTION.STAR_MIN_DEGREE_MAX}
             step={1}
             size="xs"
           />
@@ -126,7 +127,7 @@ export const MotifDetectionItem = ({
                 Found {starPatterns.count} hub nodes with {starMinDegree}+ connections
               </Text>
               <List spacing="xs" size="sm">
-                {starPatterns.patterns.slice(0, 5).map((pattern) => (
+                {starPatterns.patterns.slice(0, MOTIF_DETECTION.PREVIEW_LIMIT).map((pattern) => (
                   <List.Item
                     key={pattern.hubId}
                     icon={
@@ -142,9 +143,9 @@ export const MotifDetectionItem = ({
                     </Text>
                   </List.Item>
                 ))}
-                {starPatterns.patterns.length > 5 && (
+                {starPatterns.patterns.length > MOTIF_DETECTION.PREVIEW_LIMIT && (
                   <Text size="xs" c="dimmed">
-                    +{starPatterns.patterns.length - 5} more hubs
+                    +{starPatterns.patterns.length - MOTIF_DETECTION.PREVIEW_LIMIT} more hubs
                   </Text>
                 )}
               </List>
@@ -167,9 +168,9 @@ export const MotifDetectionItem = ({
             label="Minimum Co-citation Count"
             description="Minimum times two papers must be cited together"
             value={coCitationMinCount}
-            onChange={(value) => setCoCitationMinCount(typeof value === 'number' ? value : 2)}
-            min={1}
-            max={20}
+            onChange={(value) => setCoCitationMinCount(typeof value === 'number' ? value : MOTIF_DETECTION.CO_CITATION_MIN_DEFAULT)}
+            min={MOTIF_DETECTION.CO_CITATION_MIN}
+            max={MOTIF_DETECTION.CO_CITATION_MAX}
             step={1}
             size="xs"
           />
@@ -179,7 +180,7 @@ export const MotifDetectionItem = ({
                 Found {coCitations.pairs.length} co-citation pairs
               </Text>
               <List spacing="xs" size="sm">
-                {coCitations.pairs.slice(0, 5).map((pair) => (
+                {coCitations.pairs.slice(0, MOTIF_DETECTION.PREVIEW_LIMIT).map((pair) => (
                   <List.Item
                     key={`${pair.paper1Id}-${pair.paper2Id}`}
                     icon={
@@ -195,9 +196,9 @@ export const MotifDetectionItem = ({
                     </Text>
                   </List.Item>
                 ))}
-                {coCitations.pairs.length > 5 && (
+                {coCitations.pairs.length > MOTIF_DETECTION.PREVIEW_LIMIT && (
                   <Text size="xs" c="dimmed">
-                    +{coCitations.pairs.length - 5} more pairs
+                    +{coCitations.pairs.length - MOTIF_DETECTION.PREVIEW_LIMIT} more pairs
                   </Text>
                 )}
               </List>
@@ -220,9 +221,9 @@ export const MotifDetectionItem = ({
             label="Minimum Shared References"
             description="Minimum references two papers must share"
             value={bibCouplingMinShared}
-            onChange={(value) => setBibCouplingMinShared(typeof value === 'number' ? value : 2)}
-            min={1}
-            max={20}
+            onChange={(value) => setBibCouplingMinShared(typeof value === 'number' ? value : MOTIF_DETECTION.BIB_COUPLING_MIN_DEFAULT)}
+            min={MOTIF_DETECTION.BIB_COUPLING_MIN}
+            max={MOTIF_DETECTION.BIB_COUPLING_MAX}
             step={1}
             size="xs"
           />
@@ -232,7 +233,7 @@ export const MotifDetectionItem = ({
                 Found {bibCoupling.pairs.length} coupled paper pairs
               </Text>
               <List spacing="xs" size="sm">
-                {bibCoupling.pairs.slice(0, 5).map((pair) => (
+                {bibCoupling.pairs.slice(0, MOTIF_DETECTION.PREVIEW_LIMIT).map((pair) => (
                   <List.Item
                     key={`${pair.paper1Id}-${pair.paper2Id}`}
                     icon={
@@ -248,9 +249,9 @@ export const MotifDetectionItem = ({
                     </Text>
                   </List.Item>
                 ))}
-                {bibCoupling.pairs.length > 5 && (
+                {bibCoupling.pairs.length > MOTIF_DETECTION.PREVIEW_LIMIT && (
                   <Text size="xs" c="dimmed">
-                    +{bibCoupling.pairs.length - 5} more pairs
+                    +{bibCoupling.pairs.length - MOTIF_DETECTION.PREVIEW_LIMIT} more pairs
                   </Text>
                 )}
               </List>

@@ -17,6 +17,7 @@ import { useState } from 'react';
 
 import { useCorePeriphery } from '@/hooks/use-graph-algorithms';
 
+import { CORE_PERIPHERY, QUALITY_THRESHOLDS } from '../constants';
 import type { AlgorithmItemBaseProps } from '../types';
 
 export const CorePeripheryItem = ({
@@ -24,7 +25,7 @@ export const CorePeripheryItem = ({
   edges,
   onHighlightNodes,
 }: AlgorithmItemBaseProps) => {
-  const [coreThreshold, setCoreThreshold] = useState<number>(0.7);
+  const [coreThreshold, setCoreThreshold] = useState<number>(CORE_PERIPHERY.THRESHOLD_DEFAULT);
   const corePeriphery = useCorePeriphery(nodes, edges, coreThreshold);
 
   return (
@@ -37,10 +38,10 @@ export const CorePeripheryItem = ({
         label="Core Threshold"
         description="Coreness score above this = core member (0-1)"
         value={coreThreshold}
-        onChange={(value) => setCoreThreshold(typeof value === 'number' ? value : 0.7)}
-        min={0.1}
-        max={0.95}
-        step={0.05}
+        onChange={(value) => setCoreThreshold(typeof value === 'number' ? value : CORE_PERIPHERY.THRESHOLD_DEFAULT)}
+        min={CORE_PERIPHERY.THRESHOLD_MIN}
+        max={CORE_PERIPHERY.THRESHOLD_MAX}
+        step={CORE_PERIPHERY.THRESHOLD_STEP}
         decimalScale={2}
       />
 
@@ -58,7 +59,7 @@ export const CorePeripheryItem = ({
             <Text size="sm" c="dimmed">Fit Quality</Text>
             <Tooltip label="Correlation with ideal core-periphery structure (-1 to 1)">
               <Badge
-                color={corePeriphery.fitQuality > 0.5 ? 'green' : (corePeriphery.fitQuality > 0 ? 'yellow' : 'red')}
+                color={corePeriphery.fitQuality > QUALITY_THRESHOLDS.CORE_PERIPHERY_FIT.GOOD ? 'green' : (corePeriphery.fitQuality > QUALITY_THRESHOLDS.CORE_PERIPHERY_FIT.FAIR ? 'yellow' : 'red')}
                 variant="light"
               >
                 {corePeriphery.fitQuality.toFixed(3)}

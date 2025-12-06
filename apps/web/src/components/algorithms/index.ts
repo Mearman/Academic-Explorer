@@ -5,6 +5,7 @@
 export * from "./AlgorithmTabs";
 export * from "./GraphAlgorithmsPanel";
 export * from "./RepositoryAlgorithmsPanel";
+export * from "./constants";
 export * from "./types";
 export * from "./categories/index";
 export * from "./items/index";
