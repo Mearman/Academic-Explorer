@@ -31,30 +31,34 @@ export const SCCItem = ({
         SCCs are maximal sets of nodes where every node can reach every other node
         following edge directions.
       </Text>
-      {stronglyConnectedComponents.components.length > 0 && (
+      {stronglyConnectedComponents.components.length > 0 ? (
         <List spacing="xs" size="sm">
           {[...stronglyConnectedComponents.components]
             .sort((a, b) => b.length - a.length)
-                        .map((component, index) => (
-            <List.Item
-              key={index}
-              icon={
-                <ThemeIcon size={20} radius="xl" variant="light" color="violet">
-                  <IconCircleDot size={12} />
-                </ThemeIcon>
-              }
-              style={{ cursor: 'pointer' }}
-              onClick={() => onHighlightNodes?.(component)}
-            >
-              <Group justify="space-between">
-                <Text size="sm">SCC {index + 1}</Text>
-                <Badge size="xs" variant="light">
-                  {component.length} nodes
-                </Badge>
-              </Group>
-            </List.Item>
-          ))}
-                </List>
+            .map((component, index) => (
+              <List.Item
+                key={index}
+                icon={
+                  <ThemeIcon size={20} radius="xl" variant="light" color="violet">
+                    <IconCircleDot size={12} />
+                  </ThemeIcon>
+                }
+                style={{ cursor: 'pointer' }}
+                onClick={() => onHighlightNodes?.(component)}
+              >
+                <Group justify="space-between">
+                  <Text size="sm">SCC {index + 1}</Text>
+                  <Badge size="xs" variant="light">
+                    {component.length} nodes
+                  </Badge>
+                </Group>
+              </List.Item>
+            ))}
+        </List>
+      ) : (
+        <Text size="sm" c="dimmed">
+          No strongly connected components found. This is common in acyclic graphs.
+        </Text>
       )}
     </Stack>
   );

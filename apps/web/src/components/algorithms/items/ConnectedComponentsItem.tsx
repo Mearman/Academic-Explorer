@@ -27,7 +27,10 @@ export const ConnectedComponentsItem = ({
 
   return (
     <Stack gap="sm">
-      {connectedComponents.components.length > 0 && (
+      <Text size="xs" c="dimmed">
+        Groups of nodes where every node can reach every other node (ignoring edge direction).
+      </Text>
+      {connectedComponents.components.length > 0 ? (
         <List spacing="xs" size="sm">
           {connectedComponents.components.map((component, index) => (
             <List.Item
@@ -48,7 +51,11 @@ export const ConnectedComponentsItem = ({
               </Group>
             </List.Item>
           ))}
-                </List>
+        </List>
+      ) : (
+        <Text size="sm" c="dimmed">
+          No connected components found. Add nodes and edges to the graph.
+        </Text>
       )}
     </Stack>
   );
