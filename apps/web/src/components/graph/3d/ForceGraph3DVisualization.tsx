@@ -240,7 +240,7 @@ export const ForceGraph3DVisualization = ({
     };
     // Check immediately and after a short delay (for initial mount)
     checkRef();
-    const timeoutId = setTimeout(checkRef, 100);
+    const timeoutId = setTimeout(checkRef, TIMING.GRAPH_REF_CHECK_DELAY_MS);
     return () => clearTimeout(timeoutId);
   }, [onGraphReady]);
 
