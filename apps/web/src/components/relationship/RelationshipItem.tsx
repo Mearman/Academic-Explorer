@@ -5,11 +5,12 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import { Anchor, Group, Stack,Text } from '@mantine/core';
+import { Anchor, Group, Stack, Text } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
 import React from 'react';
 
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
+import { formatMetadata } from '@/utils/formatMetadata';
 
 export interface RelationshipItemProps {
   /** The relationship item to display */
@@ -71,8 +72,7 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
       )}
       {item.metadata && (
         <Text size="xs" c="dimmed" data-testid="relationship-metadata">
-          {/* TODO: Format metadata based on type in Phase 6 */}
-          {JSON.stringify(item.metadata)}
+          {formatMetadata(item.metadata)}
         </Text>
       )}
     </Stack>
