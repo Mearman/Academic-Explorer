@@ -4,6 +4,8 @@
 
 export * from "./AdvancedQueryBuilder";
 export * from "./OpenAlexFilters";
+export * from "./SearchFacets";
+export * from "./SearchFilters";
 export * from "./SearchInterface";
 export * from "./UnifiedSearch";
 export * from "./VisualQueryBuilder.example";

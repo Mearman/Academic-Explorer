@@ -111,6 +111,7 @@ export const UnifiedSearch = ({ defaultTab = "basic" }: UnifiedSearchProps) => {
                 onSearch={handleSearch}
                 placeholder="Search academic works, authors, institutions..."
                 showHelp={true}
+                showAdvancedFilters={true}
               />
 
               {/* Recent Searches */}

@@ -1,13 +1,15 @@
-import { SearchLoadingSpinner } from '@bibgraph/ui';
+import { SearchLoadingSpinner } from "@bibgraph/ui";
 import { debouncedSearch, isValidSearchQuery, logger, normalizeSearchQuery } from "@bibgraph/utils";
-import { ActionIcon, Alert, Button, Group, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
-import { IconInfoCircle, IconSearch, IconX } from "@tabler/icons-react";
+import { ActionIcon, Alert, Button, Group, IconFilter, IconInfoCircle, IconSearch, IconX, Paper, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
 import { useCallback, useEffect, useState } from "react";
 
-import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from "@/config/style-constants";
+
+import { AdvancedSearchFilters,SearchFilters } from "./SearchFilters";
 
 interface SearchFilters {
   query: string;
+  advanced?: AdvancedSearchFilters;
 }
 
 interface SearchInterfaceProps {
@@ -15,23 +17,28 @@ interface SearchInterfaceProps {
   isLoading?: boolean;
   placeholder?: string;
   showHelp?: boolean;
+  showAdvancedFilters?: boolean;
 }
 
 export const SearchInterface = ({
   onSearch,
   isLoading = false,
   placeholder = "Search academic works, authors, institutions...",
-  showHelp = false
+  showHelp = false,
+  showAdvancedFilters = false
 }: SearchInterfaceProps) => {
   const [query, setQuery] = useState("");
   const [searchTip, setSearchTip] = useState("");
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedSearchFilters>({});
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = useCallback(() => {
     const filters = {
       query: isValidSearchQuery(query) ? normalizeSearchQuery(query) : "",
+      advanced: showFilters && Object.keys(advancedFilters).length > 0 ? advancedFilters : undefined,
     };
     onSearch(filters);
-  }, [query, onSearch]);
+  }, [query, advancedFilters, showFilters, onSearch]);
 
   const handleQueryChange = useCallback((value: string) => {
     setQuery(value);
@@ -40,11 +47,49 @@ export const SearchInterface = ({
       debouncedSearch(() => {
         const filters = {
           query: normalizeSearchQuery(value),
+          advanced: showFilters && Object.keys(advancedFilters).length > 0 ? advancedFilters : undefined,
         };
         onSearch(filters);
       }, value);
     }
-  }, [onSearch]);
+  }, [onSearch, advancedFilters, showFilters]);
+
+  const handleFiltersChange = useCallback((filters: AdvancedSearchFilters) => {
+    setAdvancedFilters(filters);
+    // Auto-trigger search when filters change and we have a query
+    if (query.trim() && isValidSearchQuery(query)) {
+      debouncedSearch(() => {
+        const searchFilters = {
+          query: normalizeSearchQuery(query),
+          advanced: Object.keys(filters).length > 0 ? filters : undefined,
+        };
+        onSearch(searchFilters);
+      }, `filters-${JSON.stringify(filters)}`);
+    }
+  }, [query, onSearch]);
+
+  const handleResetFilters = useCallback(() => {
+    setAdvancedFilters({});
+    // Trigger search with reset filters
+    if (query.trim() && isValidSearchQuery(query)) {
+      debouncedSearch(() => {
+        const filters = {
+          query: normalizeSearchQuery(query),
+        };
+        onSearch(filters);
+      }, "reset-filters");
+    }
+  }, [query, onSearch]);
+
+  const handleClearFilters = () => {
+    setQuery("");
+    setAdvancedFilters({});
+    onSearch({
+      query: "",
+      advanced: undefined,
+    });
+    logger.info("ui", "Search cleared by user", { component: "SearchInterface" }, "SearchInterface");
+  };
 
   // Generate search tips rotation
   useEffect(() => {
@@ -54,7 +99,9 @@ export const SearchInterface = ({
       "Exclude terms: climate -change",
       "Search by entity type: authors:Smith",
       "Use wildcards: neural* networks",
-      "Filter by year: published:>2020"
+      "Filter by year: published:>2020",
+      "Use advanced filters for precise results",
+      "Combine text search with faceted filters"
     ];
     const randomTip = tips[Math.floor(Math.random() * tips.length)];
     setSearchTip(randomTip);
@@ -67,14 +114,7 @@ export const SearchInterface = ({
     return () => clearInterval(tipInterval);
   }, []);
 
-  const handleClearFilters = () => {
-    setQuery("");
-    onSearch({
-      query: "",
-    });
-    logger.info("ui", "Search cleared by user", { component: "SearchInterface" }, "SearchInterface");
-  };
-
+  
   // Log search activity
   useEffect(() => {
     if (query.length > 0) {
@@ -88,23 +128,38 @@ export const SearchInterface = ({
   return (
     <Paper p="md" style={{ border: BORDER_STYLE_GRAY_3 }}>
       <Stack gap="md">
-        {/* Header with help */}
+        {/* Header with help and filters */}
         <Group justify="space-between" align="center">
           <Title order={3}>Search Academic Literature</Title>
-          {showHelp && (
-            <Tooltip label="Search tips and help" position="bottom">
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                aria-label="Search help"
-                onClick={() => {
-                  logger.info("ui", "Search help requested", { component: "SearchInterface" }, "SearchInterface");
-                }}
-              >
-                <IconInfoCircle size={ICON_SIZE.SM} />
-              </ActionIcon>
-            </Tooltip>
-          )}
+          <Group gap="xs">
+            {showAdvancedFilters && (
+              <Tooltip label="Toggle advanced filters" position="bottom">
+                <Button
+                  variant={showFilters ? "filled" : "outline"}
+                  size="sm"
+                  leftSection={<IconFilter size={ICON_SIZE.SM} />}
+                  onClick={() => setShowFilters(!showFilters)}
+                  aria-label="Toggle advanced filters"
+                >
+                  Filters
+                </Button>
+              </Tooltip>
+            )}
+            {showHelp && (
+              <Tooltip label="Search tips and help" position="bottom">
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  aria-label="Search help"
+                  onClick={() => {
+                    logger.info("ui", "Search help requested", { component: "SearchInterface" }, "SearchInterface");
+                  }}
+                >
+                  <IconInfoCircle size={ICON_SIZE.SM} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
         </Group>
 
         {/* Search Tips */}
@@ -181,6 +236,16 @@ export const SearchInterface = ({
               ? `Ready to search for "${normalizeSearchQuery(query)}"`
               : "Enter a valid search query to continue"}
           </Text>
+        )}
+
+        {/* Advanced Filters Panel */}
+        {showAdvancedFilters && showFilters && (
+          <SearchFilters
+            filters={advancedFilters}
+            onFiltersChange={handleFiltersChange}
+            onReset={handleResetFilters}
+            isActive={Object.keys(advancedFilters).length > 0}
+          />
         )}
 
         {/* Enhanced Loading Indicator */}
