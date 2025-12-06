@@ -4,6 +4,8 @@
  * @module services/graph-algorithms
  */
 
+import { logger } from "@bibgraph/utils";
+
 import {
   // Traversal
   bfs,
@@ -559,7 +561,7 @@ export const detectCommunities = (nodes: GraphNode[], edges: GraphEdge[], option
       }
     }
   } catch (error) {
-    console.error('Community detection error:', error);
+    logger.error('graph-algorithms', 'Community detection error', { error });
     return [];
   }
 };
