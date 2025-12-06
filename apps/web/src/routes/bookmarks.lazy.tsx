@@ -32,6 +32,7 @@ import {
 import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback,useEffect, useMemo, useState } from "react";
 
+import { RATE_LIMIT_CONFIG } from "@/config/rate-limit";
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
@@ -107,7 +108,7 @@ const BookmarksIndexPage = () => {
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">(search.sortOrder || "desc");
 
 	// Debounce search query to avoid too many URL updates
-	const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 300);
+	const [debouncedSearchQuery] = useDebouncedValue(searchQuery, RATE_LIMIT_CONFIG.search.debounceMs);
 
 	// Export modal state
 	const [exportModalOpen, setExportModalOpen] = useState(false);
