@@ -15,12 +15,12 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconBookmark,
   IconBookmarkOff,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
