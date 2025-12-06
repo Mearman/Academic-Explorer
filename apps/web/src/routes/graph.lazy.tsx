@@ -54,6 +54,7 @@ import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { useGraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
+import ForceGraph2D, { type ForceGraphMethods } from 'react-force-graph-2d';
 import { useNodeExpansion } from '@/lib/graph-index';
 
 /**
@@ -132,8 +133,11 @@ const EntityGraphPage = () => {
 
   // Handler for when graph methods become available
   const handleGraphReady = useCallback(
-    (methods: GraphMethods) => {
-      graphMethodsRef.current = methods;
+    (methods: ForceGraphMethods | any) => {
+      // Cast to GraphMethods if it has the required zoomToFit method
+      if (methods && typeof methods.zoomToFit === 'function') {
+        graphMethodsRef.current = methods as GraphMethods;
+      }
     },
     []
   );

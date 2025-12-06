@@ -15,11 +15,11 @@ import type {
   Topic,
   Work,
 } from "@bibgraph/types";
-import { DataState, useAsyncOperation, useScreenReader, useAriaAttributes } from "@bibgraph/ui";
+import { DataState, useAriaAttributes,useAsyncOperation, useScreenReader } from "@bibgraph/ui";
 import { logger } from "@bibgraph/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 
 import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
 import { EntityGrid } from "./EntityGrid";
