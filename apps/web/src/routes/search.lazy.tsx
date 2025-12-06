@@ -1,7 +1,7 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { ENTITY_METADATA, toEntityType } from "@bibgraph/types";
 import type { AutocompleteResult } from "@bibgraph/types/entities";
-import { convertToRelativeUrl } from "@bibgraph/ui";
+import { convertToRelativeUrl, SearchEmptyState } from "@bibgraph/ui";
 import { formatLargeNumber, logger } from "@bibgraph/utils";
 import {
   Alert,
@@ -79,18 +79,11 @@ const renderSearchHeader = () => (
   </div>
 );
 
-const renderEmptyState = () => (
-  <Card style={{ border: BORDER_STYLE_GRAY_3 }}>
-    <Stack align="center" py="xl">
-      <Text size="lg" fw={500}>
-        Enter a search term to explore OpenAlex
-      </Text>
-      <Text size="sm" c="dimmed" ta="center">
-        Search across millions of works, authors, sources, institutions, and
-        topics with real-time results and intelligent ranking.
-      </Text>
-    </Stack>
-  </Card>
+const renderEmptyState = (onQuickSearch?: (query: string) => void) => (
+  <SearchEmptyState
+    variant="initial"
+    onQuickSearch={onQuickSearch}
+  />
 );
 
 const renderLoadingState = () => (
@@ -131,18 +124,12 @@ const renderErrorState = (error: unknown) => {
   );
 };
 
-const renderNoResultsState = (query: string) => (
-  <Alert
-    icon={<IconInfoCircle />}
-    title="No results found"
-    color="blue"
-    variant="light"
-  >
-    <Text size="sm">
-      No entities found for &quot;{query}&quot;. Try different search terms or
-      adjust your filters.
-    </Text>
-  </Alert>
+const renderNoResultsState = (query: string, onQuickSearch?: (query: string) => void) => (
+  <SearchEmptyState
+    variant="no-results"
+    query={query}
+    onQuickSearch={onQuickSearch}
+  />
 );
 
 // Get entity type color for badges using centralized metadata
@@ -301,13 +288,18 @@ const SearchPage = () => {
     // Auto-tracking in useUserInteractions will handle page visit recording
   };
 
+  const handleQuickSearch = async (query: string) => {
+    setSearchFilters({ query });
+    // Auto-tracking in useUserInteractions will handle page visit recording
+  };
+
   const hasResults = searchResults && searchResults.length > 0;
   const hasQuery = Boolean(searchFilters.query.trim());
 
   const renderSearchResults = () => {
     if (isLoading) return renderLoadingState();
     if (error) return renderErrorState(error);
-    if (!hasResults) return renderNoResultsState(searchFilters.query);
+    if (!hasResults) return renderNoResultsState(searchFilters.query, handleQuickSearch);
 
     return (
       <Stack>
@@ -417,7 +409,7 @@ const SearchPage = () => {
 
         {hasQuery && <Card style={{ border: BORDER_STYLE_GRAY_3 }}>{renderSearchResults()}</Card>}
 
-        {!hasQuery && renderEmptyState()}
+        {!hasQuery && renderEmptyState(handleQuickSearch)}
       </Stack>
     </Container>
   );
