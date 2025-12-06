@@ -298,6 +298,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-v3-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -571,6 +579,14 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-v3-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -626,6 +642,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-v3-
+
       - name: Download build artifacts
         uses: actions/download-artifact@v6
         with:
@@ -670,6 +694,14 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v6
@@ -718,6 +750,14 @@ jobs:
       - name: Install dependencies
         timeout-minutes: 5
         run: pnpm install --frozen-lockfile
+
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-v3-
 
       - name: Download build artifacts
         uses: actions/download-artifact@v6
