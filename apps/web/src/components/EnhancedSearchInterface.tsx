@@ -22,6 +22,9 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
+  LoadingOverlay,
+  FocusTrap,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -33,8 +36,48 @@ import {
   IconSearch,
   IconShare,
   IconTrendingUp,
+  IconDeviceDesktop,
+  IconKeyboard,
 } from "@tabler/icons-react";
-import React, { useMemo,useState } from "react";
+import React, { useMemo, useState, useCallback, useRef, useEffect } from "react";
+
+// Add keyboard shortcuts for better UX
+const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Handle Ctrl+K globally (even when typing)
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        handlers.clearFilters?.();
+        return;
+      }
+
+      // Ignore if user is typing in input fields for other shortcuts
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (event.key) {
+        case '/':
+          event.preventDefault();
+          handlers.focusSearch?.();
+          break;
+        case '?':
+          if (event.shiftKey) {
+            event.preventDefault();
+            handlers.showShortcuts?.();
+          }
+          break;
+        case 'Escape':
+          handlers.escape?.();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handlers]);
+};
 
 
 
@@ -61,6 +104,7 @@ interface EnhancedSearchInterfaceProps {
 }
 
 export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedSearchInterfaceProps) => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [filters, setFilters] = useState<SearchFilters>({
     query: "",
     entityType: "works",
@@ -77,6 +121,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
     hasAbstract: false,
     hasFulltext: false,
   });
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
 
   // Calculate active filters count from current filters
   const activeFiltersCount = useMemo(() => {
@@ -97,12 +142,21 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
     return count;
   }, [filters]);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     logger.debug("search", "Enhanced search initiated", { filters });
     onSearch(filters);
-  };
+    // Announce to screen readers
+    const announcement = `Searching with ${activeFiltersCount} active filters`;
+    const element = document.createElement('div');
+    element.setAttribute('aria-live', 'polite');
+    element.setAttribute('aria-atomic', 'true');
+    element.className = 'sr-only';
+    element.textContent = announcement;
+    document.body.appendChild(element);
+    setTimeout(() => document.body.removeChild(element), 1000);
+  }, [filters, onSearch, activeFiltersCount]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setFilters({
       query: "",
       entityType: "works",
@@ -120,7 +174,30 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
       hasFulltext: false,
     });
     logger.debug("search", "Search filters reset");
-  };
+    // Focus back to search input after reset
+    searchInputRef.current?.focus();
+    notifications.show({
+      title: "Filters Reset",
+      message: "All search filters have been cleared",
+      color: "blue",
+    });
+  }, []);
+
+  // Keyboard shortcuts handler (moved after handleReset to fix ordering)
+  useKeyboardShortcuts({
+    focusSearch: useCallback(() => {
+      searchInputRef.current?.focus();
+    }, []),
+    clearFilters: useCallback(() => {
+      handleReset();
+    }, [handleReset]),
+    showShortcuts: useCallback(() => {
+      setShowKeyboardShortcuts(true);
+    }, []),
+    escape: useCallback(() => {
+      setShowKeyboardShortcuts(false);
+    }, []),
+  });
 
   const entityTypeOptions = [
     { value: "works", label: "Works/Papers" },
@@ -172,33 +249,172 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
   ];
 
   return (
-    <Card padding="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm">
-      <Stack gap="md">
-        {/* Header */}
-        <Group justify="space-between">
-          <div>
-            <Title order={3}>Enhanced Search</Title>
-            <Text size="sm" c="dimmed">
-              Advanced search with powerful filters and refinements
-            </Text>
+    <>
+      {/* Keyboard shortcuts modal */}
+      {showKeyboardShortcuts && (
+        <FocusTrap active={showKeyboardShortcuts}>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+            }}
+            onClick={() => setShowKeyboardShortcuts(false)}
+            role="dialog"
+            aria-labelledby="shortcuts-title"
+            aria-modal="true"
+          >
+            <Card
+              padding="lg"
+              shadow="xl"
+              style={{ maxWidth: 500, width: '90%' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Title order={3} id="shortcuts-title" mb="md">Keyboard Shortcuts</Title>
+              <Stack gap="xs">
+                <Group gap="xs">
+                  <kbd style={{
+                    padding: '2px 6px',
+                    border: '1px solid var(--mantine-color-gray-4)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}>?</kbd>
+                  <Text size="sm">Show shortcuts</Text>
+                </Group>
+                <Group gap="xs">
+                  <kbd style={{
+                    padding: '2px 6px',
+                    border: '1px solid var(--mantine-color-gray-4)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}>/</kbd>
+                  <Text size="sm">Focus search input</Text>
+                </Group>
+                <Group gap="xs">
+                  <kbd style={{
+                    padding: '2px 6px',
+                    border: '1px solid var(--mantine-color-gray-4)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}>Enter</kbd>
+                  <Text size="sm">Execute search</Text>
+                </Group>
+                <Group gap="xs">
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    <kbd style={{
+                      padding: '2px 6px',
+                      border: '1px solid var(--mantine-color-gray-4)',
+                      borderRadius: '4px',
+                      backgroundColor: 'var(--mantine-color-gray-0)',
+                      fontFamily: 'monospace',
+                      fontSize: '12px'
+                    }}>Ctrl</kbd>
+                    <Text size="sm">+</Text>
+                    <kbd style={{
+                      padding: '2px 6px',
+                      border: '1px solid var(--mantine-color-gray-4)',
+                      borderRadius: '4px',
+                      backgroundColor: 'var(--mantine-color-gray-0)',
+                      fontFamily: 'monospace',
+                      fontSize: '12px'
+                    }}>K</kbd>
+                  </div>
+                  <Text size="sm">Clear all filters</Text>
+                </Group>
+                <Group gap="xs">
+                  <kbd style={{
+                    padding: '2px 6px',
+                    border: '1px solid var(--mantine-color-gray-4)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--mantine-color-gray-0)',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}>Esc</kbd>
+                  <Text size="sm">Close modals</Text>
+                </Group>
+              </Stack>
+              <Button mt="md" onClick={() => setShowKeyboardShortcuts(false)}>Close</Button>
+            </Card>
           </div>
-          <Group>
-            <Badge
-              variant="light"
-              color="blue"
-              leftSection={<IconFilter size={12} />}
-            >
-              {activeFiltersCount} active filters
-            </Badge>
-            <ActionIcon
-              variant="light"
-              onClick={handleReset}
-              title="Reset all filters"
-            >
-              <IconRefresh size={16} />
-            </ActionIcon>
+        </FocusTrap>
+      )}
+
+      <Card padding="lg" style={{ border: "1px solid var(--mantine-color-gray-3)" }} shadow="sm" pos="relative">
+        <LoadingOverlay visible={loading} overlayProps={{ blur: 2 }} />
+
+        <Stack gap="md">
+          {/* Header */}
+          <Group justify="space-between">
+            <div>
+              <Group gap="xs" align="center">
+                <Title order={3}>Enhanced Search</Title>
+                <Text
+                  size="xs"
+                  c="blue"
+                  style={{
+                    padding: '2px 6px',
+                    border: '1px solid var(--mantine-color-blue-3)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--mantine-color-blue-0)',
+                    fontFamily: 'monospace',
+                    fontSize: '10px'
+                  }}
+                >
+                  ?
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed">
+                Advanced search with powerful filters and refinements • Press <kbd style={{
+                  padding: '1px 4px',
+                  border: '1px solid var(--mantine-color-gray-4)',
+                  borderRadius: '3px',
+                  backgroundColor: 'var(--mantine-color-gray-0)',
+                  fontFamily: 'monospace',
+                  fontSize: '11px'
+                }}>?</kbd> for shortcuts
+              </Text>
+            </div>
+            <Group>
+              <Tooltip label="Keyboard shortcuts">
+                <ActionIcon
+                  variant="light"
+                  onClick={() => setShowKeyboardShortcuts(true)}
+                  aria-label="Show keyboard shortcuts"
+                >
+                  <IconKeyboard size={16} />
+                </ActionIcon>
+              </Tooltip>
+              <Badge
+                variant="light"
+                color="blue"
+                leftSection={<IconFilter size={12} />}
+              >
+                {activeFiltersCount} active filters
+              </Badge>
+              <Tooltip label="Reset all filters">
+                <ActionIcon
+                  variant="light"
+                  onClick={handleReset}
+                  aria-label="Reset all filters"
+                >
+                  <IconRefresh size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
           </Group>
-        </Group>
 
         <Divider />
 
@@ -214,13 +430,22 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                 size="md"
               />
               <TextInput
+                ref={searchInputRef}
                 placeholder="Enter your search query..."
                 value={filters.query}
                 onChange={(e) => setFilters({ ...filters, query: e.target.value })}
                 style={{ flex: 1 }}
                 size="md"
                 leftSection={<IconSearch size={16} />}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  } else if (e.key === "Escape") {
+                    setShowKeyboardShortcuts(false);
+                  }
+                }}
+                aria-label="Search query"
+                aria-describedby="search-help"
               />
               <Button
                 onClick={handleSearch}
@@ -429,5 +654,6 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
         </Group>
       </Stack>
     </Card>
+    </>
   );
 };
