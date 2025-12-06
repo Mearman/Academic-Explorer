@@ -26,7 +26,6 @@ import {
   IconSettings,
 } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
-import React from 'react';
 
 import { ICON_SIZE } from '@/config/style-constants';
 
@@ -44,7 +43,7 @@ export interface GraphEmptyStateProps {
  * @param root0
  * @param root0.children
  */
-const DecorativeIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const DecorativeIcon = ({ children }: { children: import("react").ReactNode }) => (
   <Box
     style={{
       width: 120,
@@ -74,9 +73,7 @@ const DecorativeIcon: React.FC<{ children: React.ReactNode }> = ({ children }) =
  * @param root0
  * @param root0.availableSourceCount
  */
-const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
-  availableSourceCount = 0,
-}) => (
+const NoSourcesEnabledState = ({ availableSourceCount = 0 }: { availableSourceCount?: number }) => (
   <Stack align="center" gap="xl" py="xl">
     <DecorativeIcon>
       <IconGraph size={ICON_SIZE.HERO_LG} stroke={1.2} />
@@ -150,7 +147,7 @@ const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
 /**
  * Empty state when sources are enabled but contain no entities
  */
-const NoEntitiesState: React.FC = () => (
+const NoEntitiesState = () => (
   <Stack align="center" gap="xl" py="xl">
     <DecorativeIcon>
       <IconGraph size={ICON_SIZE.HERO_LG} stroke={1.2} />
@@ -219,7 +216,7 @@ const NoEntitiesState: React.FC = () => (
  * @param root0.variant
  * @param root0.availableSourceCount
  */
-export const GraphEmptyState: React.FC<GraphEmptyStateProps> = ({
+export const GraphEmptyState = ({
   variant,
   availableSourceCount,
 }) => {

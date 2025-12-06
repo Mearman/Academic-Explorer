@@ -33,7 +33,6 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import React from "react";
 
 import { ICON_SIZE } from "@/config/style-constants";
 import { useVersionComparison } from "@/hooks/use-version-comparison";
@@ -51,7 +50,7 @@ const SECTION_PRIORITY: Record<string, number> = {
 };
 
 /** Section icons mapping */
-const SECTION_ICONS: Record<string, React.ReactNode> = {
+const SECTION_ICONS: Record<string, import("react").ReactNode> = {
   "Basic Information": <IconInfoCircle size={ICON_SIZE.MD} />,
   "Identifiers": <IconKey size={ICON_SIZE.MD} />,
   "Metrics": <IconChartBar size={ICON_SIZE.MD} />,
@@ -65,7 +64,7 @@ const SECTION_ICONS: Record<string, React.ReactNode> = {
 // Value Rendering
 // ============================================================================
 
-const renderPrimitiveValue = (value: unknown): React.ReactNode => {
+const renderPrimitiveValue = (value: unknown): import("react").ReactNode => {
   if (value === null || value === undefined) {
     return <Text c="dimmed" fs="italic" size="sm">null</Text>;
   }
@@ -159,7 +158,7 @@ const renderPrimitiveValue = (value: unknown): React.ReactNode => {
 interface SectionData {
   name: string;
   fields: Array<{ key: string; value: unknown }>;
-  icon: React.ReactNode;
+  icon: import("react").ReactNode;
 }
 
 const groupFields = (data: Record<string, unknown>): SectionData[] => {
@@ -214,7 +213,7 @@ const groupFields = (data: Record<string, unknown>): SectionData[] => {
 // Value Content Renderer
 // ============================================================================
 
-const renderValueContent = (value: unknown): React.ReactNode => {
+const renderValueContent = (value: unknown): import("react").ReactNode => {
   // Primitives
   if (value === null || value === undefined || typeof value === "boolean" ||
       typeof value === "number" || typeof value === "string") {

@@ -31,7 +31,7 @@ export interface RelationshipTypeFilterProps {
  * @param root0.onChange
  * @param root0.title
  */
-export const RelationshipTypeFilter: React.FC<RelationshipTypeFilterProps> = ({
+export const RelationshipTypeFilter = ({
   selectedTypes,
   onChange,
   title = 'Filter by Relationship Type',

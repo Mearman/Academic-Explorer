@@ -14,7 +14,6 @@ import {
   Stack,
   Title,
 } from "@mantine/core";
-import React from "react";
 
 /**
  * Entity types that support autocomplete endpoints
@@ -64,7 +63,7 @@ export interface EntityTypeFilterProps {
  * @param root0.inline
  * @param root0.showButtons
  */
-export const EntityTypeFilter: React.FC<EntityTypeFilterProps> = ({
+export const EntityTypeFilter = ({
   selectedTypes,
   onChange,
   availableTypes = AUTOCOMPLETE_ENTITY_TYPES,

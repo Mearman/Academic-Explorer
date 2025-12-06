@@ -17,12 +17,11 @@ import {
   IconGitCommit,
   IconTag,
 } from "@tabler/icons-react";
-import React from "react";
 
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 
-export const BuildInfo: React.FC = () => {
+export const BuildInfo = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
   const buildInfo = getBuildInfo();

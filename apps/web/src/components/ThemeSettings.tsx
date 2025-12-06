@@ -15,7 +15,6 @@ import {
   IconPalette,
   IconSun,
 } from "@tabler/icons-react";
-import React from "react";
 
 import { BORDER_STYLE_GRAY_3, CARD_BORDER_STYLE, ICON_SIZE } from "@/config/style-constants";
 import { useTheme } from "@/contexts/theme-context";
