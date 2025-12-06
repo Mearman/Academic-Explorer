@@ -49,10 +49,30 @@ export const TableViewModeToggle = ({
   value,
   onChange,
   size = "sm",
-}: TableViewModeToggleProps) => <SegmentedControl
-      value={value}
-      onChange={(val) => onChange(val as TableViewMode)}
-      data={VIEW_MODE_DATA}
-      size={size}
-      fullWidth={false}
-    />;
+}: TableViewModeToggleProps) => (
+  <SegmentedControl
+    value={value}
+    onChange={(val) => onChange(val as TableViewMode)}
+    data={VIEW_MODE_DATA}
+    size={size}
+    fullWidth={false}
+    aria-label="View mode"
+    onKeyDown={(e) => {
+      // Handle keyboard navigation
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const modes: TableViewMode[] = ["table", "list", "grid"];
+        const currentIndex = modes.indexOf(value);
+        let newIndex = currentIndex;
+
+        if (e.key === "ArrowLeft") {
+          newIndex = currentIndex > 0 ? currentIndex - 1 : modes.length - 1;
+        } else {
+          newIndex = currentIndex < modes.length - 1 ? currentIndex + 1 : 0;
+        }
+
+        onChange(modes[newIndex]);
+      }
+    }}
+  />
+);

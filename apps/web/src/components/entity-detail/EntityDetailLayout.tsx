@@ -113,7 +113,7 @@ export const EntityDetailLayout = ({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       {config.name} ID:
                     </Text>
-                    <Code style={{ flex: '1', wordBreak: 'break-all' }}>
+                    <Code flex={1} style={{ wordBreak: 'break-all' }}>
                       {entityId}
                     </Code>
                   </Group>
@@ -121,7 +121,7 @@ export const EntityDetailLayout = ({
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
                       Select fields:
                     </Text>
-                    <Text size="sm" c="dimmed" style={{ flex: '1' }}>
+                    <Text size="sm" c="dimmed" flex={1}>
                       {selectParam && typeof selectParam === 'string'
                         ? selectParam
                         : `default (${selectFields.length} fields)`}
@@ -219,7 +219,8 @@ export const EntityDetailLayout = ({
                 component="pre"
                 size="sm"
                 c="var(--mantine-color-gray-9)"
-                style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                ff="monospace"
+                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
               >
                 {JSON.stringify(data, null, 2)}
               </Text>

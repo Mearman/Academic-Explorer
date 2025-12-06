@@ -99,11 +99,11 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
       {isFetching ? (
         <Skeleton height={20} width="100%" />
       ) : (hasValue ? (
-        <Text size="sm" style={{ flex: 1, wordBreak: "break-word" }}>
+        <Text size="sm" flex={1} style={{ wordBreak: "break-word" }}>
           {formatter(currentValue)}
         </Text>
       ) : (
-        <Group gap="xs" style={{ flex: 1 }}>
+        <Group gap="xs" flex={1}>
           <Text size="sm" c="dimmed" fs="italic">
             {hasBeenFetched ? "No data" : "Not loaded"}
           </Text>
