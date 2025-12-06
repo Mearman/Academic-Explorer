@@ -1,23 +1,21 @@
 import {
-  TextInput,
-  Autocomplete,
   ActionIcon,
+  Badge,
   Group,
   Popover,
   Stack,
   Text,
-  Badge
-} from "@mantine/core";
-import {
-  IconSearch,
-  IconClock,
-  IconArrowRight,
-  IconX,
-  IconHistory
-} from "@tabler/icons-react";
-import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
+  TextInput} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import {
+  IconArrowRight,
+  IconClock,
+  IconHistory,
+  IconSearch,
+  IconX} from "@tabler/icons-react";
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo,useRef, useState } from "react";
+
 import { useNavigationEnhancements } from "@/hooks/useNavigationEnhancements";
 
 export const HeaderSearchInput = () => {
@@ -30,8 +28,7 @@ export const HeaderSearchInput = () => {
     addToSearchHistory,
     clearSearchHistory,
     searchHistory,
-    useKeyboardNavigation,
-    getNavigationContext
+    useKeyboardNavigation
   } = useNavigationEnhancements();
 
   // Enable keyboard navigation shortcuts

@@ -11,7 +11,9 @@ import {
   Button,
   Card,
   Divider,
+  FocusTrap,
   Group,
+  LoadingOverlay,
   MultiSelect,
   NumberInput,
   RangeSlider,
@@ -23,8 +25,6 @@ import {
   TextInput,
   Title,
   Tooltip,
-  LoadingOverlay,
-  FocusTrap,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -32,14 +32,13 @@ import {
   IconBookmark,
   IconDownload,
   IconFilter,
+  IconKeyboard,
   IconRefresh,
   IconSearch,
   IconShare,
   IconTrendingUp,
-  IconDeviceDesktop,
-  IconKeyboard,
 } from "@tabler/icons-react";
-import React, { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
 
 // Add keyboard shortcuts for better UX
 const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
@@ -145,15 +144,23 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
   const handleSearch = useCallback(() => {
     logger.debug("search", "Enhanced search initiated", { filters });
     onSearch(filters);
-    // Announce to screen readers
-    const announcement = `Searching with ${activeFiltersCount} active filters`;
-    const element = document.createElement('div');
-    element.setAttribute('aria-live', 'polite');
-    element.setAttribute('aria-atomic', 'true');
-    element.className = 'sr-only';
-    element.textContent = announcement;
-    document.body.appendChild(element);
-    setTimeout(() => document.body.removeChild(element), 1000);
+    // Announce to screen readers using Mantine notifications
+    notifications.show({
+      title: "Search Started",
+      message: `Searching with ${activeFiltersCount} active filters`,
+      color: "blue",
+      autoClose: 1000,
+      withCloseButton: false,
+      styles: {
+        root: {
+          position: 'fixed',
+          top: -100,
+          left: 0,
+          opacity: 0,
+          pointerEvents: 'none',
+        },
+      },
+    });
   }, [filters, onSearch, activeFiltersCount]);
 
   const handleReset = useCallback(() => {
@@ -266,11 +273,32 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
               justifyContent: 'center',
               zIndex: 1000,
             }}
-            onClick={() => setShowKeyboardShortcuts(false)}
             role="dialog"
             aria-labelledby="shortcuts-title"
             aria-modal="true"
+            tabIndex={-1}
           >
+            <button
+              type="button"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: -1,
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onClick={() => setShowKeyboardShortcuts(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setShowKeyboardShortcuts(false);
+                }
+              }}
+              aria-label="Close modal"
+            />
             <Card
               padding="lg"
               shadow="xl"

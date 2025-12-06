@@ -5,25 +5,25 @@
 
 import { EntityDetectionService } from "@bibgraph/utils";
 import {
-  Breadcrumbs,
+  ActionIcon,
   Anchor,
+  Badge,
+  Box,
+  Breadcrumbs,
   Group,
   Text,
-  Badge,
   Tooltip,
-  ActionIcon,
-  Box,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
+  IconChevronRight,
+  IconCopy,
   IconHome,
   IconSearch,
-  IconChevronRight,
   IconShare,
-  IconCopy,
 } from "@tabler/icons-react";
-import { useLocation, Link } from "@tanstack/react-router";
-import React, { useMemo, useCallback } from "react";
-import { notifications } from "@mantine/notifications";
+import { Link,useLocation } from "@tanstack/react-router";
+import React, { useCallback,useMemo } from "react";
 
 interface BreadcrumbItem {
   label: string;
@@ -56,40 +56,45 @@ export const BreadcrumbNavigation = () => {
     // Build navigation hierarchy
     let currentPath = "";
 
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      if (!part) continue;
+    let i = 0;
+  while (i < parts.length) {
+    const part = parts[i];
+    if (!part) {
+      i++;
+      continue;
+    }
 
-      currentPath += `/${part}`;
+    currentPath += `/${part}`;
 
-      // Handle entity pages
-      if (i === 0 && ["works", "authors", "institutions", "concepts", "sources", "venues"].includes(part)) {
-        items.push({
-          label: part.charAt(0).toUpperCase() + part.slice(1),
-          href: `/${part}`,
-          icon: <IconSearch size={14} />,
-          tooltip: `Search ${part}`,
-        });
+    // Handle entity pages
+    if (i === 0 && ["works", "authors", "institutions", "concepts", "sources", "venues"].includes(part)) {
+      items.push({
+        label: part.charAt(0).toUpperCase() + part.slice(1),
+        href: `/${part}`,
+        icon: <IconSearch size={14} />,
+        tooltip: `Search ${part}`,
+      });
 
-        // If there's an entity ID in the next part, add entity breadcrumb
-        if (parts[i + 1]) {
-          const entityId = decodeURIComponent(parts[i + 1]);
-          const detection = EntityDetectionService.detectEntity(entityId);
+      // If there's an entity ID in the next part, add entity breadcrumb
+      if (parts[i + 1]) {
+        const entityId = decodeURIComponent(parts[i + 1]);
+        const detection = EntityDetectionService.detectEntity(entityId);
 
-          if (detection?.entityType) {
-            items.push({
-              label: entityId,
-              href: currentPath,
-              badge: detection.entityType.charAt(0).toUpperCase(),
-              tooltip: `${detection.entityType}: ${detection.normalizedId}`,
-            });
-            i++; // Skip the next part since we processed it as entity ID
-            continue;
-          }
+        if (detection?.entityType) {
+          items.push({
+            label: entityId,
+            href: currentPath,
+            badge: detection.entityType.charAt(0).toUpperCase(),
+            tooltip: `${detection.entityType}: ${detection.normalizedId}`,
+          });
+          i += 2; // Skip the next part since we processed it as entity ID
+          continue;
         }
       }
-      // Handle special pages
-      else if (["about", "settings", "bookmarks", "catalogue"].includes(part)) {
+      i++;
+    } else {
+      // Handle other cases for non-entity pages
+      if (["about", "settings", "bookmarks", "catalogue"].includes(part)) {
         items.push({
           label: part.charAt(0).toUpperCase() + part.slice(1),
           href: currentPath,
@@ -105,7 +110,9 @@ export const BreadcrumbNavigation = () => {
           tooltip: `View ${part}`,
         });
       }
+      i++;
     }
+  }
 
     return items;
   }, [location.pathname]);
@@ -113,21 +120,25 @@ export const BreadcrumbNavigation = () => {
   // Copy current URL to clipboard
   const handleCopyUrl = useCallback(() => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      notifications.show({
-        title: "URL Copied",
-        message: "Current page URL copied to clipboard",
-        color: "green",
-        autoClose: 3000,
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        notifications.show({
+          title: "URL Copied",
+          message: "Current page URL copied to clipboard",
+          color: "green",
+          autoClose: 3000,
+        });
+        return undefined;
+      })
+      .catch(() => {
+        notifications.show({
+          title: "Copy Failed",
+          message: "Failed to copy URL to clipboard",
+          color: "red",
+          autoClose: 3000,
+        });
+        return undefined;
       });
-    }).catch(() => {
-      notifications.show({
-        title: "Copy Failed",
-        message: "Failed to copy URL to clipboard",
-        color: "red",
-        autoClose: 3000,
-      });
-    });
   }, []);
 
   // Share current page
