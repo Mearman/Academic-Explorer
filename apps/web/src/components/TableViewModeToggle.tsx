@@ -2,6 +2,8 @@ import { Group, SegmentedControl, Text } from "@mantine/core";
 import { IconGridDots,IconList, IconTable } from "@tabler/icons-react";
 import React from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
+
 export type TableViewMode = "table" | "list" | "grid";
 
 export interface TableViewModeToggleProps {
@@ -18,7 +20,7 @@ const VIEW_MODE_DATA: Array<{
     value: "table" as const,
     label: (
       <Group gap="xs" wrap="nowrap">
-        <IconTable size={16} />
+        <IconTable size={ICON_SIZE.MD} />
         <Text size="sm">Table</Text>
       </Group>
     ),
@@ -27,7 +29,7 @@ const VIEW_MODE_DATA: Array<{
     value: "list" as const,
     label: (
       <Group gap="xs" wrap="nowrap">
-        <IconList size={16} />
+        <IconList size={ICON_SIZE.MD} />
         <Text size="sm">List</Text>
       </Group>
     ),
@@ -36,7 +38,7 @@ const VIEW_MODE_DATA: Array<{
     value: "grid" as const,
     label: (
       <Group gap="xs" wrap="nowrap">
-        <IconGridDots size={16} />
+        <IconGridDots size={ICON_SIZE.MD} />
         <Text size="sm">Grid</Text>
       </Group>
     ),

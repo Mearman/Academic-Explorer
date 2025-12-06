@@ -5,6 +5,7 @@
 import { logger } from "@bibgraph/utils/logger";
 import {
   ActionIcon,
+  Box,
   Card,
   Collapse,
   Divider,
@@ -148,11 +149,12 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
       {/* Scrollable Content */}
       <div className={styles.scrollableContent}>
         {/* Catalogue Lists Section */}
-        <div style={{ marginBottom: "1rem" }}>
+        <Box mb="md">
           <Group
             justify="space-between"
             align="center"
-            style={{ cursor: "pointer", marginBottom: "0.5rem" }}
+            mb="xs"
+            style={{ cursor: "pointer" }}
             onClick={() => setListsExpanded(!listsExpanded)}
             role="button"
             aria-expanded={listsExpanded}
@@ -224,16 +226,17 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
               </Stack>
             ))}
           </Collapse>
-        </div>
+        </Box>
 
         <Divider my="sm" />
 
         {/* Bookmarks Section */}
-        <div>
+        <Box>
           <Group
             justify="space-between"
             align="center"
-            style={{ cursor: "pointer", marginBottom: "0.5rem" }}
+            mb="xs"
+            style={{ cursor: "pointer" }}
             onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
             role="button"
             aria-expanded={bookmarksExpanded}
@@ -267,7 +270,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
           <Collapse in={bookmarksExpanded}>
             {/* Search */}
             {bookmarks.length > 0 && (
-              <div style={{ marginBottom: "0.5rem" }}>
+              <Box mb="xs">
                 <TextInput
                   placeholder="Search bookmarks..."
                   aria-label="Search bookmarks"
@@ -276,7 +279,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                   leftSection={<IconSearch size={ICON_SIZE.SM} />}
                   size="xs"
                 />
-              </div>
+              </Box>
             )}
 
             {isLoadingBookmarks ? (
@@ -286,7 +289,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
               </Group>
             ) : (filteredBookmarks.length === 0 ? (
               <Card withBorder p="sm">
-                <div className={styles.emptyState} style={{ padding: "1rem" }}>
+                <Box className={styles.emptyState} p="md">
                   <IconBookmarkOff size={ICON_SIZE.XXL} />
                   <Text size="xs" fw={500} ta="center">
                     {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
@@ -296,7 +299,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
                       ? "Try adjusting your search"
                       : "Bookmark entities to revisit later"}
                   </Text>
-                </div>
+                </Box>
               </Card>
             ) : (
               <Stack gap="xs">
@@ -311,7 +314,7 @@ export const BookmarksSidebar = ({ onClose }: BookmarksSidebarProps) => {
               </Stack>
             ))}
           </Collapse>
-        </div>
+        </Box>
       </div>
 
       {/* Footer */}
