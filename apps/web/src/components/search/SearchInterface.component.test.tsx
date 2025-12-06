@@ -44,6 +44,21 @@ vi.mock("@bibgraph/utils", () => ({
   }),
   normalizeSearchQuery: vi.fn((query: string) => query.trim().toLowerCase()),
   isValidSearchQuery: vi.fn((query: string) => query.trim().length >= 2),
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+// Mock the style constants
+vi.mock("@/config/style-constants", () => ({
+  BORDER_STYLE_GRAY_3: "1px solid #e9ecef",
+  ICON_SIZE: {
+    MD: 16,
+    SM: 14,
+  },
 }));
 
 const renderWithMantine = (component: React.ReactElement) => {
@@ -229,15 +244,17 @@ describe("SearchInterface", () => {
   });
 
   it("should handle empty query on search", async () => {
-    // Import the mocked functions to access them
-    const { isValidSearchQuery } = await import("@bibgraph/utils");
-
-    vi.mocked(isValidSearchQuery).mockReturnValue(false);
-
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
-    const searchButton = screen.getByRole("button", { name: /search/i });
-    fireEvent.click(searchButton);
+    // First add some content to enable the clear button
+    const searchInput = screen.getByPlaceholderText(
+      /Search academic works, authors, institutions/i,
+    );
+    fireEvent.change(searchInput, { target: { value: "test query" } });
+
+    // Then clear it - this should trigger onSearch with empty query
+    const clearButton = screen.getByRole("button", { name: /clear/i });
+    fireEvent.click(clearButton);
 
     expect(mockOnSearch).toHaveBeenCalledWith({
       query: "",
