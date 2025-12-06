@@ -2,6 +2,8 @@ import type { EntityType } from "@bibgraph/types";
 import { EntityCard } from "@bibgraph/ui";
 import { SimpleGrid, Stack, Text } from "@mantine/core";
 
+import { ContentSkeleton } from "./molecules/ContentSkeleton";
+
 export interface EntityGridItem {
   id: string;
   displayName: string;
@@ -18,6 +20,8 @@ interface EntityGridProps {
   cols?: number;
   spacing?: "xs" | "sm" | "md" | "lg" | "xl";
   emptyMessage?: string;
+  loading?: boolean;
+  loadingCount?: number;
 }
 
 export const EntityGrid = ({
@@ -26,7 +30,19 @@ export const EntityGrid = ({
   cols = 3,
   spacing = "md",
   emptyMessage = "No items to display",
+  loading = false,
+  loadingCount = 6,
 }: EntityGridProps) => {
+  if (loading) {
+    return (
+      <SimpleGrid cols={cols} spacing={spacing}>
+        {Array.from({ length: loadingCount }).map((_, index) => (
+          <ContentSkeleton key={index} variant="card" count={1} />
+        ))}
+      </SimpleGrid>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <Stack align="center" gap="md" p="xl">

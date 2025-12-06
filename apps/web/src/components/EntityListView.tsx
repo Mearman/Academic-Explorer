@@ -2,6 +2,8 @@ import type { EntityType } from "@bibgraph/types";
 import { EntityCard } from "@bibgraph/ui";
 import { Stack, Text } from "@mantine/core";
 
+import { ContentSkeleton } from "./molecules/ContentSkeleton";
+
 export interface EntityListItem {
   id: string;
   displayName: string;
@@ -17,6 +19,8 @@ interface EntityListViewProps {
   onNavigate?: (path: string) => void;
   spacing?: "xs" | "sm" | "md" | "lg" | "xl";
   emptyMessage?: string;
+  loading?: boolean;
+  loadingCount?: number;
 }
 
 export const EntityListView = ({
@@ -24,7 +28,13 @@ export const EntityListView = ({
   onNavigate,
   spacing = "sm",
   emptyMessage = "No items to display",
+  loading = false,
+  loadingCount = 5,
 }: EntityListViewProps) => {
+  if (loading) {
+    return <ContentSkeleton variant="list" count={loadingCount} />;
+  }
+
   if (items.length === 0) {
     return (
       <Stack align="center" gap="md" p="xl">
