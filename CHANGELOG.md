@@ -1,3 +1,12 @@
+## 23.4.0 (2025-12-06)
+
+* fix(web): prevent query parameter duplication in entity URL hash extraction ([4020b23](https://github.com/Mearman/BibGraph/commit/4020b23))
+* fix(web): resolve lint errors in entity-detail and graph components ([5b9f3b9](https://github.com/Mearman/BibGraph/commit/5b9f3b9))
+* refactor(web): consolidate getMantineColor into EntityTypeConfig ([0984f9a](https://github.com/Mearman/BibGraph/commit/0984f9a))
+* feat(algorithms): implement community metrics in Louvain algorithm ([886ed1b](https://github.com/Mearman/BibGraph/commit/886ed1b))
+* feat(web): add topics, publishers, and funders to relationship queries ([67c5a6d](https://github.com/Mearman/BibGraph/commit/67c5a6d))
+* chore(release): 23.3.2 [skip ci] ([13c40ee](https://github.com/Mearman/BibGraph/commit/13c40ee))
+
 ## <small>23.3.2 (2025-12-06)</small>
 
 * ci(ci): add Nx cache to all remaining CI jobs ([1b20603](https://github.com/Mearman/BibGraph/commit/1b20603))
