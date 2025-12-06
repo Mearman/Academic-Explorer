@@ -20,6 +20,7 @@ import {
 import { IconLink, IconStar } from '@tabler/icons-react';
 import { useState } from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import {
   useBibliographicCoupling,
   useCoCitations,
@@ -54,7 +55,7 @@ export const MotifDetectionItem = ({
       </Text>
 
       {/* Triangles */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={500}>Triangles (3-Cliques)</Text>
           <Badge variant="light">{triangles.count}</Badge>
@@ -95,7 +96,7 @@ export const MotifDetectionItem = ({
       </Card>
 
       {/* Star Patterns */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={500}>Star Patterns (Hub Nodes)</Text>
           <Badge variant="light">{starPatterns.count}</Badge>
@@ -155,7 +156,7 @@ export const MotifDetectionItem = ({
       </Card>
 
       {/* Co-Citations */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={500}>Co-Citations</Text>
           <Badge variant="light" color="cyan">{coCitations.pairs.length} pairs</Badge>
@@ -208,7 +209,7 @@ export const MotifDetectionItem = ({
       </Card>
 
       {/* Bibliographic Coupling */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+      <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={500}>Bibliographic Coupling</Text>
           <Badge variant="light" color="grape">{bibCoupling.pairs.length} pairs</Badge>

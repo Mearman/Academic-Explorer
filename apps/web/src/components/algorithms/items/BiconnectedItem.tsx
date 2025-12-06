@@ -17,6 +17,7 @@ import {
 } from '@mantine/core';
 import { IconCircle, IconLink } from '@tabler/icons-react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useBiconnectedComponents } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
@@ -39,7 +40,7 @@ export const BiconnectedItem = ({
         <>
           {/* Articulation Points */}
           {biconnectedComponents.articulationPoints.length > 0 && (
-            <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+            <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
               <Group justify="space-between" mb="xs">
                 <Text size="sm" fw={500}>Articulation Points (Cut Vertices)</Text>
                 <Badge color="orange" variant="light">

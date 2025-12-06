@@ -17,6 +17,7 @@ import {
 } from '@mantine/core';
 import { useMemo,useState } from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useBFS, useDFS } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
@@ -67,7 +68,7 @@ export const TraversalItem = ({
       {traversalStartNode && (
         <Stack gap="xs">
           {/* BFS Results */}
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>Breadth-First Search (BFS)</Text>
               {bfsResult && (
@@ -110,7 +111,7 @@ export const TraversalItem = ({
           </Card>
 
           {/* DFS Results */}
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="xs">
+          <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xs">
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>Depth-First Search (DFS)</Text>
               {dfsResult && (

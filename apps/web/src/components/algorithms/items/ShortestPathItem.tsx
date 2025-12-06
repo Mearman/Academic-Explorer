@@ -37,6 +37,7 @@ import {
 } from '@tabler/icons-react';
 import { useMemo,useState } from 'react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import {
   type EdgePropertyFilter,
   findShortestPath,
@@ -285,7 +286,7 @@ export const ShortestPathItem = ({
       </Button>
 
       {pathResult && (
-        <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="sm" bg="gray.0">
+        <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="sm" bg="gray.0">
           {pathResult.found ? (
             <Stack gap="xs">
               <Group justify="space-between">

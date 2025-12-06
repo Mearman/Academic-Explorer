@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { IconGraph } from '@tabler/icons-react';
 
+import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
 import { useCycleDetection,useGraphStatistics } from '@/hooks/use-graph-algorithms';
 
 import type { AlgorithmItemBaseProps } from '../types';
@@ -26,7 +27,7 @@ export const GraphStatisticsCard = ({
   const hasCycles = useCycleDetection(nodes, edges, true);
 
   return (
-    <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+    <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
       <Title order={5} mb="sm">
         <Group gap="xs">
           <IconGraph size={18} />
