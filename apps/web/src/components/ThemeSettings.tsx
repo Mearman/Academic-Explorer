@@ -17,6 +17,7 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 
+import { BORDER_STYLE_GRAY_3, CARD_BORDER_STYLE } from "@/config/style-constants";
 import { useTheme } from "@/contexts/theme-context";
 import type { BorderRadius,ColorScheme, ComponentLibrary } from "@/styles/theme-contracts";
 
@@ -119,7 +120,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
   return (
     <Stack gap="lg">
       {/* Current Theme Summary */}
-      <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md" bg="var(--mantine-color-body)">
+      <Card style={CARD_BORDER_STYLE} p="md" bg="var(--mantine-color-body)">
         <Group justify="space-between" align="center">
           <Group>
             <IconPalette size={20} color="var(--colors-primary)" />
@@ -187,7 +188,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
                   height: 16,
                   borderRadius: 4,
                   backgroundColor: colorSchemeData.find(s => s.value === option.value)?.color,
-                  border: "1px solid var(--mantine-color-gray-3)",
+                  border: BORDER_STYLE_GRAY_3,
                 }}
               />
               <span>{option.label}</span>
@@ -230,7 +231,7 @@ export const ThemeSettings = ({ onClose }: ThemeSettingsProps) => {
                                  option.value === "md" ? "8px" :
                                  option.value === "lg" ? "12px" : "16px",
                   backgroundColor: "var(--mantine-color-gray-6)",
-                  border: "1px solid var(--mantine-color-gray-3)",
+                  border: BORDER_STYLE_GRAY_3,
                 }}
               />
               <span>{option.label}</span>

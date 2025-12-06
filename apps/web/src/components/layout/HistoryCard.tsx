@@ -18,6 +18,7 @@ import { modals } from "@mantine/modals";
 import { IconTrash } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
+import { BORDER_STYLE_GRAY_3 } from "@/config/style-constants";
 import { useEntityDisplayName } from "@/hooks/use-entity-display-name";
 
 import * as styles from "./sidebar.css";
@@ -116,7 +117,7 @@ export const HistoryCard = ({ entry, onClose, formatDate }: HistoryCardProps) =>
     <Card
       component={Link}
       to={linkUrl}
-      style={{ border: "1px solid var(--mantine-color-gray-3)", textDecoration: "none" }}
+      style={{ border: BORDER_STYLE_GRAY_3, textDecoration: "none" }}
       padding="xs"
       shadow="none"
       className={styles.historyCard}

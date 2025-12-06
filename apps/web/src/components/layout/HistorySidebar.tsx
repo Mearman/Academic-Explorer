@@ -25,6 +25,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { CARD_BORDER_STYLE } from "@/config/style-constants";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { HistoryCard } from "./HistoryCard";
@@ -169,7 +170,7 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
       {/* History List */}
       <div className={styles.scrollableContent}>
         {filteredEntries.length === 0 ? (
-          <Card style={{ border: "1px solid var(--mantine-color-gray-3)" }} p="md">
+          <Card style={CARD_BORDER_STYLE} p="md">
             <Stack align="center" gap="md" className={styles.emptyState}>
               <IconHistory
                 size={32}
