@@ -48,7 +48,7 @@ import {
 } from '@tabler/icons-react';
 import React, { useMemo,useState } from 'react';
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import {
   type CommunityDetectionOptions,
   useBFS,
@@ -309,7 +309,7 @@ export const GraphAlgorithmsPanel = ({
   if (nodes.length === 0) {
     return (
       <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
-        <Alert icon={<IconAlertCircle size={16} />} title="No Graph Data" color="gray">
+        <Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} title="No Graph Data" color="gray">
           Add nodes and edges to the graph to run algorithms.
         </Alert>
       </Card>
@@ -322,7 +322,7 @@ export const GraphAlgorithmsPanel = ({
       <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="md">
         <Title order={5} mb="sm">
           <Group gap="xs">
-            <IconGraph size={18} />
+            <IconGraph size={ICON_SIZE.LG} />
             Graph Statistics
           </Group>
         </Title>
@@ -367,7 +367,7 @@ export const GraphAlgorithmsPanel = ({
       <Accordion variant="separated" defaultValue="communities">
         {/* Community Detection */}
         <Accordion.Item value="communities">
-          <Accordion.Control icon={<IconUsers size={18} />}>
+          <Accordion.Control icon={<IconUsers size={ICON_SIZE.LG} />}>
             Community Detection
             {communities.length > 0 && (
               <Badge ml="xs" size="sm" variant="light">
@@ -380,7 +380,7 @@ export const GraphAlgorithmsPanel = ({
               {/* Computing indicator */}
               {isComputing && (
                 <Alert
-                  icon={<IconCircleDot size={16} />}
+                  icon={<IconCircleDot size={ICON_SIZE.MD} />}
                   color="blue"
                   variant="light"
                   styles={{ root: { padding: 'var(--mantine-spacing-xs)' } }}
@@ -506,11 +506,11 @@ export const GraphAlgorithmsPanel = ({
                         key={community.id}
                         icon={
                           <ThemeIcon
-                            size={20}
+                            size={ICON_SIZE.XL}
                             radius="xl"
                             style={{ backgroundColor: communityColors.get(community.id) }}
                           >
-                            <IconCircleDot size={12} />
+                            <IconCircleDot size={ICON_SIZE.XS} />
                           </ThemeIcon>
                         }
                         style={{ cursor: 'pointer' }}
@@ -545,7 +545,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Shortest Path */}
         <Accordion.Item value="path">
-          <Accordion.Control icon={<IconRoute size={18} />}>
+          <Accordion.Control icon={<IconRoute size={ICON_SIZE.LG} />}>
             Shortest Path
           </Accordion.Control>
           <Accordion.Panel>
@@ -580,7 +580,7 @@ export const GraphAlgorithmsPanel = ({
               <Button
                 onClick={handleFindPath}
                 disabled={!pathSource || !pathTarget}
-                leftSection={<IconRoute size={16} />}
+                leftSection={<IconRoute size={ICON_SIZE.MD} />}
               >
                 Find Path
               </Button>
@@ -591,7 +591,7 @@ export const GraphAlgorithmsPanel = ({
                     <Stack gap="xs">
                       <Group justify="space-between">
                         <Text size="sm" fw={500} c="green">
-                          <IconCircleCheck size={16} style={{ verticalAlign: 'middle' }} /> Path Found
+                          <IconCircleCheck size={ICON_SIZE.MD} style={{ verticalAlign: 'middle' }} /> Path Found
                         </Text>
                         <Badge variant="light">{pathResult.distance} hops</Badge>
                       </Group>
@@ -601,7 +601,7 @@ export const GraphAlgorithmsPanel = ({
                     </Stack>
                   ) : (
                     <Text size="sm" c="red">
-                      <IconAlertCircle size={16} style={{ verticalAlign: 'middle' }} /> No path exists
+                      <IconAlertCircle size={ICON_SIZE.MD} style={{ verticalAlign: 'middle' }} /> No path exists
                     </Text>
                   )}
                 </Card>
@@ -612,7 +612,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Connected Components */}
         <Accordion.Item value="components">
-          <Accordion.Control icon={<IconNetwork size={18} />}>
+          <Accordion.Control icon={<IconNetwork size={ICON_SIZE.LG} />}>
             Connected Components
             <Badge ml="xs" size="sm" variant="light">
               {connectedComponents.count}
@@ -626,8 +626,8 @@ export const GraphAlgorithmsPanel = ({
                     <List.Item
                       key={index}
                       icon={
-                        <ThemeIcon size={20} radius="xl" variant="light">
-                          <IconCircleDot size={12} />
+                        <ThemeIcon size={ICON_SIZE.XL} radius="xl" variant="light">
+                          <IconCircleDot size={ICON_SIZE.XS} />
                         </ThemeIcon>
                       }
                       style={{ cursor: 'pointer' }}
@@ -654,7 +654,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* K-Core Decomposition */}
         <Accordion.Item value="kcore">
-          <Accordion.Control icon={<IconHierarchy size={18} />}>
+          <Accordion.Control icon={<IconHierarchy size={ICON_SIZE.LG} />}>
             K-Core Decomposition
             {kCore.nodes.length > 0 && (
               <Badge ml="xs" size="sm" variant="light">
@@ -684,7 +684,7 @@ export const GraphAlgorithmsPanel = ({
                     variant="light"
                     size="xs"
                     onClick={handleKCoreHighlight}
-                    leftSection={<IconChartDonut size={14} />}
+                    leftSection={<IconChartDonut size={ICON_SIZE.SM} />}
                   >
                     Highlight K-Core
                   </Button>
@@ -700,7 +700,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Graph Traversal (BFS/DFS) */}
         <Accordion.Item value="traversal">
-          <Accordion.Control icon={<IconArrowsShuffle size={18} />}>
+          <Accordion.Control icon={<IconArrowsShuffle size={ICON_SIZE.LG} />}>
             Graph Traversal
           </Accordion.Control>
           <Accordion.Panel>
@@ -825,7 +825,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Strongly Connected Components */}
         <Accordion.Item value="scc">
-          <Accordion.Control icon={<IconCircles size={18} />}>
+          <Accordion.Control icon={<IconCircles size={ICON_SIZE.LG} />}>
             Strongly Connected Components
             <Badge ml="xs" size="sm" variant="light">
               {stronglyConnectedComponents.count}
@@ -846,8 +846,8 @@ export const GraphAlgorithmsPanel = ({
                     <List.Item
                       key={index}
                       icon={
-                        <ThemeIcon size={20} radius="xl" variant="light" color="violet">
-                          <IconCircleDot size={12} />
+                        <ThemeIcon size={ICON_SIZE.XL} radius="xl" variant="light" color="violet">
+                          <IconCircleDot size={ICON_SIZE.XS} />
                         </ThemeIcon>
                       }
                       style={{ cursor: 'pointer' }}
@@ -874,7 +874,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Topological Sort & Cycle Detection */}
         <Accordion.Item value="topo-cycle">
-          <Accordion.Control icon={<IconArrowsSort size={18} />}>
+          <Accordion.Control icon={<IconArrowsSort size={ICON_SIZE.LG} />}>
             Topological Sort / Cycles
             <Badge
               ml="xs"
@@ -889,7 +889,7 @@ export const GraphAlgorithmsPanel = ({
             <Stack gap="sm">
               {cycleInfo.hasCycle ? (
                 <>
-                  <Alert color="yellow" icon={<IconAlertCircle size={16} />}>
+                  <Alert color="yellow" icon={<IconAlertCircle size={ICON_SIZE.MD} />}>
                     Graph contains cycles - topological sort is not possible.
                   </Alert>
                   {cycleInfo.cycle.length > 0 && (
@@ -927,7 +927,7 @@ export const GraphAlgorithmsPanel = ({
                 </>
               ) : (
                 <>
-                  <Alert color="green" icon={<IconCircleCheck size={16} />}>
+                  <Alert color="green" icon={<IconCircleCheck size={ICON_SIZE.MD} />}>
                     Graph is a DAG (Directed Acyclic Graph) - topological ordering exists.
                   </Alert>
                   {topologicalOrder && topologicalOrder.length > 0 && (
@@ -971,7 +971,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Core-Periphery Decomposition */}
         <Accordion.Item value="core-periphery">
-          <Accordion.Control icon={<IconFocusCentered size={18} />}>
+          <Accordion.Control icon={<IconFocusCentered size={ICON_SIZE.LG} />}>
             Core-Periphery
             {corePeriphery && (
               <Badge ml="xs" size="sm" variant="light">
@@ -1047,7 +1047,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Biconnected Components */}
         <Accordion.Item value="biconnected">
-          <Accordion.Control icon={<IconLink size={18} />}>
+          <Accordion.Control icon={<IconLink size={ICON_SIZE.LG} />}>
             Biconnected Components
             {biconnectedComponents && (
               <Badge ml="xs" size="sm" variant="light">
@@ -1119,12 +1119,12 @@ export const GraphAlgorithmsPanel = ({
                           key={component.id}
                           icon={
                             <ThemeIcon
-                              size={20}
+                              size={ICON_SIZE.XL}
                               radius="xl"
                               variant="light"
                               color={component.isBridge ? 'yellow' : 'teal'}
                             >
-                              {component.isBridge ? <IconLink size={12} /> : <IconCircle size={12} />}
+                              {component.isBridge ? <IconLink size={ICON_SIZE.XS} /> : <IconCircle size={ICON_SIZE.XS} />}
                             </ThemeIcon>
                           }
                           style={{ cursor: 'pointer' }}
@@ -1162,7 +1162,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Ego Network */}
         <Accordion.Item value="ego-network">
-          <Accordion.Control icon={<IconPoint size={18} />}>
+          <Accordion.Control icon={<IconPoint size={ICON_SIZE.LG} />}>
             Ego Network
             {egoNetwork && (
               <Badge ml="xs" size="sm" variant="light">
@@ -1219,7 +1219,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Motif Detection */}
         <Accordion.Item value="motifs">
-          <Accordion.Control icon={<IconTriangle size={18} />}>
+          <Accordion.Control icon={<IconTriangle size={ICON_SIZE.LG} />}>
             Motif Detection
             <Badge ml="xs" size="sm" variant="light">
               {triangles.count} triangles
@@ -1309,8 +1309,8 @@ export const GraphAlgorithmsPanel = ({
                           <List.Item
                             key={pattern.hubId}
                             icon={
-                              <ThemeIcon size={16} radius="xl" variant="light" color="orange">
-                                <IconStar size={10} />
+                              <ThemeIcon size={ICON_SIZE.MD} radius="xl" variant="light" color="orange">
+                                <IconStar size={ICON_SIZE.XXS} />
                               </ThemeIcon>
                             }
                             style={{ cursor: 'pointer' }}
@@ -1362,8 +1362,8 @@ export const GraphAlgorithmsPanel = ({
                           <List.Item
                             key={`${pair.paper1Id}-${pair.paper2Id}`}
                             icon={
-                              <ThemeIcon size={16} radius="xl" variant="light" color="cyan">
-                                <IconLink size={10} />
+                              <ThemeIcon size={ICON_SIZE.MD} radius="xl" variant="light" color="cyan">
+                                <IconLink size={ICON_SIZE.XXS} />
                               </ThemeIcon>
                             }
                             style={{ cursor: 'pointer' }}
@@ -1415,8 +1415,8 @@ export const GraphAlgorithmsPanel = ({
                           <List.Item
                             key={`${pair.paper1Id}-${pair.paper2Id}`}
                             icon={
-                              <ThemeIcon size={16} radius="xl" variant="light" color="grape">
-                                <IconLink size={10} />
+                              <ThemeIcon size={ICON_SIZE.MD} radius="xl" variant="light" color="grape">
+                                <IconLink size={ICON_SIZE.XXS} />
                               </ThemeIcon>
                             }
                             style={{ cursor: 'pointer' }}
@@ -1443,7 +1443,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* K-Truss */}
         <Accordion.Item value="k-truss">
-          <Accordion.Control icon={<IconChartDonut size={18} />}>
+          <Accordion.Control icon={<IconChartDonut size={ICON_SIZE.LG} />}>
             K-Truss Decomposition
             {kTruss.nodeCount > 0 && (
               <Badge ml="xs" size="sm" variant="light">
@@ -1481,7 +1481,7 @@ export const GraphAlgorithmsPanel = ({
                     variant="light"
                     size="xs"
                     onClick={() => onHighlightNodes?.(kTruss.nodes)}
-                    leftSection={<IconChartDonut size={14} />}
+                    leftSection={<IconChartDonut size={ICON_SIZE.SM} />}
                   >
                     Highlight K-Truss
                   </Button>
@@ -1497,7 +1497,7 @@ export const GraphAlgorithmsPanel = ({
 
         {/* Cluster Quality Metrics */}
         <Accordion.Item value="cluster-quality">
-          <Accordion.Control icon={<IconChartBar size={18} />}>
+          <Accordion.Control icon={<IconChartBar size={ICON_SIZE.LG} />}>
             Cluster Quality Metrics
             {communities.length > 0 && (
               <Badge ml="xs" size="sm" variant="light" color="green">
@@ -1568,7 +1568,7 @@ export const GraphAlgorithmsPanel = ({
                   </Group>
                 </>
               ) : (
-                <Alert icon={<IconAlertCircle size={16} />} color="gray">
+                <Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} color="gray">
                   Run community detection to see cluster quality metrics.
                 </Alert>
               )}
