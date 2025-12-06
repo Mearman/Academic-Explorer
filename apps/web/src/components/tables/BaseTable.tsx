@@ -8,7 +8,10 @@ import {
   Table,
   Text,
   TextInput,
+  ActionIcon,
+  Tooltip,
 } from "@mantine/core";
+import { IconColumns, IconColumns3 } from "@tabler/icons-react";
 import {
   IconSearch,
   IconSortAscending,
@@ -30,6 +33,7 @@ import { useEffect,useRef, useState } from "react";
 
 import { TableSkeleton } from "@/components/molecules/TableSkeleton";
 import { sprinkles } from "@/styles/sprinkles";
+import { useResponsiveDesign } from "@/hooks/use-sprinkles";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -57,13 +61,16 @@ export const BaseTable = <T,>({
   estimateSize = 50,
   maxHeight = 600,
 }: BaseTableProps<T>) => {
+  const { isMobile } = useResponsiveDesign();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize,
+    pageSize: isMobile() ? 5 : pageSize, // Smaller page size on mobile
   });
+  const [compactView, setCompactView] = useState(isMobile());
 
   // Virtualization setup
   const parentRef = useRef<HTMLDivElement>(null);
@@ -135,35 +142,63 @@ export const BaseTable = <T,>({
     if (!searchable) return null;
 
     return (
-      <Group mb="md" justify="space-between">
+      <Group
+        mb="md"
+        justify="space-between"
+        gap={isMobile() ? "xs" : "md"}
+        wrap={isMobile() ? "wrap" : "nowrap"}
+      >
         <TextInput
           placeholder={searchPlaceholder}
           leftSection={<IconSearch size={16} />}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className={sprinkles({ minWidth: '300px' })}
+          className={sprinkles({
+            minWidth: isMobile() ? '200px' : '300px',
+            flex: isMobile() ? '1' : 'auto'
+          })}
+          size={isMobile() ? "sm" : "md"}
         />
 
-        <Group>
-          <Select
-            label="Page size"
-            value={pagination.pageSize.toString()}
-            onChange={(value) => {
-              const newSize = Number(value) || 10;
-              setPagination((prev) => ({
-                ...prev,
-                pageSize: newSize,
-                pageIndex: 0,
-              }));
-            }}
-            data={[
-              { value: "10", label: "10" },
-              { value: "25", label: "25" },
-              { value: "50", label: "50" },
-              { value: "100", label: "100" },
-            ]}
-            w={100}
-          />
+        <Group gap="sm" wrap="nowrap">
+          {!isMobile() && (
+            <Select
+              label="Page size"
+              value={pagination.pageSize.toString()}
+              onChange={(value) => {
+                const newSize = Number(value) || 10;
+                setPagination((prev) => ({
+                  ...prev,
+                  pageSize: newSize,
+                  pageIndex: 0,
+                }));
+              }}
+              data={[
+                { value: "5", label: "5" },
+                { value: "10", label: "10" },
+                { value: "25", label: "25" },
+                { value: "50", label: "50" },
+                { value: "100", label: "100" },
+              ]}
+              w={100}
+              size="sm"
+            />
+          )}
+
+          <Tooltip
+            label={compactView ? "Expand columns" : "Compact columns"}
+            position="bottom"
+          >
+            <ActionIcon
+              variant={compactView ? "filled" : "light"}
+              onClick={() => setCompactView(!compactView)}
+              size={isMobile() ? "lg" : "md"}
+              color={compactView ? "blue" : "gray"}
+              aria-label={compactView ? "Expand columns" : "Compact columns"}
+            >
+              {compactView ? <IconColumns3 size={16} /> : <IconColumns size={16} />}
+            </ActionIcon>
+          </Tooltip>
         </Group>
       </Group>
     );
@@ -350,101 +385,162 @@ export const BaseTable = <T,>({
   );
 
   // Helper function to render regular table
-  const renderRegularTable = () => (
-    <Table
-      striped
-      highlightOnHover
-      withTableBorder
-      withColumnBorders
-      stickyHeader
-      style={{ minHeight: isLoading ? 400 : "auto" }}
-      className={sprinkles({ minHeight: '400px' })}
-    >
-      {renderTableHeader()}
+  const renderRegularTable = () => {
+    const TableWrapper = ({ children }: { children: React.ReactNode }) => {
+      if (isMobile()) {
+        return (
+          <ScrollArea
+            type="auto"
+            scrollbarSize={8}
+            className={sprinkles({ borderGray3: true, borderRadius: 'md' })}
+            styles={{
+              viewport: {
+                minHeight: '400px'
+              }
+            }}
+          >
+            {children}
+          </ScrollArea>
+        );
+      }
+      return <>{children}</>;
+    };
 
-      <Table.Tbody>
-        {isLoading
-          ? renderLoadingState(columns.length)
-          : (table.getRowModel().rows.length === 0
-            ? renderEmptyState(columns.length)
-            : table.getRowModel().rows.map((row) => {
-                // Use descriptive aria-label for row selection
-                const ariaLabel = onRowClick
-                  ? "Select this table row"
-                  : undefined;
+    return (
+      <TableWrapper>
+        <Table
+          striped={!isMobile()}
+          highlightOnHover
+          withTableBorder
+          withColumnBorders={isMobile()}
+          stickyHeader
+          style={{
+            minHeight: isLoading ? 400 : "auto",
+            width: isMobile() && compactView ? 'max-content' : '100%'
+          }}
+          className={sprinkles({
+            minHeight: '400px',
+            fontSize: isMobile() ? 'sm' : 'md'
+          })}
+        >
+          {renderTableHeader()}
 
-                return (
-                  <Table.Tr
-                    key={row.id}
-                    role={onRowClick ? "button" : undefined}
-                    aria-label={ariaLabel}
-                    tabIndex={onRowClick ? 0 : undefined}
-                    className={sprinkles({ cursor: onRowClick ? 'pointer' : 'default' })}
-                    onClick={
-                      onRowClick
-                        ? () => handleRowClick(row.original)
-                        : undefined
-                    }
-                    onKeyDown={
-                      onRowClick
-                        ? (e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              handleRowClick(row.original);
-                            }
-                          }
-                        : undefined
-                    }
-                    onKeyUp={
-                      onRowClick
-                        ? (e) => {
-                            if (e.key === "Escape") {
-                              (e.target as HTMLElement).blur();
-                            }
-                          }
-                        : undefined
-                    }
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <Table.Td key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-                );
-              }))}
-      </Table.Tbody>
-    </Table>
-  );
+          <Table.Tbody>
+            {isLoading
+              ? renderLoadingState(columns.length)
+              : (table.getRowModel().rows.length === 0
+                ? renderEmptyState(columns.length)
+                : table.getRowModel().rows.map((row) => {
+                    // Use descriptive aria-label for row selection
+                    const ariaLabel = onRowClick
+                      ? "Select this table row"
+                      : undefined;
+
+                    return (
+                      <Table.Tr
+                        key={row.id}
+                        role={onRowClick ? "button" : undefined}
+                        aria-label={ariaLabel}
+                        tabIndex={onRowClick ? 0 : undefined}
+                        className={sprinkles({
+                          cursor: onRowClick ? 'pointer' : 'default',
+                          fontSize: isMobile() ? 'sm' : 'md'
+                        })}
+                        onClick={
+                          onRowClick
+                            ? () => handleRowClick(row.original)
+                            : undefined
+                        }
+                        onKeyDown={
+                          onRowClick
+                            ? (e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  handleRowClick(row.original);
+                                }
+                              }
+                            : undefined
+                        }
+                        onKeyUp={
+                          onRowClick
+                            ? (e) => {
+                                if (e.key === "Escape") {
+                                  (e.target as HTMLElement).blur();
+                                }
+                              }
+                            : undefined
+                        }
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <Table.Td
+                            key={cell.id}
+                            style={{
+                              minWidth: isMobile() && compactView ? '120px' : 'auto'
+                            }}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </Table.Td>
+                        ))}
+                      </Table.Tr>
+                    );
+                  }))}
+          </Table.Tbody>
+        </Table>
+      </TableWrapper>
+    );
+  };
 
   // Helper function to render pagination info
   const renderPaginationInfo = () => {
     if (isLoading || rows.length === 0) return null;
 
     return (
-      <Group justify="space-between" mt="md">
-        <Text size="sm" c="dimmed">
+      <Group
+        justify="space-between"
+        mt="md"
+        gap={isMobile() ? "xs" : "md"}
+        wrap={isMobile() ? "wrap" : "nowrap"}
+        align="center"
+      >
+        <Text
+          size={isMobile() ? "xs" : "sm"}
+          c="dimmed"
+          style={{ flex: isMobile() ? '1' : 'auto' }}
+        >
           {shouldVirtualize ? (
             <>
-              Showing {rowVirtualizer.getVirtualItems().length} of {rows.length}{" "}
-              entries (virtualized)
+              {isMobile() ? (
+                `${rowVirtualizer.getVirtualItems().length} / ${rows.length} (virtual)`
+              ) : (
+                `Showing ${rowVirtualizer.getVirtualItems().length} of ${rows.length} entries (virtualized)`
+              )}
             </>
           ) : (
             <>
-              Showing{" "}
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}{" "}
-              to{" "}
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) *
-                  table.getState().pagination.pageSize,
-                table.getFilteredRowModel().rows.length,
-              )}{" "}
-              of {table.getFilteredRowModel().rows.length} entries
+              {isMobile() ? (
+                `${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-${Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  table.getFilteredRowModel().rows.length,
+                )} / ${table.getFilteredRowModel().rows.length}`
+              ) : (
+                <>
+                  Showing{" "}
+                  {table.getState().pagination.pageIndex *
+                    table.getState().pagination.pageSize +
+                    1}{" "}
+                  to{" "}
+                  {Math.min(
+                    (table.getState().pagination.pageIndex + 1) *
+                      table.getState().pagination.pageSize,
+                    table.getFilteredRowModel().rows.length,
+                  )}{" "}
+                  of {table.getFilteredRowModel().rows.length} entries
+                </>
+              )}
             </>
           )}
         </Text>
@@ -454,8 +550,10 @@ export const BaseTable = <T,>({
             value={table.getState().pagination.pageIndex + 1}
             onChange={(page) => table.setPageIndex(page - 1)}
             total={table.getPageCount()}
-            size="sm"
-            withEdges
+            size={isMobile() ? "xs" : "sm"}
+            withEdges={!isMobile()}
+            boundaries={isMobile() ? 1 : 2}
+            siblings={isMobile() ? 0 : 1}
           />
         )}
       </Group>

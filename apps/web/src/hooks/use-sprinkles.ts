@@ -4,7 +4,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { useCallback,useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTheme } from '../contexts/theme-context';
 import type { Sprinkles } from '../styles/sprinkles';
@@ -208,7 +208,7 @@ export const useDynamicButton = (options?: {
 
 /**
  * Hook for responsive design utilities
- * Provides breakpoint-aware styling helpers
+ * Provides breakpoint-aware styling helpers with proper event handling
  */
 export const useResponsiveDesign = () => {
   const breakpoints = useMemo(() => ({
@@ -218,23 +218,60 @@ export const useResponsiveDesign = () => {
     wide: '1280px',
   }), []);
 
+  // Use state to track current breakpoint for reactive updates
+  const [currentBreakpoint, setCurrentBreakpoint] = useState<'mobile' | 'tablet' | 'desktop' | 'wide'>('mobile');
+
+  // Update breakpoint on mount and resize
+  useEffect(() => {
+    const updateBreakpoint = () => {
+      const width = window.innerWidth;
+      if (width < Number.parseInt(breakpoints.tablet)) {
+        setCurrentBreakpoint('mobile');
+      } else if (width < Number.parseInt(breakpoints.desktop)) {
+        setCurrentBreakpoint('tablet');
+      } else if (width < Number.parseInt(breakpoints.wide)) {
+        setCurrentBreakpoint('desktop');
+      } else {
+        setCurrentBreakpoint('wide');
+      }
+    };
+
+    // Initial check
+    updateBreakpoint();
+
+    // Add resize listener with debouncing
+    let resizeTimer: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateBreakpoint, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, [breakpoints]);
+
   const responsiveSprinkles = useCallback((props: {
     mobile?: Sprinkles;
     tablet?: Sprinkles;
     desktop?: Sprinkles;
     wide?: Sprinkles;
   }) => {
-    // This would be implemented with conditional sprinkles
-    // For now, return mobile styles as default
-    return sprinkles(props.mobile || {});
-  }, []);
+    // Return styles based on current breakpoint
+    const breakpointStyles = props[currentBreakpoint] || props.mobile || {};
+    return sprinkles(breakpointStyles);
+  }, [currentBreakpoint]);
 
   return {
     breakpoints,
     responsiveSprinkles,
-    isMobile: () => window.innerWidth < Number.parseInt(breakpoints.tablet),
-    isTablet: () => window.innerWidth >= Number.parseInt(breakpoints.tablet) && window.innerWidth < Number.parseInt(breakpoints.desktop),
-    isDesktop: () => window.innerWidth >= Number.parseInt(breakpoints.desktop),
+    currentBreakpoint,
+    isMobile: () => currentBreakpoint === 'mobile',
+    isTablet: () => currentBreakpoint === 'tablet',
+    isDesktop: () => currentBreakpoint === 'desktop' || currentBreakpoint === 'wide',
+    isWide: () => currentBreakpoint === 'wide',
   };
 };
 

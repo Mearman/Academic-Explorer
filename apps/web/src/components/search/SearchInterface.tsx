@@ -4,6 +4,7 @@ import { IconInfoCircle, IconSearch, IconX } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+import { SearchLoadingSpinner } from '@bibgraph/ui';
 
 interface SearchFilters {
   query: string;
@@ -182,36 +183,14 @@ export const SearchInterface = ({
           </Text>
         )}
 
-        {/* Loading Indicator */}
+        {/* Enhanced Loading Indicator */}
         {isLoading && (
-          <Group justify="center" gap="sm">
-            <div style={{
-              width: 16,
-              height: 16,
-              borderRadius: '50%',
-              border: '2px solid var(--mantine-color-blue-6)',
-              borderTopColor: 'transparent',
-              borderRightColor: 'transparent',
-              animation: 'spin 1s linear infinite'
-            }} />
-            <Text size="sm" c="blue">
-              Searching academic database...
-            </Text>
-          </Group>
+          <SearchLoadingSpinner
+            message="Searching academic database..."
+            showEta={true}
+          />
         )}
       </Stack>
-
-      {/* Add CSS animation for spinner */}
-      <style>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </Paper>
   );
 };
