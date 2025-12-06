@@ -35,6 +35,7 @@ export * from "./evaluation/index";
 export * from "./filters/index";
 export * from "./graph/index";
 export * from "./layout/index";
+export * from "./modals/index";
 export * from "./molecules/index";
 export * from "./navigation/index";
 export * from "./pdf/index";
