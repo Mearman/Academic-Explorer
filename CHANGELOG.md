@@ -1,3 +1,11 @@
+## <small>23.3.2 (2025-12-06)</small>
+
+* ci(ci): add Nx cache to all remaining CI jobs ([1b20603](https://github.com/Mearman/BibGraph/commit/1b20603))
+* fix(web): replace remaining magic number timeout in 3D graph ([76d5fee](https://github.com/Mearman/BibGraph/commit/76d5fee))
+* refactor(web): extract 3D graph visualization magic numbers to constants ([94e0c20](https://github.com/Mearman/BibGraph/commit/94e0c20))
+* refactor(web): extract graph visualization magic numbers to constants ([b6ebf21](https://github.com/Mearman/BibGraph/commit/b6ebf21))
+* chore(release): 23.3.1 [skip ci] ([a14af56](https://github.com/Mearman/BibGraph/commit/a14af56))
+
 ## <small>23.3.1 (2025-12-06)</small>
 
 * refactor(algorithms): add K_TRUSS and SCORE_FILTER constants ([3e7fcc5](https://github.com/Mearman/BibGraph/commit/3e7fcc5))
