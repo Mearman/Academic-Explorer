@@ -15,6 +15,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import {
   IconHistory,
   IconSearch,
@@ -49,13 +50,26 @@ export const HistorySidebar = ({ onClose }: HistorySidebarProps) => {
       (entry.notes && entry.notes.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
-  const handleClearHistory = async () => {
-    try {
-      await clearHistory();
-      setSearchQuery("");
-    } catch (error) {
-      logError(logger, "Failed to clear history", error, "HistorySidebar");
-    }
+  const handleClearHistory = () => {
+    modals.openConfirmModal({
+      title: "Clear All History",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to clear all navigation history? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Clear All", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await clearHistory();
+          setSearchQuery("");
+        } catch (error) {
+          logError(logger, "Failed to clear history", error, "HistorySidebar");
+        }
+      },
+    });
   };
 
   const formatDate = (date: Date) => {

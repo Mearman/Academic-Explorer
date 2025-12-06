@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   TextInput} from "@mantine/core";
+import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
   IconArrowRight,
@@ -108,12 +109,25 @@ export const HeaderSearchInput = () => {
   }, [handleSearch]);
 
   const handleClearHistory = useCallback(() => {
-    clearSearchHistory();
-    notifications.show({
-      title: "History Cleared",
-      message: "Search history has been cleared",
-      color: "blue",
-      autoClose: NOTIFICATION_DURATION.SHORT_MS,
+    modals.openConfirmModal({
+      title: "Clear Search History",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to clear your search history? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Clear History", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        clearSearchHistory();
+        notifications.show({
+          title: "History Cleared",
+          message: "Search history has been cleared",
+          color: "blue",
+          autoClose: NOTIFICATION_DURATION.SHORT_MS,
+        });
+      },
     });
   }, [clearSearchHistory]);
 
