@@ -40,8 +40,6 @@ import {
   IconRefresh,
 } from '@tabler/icons-react';
 import { createLazyFileRoute } from '@tanstack/react-router';
-
-import { ICON_SIZE } from '@/config/style-constants';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
@@ -56,6 +54,7 @@ import {
 } from '@/components/graph/NodeContextMenu';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
+import { ICON_SIZE } from '@/config/style-constants';
 import { useGraphVisualizationContext } from '@/contexts/GraphVisualizationContext';
 import { type GraphMethods,useFitToView } from '@/hooks/useFitToView';
 import { useNodeExpansion } from '@/lib/graph-index';

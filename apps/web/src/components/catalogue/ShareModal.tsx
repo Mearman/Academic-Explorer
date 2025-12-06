@@ -22,9 +22,9 @@ import {
   IconQrcode,
 } from "@tabler/icons-react";
 import QRCode from "qrcode";
+import React, { useEffect,useState } from "react";
 
 import { ICON_SIZE } from '@/config/style-constants';
-import React, { useEffect,useState } from "react";
 
 const QR_CODE_PENDING = "PENDING";
 

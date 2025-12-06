@@ -29,11 +29,10 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-
-import { ICON_SIZE } from "@/config/style-constants";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
+import { ICON_SIZE } from "@/config/style-constants";
 import { type BackgroundStrategy,settingsStoreInstance, usePolitePoolEmail, useSettingsStore } from "@/stores/settings-store";
 
 

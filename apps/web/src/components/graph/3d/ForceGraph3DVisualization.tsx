@@ -16,12 +16,12 @@ import type { EntityType,GraphEdge, GraphNode } from '@bibgraph/types';
 import { detectWebGLCapabilities, GraphLODManager, LODLevel } from '@bibgraph/utils';
 import { Badge, Box, Group, LoadingOverlay, Stack, Text, useComputedColorScheme } from '@mantine/core';
 import { IconActivity,IconAlertTriangle } from '@tabler/icons-react';
-
-import { ICON_SIZE } from '@/config/style-constants';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
+
+import { ICON_SIZE } from '@/config/style-constants';
 
 import { useCameraPersistence } from '../../../hooks/useCameraPersistence';
 import {

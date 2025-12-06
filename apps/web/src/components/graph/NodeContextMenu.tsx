@@ -21,6 +21,7 @@ import { Link } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import { ICON_SIZE } from '@/config/style-constants';
+
 import { ENTITY_TYPE_COLORS } from '../../styles/hash-colors';
 
 /**
