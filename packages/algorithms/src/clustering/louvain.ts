@@ -535,7 +535,7 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
   console.log(`[spec-027] Adaptive threshold: ${adaptiveMinModularityIncrease.toExponential(1)}`);
   console.log(`[spec-027] Neighbor selection mode: ${resolvedMode} (requested: ${mode})`);
 
-  return buildCommunityResults(graph, finalNodeToCommunity);
+  return buildCommunityResults(graph, finalNodeToCommunity, m, nodeDegrees);
 };
 
 /**
@@ -775,10 +775,17 @@ const removeEmptyCommunities = (communities: Map<number, LouvainCommunity>): voi
 
 /**
  * Build final Community results from node-to-community mapping.
- * @param graph
- * @param nodeToCommunity
+ * @param graph - The input graph
+ * @param nodeToCommunity - Mapping from node ID to community ID
+ * @param totalEdgeWeight - Total edge weight (m) for modularity calculation (optional, defaults to 0)
+ * @param nodeDegrees - Pre-calculated node degrees (optional, calculated if not provided)
  */
-const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeToCommunity: Map<string, number>): Community<N>[] => {
+const buildCommunityResults = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  nodeToCommunity: Map<string, number>,
+  totalEdgeWeight = 0,
+  nodeDegrees?: Map<string, number>,
+): Community<N>[] => {
   // Group nodes by community
   const communityMap = new Map<number, Set<N>>();
 
@@ -797,13 +804,27 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
   });
 
   // Calculate internal edges for each community efficiently (O(E) instead of O(V²))
-  // sigmaIn[communityId] = sum of edge weights within community
-  const sigmaIn = new Map<number, number>();
+  // Track both weights (sigmaIn) and counts for each community
+  const sigmaIn = new Map<number, number>(); // Sum of edge weights within community
+  const internalEdgeCounts = new Map<number, number>(); // Count of internal edges
+  const externalEdgeCounts = new Map<number, number>(); // Count of external edges (boundary-crossing)
+  const sigmaTot = new Map<number, number>(); // Sum of degrees for modularity calculation
+
   communityMap.forEach((_, communityId) => {
     sigmaIn.set(communityId, 0);
+    internalEdgeCounts.set(communityId, 0);
+    externalEdgeCounts.set(communityId, 0);
+    sigmaTot.set(communityId, 0);
   });
 
-  // Iterate through all edges once
+  // Calculate sigmaTot for each community (sum of node degrees)
+  nodeToCommunity.forEach((communityId, nodeId) => {
+    const degree = nodeDegrees?.get(nodeId) ?? 0;
+    const currentSigmaTot = sigmaTot.get(communityId) ?? 0;
+    sigmaTot.set(communityId, currentSigmaTot + degree);
+  });
+
+  // Iterate through all edges once to count internal/external edges
   const allEdges = graph.getAllEdges();
   allEdges.forEach((edge) => {
     const sourceCommunity = nodeToCommunity.get(edge.source);
@@ -814,10 +835,18 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
     }
 
     if (sourceCommunity === targetCommunity) {
-      // Internal edge - count it
+      // Internal edge - count weight and increment edge counter
       const weight = (edge as { weight?: number }).weight ?? 1;
       const currentSigma = sigmaIn.get(sourceCommunity) ?? 0;
       sigmaIn.set(sourceCommunity, currentSigma + weight);
+
+      const currentCount = internalEdgeCounts.get(sourceCommunity) ?? 0;
+      internalEdgeCounts.set(sourceCommunity, currentCount + 1);
+    } else {
+      // External edge - crosses community boundary
+      // Count once for source community (edge leaving this community)
+      const sourceCount = externalEdgeCounts.get(sourceCommunity) ?? 0;
+      externalEdgeCounts.set(sourceCommunity, sourceCount + 1);
     }
   });
 
@@ -828,6 +857,9 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
   communityMap.forEach((nodes, originalId) => {
     const n = nodes.size;
     const internalEdgeWeight = sigmaIn.get(originalId) ?? 0;
+    const communityInternalEdges = internalEdgeCounts.get(originalId) ?? 0;
+    const communityExternalEdges = externalEdgeCounts.get(originalId) ?? 0;
+    const communitySigmaTot = sigmaTot.get(originalId) ?? 0;
 
     // Calculate density from cached edge counts
     // density = actualEdges / possibleEdges
@@ -847,14 +879,30 @@ const buildCommunityResults = <N extends Node, E extends Edge>(graph: Graph<N, E
       density = Math.max(0, Math.min(1, density)); // Clamp to [0, 1]
     }
 
+    // Calculate per-community modularity contribution
+    // Formula: Q_c = (sigmaIn / 2m) - (sigmaTot / 2m)²
+    // where m = totalEdgeWeight
+    let communityModularity = 0;
+    if (totalEdgeWeight > 0) {
+      const twoM = 2 * totalEdgeWeight;
+      const sigmaInNorm = internalEdgeWeight / twoM;
+      const sigmaTotNorm = communitySigmaTot / twoM;
+      communityModularity = sigmaInNorm - (sigmaTotNorm * sigmaTotNorm);
+    }
+
+    // Adjust edge counts for undirected graphs (edges counted from both directions)
+    const adjustedInternalEdges = graph.isDirected()
+      ? communityInternalEdges
+      : Math.floor(communityInternalEdges / 2); // Each internal edge counted twice
+
     const community: Community<N> = {
       id: communityIndex++,
       nodes,
       size: n,
       density,
-      internalEdges: 0, // TODO: Calculate actual internal edges count
-      externalEdges: 0, // TODO: Calculate actual external edges count
-      modularity: 0, // TODO: Calculate per-community modularity
+      internalEdges: adjustedInternalEdges,
+      externalEdges: communityExternalEdges,
+      modularity: communityModularity,
     };
 
     communities.push(community);
