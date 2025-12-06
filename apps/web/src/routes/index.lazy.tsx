@@ -1,5 +1,4 @@
 import {
-  Anchor,
   Button,
   Card,
   Group,
@@ -7,6 +6,7 @@ import {
   Text,
   TextInput,
   Title,
+  UnstyledButton,
 } from "@mantine/core";
 import {
   IconBrandReact,
@@ -127,33 +127,48 @@ const HomePage = () => {
           </Text>
           <Stack gap="xs">
             <Group gap="sm" wrap="wrap">
-              <Anchor
-                size="sm"
+              <UnstyledButton
                 onClick={() => handleExampleSearch("machine learning")}
-                style={{ cursor: "pointer" }}
+                aria-label="Search for machine learning papers"
+                style={{
+                  fontSize: "var(--mantine-font-size-sm)",
+                  color: "var(--mantine-color-anchor)",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
               >
                 machine learning
-              </Anchor>
-              <Text size="sm" c="dimmed">
+              </UnstyledButton>
+              <Text size="sm" c="dimmed" aria-hidden="true">
                 •
               </Text>
-              <Anchor
-                size="sm"
+              <UnstyledButton
                 onClick={() => handleExampleSearch("climate change")}
-                style={{ cursor: "pointer" }}
+                aria-label="Search for climate change papers"
+                style={{
+                  fontSize: "var(--mantine-font-size-sm)",
+                  color: "var(--mantine-color-anchor)",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
               >
                 climate change
-              </Anchor>
-              <Text size="sm" c="dimmed">
+              </UnstyledButton>
+              <Text size="sm" c="dimmed" aria-hidden="true">
                 •
               </Text>
-              <Anchor
-                size="sm"
+              <UnstyledButton
                 onClick={() => handleExampleSearch("0000-0003-1613-5981")}
-                style={{ cursor: "pointer" }}
+                aria-label="Search for author by ORCID example"
+                style={{
+                  fontSize: "var(--mantine-font-size-sm)",
+                  color: "var(--mantine-color-anchor)",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
               >
                 ORCID example
-              </Anchor>
+              </UnstyledButton>
             </Group>
           </Stack>
         </Card>
