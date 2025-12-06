@@ -1,3 +1,9 @@
+## 23.5.0 (2025-12-06)
+
+* feat(web): add defensive checks to RelationshipItem ([f44d414](https://github.com/Mearman/BibGraph/commit/f44d414))
+* feat(web): add loading states to community detection panel ([ac80a23](https://github.com/Mearman/BibGraph/commit/ac80a23))
+* chore(release): 23.4.2 [skip ci] ([0fa4a7c](https://github.com/Mearman/BibGraph/commit/0fa4a7c))
+
 ## <small>23.4.2 (2025-12-06)</small>
 
 * fix(web): resolve lint errors in style constants migration ([3471997](https://github.com/Mearman/BibGraph/commit/3471997))
