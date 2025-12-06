@@ -1,3 +1,15 @@
+## 23.6.0 (2025-12-06)
+
+* fix(web): add accessibility attributes to error and toggle components ([c948fdc](https://github.com/Mearman/BibGraph/commit/c948fdc))
+* fix(web): add nav landmark for breadcrumb accessibility ([dd2436a](https://github.com/Mearman/BibGraph/commit/dd2436a))
+* fix(web): improve accessibility for sidebar card components ([0874d0c](https://github.com/Mearman/BibGraph/commit/0874d0c))
+* refactor(web): extract SplitButton magic numbers to style constants ([9ce3aee](https://github.com/Mearman/BibGraph/commit/9ce3aee))
+* feat(web): add confirmation dialogs for destructive history actions ([840ff6d](https://github.com/Mearman/BibGraph/commit/840ff6d))
+* feat(web): add keyboard shortcut hints to HeaderSearchInput ([46bca83](https://github.com/Mearman/BibGraph/commit/46bca83))
+* feat(web): add loading states to EntityGrid and EntityListView ([091eeb8](https://github.com/Mearman/BibGraph/commit/091eeb8))
+* feat(web): add success/error notifications to QueryBookmarkButton ([d54339d](https://github.com/Mearman/BibGraph/commit/d54339d))
+* chore(release): 23.5.0 [skip ci] ([9886808](https://github.com/Mearman/BibGraph/commit/9886808))
+
 ## 23.5.0 (2025-12-06)
 
 * feat(web): add defensive checks to RelationshipItem ([f44d414](https://github.com/Mearman/BibGraph/commit/f44d414))
