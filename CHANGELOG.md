@@ -1,3 +1,9 @@
+## <small>23.7.2 (2025-12-06)</small>
+
+* fix(ci): pass NEXT_RELEASE_VERSION to build step ([09c800a](https://github.com/Mearman/BibGraph/commit/09c800a))
+* refactor(web): extract magic numbers to named constants ([c4f9a20](https://github.com/Mearman/BibGraph/commit/c4f9a20))
+* refactor(web): use ICON_SIZE constants and Mantine spacing props ([668f17a](https://github.com/Mearman/BibGraph/commit/668f17a))
+
 ## <small>23.7.1 (2025-12-06)</small>
 
 * fix(release): include package.json in semantic-release commits ([29eb0ae](https://github.com/Mearman/BibGraph/commit/29eb0ae))
