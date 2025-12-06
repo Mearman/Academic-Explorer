@@ -39,6 +39,8 @@ export interface GraphEmptyStateProps {
 
 /**
  * Large decorative icon with a subtle background
+ * @param root0
+ * @param root0.children
  */
 const DecorativeIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <Box
@@ -67,6 +69,8 @@ const DecorativeIcon: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 /**
  * Empty state when no data sources are enabled
+ * @param root0
+ * @param root0.availableSourceCount
  */
 const NoSourcesEnabledState: React.FC<{ availableSourceCount?: number }> = ({
   availableSourceCount = 0,
@@ -209,6 +213,9 @@ const NoEntitiesState: React.FC = () => (
 
 /**
  * GraphEmptyState displays contextual guidance when the graph has no data to show
+ * @param root0
+ * @param root0.variant
+ * @param root0.availableSourceCount
  */
 export const GraphEmptyState: React.FC<GraphEmptyStateProps> = ({
   variant,

@@ -6,7 +6,13 @@
 
 import type { RelationshipMetadata } from '@/types/relationship';
 
-/** Format authorship metadata into human-readable text */
+/**
+ * Format authorship metadata into human-readable text
+ * @param metadata
+ * @param metadata.position
+ * @param metadata.isCorresponding
+ * @param metadata.affiliations
+ */
 const formatAuthorshipMetadata = (metadata: {
   position?: number;
   isCorresponding?: boolean;
@@ -34,7 +40,12 @@ const formatAuthorshipMetadata = (metadata: {
   return parts.join(' \u00B7 ');
 };
 
-/** Format citation metadata into human-readable text */
+/**
+ * Format citation metadata into human-readable text
+ * @param metadata
+ * @param metadata.year
+ * @param metadata.context
+ */
 const formatCitationMetadata = (metadata: {
   year?: number;
   context?: string;
@@ -58,7 +69,13 @@ const formatCitationMetadata = (metadata: {
   return parts.join(' \u00B7 ');
 };
 
-/** Format affiliation metadata into human-readable text */
+/**
+ * Format affiliation metadata into human-readable text
+ * @param metadata
+ * @param metadata.startDate
+ * @param metadata.endDate
+ * @param metadata.isPrimary
+ */
 const formatAffiliationMetadata = (metadata: {
   startDate?: string;
   endDate?: string;
@@ -80,7 +97,13 @@ const formatAffiliationMetadata = (metadata: {
   return parts.join(' \u00B7 ');
 };
 
-/** Format funding metadata into human-readable text */
+/**
+ * Format funding metadata into human-readable text
+ * @param metadata
+ * @param metadata.awardId
+ * @param metadata.amount
+ * @param metadata.currency
+ */
 const formatFundingMetadata = (metadata: {
   awardId?: string;
   amount?: number;
@@ -100,7 +123,11 @@ const formatFundingMetadata = (metadata: {
   return parts.join(' \u00B7 ');
 };
 
-/** Format lineage metadata into human-readable text */
+/**
+ * Format lineage metadata into human-readable text
+ * @param metadata
+ * @param metadata.level
+ */
 const formatLineageMetadata = (metadata: { level?: number }): string => {
   if (metadata.level === undefined) {
     return '';
@@ -119,6 +146,7 @@ const formatLineageMetadata = (metadata: { level?: number }): string => {
 /**
  * Format relationship metadata into a human-readable string
  * Uses discriminated union pattern to handle each metadata type appropriately
+ * @param metadata
  */
 export const formatMetadata = (metadata: RelationshipMetadata): string => {
   switch (metadata.type) {
@@ -138,14 +166,21 @@ export const formatMetadata = (metadata: RelationshipMetadata): string => {
   }
 };
 
-/** Get ordinal suffix for a number (1st, 2nd, 3rd, etc.) */
+/**
+ * Get ordinal suffix for a number (1st, 2nd, 3rd, etc.)
+ * @param n
+ */
 const getOrdinal = (n: number): string => {
   const suffixes = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
   return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
 };
 
-/** Format a date range string */
+/**
+ * Format a date range string
+ * @param startDate
+ * @param endDate
+ */
 const formatDateRange = (startDate?: string, endDate?: string): string => {
   if (!startDate && !endDate) {
     return '';
@@ -172,7 +207,11 @@ const formatDateRange = (startDate?: string, endDate?: string): string => {
   return `Until ${formatDate(endDate ?? '')}`;
 };
 
-/** Format currency with proper locale formatting */
+/**
+ * Format currency with proper locale formatting
+ * @param amount
+ * @param currency
+ */
 const formatCurrency = (amount: number, currency = 'USD'): string => {
   try {
     return new Intl.NumberFormat('en-US', {
@@ -187,7 +226,10 @@ const formatCurrency = (amount: number, currency = 'USD'): string => {
   }
 };
 
-/** Exhaustive type check helper - ensures all discriminated union cases are handled */
+/**
+ * Exhaustive type check helper - ensures all discriminated union cases are handled
+ * @param value
+ */
 const exhaustiveCheck = (value: never): string => {
   // If we reach here, we've missed a case in the switch statement
   console.warn('Unhandled metadata type:', value);

@@ -4,8 +4,8 @@ import { logger } from "@bibgraph/utils";
 import { Alert, Badge,Code, Container, Flex, Group, Loader, Paper, Progress, Skeleton, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect,useRef,useState } from "react";
 
-import { getMantineColor } from "./EntityTypeConfig";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
+import { getMantineColor } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
   entityType: string;

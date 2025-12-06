@@ -10,8 +10,8 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { AddToListModal } from "../catalogue/AddToListModal";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import { getMantineColor } from "./EntityTypeConfig";
 import type { EntityTypeConfig } from "./EntityTypeConfig";
+import { getMantineColor } from "./EntityTypeConfig";
 
 export type DetailViewMode = "rich" | "raw";
 
