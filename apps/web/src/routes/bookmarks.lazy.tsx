@@ -33,6 +33,7 @@ import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-rou
 import { useCallback,useEffect, useMemo, useState } from "react";
 
 import { RATE_LIMIT_CONFIG } from "@/config/rate-limit";
+import { ICON_SIZE } from "@/config/style-constants";
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
@@ -271,7 +272,7 @@ const BookmarksIndexPage = () => {
 					<Group justify="space-between" align="flex-start">
 						<Stack gap="sm">
 							<Group gap="md" align="center">
-								<IconBookmark size={32} />
+								<IconBookmark size={ICON_SIZE.EMPTY_STATE_SM} />
 								<Title order={1}>Bookmarks</Title>
 								<Badge size="lg" variant="light" color="blue">
 									{filteredBookmarks.length} of {bookmarks.length}{" "}
@@ -293,7 +294,7 @@ const BookmarksIndexPage = () => {
 										value: "list",
 										label: (
 											<Group gap={4} wrap="nowrap">
-												<IconList size={16} />
+												<IconList size={ICON_SIZE.MD} />
 												<Text size="sm">List</Text>
 											</Group>
 										),
@@ -302,7 +303,7 @@ const BookmarksIndexPage = () => {
 										value: "table",
 										label: (
 											<Group gap={4} wrap="nowrap">
-												<IconTable size={16} />
+												<IconTable size={ICON_SIZE.MD} />
 												<Text size="sm">Table</Text>
 											</Group>
 										),
@@ -311,7 +312,7 @@ const BookmarksIndexPage = () => {
 										value: "card",
 										label: (
 											<Group gap={4} wrap="nowrap">
-												<IconLayoutGrid size={16} />
+												<IconLayoutGrid size={ICON_SIZE.MD} />
 												<Text size="sm">Card</Text>
 											</Group>
 										),
@@ -332,7 +333,7 @@ const BookmarksIndexPage = () => {
 
 							<Menu shadow="md" width={200}>
 								<Menu.Target>
-									<Button variant="light" size="sm" leftSection={<IconSortDescending size={16} />}>
+									<Button variant="light" size="sm" leftSection={<IconSortDescending size={ICON_SIZE.MD} />}>
 										Sort: {sortBy}
 									</Button>
 								</Menu.Target>
@@ -350,9 +351,9 @@ const BookmarksIndexPage = () => {
 										onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
 										leftSection={
 											sortOrder === "asc" ? (
-												<IconSortAscending size={16} />
+												<IconSortAscending size={ICON_SIZE.MD} />
 											) : (
-												<IconSortDescending size={16} />
+												<IconSortDescending size={ICON_SIZE.MD} />
 											)
 										}
 									>
@@ -365,7 +366,7 @@ const BookmarksIndexPage = () => {
 								variant="light"
 								size="sm"
 								color="green"
-								leftSection={<IconFileExport size={16} />}
+								leftSection={<IconFileExport size={ICON_SIZE.MD} />}
 								onClick={() => setExportModalOpen(true)}
 								disabled={filteredBookmarks.length === 0}
 							>
@@ -392,7 +393,7 @@ const BookmarksIndexPage = () => {
 
 				{/* Error State */}
 				{error && (
-					<Alert icon={<IconAlertCircle size={16} />} title="Error loading bookmarks" color="red" variant="light">
+					<Alert icon={<IconAlertCircle size={ICON_SIZE.MD} />} title="Error loading bookmarks" color="red" variant="light">
 						{error.message || "An error occurred while loading your bookmarks."}
 					</Alert>
 				)}
@@ -504,7 +505,7 @@ const BookmarksIndexPage = () => {
 						<Button variant="subtle" onClick={() => setExportModalOpen(false)}>
 							Cancel
 						</Button>
-						<Button color="green" leftSection={<IconFileExport size={16} />} onClick={handleExport}>
+						<Button color="green" leftSection={<IconFileExport size={ICON_SIZE.MD} />} onClick={handleExport}>
 							Export
 						</Button>
 					</Group>

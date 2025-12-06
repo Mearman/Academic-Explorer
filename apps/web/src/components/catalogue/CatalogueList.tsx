@@ -35,7 +35,7 @@ import {
 } from "@tabler/icons-react";
 import React, { useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useCatalogue } from "@/hooks/useCatalogue";
 
 interface CatalogueListProps {
@@ -86,7 +86,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
         title: "Link Copied",
         message: "List link copied to clipboard",
         color: "green",
-        icon: <IconCheck size={16} />,
+        icon: <IconCheck size={ICON_SIZE.MD} />,
       });
       logger.debug("catalogue-ui", "List link copied to clipboard", {
         listId: list.id,
@@ -116,9 +116,9 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
       <Group justify="space-between" mb="xs">
         <Group>
           {list.type === "bibliography" ? (
-            <IconBook size={20} color="var(--mantine-color-blue-6)" />
+            <IconBook size={ICON_SIZE.XL} color="var(--mantine-color-blue-6)" />
           ) : (
-            <IconList size={20} color="var(--mantine-color-green-6)" />
+            <IconList size={ICON_SIZE.XL} color="var(--mantine-color-green-6)" />
           )}
           <Text fw={500} size="lg" flex={1} data-testid={`list-card-title-${list.id}`}>
             {list.title}
@@ -141,7 +141,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
                 handleCopyLink();
               }}
             >
-              <IconCopy size={14} />
+              <IconCopy size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
 
@@ -154,7 +154,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
                 onShare();
               }}
             >
-              <IconExternalLink size={14} />
+              <IconExternalLink size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
 
@@ -168,7 +168,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
               }}
               data-testid={`edit-list-${list.id}`}
             >
-              <IconEdit size={14} />
+              <IconEdit size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
 
@@ -183,7 +183,7 @@ const ListCard = ({ list, isSelected, onSelect, onEdit, onDelete, onShare }: Lis
               }}
               data-testid={`delete-list-${list.id}`}
             >
-              <IconTrash size={14} />
+              <IconTrash size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -405,7 +405,7 @@ export const CatalogueListComponent = ({
         title: "Share URL Copied",
         message: "Share URL copied to clipboard",
         color: "green",
-        icon: <IconCheck size={16} />,
+        icon: <IconCheck size={ICON_SIZE.MD} />,
       });
       logger.debug("catalogue-ui", "Share URL generated and copied", {
         listId: list.id,
@@ -441,9 +441,9 @@ export const CatalogueListComponent = ({
         <Stack align="center" gap="md">
           <Box c="gray.4">
             {listType === "bibliography" ? (
-              <IconBook size={48} />
+              <IconBook size={ICON_SIZE.EMPTY_STATE} />
             ) : (
-              <IconList size={48} />
+              <IconList size={ICON_SIZE.EMPTY_STATE} />
             )}
           </Box>
           <Text size="lg" fw={500}>
