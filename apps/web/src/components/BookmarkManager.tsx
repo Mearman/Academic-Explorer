@@ -317,6 +317,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
                     color="red"
                     onClick={handleBulkDelete}
                     title="Delete selected bookmarks"
+                    aria-label="Delete selected bookmarks"
                   >
                     <IconTrash size={16} />
                   </ActionIcon>
@@ -329,6 +330,7 @@ const BookmarkManagerInner = ({ onNavigate }: BookmarkManagerProps) => {
         {/* Search */}
         <TextInput
           placeholder="Search bookmarks..."
+          aria-label="Search bookmarks"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           leftSection={<IconSearch size={16} />}
