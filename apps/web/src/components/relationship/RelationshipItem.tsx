@@ -26,9 +26,27 @@ export interface RelationshipItemProps {
 export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
   const navigate = useNavigate();
 
+  // Defensive checks for required item properties
+  if (!item.id || !item.direction) {
+    return (
+      <Text size="xs" c="red" data-testid="relationship-item-error">
+        Invalid relationship data
+      </Text>
+    );
+  }
+
   // Determine which entity to link to (the "other" entity, not the current one being viewed)
   const relatedEntityId = item.direction === 'inbound' ? item.sourceId : item.targetId;
   const entityType = item.direction === 'inbound' ? item.sourceType : item.targetType;
+
+  // Validate we have the required entity info
+  if (!relatedEntityId || !entityType) {
+    return (
+      <Text size="xs" c="dimmed" data-testid="relationship-item-missing">
+        Unknown entity
+      </Text>
+    );
+  }
 
   // Extract just the ID portion if it's a full OpenAlex URL
   const extractEntityId = (id: string): string => {
@@ -57,7 +75,7 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
     <Stack gap="xs" data-testid={`relationship-item-${item.id}`}>
       <Group gap="xs">
         <Anchor href={entityUrl} onClick={handleClick} size="sm">
-          {item.displayName}
+          {item.displayName || cleanEntityId}
         </Anchor>
         {item.isSelfReference && (
           <Text size="xs" c="dimmed">
