@@ -1,7 +1,7 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { ENTITY_METADATA, toEntityType } from "@bibgraph/types";
 import type { AutocompleteResult } from "@bibgraph/types/entities";
-import { convertToRelativeUrl, SearchEmptyState } from "@bibgraph/ui";
+import { convertToRelativeUrl, SearchEmptyState, ErrorRecovery } from "@bibgraph/ui";
 import { formatLargeNumber, logger } from "@bibgraph/utils";
 import {
   Alert,
@@ -21,7 +21,7 @@ import {
   IconBookmarkOff,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute,useSearch  } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -92,37 +92,27 @@ const renderLoadingState = () => (
   </Text>
 );
 
-const renderErrorState = (error: unknown) => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const isNetworkError = errorMessage.toLowerCase().includes('network') ||
-                         errorMessage.toLowerCase().includes('fetch');
-  const isRateLimitError = errorMessage.toLowerCase().includes('rate limit') ||
-                           errorMessage.toLowerCase().includes('too many');
-
-  let errorTitle = "Search Error";
-  let errorDescription = `Failed to search OpenAlex: ${errorMessage}. Please try again.`;
-
-  if (isNetworkError) {
-    errorTitle = "Network Error";
-    errorDescription = "Unable to connect to OpenAlex. Please check your internet connection and try again.";
-  } else if (isRateLimitError) {
-    errorTitle = "Rate Limited";
-    errorDescription = "Too many search requests. Please wait a moment and try again.";
-  }
-
-  return (
-    <Alert
-      icon={<IconInfoCircle />}
-      title={errorTitle}
-      color="red"
-      variant="light"
-    >
-      <Text size="sm">
-        {errorDescription}
-      </Text>
-    </Alert>
-  );
-};
+const renderErrorState = (
+  error: unknown,
+  onRetry: () => void,
+  onRetryWithExponentialBackoff: () => void,
+  retryCount: number,
+  maxRetries: number,
+  isRetrying: boolean
+) => (
+  <ErrorRecovery
+    error={error}
+    onRetry={onRetry}
+    onRetryWithExponentialBackoff={onRetryWithExponentialBackoff}
+    retryCount={retryCount}
+    maxRetries={maxRetries}
+    isRetrying={isRetrying}
+    context={{
+      operation: "Search Academic Database",
+      entity: "OpenAlex Search"
+    }}
+  />
+);
 
 const renderNoResultsState = (query: string, onQuickSearch?: (query: string) => void) => (
   <SearchEmptyState
@@ -236,6 +226,7 @@ const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
 
 const SearchPage = () => {
   const searchParams = useSearch({ from: "/search" });
+  const queryClient = useQueryClient();
 
   // Derive initial search filters from URL parameters using useMemo
   const initialSearchFilters = useMemo<SearchFilters>(() => {
@@ -249,6 +240,12 @@ const SearchPage = () => {
     initialSearchFilters,
   );
   const [loading, setLoading] = useState(false);
+
+  // Retry state management
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryDelay, setRetryDelay] = useState(0);
+  const maxRetries = 3;
 
   // Update searchFilters when URL parameters change
   useEffect(() => {
@@ -290,15 +287,82 @@ const SearchPage = () => {
 
   const handleQuickSearch = async (query: string) => {
     setSearchFilters({ query });
+    setRetryCount(0); // Reset retry count on new search
     // Auto-tracking in useUserInteractions will handle page visit recording
   };
+
+  // Retry handlers
+  const handleRetry = async () => {
+    if (retryCount >= maxRetries) return;
+
+    setIsRetrying(true);
+    setRetryCount(prev => prev + 1);
+
+    try {
+      // Trigger a new search by invalidating the query cache
+      await queryClient.refetchQueries({
+        queryKey: ["search-autocomplete", searchFilters],
+      });
+    } catch (error) {
+      logger.error("search", "Manual retry failed", { error, retryCount: retryCount + 1 });
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  const handleRetryWithExponentialBackoff = async () => {
+    if (retryCount >= maxRetries) return;
+
+    const delay = Math.min(Math.pow(2, retryCount) * 1000, 30000); // Max 30s
+    setRetryDelay(delay);
+
+    logger.info("search", "Starting exponential backoff retry", {
+      retryCount: retryCount + 1,
+      delay: delay / 1000
+    });
+
+    setIsRetrying(true);
+    setRetryCount(prev => prev + 1);
+
+    // Wait for the delay before retrying
+    await new Promise(resolve => setTimeout(resolve, delay));
+
+    try {
+      await queryClient.refetchQueries({
+        queryKey: ["search-autocomplete", searchFilters],
+      });
+    } catch (error) {
+      logger.error("search", "Exponential backoff retry failed", {
+        error,
+        retryCount: retryCount + 1,
+        delay: delay / 1000
+      });
+    } finally {
+      setIsRetrying(false);
+      setRetryDelay(0);
+    }
+  };
+
+  // Reset retry count when search succeeds
+  useEffect(() => {
+    if (searchResults && searchResults.length > 0 && retryCount > 0) {
+      setRetryCount(0);
+    }
+  }, [searchResults, retryCount]);
 
   const hasResults = searchResults && searchResults.length > 0;
   const hasQuery = Boolean(searchFilters.query.trim());
 
   const renderSearchResults = () => {
     if (isLoading) return renderLoadingState();
-    if (error) return renderErrorState(error);
+    if (error) return renderErrorState(
+      error,
+      handleRetry,
+      handleRetryWithExponentialBackoff,
+      retryCount,
+      maxRetries,
+      isRetrying
+    );
     if (!hasResults) return renderNoResultsState(searchFilters.query, handleQuickSearch);
 
     return (
