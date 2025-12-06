@@ -241,7 +241,7 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=8192
           NX_PARALLEL: 1
-        run: pnpm nx run-many -t test:unit test:component test:integration --exclude=algorithms --parallel=1
+        run: pnpm nx run-many -t test:unit test:component test:integration --exclude=algorithms --parallel=1 --coverage
 
       - name: Run algorithms tests separately
         timeout-minutes: 25
