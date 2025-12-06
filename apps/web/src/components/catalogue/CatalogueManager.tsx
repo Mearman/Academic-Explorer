@@ -43,7 +43,7 @@ import { CreateListModal } from "@/components/catalogue/CreateListModal";
 import { ExportModal } from "@/components/catalogue/ExportModal";
 import { ImportModal } from "@/components/catalogue/ImportModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { settingsActions } from "@/stores/settings-store";
 
@@ -203,7 +203,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
         {/* Header */}
         <Group justify="space-between">
           <Group>
-            <IconList size={32} />
+            <IconList size={ICON_SIZE.EMPTY_STATE_SM} />
             <Title order={1}>Catalogue</Title>
             {selectedList && (
               <Badge size="lg" color="blue">
@@ -215,7 +215,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
           <Group gap="xs">
             <Button
               variant="light"
-              leftSection={<IconUpload size={16} />}
+              leftSection={<IconUpload size={ICON_SIZE.MD} />}
               onClick={() => setShowImportModal(true)}
               aria-label="Open import modal to import a catalogue list"
             >
@@ -224,7 +224,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
 
             <Button
               variant="light"
-              leftSection={<IconShare size={16} />}
+              leftSection={<IconShare size={ICON_SIZE.MD} />}
               onClick={handleShare}
               disabled={!selectedList}
               aria-label={selectedList ? "Open share modal to share this list" : "Select a list to enable sharing"}
@@ -233,7 +233,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
             </Button>
 
             <Button
-              leftSection={<IconPlus size={16} />}
+              leftSection={<IconPlus size={ICON_SIZE.MD} />}
               onClick={() => setShowCreateModal(true)}
               aria-label="Open modal to create a new catalogue list"
             >
@@ -245,7 +245,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
         {/* Search and filters */}
         <Group justify="space-between">
           <Group flex={1}>
-            <IconSearch size={16} />
+            <IconSearch size={ICON_SIZE.MD} />
             <Text fw={500}>Search:</Text>
             <TextInput
               ref={searchInputRef}
@@ -272,13 +272,13 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
         {/* Main Content */}
         <Tabs value={activeTab} onChange={setActiveTab}>
           <Tabs.List>
-            <Tabs.Tab value="lists" leftSection={<IconList size={16} />}>
+            <Tabs.Tab value="lists" leftSection={<IconList size={ICON_SIZE.MD} />}>
               Lists ({filteredLists.length})
             </Tabs.Tab>
-            <Tabs.Tab value="bibliographies" leftSection={<IconBook size={16} />}>
+            <Tabs.Tab value="bibliographies" leftSection={<IconBook size={ICON_SIZE.MD} />}>
               Bibliographies ({filteredLists.filter(l => l.type === "bibliography").length})
             </Tabs.Tab>
-            <Tabs.Tab value="cache-tiers" leftSection={<IconDatabase size={16} />}>
+            <Tabs.Tab value="cache-tiers" leftSection={<IconDatabase size={ICON_SIZE.MD} />}>
               Cache Tiers
             </Tabs.Tab>
           </Tabs.List>
@@ -347,7 +347,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
                       editButton?.click();
                     }
                   }}
-                  leftSection={<IconEdit size={16} />}
+                  leftSection={<IconEdit size={ICON_SIZE.MD} />}
                   data-testid="edit-selected-list-button"
                   aria-label="Edit list details"
                 >
@@ -357,7 +357,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
                   variant="light"
                   size="sm"
                   onClick={() => setShowExportModal(true)}
-                  leftSection={<IconDownload size={16} />}
+                  leftSection={<IconDownload size={ICON_SIZE.MD} />}
                   data-testid="export-list-button"
                   aria-label="Export this list to a file"
                 >
@@ -367,7 +367,7 @@ export const CatalogueManager = ({ onNavigate, shareData, initialListId }: Catal
                   variant="light"
                   size="sm"
                   onClick={handleShare}
-                  leftSection={<IconShare size={16} />}
+                  leftSection={<IconShare size={ICON_SIZE.MD} />}
                   data-testid="share-list-button"
                   aria-label="Share this list with others"
                 >

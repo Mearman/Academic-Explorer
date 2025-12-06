@@ -41,7 +41,7 @@ import {
 import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
 // Add keyboard shortcuts for better UX
 const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
@@ -425,13 +425,13 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                   onClick={() => setShowKeyboardShortcuts(true)}
                   aria-label="Show keyboard shortcuts"
                 >
-                  <IconKeyboard size={16} />
+                  <IconKeyboard size={ICON_SIZE.MD} />
                 </ActionIcon>
               </Tooltip>
               <Badge
                 variant="light"
                 color="blue"
-                leftSection={<IconFilter size={12} />}
+                leftSection={<IconFilter size={ICON_SIZE.XS} />}
               >
                 {activeFiltersCount} active filters
               </Badge>
@@ -441,7 +441,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                   onClick={handleReset}
                   aria-label="Reset all filters"
                 >
-                  <IconRefresh size={16} />
+                  <IconRefresh size={ICON_SIZE.MD} />
                 </ActionIcon>
               </Tooltip>
             </Group>
@@ -467,7 +467,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                 onChange={(e) => setFilters({ ...filters, query: e.target.value })}
                 style={{ flex: 1 }}
                 size="md"
-                leftSection={<IconSearch size={16} />}
+                leftSection={<IconSearch size={ICON_SIZE.MD} />}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSearch();
@@ -482,7 +482,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                 onClick={handleSearch}
                 loading={loading}
                 size="md"
-                leftSection={<IconSearch size={16} />}
+                leftSection={<IconSearch size={ICON_SIZE.MD} />}
               >
                 Search
               </Button>
@@ -520,7 +520,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
         {/* Advanced Filters */}
         <Accordion multiple defaultValue={["filters"]}>
           <Accordion.Item value="filters">
-            <Accordion.Control icon={<IconAdjustmentsHorizontal size={16} />}>
+            <Accordion.Control icon={<IconAdjustmentsHorizontal size={ICON_SIZE.MD} />}>
               Advanced Filters
             </Accordion.Control>
             <Accordion.Panel>
@@ -557,7 +557,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
                     onChange={(value) => setFilters({ ...filters, citedByMin: Number(value) || 0 })}
                     min={0}
                     placeholder="Minimum citation count"
-                    leftSection={<IconTrendingUp size={16} />}
+                    leftSection={<IconTrendingUp size={ICON_SIZE.MD} />}
                   />
                 </div>
 
@@ -628,7 +628,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
           </Accordion.Item>
 
           <Accordion.Item value="saved">
-            <Accordion.Control icon={<IconBookmark size={16} />}>
+            <Accordion.Control icon={<IconBookmark size={ICON_SIZE.MD} />}>
               Saved Searches
             </Accordion.Control>
             <Accordion.Panel>
@@ -644,7 +644,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
           <Group>
             <Button
               variant="light"
-              leftSection={<IconBookmark size={16} />}
+              leftSection={<IconBookmark size={ICON_SIZE.MD} />}
               onClick={() => {
                 notifications.show({
                   title: "Save Search",
@@ -657,7 +657,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
             </Button>
             <Button
               variant="light"
-              leftSection={<IconShare size={16} />}
+              leftSection={<IconShare size={ICON_SIZE.MD} />}
               onClick={() => {
                 notifications.show({
                   title: "Share Search",
@@ -671,7 +671,7 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
           </Group>
           <Button
             variant="outline"
-            leftSection={<IconDownload size={16} />}
+            leftSection={<IconDownload size={ICON_SIZE.MD} />}
             onClick={() => {
               notifications.show({
                 title: "Export Results",

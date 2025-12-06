@@ -37,7 +37,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import React, { useCallback,useEffect, useMemo, useState } from "react";
 
-import { BORDER_STYLE_GRAY_3 } from '@/config/style-constants';
+import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
 /**
  * Shared entity click handler for navigating to entity detail pages
@@ -181,13 +181,13 @@ const CacheTierCard = ({
           )}
           <Tooltip label="Refresh">
             <ActionIcon variant="subtle" size="sm" onClick={onRefresh} loading={isLoading}>
-              <IconRefresh size={14} />
+              <IconRefresh size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
           {onClear && entities.length > 0 && (
             <Tooltip label="Clear cache tier">
               <ActionIcon variant="subtle" color="red" size="sm" onClick={onClear}>
-                <IconTrash size={14} />
+                <IconTrash size={ICON_SIZE.SM} />
               </ActionIcon>
             </Tooltip>
           )}
@@ -311,7 +311,7 @@ const CacheTierCard = ({
                                   size="xs"
                                   onClick={() => handleEntityClick(entity)}
                                 >
-                                  <IconExternalLink size={12} />
+                                  <IconExternalLink size={ICON_SIZE.XS} />
                                 </ActionIcon>
                               </Tooltip>
                             </Table.Td>
@@ -376,7 +376,7 @@ const StaticCacheTierCard = ({
           {badges}
           <Tooltip label="Refresh">
             <ActionIcon variant="subtle" size="sm" onClick={onRefresh} loading={isLoading}>
-              <IconRefresh size={14} />
+              <IconRefresh size={ICON_SIZE.SM} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -504,7 +504,7 @@ const StaticCacheTierCard = ({
                                     size="xs"
                                     onClick={() => handleEntityClick(entity)}
                                   >
-                                    <IconExternalLink size={12} />
+                                    <IconExternalLink size={ICON_SIZE.XS} />
                                   </ActionIcon>
                                 </Tooltip>
                               </Table.Td>
@@ -660,7 +660,7 @@ export const CacheTierLists = () => {
       <Card style={{ border: BORDER_STYLE_GRAY_3 }} p="xl">
         <Stack align="center" gap="md">
           <Box c="gray.4">
-            <IconDatabase size={48} />
+            <IconDatabase size={ICON_SIZE.EMPTY_STATE} />
           </Box>
           <Text size="lg" fw={500}>Unable to load cache data</Text>
           <Text size="sm" c="dimmed">
@@ -691,7 +691,7 @@ export const CacheTierLists = () => {
         <CacheTierCard
           title="Memory Cache"
           description="Fast in-memory cache for current session"
-          icon={<IconCpu size={20} />}
+          icon={<IconCpu size={ICON_SIZE.XL} />}
           entities={summary.memory.entities}
           isLoading={isRefreshingMemory}
           onRefresh={handleRefreshMemory}
@@ -702,7 +702,7 @@ export const CacheTierLists = () => {
         <CacheTierCard
           title="IndexedDB Cache"
           description="Persistent browser storage across sessions"
-          icon={<IconDatabase size={20} />}
+          icon={<IconDatabase size={ICON_SIZE.XL} />}
           entities={summary.indexedDB.entities}
           isLoading={isRefreshingIndexedDB}
           onRefresh={handleRefreshIndexedDB}
@@ -720,7 +720,7 @@ export const CacheTierLists = () => {
           <StaticCacheTierCard
             title="GitHub Pages Cache"
             description="Pre-cached entities from GitHub Pages CDN"
-            icon={<IconBrandGithub size={20} />}
+            icon={<IconBrandGithub size={ICON_SIZE.XL} />}
             url={staticConfig.gitHubPages.url}
             isConfigured={staticConfig.gitHubPages.isConfigured}
             entities={staticCacheEntities}
@@ -741,7 +741,7 @@ export const CacheTierLists = () => {
           <StaticCacheTierCard
             title="Local Static Cache"
             description="Pre-cached entities served from local dev server"
-            icon={<IconFolder size={20} />}
+            icon={<IconFolder size={ICON_SIZE.XL} />}
             url={staticConfig.localStatic.path || staticConfig.gitHubPages.url}
             isConfigured={staticConfig.localStatic.isAvailable}
             entities={staticCacheEntities}
@@ -762,7 +762,7 @@ export const CacheTierLists = () => {
           <Card style={{ border: BORDER_STYLE_GRAY_3 }} padding="md">
             <Stack align="center" gap="md" py="lg">
               <ThemeIcon size="xl" variant="light" color="gray">
-                <IconCloud size={24} />
+                <IconCloud size={ICON_SIZE.XXL} />
               </ThemeIcon>
               <div style={{ textAlign: "center" }}>
                 <Text fw={500}>No Static Cache Configured</Text>
