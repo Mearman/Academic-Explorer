@@ -86,7 +86,7 @@ export const getSvgNodeAttributes = (node: GraphNode): Record<string, string | n
  * @param node - Graph node
  * @returns React CSSProperties object
  */
-export const getDomNodeStyle = (node: GraphNode): React.CSSProperties & Record<string, unknown> => {
+export const getDomNodeStyle = (node: GraphNode): React.CSSProperties => {
   const style = getConditionalNodeStyle(node);
 
   return {
@@ -205,7 +205,7 @@ export const createNodeThreeObject = (node: GraphNode, THREE: {
  * @param rendererType - Type of renderer being used
  * @returns Style properties appropriate for the renderer
  */
-export const applyConditionalNodeStyling = (node: GraphNode, rendererType: 'canvas' | 'svg' | 'dom' | 'three'): NodeStyleProperties | React.CSSProperties | Record<string, unknown> => {
+export const applyConditionalNodeStyling = (node: GraphNode, rendererType: 'canvas' | 'svg' | 'dom' | 'three'): NodeStyleProperties | React.CSSProperties => {
   switch (rendererType) {
     case 'canvas':
       // Return render function for canvas

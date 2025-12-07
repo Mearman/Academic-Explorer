@@ -45,100 +45,95 @@
   },
   "author": "Joe Mearman",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "source": "./src/index.ts",
-      "import": "./dist/index.js"
-    },
     "./logger": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/logger.d.ts",
       "source": "./src/logger.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/logger.js"
     },
     "./cache": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/cache/index.d.ts",
       "source": "./src/cache/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/cache/index.js"
     },
     "./storage": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/storage/index.d.ts",
       "source": "./src/storage/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/storage/index.js"
     },
     "./date-helpers": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/date-helpers.d.ts",
       "source": "./src/date-helpers.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/date-helpers.js"
     },
     "./data-helpers": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/data.d.ts",
       "source": "./src/data.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/data.js"
     },
     "./build-info": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/build-info.d.ts",
       "source": "./src/build-info.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/build-info.js"
     },
     "./data-evaluation": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/data-evaluation.d.ts",
       "source": "./src/data-evaluation.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/data-evaluation.js"
     },
     "./services": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/services.d.ts",
       "source": "./src/services.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/services.js"
     },
     "./state": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/state/index.d.ts",
       "source": "./src/state/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/state/index.js"
     },
     "./validation": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/validation.d.ts",
       "source": "./src/validation.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/validation.js"
     },
     "./environment": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/environment/index.d.ts",
       "source": "./src/environment/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/environment/index.js"
     },
     "./static-data/cache-utilities": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/static-data/cache-utilities.d.ts",
       "source": "./src/static-data/cache-utilities.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/static-data/cache-utilities.js"
     },
     "./normalize-route": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/normalize-route.d.ts",
       "source": "./src/normalize-route.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/normalize-route.js"
     },
     "./storage/user-interactions-db": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/storage/user-interactions-db.d.ts",
       "source": "./src/storage/user-interactions-db.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/storage/user-interactions-db.js"
     },
     "./storage/catalogue-db": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/storage/catalogue-db.d.ts",
       "source": "./src/storage/catalogue-db.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/storage/catalogue-db.js"
     },
     "./ui/filter-base": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/ui/filter-base.d.ts",
       "source": "./src/ui/filter-base.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/ui/filter-base.js"
     },
     "./ui": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/ui/index.d.ts",
       "source": "./src/ui/index.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/ui/index.js"
     },
     "./workers/messages": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/workers/messages.d.ts",
       "source": "./src/workers/messages.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/workers/messages.js"
     }
   },
   "files": [
@@ -154,8 +149,8 @@
     "utils"
   ],
   "license": "MIT",
-  "main": "./dist/src/index.js",
-  "module": "./dist/src/index.js",
+  "main": "./dist/logger.js",
+  "module": "./dist/logger.js",
   "nx": {
     "includedScripts": []
   },
@@ -179,5 +174,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "types": "./dist/src/index.d.ts"
+  "types": "./dist/logger.d.ts"
 }

@@ -125,8 +125,8 @@ class SimpleObjectPool<T extends object = object> {
       throw new Error('Object pool exhausted and auto-expand is disabled');
     }
 
-    if (obj && typeof obj === 'object' && 'visible' in obj) {
-      (obj as Record<string, unknown>).visible = true;
+    if (isVisible(obj)) {
+      obj.visible = true;
     }
     this.inUse.add(obj);
     return obj;
@@ -165,28 +165,32 @@ class SimpleObjectPool<T extends object = object> {
   }
 
   private disposeObject(obj: T): void {
-    if (obj && typeof obj === 'object') {
-      // Try to safely dispose Three.js objects
-      if (hasGeometry(obj)) {
-        obj.geometry.dispose();
-      }
-      if (hasMaterial(obj)) {
-        if (Array.isArray(obj.material)) {
-          obj.material.forEach((mat) => {
-            if (isDisposable(mat)) {
-              mat.dispose();
-            }
-          });
-        } else {
-          const material = obj.material;
-          if (isDisposable(material)) {
-            material.dispose();
+    if (!obj || typeof obj !== 'object') return;
+
+    // Try to safely dispose Three.js objects
+    const geometryObj = obj as { geometry?: unknown };
+    if (hasGeometry(geometryObj)) {
+      geometryObj.geometry.dispose();
+    }
+
+    const materialObj = obj as { material?: unknown };
+    if (hasMaterial(materialObj)) {
+      if (Array.isArray(materialObj.material)) {
+        materialObj.material.forEach((mat) => {
+          if (isDisposable(mat)) {
+            mat.dispose();
           }
+        });
+      } else {
+        const material = materialObj.material;
+        if (isDisposable(material)) {
+          material.dispose();
         }
       }
-      if (isDisposable(obj)) {
-        obj.dispose();
-      }
+    }
+
+    if (isDisposable(obj)) {
+      obj.dispose();
     }
   }
 

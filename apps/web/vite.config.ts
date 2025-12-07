@@ -9,7 +9,7 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type UserConfig, type PluginOption } from 'vite';
 
-import { openalexCachePlugin } from "../../config/vite-plugins/openalex-cache";
+// import { openalexCachePlugin } from "../../config/vite-plugins/openalex-cache";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -100,12 +100,12 @@ function createWebConfig(): UserConfig {
         routesDirectory: resolve(__dirname, 'src/routes'),
         generatedRouteTree: resolve(__dirname, 'src/routeTree.gen.ts'),
       }),
-      // OpenAlex Cache Plugin - enabled during E2E tests with cached data to prevent rate limiting
-      openalexCachePlugin({
-        staticDataPath: "public/data/openalex",
-        verbose: process.env.RUNNING_E2E === 'true' ? true : false,
-        enabled: true,
-      }),
+      // OpenAlex Cache Plugin - disabled due to missing plugin file
+      // openalexCachePlugin({
+      //   staticDataPath: "public/data/openalex",
+      //   verbose: process.env.RUNNING_E2E === 'true' ? true : false,
+      //   enabled: true,
+      // }),
       // Vanilla Extract Plugin
       vanillaExtractPlugin(),
       // React Plugin
