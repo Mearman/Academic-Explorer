@@ -773,9 +773,9 @@ export class CatalogueService {
   async initializeSpecialLists(): Promise<void> {
     try {
       // Create timeout promise to prevent hanging in CI environments
-      const timeoutPromise = new Promise<never>((_, reject) => {
+      const timeoutPromise = new Promise<never>((_resolve, _reject) => {
         setTimeout(() => {
-          reject(new Error("Special lists initialization timeout after 10 seconds"));
+          _reject(new Error("Special lists initialization timeout after 10 seconds"));
         }, 10000);
       });
 
