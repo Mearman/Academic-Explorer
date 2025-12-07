@@ -8,6 +8,9 @@
 export { OpenAlexBaseClient } from './client';
 export { CachedOpenAlexClient } from './cached-client';
 
+// Client instances and functions
+export { cachedOpenAlex, updateOpenAlexEmail, updateOpenAlexApiKey, getPersistentGraph } from './cached-client';
+
 // Utilities and helpers
 export * from './helpers';
 export * from './utils';

@@ -9,3 +9,6 @@
 export * from './atoms';
 export * from './components';
 export * from './hooks';
+
+// Re-export data display components
+export * from './components/data-display';

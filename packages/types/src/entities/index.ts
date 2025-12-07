@@ -5,6 +5,21 @@
 export type { EntityType, OpenAlexEntity } from "./entities";
 export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity } from "./entities";
 
+// Export field constants for API validation
+export {
+  BASE_ENTITY_FIELDS,
+  ENTITY_WITH_WORKS_FIELDS,
+  AUTHOR_FIELDS,
+  WORK_FIELDS,
+  SOURCE_FIELDS,
+  INSTITUTION_FIELDS,
+  CONCEPT_FIELDS,
+  TOPIC_FIELDS,
+  PUBLISHER_FIELDS,
+  FUNDER_FIELDS,
+  KEYWORD_FIELDS
+} from "./entities";
+
 // Export filter types that were previously available through barrels
 export type {
   WorksFilters,
