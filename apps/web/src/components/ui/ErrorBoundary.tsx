@@ -155,7 +155,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
   }
 
-  handleKeyPress = (event: KeyboardEvent): void => {
+  private handleKeyPress = (event: KeyboardEvent): void => {
     if (event.key === 'r' && (event.ctrlKey || event.metaKey)) {
       event.preventDefault();
       this.handleReset();
