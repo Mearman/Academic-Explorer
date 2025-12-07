@@ -7,8 +7,7 @@
 
 import {
   Box,
-  Text,
-  useMantineTheme
+  Text
 } from "@mantine/core";
 import { useCallback,useEffect, useRef, useState } from "react";
 
@@ -258,8 +257,8 @@ export const SkipLink = ({ target, children, position = 'top-left' }: SkipLinkPr
 interface FocusIndicatorProps {
   children: React.ReactNode;
   animated?: boolean;
-  color?: string;
-  size?: 'sm' | 'md' | 'lg';
+  _color?: string;
+  _size?: 'sm' | 'md' | 'lg';
 }
 
 /**
@@ -269,10 +268,10 @@ interface FocusIndicatorProps {
  * @param root0
  * @param root0.children
  * @param root0.animated
- * @param root0.color
- * @param root0.size
+ * @param root0._color
+ * @param root0._size
  */
-export const FocusIndicator = ({ children, animated = true, color, size = 'md' }: FocusIndicatorProps) => {
+export const FocusIndicator = ({ children, animated = true, _color, _size = 'md' }: FocusIndicatorProps) => {
   // Inject styles on component mount
   useEffect(() => {
     injectFocusManagerStyles();

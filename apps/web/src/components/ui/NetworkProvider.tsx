@@ -151,7 +151,7 @@ const StatusIndicator = ({ status, queueLength }: StatusIndicatorProps) => {
  */
 export const NetworkProvider = ({
   children,
-  config: userConfig = {},
+  config: userConfig,
   customFetch
 }: NetworkProviderProps) => {
   const config = { ...DEFAULT_CONFIG, ...userConfig };
@@ -269,6 +269,12 @@ export const NetworkProvider = ({
     }
   }, [queue, fetchFunction, config.retryDelayMs, config.retryBackoffMultiplier]);
 
+  // Queue timeout handler
+  const handleQueueTimeout = useCallback((requestId: string, reject: (reason?: Error) => void) => {
+    setQueue(prev => prev.filter(r => r.id !== requestId));
+    reject(new Error('Request timeout'));
+  }, []);
+
   // Add request to queue
   const addQueuedRequest = useCallback(async (requestParams: Omit<QueuedRequest, 'id' | 'timestamp' | 'retryCount'>): Promise<Response> => {
     return new Promise((resolve, reject) => {
@@ -290,12 +296,9 @@ export const NetworkProvider = ({
       });
 
       // Set queue timeout
-      setTimeout(() => {
-        setQueue(prev => prev.filter(r => r.id !== request.id));
-        reject(new Error('Request timeout'));
-      }, config.queueTimeoutMs);
+      setTimeout(() => handleQueueTimeout(request.id, reject), config.queueTimeoutMs);
     });
-  }, [config.maxQueueSize, config.queueTimeoutMs]);
+  }, [config.maxQueueSize, config.queueTimeoutMs, handleQueueTimeout]);
 
   // Clear all queued requests
   const clearQueue = useCallback(() => {
@@ -323,57 +326,6 @@ export const NetworkProvider = ({
       processQueue();
     }
   }, [queue, processQueue]);
-
-  // Enhanced fetch wrapper
-  const enhancedFetch = useCallback(async (url: string, options: RequestInit = {}): Promise<Response> => {
-    totalRequests.current++;
-
-    if (!navigator.onLine || status === 'offline') {
-      return addQueuedRequest({
-        url,
-        options,
-        maxRetries: config.maxRetries,
-        resolve: () => {},
-        reject: () => {}
-      }) as Promise<Response>;
-    }
-
-    try {
-      const startTime = performance.now();
-      const response = await fetchFunction(url, options);
-      const endTime = performance.now();
-
-      responseTimes.current.push(endTime - startTime);
-      if (responseTimes.current.length > 10) {
-        responseTimes.current = responseTimes.current.slice(-10);
-      }
-
-      const avgTime = responseTimes.current.reduce((a, b) => a + b, 0) / responseTimes.current.length;
-      setAverageResponseTime(avgTime);
-
-      if (response.ok) {
-        successfulRequests.current++;
-        setConsecutiveFailures(0);
-        setLastSuccessfulRequest(Date.now());
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return response;
-    } catch {
-      setFailedRequests(prev => prev + 1);
-      setConsecutiveFailures(prev => prev + 1);
-
-      // Queue the request for retry
-      return addQueuedRequest({
-        url,
-        options,
-        maxRetries: config.maxRetries,
-        resolve: () => {},
-        reject: () => {}
-      }) as Promise<Response>;
-    }
-  }, [navigator.onLine, status, addQueuedRequest, fetchFunction, config.maxRetries]);
 
   // Get network statistics
   const getNetworkStats = useCallback(() => ({

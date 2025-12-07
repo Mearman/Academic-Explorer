@@ -14,43 +14,54 @@ import {
   Paper,
   Portal,
   Stack,
-  Text,
-  Tooltip,
-  useMantineTheme
+  Text
 } from "@mantine/core";
 import {
   IconAccessible,
   IconAdjustments,
-  IconKeyboard,
   IconVolume,
   IconVolumeOff,
   IconZoomIn,
   IconZoomOut
 } from "@tabler/icons-react";
-import { createContext, ReactNode, use,useCallback, useEffect, useRef, useState } from "react";
+import { createContext, ReactNode, use, useCallback, useEffect, useMemo , useRef, useState } from "react";
 
 // Speech Recognition API type definitions
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
-  grammars: any;
+  grammars: SpeechGrammarList;
   interimResults: boolean;
   lang: string;
   maxAlternatives: number;
-  onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
-  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => unknown) | null;
+  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => unknown) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => unknown) | null;
+  onsoundend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onsoundstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onspeechend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onspeechstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
   serviceURI: string;
   start(): void;
   stop(): void;
   abort(): void;
+}
+
+// Speech Grammar List interface
+interface SpeechGrammarList {
+  addFromString(string: string, weight?: number): void;
+  addFromURI(src: string, weight?: number): void;
+  length: number;
+  item(index: number): SpeechGrammar | null;
+  [index: number]: SpeechGrammar;
+}
+
+interface SpeechGrammar {
+  src: string;
+  weight: number;
 }
 
 interface SpeechRecognitionEvent extends Event {
@@ -83,8 +94,8 @@ interface SpeechRecognitionAlternative {
 
 declare global {
   interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-    webkitSpeechRecognition: new () => SpeechRecognition;
+    SpeechRecognition?: unknown;
+    webkitSpeechRecognition?: unknown;
   }
 }
 
@@ -167,7 +178,8 @@ class FocusTrap {
 
   private handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Tab') {
-      const focusableElements = this.getFocusableElements(this.element!);
+      if (!this.element) return;
+      const focusableElements = this.getFocusableElements(this.element);
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -205,6 +217,9 @@ class FocusTrap {
   }
 }
 
+// Type guard for SpeechRecognition constructor
+const isSpeechRecognitionConstructor = (value: unknown): value is new () => SpeechRecognition => typeof value === 'function' && 'prototype' in value;
+
 // Voice command utilities
 class VoiceCommandProcessor {
   private recognition: SpeechRecognition | null = null;
@@ -212,11 +227,11 @@ class VoiceCommandProcessor {
   private onCommand?: (command: string) => void;
 
   constructor() {
-    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
-      this.recognition = new (window as any).webkitSpeechRecognition();
+    if (typeof window !== 'undefined' && window.webkitSpeechRecognition && isSpeechRecognitionConstructor(window.webkitSpeechRecognition)) {
+      this.recognition = new window.webkitSpeechRecognition();
       this.setupRecognition();
-    } else if (typeof window !== 'undefined' && 'SpeechRecognition' in window) {
-      this.recognition = new (window as any).SpeechRecognition();
+    } else if (typeof window !== 'undefined' && window.SpeechRecognition && isSpeechRecognitionConstructor(window.SpeechRecognition)) {
+      this.recognition = new window.SpeechRecognition();
       this.setupRecognition();
     }
   }
@@ -246,7 +261,8 @@ class VoiceCommandProcessor {
       this.isListening = false;
       // Auto-restart if we were intentionally listening
       if (this.recognition && this.onCommand) {
-        setTimeout(() => this.start(this.onCommand!), 100);
+        const onCommand = this.onCommand;
+        setTimeout(() => this.start(onCommand), 100);
       }
     };
   }
@@ -286,7 +302,6 @@ class VoiceCommandProcessor {
  * @param root0.children
  */
 export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) => {
-  const theme = useMantineTheme();
   const [isScreenReaderActive, setIsScreenReaderActive] = useState(false);
   const [highContrastMode, setHighContrastMode] = useState(false);
   const [fontSize, setFontSize] = useState(16);
@@ -508,8 +523,8 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
     }
   }, [highContrastMode]);
 
-  // Context value
-  const contextValue: AccessibilityContextType = {
+  // Context value - memoized to prevent unnecessary re-renders
+  const contextValue = useMemo((): AccessibilityContextType => ({
     announce,
     isScreenReaderActive,
     focusNext,
@@ -528,7 +543,25 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
     toggleVoice,
     startVoiceRecognition,
     stopVoiceRecognition
-  };
+  }), [
+    announce,
+    isScreenReaderActive,
+    focusNext,
+    focusPrevious,
+    trapFocus,
+    releaseFocus,
+    highContrastMode,
+    toggleHighContrast,
+    fontSize,
+    increaseFontSize,
+    decreaseFontSize,
+    registerShortcut,
+    unregisterShortcut,
+    voiceEnabled,
+    toggleVoice,
+    startVoiceRecognition,
+    stopVoiceRecognition
+  ]);
 
   return (
     <AccessibilityContext value={contextValue}>

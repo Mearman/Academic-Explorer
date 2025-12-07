@@ -35,9 +35,6 @@ interface ThreeMesh extends Visible {
   material?: ThreeMaterial | ThreeMaterial[];
 }
 
-interface ThreeObject extends Visible {
-  dispose?(): void;
-}
 
 // Default pool configuration
 const DEFAULT_CONFIG: PoolConfig = {
@@ -108,7 +105,11 @@ class SimpleObjectPool<T extends object = object> {
     let obj: T;
 
     if (this.pool.length > 0) {
-      obj = this.pool.pop()!;
+      const popped = this.pool.pop();
+      if (popped === undefined) {
+        throw new Error('Unexpected undefined value from pool.pop()');
+      }
+      obj = popped;
       this.stats.reused++;
     } else if (this.config.autoExpand) {
       obj = this.createFn();
@@ -353,7 +354,7 @@ export class SimpleThreeObjectPool {
   estimateMemoryUsage(): number {
     let totalObjects = 0;
 
-    const addPoolStats = (pool: SimpleObjectPool<any>) => {
+    const addPoolStats = <T extends object>(pool: SimpleObjectPool<T>) => {
       const stats = pool.getStats();
       totalObjects += stats.poolSize + stats.inUse;
     };

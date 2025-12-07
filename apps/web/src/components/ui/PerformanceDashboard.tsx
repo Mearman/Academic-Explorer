@@ -10,12 +10,10 @@ import {
   Alert,
   Badge,
   Card,
-  Divider,
   Grid,
   Group,
   Indicator,
   Paper,
-  Progress,
   Stack,
   Text,
   Title,
@@ -26,14 +24,22 @@ import {
   IconAlertTriangle,
   IconBolt,
   IconClock,
-  IconDatabase,
   IconDeviceFloppy,
-  IconGraph,
   IconRefresh,
-  IconTrendingDown,
-  IconTrendingUp
+  IconTrendingDown
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+// Performance memory API types
+interface PerformanceMemory {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface ExtendedPerformance extends Performance {
+  memory?: PerformanceMemory;
+}
 
 // Performance metrics interface
 interface PerformanceMetrics {
@@ -162,8 +168,9 @@ export const PerformanceDashboard = ({
 
   // Calculate memory usage
   const calculateMemoryUsage = useCallback(() => {
-    if ('memory' in performance && (performance as any).memory) {
-      const memory = (performance as any).memory;
+    const extendedPerformance = performance as ExtendedPerformance;
+    if (extendedPerformance.memory) {
+      const memory = extendedPerformance.memory;
       const used = memory.usedJSHeapSize / 1024 / 1024;
       const limit = memory.jsHeapSizeLimit / 1024 / 1024;
       const pressure = used / limit;

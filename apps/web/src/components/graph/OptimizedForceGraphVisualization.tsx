@@ -19,7 +19,6 @@ import { useProgressiveGraphLoading } from '@/hooks/useProgressiveGraphLoading';
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
 import {
   CONTAINER,
-  LABEL,
   LINK,
   LOADING_RING,
   NODE,
@@ -91,7 +90,7 @@ export interface OptimizedForceGraphVisualizationProps {
   /** Height of the visualization */
   height?: number;
   /** Display mode: highlight dims non-selected, filter hides non-selected */
-  displayMode?: DisplayMode;
+  _displayMode?: DisplayMode;
   /** Set of highlighted node IDs */
   highlightedNodeIds?: Set<string>;
   /** Path to highlight (ordered array of node IDs) */
@@ -103,7 +102,7 @@ export interface OptimizedForceGraphVisualizationProps {
   /** Node IDs currently being expanded (loading relationships) */
   expandingNodeIds?: Set<string>;
   /** Loading state */
-  loading?: boolean;
+  _loading?: boolean;
   /** Custom node style override */
   getNodeStyle?: (node: GraphNode, isHighlighted: boolean, communityId?: number) => NodeStyle;
   /** Custom link style override */
@@ -147,13 +146,13 @@ export const OptimizedForceGraphVisualization = ({
   visible = true,
   width,
   height = 500,
-  displayMode = 'highlight',
+  _displayMode = 'highlight',
   highlightedNodeIds = DEFAULT_HIGHLIGHTED_NODE_IDS,
   highlightedPath = DEFAULT_HIGHLIGHTED_PATH,
   communityAssignments,
   communityColors,
   expandingNodeIds = DEFAULT_EXPANDING_NODE_IDS,
-  loading = false,
+  _loading = false,
   getNodeStyle,
   getLinkStyle,
   onNodeClick,
