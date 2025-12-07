@@ -132,16 +132,80 @@ export type {
 } from "./traversal-types";
 
 // From entities module
-export * from "./entities";
+export type { EntityType, OpenAlexEntity } from "./entities";
+export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity } from "./entities";
 
-// Essential core types that must be available from main package
+// Export filter types that were previously available through barrels
+export type {
+  WorksFilters,
+  AuthorsFilters,
+  SourcesFilters,
+  InstitutionsFilters,
+  TopicsFilters,
+  ConceptsFilters,
+  PublishersFilters,
+  FundersFilters,
+  KeywordsFilters,
+  BaseEntityFilters,
+  BaseEntityWithTopicsFilters,
+  EntityFilters
+} from "./entities";
+
+// Export author-specific types that were previously available through barrels
+export type {
+  AuthorGroupingOptions,
+  AuthorCollaboratorsFilters,
+  AuthorAutocompleteOptions,
+  AuthorWorksFilters,
+  AuthorSearchOptions,
+  GroupByResult
+} from "./entities";
+export {
+  getEntityRelationshipQueries,
+  getInboundQueries,
+  getOutboundQueries,
+  hasInboundQueries,
+  hasOutboundQueries,
+  ENTITY_RELATIONSHIP_QUERIES
+} from "./entities";
+export {
+  ENTITY_METADATA,
+  getEntityMetadata,
+  getEntitySingularForm,
+  getEntityIdPrefix,
+  getEntityRoutePath,
+  getEntityIcon,
+  getEntityColor,
+  getEntityDisplayName,
+  getEntityPlural,
+  toEntityType,
+  toSingularForm,
+  isEntityType,
+  detectEntityType
+} from "./entities";
+export { getEntityType, isOpenAlexEntity } from "./entities";
+export { validateWithSchema, trustObjectShape, extractPropertyValue } from "./entities";
+export { isRecord } from "./entities/utils";
+export { isOpenAlexId } from "./entities";
+export type { OpenAlexError, AutocompleteResult } from "./entities";
+
+// Export graph-list types that were previously available through barrels
+export type {
+  GraphListNode,
+  AddToGraphListParams,
+  PruneGraphListResult
+} from "./graph/graph-list";
+export {
+  GRAPH_LIST_CONFIG
+} from "./graph/graph-list";
+
+// Export essential core types that were previously available through barrels
 export type {
   OpenAlexResponse,
   QueryParams,
   SampleParams,
   StatsParams,
   GroupParams,
-  AutocompleteResult,
   BaseAutocompleteOptions,
   GroupedResponse
 } from "./entities/common";
@@ -156,8 +220,4 @@ export type {
 export type {
   OpenAlexId
 } from "./entities/base";
-
-export type {
-  BaseEntity
-} from "./entities/entities";
 
