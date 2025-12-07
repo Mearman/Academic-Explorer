@@ -41,7 +41,7 @@ import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { AlgorithmTabs } from '@/components/algorithms';
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
-import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
+import { OptimizedForceGraphVisualization } from '@/components/graph/OptimizedForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { ALGORITHM, ICON_SIZE } from '@/config/style-constants';
@@ -848,11 +848,11 @@ const AlgorithmsPage = () => {
               </Group>
             </Group>
             {viewMode === '2D' ? (
-              <ForceGraphVisualization
+              <OptimizedForceGraphVisualization
                 nodes={graphData.nodes}
                 edges={graphData.edges}
                 height={450}
-                displayMode={displayMode}
+                _displayMode={displayMode}
                 highlightedNodeIds={highlightedNodes}
                 highlightedPath={highlightedPath}
                 communityAssignments={communityAssignments}
@@ -861,6 +861,12 @@ const AlgorithmsPage = () => {
                 onNodeClick={handleNodeClick}
                 onBackgroundClick={handleBackgroundClick}
                 onGraphReady={handleGraphReady}
+                enableOptimizations={true}
+                progressiveLoading={{
+                  enabled: true,
+                  batchSize: 50,
+                  batchDelayMs: 16,
+                }}
               />
             ) : (
               <ForceGraph3DVisualization

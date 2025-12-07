@@ -45,7 +45,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
-import { ForceGraphVisualization } from '@/components/graph/ForceGraphVisualization';
+import { OptimizedForceGraphVisualization } from '@/components/graph/OptimizedForceGraphVisualization';
 import { GraphEmptyState } from '@/components/graph/GraphEmptyState';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
 import {
@@ -394,7 +394,7 @@ const EntityGraphPage = () => {
                 }}
               >
                 {viewMode === '2D' ? (
-                  <ForceGraphVisualization
+                  <OptimizedForceGraphVisualization
                     nodes={nodes}
                     edges={edges}
                     highlightedNodeIds={highlightedNodes}
@@ -402,12 +402,18 @@ const EntityGraphPage = () => {
                     communityAssignments={communityAssignments}
                     communityColors={communityColors}
                     expandingNodeIds={expandingNodeIdsSet}
-                    displayMode={displayMode}
+                    _displayMode={displayMode}
                     enableSimulation={enableSimulation}
                     onNodeClick={handleNodeClick}
                     onNodeRightClick={handleNodeRightClick}
                     onBackgroundClick={handleBackgroundClick}
                     onGraphReady={handleGraphReady}
+                    enableOptimizations={true}
+                    progressiveLoading={{
+                      enabled: true,
+                      batchSize: 50,
+                      batchDelayMs: 16,
+                    }}
                   />
                 ) : (
                   <ForceGraph3DVisualization
