@@ -3,6 +3,7 @@
  * Provides sophisticated search options with filters and refinements
  */
 
+import { useKeyboardShortcuts } from "./ui/KeyboardShortcuts";
 import { logger } from "@bibgraph/utils";
 import {
   Accordion,
@@ -38,48 +39,11 @@ import {
   IconShare,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
 
-// Add keyboard shortcuts for better UX
-const useKeyboardShortcuts = (handlers: Record<string, () => void>) => {
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Handle Ctrl+K globally (even when typing)
-      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-        event.preventDefault();
-        handlers.clearFilters?.();
-        return;
-      }
-
-      // Ignore if user is typing in input fields for other shortcuts
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      switch (event.key) {
-        case '/':
-          event.preventDefault();
-          handlers.focusSearch?.();
-          break;
-        case '?':
-          if (event.shiftKey) {
-            event.preventDefault();
-            handlers.showShortcuts?.();
-          }
-          break;
-        case 'Escape':
-          handlers.escape?.();
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handlers]);
-};
 
 
 
@@ -193,20 +157,51 @@ export const EnhancedSearchInterface = ({ onSearch, loading = false }: EnhancedS
     });
   }, []);
 
-  // Keyboard shortcuts handler (moved after handleReset to fix ordering)
+  // Use centralized keyboard shortcuts hook instead of custom implementation
   useKeyboardShortcuts({
-    focusSearch: useCallback(() => {
-      searchInputRef.current?.focus();
-    }, []),
-    clearFilters: useCallback(() => {
-      handleReset();
-    }, [handleReset]),
-    showShortcuts: useCallback(() => {
-      setShowKeyboardShortcuts(true);
-    }, []),
-    escape: useCallback(() => {
-      setShowKeyboardShortcuts(false);
-    }, []),
+    enabled: true,
+    shortcuts: [
+      {
+        id: 'focus-search',
+        keys: '/',
+        description: 'Focus search input',
+        handler: useCallback(() => {
+          searchInputRef.current?.focus();
+        }, []),
+        category: 'Search',
+        enabled: true,
+      },
+      {
+        id: 'clear-filters',
+        keys: 'ctrl+k',
+        description: 'Clear all filters',
+        handler: useCallback(() => {
+          handleReset();
+        }, [handleReset]),
+        category: 'Search',
+        enabled: true,
+      },
+      {
+        id: 'show-shortcuts',
+        keys: 'shift+?',
+        description: 'Show keyboard shortcuts',
+        handler: useCallback(() => {
+          setShowKeyboardShortcuts(true);
+        }, []),
+        category: 'Help',
+        enabled: true,
+      },
+      {
+        id: 'hide-shortcuts',
+        keys: 'escape',
+        description: 'Hide shortcuts modal',
+        handler: useCallback(() => {
+          setShowKeyboardShortcuts(false);
+        }, []),
+        category: 'Help',
+        enabled: true,
+      },
+    ],
   });
 
   const entityTypeOptions = [
