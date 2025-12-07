@@ -69,8 +69,11 @@ jobs:
         with:
           # Cache full .nx dir (includes workspace-data DB) for cross-run cache sharing
           path: .nx
-          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          # More precise cache key - only hash files that actually affect task execution
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('nx.json', '**/project.json', 'package.json') }}
+          # Fallback to broader keys for better cache hits
           restore-keys: |
+            ${{ runner.os }}-nx-v3-${{ hashFiles('nx.json', '**/project.json') }}
             ${{ runner.os }}-nx-v3-
 
       - name: Install dependencies
@@ -214,8 +217,11 @@ jobs:
         with:
           # Cache full .nx dir (includes workspace-data DB) for cross-run cache sharing
           path: .nx
-          key: ${{ runner.os }}-nx-v3-${{ hashFiles('.github/workflows/ci.yml', 'nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
+          # More precise cache key - only hash files that actually affect task execution
+          key: ${{ runner.os }}-nx-v3-${{ hashFiles('nx.json', '**/project.json', 'package.json') }}
+          # Fallback to broader keys for better cache hits
           restore-keys: |
+            ${{ runner.os }}-nx-v3-${{ hashFiles('nx.json', '**/project.json') }}
             ${{ runner.os }}-nx-v3-
 
       - name: Install dependencies
