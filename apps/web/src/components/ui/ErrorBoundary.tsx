@@ -5,9 +5,9 @@
  * user-friendly error messages and recovery options.
  */
 
-import { Alert, Button, Container, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { IconAlertTriangle, IconHome,IconRefresh } from '@tabler/icons-react';
-import { Component, ErrorInfo, ReactNode,useCallback  } from 'react';
+import { Alert, Button, Container, Group, Paper, Stack, Text, Title, ActionIcon, Tooltip } from '@mantine/core';
+import { IconAlertTriangle, IconHome, IconRefresh, IconCopy, IconKeyboard } from '@tabler/icons-react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -62,17 +62,40 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo,
     });
 
+    // Enhanced error reporting
+    const errorReport: ErrorReport = {
+      errorId: this.state.errorId,
+      error,
+      errorInfo,
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      timestamp: Date.now(),
+      componentStack: errorInfo?.componentStack || undefined,
+    };
+
+    // Store error for debugging
+    try {
+      const existingErrors = JSON.parse(localStorage.getItem('bibgraph_errors') || '[]');
+      existingErrors.push(errorReport);
+      // Keep only last 10 errors to prevent storage bloat
+      const recentErrors = existingErrors.slice(-10);
+      localStorage.setItem('bibgraph_errors', JSON.stringify(recentErrors));
+    } catch (storageError) {
+      console.warn('Failed to store error report:', storageError);
+    }
+
     // Call error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo, this.state.errorId);
     }
 
-    // Log to console in development
+    // Log to console in development with enhanced context
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Boundary caught an error:', {
         error,
         errorInfo,
         errorId: this.state.errorId,
+        errorReport,
       });
     }
   }
@@ -88,6 +111,60 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   handleGoHome = (): void => {
     window.location.href = '/';
+  };
+
+  handleCopyErrorDetails = (): void => {
+    const errorDetails = {
+      errorId: this.state.errorId,
+      errorMessage: this.state.error?.message,
+      errorStack: this.state.error?.stack,
+      componentStack: this.state.errorInfo?.componentStack,
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+    };
+
+    const errorText = JSON.stringify(errorDetails, null, 2);
+
+    navigator.clipboard.writeText(errorText).then(() => {
+      // Show success feedback briefly
+      const originalText = document.title;
+      document.title = 'Error details copied!';
+      setTimeout(() => {
+        document.title = originalText;
+      }, 2000);
+    }).catch((err) => {
+      console.error('Failed to copy error details:', err);
+    });
+  };
+
+  componentDidUpdate(prevProps: ErrorBoundaryProps, prevState: ErrorBoundaryState): void {
+    // Add keyboard shortcuts when error occurs, remove when resolved
+    if (!prevState.hasError && this.state.hasError) {
+      this.handleKeyPress = this.handleKeyPress.bind(this);
+      window.addEventListener('keydown', this.handleKeyPress);
+    } else if (prevState.hasError && !this.state.hasError) {
+      window.removeEventListener('keydown', this.handleKeyPress);
+    }
+  }
+
+  componentWillUnmount(): void {
+    if (this.state.hasError && this.handleKeyPress) {
+      window.removeEventListener('keydown', this.handleKeyPress);
+    }
+  }
+
+  handleKeyPress = (event: KeyboardEvent): void => {
+    if (event.key === 'r' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      this.handleReset();
+    } else if (event.key === 'c' && (event.ctrlKey || event.metaKey) && event.shiftKey) {
+      event.preventDefault();
+      this.handleCopyErrorDetails();
+    } else if (event.key === 'h' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      this.handleGoHome();
+    }
   };
 
   render(): ReactNode {
@@ -163,6 +240,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 >
                   Go Home
                 </Button>
+
+                <Tooltip label="Copy error details (Ctrl+Shift+C)">
+                  <ActionIcon
+                    variant="light"
+                    onClick={this.handleCopyErrorDetails}
+                  >
+                    <IconCopy size={16} />
+                  </ActionIcon>
+                </Tooltip>
+
+                <Tooltip label="Keyboard shortcuts: Ctrl+R (Retry), Ctrl+H (Home), Ctrl+Shift+C (Copy)">
+                  <ActionIcon
+                    variant="light"
+                  >
+                    <IconKeyboard size={16} />
+                  </ActionIcon>
+                </Tooltip>
               </Group>
 
               <Text size="xs" c="dimmed">
@@ -179,18 +273,63 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 /**
+ * Enhanced error reporting with context aggregation
+ */
+interface ErrorReport {
+  errorId: string;
+  error: Error;
+  errorInfo?: ErrorInfo;
+  userAgent: string;
+  url: string;
+  timestamp: number;
+  context?: string;
+  componentStack?: string;
+}
+
+/**
  * Error handler utility for functional components to handle errors within their scope
  */
 export const createErrorHandler = () => {
-  // This could be expanded to integrate with error reporting services
   const reportError = (error: Error, context?: string) => {
-    console.error(`Error in ${context || 'component'}:`, error);
+    const errorReport: ErrorReport = {
+      errorId: `err_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      error,
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      timestamp: Date.now(),
+      context,
+    };
+
+    console.error(`Error in ${context || 'component'}:`, errorReport);
+
+    // Store in localStorage for debugging
+    try {
+      const existingErrors = JSON.parse(localStorage.getItem('bibgraph_errors') || '[]');
+      existingErrors.push(errorReport);
+      // Keep only last 10 errors
+      const recentErrors = existingErrors.slice(-10);
+      localStorage.setItem('bibgraph_errors', JSON.stringify(recentErrors));
+    } catch (storageError) {
+      console.warn('Failed to store error report:', storageError);
+    }
 
     // Here you could add integration with error reporting services
-    // like Sentry, LogRocket, etc.
+    // like Sentry, LogRocket, PostHog, etc.
   };
 
-  return { reportError };
+  const getStoredErrors = (): ErrorReport[] => {
+    try {
+      return JSON.parse(localStorage.getItem('bibgraph_errors') || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  const clearStoredErrors = (): void => {
+    localStorage.removeItem('bibgraph_errors');
+  };
+
+  return { reportError, getStoredErrors, clearStoredErrors };
 };
 
 /**
@@ -198,9 +337,8 @@ export const createErrorHandler = () => {
  */
 export const useErrorHandler = () => {
   const errorHandlers = createErrorHandler();
-  const reportError = useCallback(errorHandlers.reportError, []);
 
-  return { reportError };
+  return { reportError: errorHandlers.reportError };
 };
 
 /**
