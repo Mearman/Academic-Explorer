@@ -85,16 +85,17 @@ export default defineConfig(
 
 			coverage: {
 				reportsDirectory: "../../coverage/apps/web",
-				// Skip coverage for slow test types to improve CI speed
+				// Skip coverage for all tests during CI to maximize speed
 				exclude: [
 					"src/test/**",
 					"src/**/*.integration.test.{ts,tsx}",
 					"src/**/*.component.test.{ts,tsx}",
+					"src/**/*.unit.test.{ts,tsx}",
 				],
-				// Collect coverage only for unit tests to reduce overhead
-				include: ["src/**/*.unit.test.{ts,tsx}"],
-				// Minimal coverage reporters for CI speed
-				reporter: ["text", "json"],
+				// No coverage collection during CI for maximum speed
+				include: [],
+				// Disable coverage reporters entirely
+				reporter: [],
 				// Use cleaner temp directory naming to avoid race conditions
 				tempDirectory: "../../coverage/apps/web/.tmp",
 				cleaner: true,
@@ -121,9 +122,9 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
-						// Faster timeouts for unit tests
-						testTimeout: 5000,
-						hookTimeout: 5000,
+						// Aggressive timeouts for unit tests
+						testTimeout: 3000,
+						hookTimeout: 3000,
 						// Enable parallel execution
 						fileParallelism: true,
 					},
@@ -144,9 +145,9 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
-						// Moderate timeouts for component tests
-						testTimeout: 10000,
-						hookTimeout: 8000,
+						// Aggressive timeouts for component tests
+						testTimeout: 5000,
+						hookTimeout: 4000,
 						// Enable parallel execution
 						fileParallelism: true,
 						// Disable coverage for component tests (already handled globally)
@@ -169,9 +170,9 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
-						// Longer timeouts for integration tests but reasonable
-						testTimeout: 20000,
-						hookTimeout: 10000,
+						// Optimized timeouts for integration tests
+						testTimeout: 8000,
+						hookTimeout: 6000,
 						// Sequential execution for integration tests to avoid race conditions
 						fileParallelism: false,
 						// Disable coverage for integration tests (already handled globally)
