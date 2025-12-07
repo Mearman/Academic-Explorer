@@ -28,6 +28,7 @@ import { BORDER_STYLE_GRAY_3, ICON_SIZE, SEARCH, TIME_MS } from '@/config/style-
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { SearchInterface } from "../components/search/SearchInterface";
+import { SearchResultsSkeleton } from "../components/search/SearchResultsSkeleton";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
 
@@ -85,9 +86,11 @@ const renderEmptyState = (onQuickSearch?: (query: string) => void) => (
 );
 
 const renderLoadingState = () => (
-  <Text ta="center" py="xl">
-    Searching OpenAlex database...
-  </Text>
+  <SearchResultsSkeleton
+    viewType="table"
+    items={8}
+    title="Searching OpenAlex database..."
+  />
 );
 
 const renderErrorState = (

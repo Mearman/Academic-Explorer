@@ -15,7 +15,7 @@ import type {
   Topic,
   Work,
 } from "@bibgraph/types";
-import { DataState, useAriaAttributes,useAsyncOperation, useScreenReader } from "@bibgraph/ui";
+import { useAriaAttributes,useAsyncOperation, useScreenReader } from "@bibgraph/ui";
 import { logger } from "@bibgraph/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -25,6 +25,7 @@ import { transformEntityToGridItem, transformEntityToListItem } from "../utils/e
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
+import { SearchResultsSkeleton } from "./search/SearchResultsSkeleton";
 import { type TableViewMode,TableViewModeToggle } from "./TableViewModeToggle";
 import type { ColumnConfig as BaseColumnConfig } from "./types";
 
@@ -278,97 +279,205 @@ export const EntityList = ({
     announceAction(`Switched to ${newViewMode} view`);
   };
 
-  return (
-    <DataState
-      loading={asyncOperation.loading}
-      error={asyncOperation.error}
-      data={asyncOperation.data}
-      loadingMessage={`Loading ${title || entityType}...`}
-      onRetry={() => asyncOperation.execute(fetchData)}
-    >
-      {(data) => {
-        const tableData = data.map((item) => ({
-          ...item,
-          id: item.id.replace("https://openalex.org/", ""),
-        }));
-
-        const gridItems = data.map((item) =>
-          transformEntityToGridItem(item, entityType),
-        );
-        const listItems = data.map((item) =>
-          transformEntityToListItem(item, entityType),
-        );
-
-        const entityListTitle = title || entityType.charAt(0).toUpperCase() + entityType.slice(1);
-
-        return (
-          <div role="region" aria-label={`${entityListTitle} list`}>
-            <Group justify="space-between" mb="md">
-              <h1 id="entity-list-title">
-                {entityListTitle}
-              </h1>
-              {onViewModeChange && (
-                <div role="group" aria-label="View mode selection">
-                  <TableViewModeToggle
-                    value={viewMode}
-                    onChange={handleViewModeChange}
-                    aria-label={getAriaLabel("view mode toggle", `Change display view for ${entityListTitle}`)}
-                  />
-                </div>
-              )}
-            </Group>
-
-            <div
-              role="region"
-              aria-label={`${viewMode} view of ${entityListTitle}`}
-              aria-live="polite"
-            >
-              {viewMode === "table" && (
-                <BaseTable
-                  data={tableData}
-                  columns={tableColumns}
-                  aria-label={`${entityListTitle} table with ${data.length} rows`}
-                />
-              )}
-              {viewMode === "list" && (
-                <EntityListView
-                  items={listItems}
-                  aria-label={`${entityListTitle} list with ${data.length} items`}
-                />
-              )}
-              {viewMode === "grid" && (
-                <EntityGrid
-                  items={gridItems}
-                  aria-label={`${entityListTitle} grid with ${data.length} items`}
-                />
-              )}
+  // Enhanced loading state with skeleton
+  if (asyncOperation.loading) {
+    return (
+      <div role="region" aria-label={`${title || entityType} loading`}>
+        <Group justify="space-between" mb="md">
+          <h1 id="entity-list-title">
+            {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
+          </h1>
+          {onViewModeChange && (
+            <div role="group" aria-label="View mode selection" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+              <TableViewModeToggle
+                value={viewMode}
+                onChange={handleViewModeChange}
+                aria-label={getAriaLabel("view mode toggle", `Change display view for ${title || entityType}`)}
+              />
             </div>
+          )}
+        </Group>
 
-            {paginationInfo.totalPages > 1 && (
-              <nav
-                aria-label="Pagination navigation"
-                role="navigation"
-              >
-                <Group justify="space-between" mt="md">
-                  <Text size="sm" c="dimmed" aria-live="polite">
-                    Showing {(currentPage - 1) * perPage + 1} to{" "}
-                    {Math.min(currentPage * perPage, paginationInfo.totalCount)} of {paginationInfo.totalCount}{" "}
-                    {entityType.toLowerCase()} entries
-                  </Text>
-                  <Pagination
-                    value={currentPage}
-                    onChange={handlePageChange}
-                    total={paginationInfo.totalPages}
-                    size="sm"
-                    withEdges
-                    aria-label={`Pagination for ${entityListTitle}, currently page ${currentPage} of ${paginationInfo.totalPages}`}
-                  />
-                </Group>
-              </nav>
-            )}
+        <SearchResultsSkeleton
+          viewType={viewMode}
+          items={perPage}
+          title={`Loading ${title || entityType}...`}
+        />
+      </div>
+    );
+  }
+
+  // Error state
+  if (asyncOperation.error) {
+    return (
+      <div role="region" aria-label={`${title || entityType} error`}>
+        <Group justify="space-between" mb="md">
+          <h1 id="entity-list-title">
+            {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
+          </h1>
+          {onViewModeChange && (
+            <div role="group" aria-label="View mode selection" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+              <TableViewModeToggle
+                value={viewMode}
+                onChange={handleViewModeChange}
+                aria-label={getAriaLabel("view mode toggle", `Change display view for ${title || entityType}`)}
+              />
+            </div>
+          )}
+        </Group>
+
+        <div
+          role="alert"
+          aria-live="assertive"
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            border: '1px solid var(--mantine-color-red-3)',
+            borderRadius: '8px',
+            backgroundColor: 'var(--mantine-color-red-0)'
+          }}
+        >
+          <Text mb="md">
+            Failed to load {title || entityType}. Please try again.
+          </Text>
+          <button
+            onClick={() => asyncOperation.execute(fetchData)}
+            aria-label="Retry loading"
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--mantine-color-blue-6)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!asyncOperation.data || asyncOperation.data.length === 0) {
+    return (
+      <div role="region" aria-label={`${title || entityType} empty`}>
+        <Group justify="space-between" mb="md">
+          <h1 id="entity-list-title">
+            {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
+          </h1>
+          {onViewModeChange && (
+            <div role="group" aria-label="View mode selection" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+              <TableViewModeToggle
+                value={viewMode}
+                onChange={handleViewModeChange}
+                aria-label={getAriaLabel("view mode toggle", `Change display view for ${title || entityType}`)}
+              />
+            </div>
+          )}
+        </Group>
+
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            border: '1px solid var(--mantine-color-gray-3)',
+            borderRadius: '8px',
+            backgroundColor: 'var(--mantine-color-body)'
+          }}
+        >
+          <Text>
+            No {title || entityType} found.
+          </Text>
+        </div>
+      </div>
+    );
+  }
+
+  // Success state with data
+  const data = asyncOperation.data;
+  const tableData = data.map((item) => ({
+    ...item,
+    id: item.id.replace("https://openalex.org/", ""),
+  }));
+
+  const gridItems = data.map((item) =>
+    transformEntityToGridItem(item, entityType),
+  );
+  const listItems = data.map((item) =>
+    transformEntityToListItem(item, entityType),
+  );
+
+  const entityListTitle = title || entityType.charAt(0).toUpperCase() + entityType.slice(1);
+
+  return (
+    <div role="region" aria-label={`${entityListTitle} list`}>
+      <Group justify="space-between" mb="md">
+        <h1 id="entity-list-title">
+          {entityListTitle}
+        </h1>
+        {onViewModeChange && (
+          <div role="group" aria-label="View mode selection">
+            <TableViewModeToggle
+              value={viewMode}
+              onChange={handleViewModeChange}
+              aria-label={getAriaLabel("view mode toggle", `Change display view for ${entityListTitle}`)}
+            />
           </div>
-        );
-      }}
-    </DataState>
+        )}
+      </Group>
+
+      <div
+        role="region"
+        aria-label={`${viewMode} view of ${entityListTitle}`}
+        aria-live="polite"
+      >
+        {viewMode === "table" && (
+          <BaseTable
+            data={tableData}
+            columns={tableColumns}
+            aria-label={`${entityListTitle} table with ${data.length} rows`}
+          />
+        )}
+        {viewMode === "list" && (
+          <EntityListView
+            items={listItems}
+            aria-label={`${entityListTitle} list with ${data.length} items`}
+          />
+        )}
+        {viewMode === "grid" && (
+          <EntityGrid
+            items={gridItems}
+            aria-label={`${entityListTitle} grid with ${data.length} items`}
+          />
+        )}
+      </div>
+
+      {paginationInfo.totalPages > 1 && (
+        <nav
+          aria-label="Pagination navigation"
+          role="navigation"
+        >
+          <Group justify="space-between" mt="md">
+            <Text size="sm" c="dimmed" aria-live="polite">
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, paginationInfo.totalCount)} of {paginationInfo.totalCount}{" "}
+              {entityType.toLowerCase()} entries
+            </Text>
+            <Pagination
+              value={currentPage}
+              onChange={handlePageChange}
+              total={paginationInfo.totalPages}
+              size="sm"
+              withEdges
+              aria-label={`Pagination for ${entityListTitle}, currently page ${currentPage} of ${paginationInfo.totalPages}`}
+            />
+          </Group>
+        </nav>
+      )}
+    </div>
   );
 };
