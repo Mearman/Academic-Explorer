@@ -1,3 +1,13 @@
+## <small>24.0.1 (2025-12-07)</small>
+
+* test(algorithms): adjust Leiden performance test for CI runner overhead ([1c5cdc9](https://github.com/Mearman/BibGraph/commit/1c5cdc9))
+* ci(algorithms): fix timeout handling and shell script error handling ([f1e44af](https://github.com/Mearman/BibGraph/commit/f1e44af))
+* refactor(algorithms, ui): apply performance optimizations and clean formatting ([8a680c9](https://github.com/Mearman/BibGraph/commit/8a680c9))
+* refactor(utils): remove unused eslint-disable directives ([3cf4f40](https://github.com/Mearman/BibGraph/commit/3cf4f40))
+* fix(algorithms): optimize Leiden clustering performance test from 60s to 20s ([1241fc4](https://github.com/Mearman/BibGraph/commit/1241fc4))
+* fix(algorithms): remove unused variable resolutionM in louvain.ts ([b31d4c4](https://github.com/Mearman/BibGraph/commit/b31d4c4))
+* fix(algorithms): resolve ESLint errors in louvain and priority-queue ([860646c](https://github.com/Mearman/BibGraph/commit/860646c))
+
 ## 24.0.0 (2025-12-07)
 
 * Merge remote-tracking branch 'origin/main' ([ea2f01d](https://github.com/Mearman/BibGraph/commit/ea2f01d))
