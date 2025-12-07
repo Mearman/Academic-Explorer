@@ -165,15 +165,7 @@ export default tseslint.config([
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
 
-            // Discourage long inline union types (affects 3+ type unions)
-            "max-len": ["error", {
-                code: 100,
-                ignoreUrls: true,
-                ignoreStrings: true,
-                ignoreTemplateLiterals: true,
-                ignoreComments: true,
-                ignoreRegExpLiterals: true
-            }],
+            // Line length rule removed to allow longer lines for better readability
 
             // Barrel files rules - prevent re-exports from non-barrel files but don't enforce barrel usage
             "barrel-files/avoid-re-export-all": "off", // Turned off - using custom rule instead for more control
