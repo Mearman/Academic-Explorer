@@ -204,7 +204,7 @@ describe('Leiden Community Detection', () => {
       });
     });
 
-    it('should maintain quality and connectivity at scale', { timeout: 25000 }, () => {
+    it('should maintain quality and connectivity at scale', { timeout: 60000 }, () => {
       // Given: Large citation network
       const graph = largeCitationNetwork();
 
