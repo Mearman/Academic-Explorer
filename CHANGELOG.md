@@ -1,3 +1,7 @@
+## <small>24.0.2 (2025-12-07)</small>
+
+* test(web): fix bookmarks smoke test timeout in CI ([4829ecd](https://github.com/Mearman/BibGraph/commit/4829ecd))
+
 ## <small>24.0.1 (2025-12-07)</small>
 
 * test(algorithms): adjust Leiden performance test for CI runner overhead ([1c5cdc9](https://github.com/Mearman/BibGraph/commit/1c5cdc9))
