@@ -6,7 +6,7 @@
  */
 
 import { Box, Group, Stack, Text } from '@mantine/core';
-import { CardSkeleton, ListSkeleton, TableSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
+import { CardSkeleton, ListSkeleton, DataTableSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
 
 interface SearchResultsSkeletonProps {
   viewType?: 'list' | 'grid' | 'table';
@@ -72,7 +72,7 @@ export const SearchResultsSkeleton = ({
         {title}
       </Text>
       <Box px="md">
-        <TableSkeleton rows={items} columns={5} />
+        <DataTableSkeleton rows={items} columns={5} />
       </Box>
     </Box>
   );

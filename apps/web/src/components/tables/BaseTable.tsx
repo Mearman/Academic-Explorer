@@ -30,7 +30,7 @@ import {
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { useEffect,useRef, useState } from "react";
 
-import { TableSkeleton } from "@/components/molecules/TableSkeleton";
+import { DataTableSkeleton } from "@/components/ui";
 import { useResponsiveDesign } from "@/hooks/use-sprinkles";
 import { sprinkles } from "@/styles/sprinkles";
 
@@ -263,7 +263,7 @@ export const BaseTable = <T,>({
 
   // Helper function to render loading state
   const renderLoadingState = (colSpan: number) => (
-    <TableSkeleton columnCount={colSpan} rowCount={5} />
+    <DataTableSkeleton columns={colSpan} rows={5} />
   );
 
   // Helper function to render empty state
@@ -385,7 +385,7 @@ export const BaseTable = <T,>({
         {isLoading ? (
           <Table withTableBorder>
             <Table.Tbody>
-              <TableSkeleton columnCount={columns.length} rowCount={10} />
+              <DataTableSkeleton columns={columns.length} rows={10} />
             </Table.Tbody>
           </Table>
         ) : (rows.length === 0 ? (

@@ -191,7 +191,7 @@ export const ListSkeleton = ({ items = 5 }: { items?: number }) => {
 /**
  * Table skeleton for data tables
  */
-export const TableSkeleton = ({
+export const DataTableSkeleton = ({
   rows = 5,
   columns = 4,
 }: { rows?: number; columns?: number }) => {

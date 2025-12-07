@@ -25,7 +25,7 @@ interface TableSkeletonProps {
   columns?: number;
 }
 
-export const TableSkeleton = ({ rows = 10, columns = 4 }: TableSkeletonProps) => (
+export const PackageTableSkeleton = ({ rows = 10, columns = 4 }: TableSkeletonProps) => (
   <Stack gap="xs">
     {/* Header */}
     <Group gap="sm" p="xs">
@@ -110,7 +110,7 @@ export const DetailPageSkeleton = ({ showSidebar = true }: DetailPageSkeletonPro
       </Stack>
 
       {/* Table */}
-      <TableSkeleton rows={8} columns={3} />
+      <PackageTableSkeleton rows={8} columns={3} />
     </Stack>
 
     {/* Sidebar */}
