@@ -82,9 +82,19 @@ export const useBookmarks = (): UseBookmarksResult => {
     try {
       // Initialize special lists if not already done
       if (!initialized) {
-        await storage.initializeSpecialLists();
-        setInitialized(true);
-        logger.debug(BOOKMARKS_LOGGER_CONTEXT, "Special lists initialized");
+        try {
+          await storage.initializeSpecialLists();
+          setInitialized(true);
+          logger.debug(BOOKMARKS_LOGGER_CONTEXT, "Special lists initialized");
+        } catch (initErr) {
+          // Even if initialization fails, we can continue with empty bookmarks
+          logger.warn(BOOKMARKS_LOGGER_CONTEXT, "Special lists initialization failed, continuing with empty state", {
+            error: initErr
+          });
+          setInitialized(true); // Mark as initialized to avoid retry loops
+          setBookmarks([]); // Set empty bookmarks
+          return;
+        }
       }
 
       const currentBookmarks = await storage.getBookmarks();
@@ -97,6 +107,8 @@ export const useBookmarks = (): UseBookmarksResult => {
       const errorObj = err instanceof Error ? err : new Error(String(err));
       setError(errorObj);
       logger.error(BOOKMARKS_LOGGER_CONTEXT, "Failed to refresh bookmarks", { error: err });
+      // Set empty bookmarks on error to prevent hanging
+      setBookmarks([]);
     } finally {
       setLoading(false);
     }

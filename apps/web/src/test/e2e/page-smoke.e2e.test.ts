@@ -117,6 +117,7 @@ test.describe("Auto-discovered Static Routes", () => {
 		const isErrorTest = route === "/error-test";
 		const isBookmarksPage = route === "/bookmarks";
 
+		
 		test(`${route} loads successfully`, async ({ page }) => {
 			// Increase timeout for bookmarks page due to potential IndexedDB loading delays
 			if (isBookmarksPage) {
