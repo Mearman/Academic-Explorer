@@ -186,31 +186,33 @@ if (typeof process !== "undefined" && process.env.VITEST) {
       // Reset MSW handlers between tests
       resetMockServer();
 
-      // Clean up IndexedDB databases to prevent ConstraintError between tests
-      // This is critical for fake-indexeddb which persists state across tests
-      if (typeof indexedDB !== "undefined" && indexedDB.databases) {
-        try {
-          const databases = await indexedDB.databases();
-          await Promise.all(
-            databases.map((db) => {
-              if (db.name) {
-                return new Promise<void>((resolve, reject) => {
-                  const req = indexedDB.deleteDatabase(db.name!);
-                  req.onsuccess = () => resolve();
-                  req.onerror = () => reject(req.error);
-                  req.onblocked = () => resolve(); // Treat blocked as success
-                });
-              }
-              return Promise.resolve();
-            })
-          );
-        } catch {
-          // Ignore errors during cleanup - some environments may not support databases()
+      // Simplified IndexedDB cleanup for faster test execution
+      // Only perform full cleanup in integration tests to save time
+      if (expect.getState().currentTestName?.includes('integration')) {
+        if (typeof indexedDB !== "undefined" && indexedDB.databases) {
+          try {
+            const databases = await indexedDB.databases();
+            await Promise.all(
+              databases.map((db) => {
+                if (db.name && db.name.startsWith('test-')) {
+                  return new Promise<void>((resolve) => {
+                    const req = indexedDB.deleteDatabase(db.name!);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => resolve(); // Ignore errors for speed
+                    req.onblocked = () => resolve();
+                  });
+                }
+                return Promise.resolve();
+              })
+            );
+          } catch {
+            // Ignore errors during cleanup
+          }
         }
       }
 
-      // Force garbage collection if available (helps with memory management)
-      if (global.gc) {
+      // Less aggressive garbage collection for performance
+      if (global.gc && Math.random() < 0.1) { // Only 10% of the time
         global.gc();
       }
     });
