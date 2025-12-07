@@ -19,7 +19,8 @@ import {
   Stack,
   Text,
   Title,
-  Tooltip} from "@mantine/core";
+  Tooltip
+} from "@mantine/core";
 import {
   IconActivity,
   IconAlertTriangle,
@@ -27,37 +28,29 @@ import {
   IconClock,
   IconDatabase,
   IconGraph,
-  IconMemoryStick,
+  IconDeviceFloppy,
   IconRefresh,
   IconTrendingDown,
-  IconTrendingUp} from "@tabler/icons-react";
-import { useCallback,useEffect, useRef, useState } from "react";
+  IconTrendingUp
+} from "@tabler/icons-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Performance metrics interface
 interface PerformanceMetrics {
-  // Rendering metrics
   currentFPS: number;
   averageFPS: number;
   frameTimeMs: number;
   droppedFrames: number;
-
-  // Memory metrics
   memoryUsedMB: number;
   memoryLimitMB: number;
   memoryPressure: number;
-
-  // Graph metrics
   nodeCount: number;
   edgeCount: number;
   visibleNodes: number;
   culledNodes: number;
-
-  // Optimization metrics
   cullingEfficiency: number;
   renderTimeMs: number;
   updateTimeMs: number;
-
-  // System metrics
   cpuUsage: number;
   networkRequests: number;
   timestamp: number;
@@ -71,13 +64,9 @@ type AlertLevel = 'info' | 'warning' | 'error' | 'success';
 
 // Dashboard props
 interface PerformanceDashboardProps {
-  /** Whether to show the dashboard in expanded mode */
   expanded?: boolean;
-  /** Auto-refresh interval in milliseconds */
   refreshInterval?: number;
-  /** Maximum history points to keep */
   maxHistoryPoints?: number;
-  /** Callback for performance optimization suggestions */
   onOptimize?: (suggestions: string[]) => void;
 }
 
@@ -110,56 +99,6 @@ const PERFORMANCE_THRESHOLDS = {
  * Performance Dashboard Component
  *
  * Real-time monitoring dashboard for graph visualization performance
- * @param root0
- * @param root0.expanded
- * @param root0.refreshInterval
- * @param root0.maxHistoryPoints
- * @param root0.onOptimize
- */
-// Metric card component (extracted to avoid nested component definition)
-interface MetricCardProps {
-  title: string;
-  value: number;
-  unit: string;
-  level: PerformanceLevel;
-  icon: React.ReactNode;
-  description?: string;
-}
-
-const MetricCard = ({ title, value, unit, level, icon, description }: MetricCardProps) => (
-  <Card p="md" withBorder>
-    <Group justify="space-between" align="flex-start">
-      <Stack gap="xs">
-        <Group gap="xs">
-          {icon}
-          <Text size="sm" c="dimmed">{title}</Text>
-        </Group>
-        <Text size="lg" fw={500}>
-          {value}{unit}
-        </Text>
-        {description && (
-          <Text size="xs" c="dimmed">
-            {description}
-          </Text>
-        )}
-      </Stack>
-      <Indicator
-        size={12}
-        color={getLevelColor(level)}
-        processing={level === 'fair'}
-      />
-    </Group>
-  </Card>
-);
-
-/**
- * Performance Dashboard Component
- *
- * Real-time monitoring dashboard for graph visualization performance
- * @param root0
- * @param root0.expanded
- * @param root0.maxHistoryPoints
- * @param root0.onOptimize
  */
 export const PerformanceDashboard = ({
   expanded = false,
@@ -194,11 +133,10 @@ export const PerformanceDashboard = ({
   const frameCount = useRef(0);
   const lastFrameTime = useRef(performance.now());
   const fpsHistory = useRef<number[]>([]);
-  const animationFrameId = useRef<number>();
-  const monitorIntervalId = useRef<NodeJS.Timeout>();
+  const animationFrameId = useRef<number | undefined>(undefined);
 
   // Get performance level
-  const getPerformanceLevel = useCallback((metric: number, thresholds: typeof PERFORMANCE_THRESHOLDS.fps): PerformanceLevel => {
+  const getPerformanceLevel = useCallback((metric: number, thresholds: typeof PERFORMANCE_THRESHOLDS.fps | typeof PERFORMANCE_THRESHOLDS.frameTime): PerformanceLevel => {
     if (metric >= thresholds.excellent) return 'excellent';
     if (metric >= thresholds.good) return 'good';
     if (metric >= thresholds.fair) return 'fair';
@@ -220,9 +158,10 @@ export const PerformanceDashboard = ({
 
   // Calculate memory usage
   const calculateMemoryUsage = useCallback(() => {
-    if ('memory' in performance && performance.memory) {
-      const used = performance.memory.usedJSHeapSize / 1024 / 1024;
-      const limit = performance.memory.jsHeapSizeLimit / 1024 / 1024;
+    if ('memory' in performance && (performance as any).memory) {
+      const memory = (performance as any).memory;
+      const used = memory.usedJSHeapSize / 1024 / 1024;
+      const limit = memory.jsHeapSizeLimit / 1024 / 1024;
       const pressure = used / limit;
 
       return {
@@ -233,6 +172,9 @@ export const PerformanceDashboard = ({
     }
     return { used: 0, limit: 4096, pressure: 0 };
   }, []);
+
+  // Calculate memory usage ratio for display
+  const memoryUsageRatio = 1 - (metrics.memoryPressure / 100);
 
   // Performance monitoring loop
   const measurePerformance = useCallback(() => {
@@ -271,8 +213,8 @@ export const PerformanceDashboard = ({
       cullingEfficiency: 0,
       renderTimeMs: 0,
       updateTimeMs: 0,
-      cpuUsage: 0, // Would need special permission in real app
-      networkRequests: 0, // Would be tracked from fetch interceptors
+      cpuUsage: 0,
+      networkRequests: 0,
       timestamp: currentTime
     };
 
@@ -286,9 +228,6 @@ export const PerformanceDashboard = ({
     if (isMonitoring) {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
-      }
-      if (monitorIntervalId.current) {
-        clearInterval(monitorIntervalId.current);
       }
       setIsMonitoring(false);
     } else {
@@ -305,9 +244,6 @@ export const PerformanceDashboard = ({
     return () => {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
-      }
-      if (monitorIntervalId.current) {
-        clearInterval(monitorIntervalId.current);
       }
     };
   }, []);
@@ -328,10 +264,7 @@ export const PerformanceDashboard = ({
     }
 
     // Memory-based suggestions
-    const memLevel = getPerformanceLevel(1 - metrics.memoryPressure / 100, {
-      excellent: 0.7, good: 0.5, fair: 0.3, poor: 0.15, critical: 0
-    });
-    if (memLevel === 'poor' || memLevel === 'critical') {
+    if (memoryUsageRatio < 0.3) {
       suggestions.push('Memory pressure high - consider reducing graph complexity');
       newAlerts.push({
         level: 'error',
@@ -349,48 +282,7 @@ export const PerformanceDashboard = ({
     if (suggestions.length > 0 && onOptimize) {
       onOptimize(suggestions);
     }
-  }, [metrics, getPerformanceLevel, onOptimize]);
-
-  // Performance card component
-  const MetricCard = ({
-    title,
-    value,
-    unit,
-    level,
-    icon,
-    description
-  }: {
-    title: string;
-    value: number;
-    unit: string;
-    level: PerformanceLevel;
-    icon: React.ReactNode;
-    description?: string;
-  }) => (
-    <Card p="md" withBorder>
-      <Group justify="space-between" align="flex-start">
-        <Stack gap="xs">
-          <Group gap="xs">
-            {icon}
-            <Text size="sm" c="dimmed">{title}</Text>
-          </Group>
-          <Text size="lg" fw={500}>
-            {value}{unit}
-          </Text>
-          {description && (
-            <Text size="xs" c="dimmed">
-              {description}
-            </Text>
-          )}
-        </Stack>
-        <Indicator
-          size={12}
-          color={getLevelColor(level)}
-          processing={level === 'fair'}
-        />
-      </Group>
-    </Card>
-  );
+  }, [metrics, getPerformanceLevel, memoryUsageRatio, onOptimize]);
 
   return (
     <Paper p="lg" withBorder>
@@ -438,104 +330,86 @@ export const PerformanceDashboard = ({
         {/* Performance Metrics Grid */}
         <Grid>
           <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
-            <MetricCard
-              title="Frame Rate"
-              value={metrics.currentFPS}
-              unit=" FPS"
-              level={getPerformanceLevel(metrics.currentFPS, PERFORMANCE_THRESHOLDS.fps)}
-              icon={<IconBolt size={16} />}
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
-            <MetricCard
-              title="Frame Time"
-              value={metrics.frameTimeMs}
-              unit="ms"
-              level={getPerformanceLevel(metrics.frameTimeMs, PERFORMANCE_THRESHOLDS.frameTime)}
-              icon={<IconClock size={16} />}
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
-            <MetricCard
-              title="Memory Usage"
-              value={metrics.memoryUsedMB}
-              unit="MB"
-              level={getPerformanceLevel(1 - metrics.memoryPressure / 100, {
-                excellent: 0.7, good: 0.5, fair: 0.3, poor: 0.15, critical: 0
-              })}
-              icon={<IconMemoryStick size={16} />}
-              description={`${metrics.memoryPressure}% of limit`}
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
-            <MetricCard
-              title="Dropped Frames"
-              value={metrics.droppedFrames}
-              unit=""
-              level={metrics.droppedFrames === 0 ? 'excellent' :
-                     metrics.droppedFrames < 5 ? 'good' :
-                     metrics.droppedFrames < 20 ? 'fair' : 'critical'}
-              icon={<IconTrendingDown size={16} />}
-            />
-          </Grid.Col>
-        </Grid>
-
-        {/* Graph Metrics */}
-        <Divider label="Graph Statistics" />
-        <Grid>
-          <Grid.Col span={{ base: 12, md: 6 }}>
             <Card p="md" withBorder>
-              <Stack gap="xs">
-                <Group gap="xs">
-                  <IconGraph size={16} />
-                  <Text size="sm" c="dimmed">Nodes</Text>
-                </Group>
-                <Text size="lg" fw={500}>{metrics.nodeCount}</Text>
-                <Text size="xs" c="dimmed">
-                  {metrics.visibleNodes} visible, {metrics.culledNodes} culled
-                </Text>
-              </Stack>
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
-            <Card p="md" withBorder>
-              <Stack gap="xs">
-                <Group gap="xs">
-                  <IconGraph size={16} />
-                  <Text size="sm" c="dimmed">Edges</Text>
-                </Group>
-                <Text size="lg" fw={500}>{metrics.edgeCount}</Text>
-              </Stack>
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
-            <Card p="md" withBorder>
-              <Stack gap="xs">
-                <Group gap="xs">
-                  <IconTrendingUp size={16} />
-                  <Text size="sm" c="dimmed">Culling Efficiency</Text>
-                </Group>
-                <Progress
-                  value={metrics.cullingEfficiency * 100}
-                  color={metrics.cullingEfficiency > 0.7 ? 'green' :
-                         metrics.cullingEfficiency > 0.4 ? 'yellow' : 'red'}
-                  size="sm"
+              <Group justify="space-between" align="flex-start">
+                <Stack gap="xs">
+                  <Group gap="xs">
+                    <IconBolt size={16} />
+                    <Text size="sm" c="dimmed">Frame Rate</Text>
+                  </Group>
+                  <Text size="lg" fw={500}>
+                    {metrics.currentFPS} FPS
+                  </Text>
+                </Stack>
+                <Indicator
+                  size={12}
+                  color={getLevelColor(getPerformanceLevel(metrics.currentFPS, PERFORMANCE_THRESHOLDS.fps))}
+                  processing={false}
                 />
-                <Text size="xs" c="dimmed">
-                  {Math.round(metrics.cullingEfficiency * 100)}% nodes culled
-                </Text>
-              </Stack>
+              </Group>
             </Card>
           </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
             <Card p="md" withBorder>
-              <Stack gap="xs">
-                <Group gap="xs">
-                  <IconDatabase size={16} />
-                  <Text size="sm" c="dimmed">Render Time</Text>
-                </Group>
-                <Text size="lg" fw={500}>{metrics.renderTimeMs}ms</Text>
-              </Stack>
+              <Group justify="space-between" align="flex-start">
+                <Stack gap="xs">
+                  <Group gap="xs">
+                    <IconClock size={16} />
+                    <Text size="sm" c="dimmed">Frame Time</Text>
+                  </Group>
+                  <Text size="lg" fw={500}>
+                    {metrics.frameTimeMs}ms
+                  </Text>
+                </Stack>
+                <Indicator
+                  size={12}
+                  color={getLevelColor(getPerformanceLevel(metrics.frameTimeMs, PERFORMANCE_THRESHOLDS.frameTime))}
+                  processing={false}
+                />
+              </Group>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+            <Card p="md" withBorder>
+              <Group justify="space-between" align="flex-start">
+                <Stack gap="xs">
+                  <Group gap="xs">
+                    <IconDeviceFloppy size={16} />
+                    <Text size="sm" c="dimmed">Memory Usage</Text>
+                  </Group>
+                  <Text size="lg" fw={500}>
+                    {metrics.memoryUsedMB}MB
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {metrics.memoryPressure}% of limit
+                  </Text>
+                </Stack>
+                <Indicator
+                  size={12}
+                  color={memoryUsageRatio < 0.3 ? 'red' : memoryUsageRatio < 0.5 ? 'yellow' : 'green'}
+                  processing={false}
+                />
+              </Group>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+            <Card p="md" withBorder>
+              <Group justify="space-between" align="flex-start">
+                <Stack gap="xs">
+                  <Group gap="xs">
+                    <IconTrendingDown size={16} />
+                    <Text size="sm" c="dimmed">Dropped Frames</Text>
+                  </Group>
+                  <Text size="lg" fw={500}>{metrics.droppedFrames}</Text>
+                </Stack>
+                <Indicator
+                  size={12}
+                  color={metrics.droppedFrames === 0 ? 'green' :
+                         metrics.droppedFrames < 5 ? 'teal' :
+                         metrics.droppedFrames < 20 ? 'yellow' : 'red'}
+                  processing={false}
+                />
+              </Group>
             </Card>
           </Grid.Col>
         </Grid>
@@ -553,16 +427,10 @@ export const PerformanceDashboard = ({
               <Badge
                 size="lg"
                 color={getLevelColor(
-                  getPerformanceLevel(
-                    Math.min(metrics.currentFPS, 100 - metrics.memoryPressure),
-                    PERFORMANCE_THRESHOLDS.fps
-                  )
+                  getPerformanceLevel(metrics.currentFPS, PERFORMANCE_THRESHOLDS.fps)
                 )}
               >
-                {getPerformanceLevel(
-                  Math.min(metrics.currentFPS, 100 - metrics.memoryPressure),
-                  PERFORMANCE_THRESHOLDS.fps
-                ).toUpperCase()}
+                {getPerformanceLevel(metrics.currentFPS, PERFORMANCE_THRESHOLDS.fps).toUpperCase()}
               </Badge>
             </Group>
           </Card>

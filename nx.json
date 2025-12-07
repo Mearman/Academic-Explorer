@@ -36,15 +36,6 @@
       "options": {
         "rules": [
           {
-            "target": "barrelsby",
-            "when": {
-              "and": [
-                { "pathExists": "src" },
-                { "not": { "hasTag": "type:tooling" } }
-              ]
-            }
-          },
-          {
             "target": "typecheck",
             "when": { "pathExists": "tsconfig.json" }
           },
@@ -299,28 +290,9 @@
       },
       "cache": false
     },
-    "barrelsby": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "barrelsby --config ../../.barrelsby.json --directory ./src",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "{projectRoot}/src/**/*.{ts,tsx}",
-        "!{projectRoot}/src/**/index.ts",
-        "!{projectRoot}/**/*.test.{ts,tsx}",
-        "!{projectRoot}/**/*.spec.{ts,tsx}",
-        "{workspaceRoot}/.barrelsby.json"
-      ],
-      "outputs": [
-        "{projectRoot}/src/**/index.ts"
-      ],
-      "cache": true
-    },
-    "build": {
+      "build": {
       "cache": true,
       "dependsOn": [
-        "barrelsby",
         "typecheck",
         "^build"
       ],
@@ -400,7 +372,6 @@
         "cwd": "{projectRoot}"
       },
       "dependsOn": [
-        "barrelsby",
         "^build"
       ],
       "inputs": [

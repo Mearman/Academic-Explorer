@@ -47,18 +47,35 @@ export const useGraphViewportCulling = (
 ) => {
   const previousBounds = useRef<ViewportBounds | null>(null);
 
+  // Type guard to check if node has position properties
+  const hasPosition = (node: GraphNode): node is GraphNode & { x: number; y: number; z: number } => {
+    return 'x' in node && 'y' in node && 'z' in node &&
+           typeof node.x === 'number' && typeof node.y === 'number' && typeof node.z === 'number';
+  };
+
   // Convert GraphNode to CullableNode with position and radius
   const cullableNodes = useMemo(() => {
     return nodes.map(node => {
-      const nodeWithPosition = node as Record<string, unknown>;
-      return {
-        id: node.id,
-        x: (nodeWithPosition.x as number) || 0, // Position from force simulation
-        y: (nodeWithPosition.y as number) || 0,
-        z: (nodeWithPosition.z as number) || 0,
-        radius: nodeRadius,
-        originalNode: node,
-      };
+      if (hasPosition(node)) {
+        return {
+          id: node.id,
+          x: node.x,
+          y: node.y,
+          z: node.z,
+          radius: nodeRadius,
+          originalNode: node,
+        };
+      } else {
+        // Default position for nodes without position data
+        return {
+          id: node.id,
+          x: 0,
+          y: 0,
+          z: 0,
+          radius: nodeRadius,
+          originalNode: node,
+        };
+      }
     });
   }, [nodes, nodeRadius]);
 

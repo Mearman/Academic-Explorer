@@ -70,7 +70,6 @@ export const NetworkStatus = ({
         // Simple connectivity check
         setBrowserStatus("online");
       }
-      setLastUpdate(Date.now());
     };
 
     const handleOnline = () => {

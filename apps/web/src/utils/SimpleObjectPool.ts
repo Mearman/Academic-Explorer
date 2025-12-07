@@ -1,8 +1,8 @@
 /**
  * Simple Object Pool - Simplified Three.js object pooling for performance
  *
- * Provides basic object pooling without complex type constraints
- * Focuses on performance gains over type safety
+ * Provides basic object pooling with proper type safety
+ * Focuses on performance gains while maintaining TypeScript compliance
  */
 
 import * as THREE from 'three';
@@ -14,6 +14,31 @@ interface PoolConfig {
   autoExpand: boolean;
 }
 
+// Three.js object interfaces for proper typing
+interface Visible {
+  visible: boolean;
+}
+
+interface ThreeGeometry {
+  dispose(): void;
+}
+
+interface ThreeMaterial {
+  dispose(): void;
+}
+
+interface ThreeMesh extends Visible {
+  position: { set(x: number, y: number, z: number): void };
+  rotation: { set(x: number, y: number, z: number): void };
+  scale: { set(x: number, y: number, z: number): void };
+  geometry?: ThreeGeometry;
+  material?: ThreeMaterial | ThreeMaterial[];
+}
+
+interface ThreeObject extends Visible {
+  dispose?(): void;
+}
+
 // Default pool configuration
 const DEFAULT_CONFIG: PoolConfig = {
   initialSize: 50,
@@ -21,18 +46,58 @@ const DEFAULT_CONFIG: PoolConfig = {
   autoExpand: true,
 };
 
+// Type guard functions
+function isVisible(obj: unknown): obj is Visible {
+  return typeof obj === 'object' && obj !== null && 'visible' in obj;
+}
+
+function isThreeMesh(obj: unknown): obj is ThreeMesh {
+  return isVisible(obj) &&
+         'position' in obj &&
+         'rotation' in obj &&
+         'scale' in obj &&
+         typeof (obj as ThreeMesh).position.set === 'function' &&
+         typeof (obj as ThreeMesh).rotation.set === 'function' &&
+         typeof (obj as ThreeMesh).scale.set === 'function';
+}
+
+function hasGeometry(obj: unknown): obj is { geometry: ThreeGeometry } {
+  if (typeof obj !== 'object' || obj === null || !('geometry' in obj)) {
+    return false;
+  }
+  const geometry = (obj as { geometry: unknown }).geometry;
+  return geometry !== null &&
+         typeof geometry === 'object' &&
+         'dispose' in geometry &&
+         typeof (geometry as { dispose: unknown }).dispose === 'function';
+}
+
+function hasMaterial(obj: unknown): obj is { material: ThreeMaterial | ThreeMaterial[] } {
+  return typeof obj === 'object' &&
+         obj !== null &&
+         'material' in obj &&
+         obj.material !== null;
+}
+
+function isDisposable(obj: unknown): obj is { dispose(): void } {
+  return typeof obj === 'object' &&
+         obj !== null &&
+         'dispose' in obj &&
+         typeof (obj as { dispose: unknown }).dispose === 'function';
+}
+
 /**
  * Simple object pool for Three.js objects
  */
-class SimpleObjectPool {
-  private pool: unknown[] = [];
-  private inUse: Set<unknown> = new Set();
+class SimpleObjectPool<T extends object = object> {
+  private pool: T[] = [];
+  private inUse: Set<T> = new Set();
   private config: PoolConfig;
   private stats: { created: number; reused: number } = { created: 0, reused: 0 };
 
   constructor(
-    private createFn: () => unknown,
-    private resetFn: (obj: unknown) => void,
+    private createFn: () => T,
+    private resetFn: (obj: T) => void,
     config: Partial<PoolConfig> = {}
   ) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -40,18 +105,18 @@ class SimpleObjectPool {
     // Pre-populate pool
     for (let i = 0; i < this.config.initialSize; i++) {
       const obj = this.createFn();
-      if (obj && typeof obj === 'object' && 'visible' in obj) {
+      if (isVisible(obj)) {
         obj.visible = false;
       }
       this.pool.push(obj);
     }
   }
 
-  acquire(): unknown {
-    let obj: unknown;
+  acquire(): T {
+    let obj: T;
 
     if (this.pool.length > 0) {
-      obj = this.pool.pop() as unknown;
+      obj = this.pool.pop()!;
       this.stats.reused++;
     } else if (this.config.autoExpand) {
       obj = this.createFn();
@@ -67,7 +132,7 @@ class SimpleObjectPool {
     return obj;
   }
 
-  release(obj: unknown): void {
+  release(obj: T): void {
     if (!this.inUse.has(obj)) {
       return; // Already released or not from this pool
     }
@@ -79,10 +144,10 @@ class SimpleObjectPool {
       this.resetFn(obj);
     } else {
       if (obj && typeof obj === 'object') {
-        if ('visible' in obj) {
+        if (isVisible(obj)) {
           obj.visible = false;
         }
-        if (obj instanceof THREE.Mesh) {
+        if (isThreeMesh(obj)) {
           obj.position.set(0, 0, 0);
           obj.rotation.set(0, 0, 0);
           obj.scale.set(1, 1, 1);
@@ -99,18 +164,29 @@ class SimpleObjectPool {
     }
   }
 
-  private disposeObject(obj: THREE.Object3D | THREE.Material | THREE.BufferGeometry): void {
-    if (obj instanceof THREE.Mesh) {
-      obj.geometry?.dispose();
-      if (Array.isArray(obj.material)) {
-        obj.material.forEach(mat => mat.dispose());
-      } else if (obj.material) {
-        obj.material.dispose();
+  private disposeObject(obj: T): void {
+    if (obj && typeof obj === 'object') {
+      // Try to safely dispose Three.js objects
+      if (hasGeometry(obj)) {
+        obj.geometry.dispose();
       }
-    } else if (obj instanceof THREE.Material) {
-      obj.dispose();
-    } else if (obj instanceof THREE.BufferGeometry) {
-      obj.dispose();
+      if (hasMaterial(obj)) {
+        if (Array.isArray(obj.material)) {
+          obj.material.forEach((mat) => {
+            if (isDisposable(mat)) {
+              mat.dispose();
+            }
+          });
+        } else {
+          const material = obj.material;
+          if (isDisposable(material)) {
+            material.dispose();
+          }
+        }
+      }
+      if (isDisposable(obj)) {
+        obj.dispose();
+      }
     }
   }
 
@@ -135,20 +211,22 @@ class SimpleObjectPool {
  * Manager for multiple object pools
  */
 export class SimpleThreeObjectPool {
-  private pools: Map<string, SimpleObjectPool> = new Map();
+  private spherePools: Map<string, SimpleObjectPool<THREE.SphereGeometry>> = new Map();
+  private materialPools: Map<string, SimpleObjectPool<THREE.MeshStandardMaterial>> = new Map();
+  private meshPools: Map<string, SimpleObjectPool<THREE.Mesh>> = new Map();
 
   // Get sphere geometry
   getSphereGeometry(segments: number = 16): THREE.SphereGeometry {
     const key = `sphere_${segments}`;
-    let pool = this.pools.get(key);
+    let pool = this.spherePools.get(key);
 
     if (!pool) {
-      pool = new SimpleObjectPool(
+      pool = new SimpleObjectPool<THREE.SphereGeometry>(
         () => new THREE.SphereGeometry(1, segments, segments),
         () => {}, // No reset needed for geometry
         { initialSize: 20, maxSize: 100 }
       );
-      this.pools.set(key, pool);
+      this.spherePools.set(key, pool);
     }
 
     return pool.acquire();
@@ -156,7 +234,7 @@ export class SimpleThreeObjectPool {
 
   releaseSphereGeometry(geometry: THREE.SphereGeometry, segments: number = 16): void {
     const key = `sphere_${segments}`;
-    const pool = this.pools.get(key);
+    const pool = this.spherePools.get(key);
     if (pool) {
       pool.release(geometry);
     } else {
@@ -167,12 +245,13 @@ export class SimpleThreeObjectPool {
   // Get material
   getMaterial(color: number = 0x4287F5): THREE.MeshStandardMaterial {
     const key = `material_${color.toString(16)}`;
-    let pool = this.pools.get(key);
+    let pool = this.materialPools.get(key);
 
     if (!pool) {
-      pool = new SimpleObjectPool(
+      pool = new SimpleObjectPool<THREE.MeshStandardMaterial>(
         () => new THREE.MeshStandardMaterial({ color }),
         (mat) => {
+          // Type guard for Three.js material - already typed by generic
           mat.color.setHex(color);
           mat.emissive.setHex(0x000000);
           mat.roughness = 0.5;
@@ -182,7 +261,7 @@ export class SimpleThreeObjectPool {
         },
         { initialSize: 30, maxSize: 200 }
       );
-      this.pools.set(key, pool);
+      this.materialPools.set(key, pool);
     }
 
     return pool.acquire();
@@ -190,7 +269,7 @@ export class SimpleThreeObjectPool {
 
   releaseMaterial(material: THREE.MeshStandardMaterial, color: number): void {
     const key = `material_${color.toString(16)}`;
-    const pool = this.pools.get(key);
+    const pool = this.materialPools.get(key);
     if (pool) {
       pool.release(material);
     } else {
@@ -201,16 +280,17 @@ export class SimpleThreeObjectPool {
   // Get mesh (sphere + material)
   getNodeMesh(radius: number = 1, color: number = 0x4287F5, segments: number = 16): THREE.Mesh {
     const key = `mesh_${radius}_${color.toString(16)}_${segments}`;
-    let pool = this.pools.get(key);
+    let pool = this.meshPools.get(key);
 
     if (!pool) {
-      pool = new SimpleObjectPool(
+      pool = new SimpleObjectPool<THREE.Mesh>(
         () => {
           const geometry = new THREE.SphereGeometry(radius, segments, segments);
           const material = new THREE.MeshStandardMaterial({ color });
           return new THREE.Mesh(geometry, material);
         },
         (mesh) => {
+          // Type guard for Three.js mesh - already typed by generic
           mesh.position.set(0, 0, 0);
           mesh.rotation.set(0, 0, 0);
           mesh.scale.set(1, 1, 1);
@@ -222,7 +302,7 @@ export class SimpleThreeObjectPool {
         },
         { initialSize: 100, maxSize: 1000 }
       );
-      this.pools.set(key, pool);
+      this.meshPools.set(key, pool);
     }
 
     return pool.acquire();
@@ -230,7 +310,7 @@ export class SimpleThreeObjectPool {
 
   releaseNodeMesh(mesh: THREE.Mesh, radius: number, color: number, segments: number): void {
     const key = `mesh_${radius}_${color.toString(16)}_${segments}`;
-    const pool = this.pools.get(key);
+    const pool = this.meshPools.get(key);
     if (pool) {
       pool.release(mesh);
     } else {
@@ -247,25 +327,45 @@ export class SimpleThreeObjectPool {
   // Get statistics for all pools
   getAllStats(): Record<string, { created: number; reused: number; poolSize: number; inUse: number }> {
     const stats: Record<string, { created: number; reused: number; poolSize: number; inUse: number }> = {};
-    this.pools.forEach((pool, key) => {
+
+    // Collect stats from all pool types
+    this.spherePools.forEach((pool, key) => {
       stats[key] = pool.getStats();
     });
+    this.materialPools.forEach((pool, key) => {
+      stats[key] = pool.getStats();
+    });
+    this.meshPools.forEach((pool, key) => {
+      stats[key] = pool.getStats();
+    });
+
     return stats;
   }
 
   // Clear all pools
   clearAll(): void {
-    this.pools.forEach(pool => pool.clear());
-    this.pools.clear();
+    this.spherePools.forEach(pool => pool.clear());
+    this.materialPools.forEach(pool => pool.clear());
+    this.meshPools.forEach(pool => pool.clear());
+
+    this.spherePools.clear();
+    this.materialPools.clear();
+    this.meshPools.clear();
   }
 
   // Estimate memory usage (rough approximation)
   estimateMemoryUsage(): number {
     let totalObjects = 0;
-    this.pools.forEach(pool => {
+
+    const addPoolStats = (pool: SimpleObjectPool<any>) => {
       const stats = pool.getStats();
       totalObjects += stats.poolSize + stats.inUse;
-    });
+    };
+
+    this.spherePools.forEach(addPoolStats);
+    this.materialPools.forEach(addPoolStats);
+    this.meshPools.forEach(addPoolStats);
+
     return totalObjects * 1024; // Rough estimate: 1KB per object
   }
 }

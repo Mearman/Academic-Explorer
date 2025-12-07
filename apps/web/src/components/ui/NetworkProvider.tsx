@@ -22,10 +22,11 @@ import {
   IconAlertTriangle,
   IconCloudOff,
   IconDatabase,
+  IconRefresh,
   IconWifi,
   IconWifiOff,
   IconX} from "@tabler/icons-react";
-import { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState, useContext } from "react";
 
 // Network status types
 export type NetworkStatus = 'online' | 'offline' | 'slow' | 'unstable';
@@ -556,7 +557,7 @@ export const NetworkProvider = ({
 
 // Hook to use network context
 export const useNetwork = () => {
-  const context = use(NetworkContext);
+  const context = useContext(NetworkContext);
   if (!context) {
     throw new Error('useNetwork must be used within a NetworkProvider');
   }
@@ -582,5 +583,5 @@ export const useNetworkFetch = () => {
   }, [addQueuedRequest, status, isOnline]);
 };
 
-// Export fetch function for external use
-export { enhancedFetch as networkAwareFetch };
+// Note: networkAwareFetch functionality available through useNetworkStatus hook
+// The enhancedFetch is component-scoped and requires the NetworkProvider context
