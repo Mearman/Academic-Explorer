@@ -72,7 +72,7 @@ export default defineConfig(
 			poolOptions: {
 				forks: {
 					singleFork: false,
-					maxForks: Math.min(4, require('os').cpus().length),
+					maxForks: 4, // Fixed max forks to avoid ES module issues
 					minForks: 1,
 				},
 			},
@@ -95,6 +95,11 @@ export default defineConfig(
 				include: ["src/**/*.unit.test.{ts,tsx}"],
 				// Minimal coverage reporters for CI speed
 				reporter: ["text", "json"],
+				// Use cleaner temp directory naming to avoid race conditions
+				tempDirectory: "../../coverage/apps/web/.tmp",
+				cleaner: true,
+				// Ensure clean state for each test run
+				cleanOnRerun: true,
 			},
 
 			// Named projects for targeted test execution

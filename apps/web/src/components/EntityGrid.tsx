@@ -1,6 +1,28 @@
 import type { EntityType } from "@bibgraph/types";
 import { EntityCard } from "@bibgraph/ui";
-import { SimpleGrid, Stack, Text } from "@mantine/core";
+import {
+  SimpleGrid,
+  Stack,
+  Text,
+  Group,
+  Button,
+  ActionIcon,
+  TextInput,
+  Badge,
+  Center,
+  Paper,
+  Flex,
+  SegmentedControl
+} from "@mantine/core";
+import {
+  IconSearch,
+  IconRefresh,
+  IconFilter,
+  IconLayoutGrid,
+  IconList,
+  IconAdjustmentsHorizontal
+} from "@tabler/icons-react";
+import { useState, useMemo } from "react";
 
 import { ContentSkeleton } from "./molecules/ContentSkeleton";
 
@@ -12,62 +34,245 @@ export interface EntityGridItem {
   citedByCount?: number;
   description?: string;
   tags?: Array<{ label: string; color?: string }>;
+  bookmarked?: boolean;
+  lastUpdated?: string;
 }
 
 interface EntityGridProps {
   items: EntityGridItem[];
   onNavigate?: (path: string) => void;
-  cols?: number;
+  onBookmark?: (id: string) => void;
+  onRefresh?: () => void;
+  cols?: number | { base: number; xs: number; sm: number; md: number; lg: number; xl: number };
   spacing?: "xs" | "sm" | "md" | "lg" | "xl";
   emptyMessage?: string;
   loading?: boolean;
   loadingCount?: number;
+  searchable?: boolean;
+  filterable?: boolean;
+  showViewToggle?: boolean;
+  defaultView?: "grid" | "list";
+  maxHeight?: number;
 }
 
 export const EntityGrid = ({
   items,
   onNavigate,
-  cols = 3,
+  onBookmark,
+  onRefresh,
+  cols = { base: 1, xs: 2, sm: 2, md: 3, lg: 4, xl: 5 },
   spacing = "md",
   emptyMessage = "No items to display",
   loading = false,
   loadingCount = 6,
+  searchable = false,
+  filterable = false,
+  showViewToggle = false,
+  defaultView = "grid",
+  maxHeight,
 }: EntityGridProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">(defaultView);
+  const [selectedTypes, setSelectedTypes] = useState<EntityType[]>([]);
+
+  // Filter items based on search and filters
+  const filteredItems = useMemo(() => {
+    let result = items;
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.displayName.toLowerCase().includes(query) ||
+          item.description?.toLowerCase().includes(query) ||
+          item.tags?.some((tag) => tag.label.toLowerCase().includes(query))
+      );
+    }
+
+    // Type filter
+    if (selectedTypes.length > 0) {
+      result = result.filter((item) => selectedTypes.includes(item.entityType));
+    }
+
+    return result;
+  }, [items, searchQuery, selectedTypes]);
+
+  // Get unique entity types for filtering
+  const availableTypes = useMemo(() => {
+    return Array.from(new Set(items.map((item) => item.entityType)));
+  }, [items]);
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedTypes([]);
+  };
+  // Render loading state
   if (loading) {
     return (
-      <SimpleGrid cols={cols} spacing={spacing}>
-        {Array.from({ length: loadingCount }).map((_, index) => (
-          <ContentSkeleton key={index} variant="card" count={1} />
-        ))}
-      </SimpleGrid>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <Stack align="center" gap="md" p="xl">
-        <Text size="lg" c="dimmed">
-          {emptyMessage}
-        </Text>
+      <Stack gap="md">
+        {(searchable || filterable || showViewToggle || onRefresh) && (
+          <Paper p="md" withBorder>
+            <Group justify="space-between">
+              <Group>
+                {searchable && (
+                  <TextInput
+                    placeholder="Search entities..."
+                    leftSection={<IconSearch size={16} />}
+                    disabled
+                    style={{ flex: 1 }}
+                  />
+                )}
+                {filterable && availableTypes.map((type) => (
+                  <Badge key={type} variant="light" style={{ opacity: 0.6 }}>
+                    {type}
+                  </Badge>
+                ))}
+              </Group>
+              <Group>
+                {showViewToggle && (
+                  <SegmentedControl
+                    value={viewMode}
+                    onChange={() => {}}
+                    disabled
+                    data={[
+                      { value: 'grid', label: <IconLayoutGrid size={16} /> },
+                      { value: 'list', label: <IconList size={16} /> }
+                    ]}
+                  />
+                )}
+                {onRefresh && (
+                  <ActionIcon variant="light" disabled>
+                    <IconRefresh size={16} />
+                  </ActionIcon>
+                )}
+              </Group>
+            </Group>
+          </Paper>
+        )}
+        <SimpleGrid cols={cols} spacing={spacing}>
+          {Array.from({ length: loadingCount }).map((_, index) => (
+            <ContentSkeleton key={index} variant="card" count={1} />
+          ))}
+        </SimpleGrid>
       </Stack>
     );
   }
 
+  // Enhanced controls section
+  const hasControls = searchable || filterable || showViewToggle || onRefresh;
+
   return (
-    <SimpleGrid cols={cols} spacing={spacing}>
-      {items.map((item) => (
-        <EntityCard
-          key={item.id}
-          id={item.id}
-          displayName={item.displayName}
-          entityType={item.entityType}
-          worksCount={item.worksCount}
-          citedByCount={item.citedByCount}
-          description={item.description}
-          tags={item.tags}
-          onNavigate={onNavigate}
-        />
-      ))}
-    </SimpleGrid>
+    <Stack gap="md" style={{ maxHeight, overflow: 'auto' }}>
+      {hasControls && (
+        <Paper p="md" withBorder>
+          <Group justify="space-between" align="flex-start">
+            <Group gap="md" style={{ flex: 1 }}>
+              {searchable && (
+                <TextInput
+                  placeholder="Search entities..."
+                  leftSection={<IconSearch size={16} />}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                  style={{ flex: 1, minWidth: 200 }}
+                />
+              )}
+              {filterable && availableTypes.length > 1 && (
+                <Group gap="xs">
+                  {availableTypes.map((type) => (
+                    <Badge
+                      key={type}
+                      variant={selectedTypes.includes(type) ? "filled" : "light"}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setSelectedTypes(prev =>
+                          prev.includes(type)
+                            ? prev.filter(t => t !== type)
+                            : [...prev, type]
+                        );
+                      }}
+                    >
+                      {type}
+                    </Badge>
+                  ))}
+                </Group>
+              )}
+            </Group>
+            <Group gap="sm">
+              {(searchQuery || selectedTypes.length > 0) && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  onClick={clearFilters}
+                  leftSection={<IconAdjustmentsHorizontal size={14} />}
+                >
+                  Clear Filters
+                </Button>
+              )}
+              {showViewToggle && (
+                <SegmentedControl
+                  value={viewMode}
+                  onChange={(value) => setViewMode(value as "grid" | "list")}
+                  data={[
+                    { value: 'grid', label: <IconLayoutGrid size={16} /> },
+                    { value: 'list', label: <IconList size={16} /> }
+                  ]}
+                  size="sm"
+                />
+              )}
+              {onRefresh && (
+                <ActionIcon variant="light" onClick={onRefresh}>
+                  <IconRefresh size={16} />
+                </ActionIcon>
+              )}
+            </Group>
+          </Group>
+          {filteredItems.length !== items.length && (
+            <Text size="sm" c="dimmed" mt="xs">
+              Showing {filteredItems.length} of {items.length} items
+            </Text>
+          )}
+        </Paper>
+      )}
+
+      {/* Empty state */}
+      {filteredItems.length === 0 ? (
+        <Center p="xl" style={{ minHeight: 200 }}>
+          <Stack align="center" gap="md">
+            <Text size="lg" c="dimmed" ta="center">
+              {searchQuery || selectedTypes.length > 0
+                ? "No items match your filters"
+                : emptyMessage}
+            </Text>
+            {(searchQuery || selectedTypes.length > 0) && (
+              <Button variant="light" onClick={clearFilters} size="sm">
+                Clear Filters
+              </Button>
+            )}
+          </Stack>
+        </Center>
+      ) : (
+        /* Grid/List View */
+        <SimpleGrid
+          cols={viewMode === 'list' ? 1 : cols}
+          spacing={spacing}
+        >
+          {filteredItems.map((item) => (
+            <EntityCard
+              key={item.id}
+              id={item.id}
+              displayName={item.displayName}
+              entityType={item.entityType}
+              worksCount={item.worksCount}
+              citedByCount={item.citedByCount}
+              description={item.description}
+              tags={item.tags}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </SimpleGrid>
+      )}
+    </Stack>
   );
 };
