@@ -165,6 +165,16 @@ export default tseslint.config([
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
 
+            // Discourage long inline union types (affects 3+ type unions)
+            "max-len": ["error", {
+                code: 100,
+                ignoreUrls: true,
+                ignoreStrings: true,
+                ignoreTemplateLiterals: true,
+                ignoreComments: true,
+                ignoreRegExpLiterals: true
+            }],
+
             // Barrel files rules - ban all re-export patterns but allow index files
           "barrel-files/avoid-re-export-all": "error",
           "barrel-files/avoid-namespace-import": "error",

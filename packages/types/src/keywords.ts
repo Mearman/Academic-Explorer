@@ -38,7 +38,10 @@ export interface KeywordGraphEdge {
  * @param workId
  * @param keyword
  */
-export const createKeywordGraphEdge = (workId: string, keyword: KeywordRelationship): KeywordGraphEdge => {
+export const createKeywordGraphEdge = (
+	workId: string,
+	keyword: KeywordRelationship
+): KeywordGraphEdge => {
 	const keywordId = keyword.id
 	return {
 		id: `${workId}-work_has_keyword-${keywordId.replace('https://openalex.org/keywords/', '')}`,

@@ -26,7 +26,7 @@ import {
 /**
  * Maps base entity field names to their types.
  */
-type BaseEntityFieldMap = {
+interface BaseEntityFieldMap {
 	id: OpenAlexId
 	display_name: string
 	cited_by_count: number
@@ -38,7 +38,7 @@ type BaseEntityFieldMap = {
 /**
  * Maps entity-with-works field names to their types (includes base fields).
  */
-type EntityWithWorksFieldMap = BaseEntityFieldMap & {
+interface EntityWithWorksFieldMap extends BaseEntityFieldMap {
 	works_count: number
 	works_api_url: string
 }
@@ -241,7 +241,7 @@ export const ENTITY_TYPES = [
 export type EntityType = (typeof ENTITY_TYPES)[number]
 
 // Mapping from entity type to entity interface
-export type EntityTypeMap = {
+export interface EntityTypeMap {
 	works: Work
 	authors: Author
 	sources: Source

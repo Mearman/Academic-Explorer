@@ -625,7 +625,13 @@ const removeEmptyModules = (modules: Map<number, InternalModule>): void => {
  * @param visitProbabilities
  * @param globalCompressionRatio
  */
-const buildInfomapModules = <N extends Node, E extends Edge>(graph: Graph<N, E>, modules: Map<number, InternalModule>, nodeToModule: Map<string, number>, visitProbabilities: Map<string, number>, globalCompressionRatio: number): InfomapModule<N>[] => {
+const buildInfomapModules = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  modules: Map<number, InternalModule>,
+  nodeToModule: Map<string, number>,
+  visitProbabilities: Map<string, number>,
+  globalCompressionRatio: number,
+): InfomapModule<N>[] => {
   const results: InfomapModule<N>[] = [];
   let moduleIndex = 0;
 

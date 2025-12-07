@@ -193,7 +193,13 @@ export const dijkstra = <N extends Node, E extends Edge>(graph: Graph<N, E>, sta
  * @param weightFn
  * @internal
  */
-const reconstructPath = <N extends Node, E extends Edge>(graph: Graph<N, E>, startId: string, endId: string, predecessors: Map<string, { nodeId: string; edgeId: string } | null>, weightFn: WeightFunction<N, E>): Path<N, E> => {
+const reconstructPath = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  startId: string,
+  endId: string,
+  predecessors: Map<string, { nodeId: string; edgeId: string } | null>,
+  weightFn: WeightFunction<N, E>,
+): Path<N, E> => {
   const pathNodes: N[] = [];
   const pathEdges: E[] = [];
   let totalWeight = 0;

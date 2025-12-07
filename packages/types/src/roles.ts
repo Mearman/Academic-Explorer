@@ -42,7 +42,11 @@ export interface RoleGraphEdge {
  * @param sourceEntityType
  * @param role
  */
-export const createRoleGraphEdge = (sourceId: string, sourceEntityType: EntityType, role: RoleRelationship): RoleGraphEdge => {
+export const createRoleGraphEdge = (
+	sourceId: string,
+	sourceEntityType: EntityType,
+	role: RoleRelationship
+): RoleGraphEdge => {
 	const targetId = role.id
 	return {
 		id: `${sourceId}-has_role-${targetId.replace('https://openalex.org/', '')}-${role.role}`,

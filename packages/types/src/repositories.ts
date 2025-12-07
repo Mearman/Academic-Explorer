@@ -38,7 +38,10 @@ export interface RepositoryGraphEdge {
  * @param institutionId
  * @param repository
  */
-export const createRepositoryGraphEdge = (institutionId: string, repository: RepositoryRelationship): RepositoryGraphEdge => {
+export const createRepositoryGraphEdge = (
+	institutionId: string,
+	repository: RepositoryRelationship
+): RepositoryGraphEdge => {
 	const sourceId = repository.id
 	return {
 		id: `${institutionId}-institution_has_repository-${sourceId.replace('https://openalex.org/', '')}`,

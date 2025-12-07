@@ -172,25 +172,33 @@ export const ENTITY_METADATA: Record<EntityType, EntityMetadataEntry> = {
  * Get complete metadata for an entity type
  * @param entityType
  */
-export const getEntityMetadata = (entityType: EntityType): EntityMetadataEntry => ENTITY_METADATA[entityType];
+export const getEntityMetadata = (
+	entityType: EntityType
+): EntityMetadataEntry => ENTITY_METADATA[entityType];
 
 /**
  * Get the singular form of an entity type (for catalogue compatibility)
  * @param entityType
  */
-export const getEntitySingularForm = (entityType: EntityType): string => ENTITY_METADATA[entityType].singularForm;
+export const getEntitySingularForm = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].singularForm;
 
 /**
  * Get the ID prefix for an entity type
  * @param entityType
  */
-export const getEntityIdPrefix = (entityType: EntityType): string => ENTITY_METADATA[entityType].idPrefix;
+export const getEntityIdPrefix = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].idPrefix;
 
 /**
  * Get the route path for an entity type
  * @param entityType
  */
-export const getEntityRoutePath = (entityType: EntityType): string => ENTITY_METADATA[entityType].routePath;
+export const getEntityRoutePath = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].routePath;
 
 /**
  * Get the icon name for an entity type
@@ -208,13 +216,17 @@ export const getEntityColor = (entityType: EntityType): string => ENTITY_METADAT
  * Get the display name for an entity type
  * @param entityType
  */
-export const getEntityDisplayName = (entityType: EntityType): string => ENTITY_METADATA[entityType].displayName;
+export const getEntityDisplayName = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].displayName;
 
 /**
  * Get the plural form for an entity type
  * @param entityType
  */
-export const getEntityPlural = (entityType: EntityType): string => ENTITY_METADATA[entityType].plural;
+export const getEntityPlural = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].plural;
 
 /**
  * Convert singular form to plural EntityType
@@ -233,7 +245,9 @@ export const toEntityType = (singularForm: string): EntityType | null => {
  * @param entityType
  * @example toSingularForm('works') => 'work'
  */
-export const toSingularForm = (entityType: EntityType): string => ENTITY_METADATA[entityType].singularForm;
+export const toSingularForm = (
+	entityType: EntityType
+): string => ENTITY_METADATA[entityType].singularForm;
 
 /**
  * Check if a string is a valid entity type (plural form)

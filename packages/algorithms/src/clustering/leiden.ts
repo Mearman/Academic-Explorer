@@ -432,7 +432,14 @@ const processNeighborsForConnectivity = <N extends Node, E extends Edge>(
  * @param nodeToSuperNode
  * @param incomingEdges
  */
-const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, communities: Map<number, InternalCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeToSuperNode: Map<string, string>, incomingEdges: Map<string, E[]>): void => {
+const refineCommunities = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  communities: Map<number, InternalCommunity>,
+  nodeToCommunity: Map<string, number>,
+  superNodes: Map<string, Set<string>>,
+  nodeToSuperNode: Map<string, string>,
+  incomingEdges: Map<string, E[]>,
+): void => {
   const communitiesToSplit: number[] = [];
 
   // Identify disconnected communities
@@ -454,7 +461,15 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
 
       // Find all super-nodes connected to this one
       currentMemberNodes.forEach((nodeId) => {
-        processNeighborsForConnectivity(nodeId, graph, nodeToSuperNode, community, visited, queue, incomingEdges);
+        processNeighborsForConnectivity(
+          nodeId,
+          graph,
+          nodeToSuperNode,
+          community,
+          visited,
+          queue,
+          incomingEdges,
+        );
       });
     }
 
@@ -495,7 +510,15 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
         if (currentMemberNodes === undefined) continue;
 
         currentMemberNodes.forEach((nodeId) => {
-          processNeighborsForConnectivity(nodeId, graph, nodeToSuperNode, community, visited, queue, incomingEdges);
+          processNeighborsForConnectivity(
+            nodeId,
+            graph,
+            nodeToSuperNode,
+            community,
+            visited,
+            queue,
+            incomingEdges,
+          );
         });
       }
 
@@ -525,7 +548,9 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
         const componentIdx = componentAssignment.get(superNodeId);
         if (componentIdx === undefined) return;
 
-        const newCommunityId = componentIdx === 0 ? communityId : maxCommunityId - (componentId - 1 - componentIdx);
+        const newCommunityId = componentIdx === 0
+          ? communityId
+          : maxCommunityId - (componentId - 1 - componentIdx);
 
         const newCommunity = newCommunities.get(newCommunityId);
         if (newCommunity !== undefined) {
@@ -552,7 +577,12 @@ const refineCommunities = <N extends Node, E extends Edge>(graph: Graph<N, E>, c
  * @param weightFn
  * @param incomingEdges
  */
-const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): number => {
+const calculateNodeDegree = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  nodeId: string,
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>,
+): number => {
   let degree = 0;
 
   const outgoingResult = graph.getOutgoingEdges(nodeId);
@@ -585,7 +615,10 @@ const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>,
  * @param graph
  * @param weightFn
  */
-const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N, E>, weightFn: WeightFunction<N, E>): number => {
+const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  weightFn: WeightFunction<N, E>,
+): number => {
   let totalWeight = 0;
 
   const allNodes = graph.getAllNodes();
@@ -618,7 +651,14 @@ const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N
  * @param weightFn
  * @param incomingEdges
  */
-const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(graph: Graph<N, E>, memberNodes: Set<string>, nodeToSuperNode: Map<string, string>, nodeToCommunity: Map<string, number>, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): Map<number, number> => {
+const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  memberNodes: Set<string>,
+  nodeToSuperNode: Map<string, string>,
+  nodeToCommunity: Map<string, number>,
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>,
+): Map<number, number> => {
   const neighborCommunities = new Map<number, number>();
 
   memberNodes.forEach((nodeId) => {
@@ -680,7 +720,15 @@ const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(gra
  * @param superNodes
  * @param nodeDegrees
  */
-const moveSuperNode = (superNodeId: string, fromCommunityId: number, toCommunityId: number, communities: Map<number, InternalCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeDegrees: Map<string, number>): void => {
+const moveSuperNode = (
+  superNodeId: string,
+  fromCommunityId: number,
+  toCommunityId: number,
+  communities: Map<number, InternalCommunity>,
+  nodeToCommunity: Map<string, number>,
+  superNodes: Map<string, Set<string>>,
+  nodeDegrees: Map<string, number>,
+): void => {
   const fromCommunity = communities.get(fromCommunityId);
   if (fromCommunity === undefined) return;
 
@@ -728,7 +776,11 @@ const removeEmptyCommunities = (communities: Map<number, InternalCommunity>): vo
  * @param nodeToCommunity
  * @param incomingEdges
  */
-const buildLeidenResults = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeToCommunity: Map<string, number>, incomingEdges: Map<string, E[]>): LeidenCommunity<N>[] => {
+const buildLeidenResults = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  nodeToCommunity: Map<string, number>,
+  incomingEdges: Map<string, E[]>,
+): LeidenCommunity<N>[] => {
   const communityMap = new Map<number, Set<N>>();
 
   nodeToCommunity.forEach((communityId, nodeId) => {
@@ -815,7 +867,11 @@ const leidenToCommunity = <N extends Node>(leidenCommunity: LeidenCommunity<N>):
  * @param community
  * @param incomingEdges
  */
-const validateConnectivity = <N extends Node, E extends Edge>(graph: Graph<N, E>, community: Set<N>, incomingEdges: Map<string, E[]>): boolean => {
+const validateConnectivity = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  community: Set<N>,
+  incomingEdges: Map<string, E[]>,
+): boolean => {
   if (community.size === 0) return true;
   if (community.size === 1) return true;
 

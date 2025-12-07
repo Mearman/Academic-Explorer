@@ -167,11 +167,16 @@ export const validateBookmarkUrl = (url: string): void => {
  * Type guard to check if an error is a BookmarkError
  * @param error
  */
-export const isBookmarkError = (error: unknown): error is BookmarkError => error instanceof BookmarkError;
+export const isBookmarkError = (
+	error: unknown
+): error is BookmarkError => error instanceof BookmarkError;
 
 /**
  * Type guard to check if an error is a specific bookmark error type
  * @param error
  * @param code
  */
-export const isBookmarkErrorCode = (error: unknown, code: BookmarkErrorCode): boolean => isBookmarkError(error) && error.code === code;
+export const isBookmarkErrorCode = (
+	error: unknown,
+	code: BookmarkErrorCode
+): boolean => isBookmarkError(error) && error.code === code;

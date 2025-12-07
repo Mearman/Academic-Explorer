@@ -32,7 +32,9 @@ type AdapterWeightFunction = WeightFunction<GraphNodeRecord, GraphEdgeRecord>;
  * Build a weight function from WeightConfig
  * @param config
  */
-const buildWeightFunction = (config?: WeightConfig<GraphNodeRecord, GraphEdgeRecord>): AdapterWeightFunction => {
+const buildWeightFunction = (
+	config?: WeightConfig<GraphNodeRecord, GraphEdgeRecord>
+): AdapterWeightFunction => {
   if (!config) {
     return () => 1;
   }
@@ -326,13 +328,23 @@ export class PersistentGraphAdapter {
       if (filter.version !== undefined && edge.version !== filter.version) {
         return false;
       }
-      if (filter.scoreMin !== undefined && (edge.score === undefined || edge.score < filter.scoreMin)) {
+      if (
+        	filter.scoreMin !== undefined &&
+        	(edge.score === undefined || edge.score < filter.scoreMin)
+        ) {
         return false;
       }
-      if (filter.scoreMax !== undefined && (edge.score === undefined || edge.score > filter.scoreMax)) {
+      if (
+        	filter.scoreMax !== undefined &&
+        	(edge.score === undefined || edge.score > filter.scoreMax)
+        ) {
         return false;
       }
-      if (filter.yearsInclude !== undefined && filter.yearsInclude.length > 0 && (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year)))) {
+      if (
+          filter.yearsInclude !== undefined &&
+          filter.yearsInclude.length > 0 &&
+          (!edge.years || !filter.yearsInclude.some((year) => edge.years?.includes(year)))
+        ) {
           return false;
         }
       if (filter.awardId !== undefined && edge.awardId !== filter.awardId) {
@@ -359,4 +371,7 @@ export class PersistentGraphAdapter {
  * });
  * ```
  */
-export const createGraphAdapter = (graph: PersistentGraph, options?: TraversalOptions<GraphNodeRecord, GraphEdgeRecord>): PersistentGraphAdapter => new PersistentGraphAdapter(graph, options);
+export const createGraphAdapter = (
+	graph: PersistentGraph,
+	options?: TraversalOptions<GraphNodeRecord, GraphEdgeRecord>
+): PersistentGraphAdapter => new PersistentGraphAdapter(graph, options);

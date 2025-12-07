@@ -156,7 +156,8 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         targetType: 'institutions',
         label: 'Affiliated Institutions',
         extractEmbedded: (entityData) => {
-          const affiliations = entityData.affiliations as Array<Record<string, unknown>> | undefined;
+          const affiliations = entityData.affiliations as
+          	Array<Record<string, unknown>> | undefined;
           if (!affiliations || !Array.isArray(affiliations)) return [];
 
           const results: EmbeddedRelationshipItem[] = [];
@@ -281,8 +282,11 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         type: 'PUBLICATION',
         targetType: 'sources',
         label: 'Published In',
-        extractEmbedded: (entityData) => {
-          const primaryLocation = entityData.primary_location as Record<string, unknown> | undefined;
+        extractEmbedded: (
+          	entityData
+          ) => {
+          const primaryLocation = entityData.primary_location as
+            Record<string, unknown> | undefined;
           if (!primaryLocation) return [];
 
           const source = primaryLocation.source as Record<string, unknown> | undefined;
@@ -366,10 +370,11 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       {
         source: 'embedded',
         type: 'institution_has_repository',
-        targetType: 'sources',
+        	targetType: 'sources',
         label: 'Repositories',
         extractEmbedded: (entityData) => {
-          const repositories = entityData.repositories as Array<Record<string, unknown>> | undefined;
+          const repositories = entityData.repositories as
+            Array<Record<string, unknown>> | undefined;
           if (!repositories || !Array.isArray(repositories)) return [];
 
           return repositories.map((repo) => ({
@@ -434,10 +439,11 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       {
         source: 'embedded',
         type: 'HOST_ORGANIZATION',
-        targetType: 'publishers',
+        	targetType: 'publishers',
         label: 'Published By',
         extractEmbedded: (entityData) => {
-          const hostOrg = entityData.host_organization as Record<string, unknown> | string | undefined;
+          const hostOrg = entityData.host_organization as
+            Record<string, unknown> | string | undefined;
           const hostOrgName = entityData.host_organization_name as string | undefined;
 
           if (!hostOrg) return [];
@@ -630,32 +636,42 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
  * @param entityType - The type of entity (e.g., 'authors', 'works')
  * @returns Inbound and outbound relationship query configurations
  */
-export const getEntityRelationshipQueries = (entityType: EntityType): EntityRelationshipQueries => ENTITY_RELATIONSHIP_QUERIES[entityType];
+export const getEntityRelationshipQueries = (
+	entityType: EntityType
+): EntityRelationshipQueries => ENTITY_RELATIONSHIP_QUERIES[entityType];
 
 /**
  * Get all inbound query configurations for an entity type
  * @param entityType - The type of entity
  * @returns Array of inbound relationship query configurations
  */
-export const getInboundQueries = (entityType: EntityType): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound;
+export const getInboundQueries = (
+	entityType: EntityType
+): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound;
 
 /**
  * Get all outbound query configurations for an entity type
  * @param entityType - The type of entity
  * @returns Array of outbound relationship query configurations
  */
-export const getOutboundQueries = (entityType: EntityType): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound;
+export const getOutboundQueries = (
+	entityType: EntityType
+): RelationshipQueryConfig[] => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound;
 
 /**
  * Check if an entity type has any inbound queries configured
  * @param entityType - The type of entity
  * @returns True if inbound queries exist
  */
-export const hasInboundQueries = (entityType: EntityType): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound.length > 0;
+export const hasInboundQueries = (
+	entityType: EntityType
+): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].inbound.length > 0;
 
 /**
  * Check if an entity type has any outbound queries configured
  * @param entityType - The type of entity
  * @returns True if outbound queries exist
  */
-export const hasOutboundQueries = (entityType: EntityType): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound.length > 0;
+export const hasOutboundQueries = (
+	entityType: EntityType
+): boolean => ENTITY_RELATIONSHIP_QUERIES[entityType].outbound.length > 0;

@@ -478,7 +478,14 @@ const rebalancePartitions = (assignments: number[], k: number, nodeCount: number
  * @param weightFn
  * @param nodeIdToIndex
  */
-const buildPartitions = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodes: N[], assignments: number[], k: number, weightFn: WeightFunction<N, E>, nodeIdToIndex: Map<string, number>): Partition<N>[] => {
+const buildPartitions = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  nodes: N[],
+  assignments: number[],
+  k: number,
+  weightFn: WeightFunction<N, E>,
+  nodeIdToIndex: Map<string, number>,
+): Partition<N>[] => {
   // Group nodes by partition
   const partitionNodes: Map<number, Set<N>> = new Map();
   for (let i = 0; i < k; i++) {

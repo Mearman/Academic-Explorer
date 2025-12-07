@@ -44,7 +44,10 @@ export interface ConceptGraphEdge {
  * @param workId
  * @param concept
  */
-export const createConceptGraphEdge = (workId: string, concept: ConceptRelationship): ConceptGraphEdge => {
+export const createConceptGraphEdge = (
+	workId: string,
+	concept: ConceptRelationship
+): ConceptGraphEdge => {
 	const conceptId = concept.id
 	return {
 		id: `${workId}-concept-${conceptId.replace('https://openalex.org/', '')}`,

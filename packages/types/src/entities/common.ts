@@ -29,7 +29,7 @@ export const OpenAlexResponseSchema = <T extends z.ZodType>(resultSchema: T) =>
 			.optional(),
 	})
 
-export type OpenAlexResponse<T> = {
+export interface OpenAlexResponse<T> {
 	results: T[]
 	meta: {
 		count: number

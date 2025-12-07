@@ -10,7 +10,9 @@ export const hasProperty = <T extends Record<string, unknown>>(params: {
 	return typeof obj === "object" && obj !== null && prop in obj
 };
 
-export const isNonNull = <T>(value: T | null | undefined): value is T => value !== null && value !== undefined;
+export const isNonNull = <T>(
+	value: T | null | undefined
+): value is T => value !== null && value !== undefined;
 
 /**
  * Type guard to verify if value is a record object

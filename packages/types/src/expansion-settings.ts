@@ -380,7 +380,10 @@ export const getDefaultSettingsForTarget = (target: ExpansionTarget): ExpansionS
  * @param filter
  * @param property
  */
-export const validateFilterCriteria = (filter: FilterCriteria, property: PropertyDefinition): boolean => {
+export const validateFilterCriteria = (
+	filter: FilterCriteria,
+	property: PropertyDefinition
+): boolean => {
 	// Check if operator is valid for property type
 	switch (property.type) {
 		case "number":

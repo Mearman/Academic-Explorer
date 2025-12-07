@@ -312,7 +312,8 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
 
     // T012: Adaptive iteration limits using helper function (spec-027 Phase 1)
     // hierarchyLevel starts at 1, but helper expects 0-based (level 0 = first iteration)
-    const MAX_ITERATIONS = maxIterations ?? getAdaptiveIterationLimit(nodeCount, hierarchyLevel - 1);
+    const MAX_ITERATIONS = maxIterations ??
+      getAdaptiveIterationLimit(nodeCount, hierarchyLevel - 1);
 
     // Build reverse lookup once per hierarchy level (optimization)
     const nodeToSuperNode = new Map<string, string>();
@@ -545,7 +546,12 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
  * @param weightFn
  * @param incomingEdges
  */
-const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>, nodeId: string, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>): number => {
+const calculateNodeDegree = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  nodeId: string,
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>,
+): number => {
   let degree = 0;
 
   // Outgoing edges
@@ -580,7 +586,10 @@ const calculateNodeDegree = <N extends Node, E extends Edge>(graph: Graph<N, E>,
  * @param graph
  * @param weightFn
  */
-const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N, E>, weightFn: WeightFunction<N, E>): number => {
+const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  weightFn: WeightFunction<N, E>,
+): number => {
   let totalWeight = 0;
 
   const allNodes = graph.getAllNodes();
@@ -619,7 +628,15 @@ const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(graph: Graph<N
  * @param incomingEdges
  * @param csrGraph
  */
-const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(graph: Graph<N, E>, memberNodes: Set<string>, nodeToSuperNode: Map<string, string>, nodeToCommunity: Map<string, number>, weightFn: WeightFunction<N, E>, incomingEdges: Map<string, E[]>, csrGraph: CSRGraph<N, E> | null = null): Map<number, number> => {
+const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(
+  graph: Graph<N, E>,
+  memberNodes: Set<string>,
+  nodeToSuperNode: Map<string, string>,
+  nodeToCommunity: Map<string, number>,
+  weightFn: WeightFunction<N, E>,
+  incomingEdges: Map<string, E[]>,
+  csrGraph: CSRGraph<N, E> | null = null,
+): Map<number, number> => {
   const neighborCommunities = new Map<number, number>(); // communityId -> total weight
 
   // For each member node in this super-node
@@ -722,7 +739,15 @@ const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(gra
  * @param superNodes
  * @param nodeDegrees
  */
-const moveSuperNode = (superNodeId: string, fromCommunityId: number, toCommunityId: number, communities: Map<number, LouvainCommunity>, nodeToCommunity: Map<string, number>, superNodes: Map<string, Set<string>>, nodeDegrees: Map<string, number>): void => {
+const moveSuperNode = (
+  superNodeId: string,
+  fromCommunityId: number,
+  toCommunityId: number,
+  communities: Map<number, LouvainCommunity>,
+  nodeToCommunity: Map<string, number>,
+  superNodes: Map<string, Set<string>>,
+  nodeDegrees: Map<string, number>,
+): void => {
   const fromCommunity = communities.get(fromCommunityId);
   if (!fromCommunity) return;
 
