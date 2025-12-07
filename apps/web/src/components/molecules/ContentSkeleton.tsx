@@ -1,4 +1,6 @@
-import { Group,Skeleton, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
+
+import { CardSkeleton, ListSkeleton,Skeleton, TextSkeleton } from "../ui/LoadingSkeleton";
 
 interface ContentSkeletonProps {
   variant?: "text" | "card" | "list" | "detail";
@@ -16,60 +18,29 @@ export const ContentSkeleton = ({
   variant = "text",
   count = 3,
 }: ContentSkeletonProps) => {
-  if (variant === "text") {
-    return (
-      <Stack gap="sm">
-        {Array.from({ length: count }).map((_, index) => (
-          <Skeleton key={index} height={16} radius="sm" />
-        ))}
-      </Stack>
-    );
+  // Use centralized skeleton components for consistency and better accessibility
+  switch (variant) {
+    case "text":
+      return <TextSkeleton lines={count} />;
+    case "card":
+      return (
+        <Stack gap="md">
+          {Array.from({ length: count }).map((_, index) => (
+            <CardSkeleton key={index} />
+          ))}
+        </Stack>
+      );
+    case "list":
+      return <ListSkeleton items={count} />;
+    case "detail":
+      return (
+        <Stack gap="lg">
+          <Skeleton height={32} width="40%" variant="text" />
+          <CardSkeleton />
+          <TextSkeleton lines={3} />
+        </Stack>
+      );
+    default:
+      return <TextSkeleton lines={count} />;
   }
-
-  if (variant === "card") {
-    return (
-      <Stack gap="md">
-        {Array.from({ length: count }).map((_, index) => (
-          <div key={index}>
-            <Skeleton height={120} radius="md" mb="xs" />
-            <Skeleton height={16} width="70%" radius="sm" mb="xs" />
-            <Skeleton height={14} width="50%" radius="sm" />
-          </div>
-        ))}
-      </Stack>
-    );
-  }
-
-  if (variant === "list") {
-    return (
-      <Stack gap="xs">
-        {Array.from({ length: count }).map((_, index) => (
-          <Group key={index} gap="md">
-            <Skeleton height={40} width={40} circle />
-            <div style={{ flex: 1 }}>
-              <Skeleton height={16} width="60%" radius="sm" mb="xs" />
-              <Skeleton height={12} width="40%" radius="sm" />
-            </div>
-          </Group>
-        ))}
-      </Stack>
-    );
-  }
-
-  if (variant === "detail") {
-    return (
-      <Stack gap="lg">
-        <Skeleton height={32} width="40%" radius="sm" />
-        <Skeleton height={120} radius="md" />
-        <Group gap="md">
-          <Skeleton height={16} width="30%" radius="sm" />
-          <Skeleton height={16} width="25%" radius="sm" />
-          <Skeleton height={16} width="20%" radius="sm" />
-        </Group>
-        <Skeleton height={200} radius="md" />
-      </Stack>
-    );
-  }
-
-  return null;
 };
