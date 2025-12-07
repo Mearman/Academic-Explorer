@@ -167,7 +167,7 @@ describe('Leiden Community Detection', () => {
   });
 
   describe('User Story 5 - Scenario 3: Performance < 60s', () => {
-    it('should complete in under 20 seconds for 1000-paper network', { timeout: 25000 }, () => {
+    it('should complete in under 50 seconds for 1000-paper network (CI-optimized)', { timeout: 60000 }, () => {
       // Given: Large citation network with 1000 papers
       const graph = largeCitationNetwork();
       expect(graph.getNodeCount()).toBe(1000);
@@ -178,8 +178,10 @@ describe('Leiden Community Detection', () => {
       const endTime = performance.now();
       const executionTime = endTime - startTime;
 
-      // Then: Algorithm completes in under 20 seconds (3x faster than original 60s requirement)
-      expect(executionTime).toBeLessThan(20000); // 20 seconds in milliseconds
+      // Then: Algorithm completes in under 50 seconds (CI runner overhead accounted for)
+      // Local performance: ~14-15 seconds (optimal)
+      // CI performance: ~37-38 seconds (2.5x overhead due to runner limitations)
+      expect(executionTime).toBeLessThan(50000); // 50 seconds in milliseconds
 
       // Verify algorithm produces valid results at scale
       expect(result.ok).toBe(true);
