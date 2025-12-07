@@ -3,7 +3,6 @@
  * Provides sophisticated search options with filters and refinements
  */
 
-import { useKeyboardShortcuts } from "./ui/KeyboardShortcuts";
 import { logger } from "@bibgraph/utils";
 import {
   Accordion,
@@ -43,6 +42,8 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { NOTIFICATION_DURATION } from "@/config/notification-constants";
 import { BORDER_STYLE_GRAY_3, ICON_SIZE } from '@/config/style-constants';
+
+import { useKeyboardShortcuts } from "./ui/KeyboardShortcuts";
 
 
 
