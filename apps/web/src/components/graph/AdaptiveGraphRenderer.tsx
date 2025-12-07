@@ -164,7 +164,7 @@ export const AdaptiveGraphRenderer = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [theme.breakpoints.sm]);
-  const graphRef = useRef<ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | null>(null);
+  const graphRef = useRef<ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | undefined>(undefined);
   const [currentPerformanceProfile, setCurrentPerformanceProfile] = useState<'low' | 'medium' | 'high'>('medium');
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
     fps: 60,
@@ -365,7 +365,9 @@ export const AdaptiveGraphRenderer = ({
   }, [onNodeRightClick]);
 
   const handleNodeHover = useCallback((node: unknown | null) => {
-    if (node === null || isGraphCallbackNode(node)) {
+    if (node === null) {
+      onNodeHover?.(null);
+    } else if (isGraphCallbackNode(node)) {
       onNodeHover?.(node);
     }
   }, [onNodeHover]);
@@ -375,8 +377,8 @@ export const AdaptiveGraphRenderer = ({
   }, [onBackgroundClick]);
 
   // Type guard for force graph methods with zoom
-  const hasZoomMethod = (obj: ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | null): obj is ForceGraphMethods<NodeObject, LinkObject<NodeObject>> => {
-    return obj !== null;
+  const hasZoomMethod = (obj: ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | undefined): obj is ForceGraphMethods<NodeObject, LinkObject<NodeObject>> => {
+    return obj !== undefined;
   };
 
   // Touch gesture handlers for mobile interactions
@@ -425,7 +427,7 @@ export const AdaptiveGraphRenderer = ({
   // Notify parent when graph is ready
   useEffect(() => {
     const checkRef = () => {
-      if (graphRef.current && onGraphReady) {
+      if (graphRef.current !== undefined && onGraphReady) {
         onGraphReady(graphRef.current as unknown);
       }
     };
@@ -437,7 +439,7 @@ export const AdaptiveGraphRenderer = ({
 
   // Pause/resume simulation based on settings
   useEffect(() => {
-    if (graphRef.current) {
+    if (graphRef.current !== undefined) {
       if (enableSimulation && renderSettings.animationEnabled) {
         graphRef.current.resumeAnimation();
       } else {
@@ -528,7 +530,7 @@ export const AdaptiveGraphRenderer = ({
       <LoadingOverlay visible={false} />
 
       <ForceGraph2D
-        ref={graphRef as React.RefObject<ForceGraphMethods<NodeObject, LinkObject<NodeObject>>>}
+        ref={graphRef}
         width={width}
         height={height}
         graphData={graphData}
@@ -631,7 +633,7 @@ export const AdaptiveGraphRenderer = ({
 
           <button
             onClick={() => {
-              if (graphRef.current) {
+              if (graphRef.current !== undefined) {
                 graphRef.current.zoomToFit(200);
                 setZoomLevel(1);
                 announceToScreenReader('Zoom to fit');
