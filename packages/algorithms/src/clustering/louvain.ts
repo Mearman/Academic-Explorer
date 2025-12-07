@@ -327,6 +327,10 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
     // Aggressive early stopping: 2 rounds for large graphs, 3 for small
     const MAX_NO_IMPROVEMENT_ROUNDS = nodeCount > 500 ? 2 : 3;
 
+    // Performance optimization: Pre-allocate arrays for iteration
+    const superNodeIdsArray = [...superNodes.keys()];
+    const superNodeOrderArray = new Array<string>(superNodeIdsArray.length);
+
     // T051: Initialize community edge weight cache (spec-027 Phase 5)
     // DISABLED: Cache adds overhead without benefit (see spec-027 Phase 5 checkpoint)
     // const communityCache: CommunityHashTable = new Map();
@@ -347,13 +351,14 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
       iteration++;
       let movesThisRound = 0;
 
-      // Visit all super-nodes (altered communities disabled - no benefit)
-      const nodesToVisit = new Set(superNodes.keys());
+      // Visit nodes in random order - reuse array to avoid allocation
+      const shuffled = shuffleArray(superNodeIdsArray);
+      for (let i = 0; i < shuffled.length; i++) {
+        superNodeOrderArray[i] = shuffled[i];
+      }
 
-      // Visit nodes in random order
-      const superNodeOrder = shuffleArray([...nodesToVisit]);
-
-      for (const superNodeId of superNodeOrder) {
+      for (let nodeIndex = 0; nodeIndex < superNodeOrderArray.length; nodeIndex++) {
+        const superNodeId = superNodeOrderArray[nodeIndex];
         const currentCommunityId = nodeToCommunity.get(superNodeId);
         if (currentCommunityId === undefined) continue;
 
@@ -388,7 +393,8 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
           // T024: Random-neighbor mode (Fast Louvain) - shuffle and accept first positive ΔQ
           const shuffledNeighbors = shuffle(neighborList, seed);
 
-          for (const [neighborCommunityId, kIn] of shuffledNeighbors) {
+          for (let neighborIndex = 0; neighborIndex < shuffledNeighbors.length; neighborIndex++) {
+            const [neighborCommunityId, kIn] = shuffledNeighbors[neighborIndex];
             if (neighborCommunityId === currentCommunityId) {
               continue; // Skip current community
             }
@@ -396,7 +402,7 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
             const neighborCommunity = communities.get(neighborCommunityId);
             if (!neighborCommunity) continue;
 
-            // Calculate modularity change
+            // Calculate modularity change with pre-calculated resolutionM
             const deltaQ = calculateModularityDelta(
               superNodeDegree,
               kIn,
@@ -414,7 +420,8 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
           }
         } else {
           // T023: Best-neighbor mode - evaluate all neighbors, select maximum ΔQ
-          for (const [neighborCommunityId, kIn] of neighborList) {
+          for (let neighborIndex = 0; neighborIndex < neighborList.length; neighborIndex++) {
+            const [neighborCommunityId, kIn] = neighborList[neighborIndex];
             if (neighborCommunityId === currentCommunityId) {
               continue; // Skip current community
             }
@@ -422,7 +429,7 @@ export const detectCommunities = <N extends Node, E extends Edge>(graph: Graph<N
             const neighborCommunity = communities.get(neighborCommunityId);
             if (!neighborCommunity) continue;
 
-            // Calculate modularity change
+            // Calculate modularity change with pre-calculated resolutionM
             const deltaQ = calculateModularityDelta(
               superNodeDegree,
               kIn,
@@ -615,11 +622,22 @@ const calculateTotalEdgeWeight = <N extends Node, E extends Edge>(
 };
 
 /**
+ * Reusable Map for neighbor community weights to avoid allocations in hot path.
+ * This is a significant performance optimization for large graphs.
+ */
+let reusableNeighborCommunities: Map<number, number> | null = null;
+
+/**
  * Find neighboring communities and calculate edge weights to each (for super-nodes).
  *
  * For a super-node (which contains multiple original nodes), this finds all edges
  * from those original nodes to nodes in other super-nodes, and aggregates the weights
  * by the target super-node's community.
+ *
+ * PERFORMANCE OPTIMIZATIONS:
+ * - Reuses Map to avoid allocations in hot path
+ * - Uses for loops instead of forEach for better performance
+ * - Caches frequently accessed values
  * @param graph
  * @param memberNodes
  * @param nodeToSuperNode
@@ -637,10 +655,20 @@ const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(
   incomingEdges: Map<string, E[]>,
   csrGraph: CSRGraph<N, E> | null = null,
 ): Map<number, number> => {
-  const neighborCommunities = new Map<number, number>(); // communityId -> total weight
+  // Reuse Map to avoid allocation in hot path
+  if (!reusableNeighborCommunities) {
+    reusableNeighborCommunities = new Map<number, number>();
+  }
+  const neighborCommunities = reusableNeighborCommunities;
+  neighborCommunities.clear();
+
+  // Convert Set to array for efficient iteration
+  const memberArray = [...memberNodes];
 
   // For each member node in this super-node
-  memberNodes.forEach((nodeId) => {
+  for (let memberIndex = 0; memberIndex < memberArray.length; memberIndex++) {
+    const nodeId = memberArray[memberIndex];
+
     // T044-T046: Use CSR for neighbor iteration when available (spec-027 Phase 5)
     if (csrGraph) {
       const nodeIdx = csrGraph.nodeIndex.get(nodeId);
@@ -659,19 +687,19 @@ const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(
           if (targetSuperNodeId) {
             const targetCommunityId = nodeToCommunity.get(targetSuperNodeId);
             if (targetCommunityId !== undefined) {
-              neighborCommunities.set(
-                targetCommunityId,
-                (neighborCommunities.get(targetCommunityId) || 0) + weight
-              );
+              const currentWeight = neighborCommunities.get(targetCommunityId) || 0;
+              neighborCommunities.set(targetCommunityId, currentWeight + weight);
             }
           }
         }
       }
     } else {
-      // Fallback: Original Map-based iteration
+      // Fallback: Original Map-based iteration - optimized with for loops
       const outgoingResult = graph.getOutgoingEdges(nodeId);
       if (outgoingResult.ok) {
-        outgoingResult.value.forEach((edge) => {
+        const edges = outgoingResult.value;
+        for (let edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+          const edge = edges[edgeIndex];
           const targetNodeId = edge.target;
 
           // Find which super-node the target belongs to
@@ -684,43 +712,42 @@ const findNeighborCommunitiesForSuperNode = <N extends Node, E extends Edge>(
               const targetOption = graph.getNode(edge.target);
               if (sourceOption.some && targetOption.some) {
                 const weight = weightFn(edge, sourceOption.value, targetOption.value);
-                neighborCommunities.set(
-                  targetCommunityId,
-                  (neighborCommunities.get(targetCommunityId) || 0) + weight
-                );
+                const currentWeight = neighborCommunities.get(targetCommunityId) || 0;
+                neighborCommunities.set(targetCommunityId, currentWeight + weight);
               }
             }
           }
-        });
+        }
       }
     }
 
-    // Incoming edges (for directed graphs)
+    // Incoming edges (for directed graphs) - optimized with for loops
     if (graph.isDirected()) {
-      const incoming = incomingEdges.get(nodeId) || [];
-      incoming.forEach((edge) => {
-        const sourceNodeId = edge.source;
+      const incoming = incomingEdges.get(nodeId);
+      if (incoming) {
+        for (let edgeIndex = 0; edgeIndex < incoming.length; edgeIndex++) {
+          const edge = incoming[edgeIndex];
+          const sourceNodeId = edge.source;
 
-        // Find which super-node the source belongs to
-        const sourceSuperNodeId = nodeToSuperNode.get(sourceNodeId);
-        if (sourceSuperNodeId) {
-          // Find which community that super-node is in
-          const sourceCommunityId = nodeToCommunity.get(sourceSuperNodeId);
-          if (sourceCommunityId !== undefined) {
-            const sourceOption = graph.getNode(edge.source);
-            const targetOption = graph.getNode(edge.target);
-            if (sourceOption.some && targetOption.some) {
-              const weight = weightFn(edge, sourceOption.value, targetOption.value);
-              neighborCommunities.set(
-                sourceCommunityId,
-                (neighborCommunities.get(sourceCommunityId) || 0) + weight
-              );
+          // Find which super-node the source belongs to
+          const sourceSuperNodeId = nodeToSuperNode.get(sourceNodeId);
+          if (sourceSuperNodeId) {
+            // Find which community that super-node is in
+            const sourceCommunityId = nodeToCommunity.get(sourceSuperNodeId);
+            if (sourceCommunityId !== undefined) {
+              const sourceOption = graph.getNode(edge.source);
+              const targetOption = graph.getNode(edge.target);
+              if (sourceOption.some && targetOption.some) {
+                const weight = weightFn(edge, sourceOption.value, targetOption.value);
+                const currentWeight = neighborCommunities.get(sourceCommunityId) || 0;
+                neighborCommunities.set(sourceCommunityId, currentWeight + weight);
+              }
             }
           }
         }
-      });
+      }
     }
-  });
+  }
 
   return neighborCommunities;
 };
