@@ -27,7 +27,7 @@ import {
   IconZoomIn,
   IconZoomOut
 } from "@tabler/icons-react";
-import { createContext, ReactNode, useCallback, useEffect, useRef, useState, useContext } from "react";
+import { createContext, ReactNode, use,useCallback, useEffect, useRef, useState } from "react";
 
 // Speech Recognition API type definitions
 interface SpeechRecognition extends EventTarget {
@@ -196,7 +196,7 @@ class FocusTrap {
       '[contenteditable="true"]'
     ].join(', ');
 
-    return Array.from(element.querySelectorAll(selector)) as HTMLElement[];
+    return [...element.querySelectorAll(selector)] as HTMLElement[];
   }
 
   private getFirstFocusableElement(element: HTMLElement): HTMLElement | null {
@@ -246,7 +246,7 @@ class VoiceCommandProcessor {
       this.isListening = false;
       // Auto-restart if we were intentionally listening
       if (this.recognition && this.onCommand) {
-        setTimeout(() => this.start(this.onCommand), 100);
+        setTimeout(() => this.start(this.onCommand!), 100);
       }
     };
   }
@@ -282,6 +282,8 @@ class VoiceCommandProcessor {
  *
  * Provides comprehensive accessibility features including screen reader support,
  * focus management, voice commands, and visual accommodations.
+ * @param root0
+ * @param root0.children
  */
 export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) => {
   const theme = useMantineTheme();
@@ -330,21 +332,19 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
     announcement.style.overflow = 'hidden';
 
     announcement.textContent = message;
-    document.body.appendChild(announcement);
+    document.body.append(announcement);
 
     // Remove after announcement
     setTimeout(() => {
-      document.body.removeChild(announcement);
+      announcement.remove();
     }, 1000);
   }, []);
 
   // Focus management
   const focusNext = useCallback(() => {
-    const focusableElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
+    const focusableElements = [...document.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+      )];
 
     const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
     const nextIndex = (currentIndex + 1) % focusableElements.length;
@@ -352,11 +352,9 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
   }, []);
 
   const focusPrevious = useCallback(() => {
-    const focusableElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
+    const focusableElements = [...document.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+      )];
 
     const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
     const previousIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
@@ -685,7 +683,7 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
 
 // Hook to use accessibility context
 export const useAccessibility = () => {
-  const context = useContext(AccessibilityContext);
+  const context = use(AccessibilityContext);
   if (!context) {
     throw new Error('useAccessibility must be used within an AccessibilityProvider');
   }
