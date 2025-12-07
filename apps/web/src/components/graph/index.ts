@@ -7,6 +7,7 @@ export * from "./ForceGraphVisualization";
 export * from "./GraphEmptyState";
 export * from "./GraphSourcePanel";
 export * from "./NodeContextMenu";
+export * from "./OptimizedForceGraphVisualization";
 export * from "./animated-layout-context";
 export * from "./constants";
 export * from "./edge-renderer";
