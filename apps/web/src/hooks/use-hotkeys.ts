@@ -201,35 +201,46 @@ export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
       pressedKeys.length === normalizedKeys.length;
   }, []);
 
+  // Helper function to handle hotkey events
+  const createHotkeyHandler = useCallback((hotkey: HotkeyConfig) => {
+    return (event: KeyboardEvent) => {
+      // Check if the key combination matches
+      const isMatch = checkKeyMatch(event, hotkey.key);
+
+      if (isMatch) {
+        if (hotkey.preventDefault) {
+          event.preventDefault();
+        }
+        event.stopPropagation();
+
+        // Execute the action
+        hotkey.action();
+      }
+    };
+  }, [checkKeyMatch]);
+
+  // Helper function to register a single hotkey
+  const registerHotkey = useCallback((hotkey: HotkeyConfig) => {
+    if (hotkey.enabled === false) return;
+
+    const handler = createHotkeyHandler(hotkey);
+    document.addEventListener('keydown', handler);
+
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  }, [createHotkeyHandler]);
+
   // Register all hotkeys
   useEffect(() => {
     if (!enabled) return;
 
-    hotkeys.forEach(hotkey => {
-      if (hotkey.enabled === false) return;
+    const cleanupFunctions = hotkeys.map(hotkey => registerHotkey(hotkey));
 
-      const handler = (event: KeyboardEvent) => {
-        // Check if the key combination matches
-        const isMatch = checkKeyMatch(event, hotkey.key);
-
-        if (isMatch) {
-          if (hotkey.preventDefault) {
-            event.preventDefault();
-          }
-          event.stopPropagation();
-
-          // Execute the action
-          hotkey.action();
-        }
-      };
-
-      document.addEventListener('keydown', handler);
-
-      return () => {
-        document.removeEventListener('keydown', handler);
-      };
-    });
-  }, [enabled, hotkeys]);
+    return () => {
+      cleanupFunctions.forEach(cleanup => cleanup?.());
+    };
+  }, [enabled, hotkeys, registerHotkey]);
 
   // Get hotkeys by category
   const getHotkeysByCategory = useCallback((category: HotkeyConfig['category']) => {
