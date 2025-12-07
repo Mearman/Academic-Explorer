@@ -28,6 +28,7 @@ import { BORDER_STYLE_GRAY_3, ICON_SIZE, SEARCH, TIME_MS } from '@/config/style-
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 
 import { SearchInterface } from "../components/search/SearchInterface";
+import { SearchResultPreview, useSearchResultHover } from "../components/search/SearchResultPreview";
 import { SearchResultsSkeleton } from "../components/search/SearchResultsSkeleton";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
@@ -160,34 +161,47 @@ const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
       // Don't prepend another domain prefix
       const entityUrl = convertToRelativeUrl(result.id);
 
+      // Set up hover functionality
+      const hover = useSearchResultHover(result);
+
       return (
-        <div>
-          {entityUrl ? (
-            <Anchor
-              href={entityUrl}
-              size="sm"
-              fw={500}
-              style={{ textDecoration: "none" }}
-              aria-label={`View ${result.entity_type} ${result.display_name}`}
-            >
-              {result.display_name}
-            </Anchor>
-          ) : (
-            <Text fw={500} size="sm">
-              {result.display_name}
-            </Text>
-          )}
-          {result.hint && (
-            <Text size="xs" c="dimmed" lineClamp={1}>
-              {result.hint}
-            </Text>
-          )}
-          {result.external_id && (
-            <Text size="xs" c="dimmed">
-              {result.external_id}
-            </Text>
-          )}
-        </div>
+        <>
+          <div {...hover.props}>
+            {entityUrl ? (
+              <Anchor
+                href={entityUrl}
+                size="sm"
+                fw={500}
+                style={{ textDecoration: "none" }}
+                aria-label={`View ${result.entity_type} ${result.display_name}`}
+              >
+                {result.display_name}
+              </Anchor>
+            ) : (
+              <Text fw={500} size="sm">
+                {result.display_name}
+              </Text>
+            )}
+            {result.hint && (
+              <Text size="xs" c="dimmed" lineClamp={1}>
+                {result.hint}
+              </Text>
+            )}
+            {result.external_id && (
+              <Text size="xs" c="dimmed">
+                {result.external_id}
+              </Text>
+            )}
+          </div>
+
+          {/* Hover preview card */}
+          <SearchResultPreview
+            entity={result}
+            opened={hover.opened}
+            onToggle={hover.toggle}
+            targetElement={hover.targetElement}
+          />
+        </>
       );
     },
   },
