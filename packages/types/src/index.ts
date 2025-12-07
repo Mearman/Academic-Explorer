@@ -134,6 +134,7 @@ export type {
 // From entities module
 export type { EntityType, OpenAlexEntity } from "./entities";
 export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity } from "./entities";
+export { ENTITY_TYPES } from "./entities";
 
 // Export filter types that were previously available through barrels
 export type {
