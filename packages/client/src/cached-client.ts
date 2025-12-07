@@ -846,7 +846,6 @@ export const cachedOpenAlex: CachedOpenAlexClient = new CachedOpenAlexClient({
 });
 
 // Re-export utility functions
-export { getPersistentGraph } from './cache/dexie/persistent-graph';
 
 /**
  * Create a new cached client with custom configuration
@@ -869,6 +868,11 @@ export const updateOpenAlexEmail = (email: string | undefined) => {
 export const updateOpenAlexApiKey = (apiKey: string | undefined) => {
   cachedOpenAlex.updateConfig({ apiKey });
 };
+
+/**
+ * Get the persistent graph instance
+ */
+export { getPersistentGraph };
 
 /**
  * Get comprehensive cache performance metrics
