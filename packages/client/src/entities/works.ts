@@ -10,7 +10,7 @@ import type {
   QueryParams,
   Work,
   WorksFilters,
-} from "@bibgraph/types/entities";
+} from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

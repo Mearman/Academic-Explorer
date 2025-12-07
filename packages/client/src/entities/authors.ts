@@ -18,7 +18,7 @@ import type {
   OpenAlexResponse,
   QueryParams,
   Work,
-} from "@bibgraph/types/entities";
+} from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
 import type { OpenAlexBaseClient } from "../client";

@@ -4,7 +4,7 @@
  */
 
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@bibgraph/types";
-import { validateWithSchema } from "@bibgraph/types/entities";
+import { validateWithSchema } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
 /**

@@ -9,10 +9,7 @@ import type {
   OpenAlexResponse,
   QueryParams,
 } from "@bibgraph/types";
-import {
-  extractPropertyValue,
-  trustObjectShape,
-} from "@bibgraph/types/entities";
+import { extractPropertyValue, trustObjectShape } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";

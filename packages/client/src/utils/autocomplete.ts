@@ -4,7 +4,7 @@
  */
 
 import type { AutocompleteResult, EntityType, QueryParams } from "@bibgraph/types";
-import { isRecord } from "@bibgraph/types/entities";
+import { isRecord } from "@bibgraph/types";
 
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";

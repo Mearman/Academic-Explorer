@@ -216,6 +216,14 @@ export type {
   ConceptSearchOptions
 } from "./entities/concepts";
 
+// Export schemas for validation
+export {
+  OpenAlexResponseSchema,
+  QueryParamsSchema,
+  AutocompleteResultSchema,
+  BaseAutocompleteOptionsSchema
+} from "./entities/common";
+
 // Export OpenAlex ID and base entity types
 export type {
   OpenAlexId

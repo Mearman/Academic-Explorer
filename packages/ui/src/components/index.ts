@@ -1,0 +1,17 @@
+/**
+ * UI Components
+ *
+ * Composite components built from atoms
+ */
+
+// Re-export all component subdirectories
+export * from './feedback';
+export * from './indicators';
+export * from './layout';
+export * from './settings';
+
+// Re-export individual components
+export * from './ErrorBoundary';
+export * from './LoadingSpinner';
+export * from './ErrorRecovery';
+export * from './SkeletonScreens';

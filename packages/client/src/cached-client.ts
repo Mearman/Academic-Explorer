@@ -2,8 +2,8 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import type { EntityType,OpenAlexEntity, QueryParams } from "@bibgraph/types";
-import { isOpenAlexEntity } from "@bibgraph/types/entities";
+import type { EntityType, OpenAlexEntity, QueryParams } from "@bibgraph/types";
+import { isOpenAlexEntity } from "@bibgraph/types";
 import { logger } from "@bibgraph/utils";
 
 import { extractAndIndexRelationships } from "./cache/dexie/graph-extraction";
