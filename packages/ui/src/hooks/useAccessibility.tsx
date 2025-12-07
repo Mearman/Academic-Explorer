@@ -159,7 +159,6 @@ export const useAriaAttributes = () => {
 // Hook for screen reader announcements
 export const useScreenReader = () => {
   const announceToScreenReader = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    // eslint-disable-next-line custom/no-deprecated
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
     announcement.setAttribute('aria-atomic', 'true');

@@ -85,24 +85,26 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
   const outgoingNeighbors = new Map<string, string[]>();
   const incomingNeighbors = new Map<string, string[]>();
 
-  allNodes.forEach((node) => {
+  for (let nodeIndex = 0; nodeIndex < allNodes.length; nodeIndex++) {
+    const node = allNodes[nodeIndex];
     const outgoing: string[] = [];
     const outgoingResult = graph.getOutgoingEdges(node.id);
     if (outgoingResult.ok) {
-      outgoingResult.value.forEach((edge) => {
+      const edges = outgoingResult.value;
+      for (let edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+        const edge = edges[edgeIndex];
         outgoing.push(edge.target);
-        // Build incoming map simultaneously
-        if (!incomingNeighbors.has(edge.target)) {
-          incomingNeighbors.set(edge.target, []);
+        // Build incoming map simultaneously - optimize get/set pattern
+        let targetNeighbors = incomingNeighbors.get(edge.target);
+        if (!targetNeighbors) {
+          targetNeighbors = [];
+          incomingNeighbors.set(edge.target, targetNeighbors);
         }
-        const targetNeighbors = incomingNeighbors.get(edge.target);
-        if (targetNeighbors) {
-          targetNeighbors.push(edge.source);
-        }
-      });
+        targetNeighbors.push(edge.source);
+      }
     }
     outgoingNeighbors.set(node.id, outgoing);
-  });
+  }
 
   // Seed random number generator for reproducibility
   let rngState = seed;
@@ -126,53 +128,67 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
   let iteration = 0;
   let converged = false;
 
+  // Pre-allocate reusable objects to minimize allocations in hot path
+  const labelCounts = new Map<ClusterId, number>();
+  const tiedLabels: ClusterId[] = [];
+  const shuffledNodeIds = new Array<string>(nodeIds.length);
+
   while (!converged && iteration < maxIterations) {
     iteration++;
     let changedCount = 0;
 
-    // Process nodes in random order (asynchronous updates)
+    // Process nodes in random order (asynchronous updates) - reuse array
     const randomOrder = shuffleArray(nodeIds);
 
-    for (const nodeId of randomOrder) {
+    // Copy to reusable array to avoid allocation
+    for (let i = 0; i < randomOrder.length; i++) {
+      shuffledNodeIds[i] = randomOrder[i];
+    }
+
+    for (let nodeIndex = 0; nodeIndex < shuffledNodeIds.length; nodeIndex++) {
+      const nodeId = shuffledNodeIds[nodeIndex];
       const currentLabel = nodeToLabel.get(nodeId);
       if (currentLabel === undefined) continue;
 
-      // Count neighbor labels (use uniform weights for performance)
-      const labelCounts = new Map<ClusterId, number>();
+      // Clear and reuse labelCounts Map instead of creating new one
+      labelCounts.clear();
 
       // Collect neighbor labels from outgoing edges (using cached adjacency list)
-      const outgoing = outgoingNeighbors.get(nodeId) || [];
-      for (const neighborId of outgoing) {
-        const neighborLabel = nodeToLabel.get(neighborId);
-        if (neighborLabel !== undefined) {
-          labelCounts.set(
-            neighborLabel,
-            (labelCounts.get(neighborLabel) || 0) + 1
-          );
+      const outgoing = outgoingNeighbors.get(nodeId);
+      if (outgoing) {
+        for (let neighborIndex = 0; neighborIndex < outgoing.length; neighborIndex++) {
+          const neighborId = outgoing[neighborIndex];
+          const neighborLabel = nodeToLabel.get(neighborId);
+          if (neighborLabel !== undefined) {
+            const currentCount = labelCounts.get(neighborLabel);
+            labelCounts.set(neighborLabel, currentCount ? currentCount + 1 : 1);
+          }
         }
       }
 
       // Collect neighbor labels from incoming edges (for directed graphs)
       if (graph.isDirected()) {
-        const incoming = incomingNeighbors.get(nodeId) || [];
-        for (const neighborId of incoming) {
-          const neighborLabel = nodeToLabel.get(neighborId);
-          if (neighborLabel !== undefined) {
-            labelCounts.set(
-              neighborLabel,
-              (labelCounts.get(neighborLabel) || 0) + 1
-            );
+        const incoming = incomingNeighbors.get(nodeId);
+        if (incoming) {
+          for (let neighborIndex = 0; neighborIndex < incoming.length; neighborIndex++) {
+            const neighborId = incoming[neighborIndex];
+            const neighborLabel = nodeToLabel.get(neighborId);
+            if (neighborLabel !== undefined) {
+              const currentCount = labelCounts.get(neighborLabel);
+              labelCounts.set(neighborLabel, currentCount ? currentCount + 1 : 1);
+            }
           }
         }
       }
 
-      // Find most frequent label (majority voting)
+      // Find most frequent label (majority voting) - optimize iteration
       if (labelCounts.size > 0) {
         let maxWeight = 0;
         let bestLabel = currentLabel;
-        const tiedLabels: ClusterId[] = [];
+        tiedLabels.length = 0; // Clear and reuse array
 
-        labelCounts.forEach((weight, label) => {
+        // Use for...of loop which is more efficient than forEach with callback
+        for (const [label, weight] of labelCounts.entries()) {
           if (weight > maxWeight) {
             maxWeight = weight;
             bestLabel = label;
@@ -181,7 +197,7 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
           } else if (weight === maxWeight) {
             tiedLabels.push(label);
           }
-        });
+        }
 
         // Tie-breaking: Choose randomly among tied labels
         if (tiedLabels.length > 1) {
@@ -203,34 +219,39 @@ export const labelPropagation = <N extends Node, E extends Edge>(graph: Graph<N,
     }
   }
 
-  // Build clusters from final label assignments
+  // Build clusters from final label assignments - optimize with for loops
   const labelToNodes = new Map<ClusterId, Set<N>>();
 
-  allNodes.forEach((node) => {
+  for (let nodeIndex = 0; nodeIndex < allNodes.length; nodeIndex++) {
+    const node = allNodes[nodeIndex];
     const label = nodeToLabel.get(node.id);
-    if (label === undefined) return;
+    if (label === undefined) continue;
 
-    if (!labelToNodes.has(label)) {
-      labelToNodes.set(label, new Set());
+    let labelNodes = labelToNodes.get(label);
+    if (!labelNodes) {
+      labelNodes = new Set<N>();
+      labelToNodes.set(label, labelNodes);
     }
-    const labelNodes = labelToNodes.get(label);
-    if (labelNodes) {
-      labelNodes.add(node);
-    }
-  });
+    labelNodes.add(node);
+  }
 
-  // Convert to LabelCluster array
+  // Convert to LabelCluster array - optimize iteration
   const clusters: LabelCluster<N>[] = [];
+  const labels = [...labelToNodes.keys()];
 
-  labelToNodes.forEach((nodes, label) => {
-    clusters.push({
-      label,
-      nodes,
-      size: nodes.size,
-      iterations: iteration,
-      stable: converged,
-    });
-  });
+  for (let labelIndex = 0; labelIndex < labels.length; labelIndex++) {
+    const label = labels[labelIndex];
+    const nodes = labelToNodes.get(label);
+    if (nodes) {
+      clusters.push({
+        label,
+        nodes,
+        size: nodes.size,
+        iterations: iteration,
+        stable: converged,
+      });
+    }
+  }
 
   const endTime = performance.now();
   const runtime = endTime - startTime;
