@@ -1,0 +1,443 @@
+/**
+ * Accessibility Styles - High contrast mode and visual accommodations
+ *
+ * Provides enhanced visual accessibility features including high contrast themes,
+ * focus indicators, and reduced motion support for users with accessibility needs.
+ */
+
+/* High contrast mode styles */
+:root[data-high-contrast="true"] {
+  /* High contrast color palette */
+  --high-contrast-bg: #000000;
+  --high-contrast-bg-primary: #ffffff;
+  --high-contrast-bg-secondary: #f0f0f0;
+  --high-contrast-text: #000000;
+  --high-contrast-text-primary: #ffffff;
+  --high-contrast-text-secondary: #cccccc;
+  --high-contrast-border: #ffffff;
+  --high-contrast-focus: #ffff00;
+  --high-contrast-link: #0000ff;
+  --high-contrast-link-visited: #800080;
+  --high-contrast-success: #00ff00;
+  --high-contrast-warning: #ff8000;
+  --high-contrast-error: #ff0000;
+
+  /* Apply high contrast to common elements */
+  background-color: var(--high-contrast-bg);
+  color: var(--high-contrast-text-primary);
+}
+
+:root[data-high-contrast="true"] * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+:root[data-high-contrast="true"] body {
+  background-color: var(--high-contrast-bg);
+  color: var(--high-contrast-text-primary);
+}
+
+:root[data-high-contrast="true"] .mantine-Button-root {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Button-root:hover {
+  background-color: var(--high-contrast-bg-secondary) !important;
+  border-color: var(--high-contrast-focus) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Card-root {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-TextInput-input,
+:root[data-high-contrast="true"] .mantine-Textarea-input,
+:root[data-high-contrast="true"] .mantine-Select-input {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-TextInput-input:focus,
+:root[data-high-contrast="true"] .mantine-Textarea-input:focus,
+:root[data-high-contrast="true"] .mantine-Select-input:focus {
+  border-color: var(--high-contrast-focus) !important;
+  outline: 3px solid var(--high-contrast-focus) !important;
+  outline-offset: 2px !important;
+}
+
+:root[data-high-contrast="true"] a {
+  color: var(--high-contrast-link) !important;
+  text-decoration: underline !important;
+}
+
+:root[data-high-contrast="true"] a:visited {
+  color: var(--high-contrast-link-visited) !important;
+}
+
+:root[data-high-contrast="true"] a:hover {
+  background-color: var(--high-contrast-focus) !important;
+  color: var(--high-contrast-text) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Badge-root {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Paper-root {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Modal-root {
+  background-color: var(--high-contrast-bg) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Modal-content {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 3px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .mantine-Modal-header {
+  background-color: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border-bottom: 2px solid var(--high-contrast-border) !important;
+}
+
+/* Enhanced focus indicators for all users */
+.focus-visible:focus,
+.focus-visible:focus-visible,
+*:focus-visible {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
+
+/* Enhanced focus indicators for high contrast mode */
+:root[data-high-contrast="true"] *:focus-visible {
+  outline: 4px solid var(--high-contrast-focus) !important;
+  outline-offset: 3px !important;
+  border-radius: 4px !important;
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 10000;
+  font-weight: 500;
+  transition: top 0.2s ease-out;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* High contrast skip links */
+:root[data-high-contrast="true"] .skip-link {
+  background: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 3px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .skip-link:focus {
+  border-color: var(--high-contrast-focus) !important;
+  background: var(--high-contrast-focus) !important;
+  color: var(--high-contrast-text) !important;
+}
+
+/* Focus traps */
+.focus-trap:focus-within {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:root[data-high-contrast="true"] .focus-trap:focus-within {
+  outline-color: var(--high-contrast-focus) !important;
+  outline-width: 4px !important;
+}
+
+/* Focus indicators */
+.focus-indicator:focus-visible {
+  position: relative;
+}
+
+.focus-indicator:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 3px solid #3b82f6;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+  animation: focus-ring 0.3s ease-out;
+}
+
+:root[data-high-contrast="true"] .focus-indicator:focus-visible::after {
+  border-color: var(--high-contrast-focus) !important;
+  border-width: 4px !important;
+}
+
+/* Focus boundary */
+.focus-boundary.active {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:root[data-high-contrast="true"] .focus-boundary.active {
+  outline-color: var(--high-contrast-focus) !important;
+  outline-width: 3px !important;
+}
+
+/* Keyboard navigation hints */
+.keyboard-hint {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.keyboard-hint kbd {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  min-width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
+:root[data-high-contrast="true"] .keyboard-hint {
+  background: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .keyboard-hint kbd {
+  background: var(--high-contrast-bg-secondary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .focus-indicator:focus-visible::after {
+    animation: none !important;
+  }
+}
+
+/* Focus ring animation */
+@keyframes focus-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    transform: scale(0.95);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    transform: scale(1);
+  }
+}
+
+/* High contrast focus ring animation */
+:root[data-high-contrast="true"] @keyframes focus-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--high-contrast-focus);
+    transform: scale(0.95);
+  }
+  50% {
+    box-shadow: 0 0 0 8px var(--high-contrast-focus);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 4px var(--high-contrast-focus);
+    transform: scale(1);
+  }
+}
+
+/* Accessibility controls styling */
+.accessibility-controls {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+}
+
+.accessibility-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  min-width: 320px;
+}
+
+:root[data-high-contrast="true"] .accessibility-panel {
+  background: var(--high-contrast-bg-primary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 3px solid var(--high-contrast-border) !important;
+  box-shadow: none !important;
+}
+
+/* Status indicators for accessibility features */
+.a11y-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.a11y-status.active {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.a11y-status.inactive {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+:root[data-high-contrast="true"] .a11y-status.active {
+  background: var(--high-contrast-success) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+:root[data-high-contrast="true"] .a11y-status.inactive {
+  background: var(--high-contrast-bg-secondary) !important;
+  color: var(--high-contrast-text) !important;
+  border: 2px solid var(--high-contrast-border) !important;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Enhanced color contrast for text */
+.text-high-contrast {
+  color: #000000 !important;
+  background: #ffffff !important;
+}
+
+.text-low-vision {
+  font-size: 1.2em !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 500 !important;
+}
+
+/* High contrast graphs and visualizations */
+.high-contrast-graph {
+  background: var(--high-contrast-bg-primary) !important;
+  border: 3px solid var(--high-contrast-border) !important;
+}
+
+.high-contrast-graph .node {
+  fill: var(--high-contrast-bg-primary) !important;
+  stroke: var(--high-contrast-border) !important;
+  stroke-width: 3px !important;
+}
+
+.high-contrast-graph .node.selected {
+  stroke: var(--high-contrast-focus) !important;
+  stroke-width: 4px !important;
+}
+
+.high-contrast-graph .edge {
+  stroke: var(--high-contrast-border) !important;
+  stroke-width: 3px !important;
+}
+
+.high-contrast-graph .edge.highlighted {
+  stroke: var(--high-contrast-focus) !important;
+  stroke-width: 4px !important;
+}
+
+.high-contrast-graph .label {
+  fill: var(--high-contrast-text) !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+}
+
+/* Large print styles */
+@media (min-width: 768px) {
+  .large-print {
+    font-size: 1.25em !important;
+    line-height: 1.7 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .large-print {
+    font-size: 1.5em !important;
+    line-height: 1.8 !important;
+  }
+}
+
+/* High contrast large print */
+:root[data-high-contrast="true"] .large-print {
+  font-size: 1.5em !important;
+  line-height: 1.8 !important;
+  font-weight: 600 !important;
+  color: var(--high-contrast-text) !important;
+}
+
+/* Accessibility testing utilities */
+.a11y-test-outline * {
+  outline: 1px solid #ff0000 !important;
+}
+
+.a11y-test-contrast * {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+.a11y-test-focus *:focus {
+  outline: 5px solid #00ff00 !important;
+  outline-offset: 5px !important;
+}
