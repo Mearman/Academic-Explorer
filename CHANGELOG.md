@@ -1,3 +1,63 @@
+## 24.0.0 (2025-12-07)
+
+* Merge remote-tracking branch 'origin/main' ([ea2f01d](https://github.com/Mearman/BibGraph/commit/ea2f01d))
+* refactor(web, client, ui, tools): remove unused eslint-disable comments and duplicate exports ([28faff7](https://github.com/Mearman/BibGraph/commit/28faff7))
+* chore(deps): auto-fix syncpack mismatches [skip ci] ([76ace1b](https://github.com/Mearman/BibGraph/commit/76ace1b))
+* chore(deps): auto-fix syncpack mismatches [skip ci] ([a3ac81d](https://github.com/Mearman/BibGraph/commit/a3ac81d))
+* chore(index): update component exports for new features ([c678f86](https://github.com/Mearman/BibGraph/commit/c678f86))
+* refactor(barrels): remove re-export barrel files across monorepo ([26a9532](https://github.com/Mearman/BibGraph/commit/26a9532))
+* refactor(eslint): enforce 100-character line limit to prevent long inline unions ([a594198](https://github.com/Mearman/BibGraph/commit/a594198))
+* refactor(eslint): remove max-len rule to reduce formatting errors ([190941b](https://github.com/Mearman/BibGraph/commit/190941b))
+* refactor(types): remove duplicate exports to resolve ESLint violations ([6ddb518](https://github.com/Mearman/BibGraph/commit/6ddb518))
+* refactor(ui): fix max-len ESLint violations in components ([9cd7e9c](https://github.com/Mearman/BibGraph/commit/9cd7e9c))
+* refactor(web): resolve ESLint errors and improve type safety ([0d6b341](https://github.com/Mearman/BibGraph/commit/0d6b341))
+* fix: add critical missing exports for web app typecheck ([de9b152](https://github.com/Mearman/BibGraph/commit/de9b152))
+* fix: create missing client index files and fix UI component paths ([e43c5eb](https://github.com/Mearman/BibGraph/commit/e43c5eb))
+* fix: create missing index files for UI and client packages ([892409e](https://github.com/Mearman/BibGraph/commit/892409e))
+* fix: resolve client import issues and UI build failures ([704c662](https://github.com/Mearman/BibGraph/commit/704c662))
+* fix(algorithms): add missing barrel exports for algorithm components ([082c55e](https://github.com/Mearman/BibGraph/commit/082c55e))
+* fix(algorithms): resolve imports after barrel file removal ([b4f8e8f](https://github.com/Mearman/BibGraph/commit/b4f8e8f))
+* fix(client): add missing getPersistentGraph export ([647292e](https://github.com/Mearman/BibGraph/commit/647292e))
+* fix(client): export getPersistentGraph from cached-client.ts ([b00f78e](https://github.com/Mearman/BibGraph/commit/b00f78e))
+* fix(client): re-export getPersistentGraph from cache module ([9592b20](https://github.com/Mearman/BibGraph/commit/9592b20))
+* fix(client): resolve ESLint errors in client package ([55cf4e9](https://github.com/Mearman/BibGraph/commit/55cf4e9))
+* fix(exports): comprehensive type export restoration for CI success ([be08e3b](https://github.com/Mearman/BibGraph/commit/be08e3b))
+* fix(exports): restore missing type exports to resolve CI failures ([1451eee](https://github.com/Mearman/BibGraph/commit/1451eee))
+* fix(exports): restore remaining missing type exports for CI success ([33aa481](https://github.com/Mearman/BibGraph/commit/33aa481))
+* fix(imports): resolve missing exports after barrel file removal ([8be47f7](https://github.com/Mearman/BibGraph/commit/8be47f7))
+* fix(test): add missing test utilities index file ([8abba60](https://github.com/Mearman/BibGraph/commit/8abba60))
+* fix(types): add missing isRecord export with correct path ([b662817](https://github.com/Mearman/BibGraph/commit/b662817))
+* fix(types): export ENTITY_TYPES from @bibgraph/types ([50aa857](https://github.com/Mearman/BibGraph/commit/50aa857))
+* fix(types): resolve TypeScript compilation errors in Three.js and graph rendering ([14aa84b](https://github.com/Mearman/BibGraph/commit/14aa84b))
+* fix(types): resolve TypeScript errors in UI components ([276dc9c](https://github.com/Mearman/BibGraph/commit/276dc9c))
+* fix(ui): add missing hook exports for useScreenReader, useAsyncOperation, and useAriaAttributes ([1d5574c](https://github.com/Mearman/BibGraph/commit/1d5574c))
+* fix(ui): resolve AccessibilityProvider callback type error ([559d290](https://github.com/Mearman/BibGraph/commit/559d290))
+* fix(ui): resolve NetworkStatus duplicate export ambiguity ([475b45d](https://github.com/Mearman/BibGraph/commit/475b45d))
+* fix(utils): add main package export and generate index.d.ts for client imports ([5eb9273](https://github.com/Mearman/BibGraph/commit/5eb9273))
+* fix(utils): add timeout protection and CI resilience to storage initialization ([f9b7cb1](https://github.com/Mearman/BibGraph/commit/f9b7cb1))
+* fix(utils): resolve Promise constructor parameter naming linting error ([7b8bdea](https://github.com/Mearman/BibGraph/commit/7b8bdea))
+* fix(web): resolve all linting errors in performance optimization utilities ([a89c941](https://github.com/Mearman/BibGraph/commit/a89c941))
+* fix(web): separate type imports from value imports in filter components ([1600e13](https://github.com/Mearman/BibGraph/commit/1600e13))
+* wip: additional fixes and improvements ([4f0c0ca](https://github.com/Mearman/BibGraph/commit/4f0c0ca))
+* wip: massive TypeScript error reduction and CI fixes ([78cf976](https://github.com/Mearman/BibGraph/commit/78cf976))
+* feat(a11y): add comprehensive accessibility support ([55139cd](https://github.com/Mearman/BibGraph/commit/55139cd))
+* feat(eslint): add eslint-plugin-barrel-files dependency ([3deaf13](https://github.com/Mearman/BibGraph/commit/3deaf13))
+* feat(graph): add OptimizedForceGraphVisualization component ([1fb788a](https://github.com/Mearman/BibGraph/commit/1fb788a)), closes [hi#performance](https://github.com/hi/issues/performance)
+* feat(perf): add advanced graph performance optimization utilities ([7c92b72](https://github.com/Mearman/BibGraph/commit/7c92b72))
+* feat(search): enhance SearchFilters with entity pills, date presets, and citation impact levels ([9901d7f](https://github.com/Mearman/BibGraph/commit/9901d7f))
+* feat(ui): add comprehensive UI enhancements for performance and offline support ([708661a](https://github.com/Mearman/BibGraph/commit/708661a))
+* feat(web): enhance search autocomplete with intelligent research scoring ([c14a1a6](https://github.com/Mearman/BibGraph/commit/c14a1a6))
+
+
+### BREAKING CHANGE
+
+* utils package now uses single bundle output instead of preserved modules
+
+- Added main package export to package.json
+- Modified vite.config.ts to generate single index.d.ts file
+- All utility functions now properly exported from main package entry
+- Fixes client package import errors for extractEntityLabel, extractRelationships, normalizeOpenAlexId
+
 ## 23.12.0 (2025-12-07)
 
 * feat(web): enhance mobile responsiveness and UX ([c73d37c](https://github.com/Mearman/BibGraph/commit/c73d37c))
