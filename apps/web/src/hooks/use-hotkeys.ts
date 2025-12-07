@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback,useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 interface HotkeyConfig {
@@ -123,8 +123,8 @@ export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
       description: 'Next result',
       action: () => {
         const results = document.querySelectorAll('[role="listitem"]');
-        const currentIndex = Array.from(results).findIndex(
-          item => item === document.activeElement?.parentElement
+        const currentIndex = [...results].indexOf(
+          document.activeElement?.parentElement as Element
         );
         const nextIndex = (currentIndex + 1) % results.length;
         (results[nextIndex] as HTMLElement)?.focus();
@@ -137,8 +137,8 @@ export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
       description: 'Previous result',
       action: () => {
         const results = document.querySelectorAll('[role="listitem"]');
-        const currentIndex = Array.from(results).findIndex(
-          item => item === document.activeElement?.parentElement
+        const currentIndex = [...results].indexOf(
+          document.activeElement?.parentElement as Element
         );
         const prevIndex = currentIndex <= 0 ? results.length - 1 : currentIndex - 1;
         (results[prevIndex] as HTMLElement)?.focus();
@@ -264,9 +264,9 @@ export const useNavigationHotkeys = () => {
   useHotkeys('j', (e) => {
     e.preventDefault();
     const results = document.querySelectorAll('[role="listitem"]');
-    const currentIndex = Array.from(results).findIndex(
-      item => item === document.activeElement?.parentElement
-    );
+    const currentIndex = document.activeElement?.parentElement
+      ? [...results].indexOf(document.activeElement.parentElement as Element)
+      : -1;
     const nextIndex = (currentIndex + 1) % results.length;
     (results[nextIndex] as HTMLElement)?.focus();
   });
@@ -274,9 +274,9 @@ export const useNavigationHotkeys = () => {
   useHotkeys('k', (e) => {
     e.preventDefault();
     const results = document.querySelectorAll('[role="listitem"]');
-    const currentIndex = Array.from(results).findIndex(
-      item => item === document.activeElement?.parentElement
-    );
+    const currentIndex = document.activeElement?.parentElement
+      ? [...results].indexOf(document.activeElement.parentElement as Element)
+      : -1;
     const prevIndex = currentIndex <= 0 ? results.length - 1 : currentIndex - 1;
     (results[prevIndex] as HTMLElement)?.focus();
   });
