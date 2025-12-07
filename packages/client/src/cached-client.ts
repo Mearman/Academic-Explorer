@@ -872,7 +872,6 @@ export const updateOpenAlexApiKey = (apiKey: string | undefined) => {
 /**
  * Get the persistent graph instance
  */
-export { getPersistentGraph };
 
 /**
  * Get comprehensive cache performance metrics

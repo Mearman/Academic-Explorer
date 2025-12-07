@@ -19,5 +19,3 @@ export * from './bookmarks/BookmarkList';
 export * from './bookmarks/BookmarkSearchFilters';
 export * from './bookmarks/BookmarkTable';
 
-// Export utility functions from entity matchers
-export { convertToRelativeUrl } from './components/entity-views/matchers';

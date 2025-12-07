@@ -84,6 +84,7 @@ export const noDeprecated = createRule({
       "getElementsByTagName",
       "addEventListener",
       "removeEventListener",
+      "createElement",
     ]);
 
     return {

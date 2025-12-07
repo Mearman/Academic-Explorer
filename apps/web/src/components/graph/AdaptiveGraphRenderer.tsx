@@ -19,7 +19,6 @@ import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/has
 
 // Performance detection utilities
 const detectDeviceCapabilities = () => {
-  // eslint-disable-next-line custom/no-deprecated -- Canvas creation requires createElement for WebGL context
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext | null;
 

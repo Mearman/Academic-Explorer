@@ -883,7 +883,6 @@ export const useCatalogue = (options: UseCatalogueOptions = {}): UseCatalogueRet
       const url = URL.createObjectURL(blob);
 
       // Create temporary anchor element for download (standard approach)
-      // eslint-disable-next-line custom/no-deprecated
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
