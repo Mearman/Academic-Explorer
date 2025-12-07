@@ -1,3 +1,9 @@
+## 23.12.0 (2025-12-07)
+
+* feat(web): enhance mobile responsiveness and UX ([c73d37c](https://github.com/Mearman/BibGraph/commit/c73d37c))
+* fix(ci): optimize smoke test performance with native Node.js server ([c5e9277](https://github.com/Mearman/BibGraph/commit/c5e9277))
+* fix(web): improve smoke test reliability and performance ([1a33b0f](https://github.com/Mearman/BibGraph/commit/1a33b0f))
+
 ## <small>23.11.1 (2025-12-07)</small>
 
 * refactor(web): organize imports in EnhancedSearchInterface ([c621a10](https://github.com/Mearman/BibGraph/commit/c621a10))
