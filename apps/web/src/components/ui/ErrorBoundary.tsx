@@ -5,8 +5,8 @@
  * user-friendly error messages and recovery options.
  */
 
-import { Alert, Button, Container, Group, Paper, Stack, Text, Title, ActionIcon, Tooltip } from '@mantine/core';
-import { IconAlertTriangle, IconHome, IconRefresh, IconCopy, IconKeyboard } from '@tabler/icons-react';
+import { ActionIcon, Alert, Button, Container, Group, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { IconAlertTriangle, IconCopy, IconHome, IconKeyboard,IconRefresh } from '@tabler/icons-react';
 import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface ErrorBoundaryState {
@@ -133,6 +133,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       setTimeout(() => {
         document.title = originalText;
       }, 2000);
+      return undefined; // Explicit return for promise chain
     }).catch((err) => {
       console.error('Failed to copy error details:', err);
     });
@@ -333,9 +334,9 @@ export const createErrorHandler = () => {
 };
 
 /**
- * Hook for functional components to handle errors within their scope
+ * Error handler utility for functional components to handle errors within their scope
  */
-export const useErrorHandler = () => {
+export const createErrorHandlerHook = () => {
   const errorHandlers = createErrorHandler();
 
   return { reportError: errorHandlers.reportError };

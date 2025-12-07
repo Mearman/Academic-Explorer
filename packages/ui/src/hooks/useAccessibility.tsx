@@ -188,8 +188,8 @@ export const useScreenReader = () => {
         }
       }, 2000);
 
-      // Store timeout ID for potential cleanup
-      (announcement as any)._cleanupTimeout = timeoutId;
+      // Store timeout ID for potential cleanup using a custom property
+      (announcement as HTMLElement & { _cleanupTimeout?: NodeJS.Timeout })._cleanupTimeout = timeoutId;
     } catch (error) {
       // Fail silently for accessibility features - they should never break the app
       console.warn('Failed to create screen reader announcement:', error);
