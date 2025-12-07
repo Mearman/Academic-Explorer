@@ -47,8 +47,9 @@ export class MinHeap<T> {
    */
   insert(element: T, priority: number): void {
     const entry: HeapEntry<T> = { element, priority };
-    this.heap.push(entry);
-    const index = this.heap.length - 1;
+    const heap = this.heap;
+    heap.push(entry);
+    const index = heap.length - 1;
     this.positions.set(element, index);
     this.bubbleUp(index);
   }
@@ -58,27 +59,33 @@ export class MinHeap<T> {
    * @returns Option containing the minimum element, or None if heap is empty
    */
   extractMin(): Option<T> {
-    if (this.heap.length === 0) {
+    const heap = this.heap;
+    const heapLength = heap.length;
+
+    if (heapLength === 0) {
       return None();
     }
 
-    const min = this.heap[0];
-    this.positions.delete(min.element);
+    const min = heap[0];
+    const minElement = min.element;
+    this.positions.delete(minElement);
 
-    if (this.heap.length === 1) {
-      this.heap = [];
-      return Some(min.element);
+    if (heapLength === 1) {
+      heap.length = 0; // Faster than reassignment
+      return Some(minElement);
     }
 
     // Move last element to root and bubble down
-    const last = this.heap.pop();
-    if (last !== undefined) {
-      this.heap[0] = last;
-      this.positions.set(last.element, 0);
-      this.bubbleDown(0);
+    const last = heap.pop();
+    if (last === undefined) {
+      // This should never happen since we checked heapLength > 1
+      return None();
     }
+    heap[0] = last;
+    this.positions.set(last.element, 0);
+    this.bubbleDown(0);
 
-    return Some(min.element);
+    return Some(minElement);
   }
 
   /**
@@ -97,7 +104,8 @@ export class MinHeap<T> {
       });
     }
 
-    const currentPriority = this.heap[index].priority;
+    const heap = this.heap;
+    const currentPriority = heap[index].priority;
 
     if (newPriority > currentPriority) {
       return Err({
@@ -106,7 +114,7 @@ export class MinHeap<T> {
       });
     }
 
-    this.heap[index].priority = newPriority;
+    heap[index].priority = newPriority;
     this.bubbleUp(index);
 
     return Ok(void 0);
@@ -129,22 +137,65 @@ export class MinHeap<T> {
   }
 
   /**
+   * Extract multiple elements efficiently (optimized for performance tests).
+   * Returns array of extracted elements to avoid Option wrapper overhead.
+   * @param count
+   * @internal
+   */
+  extractMinBatch(count: number): T[] {
+    const result: T[] = [];
+    const heap = this.heap;
+
+    for (let i = 0; i < count && heap.length > 0; i++) {
+      const min = heap[0];
+      result.push(min.element);
+      this.positions.delete(min.element);
+
+      if (heap.length === 1) {
+        heap.length = 0;
+        break;
+      }
+
+      // Move last element to root and bubble down
+      const last = heap.pop();
+      if (last === undefined) {
+        // This should never happen since we checked heap.length > 1
+        break;
+      }
+      heap[0] = last;
+      this.positions.set(last.element, 0);
+      this.bubbleDown(0);
+    }
+
+    return result;
+  }
+
+  /**
    * Bubble up an element to maintain heap property.
    * @param index
    * @internal
    */
   private bubbleUp(index: number): void {
+    const heap = this.heap;
+    const positions = this.positions;
+
     while (index > 0) {
-      const parentIndex = Math.floor((index - 1) / 2);
-      const parent = this.heap[parentIndex];
-      const current = this.heap[index];
+      const parentIndex = (index - 1) >> 1; // Bitwise divide by 2, faster than Math.floor
+      const parent = heap[parentIndex];
+      const current = heap[index];
 
       if (parent.priority <= current.priority) {
         break; // Heap property satisfied
       }
 
-      // Swap with parent
-      this.swap(index, parentIndex);
+      // Inline swap for performance
+      heap[index] = parent;
+      heap[parentIndex] = current;
+
+      // Update position map
+      positions.set(current.element, parentIndex);
+      positions.set(parent.element, index);
+
       index = parentIndex;
     }
   }
@@ -155,33 +206,45 @@ export class MinHeap<T> {
    * @internal
    */
   private bubbleDown(index: number): void {
+    const heap = this.heap;
+    const positions = this.positions;
+    const heapLength = heap.length;
+
     while (true) {
-      const leftChild = 2 * index + 1;
-      const rightChild = 2 * index + 2;
+      const leftChild = (index << 1) + 1; // Bitwise multiply by 2, faster
+      const rightChild = leftChild + 1;
       let smallest = index;
 
       // Check if left child is smaller
-      if (
-        leftChild < this.heap.length &&
-        this.heap[leftChild].priority < this.heap[smallest].priority
-      ) {
-        smallest = leftChild;
+      if (leftChild < heapLength) {
+        const leftPriority = heap[leftChild].priority;
+        if (leftPriority < heap[smallest].priority) {
+          smallest = leftChild;
+        }
       }
 
       // Check if right child is smaller
-      if (
-        rightChild < this.heap.length &&
-        this.heap[rightChild].priority < this.heap[smallest].priority
-      ) {
-        smallest = rightChild;
+      if (rightChild < heapLength) {
+        const rightPriority = heap[rightChild].priority;
+        if (rightPriority < heap[smallest].priority) {
+          smallest = rightChild;
+        }
       }
 
       if (smallest === index) {
         break; // Heap property satisfied
       }
 
-      // Swap with smallest child
-      this.swap(index, smallest);
+      // Inline swap for performance
+      const current = heap[index];
+      const swapTarget = heap[smallest];
+      heap[index] = swapTarget;
+      heap[smallest] = current;
+
+      // Update position map
+      positions.set(current.element, smallest);
+      positions.set(swapTarget.element, index);
+
       index = smallest;
     }
   }
@@ -191,14 +254,18 @@ export class MinHeap<T> {
    * @param i
    * @param j
    * @internal
+   * @deprecated Use inline swaps in bubbleUp/bubbleDown for better performance
    */
   private swap(i: number, j: number): void {
-    const temp = this.heap[i];
-    this.heap[i] = this.heap[j];
-    this.heap[j] = temp;
+    const heap = this.heap;
+    const positions = this.positions;
+
+    const temp = heap[i];
+    heap[i] = heap[j];
+    heap[j] = temp;
 
     // Update position map
-    this.positions.set(this.heap[i].element, i);
-    this.positions.set(this.heap[j].element, j);
+    positions.set(heap[i].element, i);
+    positions.set(heap[j].element, j);
   }
 }
