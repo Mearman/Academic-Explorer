@@ -24,8 +24,8 @@ import React, { useMemo, useState } from "react";
 import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
 import { EntityGrid } from "./EntityGrid";
 import { EntityListView } from "./EntityListView";
-import { BaseTable } from "./tables/BaseTable";
 import { SearchResultsSkeleton } from "./search/SearchResultsSkeleton";
+import { BaseTable } from "./tables/BaseTable";
 import { type TableViewMode,TableViewModeToggle } from "./TableViewModeToggle";
 import type { ColumnConfig as BaseColumnConfig } from "./types";
 

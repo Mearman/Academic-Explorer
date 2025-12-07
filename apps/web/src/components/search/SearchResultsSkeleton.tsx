@@ -6,7 +6,8 @@
  */
 
 import { Box, Group, Stack, Text } from '@mantine/core';
-import { CardSkeleton, ListSkeleton, DataTableSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
+
+import { CardSkeleton, DataTableSkeleton, ListSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
 
 interface SearchResultsSkeletonProps {
   viewType?: 'list' | 'grid' | 'table';
@@ -16,6 +17,10 @@ interface SearchResultsSkeletonProps {
 
 /**
  * Skeleton for search results loading state
+ * @param root0
+ * @param root0.viewType
+ * @param root0.items
+ * @param root0.title
  */
 export const SearchResultsSkeleton = ({
   viewType = 'list',

@@ -5,9 +5,9 @@
  * with smooth animations and proper accessibility support.
  */
 
-import { Box, Group, Stack, Text } from '@mantine/core';
-import { useMantineTheme } from '@mantine/core';
 import './LoadingSkeleton.css';
+
+import { Box, Group, Stack, Text , useMantineTheme } from '@mantine/core';
 
 interface SkeletonProps {
   width?: string | number;
@@ -19,6 +19,12 @@ interface SkeletonProps {
 
 /**
  * Individual skeleton element
+ * @param root0
+ * @param root0.width
+ * @param root0.height
+ * @param root0.variant
+ * @param root0.animate
+ * @param root0.'aria-label'
  */
 export const Skeleton = ({
   width = '100%',
@@ -108,7 +114,7 @@ export const TextSkeleton = ({
   width,
   className,
 }: TextSkeletonProps) => {
-  const widths = Array.isArray(width) ? width : Array(lines).fill(width || '100%');
+  const widths = Array.isArray(width) ? width : new Array(lines).fill(width || '100%');
 
   return (
     <Stack gap={4} className={className}>
@@ -160,6 +166,8 @@ export const CardSkeleton = () => {
 
 /**
  * List skeleton for list items
+ * @param root0
+ * @param root0.items
  */
 export const ListSkeleton = ({ items = 5 }: { items?: number }) => {
   return (
@@ -190,6 +198,9 @@ export const ListSkeleton = ({ items = 5 }: { items?: number }) => {
 
 /**
  * Table skeleton for data tables
+ * @param root0
+ * @param root0.rows
+ * @param root0.columns
  */
 export const DataTableSkeleton = ({
   rows = 5,
@@ -332,6 +343,8 @@ export const GraphSkeleton = () => {
 
 /**
  * Stats skeleton for statistics dashboard
+ * @param root0
+ * @param root0.items
  */
 export const StatsSkeleton = ({ items = 4 }: { items?: number }) => {
   return (

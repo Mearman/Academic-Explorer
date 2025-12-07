@@ -6,24 +6,23 @@
  */
 
 import type { ComparisonResults } from "@bibgraph/utils";
-import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import {
+  ActionIcon,
   Box,
   Group,
+  Kbd,
   Stack,
   Text,
   Title,
-  ActionIcon,
-  Tooltip,
-  Kbd
-} from "@mantine/core";
+  Tooltip} from "@mantine/core";
 import {
-  IconTable,
+  IconAccessible,
   IconChartBar,
   IconMaximize,
   IconMinimize,
-  IconAccessible
-} from "@tabler/icons-react";
+  IconTable} from "@tabler/icons-react";
+import { useCallback, useEffect,useMemo, useRef, useState } from "react";
+
 import { announceToScreenReader, createFocusTrap } from "@/utils/accessibility";
 
 interface AccessibleChartProps {
@@ -52,6 +51,7 @@ interface ChartData {
 
 /**
  * Generates comprehensive data table representation for screen readers
+ * @param data
  */
 const generateDataTable = (data: ChartData): string => {
   let table = "Data Table:\n\n";
@@ -73,6 +73,8 @@ const generateDataTable = (data: ChartData): string => {
 
 /**
  * Generates audio description for charts
+ * @param data
+ * @param chartType
  */
 const generateAudioDescription = (data: ChartData, chartType: string): string => {
   let description = `${chartType} chart titled "${data.summary}". `;
@@ -108,6 +110,9 @@ const generateAudioDescription = (data: ChartData, chartType: string): string =>
 
 /**
  * Accessible Data Table View
+ * @param root0
+ * @param root0.data
+ * @param root0.onClose
  */
 const DataTableView = ({ data, onClose }: { data: ChartData; onClose: () => void }) => {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -244,6 +249,8 @@ const DataTableView = ({ data, onClose }: { data: ChartData; onClose: () => void
 
 /**
  * Keyboard Navigation Instructions
+ * @param root0
+ * @param root0.chartType
  */
 const KeyboardInstructions = ({ chartType }: { chartType: string }) => {
   const instructions = {
@@ -303,6 +310,14 @@ const KeyboardInstructions = ({ chartType }: { chartType: string }) => {
 
 /**
  * Main Accessible Chart Component
+ * @param root0
+ * @param root0.comparisonResults
+ * @param root0.title
+ * @param root0.description
+ * @param root0.chartType
+ * @param root0.height
+ * @param root0.provideDataTable
+ * @param root0.provideAudioDescription
  */
 export const AccessibleChart = ({
   comparisonResults,
@@ -534,6 +549,11 @@ export const AccessibleChart = ({
 
 /**
  * Chart with Alt Text Generator
+ * @param root0
+ * @param root0.children
+ * @param root0.title
+ * @param root0.data
+ * @param root0.generateAltText
  */
 export const ChartWithAltText = ({
   children,
@@ -547,7 +567,7 @@ export const ChartWithAltText = ({
   generateAltText?: boolean;
 }) => {
   const altText = useMemo(() => {
-    if (!generateAltText || !data.length) return '';
+    if (!generateAltText || data.length === 0) return '';
 
     const values = data.map(d => d.value || 0);
     const avg = values.reduce((a, b) => a + b, 0) / values.length;

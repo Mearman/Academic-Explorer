@@ -30,24 +30,24 @@ import {
 import { Link } from "@tanstack/react-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+import { KeyboardShortcutsButton, KeyboardShortcutsHelp } from "@/components/modals/KeyboardShortcutsHelp";
 import { ICON_SIZE } from "@/config/style-constants";
+import { useGlobalHotkeys } from "@/hooks/use-hotkeys";
 import { useLayoutStore } from "@/stores/layout-store";
 import { sprinkles } from "@/styles/sprinkles";
 import {
   announceToScreenReader,
-  injectAccessibilityStyles,
   createSkipLinks,
+  injectAccessibilityStyles,
 } from "@/utils/accessibility";
 
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { ColorSchemeSelector } from "./ColorSchemeSelector";
 import { HeaderSearchInput } from "./HeaderSearchInput";
 import { HistorySidebar } from "./HistorySidebar";
-import { KeyboardShortcutsButton, KeyboardShortcutsHelp } from "@/components/modals/KeyboardShortcutsHelp";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 import { RightSidebarContent } from "./RightSidebarContent";
-import { useGlobalHotkeys } from "@/hooks/use-hotkeys";
 // import { ThemeDropdown } from "./ThemeDropdown";
 // import { ThemeSettings } from "@/components/ThemeSettings";
 
@@ -76,7 +76,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
     return () => {
       if (document.body.contains(skipLinks)) {
-        document.body.removeChild(skipLinks);
+        skipLinks.remove();
       }
     };
   }, []);

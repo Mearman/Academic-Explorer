@@ -13,12 +13,12 @@ export const announceToScreenReader = (message: string, priority: 'polite' | 'as
   announcement.style.height = '1px';
   announcement.style.overflow = 'hidden';
 
-  document.body.appendChild(announcement);
+  document.body.append(announcement);
   announcement.textContent = message;
 
   // Remove after announcement
   setTimeout(() => {
-    document.body.removeChild(announcement);
+    announcement.remove();
   }, 1000);
 };
 
@@ -73,7 +73,7 @@ export const createSkipLinks = () => {
     anchor.href = link.href;
     anchor.textContent = link.text;
     anchor.className = 'skip-link';
-    skipLinksContainer.appendChild(anchor);
+    skipLinksContainer.append(anchor);
   });
 
   return skipLinksContainer;
@@ -81,7 +81,7 @@ export const createSkipLinks = () => {
 
 // Generate unique IDs for accessibility attributes
 export const generateId = (prefix: string) => {
-  return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${prefix}-${Math.random().toString(36).slice(2, 11)}`;
 };
 
 // Check if user prefers reduced motion
@@ -253,7 +253,7 @@ export const validateAccessibility = (element: HTMLElement) => {
   const headings = element.querySelectorAll('h1, h2, h3, h4, h5, h6');
   let lastLevel = 0;
   headings.forEach((heading, index) => {
-    const level = parseInt(heading.tagName.substring(1));
+    const level = Number.parseInt(heading.tagName.slice(1));
     if (level > lastLevel + 1) {
       issues.push(`Heading ${index + 1} skips heading levels (from h${lastLevel} to h${level})`);
     }
@@ -322,5 +322,5 @@ export const injectAccessibilityStyles = () => {
     }
   `;
 
-  document.head.appendChild(style);
+  document.head.append(style);
 };
