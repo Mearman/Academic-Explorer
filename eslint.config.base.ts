@@ -19,6 +19,7 @@ import unicornPlugin from "eslint-plugin-unicorn";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import playwrightPlugin from "eslint-plugin-playwright";
+import barrelFilesPlugin from "eslint-plugin-barrel-files";
 import { customRulesPlugin } from "./tools/eslint-rules/index.js";
 
 /**
@@ -151,6 +152,7 @@ export default tseslint.config([
             "n": nodePlugin,
             "unicorn": unicornPlugin,
             "sonarjs": sonarjsPlugin,
+            "barrel-files": barrelFilesPlugin,
             "custom": customRulesPlugin,
         },
         rules: {
@@ -163,12 +165,16 @@ export default tseslint.config([
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
 
-            // Custom rules
-            "custom/barrelsby-header": "error",
-            "custom/no-deprecated": "error",
-            "custom/no-duplicate-reexports": "error",
-            "custom/no-reexport-from-non-barrel": "error",
-            "custom/no-redundant-assignment": "off",
+            // Barrel files rules - ban all re-export patterns but allow index files
+          "barrel-files/avoid-re-export-all": "error",
+          "barrel-files/avoid-namespace-import": "error",
+
+          // Custom rules - work with barrel files plugin
+          "custom/barrelsby-header": "error",
+          "custom/no-deprecated": "error",
+          "custom/no-duplicate-reexports": "error",
+          "custom/no-reexport-from-non-barrel": "error",
+          "custom/no-redundant-assignment": "off",
 
             // Import rules (from recommended + custom)
             ...importPlugin.configs.recommended.rules,
