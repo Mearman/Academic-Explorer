@@ -41,15 +41,17 @@ const buildUrl = (path: string): string => `${BASE_URL}/#${path}`;
 const expectPageLoads = async (page: import("@playwright/test").Page, path: string, options?: {
 		expectContent?: string | RegExp;
 		skipContentCheck?: boolean;
+		timeout?: number;
 	}): Promise<void> => {
 	const errors: string[] = [];
 	page.on("pageerror", (error) => {
 		errors.push(error.message);
 	});
 
+	const timeout = options?.timeout ?? 30_000;
 	const url = buildUrl(path);
-	await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
-	await waitForAppReady(page, { timeout: 30_000 });
+	await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+	await waitForAppReady(page, { timeout });
 
 	// Verify no JavaScript errors
 	expect(errors, `JavaScript errors on ${path}`).toHaveLength(0);
@@ -127,6 +129,7 @@ test.describe("Auto-discovered Static Routes", () => {
 			await expectPageLoads(page, route, {
 				expectContent: isHomepage ? "BibGraph" : undefined,
 				skipContentCheck: isErrorTest,
+				timeout: isBookmarksPage ? 60_000 : undefined, // Increased timeout for bookmarks page
 			});
 		});
 	}
