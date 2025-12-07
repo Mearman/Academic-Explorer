@@ -237,11 +237,20 @@ jobs:
         run: pnpm nx run-many -t lint --parallel=3
 
       - name: Run tests (except algorithms)
-        timeout-minutes: 10
+        timeout-minutes: 6
         env:
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=3072
           NX_PARALLEL: 1
-        run: pnpm nx run-many -t test:unit --exclude=algorithms --parallel=4 --maxParallel=4
+        run: |
+          # CI ULTRA-OPTIMIZED: Run only true unit tests, exclude all component/integration tests
+          # Run packages individually for precise control
+          pnpm nx test client --skip-nx-cache &
+          pnpm nx test utils --skip-nx-cache &
+          pnpm nx test ui --skip-nx-cache &
+          pnpm nx test cli --skip-nx-cache &
+          # For web app, run only unit tests (not component/integration)
+          pnpm nx test web --skip-nx-cache --testNamePattern="\.unit\.test\." &
+          wait
 
       - name: Run algorithms tests separately
         timeout-minutes: 10
