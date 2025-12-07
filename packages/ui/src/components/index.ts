@@ -11,7 +11,4 @@ export * from './layout';
 export * from './settings';
 
 // Re-export individual components
-export * from './ErrorBoundary';
-export * from './LoadingSpinner';
-export * from './ErrorRecovery';
 export * from './SkeletonScreens';
