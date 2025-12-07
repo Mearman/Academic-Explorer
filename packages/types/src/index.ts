@@ -133,36 +133,3 @@ export type {
 
 // From entities module
 export * from "./entities";
-
-// Essential common types that were previously exported through barrels
-export type { OpenAlexResponse, QueryParams, SampleParams, StatsParams, GroupParams, AutocompleteResult } from "./entities/common";
-export { OpenAlexResponseSchema, QueryParamsSchema, SampleParamsSchema, StatsParamsSchema, GroupParamsSchema, AutocompleteResultSchema } from "./entities/common";
-
-// Essential filter types
-export type {
-  WorksFilters,
-  AuthorsFilters,
-  SourcesFilters,
-  InstitutionsFilters,
-  TopicsFilters,
-  ConceptsFilters,
-  PublishersFilters,
-  FundersFilters,
-  KeywordsFilters,
-  BaseEntityFilters,
-  BaseEntityWithTopicsFilters,
-  EntityFilters
-} from "./entities/filters";
-
-// Essential utility types
-export { isRecord } from "./entities/utils";
-
-// Essential graph-list types
-export type {
-  GraphListNode,
-  AddToGraphListParams,
-  PruneGraphListResult
-} from "./graph/graph-list";
-export {
-  GRAPH_LIST_CONFIG
-} from "./graph/graph-list";
