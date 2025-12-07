@@ -20,6 +20,13 @@ export type {
   BaseEntityWithTopicsFilters,
   EntityFilters
 } from "./filters";
+
+// Export author-specific types that were previously available through barrels
+export type {
+  AuthorGroupingOptions,
+  AuthorCollaboratorsFilters,
+  AuthorAutocompleteOptions
+} from "./authors";
 export {
   getEntityRelationshipQueries,
   getInboundQueries,
@@ -44,6 +51,8 @@ export {
   detectEntityType
 } from "./entity-metadata";
 export { getEntityType, isOpenAlexEntity } from "./type-guards";
+export { validateWithSchema } from "./utils";
+export type { OpenAlexError } from "./common";
 
 // Export graph-list types that were previously available through barrels
 export type {

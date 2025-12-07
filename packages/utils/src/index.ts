@@ -37,3 +37,7 @@ export * from "./webgl-detection";
 
 // Graph utilities
 export * from "./graph-3d-adapter";
+export * from "./graph-sources/relationship-extractor";
+
+// Cache utilities
+export * from "./cache";
