@@ -78,24 +78,20 @@ const expectPageLoads = async (page: import("@playwright/test").Page, path: stri
 		// Strategy 1: Try to find visible text content first
 		try {
 			await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 5_000 });
-		} catch (error) {
+		} catch {
 			// Strategy 2: Check if content exists in page title (more reliable for branding)
-			try {
-				const title = await page.title();
-				if (title.includes(content)) {
-					// Found in title, consider this a pass
-					return;
-				}
-			} catch (titleError) {
-				// Continue to next strategy
+			const title = await page.title();
+			if (title.includes(content)) {
+				// Found in title, consider this a pass
+				return;
 			}
-
-			// Strategy 3: Check for the first occurrence with longer timeout
-			const locator = typeof options.expectContent === "string"
-				? page.locator(`text=${options.expectContent}`)
-				: page.locator(`text=${options.expectContent.source}`);
-			await expect(locator.first()).toBeVisible({ timeout: 15_000 });
 		}
+
+		// Strategy 3: Check for the first occurrence with longer timeout
+		const locator = typeof options.expectContent === "string"
+			? page.locator(`text=${options.expectContent}`)
+			: page.locator(`text=${options.expectContent.source}`);
+		await expect(locator.first()).toBeVisible({ timeout: 15_000 });
 	}
 
 	// Verify no error state displayed

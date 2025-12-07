@@ -124,8 +124,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const dragStartRef = useRef<{ x: number; width: number } | null>(null);
 
   // Mobile menu state
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  
   // Mobile search state
   const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
 
@@ -206,111 +205,89 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Header */}
       <AppShell.Header>
         <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'md' }}>
-          {/* Left side - Title and version (hidden on mobile when search expanded) */}
-          <Group flex={mobileSearchExpanded ? 0 : 1} gap="xs">
-            {!mobileSearchExpanded && (
-              <>
-                <Link to="/" style={{ textDecoration: 'none' }}>
-                  <Text
-                    size="xl"
-                    fw={600}
-                    c="blue"
-                    className={sprinkles({ cursor: 'pointer' })}
-                  >
-                    BibGraph
-                  </Text>
-                </Link>
-                <Anchor
-                  href={releaseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <Badge
-                    variant="light"
-                    size="sm"
-                    className={sprinkles({ cursor: 'pointer' })}
-                  >
-                    v{buildInfo.version}
-                  </Badge>
-                </Anchor>
-              </>
-            )}
-          </Group>
-
-          {/* Center - Desktop search */}
-          <Group gap="xs">
-            <Box visibleFrom="sm">
-              <HeaderSearchInput />
-            </Box>
-          </Group>
-
-          {/* Right side - Controls */}
-          <Group gap="xs">
-            {/* Mobile search - expandable input */}
-            <Box
-              hiddenFrom="sm"
-              className={sprinkles({ display: 'flex' })}
-              style={{
-                alignItems: 'center',
-                gap: '0.5rem',
-                flex: mobileSearchExpanded ? 1 : 'none'
-              }}
+          {/* Left side - Always show logo on mobile, hide version badge */}
+          <Group gap="xs" style={{ minWidth: 0, flexShrink: 0 }}>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <Text
+                size="lg"
+                fw={600}
+                c="blue"
+                className={sprinkles({ cursor: 'pointer' })}
+                lineClamp={1}
+                style={{ fontSize: 'clamp(1.125rem, 4vw, 1.5rem)' }}
+              >
+                BibGraph
+              </Text>
+            </Link>
+            {/* Version badge only on larger screens */}
+            <Anchor
+              href={releaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'none' }}
+              visibleFrom="sm"
             >
-              {mobileSearchExpanded ? (
-                <>
-                  <Box className={sprinkles({ flex: '1', minWidth: '0' })} style={{}}>
-                    <HeaderSearchInput />
-                  </Box>
-                  <ActionIcon
-                    onClick={() => setMobileSearchExpanded(false)}
-                    variant="subtle"
-                    size="lg"
-                    aria-label="Close search"
-                    style={{ flexShrink: 0 }}
-                  >
-                    <IconX size={ICON_SIZE.LG} />
-                  </ActionIcon>
-                </>
-              ) : (
-                <ActionIcon
-                  onClick={() => setMobileSearchExpanded(true)}
-                  variant="subtle"
-                  size="lg"
-                  aria-label="Open search"
-                >
-                  <IconSearch size={ICON_SIZE.LG} />
-                </ActionIcon>
-              )}
-            </Box>
+              <Badge
+                variant="light"
+                size="sm"
+                className={sprinkles({ cursor: 'pointer' })}
+              >
+                v{buildInfo.version}
+              </Badge>
+            </Anchor>
+          </Group>
 
-            {/* Sidebar toggle controls - hidden on mobile when search expanded */}
-            {!mobileSearchExpanded && (
-              <>
-                <ActionIcon
-                  onClick={toggleLeftSidebar}
-                  variant="subtle"
-                  size="lg"
-                  aria-label="Toggle left sidebar"
-                  color={leftSidebarOpen ? "blue" : "gray"}
-                >
-                  <IconLayoutSidebar size={ICON_SIZE.LG} />
-                </ActionIcon>
+          {/* Center - Desktop search only */}
+          <Box visibleFrom="sm" style={{ flex: 1, maxWidth: 400, margin: '0 auto' }}>
+            <HeaderSearchInput />
+          </Box>
 
+          {/* Right side - Controls with mobile optimization */}
+          <Group gap="xs" style={{ flexShrink: 0 }}>
+            {/* Mobile search - full width when expanded */}
+            {mobileSearchExpanded ? (
+              <Box
+                hiddenFrom="sm"
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  backgroundColor: 'var(--mantine-color-body)',
+                  zIndex: 1000,
+                  padding: '0 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
                 <ActionIcon
-                  onClick={toggleRightSidebar}
+                  onClick={() => setMobileSearchExpanded(false)}
                   variant="subtle"
                   size="lg"
-                  aria-label="Toggle right sidebar"
-                  color={rightSidebarOpen ? "blue" : "gray"}
+                  aria-label="Close search"
                 >
-                  <IconLayoutSidebarRight size={ICON_SIZE.LG} />
+                  <IconX size={ICON_SIZE.LG} />
                 </ActionIcon>
-              </>
+                <Box style={{ flex: 1, minWidth: 0 }}>
+                  <HeaderSearchInput />
+                </Box>
+              </Box>
+            ) : (
+              <ActionIcon
+                onClick={() => setMobileSearchExpanded(true)}
+                variant="subtle"
+                size="lg"
+                aria-label="Open search"
+                hiddenFrom="sm"
+              >
+                <IconSearch size={ICON_SIZE.LG} />
+              </ActionIcon>
             )}
 
-            {/* Desktop navigation - inline buttons */}
-            <Group gap={rem(4)} visibleFrom="xl">
+            {/* Desktop navigation - hidden on smaller screens */}
+            <Group gap={rem(4)} visibleFrom="lg">
               <Button
                 component={Link}
                 to="/"
@@ -327,6 +304,127 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 About
               </Button>
+            </Group>
+
+            {/* Sidebar controls - simplified on mobile */}
+            <Group gap="xs" visibleFrom="sm">
+              <ActionIcon
+                onClick={toggleLeftSidebar}
+                variant="subtle"
+                size="lg"
+                aria-label="Toggle left sidebar"
+                color={leftSidebarOpen ? "blue" : "gray"}
+              >
+                <IconLayoutSidebar size={ICON_SIZE.LG} />
+              </ActionIcon>
+
+              <ActionIcon
+                onClick={toggleRightSidebar}
+                variant="subtle"
+                size="lg"
+                aria-label="Toggle right sidebar"
+                color={rightSidebarOpen ? "blue" : "gray"}
+              >
+                <IconLayoutSidebarRight size={ICON_SIZE.LG} />
+              </ActionIcon>
+            </Group>
+
+            {/* Mobile-only menu button */}
+            <Box hiddenFrom="sm">
+              <Menu shadow="md" width={200}>
+              <Menu.Target>
+                <ActionIcon
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Menu"
+                >
+                  <IconMenu size={ICON_SIZE.LG} />
+                </ActionIcon>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconLayoutSidebar size={ICON_SIZE.MD} />}
+                  onClick={toggleLeftSidebar}
+                >
+                  {leftSidebarOpen ? 'Hide' : 'Show'} Left Panel
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconLayoutSidebarRight size={ICON_SIZE.MD} />}
+                  onClick={toggleRightSidebar}
+                >
+                  {rightSidebarOpen ? 'Hide' : 'Show'} Right Panel
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                  onClick={() => setMobileSearchExpanded(true)}
+                >
+                  Search
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Home
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/about"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  About
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item
+                  component={Link}
+                  to="/history"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  History
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/bookmarks"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Bookmarks
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/catalogue"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Catalogue
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/settings"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Settings
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/algorithms"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Algorithms
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/graph"
+                  leftSection={<IconSearch size={ICON_SIZE.MD} />}
+                >
+                  Graph
+                </Menu.Item>
+              </Menu.Dropdown>
+              </Menu>
+            </Box>
+
+            {/* Desktop navigation - additional buttons */}
+            <Group gap={rem(4)} visibleFrom="xl">
               <Button
                 component={Link}
                 to="/history"
@@ -351,117 +449,17 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Catalogue
               </Button>
-              <Button
-                component={Link}
-                to="/settings"
-                variant="subtle"
-                size="xs"
-              >
-                Settings
-              </Button>
-              <Button
-                component={Link}
-                to="/algorithms"
-                variant="subtle"
-                size="xs"
-              >
-                Algorithms
-              </Button>
-              <Button
-                component={Link}
-                to="/graph"
-                variant="subtle"
-                size="xs"
-              >
-                Graph
-              </Button>
             </Group>
 
-            {/* Mobile navigation - dropdown menu (hidden when search expanded) */}
-            {!mobileSearchExpanded && (
-              <Menu opened={mobileMenuOpen} onChange={setMobileMenuOpen}>
-                <Menu.Target>
-                  <ActionIcon
-                    variant="subtle"
-                    size="lg"
-                    aria-label="Open navigation menu"
-                    hiddenFrom="xl"
-                  >
-                    <IconMenu size={ICON_SIZE.LG} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    component={Link}
-                    to="/"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Home
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/about"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    About
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/history"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    History
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/bookmarks"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Bookmarks
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/catalogue"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Catalogue
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/settings"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Settings
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/algorithms"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Algorithms
-                  </Menu.Item>
-                  <Menu.Item
-                    component={Link}
-                    to="/graph"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Graph
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            )}
-
-            {/* Theme dropdown (hidden on mobile when search expanded) */}
-            {!mobileSearchExpanded && (
-              <ColorSchemeSelector />
-            )}
-
-            {/* Keyboard shortcuts button (hidden on mobile when search expanded) */}
-            {!mobileSearchExpanded && (
-              <KeyboardShortcutsButton
-                onClick={() => setShortcutsHelpOpened(true)}
-              />
-            )}
+            {/* Theme selector and help - visible on all screen sizes */}
+            <ColorSchemeSelector />
+            <KeyboardShortcutsButton
+              onClick={() => setShortcutsHelpOpened(true)}
+            />
+            <KeyboardShortcutsHelp
+              opened={shortcutsHelpOpened}
+              onClose={() => setShortcutsHelpOpened(false)}
+            />
           </Group>
         </Group>
       </AppShell.Header>
