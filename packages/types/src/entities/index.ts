@@ -25,7 +25,10 @@ export type {
 export type {
   AuthorGroupingOptions,
   AuthorCollaboratorsFilters,
-  AuthorAutocompleteOptions
+  AuthorAutocompleteOptions,
+  AuthorWorksFilters,
+  AuthorSearchOptions,
+  GroupByResult
 } from "./authors";
 export {
   getEntityRelationshipQueries,
@@ -52,7 +55,7 @@ export {
 } from "./entity-metadata";
 export { getEntityType, isOpenAlexEntity } from "./type-guards";
 export { validateWithSchema } from "./utils";
-export type { OpenAlexError } from "./common";
+export type { OpenAlexError, AutocompleteResult } from "./common";
 
 // Export graph-list types that were previously available through barrels
 export type {

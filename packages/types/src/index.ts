@@ -133,3 +133,6 @@ export type {
 
 // From entities module
 export * from "./entities";
+
+// Essential core types that must be available from main package
+export type { OpenAlexResponse, QueryParams, SampleParams, StatsParams, GroupParams, AutocompleteResult } from "./entities/common";
