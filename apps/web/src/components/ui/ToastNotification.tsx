@@ -5,13 +5,13 @@
  * variants, positioning, and auto-dismiss functionality.
  */
 
-import { notifications, NotificationData } from '@mantine/notifications';
+import { NotificationData,notifications } from '@mantine/notifications';
 import {
-  IconCheck,
   IconAlertTriangle,
+  IconCheck,
   IconInfoCircle,
-  IconX,
   IconLoader,
+  IconX,
 } from '@tabler/icons-react';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning' | 'loading';
@@ -30,6 +30,7 @@ const LOADING_AUTO_CLOSE = false;
 
 /**
  * Get notification configuration for variant
+ * @param variant
  */
 const getNotificationConfig = (variant: ToastVariant = 'info') => {
   const configs = {
@@ -66,6 +67,8 @@ const getNotificationConfig = (variant: ToastVariant = 'info') => {
 
 /**
  * Show a success toast notification
+ * @param message
+ * @param options
  */
 export const showSuccessToast = (
   message: string,
@@ -81,6 +84,8 @@ export const showSuccessToast = (
 
 /**
  * Show an error toast notification
+ * @param message
+ * @param options
  */
 export const showErrorToast = (
   message: string,
@@ -96,6 +101,8 @@ export const showErrorToast = (
 
 /**
  * Show a warning toast notification
+ * @param message
+ * @param options
  */
 export const showWarningToast = (
   message: string,
@@ -111,6 +118,8 @@ export const showWarningToast = (
 
 /**
  * Show an info toast notification
+ * @param message
+ * @param options
  */
 export const showInfoToast = (
   message: string,
@@ -126,6 +135,8 @@ export const showInfoToast = (
 
 /**
  * Show a loading toast notification
+ * @param message
+ * @param options
  */
 export const showLoadingToast = (
   message: string,
@@ -141,6 +152,10 @@ export const showLoadingToast = (
 
 /**
  * Show a custom toast with specific configuration
+ * @param title
+ * @param message
+ * @param variant
+ * @param options
  */
 export const showToast = (
   title: string,
@@ -159,6 +174,7 @@ export const showToast = (
 
 /**
  * Hide a specific toast notification
+ * @param id
  */
 export const hideToast = (id: string): void => {
   notifications.hide(id);
@@ -179,6 +195,8 @@ export class ToastManager {
 
   /**
    * Show operation success toast
+   * @param operation
+   * @param details
    */
   static showOperationSuccess(operation: string, details?: string): string {
     const message = details ? `${operation}: ${details}` : operation;
@@ -189,6 +207,8 @@ export class ToastManager {
 
   /**
    * Show operation error toast
+   * @param operation
+   * @param error
    */
   static showOperationError(operation: string, error?: string | Error): string {
     const errorMessage = error instanceof Error ? error.message : error || 'Unknown error';
@@ -202,6 +222,7 @@ export class ToastManager {
 
   /**
    * Show operation loading toast
+   * @param operation
    */
   static showOperationLoading(operation: string): string {
     const message = `${operation}...`;
@@ -212,6 +233,9 @@ export class ToastManager {
 
   /**
    * Update loading toast to success
+   * @param loadingId
+   * @param operation
+   * @param details
    */
   static updateLoadingToSuccess(loadingId: string, operation: string, details?: string): void {
     notifications.update({
@@ -226,6 +250,9 @@ export class ToastManager {
 
   /**
    * Update loading toast to error
+   * @param loadingId
+   * @param operation
+   * @param error
    */
   static updateLoadingToError(loadingId: string, operation: string, error?: string | Error): void {
     const errorMessage = error instanceof Error ? error.message : error || 'Unknown error';
@@ -242,6 +269,7 @@ export class ToastManager {
 
   /**
    * Show network error toast
+   * @param error
    */
   static showNetworkError(error: string = 'Network error occurred. Please check your connection.'): string {
     return showErrorToast(error, {
@@ -252,6 +280,7 @@ export class ToastManager {
 
   /**
    * Show validation error toast
+   * @param errors
    */
   static showValidationError(errors: string[]): string {
     const message = `Please fix the following errors: ${errors.join(', ')}`;
@@ -263,6 +292,7 @@ export class ToastManager {
 
   /**
    * Show permission error toast
+   * @param action
    */
   static showPermissionError(action: string): string {
     const message = `You don't have permission to ${action}.`;

@@ -10,8 +10,8 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ErrorBoundary } from "./ErrorBoundary";
-import { CardSkeleton, ListSkeleton, GraphSkeleton, StatsSkeleton } from "./LoadingSkeleton";
-import { ToastManager, useToast } from "./ToastNotification";
+import { CardSkeleton, GraphSkeleton, ListSkeleton, StatsSkeleton } from "./LoadingSkeleton";
+import { useToast } from "./ToastNotification";
 
 export interface DataFetcherConfig<T> {
   /** Function to fetch data */
@@ -66,8 +66,9 @@ export interface DataFetcherProps<T> {
 
 /**
  * Hook for data fetching with integrated error handling and toasts
+ * @param config
  */
-export function useDataFetcher<T>(config: DataFetcherConfig<T>) {
+export const useDataFetcher = <T,>(config: DataFetcherConfig<T>) => {
   const toast = useToast();
   const [data, setData] = useState<T | undefined>(config.initialData);
   const [loading, setLoading] = useState(config.fetchOnMount ?? true);
@@ -130,12 +131,15 @@ export function useDataFetcher<T>(config: DataFetcherConfig<T>) {
     refetch,
     retryCount,
   };
-};
+};;
 
 /**
  * Data Fetcher Component that provides integrated UI and state management
+ * @param root0
+ * @param root0.config
+ * @param root0.children
  */
-export function DataFetcher<T>({ config, children }: DataFetcherProps<T>) {
+export const DataFetcher = <T,>({ config, children }: DataFetcherProps<T>) => {
   const { data, loading, error, refetch, retryCount } = useDataFetcher(config);
 
   // Check if data is empty
@@ -181,32 +185,32 @@ export function DataFetcher<T>({ config, children }: DataFetcherProps<T>) {
   }
 
   // Handle empty state
-  if (isEmpty && !loading && !error) {
-    if (config.emptyComponent) {
+  if (isEmpty && !loading && !error && config.emptyComponent) {
       return <>{config.emptyComponent}</>;
     }
-  }
 
   // Render children with state
   return <>{children({ data, loading, error, refetch, retryCount })}</>;
-};
+};;
 
 /**
  * Specialized fetcher for API responses with count and results
+ * @param fetchFn
+ * @param options
+ * @param options.initialPage
+ * @param options.perPage
+ * @param options.autoFetch
  */
-export function usePaginatedFetcher<T>(
-  fetchFn: (page?: number, perPage?: number) => Promise<{
+export const usePaginatedFetcher = <T,>(fetchFn: (page?: number, perPage?: number) => Promise<{
     results: T[];
     count: number;
     page?: number;
     perPage?: number;
-  }>,
-  options?: {
+  }>, options?: {
     initialPage?: number;
     perPage?: number;
     autoFetch?: boolean;
-  }
-) {
+  }) => {
   const [page, setPage] = useState(options?.initialPage || 1);
   const [perPage, setPerPage] = useState(options?.perPage || 25);
   const [pagination, setPagination] = useState<{
@@ -234,7 +238,7 @@ export function usePaginatedFetcher<T>(
       try {
         const result = await fetchFn(page, perPage);
         setPagination(result);
-      } catch (err) {
+      } catch {
         // Error handled by useDataFetcher
       }
     };
@@ -268,15 +272,14 @@ export function usePaginatedFetcher<T>(
     hasNextPage: page * perPage < pagination.count,
     hasPrevPage: page > 1,
   };
-};
+};;
 
 /**
  * Higher-order component for adding data fetching to existing components
+ * @param Component
+ * @param config
  */
-export function withDataFetching<P extends object>(
-  Component: React.ComponentType<P>,
-  config: DataFetcherConfig<any>
-) {
+export const withDataFetching = <P,>(Component: React.ComponentType<P>, config: DataFetcherConfig<unknown>) => {
   const WrappedComponent = (props: Omit<P, keyof ReturnType<typeof useDataFetcher>>) => {
     return (
       <DataFetcher config={config}>
@@ -287,7 +290,7 @@ export function withDataFetching<P extends object>(
 
   WrappedComponent.displayName = `withDataFetching(${Component.displayName || Component.name})`;
   return WrappedComponent;
-};
+};;
 
 /**
  * Predefined configurations for common use cases
@@ -340,4 +343,3 @@ export const DataFetcherConfigs = {
   },
 } as const;
 
-export default DataFetcher;

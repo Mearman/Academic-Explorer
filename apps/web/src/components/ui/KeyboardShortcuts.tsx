@@ -6,26 +6,13 @@
  * through improved keyboard navigation and productivity shortcuts.
  */
 
-import type { KeyboardEvent } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-
 import {
   ActionIcon,
-  Badge,
-  Box,
-  Button,
-  Center,
-  Group,
-  Kbd,
-  Modal,
-  Paper,
-  Stack,
-  Table,
-  Text,
-  Title,
   Tooltip,
 } from "@mantine/core";
-import { IconHelp, IconKeyboard } from "@tabler/icons-react";
+import { IconKeyboard } from "@tabler/icons-react";
+import type { KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export interface KeyboardShortcut {
   /** Unique identifier for the shortcut */
@@ -77,10 +64,9 @@ interface KeyboardShortcutsManagerProps {
 
 /**
  * Hook for keyboard shortcuts management
+ * @param config
  */
 export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
-  const [enabled, setEnabled] = useState(config.enabled ?? true);
-  const [helpOpen, setHelpOpen] = useState(false);
   const shortcutsRef = useRef(config.shortcuts);
 
   // Update shortcuts ref when config changes
@@ -145,7 +131,7 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
 
   // Handle keyboard events
   const handleKeyDown = useCallback(async (event: KeyboardEvent) => {
-    if (!enabled) return;
+    if (config.enabled === false) return;
 
     // Ignore events in input fields unless explicitly allowed
     if (
@@ -173,11 +159,11 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
         break;
       }
     }
-  }, [enabled, matchesShortcut]);
+  }, [config.enabled, matchesShortcut]);
 
   // Add and remove event listeners
   useEffect(() => {
-    if (enabled) {
+    if (config.enabled !== false) {
       const keydownHandler = (event: Event) => {
         // Cast Event to our expected KeyboardEvent type
         const keyboardEvent = event as unknown as KeyboardEvent;
@@ -187,13 +173,9 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
       document.addEventListener('keydown', keydownHandler, true);
       return () => document.removeEventListener('keydown', keydownHandler, true);
     }
-  }, [enabled, handleKeyDown]);
+  }, [config.enabled, handleKeyDown]);
 
-  // Toggle enabled state
-  const toggleEnabled = useCallback(() => {
-    setEnabled((prev) => !prev);
-  }, []);
-
+  
   // Register new shortcut
   const registerShortcut = useCallback((shortcut: KeyboardShortcut) => {
     shortcutsRef.current = [...shortcutsRef.current, shortcut];
@@ -204,29 +186,16 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
     shortcutsRef.current = shortcutsRef.current.filter(s => s.id !== id);
   }, []);
 
-  // Get shortcuts by category
-  const getShortcutsByCategory = useCallback(() => {
-    const categories: Record<string, KeyboardShortcut[]> = {};
-
-    shortcutsRef.current.forEach(shortcut => {
-      const category = shortcut.category || 'General';
-      if (!categories[category]) {
-        categories[category] = [];
-      }
-      categories[category].push(shortcut);
-    });
-
-    return categories;
+  // Simple setter for help modal (for help button)
+  const setHelpOpen = useCallback((_open: boolean) => {
+    // This function exists for compatibility with the help button
+    // In a full implementation, this would control a help modal
   }, []);
 
   return {
-    enabled,
-    helpOpen,
     setHelpOpen,
-    toggleEnabled,
     registerShortcut,
     unregisterShortcut,
-    getShortcutsByCategory,
   };
 };
 
@@ -270,31 +239,15 @@ export const KeyboardHelpButton = ({
 
 /**
  * Main Keyboard Shortcuts Manager Component
+ * @param root0
+ * @param root0.config
+ * @param root0.renderHelpButton
  */
 export const KeyboardShortcutsManager = ({
   config,
   renderHelpButton = true,
 }: KeyboardShortcutsManagerProps) => {
-  const {
-    enabled,
-    helpOpen,
-    setHelpOpen,
-    toggleEnabled,
-    getShortcutsByCategory,
-  } = useKeyboardShortcuts(config);
-
-  // Add help shortcut if not present
-  const allShortcuts = [
-    ...config.shortcuts,
-    {
-      id: 'help',
-      keys: config.helpShortcut || 'ctrl+?',
-      description: 'Show keyboard shortcuts help',
-      handler: () => setHelpOpen(true),
-      category: 'Help',
-      enabled: true,
-    } as KeyboardShortcut,
-  ];
+  const { setHelpOpen } = useKeyboardShortcuts(config);
 
   if (renderHelpButton && config.showHelpButton !== false) {
     return (
@@ -372,4 +325,3 @@ export const CommonShortcuts = {
   },
 } as const;
 
-export default KeyboardShortcutsManager;

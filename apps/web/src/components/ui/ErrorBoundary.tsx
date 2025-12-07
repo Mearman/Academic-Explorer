@@ -6,7 +6,7 @@
  */
 
 import { Alert, Button, Container, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { IconAlertTriangle, IconRefresh, IconHome } from '@tabler/icons-react';
+import { IconAlertTriangle, IconHome,IconRefresh } from '@tabler/icons-react';
 import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface ErrorBoundaryState {
@@ -239,6 +239,8 @@ export const InlineErrorBoundary = ({
 
 /**
  * Error boundary specifically for async components
+ * @param root0
+ * @param root0.children
  */
 export const AsyncErrorBoundary = ({
   children,

@@ -6,26 +6,26 @@
  * and improves developer experience with standardized patterns.
  */
 
+import { Button, Group, Stack, Text } from "@mantine/core";
+import { IconAlertTriangle, IconCheck, IconLoader } from "@tabler/icons-react";
 import type { FormEvent, ReactNode } from "react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
-import { Button, Group, Stack, Text } from "@mantine/core";
-import { IconAlertTriangle, IconCheck, IconLoader } from "@tabler/icons-react";
-import { ToastManager, useToast } from "./ToastNotification";
+import { useToast } from "./ToastNotification";
 
-export interface FormFieldConfig<T = any> {
+export interface FormFieldConfig<T = unknown> {
   /** Field name */
   name: keyof T;
   /** Initial value */
-  initialValue: any;
+  initialValue: unknown;
   /** Validation function */
-  validate?: (value: any, formData: T) => string | null;
+  validate?: (value: unknown, formData: T) => string | null;
   /** Whether field is required */
   required?: boolean;
   /** Custom error message */
   errorMessage?: string;
   /** Transform function before validation */
-  transform?: (value: any) => any;
+  transform?: (value: unknown) => unknown;
   /** Field dependencies */
   dependsOn?: (keyof T)[];
 }
@@ -73,13 +73,13 @@ export interface FormManagerProps<T> {
     dirty: boolean;
     valid: boolean;
     getFieldProps: (name: keyof T) => {
-      value: any;
+      value: unknown;
       error?: string;
-      onChange: (value: any) => void;
+      onChange: (value: unknown) => void;
       onBlur: () => void;
       required?: boolean;
     };
-    setFieldValue: (name: keyof T, value: any) => void;
+    setFieldValue: (name: keyof T, value: unknown) => void;
     setError: (name: keyof T, error: string) => void;
     clearError: (name: keyof T) => void;
     handleSubmit: (e?: FormEvent) => Promise<void>;
@@ -95,16 +95,15 @@ export interface FormManagerProps<T> {
 
 /**
  * Hook for form state management
+ * @param config
  */
-export function useFormManager<T extends Record<string, any>>(
-  config: FormConfig<T>
-) {
+export const useFormManager = <T,>(config: FormConfig<T>) => {
   const toast = useToast();
   const formId = useId();
 
   // Initialize form data
   const initialData = useMemo(() => {
-    const data = { ...config.initialData } as Record<string, any>;
+    const data = { ...config.initialData } as Record<string, unknown>;
     config.fields.forEach((field) => {
       if (data[field.name as string] === undefined) {
         data[field.name as string] = field.initialValue;
@@ -125,17 +124,14 @@ export function useFormManager<T extends Record<string, any>>(
   }, [data, initialData]);
 
   // Check if form is valid
-  const valid = useMemo(() => {
-    return Object.keys(errors).length === 0 && config.fields.every((field) => {
-      if (field.required && !data[field.name as keyof T]) {
-        return false;
-      }
-      return true;
-    });
-  }, [errors, data, config.fields]);
+  const valid = useMemo(() => (
+    Object.keys(errors).length === 0 && config.fields.every((field) => (
+      !(field.required && !data[field.name as keyof T])
+    ))
+  ), [errors, data, config.fields]);
 
   // Validate single field
-  const validateField = useCallback((name: keyof T, value: any): string | null => {
+  const validateField = useCallback((name: keyof T, value: unknown): string | null => {
     const field = config.fields.find((f) => f.name === name);
     if (!field) return null;
 
@@ -179,7 +175,7 @@ export function useFormManager<T extends Record<string, any>>(
   }, [config.fields, validateField, config.validateForm]);
 
   // Set field value
-  const setFieldValue = useCallback((name: keyof T, value: any) => {
+  const setFieldValue = useCallback((name: keyof T, value: unknown) => {
     setData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when value changes
@@ -224,7 +220,7 @@ export function useFormManager<T extends Record<string, any>>(
   const getFieldProps = useCallback((name: keyof T) => ({
     value: data[name],
     error: touched[name] ? errors[name as string] : undefined,
-    onChange: (value: any) => setFieldValue(name, value),
+    onChange: (value: unknown) => setFieldValue(name, value),
     onBlur: () => handleFieldBlur(name),
     required: config.fields.find((f) => f.name === name)?.required,
   }), [data, touched, errors, setFieldValue, handleFieldBlur, config.fields]);
@@ -275,14 +271,14 @@ export function useFormManager<T extends Record<string, any>>(
     if (!config.autoSave?.enabled) return;
 
     const timeoutId = setTimeout(async () => {
-      if (dirty && valid) {
+      if (dirty && valid && config.autoSave?.onSave) {
         try {
-          await config.autoSave!.onSave(data);
-        } catch (error) {
+          await config.autoSave.onSave(data);
+        } catch {
           // Silent auto-save failures
         }
       }
-    }, config.autoSave.debounceMs);
+    }, config.autoSave?.debounceMs);
 
     return () => clearTimeout(timeoutId);
   }, [data, dirty, valid, config.autoSave]);
@@ -303,18 +299,24 @@ export function useFormManager<T extends Record<string, any>>(
     handleSubmit,
     handleReset,
   };
-};
+};;
 
 /**
  * Form Manager Component
+ * @param root0
+ * @param root0.config
+ * @param root0.children
+ * @param root0.submitButton
+ * @param root0.resetButton
+ * @param root0.showActions
  */
-export function FormManager<T extends Record<string, any>>({
+export const FormManager = <T,>({
   config,
   children,
   submitButton,
   resetButton,
   showActions = true,
-}: FormManagerProps<T>) {
+}: FormManagerProps<T>) => {
   const formState = useFormManager(config);
 
   return (
@@ -351,7 +353,7 @@ export function FormManager<T extends Record<string, any>>({
       )}
     </form>
   );
-};
+};;
 
 /**
  * Form field component with integrated validation
@@ -393,7 +395,7 @@ export const FormField = ({ label, error, required, description, children }: For
  * Predefined validation functions
  */
 export const Validations = {
-  required: (message = "This field is required") => (value: any) => {
+  required: (message = "This field is required") => (value: unknown) => {
     if (!value || (typeof value === 'string' && !value.trim())) {
       return message;
     }
@@ -401,7 +403,7 @@ export const Validations = {
   },
 
   email: (message = "Please enter a valid email address") => (value: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
       return message;
     }
@@ -438,32 +440,32 @@ export const Validations = {
     }
   },
 
-  numeric: (message = "Please enter a valid number") => (value: any) => {
-    if (isNaN(Number(value))) {
+  numeric: (message = "Please enter a valid number") => (value: unknown) => {
+    if (Number.isNaN(Number(value))) {
       return message;
     }
     return null;
   },
 
-  positive: (message = "Must be a positive number") => (value: any) => {
+  positive: (message = "Must be a positive number") => (value: unknown) => {
     const num = Number(value);
-    if (isNaN(num) || num <= 0) {
+    if (Number.isNaN(num) || num <= 0) {
       return message;
     }
     return null;
   },
 
-  integer: (message = "Must be a whole number") => (value: any) => {
+  integer: (message = "Must be a whole number") => (value: unknown) => {
     const num = Number(value);
-    if (isNaN(num) || !Number.isInteger(num)) {
+    if (Number.isNaN(num) || !Number.isInteger(num)) {
       return message;
     }
     return null;
   },
 
-  range: (min: number, max: number, message?: string) => (value: any) => {
+  range: (min: number, max: number, message?: string) => (value: unknown) => {
     const num = Number(value);
-    if (isNaN(num) || num < min || num > max) {
+    if (Number.isNaN(num) || num < min || num > max) {
       return message || `Must be between ${min} and ${max}`;
     }
     return null;
@@ -477,4 +479,3 @@ export const Validations = {
   },
 };
 
-export default FormManager;
