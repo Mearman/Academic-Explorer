@@ -1,3 +1,8 @@
+## <small>24.0.5 (2025-12-07)</small>
+
+* fix(web): properly exclude bookmarks from smoke tests in CI ([af9b386](https://github.com/Mearman/BibGraph/commit/af9b386))
+* fix(web): skip bookmarks smoke test in CI due to IndexedDB issues ([edc7d44](https://github.com/Mearman/BibGraph/commit/edc7d44))
+
 ## <small>24.0.4 (2025-12-07)</small>
 
 * fix(web): improve bookmarks smoke test reliability in CI ([526e8b6](https://github.com/Mearman/BibGraph/commit/526e8b6))
