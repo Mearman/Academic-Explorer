@@ -1,9 +1,9 @@
 import type {
-  BaseFilter,
-  type BaseFilterRenderProps,
-  createEnumOptions,  FilterFieldConfig,
+  BaseFilterRenderProps,
+  FilterFieldConfig,
   FilterFieldOption as UtilsFilterFieldOption,
   FilterOperator} from "@bibgraph/utils";
+import { BaseFilter, createEnumOptions } from "@bibgraph/utils";
 import { MultiSelect, Select } from "@mantine/core";
 
 

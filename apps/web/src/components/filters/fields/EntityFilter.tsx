@@ -1,4 +1,5 @@
-import type { BaseFilter, type BaseFilterRenderProps,FilterFieldConfig, FilterOperator  } from "@bibgraph/utils";
+import type { BaseFilterRenderProps, FilterFieldConfig, FilterOperator } from "@bibgraph/utils";
+import { BaseFilter } from "@bibgraph/utils";
 import { MultiSelect, Select, TextInput } from "@mantine/core";
 
 interface EntityFilterProps {

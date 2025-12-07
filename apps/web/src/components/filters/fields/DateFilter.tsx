@@ -1,4 +1,5 @@
-import type { BaseFilter, type BaseFilterRenderProps,FilterFieldConfig, FilterOperator  } from "@bibgraph/utils";
+import type { BaseFilterRenderProps, FilterFieldConfig, FilterOperator } from "@bibgraph/utils";
+import { BaseFilter } from "@bibgraph/utils";
 import { TextInput } from "@mantine/core";
 import React from "react";
 
