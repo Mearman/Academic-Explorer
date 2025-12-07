@@ -1,3 +1,7 @@
+## <small>24.0.4 (2025-12-07)</small>
+
+* fix(web): improve bookmarks smoke test reliability in CI ([526e8b6](https://github.com/Mearman/BibGraph/commit/526e8b6))
+
 ## <small>24.0.3 (2025-12-07)</small>
 
 * fix(algorithms): increase Leiden test timeout to 60s for CI environment ([4385e1c](https://github.com/Mearman/BibGraph/commit/4385e1c))
