@@ -4,4 +4,22 @@
  * Custom React hooks for UI functionality
  */
 
-// Add custom hooks exports here when available
+// Accessibility hooks
+export {
+  useLiveRegion,
+  useKeyboardNavigation,
+  useFocusTrap,
+  useAriaAttributes,
+  useScreenReader,
+  useHighContrast,
+  useReducedMotion,
+  useFocusManagement,
+} from './useAccessibility';
+
+// Async operation hook
+export {
+  useAsyncOperation,
+  type AsyncOperationState,
+  type AsyncOperationResult,
+  type UseAsyncOperationOptions,
+} from './use-async-operation';
