@@ -1,3 +1,10 @@
+## 24.1.0 (2025-12-07)
+
+* fix(web): make handleKeyPress method private in ErrorBoundary ([87019fa](https://github.com/Mearman/BibGraph/commit/87019fa))
+* fix(web, ui): resolve linting and TypeScript issues ([9a90f46](https://github.com/Mearman/BibGraph/commit/9a90f46))
+* refactor(ui): enhance accessibility hooks with robust error handling ([5bfd614](https://github.com/Mearman/BibGraph/commit/5bfd614))
+* feat(ui): enhance ErrorBoundary with improved debugging and DevEx ([a317966](https://github.com/Mearman/BibGraph/commit/a317966))
+
 ## <small>24.0.5 (2025-12-07)</small>
 
 * fix(web): properly exclude bookmarks from smoke tests in CI ([af9b386](https://github.com/Mearman/BibGraph/commit/af9b386))
