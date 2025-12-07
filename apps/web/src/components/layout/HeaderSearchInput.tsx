@@ -54,6 +54,10 @@ interface SearchSuggestion {
   description?: string;
   worksCount?: number;
   citedByCount?: number;
+  score?: number;
+  trending?: boolean;
+  recent?: boolean;
+  relevanceReason?: string;
 }
 
 export const HeaderSearchInput = () => {
@@ -157,17 +161,57 @@ export const HeaderSearchInput = () => {
         }
       };
 
-      // Transform OpenAlex suggestions to our format
-      const transformedSuggestions: SearchSuggestion[] = (data.results || [])
-        .slice(0, 8)
-        .map((item: OpenAlexAutocompleteItem) => ({
+      // Transform OpenAlex suggestions to our format with research scoring
+      const rawSuggestions = (data.results || []).slice(0, 8);
+      const transformedSuggestions: SearchSuggestion[] = rawSuggestions.map((item: OpenAlexAutocompleteItem, index: number) => {
+        // Calculate relevance score based on multiple factors
+        let score = 100 - (index * 5); // Base score from API ordering
+
+        // Boost highly cited works
+        if (item.cited_by_count && item.cited_by_count > 100) {
+          score += 15;
+        } else if (item.cited_by_count && item.cited_by_count > 50) {
+          score += 10;
+        } else if (item.cited_by_count && item.cited_by_count > 10) {
+          score += 5;
+        }
+
+        // Boost recent publications (assumed from OpenAlex freshness heuristics)
+        if (item.works_count && item.works_count < 10) {
+          score += 8; // Likely emerging researcher/topic
+        }
+
+        // Boost institutional entities for research credibility
+        if (item.entity_type === 'institution') {
+          score += 5;
+        }
+
+        const suggestion: SearchSuggestion = {
           id: item.id || `${item.entity_type}-${item.display_name}`,
           displayName: item.display_name,
           entityType: mapEntityType(item.entity_type),
           description: item.entity_type,
           worksCount: item.works_count,
           citedByCount: item.cited_by_count,
-        }));
+          score,
+          trending: item.cited_by_count ? item.cited_by_count > 200 : false,
+          recent: item.works_count ? item.works_count < 5 : false,
+        };
+
+        // Add relevance reason for highly scored suggestions
+        if (score >= 115) {
+          suggestion.relevanceReason = 'Highly cited research';
+        } else if (score >= 110) {
+          suggestion.relevanceReason = 'Emerging research';
+        } else if (item.entity_type === 'institution') {
+          suggestion.relevanceReason = 'Research institution';
+        }
+
+        return suggestion;
+      });
+
+      // Sort by calculated score for research relevance
+      transformedSuggestions.sort((a, b) => (b.score || 0) - (a.score || 0));
 
       setSuggestions(transformedSuggestions);
 
@@ -479,16 +523,36 @@ export const HeaderSearchInput = () => {
                               <Badge size="xs" variant="light" color={getEntityTypeColor(suggestion.entityType)}>
                                 {suggestion.entityType}
                               </Badge>
-                              {suggestion.worksCount !== undefined && (
-                                <Text size="xs" c="dimmed">
-                                  {suggestion.worksCount.toLocaleString()} works
-                                </Text>
+
+                              {/* Research relevance indicators */}
+                              {suggestion.trending && (
+                                <Badge size="xs" variant="filled" color="orange">
+                                  📈 Trending
+                                </Badge>
                               )}
-                              {suggestion.citedByCount !== undefined && (
-                                <Text size="xs" c="dimmed">
-                                  {suggestion.citedByCount.toLocaleString()} citations
-                                </Text>
+                              {suggestion.recent && (
+                                <Badge size="xs" variant="light" color="green">
+                                  🆕 Recent
+                                </Badge>
                               )}
+
+                              <Box style={{ flex: 1 }}>
+                                {suggestion.worksCount !== undefined && (
+                                  <Text size="xs" c="dimmed">
+                                    {suggestion.worksCount.toLocaleString()} works
+                                  </Text>
+                                )}
+                                {suggestion.citedByCount !== undefined && (
+                                  <Text size="xs" c="dimmed">
+                                    {suggestion.citedByCount.toLocaleString()} citations
+                                  </Text>
+                                )}
+                                {suggestion.relevanceReason && (
+                                  <Text size="xs" c="blue" fw={500}>
+                                    {suggestion.relevanceReason}
+                                  </Text>
+                                )}
+                              </Box>
                             </Group>
                           </Box>
                           <ActionIcon
