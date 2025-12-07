@@ -18,10 +18,26 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: {
+        index: resolve(__dirname, "src/index.ts"),
+        logger: resolve(__dirname, "src/logger.ts"),
+        "static-data/cache-utilities": resolve(__dirname, "src/static-data/cache-utilities.ts"),
+        cache: resolve(__dirname, "src/cache/index.ts"),
+        "ui/filter-base": resolve(__dirname, "src/ui/filter-base.tsx"),
+        "date-helpers": resolve(__dirname, "src/date-helpers.ts"),
+        "data-helpers": resolve(__dirname, "src/data.ts"),
+        "build-info": resolve(__dirname, "src/build-info.ts"),
+        "data-evaluation": resolve(__dirname, "src/data-evaluation.ts"),
+        services: resolve(__dirname, "src/services.ts"),
+        validation: resolve(__dirname, "src/validation.ts"),
+        "normalize-route": resolve(__dirname, "src/normalize-route.ts"),
+        "storage/user-interactions-db": resolve(__dirname, "src/storage/user-interactions-db.ts"),
+        "storage/catalogue-db": resolve(__dirname, "src/storage/catalogue-db.ts"),
+        "workers/messages": resolve(__dirname, "src/workers/messages.ts"),
+      },
       name: "BibGraphUtils",
       formats: ["es"],
-      fileName: () => "index.js",
+      fileName: (format, entryName) => `${entryName}.js`,
     },
     sourcemap: true,
     emptyOutDir: true,
@@ -38,7 +54,7 @@ export default defineConfig({
         "immer",
       ],
       output: {
-        // Generate bundled index file instead of nested modules
+        // Generate individual files for each entry point
         preserveModules: false,
       },
     },
