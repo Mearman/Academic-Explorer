@@ -1,3 +1,10 @@
+## 23.11.0 (2025-12-07)
+
+* fix(ui): resolve KeyboardShortcutsHelp module export conflict ([81bd9e7](https://github.com/Mearman/BibGraph/commit/81bd9e7))
+* fix(web): resolve linting errors in UI components ([1b73949](https://github.com/Mearman/BibGraph/commit/1b73949))
+* fix(web): resolve TypeScript compilation errors in UI components ([0b38047](https://github.com/Mearman/BibGraph/commit/0b38047))
+* feat(web): add comprehensive utility components for enhanced DevEx and UX ([54e8837](https://github.com/Mearman/BibGraph/commit/54e8837))
+
 ## 23.10.0 (2025-12-07)
 
 * perf(algorithms): optimize test configuration for faster CI execution ([4a0a508](https://github.com/Mearman/BibGraph/commit/4a0a508))
