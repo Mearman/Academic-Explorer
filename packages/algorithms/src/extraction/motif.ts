@@ -208,7 +208,7 @@ export const detectStarPatterns = <N extends Node, E extends Edge>(graph: Graph<
       if (neighbors.length >= minDegree) {
         leaves = neighbors
           .map(id => graph.getNode(id))
-          .filter(opt => opt.some)
+          .filter((opt): opt is { some: true; value: N } => opt.some)
           .map(opt => opt.value);
 
         stars.push({

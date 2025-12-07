@@ -5,7 +5,8 @@
     "composite": false,
     "declaration": false,
     "lib": ["ES2022"],
-    "types": ["node", "vitest"]
+    "types": ["node", "vitest"],
+    "downlevelIteration": true
   },
   "include": ["src/**/*", "*.config.ts", "*.config.mts"],
   "exclude": ["dist", "node_modules"]

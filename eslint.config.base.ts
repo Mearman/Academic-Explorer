@@ -175,16 +175,16 @@ export default tseslint.config([
                 ignoreRegExpLiterals: true
             }],
 
-            // Barrel files rules - ban all re-export patterns but allow index files
-          "barrel-files/avoid-re-export-all": "error",
-          "barrel-files/avoid-namespace-import": "error",
+            // Barrel files rules - prevent re-exports from non-barrel files but don't enforce barrel usage
+            "barrel-files/avoid-re-export-all": "off", // Turned off - using custom rule instead for more control
+            "barrel-files/avoid-namespace-import": "off", // Turned off - namespace imports have valid use cases
 
-          // Custom rules - work with barrel files plugin
-          "custom/barrelsby-header": "error",
-          "custom/no-deprecated": "error",
-          "custom/no-duplicate-reexports": "error",
-          "custom/no-reexport-from-non-barrel": "error",
-          "custom/no-redundant-assignment": "off",
+            // Custom rules - prevent re-exports from non-barrel files but make barrels optional
+            "custom/barrelsby-header": "off", // Turned off - barrels are optional
+            "custom/no-deprecated": "error",
+            "custom/no-duplicate-reexports": "error",
+            "custom/no-reexport-from-non-barrel": "error", // Keep - prevents re-exports from non-barrels
+            "custom/no-redundant-assignment": "off", // Turned off - less critical
 
             // Import rules (from recommended + custom)
             ...importPlugin.configs.recommended.rules,

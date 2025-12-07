@@ -8,6 +8,7 @@
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node", "vitest"],
+    "downlevelIteration": true,
     "paths": {
       "@/*": ["src/*"],
       "@bibgraph/types": ["../../packages/types/src/index.ts"],

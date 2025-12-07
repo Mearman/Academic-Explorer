@@ -13,7 +13,7 @@ import {
   isDirectoryIndex,
   sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
-} from "@bibgraph/utils/static-data/cache-utilities";
+} from "@bibgraph/utils";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import("node:fs/promises") | undefined;

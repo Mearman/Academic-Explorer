@@ -11,6 +11,20 @@ export * from "./analysis/cycle-detection";
 // Clustering algorithms
 export * from "./clustering/infomap";
 export * from "./clustering/louvain";
+export * from "./clustering/label-propagation";
+export * from "./clustering/leiden";
+
+// Decomposition algorithms
+export * from "./decomposition/biconnected";
+export * from "./decomposition/core-periphery";
+export * from "./decomposition/k-core";
+
+// Extraction algorithms
+export * from "./extraction/ego-network";
+export * from "./extraction/subgraph";
+export * from "./extraction/filter";
+export * from "./extraction/truss";
+export * from "./extraction/motif";
 
 // Graph algorithms
 export * from "./graph/graph";
@@ -18,9 +32,16 @@ export * from "./graph/graph";
 // Hierarchical algorithms
 export * from "./hierarchical/clustering";
 
+// Partitioning algorithms
+export * from "./partitioning/spectral";
+
 // Pathfinding algorithms
 export * from "./pathfinding/priority-queue";
 export * from "./pathfinding/dijkstra";
+
+// Traversal algorithms
+export * from "./traversal/bfs";
+export * from "./traversal/dfs";
 
 // Metrics
 export * from "./metrics/cluster-quality";

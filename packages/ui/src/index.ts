@@ -12,3 +12,12 @@ export * from './hooks';
 
 // Re-export data display components
 export * from './components/data-display';
+
+// Re-export bookmark components
+export * from './bookmarks/BookmarkGrid';
+export * from './bookmarks/BookmarkList';
+export * from './bookmarks/BookmarkSearchFilters';
+export * from './bookmarks/BookmarkTable';
+
+// Export utility functions from entity matchers
+export { convertToRelativeUrl } from './components/entity-views/matchers';

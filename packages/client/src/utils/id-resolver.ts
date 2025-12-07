@@ -11,7 +11,7 @@
 import {
   isNonEmptyString,
   isString,
-} from "@bibgraph/utils/validation";
+} from "@bibgraph/utils";
 
 /**
  * Supported external identifier types

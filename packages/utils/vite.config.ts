@@ -12,8 +12,8 @@ export default defineConfig({
       include: ["src/**/*"],
       exclude: ["**/*.test.ts", "**/*.spec.ts"],
       outDir: "dist",
-      rollupTypes: true,
       tsconfigPath: resolve(__dirname, "tsconfig.json"),
+      rollupTypes: true,
     }),
   ],
   build: {
@@ -38,7 +38,7 @@ export default defineConfig({
         "immer",
       ],
       output: {
-        // Don't preserve modules to generate a single bundle with index.d.ts
+        // Generate bundled index file instead of nested modules
         preserveModules: false,
       },
     },

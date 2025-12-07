@@ -1,5 +1,5 @@
 import { cachedOpenAlex } from "@bibgraph/client";
-import { type Concept, type ConceptField } from "@bibgraph/types/entities";
+import { type Concept, type ConceptField } from "@bibgraph/types";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";

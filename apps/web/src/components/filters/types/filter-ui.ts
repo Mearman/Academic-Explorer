@@ -12,7 +12,7 @@ import type {
 import type {
   FilterFieldConfig,
   FilterOperator,
-} from "@bibgraph/utils/ui";
+} from "@bibgraph/utils";
 
 export type LogicalOperator = "AND" | "OR" | "NOT";
 

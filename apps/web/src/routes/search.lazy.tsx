@@ -1,6 +1,6 @@
 import { cachedOpenAlex } from "@bibgraph/client";
 import { ENTITY_METADATA, toEntityType } from "@bibgraph/types";
-import type { AutocompleteResult } from "@bibgraph/types/entities";
+import type { AutocompleteResult } from "@bibgraph/types";
 import { convertToRelativeUrl, ErrorRecovery,SearchEmptyState } from "@bibgraph/ui";
 import { formatLargeNumber, logger } from "@bibgraph/utils";
 import {

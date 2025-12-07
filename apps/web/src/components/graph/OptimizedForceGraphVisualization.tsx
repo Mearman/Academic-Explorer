@@ -147,13 +147,13 @@ export const OptimizedForceGraphVisualization = ({
   visible = true,
   width,
   height = 500,
-  _displayMode = 'highlight',
+  displayMode = 'highlight',
   highlightedNodeIds = DEFAULT_HIGHLIGHTED_NODE_IDS,
   highlightedPath = DEFAULT_HIGHLIGHTED_PATH,
   communityAssignments,
   communityColors,
   expandingNodeIds = DEFAULT_EXPANDING_NODE_IDS,
-  _loading = false,
+  loading = false,
   getNodeStyle,
   getLinkStyle,
   onNodeClick,
@@ -181,7 +181,7 @@ export const OptimizedForceGraphVisualization = ({
   const [showPerformanceStats, setShowPerformanceStats] = useState(false);
 
   // Progressive loading for smooth graph initialization
-  const { visibleNodes: progressiveNodes, loadingState } = useProgressiveGraphLoading(
+  const { visibleItems: progressiveNodes, loadingState } = useProgressiveGraphLoading(
     nodes,
     {
       enabled: enableOptimizations && progressiveLoading.enabled,
@@ -241,13 +241,14 @@ export const OptimizedForceGraphVisualization = ({
         // Update viewport bounds when container resizes
         if (graphRef.current) {
           try {
-            const cameraPosition = graphRef.current.cameraPosition();
+            // Use centerAt to get current position (cameraPosition method doesn't exist)
+            const center = graphRef.current.centerAt();
             const zoom = graphRef.current.zoom();
 
             setViewportBounds(calculateViewportBounds(
-              cameraPosition.x,
-              cameraPosition.y,
-              cameraPosition.z || 1000,
+              center.x,
+              center.y,
+              1000, // Default z distance
               zoom,
               entry.contentRect.width,
               height
@@ -305,7 +306,7 @@ export const OptimizedForceGraphVisualization = ({
     const transformedNodes: ForceGraphNode[] = deduplicatedNodes.map(node => ({
       id: node.id,
       entityType: node.entityType,
-      label: node.displayName || node.id,
+      label: node.label || node.id,
       entityId: node.id,
       x: node.x ?? (random() - 0.5) * 200,
       y: node.y ?? (random() - 0.5) * 200,
@@ -322,7 +323,7 @@ export const OptimizedForceGraphVisualization = ({
       })
       .map(edge => ({
         id: edge.id,
-        type: edge.relationshipType || 'related',
+        type: edge.type || 'related',
         source: edge.source,
         target: edge.target,
         originalEdge: edge,
@@ -361,7 +362,7 @@ export const OptimizedForceGraphVisualization = ({
     color: colors?.get(communityId || 0) ?? ENTITY_TYPE_COLORS[node.entityType] ?? 'var(--mantine-color-dimmed)',
     size: NODE.DEFAULT_SIZE,
     opacity: isHighlighted ? NODE.FULL_OPACITY : NODE.DIMMED_OPACITY,
-    borderWidth: isHighlighted ? NODE.HIGHLIGHT_BORDER_WIDTH : 0,
+    borderWidth: isHighlighted ? NODE.HIGHLIGHTED_BORDER_WIDTH : 0,
     borderColor: 'var(--mantine-color-blue-6)',
   }), []);
 
@@ -407,7 +408,7 @@ export const OptimizedForceGraphVisualization = ({
       const ringRadius = size * LOADING_RING.RADIUS_MULTIPLIER;
       const ringWidth = size * LOADING_RING.WIDTH_MULTIPLIER;
 
-      ctx.strokeStyle = LOADING_RING.COLOR;
+      ctx.strokeStyle = LOADING_RING.PRIMARY_COLOR;
       ctx.lineWidth = ringWidth;
       ctx.beginPath();
       ctx.arc(x, y, ringRadius, 0, 2 * Math.PI);
@@ -415,9 +416,9 @@ export const OptimizedForceGraphVisualization = ({
     }
 
     // Draw labels only for sufficiently large nodes (performance optimization)
-    if (screenSize > 15 && style.showLabel !== false) {
-      ctx.globalAlpha = LABEL.DEFAULT_ALPHA;
-      ctx.fillStyle = colorScheme === 'dark' ? LABEL.COLOR_DARK : LABEL.COLOR_LIGHT;
+    if (screenSize > 15) {
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = colorScheme === 'dark' ? '#ffffff' : '#000000';
       ctx.font = `${Math.min(screenSize / 3, 12)}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -459,11 +460,28 @@ export const OptimizedForceGraphVisualization = ({
       : getEdgeStyle(forceLink.originalEdge);
 
     // Apply opacity
-    ctx.globalAlpha = isHighlighted ? LINK.DEFAULT_ALPHA : LINK.DIMMED_ALPHA;
+    ctx.globalAlpha = isHighlighted ? LINK.HIGHLIGHTED_OPACITY : LINK.DIMMED_OPACITY;
 
-    // Draw link
-    ctx.strokeStyle = style.color ?? LINK.DEFAULT_COLOR;
-    ctx.lineWidth = (style.width ?? LINK.DEFAULT_WIDTH) * (isHighlighted ? 1.5 : 1);
+    // Draw link - handle both LinkStyle and EdgeStyleProperties
+    let linkColor: string;
+    let linkWidth: number;
+
+    if ('stroke' in style && style.stroke !== undefined) {
+      // EdgeStyleProperties
+      linkColor = style.stroke;
+      linkWidth = style.strokeWidth ?? LINK.DEFAULT_WIDTH;
+    } else if ('color' in style && style.color !== undefined) {
+      // LinkStyle
+      linkColor = style.color;
+      linkWidth = style.width ?? LINK.DEFAULT_WIDTH;
+    } else {
+      // Fallback
+      linkColor = '#999';
+      linkWidth = LINK.DEFAULT_WIDTH;
+    }
+
+    ctx.strokeStyle = linkColor;
+    ctx.lineWidth = linkWidth * (isHighlighted ? 1.5 : 1);
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     ctx.lineTo(endX, endY);
@@ -579,13 +597,13 @@ export const OptimizedForceGraphVisualization = ({
             enableNodeDrag={true}
             enableZoomInteraction={true}
             enablePointerInteraction={true}
-            warmupTicks={enableSimulation ? SIMULATION.WARMUP_TICKS : 0}
-            cooldownTicks={enableSimulation ? SIMULATION.COOLDOWN_TICKS : 0}
-            alphaDecay={enableSimulation ? SIMULATION.ALPHA_DECAY : 1}
-            velocityDecay={SIMULATION.VELOCITY_DECAY}
-            isStatic={!enableSimulation}
+            enablePanInteraction={true}
+            warmupTicks={enableSimulation ? 100 : 0}
+            cooldownTicks={enableSimulation ? 100 : 0}
+            d3AlphaDecay={enableSimulation ? SIMULATION.ALPHA_DECAY : 1}
+            d3VelocityDecay={SIMULATION.VELOCITY_DECAY}
             onZoom={handleZoom}
-            onAfterRender={handleZoom}
+            onZoomEnd={handleZoom}
           />
         </>
       )}

@@ -3,7 +3,22 @@
  */
 
 export type { EntityType, OpenAlexEntity } from "./entities";
-export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity } from "./entities";
+export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity, Authorship } from "./entities";
+
+// Export field types for entity detail components
+export type {
+  BaseEntityField,
+  EntityWithWorksField,
+  AuthorField,
+  WorkField,
+  SourceField,
+  InstitutionField,
+  ConceptField,
+  TopicField,
+  PublisherField,
+  FunderField,
+  KeywordField
+} from "./entities";
 export { ENTITY_TYPES } from "./entities";
 
 // Export field constants for API validation

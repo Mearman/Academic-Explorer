@@ -4,6 +4,10 @@
 
 // Re-export individual modules to maintain compatibility without barrel patterns
 
+// From common.ts - Core API response and query types (manually added)
+export type { OpenAlexResponse, QueryParams, SampleParams, StatsParams, GroupParams, BaseAutocompleteOptions, NGram, TextAnalysis, GroupedResponse } from "./entities/common";
+export { OpenAlexResponseSchema, QueryParamsSchema, SampleParamsSchema, StatsParamsSchema, GroupParamsSchema, BaseAutocompleteOptionsSchema, NGramSchema, TextAnalysisSchema, createGroupedResponseSchema } from "./entities/common";
+
 // From bookmark.ts
 export type { BookmarkMetadata, Bookmark } from "./bookmark";
 export { BookmarkMetadataSchema, BookmarkSchema } from "./bookmark";
@@ -133,7 +137,24 @@ export type {
 
 // From entities module
 export type { EntityType, OpenAlexEntity } from "./entities";
-export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity } from "./entities";
+export type { BaseEntity, Author, Work, Institution, Source, Publisher, Funder, Concept, Domain, Field, Subfield, Topic, Keyword, InstitutionEntity, Authorship } from "./entities";
+export type { RelationshipQueryConfig } from "./entities/relationship-queries";
+export type { GraphProvenance } from "./graph/graph-list";
+
+// Export field types for entity detail components
+export type {
+  BaseEntityField,
+  EntityWithWorksField,
+  AuthorField,
+  WorkField,
+  SourceField,
+  InstitutionField,
+  ConceptField,
+  TopicField,
+  PublisherField,
+  FunderField,
+  KeywordField
+} from "./entities/entities";
 export { ENTITY_TYPES } from "./entities";
 
 // Export filter types that were previously available through barrels
@@ -150,7 +171,7 @@ export type {
   BaseEntityFilters,
   BaseEntityWithTopicsFilters,
   EntityFilters
-} from "./entities";
+} from "./entities/filters";
 
 // Export author-specific types that were previously available through barrels
 export type {
@@ -200,16 +221,6 @@ export {
   GRAPH_LIST_CONFIG
 } from "./graph/graph-list";
 
-// Export essential core types that were previously available through barrels
-export type {
-  OpenAlexResponse,
-  QueryParams,
-  SampleParams,
-  StatsParams,
-  GroupParams,
-  BaseAutocompleteOptions,
-  GroupedResponse
-} from "./entities/common";
 
 // Export concept-specific types
 export type {
@@ -217,13 +228,6 @@ export type {
   ConceptSearchOptions
 } from "./entities/concepts";
 
-// Export schemas for validation
-export {
-  OpenAlexResponseSchema,
-  QueryParamsSchema,
-  AutocompleteResultSchema,
-  BaseAutocompleteOptionsSchema
-} from "./entities/common";
 
 // Export OpenAlex ID and base entity types
 export type {

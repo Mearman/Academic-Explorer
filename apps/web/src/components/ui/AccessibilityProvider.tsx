@@ -19,7 +19,7 @@ import {
   useMantineTheme
 } from "@mantine/core";
 import {
-  IconAccessibility,
+  IconAccessible,
   IconAdjustments,
   IconKeyboard,
   IconVolume,
@@ -28,6 +28,65 @@ import {
   IconZoomOut
 } from "@tabler/icons-react";
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState, useContext } from "react";
+
+// Speech Recognition API type definitions
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  grammars: any;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  serviceURI: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: 'no-speech' | 'aborted' | 'audio-capture' | 'network' | 'service-not-allowed' | 'not-allowed';
+  message?: string;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 // Accessibility context interface
 interface AccessibilityContextType {
@@ -187,7 +246,7 @@ class VoiceCommandProcessor {
       this.isListening = false;
       // Auto-restart if we were intentionally listening
       if (this.recognition && this.onCommand) {
-        setTimeout(() => this.start(), 100);
+        setTimeout(() => this.start(this.onCommand), 100);
       }
     };
   }
@@ -504,7 +563,7 @@ export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) 
           <Button
             size="sm"
             variant="light"
-            leftSection={<IconAccessibility size={16} />}
+            leftSection={<IconAccessible size={16} />}
             onClick={() => setShowAccessibilityPanel(!showAccessibilityPanel)}
             aria-label="Accessibility options"
             aria-expanded={showAccessibilityPanel}

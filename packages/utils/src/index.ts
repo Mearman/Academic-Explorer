@@ -30,14 +30,40 @@ export * from "./data-evaluation";
 export * from "./field-summary";
 export * from "./metadata-improvements";
 
-// Service and web utilities
-export * from "./services";
+// Web utilities
 export * from "./navigation";
 export * from "./webgl-detection";
 
 // Graph utilities
 export * from "./graph-3d-adapter";
 export * from "./graph-sources/relationship-extractor";
+export * from "./graph-sources/types";
+
+// Spatial graph utilities
+export * from "./spatial/graph-lod-manager";
+
+// Service utilities
+export * from "./services";
+
+// Storage utilities
+export * from "./storage/dexie-storage-provider";
+export * from "./storage/catalogue-db";
+export * from "./storage/catalogue-storage-provider";
+export * from "./storage/in-memory-storage-provider";
+export * from "./storage/indexeddb-storage";
+
+// UI utilities
+export * from "./ui/filter-base";
 
 // Cache utilities
 export * from "./cache";
+
+// Static data utilities
+export * from "./static-data/cache-utilities";
+
+// Hooks
+export * from "./hooks/use-entity-route";
+
+// Background tasks
+export * from "./background-tasks/types";
+export * from "./background-tasks/task-executor";

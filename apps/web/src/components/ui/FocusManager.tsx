@@ -7,82 +7,110 @@
 
 import {
   Box,
-  createStyles,
-  keyframes,
   Text,
   useMantineTheme
 } from "@mantine/core";
 import { useEffect, useRef, useState, useCallback } from "react";
 
-// Focus ring animation
-const focusRingAnimation = keyframes({
-  '0%': {
-    boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.5)',
-    transform: 'scale(0.95)'
-  },
-  '50%': {
-    boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.2)',
-    transform: 'scale(1.02)'
-  },
-  '100%': {
-    boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.3)',
-    transform: 'scale(1)'
-  }
-});
+// Inject focus manager CSS styles
+const injectFocusManagerStyles = () => {
+  if (!document.getElementById('focus-manager-styles')) {
+    const style = document.createElement('style');
+    style.id = 'focus-manager-styles';
+    style.textContent = `
+      @keyframes focusRingAnimation {
+        0% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+          transform: scale(0.95);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2);
+          transform: scale(1.02);
+        }
+        100% {
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+          transform: scale(1);
+        }
+      }
 
-const useStyles = createStyles((theme, params: { animated?: boolean }) => ({
-  focusable: {
-    '&:focus-visible': {
-      outline: 'none',
-      ...(params.animated && {
-        animation: `${focusRingAnimation} 0.3s ease-out`,
-      }),
-      '&::after': {
-        content: '""',
-        position: 'absolute',
-        inset: '-2px',
-        borderRadius: theme.radius.sm,
-        border: `2px solid ${theme.colors.blue[6]}`,
-        pointerEvents: 'none',
-        zIndex: 1
+      .focus-indicator {
+        position: relative;
       }
-    },
-    '&:not(:focus-visible)': {
-      '&::after': {
-        content: 'none'
+
+      .focus-indicator:focus-visible {
+        outline: none;
       }
-    }
-  },
-  focusTrap: {
-    '&:focus-within': {
-      outline: `2px solid ${theme.colors.blue[6]}`,
-      outlineOffset: '2px',
-      borderRadius: theme.radius.sm
-    }
-  },
-  skipLink: {
-    position: 'absolute',
-    top: '-40px',
-    left: '6px',
-    background: theme.colors.blue[6],
-    color: 'white',
-    padding: '8px 16px',
-    textDecoration: 'none',
-    borderRadius: theme.radius.sm,
-    zIndex: 10000,
-    fontWeight: 500,
-    '&:focus': {
-      top: '6px',
-      transform: 'translateY(0)',
-      transition: 'top 0.2s ease-out'
-    },
-    '&:hover': {
-      background: theme.colors.blue[7],
-      transform: 'translateY(0)',
-      top: '6px'
-    }
+
+      .focus-indicator.animated:focus-visible {
+        animation: focusRingAnimation 0.3s ease-out;
+      }
+
+      .focus-indicator:focus-visible::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: var(--mantine-radius-sm, 4px);
+        border: 2px solid var(--mantine-color-blue-6, #228be6);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .focus-indicator:not(:focus-visible)::after {
+        content: none;
+      }
+
+      .focus-trap {
+        outline: none;
+      }
+
+      .focus-trap:focus-within {
+        outline: 2px solid var(--mantine-color-blue-6, #228be6);
+        outline-offset: 2px;
+        border-radius: var(--mantine-radius-sm, 4px);
+      }
+
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--mantine-color-blue-6, #228be6);
+        color: var(--mantine-color-white, #ffffff);
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: var(--mantine-radius-sm, 4px);
+        z-index: 10000;
+        font-weight: 500;
+        transition: top 0.2s ease-out, background-color 0.2s ease-out;
+      }
+
+      .skip-link:focus {
+        top: 6px;
+        transform: translateY(0);
+      }
+
+      .skip-link:hover {
+        background: var(--mantine-color-blue-7, #1c7ed6);
+        transform: translateY(0);
+        top: 6px;
+      }
+
+      .skip-link.top-right {
+        left: auto;
+        right: 6px;
+      }
+
+      .skip-link.top-center {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .skip-link.top-center:focus {
+        transform: translateX(-50%) translateY(0);
+      }
+    `;
+    document.head.appendChild(style);
   }
-}));
+};
 
 // Focus trap props
 interface FocusTrapProps {
@@ -97,9 +125,13 @@ interface FocusTrapProps {
  * Traps focus within a container for modals, dialogs, and other focused UI patterns
  */
 export const FocusTrap = ({ children, enabled = true, onEscape }: FocusTrapProps) => {
-  const { cx, classes } = useStyles({ animated: false });
   const containerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Inject styles on component mount
+  useEffect(() => {
+    injectFocusManagerStyles();
+  }, []);
 
   useEffect(() => {
     if (!enabled || !containerRef.current) return;
@@ -165,7 +197,10 @@ export const FocusTrap = ({ children, enabled = true, onEscape }: FocusTrapProps
   }, [enabled, onEscape]);
 
   return (
-    <div ref={containerRef} className={cx(classes.focusTrap, 'focus-trap')}>
+    <div
+      ref={containerRef}
+      className="focus-trap"
+    >
       {children}
     </div>
   );
@@ -184,16 +219,19 @@ interface SkipLinkProps {
  * Provides skip navigation links for keyboard users
  */
 export const SkipLink = ({ target, children, position = 'top-left' }: SkipLinkProps) => {
-  const { cx, classes } = useStyles();
+  // Inject styles on component mount
+  useEffect(() => {
+    injectFocusManagerStyles();
+  }, []);
 
-  const getPositionStyles = () => {
+  const getPositionClass = () => {
     switch (position) {
       case 'top-right':
-        return { left: 'auto', right: '6px' };
+        return 'top-right';
       case 'top-center':
-        return { left: '50%', transform: 'translateX(-50%)' };
+        return 'top-center';
       default:
-        return { left: '6px' };
+        return '';
     }
   };
 
@@ -201,8 +239,7 @@ export const SkipLink = ({ target, children, position = 'top-left' }: SkipLinkPr
     <Box
       component="a"
       href={target}
-      className={classes.skipLink}
-      style={getPositionStyles()}
+      className={`skip-link ${getPositionClass()}`}
     >
       {children}
     </Box>
@@ -223,32 +260,22 @@ interface FocusIndicatorProps {
  * Enhances focus visibility for better keyboard navigation
  */
 export const FocusIndicator = ({ children, animated = true, color, size = 'md' }: FocusIndicatorProps) => {
-  const { cx, classes } = useStyles({ animated });
-  const theme = useMantineTheme();
+  // Inject styles on component mount
+  useEffect(() => {
+    injectFocusManagerStyles();
+  }, []);
 
-  const getSizeStyles = () => {
-    const sizes = {
-      sm: '1px',
-      md: '2px',
-      lg: '3px'
-    };
-    return sizes[size];
-  };
-
-  const getColorStyles = () => {
-    return color || theme.colors.blue[6];
+  const getClassName = () => {
+    let className = 'focus-indicator';
+    if (animated) {
+      className += ' animated';
+    }
+    return className;
   };
 
   return (
     <Box
-      className={cx(classes.focusable, 'focus-indicator')}
-      sx={{
-        position: 'relative',
-        '&:focus-visible::after': {
-          borderColor: getColorStyles(),
-          borderWidth: getSizeStyles()
-        }
-      }}
+      className={getClassName()}
     >
       {children}
     </Box>
@@ -271,20 +298,18 @@ interface KeyboardNavigationHintProps {
  * Displays available keyboard shortcuts and navigation hints
  */
 export const KeyboardNavigationHint = ({ shortcuts, show = false }: KeyboardNavigationHintProps) => {
-  const { cx, classes } = useStyles();
-
   if (!show) return null;
 
   return (
     <Box
       p="sm"
       mb="md"
-      sx={(theme) => ({
-        background: theme.colors.gray[0],
-        border: `1px solid ${theme.colors.gray[2]}`,
-        borderRadius: theme.radius.sm,
-        fontSize: theme.fontSizes.sm
-      })}
+      style={{
+        background: 'var(--mantine-color-gray-0, #f8f9fa)',
+        border: '1px solid var(--mantine-color-gray-2, #dee2e6)',
+        borderRadius: 'var(--mantine-radius-sm, 4px)',
+        fontSize: 'var(--mantine-font-size-sm, 14px)',
+      }}
     >
       <Box mb="xs" fw={500}>Keyboard Navigation:</Box>
       <Box>
@@ -292,21 +317,25 @@ export const KeyboardNavigationHint = ({ shortcuts, show = false }: KeyboardNavi
           <Box
             key={index}
             mb={index < shortcuts.length - 1 ? 'xs' : 0}
-            sx={{ display: 'flex', alignItems: 'center', gap: 'sm' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--mantine-spacing-sm, 8px)',
+            }}
           >
             <Box
               component="kbd"
               px="xs"
               py={2}
-              sx={(theme) => ({
-                background: theme.colors.gray[1],
-                border: `1px solid ${theme.colors.gray[3]}`,
-                borderRadius: theme.radius.xs,
-                fontSize: theme.fontSizes.xs,
+              style={{
+                background: 'var(--mantine-color-gray-1, #f1f3f5)',
+                border: '1px solid var(--mantine-color-gray-3, #ced4da)',
+                borderRadius: 'var(--mantine-radius-xs, 2px)',
+                fontSize: 'var(--mantine-font-size-xs, 12px)',
                 fontFamily: 'monospace',
                 minWidth: '20px',
-                textAlign: 'center'
-              })}
+                textAlign: 'center',
+              }}
             >
               {shortcut.key}
             </Box>
@@ -395,21 +424,26 @@ interface LiveRegionProps {
   children?: React.ReactNode;
 }
 
-export const LiveRegion = ({ politeness = 'polite', children }: LiveRegionProps) => (
-  <Box
-    aria-live={politeness}
-    aria-atomic="true"
-    sx={{
-      position: 'absolute',
-      left: '-10000px',
-      width: '1px',
-      height: '1px',
-      overflow: 'hidden'
-    }}
-  >
-    {children}
-  </Box>
-);
+export const LiveRegion = ({ politeness = 'polite', children }: LiveRegionProps) => {
+  const liveRegionStyles = {
+    position: 'absolute' as const,
+    left: '-10000px',
+    width: '1px',
+    height: '1px',
+    overflow: 'hidden',
+  };
+
+  return (
+    <Box
+      aria-live={politeness}
+      aria-atomic="true"
+      component="div"
+      style={liveRegionStyles}
+    >
+      {children}
+    </Box>
+  );
+};
 
 // Custom hook for announcing to screen readers
 export const useScreenReaderAnnouncer = () => {

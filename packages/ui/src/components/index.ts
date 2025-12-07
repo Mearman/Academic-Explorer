@@ -12,3 +12,6 @@ export * from './settings';
 
 // Re-export individual components
 export * from './SkeletonScreens';
+
+// Export utility functions
+export { convertToRelativeUrl } from './entity-views/matchers/entity-matchers';

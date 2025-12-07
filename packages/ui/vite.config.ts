@@ -15,15 +15,19 @@ const uiConfig = defineConfig({
     }),
   ],
   build: {
-    lib: {
-      entry: resolve(
-        fileURLToPath(new URL(".", import.meta.url)),
-        "src/index.ts",
-      ),
-      name: "BibGraphUI",
-      formats: ["es", "cjs"],
-      fileName: (format) => `index.${format}.js`,
-    },
+      lib: {
+        entry: resolve(
+          fileURLToPath(new URL(".", import.meta.url)),
+          "src/index.ts",
+        ),
+        name: "BibGraphUI",
+        formats: ["es", "cjs"],
+        fileName: (format) => {
+          if (format === "es") return "index.es.js";
+          if (format === "cjs") return "index.cjs.js";
+          return `index.${format}.js`;
+        },
+      },
     sourcemap: true,
     copyPublicDir: false,
     emptyOutDir: true,

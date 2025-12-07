@@ -1,10 +1,11 @@
 import { cachedOpenAlex } from "@bibgraph/client";
-import { type Author, type AuthorField } from "@bibgraph/types/entities";
+import { type Author, type AuthorField } from "@bibgraph/types";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute,useParams, useSearch  } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { type DetailViewMode,ENTITY_TYPE_CONFIGS,  EntityDetailLayout, ErrorState, LoadingState } from "@/components/entity-detail";
+import { type DetailViewMode, EntityDetailLayout, ErrorState, LoadingState } from "@/components/entity-detail";
+import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";

@@ -1,5 +1,5 @@
 import { cachedOpenAlex } from "@bibgraph/client";
-import { type Keyword, type KeywordField } from "@bibgraph/types/entities";
+import { type Keyword, type KeywordField } from "@bibgraph/types";
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";

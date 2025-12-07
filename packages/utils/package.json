@@ -65,6 +65,11 @@
       "source": "./src/storage/index.ts",
       "import": "./dist/storage/index.js"
     },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "source": "./src/ui/filter-base.tsx",
+      "import": "./dist/ui.js"
+    },
     "./date-helpers": {
       "types": "./dist/date-helpers.d.ts",
       "source": "./src/date-helpers.ts",
@@ -100,7 +105,7 @@
       "source": "./src/validation.ts",
       "import": "./dist/validation.js"
     },
-    "./environment": {
+        "./environment": {
       "types": "./dist/environment/index.d.ts",
       "source": "./src/environment/index.ts",
       "import": "./dist/environment/index.js"
@@ -129,11 +134,6 @@
       "types": "./dist/ui/filter-base.d.ts",
       "source": "./src/ui/filter-base.ts",
       "import": "./dist/ui/filter-base.js"
-    },
-    "./ui": {
-      "types": "./dist/ui/index.d.ts",
-      "source": "./src/ui/index.ts",
-      "import": "./dist/ui/index.js"
     },
     "./workers/messages": {
       "types": "./dist/workers/messages.d.ts",

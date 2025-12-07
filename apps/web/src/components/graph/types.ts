@@ -21,6 +21,7 @@ export interface NodeStyle {
   opacity?: number;
   borderColor?: string;
   borderWidth?: number;
+  showLabel?: boolean;
 }
 
 /**

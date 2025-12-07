@@ -1,5 +1,5 @@
 import { createFilterBuilder } from "@bibgraph/client";
-import type { Work } from "@bibgraph/types/entities";
+import type { Work } from "@bibgraph/types";
 import { Anchor } from "@mantine/core";
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useState } from "react";

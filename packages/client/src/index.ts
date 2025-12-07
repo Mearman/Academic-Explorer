@@ -29,3 +29,7 @@ export * from './cache';
 
 // Data pipeline
 export * from './data-pipeline';
+
+// Graph functionality
+export * from './cache/dexie/graph-expansion';
+export * from './cache/dexie/persistent-graph';

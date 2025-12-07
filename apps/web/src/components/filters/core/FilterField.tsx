@@ -4,7 +4,7 @@
  */
 
 import type { EntityFilters } from "@bibgraph/types";
-import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@bibgraph/utils/ui";
+import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@bibgraph/utils";
 import { ActionIcon, Alert,Group, Text, Tooltip } from "@mantine/core";
 import { IconAlertCircle,IconX } from "@tabler/icons-react";
 import React, { useCallback, useMemo } from "react";
