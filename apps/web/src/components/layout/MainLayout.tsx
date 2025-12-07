@@ -85,7 +85,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [shortcutsHelpOpened, setShortcutsHelpOpened] = useState(false);
 
   // Set up global keyboard shortcuts
-  const { getAllHotkeys } = useGlobalHotkeys({
+  useGlobalHotkeys({
     enabled: true,
   });
 

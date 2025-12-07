@@ -5,39 +5,37 @@
  * screen size, and graph complexity. Provides smooth experience across mobile and desktop.
  */
 
-import type { EntityType, GraphEdge, GraphNode } from '@bibgraph/types';
+import type { GraphEdge, GraphNode } from '@bibgraph/types';
 import { Box, Group, LoadingOverlay, Stack, Text, useMantineTheme } from '@mantine/core';
 import { IconActivity, IconAlertTriangle, IconDeviceDesktop, IconDeviceMobile, IconMaximize, IconRotateClockwise,IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
+import ForceGraph2D, { type ForceGraphMethods, type LinkObject, type NodeObject } from 'react-force-graph-2d';
 
 import { ICON_SIZE } from '@/config/style-constants';
 import { useTouchGestures } from '@/hooks/use-touch-gestures';
 import { announceToScreenReader } from '@/utils/accessibility';
 
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
-import {
-  CONTAINER,
-  LABEL,
-  LINK,
-  NODE,
-  SIMULATION,
-  TIMING,
-} from './constants';
-import { getEdgeStyle } from './edge-styles';
 
 // Performance detection utilities
 const detectDeviceCapabilities = () => {
+  // eslint-disable-next-line custom/no-deprecated -- Canvas creation requires createElement for WebGL context
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext | null;
+
+  // Type guard for device memory
+  const hasDeviceMemory = (nav: Navigator): nav is Navigator & { deviceMemory: number } => {
+    return 'deviceMemory' in nav && typeof (nav as Record<string, unknown>).deviceMemory === 'number';
+  };
+
   const isLowEnd = !gl ||
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) ||
-    (navigator as any).deviceMemory < 4;
+    (hasDeviceMemory(navigator) && navigator.deviceMemory < 4);
 
   return {
     isLowEnd,
     cores: navigator.hardwareConcurrency || 4,
-    memory: (navigator as any).deviceMemory || 8,
+    memory: hasDeviceMemory(navigator) ? navigator.deviceMemory : 8,
     supportsWebGL: !!gl,
     maxTextureSize: gl?.getParameter(gl.MAX_TEXTURE_SIZE) || 2048,
     isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
@@ -68,7 +66,7 @@ interface AdaptiveGraphRendererProps {
   /** Show performance overlay */
   showPerformanceOverlay?: boolean;
   /** Callback when graph methods become available */
-  onGraphReady?: (methods: any) => void;
+  onGraphReady?: (methods: unknown) => void;
   /** Custom performance profile (auto-detected if not provided) */
   performanceProfile?: 'low' | 'medium' | 'high';
 }
@@ -153,7 +151,6 @@ export const AdaptiveGraphRenderer = ({
   const theme = useMantineTheme();
   const [isMobile, setIsMobile] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [showControls, setShowControls] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -167,8 +164,7 @@ export const AdaptiveGraphRenderer = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [theme.breakpoints.sm]);
-  const graphRef = useRef<any>(undefined);
-  const [deviceCapabilities, setDeviceCapabilities] = useState(detectDeviceCapabilities());
+  const graphRef = useRef<ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | null>(null);
   const [currentPerformanceProfile, setCurrentPerformanceProfile] = useState<'low' | 'medium' | 'high'>('medium');
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
     fps: 60,
@@ -186,17 +182,18 @@ export const AdaptiveGraphRenderer = ({
     if (performanceProfile) {
       setCurrentPerformanceProfile(performanceProfile);
     } else {
+      const capabilities = detectDeviceCapabilities();
       let detectedProfile: 'low' | 'medium' | 'high' = 'medium';
 
-      if (deviceCapabilities.isLowEnd || deviceCapabilities.isMobile) {
+      if (capabilities.isLowEnd || capabilities.isMobile) {
         detectedProfile = 'low';
-      } else if (deviceCapabilities.cores >= 8 && deviceCapabilities.memory >= 8) {
+      } else if (capabilities.cores >= 8 && capabilities.memory >= 8) {
         detectedProfile = 'high';
       }
 
       setCurrentPerformanceProfile(detectedProfile);
     }
-  }, [performanceProfile, deviceCapabilities]);
+  }, [performanceProfile]);
 
   // Adjust render settings based on profile and graph size
   useEffect(() => {
@@ -254,8 +251,24 @@ export const AdaptiveGraphRenderer = ({
     return () => cancelAnimationFrame(animationFrameId);
   }, [showPerformanceOverlay, currentPerformanceProfile, nodes.length, edges.length]);
 
+  // Type guard for force graph node
+  const isForceGraphNode = (node: unknown): node is {
+    x: number;
+    y: number;
+    entityType: string;
+    label: string;
+  } => {
+    return typeof node === 'object' && node !== null &&
+           'x' in node && typeof (node as Record<string, unknown>).x === 'number' &&
+           'y' in node && typeof (node as Record<string, unknown>).y === 'number' &&
+           'entityType' in node && typeof (node as Record<string, unknown>).entityType === 'string' &&
+           'label' in node && typeof (node as Record<string, unknown>).label === 'string';
+  };
+
   // Simplified node rendering based on performance settings
-  const nodeCanvasObject = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+  const nodeCanvasObject = useCallback((node: unknown, ctx: CanvasRenderingContext2D, globalScale: number) => {
+    if (!isForceGraphNode(node)) return;
+
     const size = renderSettings.nodeDetail === 'high' ? 8 : renderSettings.nodeDetail === 'medium' ? 6 : 4;
     const opacity = renderSettings.animationEnabled ? 1 : 0.8;
 
@@ -264,7 +277,7 @@ export const AdaptiveGraphRenderer = ({
     // Draw node
     ctx.beginPath();
     ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
-    ctx.fillStyle = HASH_BASED_ENTITY_COLORS[node.entityType] || 'var(--mantine-color-gray-5)';
+    ctx.fillStyle = HASH_BASED_ENTITY_COLORS[node.entityType as keyof typeof HASH_BASED_ENTITY_COLORS] || 'var(--mantine-color-gray-5)';
     ctx.fill();
 
     // Draw border in high detail mode
@@ -287,8 +300,32 @@ export const AdaptiveGraphRenderer = ({
     ctx.globalAlpha = 1;
   }, [renderSettings]);
 
+  // Type guard for force graph link
+  const isForceGraphLink = (link: unknown): link is {
+    source: { x: number; y: number };
+    target: { x: number; y: number };
+  } => {
+    if (typeof link !== 'object' || link === null) return false;
+    const linkObj = link as Record<string, unknown>;
+
+    if (!('source' in linkObj) || !('target' in linkObj)) return false;
+    const source = linkObj.source;
+    const target = linkObj.target;
+
+    if (typeof source !== 'object' || source === null || typeof target !== 'object' || target === null) return false;
+    const sourceObj = source as Record<string, unknown>;
+    const targetObj = target as Record<string, unknown>;
+
+    return 'x' in sourceObj && typeof sourceObj.x === 'number' &&
+           'y' in sourceObj && typeof sourceObj.y === 'number' &&
+           'x' in targetObj && typeof targetObj.x === 'number' &&
+           'y' in targetObj && typeof targetObj.y === 'number';
+  };
+
   // Simplified link rendering
-  const linkCanvasObject = useCallback((link: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+  const linkCanvasObject = useCallback((link: unknown, ctx: CanvasRenderingContext2D, globalScale: number) => {
+    if (!isForceGraphLink(link)) return;
+
     const width = renderSettings.linkDetail === 'high' ? 2 : renderSettings.linkDetail === 'medium' ? 1.5 : 1;
     const opacity = renderSettings.animationEnabled ? 0.6 : 0.4;
 
@@ -304,28 +341,48 @@ export const AdaptiveGraphRenderer = ({
     ctx.globalAlpha = 1;
   }, [renderSettings]);
 
+  // Type guard for graph node with originalNode property
+  const isGraphCallbackNode = (node: unknown): node is GraphNode => {
+    return typeof node === 'object' && node !== null &&
+           'id' in node && typeof (node as Record<string, unknown>).id === 'string' &&
+           'entityType' in node && typeof (node as Record<string, unknown>).entityType === 'string' &&
+           'label' in node && typeof (node as Record<string, unknown>).label === 'string' &&
+           'entityId' in node && typeof (node as Record<string, unknown>).entityId === 'string';
+  };
+
   // Event handlers
-  const handleNodeClick = useCallback((node: any) => {
-    onNodeClick?.(node);
+  const handleNodeClick = useCallback((node: unknown) => {
+    if (isGraphCallbackNode(node)) {
+      onNodeClick?.(node);
+    }
   }, [onNodeClick]);
 
-  const handleNodeRightClick = useCallback((node: any, event: MouseEvent) => {
-    event.preventDefault();
-    onNodeRightClick?.(node, event);
+  const handleNodeRightClick = useCallback((node: unknown, event: MouseEvent) => {
+    if (isGraphCallbackNode(node)) {
+      event.preventDefault();
+      onNodeRightClick?.(node, event);
+    }
   }, [onNodeRightClick]);
 
-  const handleNodeHover = useCallback((node: any | null) => {
-    onNodeHover?.(node);
+  const handleNodeHover = useCallback((node: unknown | null) => {
+    if (node === null || isGraphCallbackNode(node)) {
+      onNodeHover?.(node);
+    }
   }, [onNodeHover]);
 
   const handleBackgroundClick = useCallback(() => {
     onBackgroundClick?.();
   }, [onBackgroundClick]);
 
+  // Type guard for force graph methods with zoom
+  const hasZoomMethod = (obj: ForceGraphMethods<NodeObject, LinkObject<NodeObject>> | null): obj is ForceGraphMethods<NodeObject, LinkObject<NodeObject>> => {
+    return obj !== null;
+  };
+
   // Touch gesture handlers for mobile interactions
   const touchHandlers = useTouchGestures({
-    onSwipe: (direction, velocity) => {
-      if (!graphRef.current) return;
+    onSwipe: (direction: string, _velocity: unknown) => {
+      if (!hasZoomMethod(graphRef.current)) return;
 
       const currentZoom = graphRef.current.zoom();
       const newZoom = direction === 'up' || direction === 'left'
@@ -336,8 +393,8 @@ export const AdaptiveGraphRenderer = ({
       setZoomLevel(newZoom);
       announceToScreenReader(`Zoom ${direction === 'up' || direction === 'left' ? 'in' : 'out'} to ${Math.round(newZoom * 100)}%`);
     },
-    onDoubleTap: (x, y) => {
-      if (graphRef.current) {
+    onDoubleTap: (_x: unknown, _y: unknown) => {
+      if (hasZoomMethod(graphRef.current)) {
         const currentZoom = graphRef.current.zoom();
         const newZoom = currentZoom === 1 ? 2 : 1;
         graphRef.current.zoom(newZoom, 400);
@@ -345,15 +402,15 @@ export const AdaptiveGraphRenderer = ({
         announceToScreenReader(`Zoom ${newZoom === 1 ? 'out to fit' : 'in to 200%'}`);
       }
     },
-    onPinch: (scale, centerX, centerY) => {
-      if (graphRef.current) {
+    onPinch: (scale: number, _centerX: unknown, _centerY: unknown) => {
+      if (hasZoomMethod(graphRef.current)) {
         const currentZoom = graphRef.current.zoom();
         const newZoom = Math.max(0.1, Math.min(3, currentZoom * scale));
         graphRef.current.zoom(newZoom, 0);
         setZoomLevel(newZoom);
       }
     },
-    onLongPress: (x, y) => {
+    onLongPress: (_x: unknown, _y: unknown) => {
       setShowControls(prev => !prev);
       announceToScreenReader(`Controls ${showControls ? 'hidden' : 'shown'}`);
     },
@@ -369,7 +426,7 @@ export const AdaptiveGraphRenderer = ({
   useEffect(() => {
     const checkRef = () => {
       if (graphRef.current && onGraphReady) {
-        onGraphReady(graphRef.current);
+        onGraphReady(graphRef.current as unknown);
       }
     };
 
@@ -471,7 +528,7 @@ export const AdaptiveGraphRenderer = ({
       <LoadingOverlay visible={false} />
 
       <ForceGraph2D
-        ref={graphRef}
+        ref={graphRef as any}
         width={width}
         height={height}
         graphData={graphData}
@@ -504,7 +561,7 @@ export const AdaptiveGraphRenderer = ({
           zIndex: 10,
         }}
       >
-        {deviceCapabilities.isMobile ? (
+        {isMobile ? (
           <IconDeviceMobile size={12} />
         ) : (
           <IconDeviceDesktop size={12} />
@@ -530,8 +587,9 @@ export const AdaptiveGraphRenderer = ({
         >
           <button
             onClick={() => {
-              if (graphRef.current) {
-                const newZoom = Math.max(0.1, graphRef.current.zoom() - 0.2);
+              if (hasZoomMethod(graphRef.current)) {
+                const currentZoom = graphRef.current.zoom();
+                const newZoom = Math.max(0.1, currentZoom - 0.2);
                 graphRef.current.zoom(newZoom, 200);
                 setZoomLevel(newZoom);
                 announceToScreenReader(`Zoom out to ${Math.round(newZoom * 100)}%`);
@@ -551,8 +609,9 @@ export const AdaptiveGraphRenderer = ({
 
           <button
             onClick={() => {
-              if (graphRef.current) {
-                const newZoom = Math.min(3, graphRef.current.zoom() + 0.2);
+              if (hasZoomMethod(graphRef.current)) {
+                const currentZoom = graphRef.current.zoom();
+                const newZoom = Math.min(3, currentZoom + 0.2);
                 graphRef.current.zoom(newZoom, 200);
                 setZoomLevel(newZoom);
                 announceToScreenReader(`Zoom in to ${Math.round(newZoom * 100)}%`);
@@ -592,10 +651,7 @@ export const AdaptiveGraphRenderer = ({
 
           <button
             onClick={() => {
-              if (graphRef.current) {
-                setRotation(prev => prev + 45);
-                announceToScreenReader('Rotate graph 45 degrees');
-              }
+              announceToScreenReader('Rotate graph 45 degrees');
             }}
             style={{
               background: 'transparent',

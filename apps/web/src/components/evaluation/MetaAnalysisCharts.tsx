@@ -23,19 +23,6 @@ interface MetaAnalysisChartsProps {
   comparisonResults: ComparisonResults[];
 }
 
-interface DatasetPerformanceData {
-  datasetName: string;
-  precision: number;
-  recall: number;
-  f1Score: number;
-  truePositives: number;
-  falsePositives: number;
-  falseNegatives: number;
-  additionalPapers: number;
-  totalFound: number;
-  totalGroundTruth: number;
-}
-
 /**
  * Performance Comparison Bar Chart
  * Enhanced responsive version with touch interactions and accessibility

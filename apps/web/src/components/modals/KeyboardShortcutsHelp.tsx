@@ -11,12 +11,9 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
-  IconBookmark,
   IconFilter,
-  IconHome,
   IconInfoCircle,
   IconKeyboard,
-  IconKeyboardOff,
   IconNavigation,
   IconSearch,
 } from '@tabler/icons-react';

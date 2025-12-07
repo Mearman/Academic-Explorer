@@ -7,7 +7,7 @@
 
 import './LoadingSkeleton.css';
 
-import { Box, Group, Stack, Text , useMantineTheme } from '@mantine/core';
+import { Box, Group, Stack } from '@mantine/core';
 
 interface SkeletonProps {
   width?: string | number;
@@ -33,8 +33,6 @@ export const Skeleton = ({
   animate = true,
   'aria-label': ariaLabel,
 }: SkeletonProps) => {
-  const theme = useMantineTheme();
-
   const getStyles = () => {
     const baseStyles: React.CSSProperties = {
       background: 'var(--mantine-color-gray-1)',
@@ -42,26 +40,6 @@ export const Skeleton = ({
       position: 'relative',
       overflow: 'hidden',
     };
-
-    // For animated skeletons, we'll handle the animation via CSS-in-JS
-    const animationStyle = animate ? {
-      '&::after': {
-        content: '""',
-        position: 'absolute' as const,
-        top: '0',
-        left: '0',
-        right: '0',
-        bottom: '0',
-        background: `linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.4),
-          transparent
-        )`,
-        animation: 'skeleton-loading 1.5s ease-in-out infinite',
-        transform: 'translateX(-100%)',
-      },
-    } : {};
 
     const styles: React.CSSProperties = {
       ...baseStyles,

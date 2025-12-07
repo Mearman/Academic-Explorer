@@ -16,7 +16,7 @@ interface UseHotkeysOptions {
 }
 
 export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
-  const { enabled = true, scope = 'global' } = options;
+  const { enabled = true } = options;
 
   // Define all hotkey configurations
   const hotkeys: HotkeyConfig[] = [
