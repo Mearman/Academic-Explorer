@@ -58,7 +58,6 @@ export const detectWebGLCapabilities = (): WebGLDetectionResult => {
 	}
 
 	// Create offscreen canvas for testing
-	// eslint-disable-next-line custom/no-deprecated -- WebGL detection requires canvas creation
 	const canvas = document.createElement('canvas')
 
 	// Try WebGL2 first (preferred)
@@ -146,7 +145,6 @@ const detectWebGLUnavailableReason = (): string => {
 	}
 
 	// Check if running in a context that blocks WebGL
-	// eslint-disable-next-line custom/no-deprecated -- WebGL detection requires canvas creation
 	const canvas = document.createElement('canvas')
 
 	try {

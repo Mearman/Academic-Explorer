@@ -334,7 +334,6 @@ export const downloadExport = (content: string, format: ExportFormat, filename?:
 
 	const blob = new Blob([content], { type: mimeTypes[format] });
 	const url = URL.createObjectURL(blob);
-	// eslint-disable-next-line custom/no-deprecated
 	const link = globalThis.document.createElement("a");
 	link.href = url;
 	link.download = defaultFilename;

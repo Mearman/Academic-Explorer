@@ -145,7 +145,6 @@ export class GenericLogger {
 		const data = JSON.stringify(this.logs, null, 2)
 		const blob = new Blob([data], { type: "application/json" })
 		const url = URL.createObjectURL(blob)
-		// eslint-disable-next-line custom/no-deprecated
 		const a = globalThis.document.createElement("a")
 		a.href = url
 		a.download = `logs-${new Date().toISOString().split("T")[0]}.json`
