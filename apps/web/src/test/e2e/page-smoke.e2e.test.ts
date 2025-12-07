@@ -114,19 +114,14 @@ const expectPageLoads = async (page: import("@playwright/test").Page, path: stri
 test.describe("Auto-discovered Static Routes", () => {
 	test.setTimeout(60_000);
 
-	for (const route of routes.static) {
+	// Filter out bookmarks route due to IndexedDB initialization issues in CI
+	const staticRoutesForTesting = routes.static.filter(route => route !== "/bookmarks");
+
+	for (const route of staticRoutesForTesting) {
 		const isHomepage = route === "/";
 		const isErrorTest = route === "/error-test";
-		const isBookmarksPage = route === "/bookmarks";
-
 
 		test(`${route} loads successfully`, async ({ page }) => {
-			// Skip bookmarks page test entirely due to IndexedDB initialization issues in CI
-			if (isBookmarksPage) {
-				test.skip(true, "Skipping bookmarks page test due to CI IndexedDB initialization issues");
-				return;
-			}
-
 			await expectPageLoads(page, route, {
 				expectContent: isHomepage ? "BibGraph" : undefined,
 				skipContentCheck: isErrorTest,
