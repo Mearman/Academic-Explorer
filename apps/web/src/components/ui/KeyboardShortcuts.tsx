@@ -230,101 +230,6 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutConfig) => {
   };
 };
 
-/**
- * Keyboard shortcuts help modal
- */
-interface KeyboardShortcutsHelpProps {
-  shortcuts: KeyboardShortcut[];
-  opened: boolean;
-  onClose: () => void;
-}
-
-export const KeyboardShortcutsHelp = ({
-  shortcuts,
-  opened,
-  onClose,
-}: KeyboardShortcutsHelpProps) => {
-  const categories = shortcuts.reduce((acc, shortcut) => {
-    const category = shortcut.category || 'General';
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(shortcut);
-    return acc;
-  }, {} as Record<string, KeyboardShortcut[]>);
-
-  const formatKeys = (keys: string) => {
-    return keys.split('+').map((key, index) => (
-      <Kbd key={index}>{key.toUpperCase()}</Kbd>
-    ));
-  };
-
-  const rows = Object.entries(categories).flatMap(([category, categoryShortcuts]) =>
-    categoryShortcuts.map((shortcut, index) => (
-      <tr key={`${category}-${shortcut.id}`}>
-        {index === 0 && (
-          <td rowSpan={categoryShortcuts.length}>
-            <Text fw={500}>{category}</Text>
-          </td>
-        )}
-        <td>
-          <Group gap={4}>
-            {formatKeys(shortcut.keys)}
-          </Group>
-        </td>
-        <td>{shortcut.description}</td>
-        {index === 0 && (
-          <td rowSpan={categoryShortcuts.length}>
-            {shortcut.enabled === false ? (
-              <Badge color="red" size="xs">Disabled</Badge>
-            ) : (
-              <Badge color="green" size="xs">Enabled</Badge>
-            )}
-          </td>
-        )}
-      </tr>
-    ))
-  );
-
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title="Keyboard Shortcuts"
-      size="lg"
-      centered
-    >
-      <Stack>
-        <Text c="dimmed" size="sm">
-          Press the key combinations below to trigger actions throughout the application.
-        </Text>
-
-        <Paper withBorder p="md">
-          <Table striped highlightOnHover>
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Keys</th>
-                <th>Action</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>{rows}</tbody>
-          </Table>
-        </Paper>
-
-        <Group justify="space-between">
-          <Text size="xs" c="dimmed">
-            Tip: Click anywhere outside this modal to close it
-          </Text>
-          <Button variant="light" onClick={onClose}>
-            Close
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
-  );
-};
 
 /**
  * Help button component
@@ -391,8 +296,6 @@ export const KeyboardShortcutsManager = ({
     } as KeyboardShortcut,
   ];
 
-  const shortcuts = getShortcutsByCategory();
-
   if (renderHelpButton && config.showHelpButton !== false) {
     return (
       <>
@@ -400,22 +303,11 @@ export const KeyboardShortcutsManager = ({
           onClick={() => setHelpOpen(true)}
           position={config.helpButtonPosition}
         />
-        <KeyboardShortcutsHelp
-          shortcuts={allShortcuts}
-          opened={helpOpen}
-          onClose={() => setHelpOpen(false)}
-        />
       </>
     );
   }
 
-  return (
-    <KeyboardShortcutsHelp
-      shortcuts={allShortcuts}
-      opened={helpOpen}
-      onClose={() => setHelpOpen(false)}
-    />
-  );
+  return null;
 };
 
 /**
