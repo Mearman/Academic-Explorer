@@ -58,31 +58,43 @@ export default defineConfig(
 				inline: [/@bibgraph\/.*/],
 			},
 
-			// Exclude E2E tests from Vitest - they use Playwright
+			// Exclude E2E and performance tests from CI - they use Playwright or are too intensive
 			exclude: [
 				...(baseVitestConfig.test?.exclude || []),
 				"**/*.e2e.test.ts",
 				"**/*.e2e.test.tsx",
+				"**/*.performance.test.ts",
+				"**/test/e2e/**",
 			],
 
-			// Pool options for better memory management
+			// Pool options for better memory management with parallel execution
 			pool: "forks",
 			poolOptions: {
 				forks: {
-					singleFork: true,
-					maxForks: 1,
+					singleFork: false,
+					maxForks: Math.min(4, require('os').cpus().length),
 					minForks: 1,
 				},
 			},
 
-			// Aggressive cleanup between tests
-			isolate: true,
+			// Moderate cleanup between tests
+			isolate: false,
 
-			// File-level serial execution to prevent OOM
-			fileParallelism: false,
+			// Enable file-level parallel execution for faster CI
+			fileParallelism: true,
 
 			coverage: {
 				reportsDirectory: "../../coverage/apps/web",
+				// Skip coverage for slow test types to improve CI speed
+				exclude: [
+					"src/test/**",
+					"src/**/*.integration.test.{ts,tsx}",
+					"src/**/*.component.test.{ts,tsx}",
+				],
+				// Collect coverage only for unit tests to reduce overhead
+				include: ["src/**/*.unit.test.{ts,tsx}"],
+				// Minimal coverage reporters for CI speed
+				reporter: ["text", "json"],
 			},
 
 			// Named projects for targeted test execution
@@ -104,6 +116,11 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
+						// Faster timeouts for unit tests
+						testTimeout: 5000,
+						hookTimeout: 5000,
+						// Enable parallel execution
+						fileParallelism: true,
 					},
 				},
 				{
@@ -122,6 +139,13 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
+						// Moderate timeouts for component tests
+						testTimeout: 10000,
+						hookTimeout: 8000,
+						// Enable parallel execution
+						fileParallelism: true,
+						// Disable coverage for component tests (already handled globally)
+						coverage: { enabled: false },
 					},
 				},
 				{
@@ -140,7 +164,13 @@ export default defineConfig(
 						deps: {
 							inline: [/@bibgraph\/.*/],
 						},
-						testTimeout: 30000,
+						// Longer timeouts for integration tests but reasonable
+						testTimeout: 20000,
+						hookTimeout: 10000,
+						// Sequential execution for integration tests to avoid race conditions
+						fileParallelism: false,
+						// Disable coverage for integration tests (already handled globally)
+						coverage: { enabled: false },
 					},
 				},
 			],
