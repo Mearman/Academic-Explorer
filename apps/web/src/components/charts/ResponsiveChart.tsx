@@ -6,8 +6,10 @@
  */
 
 import type { ComparisonResults } from "@bibgraph/utils";
-import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { useMantineTheme } from "@mantine/core";
+import { useCallback, useEffect,useMemo, useRef, useState } from "react";
+
+import { useTouchGestures } from "@/hooks/use-touch-gestures";
 import { announceToScreenReader } from "@/utils/accessibility";
 
 interface ResponsiveChartProps {
@@ -34,6 +36,13 @@ interface DatasetPerformanceData {
 
 /**
  * Touch-friendly bar chart component with responsive design
+ * @param root0
+ * @param root0.comparisonResults
+ * @param root0.title
+ * @param root0.description
+ * @param root0.height
+ * @param root0.mobileHeight
+ * @param root0.ariaLabel
  */
 export const ResponsivePerformanceChart = ({
   comparisonResults,
@@ -47,12 +56,14 @@ export const ResponsivePerformanceChart = ({
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [focusedBar, setFocusedBar] = useState<{dataset: string, metric: string} | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const chartRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < (parseInt(theme.breakpoints.sm.replace('px', ''))));
+      setIsMobile(window.innerWidth < (Number.parseInt(theme.breakpoints.sm.replace('px', ''))));
     };
 
     checkMobile();
@@ -83,14 +94,53 @@ export const ResponsivePerformanceChart = ({
 
   const actualHeight = isMobile ? mobileHeight : height;
 
-  // Handle touch interactions for mobile
+  // Enhanced touch interactions with gesture support
   const handleTouchStart = useCallback((datasetName: string, metric: string) => {
     if (isMobile) {
       setSelectedDataset(datasetName);
       setFocusedBar({ dataset: datasetName, metric });
-      announceToScreenReader(`${datasetName} ${metric}: ${(chartData.find(d => d.datasetName === datasetName)?.[metric as keyof DatasetPerformanceData] as number * 100).toFixed(1)}%`);
+      const value = (chartData.find(d => d.datasetName === datasetName)?.[metric as keyof DatasetPerformanceData] as number * 100).toFixed(1);
+      announceToScreenReader(`${datasetName} ${metric}: ${value}%`);
     }
   }, [isMobile, chartData]);
+
+  // Touch gesture handlers
+  const touchHandlers = useTouchGestures({
+    onSwipe: (direction, velocity) => {
+      if (!isMobile || !scrollContainerRef.current) return;
+
+      const scrollAmount = 200 * velocity;
+      switch (direction) {
+        case 'left':
+          scrollContainerRef.current.scrollLeft += scrollAmount;
+          break;
+        case 'right':
+          scrollContainerRef.current.scrollLeft -= scrollAmount;
+          break;
+        case 'up':
+        case 'down':
+          // Vertical scrolling handled by native scroll
+          break;
+      }
+    },
+    onDoubleTap: (x, y) => {
+      if (isMobile) {
+        setZoomLevel(prev => prev === 1 ? 1.5 : 1);
+        announceToScreenReader(`Zoom ${zoomLevel === 1 ? 'in' : 'out'}`);
+      }
+    },
+    onPinch: (scale, centerX, centerY) => {
+      if (isMobile) {
+        setZoomLevel(Math.max(1, Math.min(3, scale)));
+        announceToScreenReader(`Zoom level: ${Math.round(scale * 100)}%`);
+      }
+    },
+  }, {
+    swipeThreshold: 30,
+    pinchThreshold: 0.1,
+    doubleTapDelay: 300,
+    preventDefault: false, // Allow scrolling
+  });
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent, datasetName: string, metric: string) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -177,13 +227,21 @@ export const ResponsivePerformanceChart = ({
 
       {/* Chart container */}
       <div
+        ref={scrollContainerRef}
         style={{
           height: `${actualHeight - (isMobile ? 80 : 100)}px`,
           overflowX: isMobile ? 'auto' : 'visible',
           WebkitOverflowScrolling: 'touch',
         }}
+        {...touchHandlers.handlers}
       >
-        <div style={{ minWidth: isMobile ? '600px' : 'auto' }}>
+        <div
+          style={{
+            minWidth: isMobile ? `${600 * zoomLevel}px` : 'auto',
+            transform: isMobile ? `scale(${zoomLevel})` : 'none',
+            transformOrigin: 'top left',
+            transition: 'transform 0.2s ease',
+          }}>
           {chartData.map((dataset, index) => (
             <div
               key={dataset.datasetName || `dataset-${index}`}
@@ -318,9 +376,12 @@ export const ResponsivePerformanceChart = ({
         >
           <strong>Selected:</strong> {selectedDataset}
           <br />
-          <span style={{ fontSize: '12px', color: 'var(--mantine-color-dimmed)' }}>
-            Tap on bars to hear values • Swipe to scroll • Double-tap to select
-          </span>
+          <div style={{ fontSize: '12px', color: 'var(--mantine-color-dimmed)', marginTop: '8px' }}>
+            <div>📱 Tap bars to hear values</div>
+            <div>👆 Swipe to scroll horizontally</div>
+            <div>🔍 Double-tap to zoom in/out</div>
+            <div>🤏 Pinch to zoom (scale: {Math.round(zoomLevel * 100)}%)</div>
+          </div>
         </div>
       )}
 
@@ -344,6 +405,13 @@ export const ResponsivePerformanceChart = ({
 
 /**
  * Responsive scatter plot with touch and keyboard support
+ * @param root0
+ * @param root0.comparisonResults
+ * @param root0.title
+ * @param root0.description
+ * @param root0.height
+ * @param root0.mobileHeight
+ * @param root0.ariaLabel
  */
 export const ResponsiveScatterPlot = ({
   comparisonResults,
@@ -361,7 +429,7 @@ export const ResponsiveScatterPlot = ({
   // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < (parseInt(theme.breakpoints.sm.replace('px', ''))));
+      setIsMobile(window.innerWidth < (Number.parseInt(theme.breakpoints.sm.replace('px', ''))));
     };
 
     checkMobile();

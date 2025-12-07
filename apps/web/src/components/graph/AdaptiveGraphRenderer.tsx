@@ -7,11 +7,12 @@
 
 import type { EntityType, GraphEdge, GraphNode } from '@bibgraph/types';
 import { Box, Group, LoadingOverlay, Stack, Text, useMantineTheme } from '@mantine/core';
-import { IconActivity, IconAlertTriangle, IconDeviceMobile, IconDeviceDesktop } from '@tabler/icons-react';
+import { IconActivity, IconAlertTriangle, IconDeviceDesktop, IconDeviceMobile, IconMaximize, IconRotateClockwise,IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 
 import { ICON_SIZE } from '@/config/style-constants';
+import { useTouchGestures } from '@/hooks/use-touch-gestures';
 import { announceToScreenReader } from '@/utils/accessibility';
 
 import { ENTITY_TYPE_COLORS as HASH_BASED_ENTITY_COLORS } from '../../styles/hash-colors';
@@ -151,12 +152,15 @@ export const AdaptiveGraphRenderer = ({
 }: AdaptiveGraphRendererProps) => {
   const theme = useMantineTheme();
   const [isMobile, setIsMobile] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [showControls, setShowControls] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < (parseInt(theme.breakpoints.sm.replace('px', ''))));
+      setIsMobile(window.innerWidth < (Number.parseInt(theme.breakpoints.sm.replace('px', ''))));
     };
 
     checkMobile();
@@ -318,6 +322,49 @@ export const AdaptiveGraphRenderer = ({
     onBackgroundClick?.();
   }, [onBackgroundClick]);
 
+  // Touch gesture handlers for mobile interactions
+  const touchHandlers = useTouchGestures({
+    onSwipe: (direction, velocity) => {
+      if (!graphRef.current) return;
+
+      const currentZoom = graphRef.current.zoom();
+      const newZoom = direction === 'up' || direction === 'left'
+        ? Math.min(currentZoom * 1.1, 3)
+        : Math.max(currentZoom * 0.9, 0.1);
+
+      graphRef.current.zoom(newZoom, 400);
+      setZoomLevel(newZoom);
+      announceToScreenReader(`Zoom ${direction === 'up' || direction === 'left' ? 'in' : 'out'} to ${Math.round(newZoom * 100)}%`);
+    },
+    onDoubleTap: (x, y) => {
+      if (graphRef.current) {
+        const currentZoom = graphRef.current.zoom();
+        const newZoom = currentZoom === 1 ? 2 : 1;
+        graphRef.current.zoom(newZoom, 400);
+        setZoomLevel(newZoom);
+        announceToScreenReader(`Zoom ${newZoom === 1 ? 'out to fit' : 'in to 200%'}`);
+      }
+    },
+    onPinch: (scale, centerX, centerY) => {
+      if (graphRef.current) {
+        const currentZoom = graphRef.current.zoom();
+        const newZoom = Math.max(0.1, Math.min(3, currentZoom * scale));
+        graphRef.current.zoom(newZoom, 0);
+        setZoomLevel(newZoom);
+      }
+    },
+    onLongPress: (x, y) => {
+      setShowControls(prev => !prev);
+      announceToScreenReader(`Controls ${showControls ? 'hidden' : 'shown'}`);
+    },
+  }, {
+    swipeThreshold: 50,
+    pinchThreshold: 0.1,
+    doubleTapDelay: 300,
+    longPressDelay: 800,
+    preventDefault: false,
+  });
+
   // Notify parent when graph is ready
   useEffect(() => {
     const checkRef = () => {
@@ -419,6 +466,7 @@ export const AdaptiveGraphRenderer = ({
       }}
       role="application"
       aria-label={`Interactive graph with ${nodes.length} nodes and ${edges.length} edges. ${renderSettings.animationEnabled ? 'Animation enabled' : 'Animation disabled for performance'}.`}
+      {...(isMobile ? touchHandlers.handlers : {})}
     >
       <LoadingOverlay visible={false} />
 
@@ -434,8 +482,8 @@ export const AdaptiveGraphRenderer = ({
         onNodeHover={handleNodeHover}
         onBackgroundClick={handleBackgroundClick}
         enableNodeDrag={true}
-        enableZoomInteraction={true}
-        enablePanInteraction={true}
+        enableZoomInteraction={!isMobile}
+        enablePanInteraction={!isMobile}
         cooldownTime={renderSettings.simulationCooldown}
         d3AlphaDecay={renderSettings.animationEnabled ? 0.0228 : 0.1}
         d3VelocityDecay={renderSettings.animationEnabled ? 0.4 : 0.8}
@@ -462,7 +510,106 @@ export const AdaptiveGraphRenderer = ({
           <IconDeviceDesktop size={12} />
         )}
         <span>{currentPerformanceProfile.toUpperCase()}</span>
+        <span>•</span>
+        <span>{Math.round(zoomLevel * 100)}%</span>
       </Group>
+
+      {/* Mobile controls */}
+      {isMobile && showControls && (
+        <Group
+          gap="xs"
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            borderRadius: '4px',
+            padding: '4px',
+            zIndex: 10,
+          }}
+        >
+          <button
+            onClick={() => {
+              if (graphRef.current) {
+                const newZoom = Math.max(0.1, graphRef.current.zoom() - 0.2);
+                graphRef.current.zoom(newZoom, 200);
+                setZoomLevel(newZoom);
+                announceToScreenReader(`Zoom out to ${Math.round(newZoom * 100)}%`);
+              }
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+            aria-label="Zoom out"
+          >
+            <IconZoomOut size={16} />
+          </button>
+
+          <button
+            onClick={() => {
+              if (graphRef.current) {
+                const newZoom = Math.min(3, graphRef.current.zoom() + 0.2);
+                graphRef.current.zoom(newZoom, 200);
+                setZoomLevel(newZoom);
+                announceToScreenReader(`Zoom in to ${Math.round(newZoom * 100)}%`);
+              }
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+            aria-label="Zoom in"
+          >
+            <IconZoomIn size={16} />
+          </button>
+
+          <button
+            onClick={() => {
+              if (graphRef.current) {
+                graphRef.current.zoomToFit(200);
+                setZoomLevel(1);
+                announceToScreenReader('Zoom to fit');
+              }
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+            aria-label="Zoom to fit"
+          >
+            <IconMaximize size={16} />
+          </button>
+
+          <button
+            onClick={() => {
+              if (graphRef.current) {
+                setRotation(prev => prev + 45);
+                announceToScreenReader('Rotate graph 45 degrees');
+              }
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+            aria-label="Rotate graph"
+          >
+            <IconRotateClockwise size={16} />
+          </button>
+        </Group>
+      )}
 
       {/* Performance overlay */}
       {showPerformanceOverlay && (
@@ -534,15 +681,20 @@ export const AdaptiveGraphRenderer = ({
       >
         {isMobile ? (
           <Text size="xs" c="white">
-            • Pinch to zoom<br/>
-            • Drag to pan<br/>
-            • Tap nodes to select
+            <div>• Swipe up/down to zoom</div>
+            <div>• Double-tap to toggle zoom</div>
+            <div>• Long-press to show controls</div>
+            <div>• Pinch to zoom precisely</div>
+            <div>• Drag nodes to reposition</div>
+            <div>• Tap nodes for details</div>
           </Text>
         ) : (
           <Text size="xs" c="white">
-            • Scroll to zoom<br/>
-            • Drag to pan<br/>
-            • Click nodes to select
+            <div>• Scroll to zoom in/out</div>
+            <div>• Drag to pan around</div>
+            <div>• Click nodes for details</div>
+            <div>• Right-click for context menu</div>
+            <div>• Use Tab + Enter for keyboard nav</div>
           </Text>
         )}
       </Box>

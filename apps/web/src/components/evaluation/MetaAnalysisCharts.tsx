@@ -6,7 +6,8 @@
 
 import type { ComparisonResults } from "@bibgraph/utils";
 import { useMemo } from "react";
-import { ResponsivePerformanceChart, ResponsiveScatterPlot } from "@/components/charts";
+
+import { ResponsivePerformanceChart, ResponsiveScatterPlot } from "@/components/charts/ResponsiveChart";
 
 // Common color constants - using Mantine CSS custom properties for theme-agnostic colors
 const COLOR_GRAY_500 = "var(--mantine-color-dimmed)";
@@ -38,6 +39,8 @@ interface DatasetPerformanceData {
 /**
  * Performance Comparison Bar Chart
  * Enhanced responsive version with touch interactions and accessibility
+ * @param root0
+ * @param root0.comparisonResults
  */
 export const PerformanceComparisonChart = ({
   comparisonResults,
@@ -55,6 +58,8 @@ export const PerformanceComparisonChart = ({
 /**
  * Precision-Recall Scatter Plot
  * Enhanced responsive version with touch interactions and accessibility
+ * @param root0
+ * @param root0.comparisonResults
  */
 export const PrecisionRecallScatterPlot = ({
   comparisonResults,
@@ -112,8 +117,8 @@ export const ConfusionMatrixHeatmap = ({
     return (
       <div
         style={{
-          backgroundColor: COLOR_GRAY_100,
-          border: "BORDER_STYLE",
+          backgroundColor: "var(--mantine-color-gray-1)",
+          border: "1px solid var(--mantine-color-gray-3)",
           borderRadius: "8px",
           padding: "24px",
           textAlign: "center",
@@ -131,8 +136,8 @@ export const ConfusionMatrixHeatmap = ({
   return (
     <div
       style={{
-        backgroundColor: "white",
-        border: "BORDER_STYLE",
+        backgroundColor: "var(--mantine-color-body)",
+        border: "1px solid var(--mantine-color-gray-3)",
         borderRadius: "12px",
         padding: "24px",
       }}
@@ -429,8 +434,8 @@ export const DatasetStatisticsOverview = ({
     return (
       <div
         style={{
-          backgroundColor: COLOR_GRAY_100,
-          border: "BORDER_STYLE",
+          backgroundColor: "var(--mantine-color-gray-1)",
+          border: "1px solid var(--mantine-color-gray-3)",
           borderRadius: "8px",
           padding: "24px",
           textAlign: "center",
@@ -446,8 +451,8 @@ export const DatasetStatisticsOverview = ({
   return (
     <div
       style={{
-        backgroundColor: "white",
-        border: "BORDER_STYLE",
+        backgroundColor: "var(--mantine-color-body)",
+        border: "1px solid var(--mantine-color-gray-3)",
         borderRadius: "12px",
         padding: "24px",
       }}
@@ -471,7 +476,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "left",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -483,7 +488,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -495,7 +500,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -507,7 +512,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -519,7 +524,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -531,7 +536,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -543,7 +548,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -555,7 +560,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",
@@ -567,7 +572,7 @@ export const DatasetStatisticsOverview = ({
                 style={{
                   textAlign: "right",
                   padding: "12px 8px",
-                  borderBottom: "TABLE_HEADER_BORDER",
+                  borderBottom: "1px solid var(--mantine-color-gray-3)",
                   fontSize: "12px",
                   fontWeight: "600",
                   color: "var(--mantine-color-text)",

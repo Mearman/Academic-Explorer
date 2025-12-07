@@ -1,0 +1,277 @@
+/**
+ * Touch Gesture Hook
+ *
+ * Provides advanced touch gesture support for mobile interactions with charts and graphs.
+ * Includes swipe, pinch, and double-tap gestures with proper accessibility.
+ */
+
+import { useCallback, useRef, useState } from 'react';
+
+interface TouchPoint {
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
+interface TouchGestureState {
+  touches: TouchPoint[];
+  isGesturing: boolean;
+  currentGesture: 'swipe' | 'pinch' | 'double-tap' | 'long-press' | null;
+  swipeDirection: 'left' | 'right' | 'up' | 'down' | null;
+  pinchScale: number;
+  lastTapTime: number;
+  tapCount: number;
+}
+
+export interface TouchGestureHandlers {
+  onSwipe?: (direction: 'left' | 'right' | 'up' | 'down', velocity: number) => void;
+  onPinch?: (scale: number, centerX: number, centerY: number) => void;
+  onDoubleTap?: (x: number, y: number) => void;
+  onLongPress?: (x: number, y: number) => void;
+  onTouchStart?: (touches: TouchPoint[]) => void;
+  onTouchMove?: (touches: TouchPoint[]) => void;
+  onTouchEnd?: (touches: TouchPoint[]) => void;
+}
+
+export interface TouchGestureOptions {
+  swipeThreshold?: number;
+  pinchThreshold?: number;
+  doubleTapDelay?: number;
+  longPressDelay?: number;
+  preventDefault?: boolean;
+}
+
+export const useTouchGestures = (
+  handlers: TouchGestureHandlers = {},
+  options: TouchGestureOptions = {}
+) => {
+  const {
+    swipeThreshold = 50,
+    pinchThreshold = 20,
+    doubleTapDelay = 300,
+    longPressDelay = 500,
+    preventDefault = true,
+  } = options;
+
+  const [gestureState, setGestureState] = useState<TouchGestureState>({
+    touches: [],
+    isGesturing: false,
+    currentGesture: null,
+    swipeDirection: null,
+    pinchScale: 1,
+    lastTapTime: 0,
+    tapCount: 0,
+  });
+
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const initialPinchDistanceRef = useRef<number | null>(null);
+
+  const getTouchPoints = useCallback((touches: TouchList | React.TouchList): TouchPoint[] => {
+    const touchArray: Touch[] = [];
+    for (let i = 0; i < touches.length; i++) {
+      touchArray.push(touches[i] as Touch);
+    }
+    return touchArray.map(touch => ({
+      x: touch.clientX,
+      y: touch.clientY,
+      timestamp: Date.now(),
+    }));
+  }, []);
+
+  const calculateDistance = useCallback((touch1: TouchPoint, touch2: TouchPoint): number => {
+    const dx = touch2.x - touch1.x;
+    const dy = touch2.y - touch1.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, []);
+
+  const calculateSwipeDirection = useCallback(
+    (startPoint: TouchPoint, endPoint: TouchPoint): 'left' | 'right' | 'up' | 'down' | null => {
+      const dx = endPoint.x - startPoint.x;
+      const dy = endPoint.y - startPoint.y;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
+      if (Math.max(absDx, absDy) < swipeThreshold) return null;
+
+      if (absDx > absDy) {
+        return dx > 0 ? 'right' : 'left';
+      } else {
+        return dy > 0 ? 'down' : 'up';
+      }
+    },
+    [swipeThreshold]
+  );
+
+  const handleTouchStart = useCallback(
+    (event: React.TouchEvent) => {
+      if (preventDefault) {
+        event.preventDefault();
+      }
+
+      const currentTouches = getTouchPoints(event.touches);
+      setGestureState(prev => ({
+        ...prev,
+        touches: currentTouches,
+        isGesturing: true,
+      }));
+
+      // Start long press timer for single touch
+      if (currentTouches.length === 1 && handlers.onLongPress) {
+        longPressTimerRef.current = setTimeout(() => {
+          const touch = currentTouches[0];
+          handlers.onLongPress?.(touch.x, touch.y);
+          setGestureState(prev => ({
+            ...prev,
+            currentGesture: 'long-press',
+          }));
+        }, longPressDelay);
+      }
+
+      // Initialize pinch detection
+      if (currentTouches.length === 2 && handlers.onPinch) {
+        initialPinchDistanceRef.current = calculateDistance(currentTouches[0], currentTouches[1]);
+      }
+
+      handlers.onTouchStart?.(currentTouches);
+    },
+    [getTouchPoints, calculateDistance, handlers, preventDefault, longPressDelay]
+  );
+
+  const handleTouchMove = useCallback(
+    (event: React.TouchEvent) => {
+      if (preventDefault && gestureState.isGesturing) {
+        event.preventDefault();
+      }
+
+      const currentTouches = getTouchPoints(event.touches);
+
+      setGestureState(prev => ({
+        ...prev,
+        touches: currentTouches,
+      }));
+
+      // Clear long press timer on move
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+
+      // Handle pinch gesture
+      if (currentTouches.length === 2 && handlers.onPinch && initialPinchDistanceRef.current) {
+        const currentDistance = calculateDistance(currentTouches[0], currentTouches[1]);
+        const scale = currentDistance / initialPinchDistanceRef.current;
+        const centerX = (currentTouches[0].x + currentTouches[1].x) / 2;
+        const centerY = (currentTouches[0].y + currentTouches[1].y) / 2;
+
+        if (Math.abs(scale - 1) > pinchThreshold / 100) {
+          handlers.onPinch(scale, centerX, centerY);
+          setGestureState(prev => ({
+            ...prev,
+            currentGesture: 'pinch',
+            pinchScale: scale,
+          }));
+        }
+      }
+
+      handlers.onTouchMove?.(currentTouches);
+    },
+    [getTouchPoints, calculateDistance, gestureState.isGesturing, handlers, preventDefault, pinchThreshold]
+  );
+
+  const handleTouchEnd = useCallback(
+    (event: React.TouchEvent) => {
+      if (preventDefault && gestureState.isGesturing) {
+        event.preventDefault();
+      }
+
+      const finalTouches = getTouchPoints(event.touches);
+      const previousTouches = gestureState.touches;
+
+      // Clear long press timer
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+
+      // Handle double tap
+      if (previousTouches.length === 1 && finalTouches.length === 0 && handlers.onDoubleTap) {
+        const currentTime = Date.now();
+        const timeSinceLastTap = currentTime - gestureState.lastTapTime;
+        const tapPoint = previousTouches[0];
+
+        if (timeSinceLastTap < doubleTapDelay) {
+          const newTapCount = gestureState.tapCount + 1;
+
+          if (newTapCount === 2) {
+            handlers.onDoubleTap(tapPoint.x, tapPoint.y);
+            setGestureState(prev => ({
+              ...prev,
+              currentGesture: 'double-tap',
+              tapCount: 0,
+              lastTapTime: 0,
+            }));
+            return;
+          }
+        }
+
+        setGestureState(prev => ({
+          ...prev,
+          tapCount: 1,
+          lastTapTime: currentTime,
+        }));
+      }
+
+      // Handle swipe
+      if (previousTouches.length === 1 && finalTouches.length === 0 && handlers.onSwipe) {
+        const direction = calculateSwipeDirection(
+          previousTouches[0],
+          { x: previousTouches[0].x, y: previousTouches[0].y, timestamp: Date.now() }
+        );
+
+        if (direction) {
+          const velocity = swipeThreshold / 100; // Simplified velocity calculation
+          handlers.onSwipe(direction, velocity);
+          setGestureState(prev => ({
+            ...prev,
+            currentGesture: 'swipe',
+            swipeDirection: direction,
+          }));
+        }
+      }
+
+      // Reset pinch state
+      if (finalTouches.length < 2) {
+        initialPinchDistanceRef.current = null;
+      }
+
+      setGestureState(prev => ({
+        ...prev,
+        touches: finalTouches,
+        isGesturing: finalTouches.length > 0,
+        currentGesture: finalTouches.length > 0 ? prev.currentGesture : null,
+      }));
+
+      handlers.onTouchEnd?.(finalTouches);
+    },
+    [
+      getTouchPoints,
+      gestureState.touches,
+      gestureState.lastTapTime,
+      gestureState.tapCount,
+      calculateSwipeDirection,
+      handlers,
+      preventDefault,
+      doubleTapDelay,
+      swipeThreshold,
+    ]
+  );
+
+  return {
+    gestureState,
+    handlers: {
+      onTouchStart: handleTouchStart,
+      onTouchMove: handleTouchMove,
+      onTouchEnd: handleTouchEnd,
+    },
+  };
+};
