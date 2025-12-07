@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Hook for managing ARIA live regions
 export const useLiveRegion = () => {
@@ -159,21 +159,41 @@ export const useAriaAttributes = () => {
 // Hook for screen reader announcements
 export const useScreenReader = () => {
   const announceToScreenReader = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', priority);
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.style.position = 'absolute';
-    announcement.style.left = '-10000px';
-    announcement.style.width = '1px';
-    announcement.style.height = '1px';
-    announcement.style.overflow = 'hidden';
+    // Guard against SSR environments where document might not be available
+    if (typeof document === 'undefined' || !document.body) {
+      return;
+    }
 
-    document.body.append(announcement);
-    announcement.textContent = message;
+    try {
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', priority);
+      announcement.setAttribute('aria-atomic', 'true');
+      announcement.style.position = 'absolute';
+      announcement.style.left = '-10000px';
+      announcement.style.width = '1px';
+      announcement.style.height = '1px';
+      announcement.style.overflow = 'hidden';
 
-    setTimeout(() => {
-      announcement.remove();
-    }, 1000);
+      document.body.append(announcement);
+      announcement.textContent = message;
+
+      // Use a longer timeout to ensure screen readers can process the announcement
+      const timeoutId = setTimeout(() => {
+        try {
+          if (document.body.contains(announcement)) {
+            announcement.remove();
+          }
+        } catch {
+          // Ignore errors during cleanup
+        }
+      }, 2000);
+
+      // Store timeout ID for potential cleanup
+      (announcement as any)._cleanupTimeout = timeoutId;
+    } catch (error) {
+      // Fail silently for accessibility features - they should never break the app
+      console.warn('Failed to create screen reader announcement:', error);
+    }
   }, []);
 
   const announceNavigation = useCallback((direction: 'forward' | 'backward', itemName?: string) => {
@@ -243,18 +263,39 @@ export const useFocusManagement = () => {
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const saveFocus = useCallback(() => {
-    previousFocusRef.current = document.activeElement as HTMLElement;
+    // Guard against SSR environments
+    if (typeof document === 'undefined') return;
+
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement instanceof HTMLElement) {
+      previousFocusRef.current = activeElement;
+    }
   }, []);
 
   const restoreFocus = useCallback(() => {
     if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-      previousFocusRef.current.focus();
+      try {
+        // Check if element is still connected to DOM before focusing
+        if (document.contains(previousFocusRef.current)) {
+          previousFocusRef.current.focus();
+        }
+      } catch (error) {
+        // Focus can fail if element is no longer focusable or visible
+        console.warn('Failed to restore focus:', error);
+      }
     }
   }, []);
 
   const focusElement = useCallback((element: HTMLElement | null) => {
-    if (element && typeof element.focus === 'function') {
-      element.focus();
+    if (!element || typeof element.focus !== 'function') return;
+
+    try {
+      // Check if element is still connected to DOM
+      if (document.contains(element)) {
+        element.focus();
+      }
+    } catch (error) {
+      console.warn('Failed to focus element:', error);
     }
   }, []);
 
