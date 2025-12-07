@@ -3,7 +3,7 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 import type { FC,ReactNode } from "react"
 import { useState } from "react"
 
-export type SectionFrameProps = {
+export interface SectionFrameProps {
 	children: ReactNode
 	title?: string
 	subtitle?: string

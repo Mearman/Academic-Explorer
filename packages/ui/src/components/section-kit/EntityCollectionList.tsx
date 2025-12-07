@@ -8,13 +8,13 @@ const EMPTY_SEARCH_KEYS: Array<string> = [];
 const EMPTY_FILTERS: FilterChip[] = [];
 const EMPTY_ACTIVE_FILTERS: string[] = [];
 
-export type FilterChip = {
+export interface FilterChip {
 	label: string
 	value: string
 	color?: string
 }
 
-export type EntityCollectionListProps<T = Record<string, unknown>> = {
+export interface EntityCollectionListProps<T = Record<string, unknown>> {
 	items: T[]
 	renderItem: (item: T, index: number) => ReactNode
 	getItemKey?: (item: T, index: number) => string | number

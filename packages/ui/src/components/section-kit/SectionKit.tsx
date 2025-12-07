@@ -1,6 +1,6 @@
 import type { FC,ReactNode } from "react"
 
-export type SectionKitProps = {
+export interface SectionKitProps {
 	children: ReactNode
 	title?: string
 }

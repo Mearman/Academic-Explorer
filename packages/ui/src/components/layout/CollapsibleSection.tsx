@@ -7,14 +7,14 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import type { FC,ReactNode } from "react";
 import { useState } from "react";
 
-export type CollapsibleSectionProps = {
+export interface CollapsibleSectionProps {
 	title: string;
 	icon: ReactNode;
 	children: ReactNode;
 	defaultExpanded?: boolean;
 	storageKey?: string;
 	onToggle?: (expanded: boolean) => void;
-};
+}
 
 export const CollapsibleSection: FC<CollapsibleSectionProps> = ({
 	title,

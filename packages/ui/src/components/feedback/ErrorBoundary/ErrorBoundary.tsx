@@ -27,7 +27,7 @@ import type { ErrorInfo, ReactNode } from "react"
 import { Component } from "react";
 import * as React from "react";
 
-export type ErrorBoundaryProps = {
+export interface ErrorBoundaryProps {
 	children: ReactNode
 	fallback?: ReactNode
 	onError?: (error: Error, errorInfo: ErrorInfo) => void
@@ -39,7 +39,7 @@ export type ErrorBoundaryProps = {
 	"data-testid"?: string
 }
 
-type State = {
+interface State {
 	hasError: boolean
 	error: Error | undefined
 	errorInfo: ErrorInfo | undefined
@@ -49,7 +49,7 @@ type State = {
 	clearingCache: boolean
 }
 
-type DebugInfo = {
+interface DebugInfo {
 	timestamp: string
 	userAgent: string
 	url: string

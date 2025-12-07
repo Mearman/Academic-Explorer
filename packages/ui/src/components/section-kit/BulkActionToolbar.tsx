@@ -11,7 +11,7 @@ import {
 } from "@tabler/icons-react"
 import type { ReactNode } from "react"
 
-export type BulkActionToolbarProps = {
+export interface BulkActionToolbarProps {
 	// Selection state
 	totalItems: number
 	selectedItems: string[]
