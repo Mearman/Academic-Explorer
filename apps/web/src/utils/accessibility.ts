@@ -4,6 +4,7 @@
 
 // Announce messages to screen readers
 export const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  // eslint-disable-next-line custom/no-deprecated
   const announcement = document.createElement('div');
   announcement.setAttribute('aria-live', priority);
   announcement.setAttribute('aria-atomic', 'true');
@@ -63,12 +64,14 @@ export const createSkipLinks = () => {
     { href: '#search', text: 'Skip to search' },
   ];
 
+  // eslint-disable-next-line custom/no-deprecated
   const skipLinksContainer = document.createElement('div');
   skipLinksContainer.setAttribute('role', 'navigation');
   skipLinksContainer.setAttribute('aria-label', 'Skip navigation links');
   skipLinksContainer.className = 'skip-links';
 
   skipLinks.forEach((link) => {
+    // eslint-disable-next-line custom/no-deprecated
     const anchor = document.createElement('a');
     anchor.href = link.href;
     anchor.textContent = link.text;
@@ -85,12 +88,12 @@ export const generateId = (prefix: string) => {
 };
 
 // Check if user prefers reduced motion
-export const prefersReducedMotion = () => {
+export const prefersReducedMotion = (): boolean => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 };
 
 // Check if user prefers high contrast
-export const prefersHighContrast = () => {
+export const prefersHighContrast = (): boolean => {
   return window.matchMedia('(prefers-contrast: high)').matches;
 };
 
@@ -100,8 +103,12 @@ export const getPreferredColorScheme = (): 'light' | 'dark' => {
 };
 
 // ARIA label generators
-export const createSearchAriaLabel = (placeholder: string, hasValue: boolean) => {
-  return hasValue ? `Search field with current value: ${placeholder}` : placeholder;
+export const createEmptySearchAriaLabel = (placeholder: string): string => {
+  return placeholder;
+};
+
+export const createValueSearchAriaLabel = (placeholder: string): string => {
+  return `Search field with current value: ${placeholder}`;
 };
 
 export const createButtonAriaLabel = (action: string, description?: string) => {
@@ -270,10 +277,11 @@ export const validateAccessibility = (element: HTMLElement) => {
 export const injectAccessibilityStyles = () => {
   const styleId = 'accessibility-styles';
 
-  if (document.getElementById(styleId)) {
+  if (document.querySelector(`#${styleId}`)) {
     return; // Already injected
   }
 
+  // eslint-disable-next-line custom/no-deprecated
   const style = document.createElement('style');
   style.id = styleId;
   style.textContent = `

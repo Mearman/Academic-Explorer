@@ -528,7 +528,7 @@ export const AdaptiveGraphRenderer = ({
       <LoadingOverlay visible={false} />
 
       <ForceGraph2D
-        ref={graphRef as any}
+        ref={graphRef as React.RefObject<ForceGraphMethods<NodeObject, LinkObject<NodeObject>>>}
         width={width}
         height={height}
         graphData={graphData}

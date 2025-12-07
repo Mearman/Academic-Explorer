@@ -179,6 +179,28 @@ export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
     },
   ];
 
+  // Helper function to check key combination matches
+  const checkKeyMatch = useCallback((event: KeyboardEvent, hotkeyKey: string): boolean => {
+    const keys: string[] = hotkeyKey.toLowerCase().split('+');
+    const pressedKeys: string[] = [];
+
+    if (event.ctrlKey) pressedKeys.push('ctrl');
+    if (event.metaKey) pressedKeys.push('meta'); // For Mac compatibility
+    if (event.altKey) pressedKeys.push('alt');
+    if (event.shiftKey) pressedKeys.push('shift');
+    if (event.key && !['ctrl', 'meta', 'alt', 'shift'].includes(event.key.toLowerCase())) {
+      pressedKeys.push(event.key.toLowerCase());
+    }
+
+    const normalizedKeys: string[] = keys.flatMap(key => {
+      if (key === 'ctrl') return ['ctrl', 'meta'];
+      return [key];
+    });
+
+    return normalizedKeys.every(key => pressedKeys.includes(key)) &&
+      pressedKeys.length === normalizedKeys.length;
+  }, []);
+
   // Register all hotkeys
   useEffect(() => {
     if (!enabled) return;
@@ -188,24 +210,7 @@ export const useGlobalHotkeys = (options: UseHotkeysOptions = {}) => {
 
       const handler = (event: KeyboardEvent) => {
         // Check if the key combination matches
-        const keys: string[] = hotkey.key.toLowerCase().split('+');
-        const pressedKeys: string[] = [];
-
-        if (event.ctrlKey) pressedKeys.push('ctrl');
-        if (event.metaKey) pressedKeys.push('meta'); // For Mac compatibility
-        if (event.altKey) pressedKeys.push('alt');
-        if (event.shiftKey) pressedKeys.push('shift');
-        if (event.key && !['ctrl', 'meta', 'alt', 'shift'].includes(event.key.toLowerCase())) {
-          pressedKeys.push(event.key.toLowerCase());
-        }
-
-        const normalizedKeys: string[] = keys.flatMap(key => {
-          if (key === 'ctrl') return ['ctrl', 'meta'];
-          return [key];
-        });
-
-        const isMatch = normalizedKeys.every(key => pressedKeys.includes(key)) &&
-          pressedKeys.length === normalizedKeys.length;
+        const isMatch = checkKeyMatch(event, hotkey.key);
 
         if (isMatch) {
           if (hotkey.preventDefault) {
