@@ -54,7 +54,8 @@ export {
   detectEntityType
 } from "./entity-metadata";
 export { getEntityType, isOpenAlexEntity } from "./type-guards";
-export { validateWithSchema } from "./utils";
+export { validateWithSchema, trustObjectShape, extractPropertyValue } from "./utils";
+export { isOpenAlexId } from "./validation";
 export type { OpenAlexError, AutocompleteResult } from "./common";
 
 // Export graph-list types that were previously available through barrels

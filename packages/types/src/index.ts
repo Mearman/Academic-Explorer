@@ -135,4 +135,29 @@ export type {
 export * from "./entities";
 
 // Essential core types that must be available from main package
-export type { OpenAlexResponse, QueryParams, SampleParams, StatsParams, GroupParams, AutocompleteResult } from "./entities/common";
+export type {
+  OpenAlexResponse,
+  QueryParams,
+  SampleParams,
+  StatsParams,
+  GroupParams,
+  AutocompleteResult,
+  BaseAutocompleteOptions,
+  GroupedResponse
+} from "./entities/common";
+
+// Export concept-specific types
+export type {
+  ConceptsQueryParams,
+  ConceptSearchOptions
+} from "./entities/concepts";
+
+// Export OpenAlex ID and base entity types
+export type {
+  OpenAlexId
+} from "./entities/base";
+
+export type {
+  BaseEntity
+} from "./entities/entities";
+
