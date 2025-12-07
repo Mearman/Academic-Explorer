@@ -352,9 +352,9 @@ export const SearchResultPreview = ({
 
 /**
  * Hook to manage hover card state with delays
- * @param entity
- * @param onBookmark
- * @param isBookmarked
+ * @param _entity
+ * @param _onBookmark
+ * @param _isBookmarked
  */
 export const useSearchResultHover = (
   _entity: AutocompleteResult,

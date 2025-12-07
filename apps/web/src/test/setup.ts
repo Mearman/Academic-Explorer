@@ -188,26 +188,27 @@ if (typeof process !== "undefined" && process.env.VITEST) {
 
       // Simplified IndexedDB cleanup for faster test execution
       // Only perform full cleanup in integration tests to save time
-      if (expect.getState().currentTestName?.includes('integration')) {
-        if (typeof indexedDB !== "undefined" && indexedDB.databases) {
-          try {
-            const databases = await indexedDB.databases();
-            await Promise.all(
-              databases.map((db) => {
-                if (db.name && db.name.startsWith('test-')) {
-                  return new Promise<void>((resolve) => {
-                    const req = indexedDB.deleteDatabase(db.name!);
-                    req.onsuccess = () => resolve();
-                    req.onerror = () => resolve(); // Ignore errors for speed
-                    req.onblocked = () => resolve();
-                  });
-                }
-                return Promise.resolve();
-              })
-            );
-          } catch {
-            // Ignore errors during cleanup
-          }
+      const currentState = expect.getState();
+      const isIntegrationTest = currentState.currentTestName?.includes('integration');
+
+      if (isIntegrationTest && typeof indexedDB !== "undefined" && indexedDB.databases) {
+        try {
+          const databases = await indexedDB.databases();
+          await Promise.all(
+            databases.map((db) => {
+              if (db.name && db.name.startsWith('test-')) {
+                return new Promise<void>((resolve) => {
+                  const req = indexedDB.deleteDatabase(db.name!);
+                  req.onsuccess = () => resolve();
+                  req.onerror = () => resolve(); // Ignore errors for speed
+                  req.onblocked = () => resolve();
+                });
+              }
+              return Promise.resolve();
+            })
+          );
+        } catch {
+          // Ignore errors during cleanup
         }
       }
 

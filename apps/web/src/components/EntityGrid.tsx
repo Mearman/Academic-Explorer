@@ -1,28 +1,26 @@
 import type { EntityType } from "@bibgraph/types";
 import { EntityCard } from "@bibgraph/ui";
 import {
+  ActionIcon,
+  Badge,
+  Button,
+  Center,
+  Group,
+  Paper,
+  SegmentedControl,
   SimpleGrid,
   Stack,
   Text,
-  Group,
-  Button,
-  ActionIcon,
   TextInput,
-  Badge,
-  Center,
-  Paper,
-  Flex,
-  SegmentedControl
 } from "@mantine/core";
 import {
-  IconSearch,
-  IconRefresh,
-  IconFilter,
+  IconAdjustmentsHorizontal,
   IconLayoutGrid,
   IconList,
-  IconAdjustmentsHorizontal
+  IconRefresh,
+  IconSearch,
 } from "@tabler/icons-react";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { ContentSkeleton } from "./molecules/ContentSkeleton";
 
@@ -55,12 +53,14 @@ interface EntityGridProps {
   maxHeight?: number;
 }
 
+const DEFAULT_COLS = { base: 1, xs: 2, sm: 2, md: 3, lg: 4, xl: 5 };
+
 export const EntityGrid = ({
   items,
   onNavigate,
-  onBookmark,
+  onBookmark: _onBookmark,
   onRefresh,
-  cols = { base: 1, xs: 2, sm: 2, md: 3, lg: 4, xl: 5 },
+  cols = DEFAULT_COLS,
   spacing = "md",
   emptyMessage = "No items to display",
   loading = false,
@@ -100,13 +100,22 @@ export const EntityGrid = ({
 
   // Get unique entity types for filtering
   const availableTypes = useMemo(() => {
-    return Array.from(new Set(items.map((item) => item.entityType)));
+    return [...new Set(items.map((item) => item.entityType))];
   }, [items]);
 
   // Clear all filters
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedTypes([]);
+  };
+
+  // Toggle type filter
+  const toggleTypeFilter = (type: EntityType) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type)
+        ? prev.filter((t) => t !== type)
+        : [...prev, type]
+    );
   };
   // Render loading state
   if (loading) {
@@ -185,13 +194,7 @@ export const EntityGrid = ({
                       key={type}
                       variant={selectedTypes.includes(type) ? "filled" : "light"}
                       style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setSelectedTypes(prev =>
-                          prev.includes(type)
-                            ? prev.filter(t => t !== type)
-                            : [...prev, type]
-                        );
-                      }}
+                                      onClick={() => toggleTypeFilter(type)}
                     >
                       {type}
                     </Badge>
