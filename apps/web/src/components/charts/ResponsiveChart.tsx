@@ -7,7 +7,7 @@
 
 import type { ComparisonResults } from "@bibgraph/utils";
 import { useMantineTheme } from "@mantine/core";
-import { useCallback, useEffect,useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useTouchGestures } from "@/hooks/use-touch-gestures";
 import { announceToScreenReader } from "@/utils/accessibility";
@@ -123,13 +123,13 @@ export const ResponsivePerformanceChart = ({
           break;
       }
     },
-    onDoubleTap: (x, y) => {
+    onDoubleTap: (_x, _y) => {
       if (isMobile) {
         setZoomLevel(prev => prev === 1 ? 1.5 : 1);
         announceToScreenReader(`Zoom ${zoomLevel === 1 ? 'in' : 'out'}`);
       }
     },
-    onPinch: (scale, centerX, centerY) => {
+    onPinch: (scale, _centerX, _centerY) => {
       if (isMobile) {
         setZoomLevel(Math.max(1, Math.min(3, scale)));
         announceToScreenReader(`Zoom level: ${Math.round(scale * 100)}%`);
@@ -197,7 +197,6 @@ export const ResponsivePerformanceChart = ({
       }}
       role="img"
       aria-label={ariaLabel || `Performance chart showing ${chartData.length} datasets`}
-      tabIndex={0}
     >
       {/* Title and description */}
       <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
@@ -344,7 +343,7 @@ export const ResponsivePerformanceChart = ({
                         style={{
                           width: isMobile ? '40px' : '50px',
                           fontSize: isMobile ? '10px' : '12px',
-                          color: isSelected ? 'var(--mantine-color-text)' : 'var(--mantine-color-text)',
+                          color: 'var(--mantine-color-text)',
                           fontWeight: isFocused ? 600 : 500,
                           textAlign: 'right',
                         }}
@@ -417,7 +416,7 @@ export const ResponsiveScatterPlot = ({
   comparisonResults,
   title,
   description,
-  height = 400,
+  height: _height = 400,
   mobileHeight = 350,
   ariaLabel
 }: ResponsiveChartProps) => {
@@ -487,7 +486,6 @@ export const ResponsiveScatterPlot = ({
       }}
       role="img"
       aria-label={ariaLabel || `Precision-Recall scatter plot with ${plotData.length} data points`}
-      tabIndex={0}
     >
       {/* Title and description */}
       <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
@@ -626,7 +624,7 @@ export const ResponsiveScatterPlot = ({
                     r={radius}
                     fill={isSelected ? 'var(--mantine-color-blue-6)' : 'var(--mantine-color-blue-5)'}
                     fillOpacity={isSelected ? 1 : 0.7}
-                    stroke={isSelected ? 'var(--mantine-color-blue-7)' : 'var(--mantine-color-blue-7)'}
+                    stroke='var(--mantine-color-blue-7)'
                     strokeWidth={isSelected ? 3 : 2}
                     style={{
                       cursor: 'pointer',
@@ -748,7 +746,7 @@ export const ResponsiveScatterPlot = ({
                     height: '6px',
                     borderRadius: '50%',
                     backgroundColor: selectedPoint === point.id ? 'var(--mantine-color-blue-6)' : 'var(--mantine-color-blue-5)',
-                    border: selectedPoint === point.id ? '1px solid var(--mantine-color-blue-7)' : '1px solid var(--mantine-color-blue-7)',
+                    border: '1px solid var(--mantine-color-blue-7)',
                     flexShrink: 0,
                   }}
                 />

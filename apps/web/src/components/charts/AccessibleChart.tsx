@@ -18,10 +18,9 @@ import {
 import {
   IconAccessible,
   IconChartBar,
-  IconMaximize,
   IconMinimize,
   IconTable} from "@tabler/icons-react";
-import { useCallback, useEffect,useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { announceToScreenReader, createFocusTrap } from "@/utils/accessibility";
 
@@ -53,7 +52,7 @@ interface ChartData {
  * Generates comprehensive data table representation for screen readers
  * @param data
  */
-const generateDataTable = (data: ChartData): string => {
+const _generateDataTable = (data: ChartData): string => {
   let table = "Data Table:\n\n";
   table += "Point\tValue\tDescription\n";
   table += "-----\t-----\t-----------\n";
@@ -96,10 +95,10 @@ const generateAudioDescription = (data: ChartData, chartType: string): string =>
 
   // Highlight key points
   const highestPoint = data.points.reduce((max, point) =>
-    point.value > max.value ? point : max
+    point.value > max.value ? point : max, data.points[0]
   );
   const lowestPoint = data.points.reduce((min, point) =>
-    point.value < min.value ? point : min
+    point.value < min.value ? point : min, data.points[0]
   );
 
   description += `The highest value is ${highestPoint.value} for ${highestPoint.label}. `;
@@ -326,7 +325,7 @@ export const AccessibleChart = ({
   chartType,
   height = 400,
   provideDataTable = true,
-  provideAudioDescription = true,
+  provideAudioDescription: _provideAudioDescription = true,
 }: AccessibleChartProps) => {
   const [showDataTable, setShowDataTable] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
@@ -345,7 +344,7 @@ export const AccessibleChart = ({
 
     const values = points.map(p => p.value);
     const insights = [
-      `Highest performing dataset: ${points.reduce((max, p) => p.value > max.value ? p : max).label}`,
+      `Highest performing dataset: ${points.reduce((max, p) => p.value > max.value ? p : max, points[0]).label}`,
       `Average F1-score: ${(values.reduce((a, b) => a + b, 0) / values.length * 100).toFixed(1)}%`,
       `Performance range: ${(Math.max(...values) - Math.min(...values)).toFixed(3)}`,
     ];
@@ -389,10 +388,10 @@ export const AccessibleChart = ({
       case 'ArrowUp':
       case 'ArrowDown':
       case 'ArrowLeft':
-      case 'ArrowRight':
+      case 'ArrowRight': {
         event.preventDefault();
         const currentIndex = selectedPoint ?? 0;
-        let newIndex = currentIndex;
+        let newIndex: number;
 
         if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
           newIndex = Math.min(currentIndex + 1, chartData.points.length - 1);
@@ -404,28 +403,24 @@ export const AccessibleChart = ({
         const point = chartData.points[newIndex];
         announceToScreenReader(`${point.label}: ${point.value.toFixed(3)}. ${point.description}`);
         break;
+      }
 
       case 'Enter':
-      case ' ':
+      case ' ': {
         event.preventDefault();
         if (selectedPoint !== null) {
           const point = chartData.points[selectedPoint];
           announceToScreenReader(`Selected: ${point.label}. ${point.description}`);
         }
         break;
+      }
 
       default:
         break;
     }
   }, [selectedPoint, chartData, showDataTable, provideDataTable, comprehensiveDescription]);
 
-  // Handle mouse interactions
-  const handlePointClick = useCallback((point: DataPoint, index: number) => {
-    setSelectedPoint(index);
-    setIsKeyboardMode(false);
-    announceToScreenReader(`${point.label}: ${point.value.toFixed(3)}. ${point.description}`);
-  }, [chartData]);
-
+  
   return (
     <Box
       ref={chartRef}
@@ -444,7 +439,7 @@ export const AccessibleChart = ({
           <Box style={{ flex: 1 }}>
             <Title order={3} mb="xs">{title}</Title>
             {description && (
-              <Text size="sm" color="dimmed">{description}</Text>
+              <Text size="sm" c="dimmed">{description}</Text>
             )}
           </Box>
 
@@ -493,9 +488,9 @@ export const AccessibleChart = ({
         aria-label={`${chartType} chart visualization`}
       >
         <Stack align="center" gap="md">
-          <IconChartBar size={48} color="var(--mantine-color-gray-4)" />
-          <Text size="lg" color="dimmed">Chart Visualization</Text>
-          <Text size="sm" color="dimmed" c="center">
+          <IconChartBar size={48} style={{ color: 'var(--mantine-color-gray-4)' }} />
+          <Text size="lg" c="dimmed">Chart Visualization</Text>
+          <Text size="sm" c="dimmed" style={{ textAlign: 'center' }}>
             {chartData.points.length} data points displayed<br />
             {isKeyboardMode && 'Keyboard navigation active'}
           </Text>
@@ -563,13 +558,13 @@ export const ChartWithAltText = ({
 }: {
   children: React.ReactNode;
   title: string;
-  data: any[];
+  data: unknown[];
   generateAltText?: boolean;
 }) => {
   const altText = useMemo(() => {
     if (!generateAltText || data.length === 0) return '';
 
-    const values = data.map(d => d.value || 0);
+    const values = data.map((d: unknown) => (typeof d === 'object' && d !== null && 'value' in d) ? Number((d as { value: unknown }).value) || 0 : 0);
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     const max = Math.max(...values);
     const min = Math.min(...values);
