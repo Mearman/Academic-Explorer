@@ -5,7 +5,7 @@
 
 import "@testing-library/jest-dom/vitest";
 
-import { setupAllTestMocks } from "./utils";
+import { setupAllTestMocks } from "./utils/index";
 
 // Setup all component mocks for testing
 setupAllTestMocks();

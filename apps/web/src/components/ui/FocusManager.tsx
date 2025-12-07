@@ -10,11 +10,11 @@ import {
   Text,
   useMantineTheme
 } from "@mantine/core";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback,useEffect, useRef, useState } from "react";
 
 // Inject focus manager CSS styles
 const injectFocusManagerStyles = () => {
-  if (!document.getElementById('focus-manager-styles')) {
+  if (!document.querySelector('#focus-manager-styles')) {
     const style = document.createElement('style');
     style.id = 'focus-manager-styles';
     style.textContent = `
@@ -108,7 +108,7 @@ const injectFocusManagerStyles = () => {
         transform: translateX(-50%) translateY(0);
       }
     `;
-    document.head.appendChild(style);
+    document.head.append(style);
   }
 };
 
@@ -123,6 +123,10 @@ interface FocusTrapProps {
  * Focus Trap Component
  *
  * Traps focus within a container for modals, dialogs, and other focused UI patterns
+ * @param root0
+ * @param root0.children
+ * @param root0.enabled
+ * @param root0.onEscape
  */
 export const FocusTrap = ({ children, enabled = true, onEscape }: FocusTrapProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -151,7 +155,7 @@ export const FocusTrap = ({ children, enabled = true, onEscape }: FocusTrapProps
         '[contenteditable="true"]'
       ].join(', ');
 
-      return Array.from(container.querySelectorAll(selector)) as HTMLElement[];
+      return [...container.querySelectorAll(selector)] as HTMLElement[];
     };
 
     // Focus the first focusable element
@@ -217,6 +221,10 @@ interface SkipLinkProps {
  * Skip Link Component
  *
  * Provides skip navigation links for keyboard users
+ * @param root0
+ * @param root0.target
+ * @param root0.children
+ * @param root0.position
  */
 export const SkipLink = ({ target, children, position = 'top-left' }: SkipLinkProps) => {
   // Inject styles on component mount
@@ -258,6 +266,11 @@ interface FocusIndicatorProps {
  * Focus Indicator Component
  *
  * Enhances focus visibility for better keyboard navigation
+ * @param root0
+ * @param root0.children
+ * @param root0.animated
+ * @param root0.color
+ * @param root0.size
  */
 export const FocusIndicator = ({ children, animated = true, color, size = 'md' }: FocusIndicatorProps) => {
   // Inject styles on component mount
@@ -296,6 +309,9 @@ interface KeyboardNavigationHintProps {
  * Keyboard Navigation Hint Component
  *
  * Displays available keyboard shortcuts and navigation hints
+ * @param root0
+ * @param root0.shortcuts
+ * @param root0.show
  */
 export const KeyboardNavigationHint = ({ shortcuts, show = false }: KeyboardNavigationHintProps) => {
   if (!show) return null;
@@ -359,11 +375,9 @@ export const useFocusManagement = () => {
   }, []);
 
   const focusNext = useCallback(() => {
-    const focusableElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
+    const focusableElements = [...document.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+      )];
 
     const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
     const nextIndex = currentIndex < focusableElements.length - 1 ? currentIndex + 1 : 0;
@@ -371,11 +385,9 @@ export const useFocusManagement = () => {
   }, [focusElement]);
 
   const focusPrevious = useCallback(() => {
-    const focusableElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
+    const focusableElements = [...document.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+      )];
 
     const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
     const previousIndex = currentIndex > 0 ? currentIndex - 1 : focusableElements.length - 1;
@@ -390,11 +402,9 @@ export const useFocusManagement = () => {
   }, [focusElement]);
 
   const focusLast = useCallback(() => {
-    const focusableElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
+    const focusableElements = [...document.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
+      )];
     focusElement(focusableElements[focusableElements.length - 1]);
   }, [focusElement]);
 
@@ -458,12 +468,12 @@ export const useScreenReaderAnnouncer = () => {
     announcement.style.overflow = 'hidden';
 
     announcement.textContent = message;
-    document.body.appendChild(announcement);
+    document.body.append(announcement);
 
     // Remove after announcement to prevent screen reader build-up
     setTimeout(() => {
       if (document.body.contains(announcement)) {
-        document.body.removeChild(announcement);
+        announcement.remove();
       }
     }, 1000);
   }, []);

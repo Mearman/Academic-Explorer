@@ -26,7 +26,7 @@ import {
   IconWifi,
   IconWifiOff,
   IconX} from "@tabler/icons-react";
-import { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState, useContext } from "react";
+import { createContext, ReactNode, use,useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // Network status types
 export type NetworkStatus = 'online' | 'offline' | 'slow' | 'unstable';
@@ -557,7 +557,7 @@ export const NetworkProvider = ({
 
 // Hook to use network context
 export const useNetwork = () => {
-  const context = useContext(NetworkContext);
+  const context = use(NetworkContext);
   if (!context) {
     throw new Error('useNetwork must be used within a NetworkProvider');
   }

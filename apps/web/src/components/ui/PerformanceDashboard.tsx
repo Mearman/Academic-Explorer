@@ -27,8 +27,8 @@ import {
   IconBolt,
   IconClock,
   IconDatabase,
-  IconGraph,
   IconDeviceFloppy,
+  IconGraph,
   IconRefresh,
   IconTrendingDown,
   IconTrendingUp
@@ -99,6 +99,10 @@ const PERFORMANCE_THRESHOLDS = {
  * Performance Dashboard Component
  *
  * Real-time monitoring dashboard for graph visualization performance
+ * @param root0
+ * @param root0.expanded
+ * @param root0.maxHistoryPoints
+ * @param root0.onOptimize
  */
 export const PerformanceDashboard = ({
   expanded = false,

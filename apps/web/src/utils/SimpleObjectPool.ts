@@ -47,21 +47,17 @@ const DEFAULT_CONFIG: PoolConfig = {
 };
 
 // Type guard functions
-function isVisible(obj: unknown): obj is Visible {
-  return typeof obj === 'object' && obj !== null && 'visible' in obj;
-}
+const isVisible = (obj: unknown): obj is Visible => typeof obj === 'object' && obj !== null && 'visible' in obj;
 
-function isThreeMesh(obj: unknown): obj is ThreeMesh {
-  return isVisible(obj) &&
+const isThreeMesh = (obj: unknown): obj is ThreeMesh => isVisible(obj) &&
          'position' in obj &&
          'rotation' in obj &&
          'scale' in obj &&
          typeof (obj as ThreeMesh).position.set === 'function' &&
          typeof (obj as ThreeMesh).rotation.set === 'function' &&
          typeof (obj as ThreeMesh).scale.set === 'function';
-}
 
-function hasGeometry(obj: unknown): obj is { geometry: ThreeGeometry } {
+const hasGeometry = (obj: unknown): obj is { geometry: ThreeGeometry } => {
   if (typeof obj !== 'object' || obj === null || !('geometry' in obj)) {
     return false;
   }
@@ -70,21 +66,17 @@ function hasGeometry(obj: unknown): obj is { geometry: ThreeGeometry } {
          typeof geometry === 'object' &&
          'dispose' in geometry &&
          typeof (geometry as { dispose: unknown }).dispose === 'function';
-}
+};
 
-function hasMaterial(obj: unknown): obj is { material: ThreeMaterial | ThreeMaterial[] } {
-  return typeof obj === 'object' &&
+const hasMaterial = (obj: unknown): obj is { material: ThreeMaterial | ThreeMaterial[] } => typeof obj === 'object' &&
          obj !== null &&
          'material' in obj &&
          obj.material !== null;
-}
 
-function isDisposable(obj: unknown): obj is { dispose(): void } {
-  return typeof obj === 'object' &&
+const isDisposable = (obj: unknown): obj is { dispose(): void } => typeof obj === 'object' &&
          obj !== null &&
          'dispose' in obj &&
          typeof (obj as { dispose: unknown }).dispose === 'function';
-}
 
 /**
  * Simple object pool for Three.js objects
