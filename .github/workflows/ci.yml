@@ -782,10 +782,49 @@ jobs:
       - name: Start preview server for smoke tests
         run: |
           cd apps/web
-          NODE_ENV=production RUNNING_E2E=true pnpm preview --port 4173 &
-          echo "Preview server starting on port 4173..."
-          timeout 120 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 2; done'
-          echo "✅ Preview server is ready on http://localhost:4173"
+          # Use built-in Node.js HTTP module to serve pre-built artifacts
+          # This is much faster than pnpm preview which rebuilds everything and doesn't require extra packages
+          node -e "
+            const http = require('http');
+            const fs = require('fs');
+            const path = require('path');
+            const url = require('url');
+
+            const server = http.createServer((req, res) => {
+              const parsedUrl = url.parse(req.url, true);
+              let filePath = path.join(__dirname, 'dist', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
+
+              const extname = path.extname(filePath);
+              const contentType = {
+                '.html': 'text/html',
+                '.js': 'text/javascript',
+                '.css': 'text/css',
+                '.json': 'application/json',
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.ico': 'image/x-icon'
+              }[extname] || 'text/plain';
+
+              fs.readFile(filePath, (err, content) => {
+                if (err) {
+                  res.writeHead(404);
+                  res.end('Not found');
+                } else {
+                  res.writeHead(200, { 'Content-Type': contentType });
+                  res.end(content);
+                }
+              });
+            });
+
+            server.listen(4173, () => {
+              console.log('Static server ready on port 4173');
+            });
+          " &
+          echo "Static file server starting on port 4173..."
+
+          # Wait for server to be ready (should be very quick with static server)
+          timeout 10 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 1; done'
+          echo "✅ Static file server is ready on http://localhost:4173"
 
       - name: Run route-based smoke tests
         timeout-minutes: 8
