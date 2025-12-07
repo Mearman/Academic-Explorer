@@ -845,6 +845,9 @@ export const cachedOpenAlex: CachedOpenAlexClient = new CachedOpenAlexClient({
   staticCacheEnabled: true,
 });
 
+// Re-export utility functions
+export { getPersistentGraph } from './cache/dexie/persistent-graph';
+
 /**
  * Create a new cached client with custom configuration
  * @param config
