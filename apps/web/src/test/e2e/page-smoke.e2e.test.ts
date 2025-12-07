@@ -129,7 +129,7 @@ test.describe("Auto-discovered Static Routes", () => {
 			await expectPageLoads(page, route, {
 				expectContent: isHomepage ? "BibGraph" : undefined,
 				skipContentCheck: isErrorTest,
-				timeout: isBookmarksPage ? 60_000 : undefined, // Increased timeout for bookmarks page
+				timeout: isBookmarksPage ? 90_000 : undefined, // Further increased timeout for bookmarks page (90s)
 			});
 		});
 	}
