@@ -9,7 +9,7 @@ export { OpenAlexBaseClient } from './client';
 export { CachedOpenAlexClient } from './cached-client';
 
 // Client instances and functions
-export { cachedOpenAlex, updateOpenAlexEmail, updateOpenAlexApiKey, getPersistentGraph } from './cached-client';
+export { cachedOpenAlex, updateOpenAlexEmail, updateOpenAlexApiKey } from './cached-client';
 
 // Utilities and helpers
 export * from './helpers';
@@ -27,8 +27,6 @@ export * from './interceptors/api-interceptor';
 // Cache functionality
 export * from './cache';
 
-// Data pipeline
-export * from './data-pipeline';
 
 // Graph functionality
 export * from './cache/dexie/graph-expansion';

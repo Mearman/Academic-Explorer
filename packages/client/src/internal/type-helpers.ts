@@ -3,10 +3,6 @@
  * Uses Zod schemas for type-safe validation instead of unsafe type assertions
  */
 
-import {
-  validateWithSchema,
-} from "@bibgraph/types";
-
 /**
  * Validates external API response data using schema validation
  * Throws an error if validation fails
