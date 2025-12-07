@@ -1,3 +1,9 @@
+## <small>23.11.1 (2025-12-07)</small>
+
+* refactor(web): organize imports in EnhancedSearchInterface ([c621a10](https://github.com/Mearman/BibGraph/commit/c621a10))
+* refactor(web): replace duplicate keyboard shortcuts with centralized hook ([a560907](https://github.com/Mearman/BibGraph/commit/a560907))
+* fix(web): resolve ContentSkeleton prop interface issues ([3a6f9de](https://github.com/Mearman/BibGraph/commit/3a6f9de))
+
 ## 23.11.0 (2025-12-07)
 
 * fix(ui): resolve KeyboardShortcutsHelp module export conflict ([81bd9e7](https://github.com/Mearman/BibGraph/commit/81bd9e7))
