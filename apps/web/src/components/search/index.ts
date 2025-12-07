@@ -7,6 +7,7 @@ export * from "./OpenAlexFilters";
 export * from "./SearchFacets";
 export * from "./SearchFilters";
 export * from "./SearchInterface";
+export * from "./SearchResultsSkeleton";
 export * from "./UnifiedSearch";
 export * from "./VisualQueryBuilder.example";
 export * from "./VisualQueryBuilder";

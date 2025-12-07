@@ -5,4 +5,3 @@
 export * from "./BuildInfo";
 export * from "./ContentSkeleton";
 export * from "./FieldDisplay";
-export * from "./TableSkeleton";
