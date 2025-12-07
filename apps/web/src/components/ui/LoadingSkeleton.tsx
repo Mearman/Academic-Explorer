@@ -71,7 +71,7 @@ export const Skeleton = ({
       role="presentation"
       aria-label={ariaLabel || 'Loading...'}
       aria-live="polite"
-      className={animate ? 'skeleton-loading' : undefined}
+      className={`Skeleton ${animate ? 'skeleton-loading' : ''}`}
     />
   );
 };
