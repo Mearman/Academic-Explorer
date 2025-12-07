@@ -5,8 +5,6 @@
  * with smooth animations and proper accessibility support.
  */
 
-import './LoadingSkeleton.css';
-
 import { Box, Group, Stack } from '@mantine/core';
 
 interface SkeletonProps {
@@ -65,14 +63,46 @@ export const Skeleton = ({
     }
   };
 
+  const skeletonStyle = getStyles();
+
+  // Add loading animation if animate is true
+  if (animate) {
+    skeletonStyle.background = 'linear-gradient(90deg, var(--mantine-color-gray-1) 25%, var(--mantine-color-gray-0) 50%, var(--mantine-color-gray-1) 75%)';
+    skeletonStyle.backgroundSize = '200% 100%';
+    skeletonStyle.animation = 'skeleton-loading 1.5s ease-in-out infinite';
+  }
+
   return (
-    <Box
-      style={getStyles()}
-      role="presentation"
-      aria-label={ariaLabel || 'Loading...'}
-      aria-live="polite"
-      className={`Skeleton ${animate ? 'skeleton-loading' : ''}`}
-    />
+    <>
+      <style>{`
+        @keyframes skeleton-loading {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .rotate {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
+      <Box
+        style={skeletonStyle}
+        role="presentation"
+        aria-label={ariaLabel || 'Loading...'}
+        aria-live="polite"
+        className="Skeleton"
+      />
+    </>
   );
 };
 
