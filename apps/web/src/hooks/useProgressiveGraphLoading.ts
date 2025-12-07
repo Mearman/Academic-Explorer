@@ -5,7 +5,7 @@
  * to prevent UI blocking during graph initialization.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Configuration for progressive loading
 interface ProgressiveLoadingConfig {
@@ -40,6 +40,8 @@ const DEFAULT_CONFIG: ProgressiveLoadingConfig = {
 /**
  * Hook for progressive graph loading
  * Loads nodes in batches to maintain smooth UI performance
+ * @param items - items to load progressively
+ * @param config - progressive loading configuration
  */
 export const useProgressiveGraphLoading = <T>(
   items: T[],
@@ -202,6 +204,13 @@ export const useProgressiveGraphLoading = <T>(
 /**
  * Hook for progressive edge loading with dependency on node loading
  * Ensures edges are only loaded after both connected nodes are visible
+ * @param nodes - array of nodes
+ * @param edges - array of edges
+ * @param getNodeId - function to get node ID
+ * @param getEdgeSourceId - function to get edge source ID
+ * @param getEdgeTargetId - function to get edge target ID
+ * @param config - progressive loading configuration
+ * @param _config
  */
 export const useProgressiveEdgeLoading = <Node, Edge>(
   nodes: Node[],
@@ -209,7 +218,7 @@ export const useProgressiveEdgeLoading = <Node, Edge>(
   getNodeId: (node: Node) => string,
   getEdgeSourceId: (edge: Edge) => string,
   getEdgeTargetId: (edge: Edge) => string,
-  config: Partial<ProgressiveLoadingConfig> = {}
+  _config: Partial<ProgressiveLoadingConfig> = {}
 ) => {
   const [visibleEdges, setVisibleEdges] = useState<Edge[]>([]);
   const nodeIdSet = useRef<Set<string>>(new Set());
@@ -249,7 +258,7 @@ export interface ProgressiveLoadingMetrics {
 
 export const calculateLoadingMetrics = (
   loadingState: LoadingState,
-  config: ProgressiveLoadingConfig
+  _config: ProgressiveLoadingConfig
 ): ProgressiveLoadingMetrics => {
   const totalTimeMs = performance.now() - loadingState.startTime;
   const batchesLoaded = loadingState.currentBatch;
@@ -266,6 +275,8 @@ export const calculateLoadingMetrics = (
 
 /**
  * Adaptive batch sizing based on performance
+ * @param initialBatchSize - starting batch size
+ * @param targetFrameTime - target frame time in milliseconds (~60fps)
  */
 export const useAdaptiveBatching = (
   initialBatchSize: number = 50,

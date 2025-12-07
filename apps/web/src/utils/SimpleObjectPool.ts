@@ -25,14 +25,14 @@ const DEFAULT_CONFIG: PoolConfig = {
  * Simple object pool for Three.js objects
  */
 class SimpleObjectPool {
-  private pool: any[] = [];
-  private inUse: Set<any> = new Set();
+  private pool: unknown[] = [];
+  private inUse: Set<unknown> = new Set();
   private config: PoolConfig;
   private stats: { created: number; reused: number } = { created: 0, reused: 0 };
 
   constructor(
-    private createFn: () => any,
-    private resetFn: (obj: any) => void,
+    private createFn: () => unknown,
+    private resetFn: (obj: unknown) => void,
     config: Partial<PoolConfig> = {}
   ) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -47,11 +47,11 @@ class SimpleObjectPool {
     }
   }
 
-  acquire(): any {
-    let obj: any;
+  acquire(): unknown {
+    let obj: unknown;
 
     if (this.pool.length > 0) {
-      obj = this.pool.pop()!;
+      obj = this.pool.pop() as unknown;
       this.stats.reused++;
     } else if (this.config.autoExpand) {
       obj = this.createFn();
@@ -61,13 +61,13 @@ class SimpleObjectPool {
     }
 
     if (obj && typeof obj === 'object' && 'visible' in obj) {
-      obj.visible = true;
+      (obj as Record<string, unknown>).visible = true;
     }
     this.inUse.add(obj);
     return obj;
   }
 
-  release(obj: any): void {
+  release(obj: unknown): void {
     if (!this.inUse.has(obj)) {
       return; // Already released or not from this pool
     }
@@ -99,7 +99,7 @@ class SimpleObjectPool {
     }
   }
 
-  private disposeObject(obj: any): void {
+  private disposeObject(obj: THREE.Object3D | THREE.Material | THREE.BufferGeometry): void {
     if (obj instanceof THREE.Mesh) {
       obj.geometry?.dispose();
       if (Array.isArray(obj.material)) {
@@ -165,7 +165,7 @@ export class SimpleThreeObjectPool {
   }
 
   // Get material
-  getMaterial(color: number = 0x4287f5): THREE.MeshStandardMaterial {
+  getMaterial(color: number = 0x4287F5): THREE.MeshStandardMaterial {
     const key = `material_${color.toString(16)}`;
     let pool = this.pools.get(key);
 
@@ -199,7 +199,7 @@ export class SimpleThreeObjectPool {
   }
 
   // Get mesh (sphere + material)
-  getNodeMesh(radius: number = 1, color: number = 0x4287f5, segments: number = 16): THREE.Mesh {
+  getNodeMesh(radius: number = 1, color: number = 0x4287F5, segments: number = 16): THREE.Mesh {
     const key = `mesh_${radius}_${color.toString(16)}_${segments}`;
     let pool = this.pools.get(key);
 
@@ -245,8 +245,8 @@ export class SimpleThreeObjectPool {
   }
 
   // Get statistics for all pools
-  getAllStats(): Record<string, any> {
-    const stats: Record<string, any> = {};
+  getAllStats(): Record<string, { created: number; reused: number; poolSize: number; inUse: number }> {
+    const stats: Record<string, { created: number; reused: number; poolSize: number; inUse: number }> = {};
     this.pools.forEach((pool, key) => {
       stats[key] = pool.getStats();
     });

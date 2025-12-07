@@ -7,7 +7,7 @@
 
 import { Alert, Button, Container, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { IconAlertTriangle, IconHome,IconRefresh } from '@tabler/icons-react';
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode,useCallback  } from 'react';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -179,9 +179,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 /**
- * Hook for functional components to handle errors within their scope
+ * Error handler utility for functional components to handle errors within their scope
  */
-export const useErrorHandler = () => {
+export const createErrorHandler = () => {
   // This could be expanded to integrate with error reporting services
   const reportError = (error: Error, context?: string) => {
     console.error(`Error in ${context || 'component'}:`, error);
@@ -189,6 +189,16 @@ export const useErrorHandler = () => {
     // Here you could add integration with error reporting services
     // like Sentry, LogRocket, etc.
   };
+
+  return { reportError };
+};
+
+/**
+ * Hook for functional components to handle errors within their scope
+ */
+export const useErrorHandler = () => {
+  const errorHandlers = createErrorHandler();
+  const reportError = useCallback(errorHandlers.reportError, []);
 
   return { reportError };
 };

@@ -13,6 +13,7 @@ import {
   IconLoader,
   IconX,
 } from '@tabler/icons-react';
+import { useCallback } from 'react';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning' | 'loading';
 
@@ -317,14 +318,23 @@ export class ToastManager {
  * React hook for toast management
  */
 export const useToast = () => {
+  // Use useCallback to stabilize function references if React hooks are needed
+  const success = useCallback(showSuccessToast, []);
+  const error = useCallback(showErrorToast, []);
+  const warning = useCallback(showWarningToast, []);
+  const info = useCallback(showInfoToast, []);
+  const loading = useCallback(showLoadingToast, []);
+  const hide = useCallback(hideToast, []);
+  const clearAll = useCallback(hideAllToasts, []);
+
   return {
-    success: showSuccessToast,
-    error: showErrorToast,
-    warning: showWarningToast,
-    info: showInfoToast,
-    loading: showLoadingToast,
-    hide: hideToast,
-    clearAll: hideAllToasts,
+    success,
+    error,
+    warning,
+    info,
+    loading,
+    hide,
+    clearAll,
     manager: ToastManager,
   };
 };

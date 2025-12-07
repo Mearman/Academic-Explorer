@@ -5,8 +5,8 @@
  * for large graphs with 1000+ nodes.
  */
 
-import type { BoundingBox3D, GraphNode, Position3D } from '@bibgraph/types';
-import { useMemo, useRef, useCallback } from 'react';
+import type { GraphNode } from '@bibgraph/types';
+import { useCallback, useMemo, useRef } from 'react';
 
 // Viewport bounds for culling calculations
 interface ViewportBounds {
@@ -30,43 +30,14 @@ interface CullableNode {
   originalNode: GraphNode;
 }
 
-/**
- * Frustum culling implementation for 3D viewport
- */
-class FrustumCuller {
-  private planes: Array<{ normal: Position3D; distance: number }> = [];
-
-  /**
-   * Update frustum planes based on camera view matrix
-   */
-  updateFrustum(viewMatrix: number[][]): void {
-    // Extract frustum planes from view-projection matrix
-    // Left, right, top, bottom, near, far planes
-    this.planes = [
-      { normal: { x: viewMatrix[3][0] + viewMatrix[0][0], y: viewMatrix[3][1] + viewMatrix[0][1], z: viewMatrix[3][2] + viewMatrix[0][2] }, distance: viewMatrix[3][3] + viewMatrix[0][3] },
-      { normal: { x: viewMatrix[3][0] - viewMatrix[0][0], y: viewMatrix[3][1] - viewMatrix[0][1], z: viewMatrix[3][2] - viewMatrix[0][2] }, distance: viewMatrix[3][3] - viewMatrix[0][3] },
-      { normal: { x: viewMatrix[3][0] + viewMatrix[1][0], y: viewMatrix[3][1] + viewMatrix[1][1], z: viewMatrix[3][2] + viewMatrix[1][2] }, distance: viewMatrix[3][3] + viewMatrix[1][3] },
-      { normal: { x: viewMatrix[3][0] - viewMatrix[1][0], y: viewMatrix[3][1] - viewMatrix[1][1], z: viewMatrix[3][2] - viewMatrix[1][2] }, distance: viewMatrix[3][3] - viewMatrix[1][3] },
-    ];
-  }
-
-  /**
-   * Test if a sphere is within the frustum
-   */
-  testSphere(center: Position3D, radius: number): boolean {
-    for (const plane of this.planes) {
-      const distance = plane.normal.x * center.x + plane.normal.y * center.y + plane.normal.z * center.z - plane.distance;
-      if (distance < -radius) {
-        return false; // Sphere is outside this plane
-      }
-    }
-    return true; // Sphere is inside or intersecting all planes
-  }
-}
 
 /**
  * Hook for viewport-based node culling
  * Optimizes performance by only returning nodes visible in current viewport
+ * @param nodes - array of graph nodes
+ * @param viewportBounds - current viewport boundaries
+ * @param nodeRadius - radius of each node for culling calculations
+ * @param cullingMargin - margin multiplier for culling
  */
 export const useGraphViewportCulling = (
   nodes: GraphNode[],
@@ -74,19 +45,21 @@ export const useGraphViewportCulling = (
   nodeRadius: number = 50,
   cullingMargin: number = 1.2
 ) => {
-  const frustumCuller = useRef(new FrustumCuller());
   const previousBounds = useRef<ViewportBounds | null>(null);
 
   // Convert GraphNode to CullableNode with position and radius
   const cullableNodes = useMemo(() => {
-    return nodes.map(node => ({
-      id: node.id,
-      x: (node as any).x || 0, // Position from force simulation
-      y: (node as any).y || 0,
-      z: (node as any).z || 0,
-      radius: nodeRadius,
-      originalNode: node,
-    }));
+    return nodes.map(node => {
+      const nodeWithPosition = node as Record<string, unknown>;
+      return {
+        id: node.id,
+        x: (nodeWithPosition.x as number) || 0, // Position from force simulation
+        y: (nodeWithPosition.y as number) || 0,
+        z: (nodeWithPosition.z as number) || 0,
+        radius: nodeRadius,
+        originalNode: node,
+      };
+    });
   }, [nodes, nodeRadius]);
 
   // Simple 2D viewport culling for 2D graphs
@@ -103,16 +76,7 @@ export const useGraphViewportCulling = (
     return visibleNodes;
   }, [nodeRadius, cullingMargin]);
 
-  // 3D frustum culling for 3D graphs
-  const getVisibleNodes3D = useCallback((nodes: CullableNode[]) => {
-    return nodes.filter(node => {
-      return frustumCuller.current.testSphere(
-        { x: node.x, y: node.y, z: node.z },
-        node.radius * cullingMargin
-      );
-    });
-  }, [cullingMargin]);
-
+  
   const visibleNodes = useMemo(() => {
     if (!viewportBounds) {
       // Return all nodes if no viewport bounds provided
@@ -145,6 +109,12 @@ export const useGraphViewportCulling = (
 
 /**
  * Utility function to calculate viewport bounds from camera parameters
+ * @param cameraX - camera X position
+ * @param cameraY - camera Y position
+ * @param cameraZ - camera Z position
+ * @param zoom - current zoom level
+ * @param width - viewport width
+ * @param height - viewport height
  */
 export const calculateViewportBounds = (
   cameraX: number,
