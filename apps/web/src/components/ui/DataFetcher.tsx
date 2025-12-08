@@ -122,13 +122,11 @@ export const useDataFetcher = <T,>(config: DataFetcherConfig<T>) => {
         setTimeout(() => {
           executeFetch();
         }, delay);
-      } else if (config.retry && retryCount >= config.retry.maxAttempts) {
+      } else if (config.retry && retryCount >= config.retry.maxAttempts && config.showErrorToast) {
         // Show final failure message when all retries exhausted
-        if (config.showErrorToast) {
-          toast.error(
-            config.errorMessage || `Failed after ${config.retry.maxAttempts} attempts. Please try again later.`
-          );
-        }
+        toast.error(
+          config.errorMessage || `Failed after ${config.retry.maxAttempts} attempts. Please try again later.`
+        );
       }
 
       throw errorObj;
