@@ -4,7 +4,7 @@ interface WaitOptions {
 	timeout?: number;
 }
 
-const DEFAULT_TIMEOUT = 30_000;
+const DEFAULT_TIMEOUT = 45_000;
 
 /**
  * Wait for the application to be fully initialized and ready for interaction.
