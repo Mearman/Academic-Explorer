@@ -45,7 +45,6 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { type ForceGraphMethods } from 'react-force-graph-2d';
 
 import { ForceGraph3DVisualization } from '@/components/graph/3d/ForceGraph3DVisualization';
-import { OptimizedForceGraphVisualization } from '@/components/graph/OptimizedForceGraphVisualization';
 import { GraphEmptyState } from '@/components/graph/GraphEmptyState';
 import { GraphSourcePanel } from '@/components/graph/GraphSourcePanel';
 import {
@@ -53,6 +52,7 @@ import {
   INITIAL_CONTEXT_MENU_STATE,
   NodeContextMenu,
 } from '@/components/graph/NodeContextMenu';
+import { OptimizedForceGraphVisualization } from '@/components/graph/OptimizedForceGraphVisualization';
 import type { DisplayMode } from '@/components/graph/types';
 import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 import { ICON_SIZE,LAYOUT  } from '@/config/style-constants';
