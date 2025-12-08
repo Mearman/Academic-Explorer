@@ -1,3 +1,13 @@
+## 24.2.0 (2025-12-08)
+
+* Merge remote-tracking branch 'origin/main' ([c8c8559](https://github.com/Mearman/BibGraph/commit/c8c8559))
+* feat(ui): enhance DataFetcher with retry visibility and exponential backoff ([6e3f837](https://github.com/Mearman/BibGraph/commit/6e3f837))
+* feat(utils): add structured error handling for storage operations ([a803541](https://github.com/Mearman/BibGraph/commit/a803541))
+* feat(utils): enhance DexieStorageProvider with comprehensive error handling ([4fba706](https://github.com/Mearman/BibGraph/commit/4fba706))
+* feat(utils): enhance storage error handling and logging ([585d059](https://github.com/Mearman/BibGraph/commit/585d059))
+* feat(web): add application error boundary to main layout ([bdeffa6](https://github.com/Mearman/BibGraph/commit/bdeffa6))
+* refactor(ui): fix unicorn/no-lonely-if rule in DataFetcher ([ed77b64](https://github.com/Mearman/BibGraph/commit/ed77b64))
+
 ## <small>24.1.1 (2025-12-08)</small>
 
 * style(web): fix import sorting in graph.lazy.tsx ([f1532ae](https://github.com/Mearman/BibGraph/commit/f1532ae))
