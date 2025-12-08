@@ -11,25 +11,15 @@
         "cwd": "{projectRoot}"
       }
     },
-    "barrelsby": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "barrelsby --config ../../.barrelsby.json --directory ./src/components",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
-    },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "echo '[barrels:watch] Starting...' && exec nx watch --projects=types,utils,client,ui,algorithms,web -- nx run \\$NX_PROJECT_NAME:barrelsby",
           "nx run web:serve"
         ],
         "parallel": true
       },
-      "continuous": true,
-      "dependsOn": ["barrelsby"]
+      "continuous": true
     },
     "test:e2e": {
       "executor": "@nx/playwright:playwright",

@@ -171,8 +171,7 @@ export default tseslint.config([
             "barrel-files/avoid-re-export-all": "off", // Turned off - using custom rule instead for more control
             "barrel-files/avoid-namespace-import": "off", // Turned off - namespace imports have valid use cases
 
-            // Custom rules - prevent re-exports from non-barrel files but make barrels optional
-            "custom/barrelsby-header": "off", // Turned off - barrels are optional
+            // Custom rules - prevent re-exports from non-barrel files
             "custom/no-deprecated": "error",
             "custom/no-duplicate-reexports": "error",
             "custom/no-reexport-from-non-barrel": "error", // Keep - prevents re-exports from non-barrels

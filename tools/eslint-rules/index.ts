@@ -7,7 +7,6 @@
 
 import { noDeprecated } from "./no-deprecated.js";
 import { noRedundantAssignment } from "./no-redundant-assignment.js";
-import { barrelsbyHeader } from "./barrelsby-header.js";
 import { noDuplicateReexports } from "./no-duplicate-reexports.js";
 import { noReexportFromNonBarrel } from "./no-reexport-from-non-barrel.js";
 
@@ -15,7 +14,6 @@ export const customRulesPlugin = {
   rules: {
     "no-deprecated": noDeprecated,
     "no-redundant-assignment": noRedundantAssignment,
-    "barrelsby-header": barrelsbyHeader,
     "no-duplicate-reexports": noDuplicateReexports,
     "no-reexport-from-non-barrel": noReexportFromNonBarrel,
   },
@@ -24,7 +22,6 @@ export const customRulesPlugin = {
 export {
   noDeprecated,
   noRedundantAssignment,
-  barrelsbyHeader,
   noDuplicateReexports,
   noReexportFromNonBarrel,
 };
