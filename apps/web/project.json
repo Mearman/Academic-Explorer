@@ -11,15 +11,36 @@
         "cwd": "{projectRoot}"
       }
     },
-    "serve": {
-      "executor": "nx:run-commands",
+    "build": {
+      "executor": "@nx/vite:build",
+      "defaultConfiguration": "production",
       "options": {
-        "command": "cd apps/web && vite",
-        "cwd": "{workspaceRoot}"
+        "outputPath": "dist/apps/web",
+        "root": "apps/web"
       },
       "configurations": {
+        "development": {
+          "mode": "development"
+        },
         "production": {
-          "command": "cd apps/web && vite build --mode production && vite preview --port 4173"
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "web:build",
+        "configFile": "apps/web/vite.config.ts"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "web:build:development"
+        },
+        "production": {
+          "buildTarget": "web:build:production",
+          "mode": "production"
         }
       }
     },

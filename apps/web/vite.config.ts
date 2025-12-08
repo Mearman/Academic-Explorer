@@ -163,6 +163,7 @@ function createWebConfig(): UserConfig {
       alias: {
         '@': resolve(__dirname, 'src'),
       },
+      dedupe: ['react', 'react-dom'],
     },
 
     // Development server configuration
@@ -175,7 +176,14 @@ function createWebConfig(): UserConfig {
         port: 5174,
       },
       fs: {
-        strict: true,
+        strict: false,
+        allow: [
+          '.',           // Current project
+          '..',          // Parent directory
+          '../..',       // For accessing sibling projects
+          '../../.pnpm', // For pnpm store access
+          '../../node_modules' // For workspace dependencies
+        ],
       },
       watch: {
         usePolling: false,
@@ -196,6 +204,9 @@ function createWebConfig(): UserConfig {
       include: [
         'react',
         'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
         '@tanstack/react-router',
         '@tanstack/react-query',
         '@mantine/core',
@@ -204,8 +215,18 @@ function createWebConfig(): UserConfig {
       exclude: [
         '@bibgraph/client',
         '@bibgraph/utils',
+        '@nx/vite',
+        '@nx/vite/plugin',
+        '@nx/devkit',
+        '@nx/angular',
+        'rxjs',
+        '@angular-devkit/architect',
+        '@angular-devkit/core',
+        '@angular-devkit/schematics',
+        'ts-node',
+        '@swc-node/register'
       ],
-      force: true,
+      force: false,
     },
 
     // Define global replacements
