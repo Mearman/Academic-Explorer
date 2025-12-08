@@ -32,10 +32,13 @@ export interface DataFetcherConfig<T> {
   successMessage?: string;
   /** Whether to show error toast on failure */
   showErrorToast?: boolean;
+  /** Whether to show retry status in toasts */
+  showRetryStatus?: boolean;
   /** Retry configuration */
   retry?: {
     maxAttempts: number;
     delay: number;
+    backoffMultiplier?: number;
   };
   /** Loading skeleton type */
   skeletonType?: "text" | "card" | "list" | "table" | "graph" | "stats";
@@ -99,12 +102,33 @@ export const useDataFetcher = <T,>(config: DataFetcherConfig<T>) => {
         toast.error(config.errorMessage || errorObj.message);
       }
 
-      // Handle retry logic
+      // Handle retry logic with enhanced visibility
       if (config.retry && retryCount < config.retry.maxAttempts) {
-        setRetryCount((prev) => prev + 1);
+        const nextRetryCount = retryCount + 1;
+        const backoffMultiplier = config.retry.backoffMultiplier || 1;
+        const delay = config.retry.delay * Math.pow(backoffMultiplier, retryCount);
+
+        setRetryCount(nextRetryCount);
+
+        // Show retry status toast if enabled
+        if (config.showRetryStatus) {
+          const remainingAttempts = config.retry.maxAttempts - nextRetryCount;
+          toast.info(
+            `Retrying... Attempt ${nextRetryCount} of ${config.retry.maxAttempts} (${remainingAttempts} remaining)`,
+            { autoClose: delay }
+          );
+        }
+
         setTimeout(() => {
           executeFetch();
-        }, config.retry.delay);
+        }, delay);
+      } else if (config.retry && retryCount >= config.retry.maxAttempts) {
+        // Show final failure message when all retries exhausted
+        if (config.showErrorToast) {
+          toast.error(
+            config.errorMessage || `Failed after ${config.retry.maxAttempts} attempts. Please try again later.`
+          );
+        }
       }
 
       throw errorObj;
@@ -302,9 +326,11 @@ export const DataFetcherConfigs = {
     skeletonCount: 5,
     showSuccessToast: false,
     showErrorToast: true,
+    showRetryStatus: true,
     retry: {
       maxAttempts: 3,
       delay: 1000,
+      backoffMultiplier: 1.5,
     },
   },
 
@@ -314,7 +340,13 @@ export const DataFetcherConfigs = {
     skeletonCount: 6,
     showSuccessToast: false,
     showErrorToast: true,
+    showRetryStatus: true,
     errorMessage: "Search failed. Please try again.",
+    retry: {
+      maxAttempts: 2,
+      delay: 800,
+      backoffMultiplier: 2,
+    },
   },
 
   /** Configuration for entity details */
@@ -323,9 +355,11 @@ export const DataFetcherConfigs = {
     skeletonCount: 1,
     showSuccessToast: false,
     showErrorToast: true,
+    showRetryStatus: true,
     retry: {
       maxAttempts: 2,
       delay: 500,
+      backoffMultiplier: 1.5,
     },
   },
 
@@ -336,9 +370,11 @@ export const DataFetcherConfigs = {
     showSuccessToast: true,
     successMessage: "Graph data loaded successfully",
     showErrorToast: true,
+    showRetryStatus: true,
     retry: {
-      maxAttempts: 1,
+      maxAttempts: 2,
       delay: 2000,
+      backoffMultiplier: 1.2,
     },
   },
 } as const;
