@@ -103,18 +103,20 @@ export class OperationAbortedError extends StorageError {
 
 /**
  * Utility function to determine if an error is a storage error
+ * @param error - The error to check
  */
-export function isStorageError(error: unknown): error is StorageError {
-  return error instanceof StorageError;
-}
+export const isStorageError = (error: unknown): error is StorageError =>
+  error instanceof StorageError;
 
 /**
  * Utility function to convert IndexedDB errors to structured storage errors
+ * @param operation - The operation that failed
+ * @param error - The original error
  */
-export function convertIndexedDBError(
+export const convertIndexedDBError = (
   operation: string,
   error: unknown
-): StorageError {
+): StorageError => {
   if (isStorageError(error)) {
     return error;
   }
@@ -148,4 +150,4 @@ export function convertIndexedDBError(
   }
 
   return new IndexedDBError(operation, new Error(String(error)));
-}
+};

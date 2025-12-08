@@ -15,12 +15,7 @@ import type { CatalogueEntity,CatalogueList } from './catalogue-db.js';
 import { CatalogueService } from './catalogue-db.js';
 import type { AddBookmarkParams, AddEntityParams, AddToHistoryParams, BatchAddResult, CatalogueStorageProvider, CreateListParams, ListStats, ShareAccessResult } from './catalogue-storage-provider.js';
 import {
-	ConnectionError,
 	convertIndexedDBError,
-	IndexedDBError,
-	NotFoundError,
-	OperationAbortedError,
-	QuotaExceededError,
 	ValidationError,
 } from './errors.js';
 
