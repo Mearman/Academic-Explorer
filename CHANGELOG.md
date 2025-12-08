@@ -1,3 +1,8 @@
+## <small>24.1.1 (2025-12-08)</small>
+
+* style(web): fix import sorting in graph.lazy.tsx ([f1532ae](https://github.com/Mearman/BibGraph/commit/f1532ae))
+* perf(web): replace ForceGraphVisualization with OptimizedForceGraphVisualization ([76a8a72](https://github.com/Mearman/BibGraph/commit/76a8a72)), closes [#38-graph-list](https://github.com/Mearman/BibGraph/issues/38-graph-list)
+
 ## 24.1.0 (2025-12-07)
 
 * fix(web): make handleKeyPress method private in ErrorBoundary ([87019fa](https://github.com/Mearman/BibGraph/commit/87019fa))
