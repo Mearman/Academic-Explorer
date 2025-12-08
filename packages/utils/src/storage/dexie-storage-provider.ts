@@ -14,22 +14,52 @@ import type { GenericLogger } from '../logger.js';
 import type { CatalogueEntity,CatalogueList } from './catalogue-db.js';
 import { CatalogueService } from './catalogue-db.js';
 import type { AddBookmarkParams, AddEntityParams, AddToHistoryParams, BatchAddResult, CatalogueStorageProvider, CreateListParams, ListStats, ShareAccessResult } from './catalogue-storage-provider.js';
+import {
+	ConnectionError,
+	convertIndexedDBError,
+	IndexedDBError,
+	NotFoundError,
+	OperationAbortedError,
+	QuotaExceededError,
+	ValidationError,
+} from './errors.js';
 
 /**
  * Production storage provider using IndexedDB via Dexie
  * Delegates all operations to the existing CatalogueService
+ * Enhanced with comprehensive error handling and logging
  */
 export class DexieStorageProvider implements CatalogueStorageProvider {
 	private catalogueService: CatalogueService;
+	private logger?: GenericLogger;
 
 	constructor(logger?: GenericLogger) {
+		this.logger = logger;
 		this.catalogueService = new CatalogueService(logger);
 	}
 
 	// ========== List Operations ==========
 
 	async createList(params: CreateListParams): Promise<string> {
-		return await this.catalogueService.createList(params);
+		try {
+			// Validate input parameters
+			if (!params.title || params.title.trim().length === 0) {
+				throw new ValidationError('title', params.title, 'Title cannot be empty');
+			}
+
+			const result = await this.catalogueService.createList(params);
+
+			this.logger?.info('storage', 'List created successfully', { listId: result, title: params.title });
+			return result;
+		} catch (error) {
+			const storageError = convertIndexedDBError('createList', error);
+			this.logger?.error('storage', 'Failed to create list', {
+				error: storageError.message,
+				title: params.title,
+				originalError: error,
+			});
+			throw storageError;
+		}
 	}
 
 	async getList(listId: string): Promise<CatalogueList | null> {
@@ -54,13 +84,44 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 	// ========== Entity Operations ==========
 
 	async addEntityToList(params: AddEntityParams): Promise<string> {
-		return await this.catalogueService.addEntityToList({
-			listId: params.listId,
-			entityType: params.entityType,
-			entityId: params.entityId,
-			notes: params.notes,
-			position: params.position,
-		});
+		try {
+			// Validate input parameters
+			if (!params.listId || params.listId.trim().length === 0) {
+				throw new ValidationError('listId', params.listId, 'List ID cannot be empty');
+			}
+			if (!params.entityId || params.entityId.trim().length === 0) {
+				throw new ValidationError('entityId', params.entityId, 'Entity ID cannot be empty');
+			}
+			if (!params.entityType) {
+				throw new ValidationError('entityType', params.entityType, 'Entity type is required');
+			}
+
+			const result = await this.catalogueService.addEntityToList({
+				listId: params.listId,
+				entityType: params.entityType,
+				entityId: params.entityId,
+				notes: params.notes,
+				position: params.position,
+			});
+
+			this.logger?.info('storage', 'Entity added to list successfully', {
+				entityId: params.entityId,
+				entityType: params.entityType,
+				listId: params.listId,
+				recordId: result,
+			});
+			return result;
+		} catch (error) {
+			const storageError = convertIndexedDBError('addEntityToList', error);
+			this.logger?.error('storage', 'Failed to add entity to list', {
+				error: storageError.message,
+				entityId: params.entityId,
+				entityType: params.entityType,
+				listId: params.listId,
+				originalError: error,
+			});
+			throw storageError;
+		}
 	}
 
 	async getListEntities(listId: string): Promise<CatalogueEntity[]> {
@@ -133,11 +194,37 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 	}
 
 	async addBookmark(params: AddBookmarkParams): Promise<string> {
-		return await this.catalogueService.addBookmark({
-			entityType: params.entityType,
-			entityId: params.entityId,
-			notes: params.notes,
-		});
+		try {
+			// Validate input parameters
+			if (!params.entityId || params.entityId.trim().length === 0) {
+				throw new ValidationError('entityId', params.entityId, 'Entity ID cannot be empty');
+			}
+			if (!params.entityType) {
+				throw new ValidationError('entityType', params.entityType, 'Entity type is required');
+			}
+
+			const result = await this.catalogueService.addBookmark({
+				entityType: params.entityType,
+				entityId: params.entityId,
+				notes: params.notes,
+			});
+
+			this.logger?.info('storage', 'Bookmark added successfully', {
+				entityId: params.entityId,
+				entityType: params.entityType,
+				recordId: result,
+			});
+			return result;
+		} catch (error) {
+			const storageError = convertIndexedDBError('addBookmark', error);
+			this.logger?.error('storage', 'Failed to add bookmark', {
+				error: storageError.message,
+				entityId: params.entityId,
+				entityType: params.entityType,
+				originalError: error,
+			});
+			throw storageError;
+		}
 	}
 
 	async removeBookmark(entityRecordId: string): Promise<void> {
