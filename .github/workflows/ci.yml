@@ -248,14 +248,14 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=3072
           NX_PARALLEL: 1
         run: |
-          # CI ULTRA-OPTIMIZED: Run only true unit tests, exclude all component/integration tests
+          # CI ULTRA-OPTIMIZED: Run only true unit tests with coverage, exclude all component/integration tests
           # Run packages individually for precise control
-          pnpm nx test client --skip-nx-cache &
-          pnpm nx test utils --skip-nx-cache &
-          pnpm nx test ui --skip-nx-cache &
-          pnpm nx test cli --skip-nx-cache &
-          # For web app, run only unit tests (not component/integration)
-          pnpm nx test web --skip-nx-cache --testNamePattern="\.unit\.test\." &
+          pnpm nx test:coverage client --skip-nx-cache &
+          pnpm nx test:coverage utils --skip-nx-cache &
+          pnpm nx test:coverage ui --skip-nx-cache &
+          pnpm nx test:coverage cli --skip-nx-cache &
+          # For web app, run only unit tests with coverage (not component/integration)
+          pnpm nx test:coverage web --skip-nx-cache --testNamePattern="\.unit\.test\." &
           wait
 
       - name: Run algorithms tests separately
@@ -266,7 +266,7 @@ jobs:
           CI: true
         run: |
           cd packages/algorithms
-          timeout 300 npx vitest run --reporter=verbose --no-coverage --test-timeout=45000 || {
+          timeout 300 npx vitest run --reporter=verbose --coverage --test-timeout=45000 || {
             exit_code=$?
             echo "Algorithm tests completed with exit code: $exit_code"
             # Check if the tests actually passed despite timeout
