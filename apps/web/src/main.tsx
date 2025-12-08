@@ -14,6 +14,7 @@ import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
 
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AppActivityProvider } from "@/stores/app-activity-store";
@@ -348,7 +349,22 @@ createRoot(rootElement, reactErrorHandlers).render(
           <StorageProviderWrapper provider={storageProvider}>
             <LayoutProvider>
               <AppActivityProvider>
-                <RouterProvider router={router} />
+                <ErrorBoundary
+                  title="Application Error"
+                  description="Something went wrong while loading the application. Please try again."
+                  showRetry={true}
+                  showDetails={process.env.NODE_ENV === 'development'}
+                  onError={(error, errorInfo, errorId) => {
+                    logger.error('main', 'Application error caught by ErrorBoundary', {
+                      errorId,
+                      error: error.message,
+                      stack: error.stack,
+                      componentStack: errorInfo?.componentStack,
+                    });
+                  }}
+                >
+                  <RouterProvider router={router} />
+                </ErrorBoundary>
               </AppActivityProvider>
             </LayoutProvider>
           </StorageProviderWrapper>
