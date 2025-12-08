@@ -32,8 +32,9 @@ const BASE_URL =
 
 // Configuration for smoke testing optimization
 const SMOKE_TEST_CONFIG = {
-	// In CI, use sampling to reduce timeout risk
-	maxRoutesPerCategory: process.env.CI ? 3 : Number.MAX_SAFE_INTEGER,
+	// In CI, use aggressive sampling to fit within 8-minute job timeout
+	// At ~50s per test, we can only run ~6-7 tests total (50s * 7 = 350s + overhead)
+	maxRoutesPerCategory: process.env.CI ? 1 : Number.MAX_SAFE_INTEGER,
 	skipEntityDetailInCI: process.env.CI ? true : false,
 };
 
