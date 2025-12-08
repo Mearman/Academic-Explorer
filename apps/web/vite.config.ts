@@ -84,9 +84,9 @@ function githubPagesPlugin(): PluginOption {
 // Type-safe configuration creation
 function createWebConfig(): UserConfig {
   return {
-    // Use relative base path for dual-domain deployment (GitHub Pages + custom domain)
-    // With hash routing, relative paths resolve correctly from any document location
-    base: './',
+    // Use relative base path only for production builds (GitHub Pages deployment)
+    // In development, use root path for proper dev server behavior
+    base: process.env.NODE_ENV === 'production' ? './' : '/',
 
     // Pass GITHUB_PAGES to client code via import.meta.env
     envPrefix: ['VITE_', 'GITHUB_PAGES'],

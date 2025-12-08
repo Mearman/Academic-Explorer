@@ -12,13 +12,14 @@
       }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "web:build"
+        "command": "cd apps/web && vite",
+        "cwd": "{workspaceRoot}"
       },
       "configurations": {
         "production": {
-          "mode": "production"
+          "command": "cd apps/web && vite build --mode production && vite preview --port 4173"
         }
       }
     },
