@@ -20,7 +20,7 @@
     "deps:knip:fix": "nx run bibgraph:deps:knip:fix",
     "deps:outdated": "nx run bibgraph:deps:outdated",
     "deps:update": "pnpm update --interactive --latest",
-    "dev": "nx run web:dev",
+    "dev": "nx serve web",
     "generate:test-urls": "tsx scripts/generate-test-urls.ts",
     "kill-nx": "tsx scripts/kill-nx-processes.ts",
     "kill-nx:emergency": "pkill -f nx; pkill -f '@nx/daemon'; rm -rf .nx /tmp/nx* /tmp/*nx* 2>/dev/null || true; nx reset",

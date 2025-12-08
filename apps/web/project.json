@@ -11,15 +11,23 @@
         "cwd": "{projectRoot}"
       }
     },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "options": {
+        "buildTarget": "web:build"
+      },
+      "configurations": {
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "nx run web:serve"
-        ],
-        "parallel": true
-      },
-      "continuous": true
+        "command": "echo 'Use \"nx serve web\" instead of \"nx dev web\" for better performance and modern setup'",
+        "cwd": "{projectRoot}"
+      }
     },
     "test:e2e": {
       "executor": "@nx/playwright:playwright",
