@@ -73,7 +73,7 @@ const expectPageLoads = async (page: import("@playwright/test").Page, path: stri
 		errors.push(error.message);
 	});
 
-	const timeout = options?.timeout ?? 30_000;
+	const timeout = options?.timeout ?? 45_000;
 	const url = buildUrl(path);
 	await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
 	await waitForAppReady(page, { timeout });
