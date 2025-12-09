@@ -283,9 +283,9 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            apps/web/dist
-            apps/cli/dist
-            packages/*/dist
+            dist/apps/web
+            dist/apps/cli
+            dist/packages/*/dist
           retention-days: 1
 
       - name: Upload coverage
@@ -797,8 +797,7 @@ jobs:
 
       - name: Start preview server for smoke tests
         run: |
-          cd apps/web
-          # Use built-in Node.js HTTP module to serve pre-built artifacts
+          # Use built-in Node.js HTTP module to serve pre-built artifacts from dist/apps/web
           # This is much faster than pnpm preview which rebuilds everything and doesn't require extra packages
           node -e "
             const http = require('http');
@@ -808,7 +807,7 @@ jobs:
 
             const server = http.createServer((req, res) => {
               const parsedUrl = url.parse(req.url, true);
-              let filePath = path.join(__dirname, 'dist', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
+              let filePath = path.join(__dirname, '../../dist/apps/web', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
 
               const extname = path.extname(filePath);
               const contentType = {
@@ -904,13 +903,13 @@ jobs:
         run: npm install -g @posthog/cli
 
       - name: Inject source map metadata
-        run: posthog-cli --host https://eu.posthog.com sourcemap inject --version ${{ github.sha }} --directory ./apps/web/dist
+        run: posthog-cli --host https://eu.posthog.com sourcemap inject --version ${{ github.sha }} --directory ./dist/apps/web
         env:
           POSTHOG_CLI_TOKEN: ${{ secrets.POSTHOG_CLI_TOKEN }}
           POSTHOG_CLI_ENV_ID: ${{ secrets.POSTHOG_CLI_ENV_ID }}
 
       - name: Upload source maps to PostHog
-        run: posthog-cli --host https://eu.posthog.com sourcemap upload --directory ./apps/web/dist --delete-after
+        run: posthog-cli --host https://eu.posthog.com sourcemap upload --directory ./dist/apps/web --delete-after
         env:
           POSTHOG_CLI_TOKEN: ${{ secrets.POSTHOG_CLI_TOKEN }}
           POSTHOG_CLI_ENV_ID: ${{ secrets.POSTHOG_CLI_ENV_ID }}
@@ -918,7 +917,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-pages-artifact@v4
         with:
-          path: apps/web/dist
+          path: dist/apps/web
 
       - name: Deploy to GitHub Pages
         id: deployment
