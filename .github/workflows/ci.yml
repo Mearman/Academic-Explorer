@@ -808,7 +808,41 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
-          path: .
+          path: build-artifacts-temp
+
+      - name: Restore build artifacts for smoke tests
+        run: |
+          echo "=== Restoring build artifacts for smoke tests ==="
+          # Check if artifacts are stored directly (without dist/ prefix) or under dist/
+          if [ -d "build-artifacts-temp/dist" ]; then
+            echo "✅ Found dist directory in temp artifacts (with dist/ prefix)"
+            mv build-artifacts-temp/dist ./dist
+            echo "✅ Moved dist directory to expected location"
+          elif [ -d "build-artifacts-temp/apps" ]; then
+            echo "✅ Found apps directory in temp artifacts (without dist/ prefix)"
+            mv build-artifacts-temp ./dist
+            echo "✅ Moved temp directory contents to dist/"
+          else
+            echo "❌ No valid build artifacts found in temp directory"
+            echo "=== Contents of temp directory ==="
+            find build-artifacts-temp -type f -o -type d | head -20
+            exit 1
+          fi
+
+          # Verify the restored structure
+          if [ -d "dist/apps/web" ]; then
+            echo "✅ dist/apps/web directory restored successfully"
+            find dist/apps/web -maxdepth 1 -type f | head -5
+          else
+            echo "❌ dist/apps/web directory not found after restore"
+            echo "=== Contents of dist directory ==="
+            find dist -type f -o -type d | head -20
+            exit 1
+          fi
+
+          # Clean up temp directory
+          rm -rf build-artifacts-temp
+          echo "✅ Temporary artifacts directory cleaned up"
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
@@ -930,12 +964,17 @@ jobs:
       - name: Restore build artifacts
         run: |
           echo "=== Restoring build artifacts from temp directory ==="
+          # Check if artifacts are stored directly (without dist/ prefix) or under dist/
           if [ -d "build-artifacts-temp/dist" ]; then
-            echo "✅ Found dist directory in temp artifacts"
+            echo "✅ Found dist directory in temp artifacts (with dist/ prefix)"
             mv build-artifacts-temp/dist ./dist
             echo "✅ Moved dist directory to expected location"
+          elif [ -d "build-artifacts-temp/apps" ]; then
+            echo "✅ Found apps directory in temp artifacts (without dist/ prefix)"
+            mv build-artifacts-temp ./dist
+            echo "✅ Moved temp directory contents to dist/"
           else
-            echo "❌ dist directory not found in temp artifacts"
+            echo "❌ No valid build artifacts found in temp directory"
             echo "=== Contents of temp directory ==="
             find build-artifacts-temp -type f -o -type d | head -20
             exit 1
@@ -947,6 +986,8 @@ jobs:
             find dist/apps/web -maxdepth 1 -type f | head -5
           else
             echo "❌ dist/apps/web directory not found after restore"
+            echo "=== Contents of dist directory ==="
+            find dist -type f -o -type d | head -20
             exit 1
           fi
 
