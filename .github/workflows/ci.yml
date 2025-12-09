@@ -807,7 +807,7 @@ jobs:
 
             const server = http.createServer((req, res) => {
               const parsedUrl = url.parse(req.url, true);
-              let filePath = path.join(__dirname, '../../dist/apps/web', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
+              let filePath = path.join(process.env.GITHUB_WORKSPACE || '.', 'dist/apps/web', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
 
               const extname = path.extname(filePath);
               const contentType = {
