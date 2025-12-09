@@ -16,7 +16,31 @@ export const waitForAppReady = async (page: Page, options?: WaitOptions): Promis
 	const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
 
 	// Wait for root element to exist and have children
-	await page.waitForSelector('#root:has(*)', { timeout, state: 'attached' });
+	try {
+		await page.waitForSelector('#root:has(*)', { timeout, state: 'attached' });
+	} catch (error) {
+		// In CI, provide more diagnostic information if the app fails to load
+		if (process.env.CI) {
+			const diagnostics = await page.evaluate(() => {
+				const scripts = Array.from(document.querySelectorAll('script[src*="index-"]'));
+				const mainScript = scripts.find(s => (s as HTMLScriptElement).src.includes('index-'));
+				const rootEl = document.querySelector('#root');
+
+				return {
+					hasRoot: !!rootEl,
+					rootHasChildren: rootEl ? rootEl.children.length > 0 : false,
+					hasMainScript: !!mainScript,
+					mainScriptSrc: mainScript ? (mainScript as HTMLScriptElement).src : null,
+					documentReady: document.readyState,
+					location: window.location.href,
+					userAgent: navigator.userAgent
+				};
+			});
+
+			console.error('CI smoke test failure diagnostics:', diagnostics);
+		}
+		throw error;
+	}
 
 	// Wait for loading indicators to be hidden (if present)
 	try {
