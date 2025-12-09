@@ -825,7 +825,14 @@ jobs:
 
             const server = http.createServer((req, res) => {
               const parsedUrl = url.parse(req.url, true);
-              let filePath = path.join(process.env.GITHUB_WORKSPACE || '.', 'dist/apps/web', parsedUrl.pathname === '/' ? 'index.html' : parsedUrl.pathname);
+
+              // Handle the root path and any path that doesn't start with /assets/
+              let requestPath = parsedUrl.pathname;
+              if (requestPath === '/') {
+                requestPath = '/index.html';
+              }
+
+              let filePath = path.join(process.env.GITHUB_WORKSPACE || '.', 'dist/apps/web', requestPath);
 
               const extname = path.extname(filePath);
               const contentType = {
@@ -840,9 +847,11 @@ jobs:
 
               fs.readFile(filePath, (err, content) => {
                 if (err) {
+                  console.log(\`File not found: \${filePath} for request: \${parsedUrl.pathname}\`);
                   res.writeHead(404);
-                  res.end('Not found');
+                  res.end(\`File not found: \${parsedUrl.pathname}\`);
                 } else {
+                  console.log(\`Serving file: \${filePath} for request: \${parsedUrl.pathname}\`);
                   res.writeHead(200, { 'Content-Type': contentType });
                   res.end(content);
                 }
@@ -851,6 +860,7 @@ jobs:
 
             server.listen(4173, () => {
               console.log('Static server ready on port 4173');
+              console.log('Serving files from:', path.join(process.env.GITHUB_WORKSPACE || '.', 'dist/apps/web'));
             });
           " &
           echo "Static file server starting on port 4173..."
