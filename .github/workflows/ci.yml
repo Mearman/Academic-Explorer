@@ -282,10 +282,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: build-artifacts
-          path: |
-            dist/apps/web
-            dist/apps/cli
-            dist/packages/*/dist
+          path: dist/
           retention-days: 1
 
       - name: Upload coverage
