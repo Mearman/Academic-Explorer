@@ -907,46 +907,47 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Download build artifacts to temp directory
+        uses: actions/download-artifact@v6
+        with:
+          name: build-artifacts
+          path: build-artifacts-temp
+
       - name: Install dependencies
         timeout-minutes: 5
         run: pnpm install --frozen-lockfile
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v6
-        with:
-          name: build-artifacts
-          path: .
+      - name: Restore build artifacts
+        run: |
+          echo "=== Restoring build artifacts from temp directory ==="
+          if [ -d "build-artifacts-temp/dist" ]; then
+            echo "✅ Found dist directory in temp artifacts"
+            mv build-artifacts-temp/dist ./dist
+            echo "✅ Moved dist directory to expected location"
+          else
+            echo "❌ dist directory not found in temp artifacts"
+            echo "=== Contents of temp directory ==="
+            find build-artifacts-temp -type f -o -type d | head -20
+            exit 1
+          fi
+
+          # Verify the restored structure
+          if [ -d "dist/apps/web" ]; then
+            echo "✅ dist/apps/web directory restored successfully"
+            find dist/apps/web -maxdepth 1 -type f | head -5
+          else
+            echo "❌ dist/apps/web directory not found after restore"
+            exit 1
+          fi
+
+          # Clean up temp directory
+          rm -rf build-artifacts-temp
+          echo "✅ Temporary artifacts directory cleaned up"
 
       - name: Install PostHog CLI
         run: npm install -g @posthog/cli
 
-      - name: Verify artifact structure
-        run: |
-          echo "=== Current directory structure ==="
-          find . -maxdepth 1 -type f -o -type d | head -20
-          echo "=== Checking for dist directory ==="
-          if [ -d "dist" ]; then
-            echo "✅ dist directory found"
-            find dist -maxdepth 2 -type f -o -type d | head -20
-            if [ -d "dist/apps" ]; then
-              echo "✅ dist/apps directory found"
-              find dist/apps -maxdepth 1 -type d
-              if [ -d "dist/apps/web" ]; then
-                echo "✅ dist/apps/web directory found"
-                find dist/apps/web -maxdepth 1 -type f | head -10
-              else
-                echo "❌ dist/apps/web directory NOT found"
-                exit 1
-              fi
-            else
-              echo "❌ dist/apps directory NOT found"
-              exit 1
-            fi
-          else
-            echo "❌ dist directory NOT found"
-            exit 1
-          fi
-
+  
       - name: Inject source map metadata
         run: posthog-cli --host https://eu.posthog.com sourcemap inject --version ${{ github.sha }} --directory ./dist/apps/web
         env:
