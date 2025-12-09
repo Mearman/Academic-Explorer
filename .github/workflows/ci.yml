@@ -278,6 +278,27 @@ jobs:
             fi
           }
 
+      - name: Verify build artifacts before upload
+        run: |
+          echo "=== Verifying build artifacts before upload ==="
+          if [ ! -d "dist" ]; then
+            echo "❌ dist directory not found"
+            exit 1
+          fi
+          echo "✅ dist directory found"
+          find dist -maxdepth 2 -type f -o -type d | head -20
+          if [ ! -d "dist/apps" ]; then
+            echo "❌ dist/apps directory not found"
+            exit 1
+          fi
+          echo "✅ dist/apps directory found"
+          if [ ! -d "dist/apps/web" ]; then
+            echo "❌ dist/apps/web directory not found"
+            exit 1
+          fi
+          echo "✅ dist/apps/web directory found"
+          echo "=== Build artifacts verified successfully ==="
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v5
         with:
