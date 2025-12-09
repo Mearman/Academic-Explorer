@@ -22,7 +22,7 @@ export const waitForAppReady = async (page: Page, options?: WaitOptions): Promis
 		// In CI, provide more diagnostic information if the app fails to load
 		if (process.env.CI) {
 			const diagnostics = await page.evaluate(() => {
-				const scripts = Array.from(document.querySelectorAll('script[src*="index-"]'));
+				const scripts = [...document.querySelectorAll('script[src*="index-"]')];
 				const mainScript = scripts.find(s => (s as HTMLScriptElement).src.includes('index-'));
 				const rootEl = document.querySelector('#root');
 
